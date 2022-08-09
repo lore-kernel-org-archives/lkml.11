@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1901C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBB3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344459AbiHISDT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:03:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        id S245221AbiHISDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343501AbiHISCu (ORCPT
+        with ESMTP id S245324AbiHISCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:02:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA05626110;
-        Tue,  9 Aug 2022 11:01:31 -0700 (PDT)
+        Tue, 9 Aug 2022 14:02:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B63326561;
+        Tue,  9 Aug 2022 11:01:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E0EEB816EC;
-        Tue,  9 Aug 2022 18:01:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4FABC433D6;
-        Tue,  9 Aug 2022 18:01:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17BEFB8171E;
+        Tue,  9 Aug 2022 18:01:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 800D0C4347C;
+        Tue,  9 Aug 2022 18:01:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068091;
-        bh=K/+z6RtiqdIGnLZ1gtlrGutH0ZaIuy+G3NLRTJq9AYA=;
+        s=korg; t=1660068093;
+        bh=yagiaS4psLuXibb3+PS+oAKKqpiYlNe2XinfS2S4DwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=azgY44G7ups9UT8kZLIOATI1omjjSCU0cXV+9d5PDWOKenMKkWCj19JU4eq0j1fdq
-         BOf8Nv1+20QhUlLCuvT9MkocR+NassIy1dSm5VWz5Zt0PegUwu9WcMGidWdHD9kHT5
-         N5fz2TMvgc2S3OO8DaP5dKCEsWGnA+vMUC6GsZKE=
+        b=Jc23lkZqTX+J3SZtRTJ3DlK+SyRWS1K9WbCNrYw4ryEwiQHZkx8vjBGO/m2+huglE
+         kdD12QKi5UAZLXe25d8LSZF6MDr55LDwtg893qGpjuNUves4+laokDJgNU1eadHyC4
+         EM0doS0HNJYfdeh5t6/5Iib/wHWylTmR2aI92fMg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com,
-        Ayushman Dutta <ayudutta@amazon.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 11/32] net: ping6: Fix memleak in ipv6_renew_options().
-Date:   Tue,  9 Aug 2022 20:00:02 +0200
-Message-Id: <20220809175513.451194988@linuxfoundation.org>
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Yongqiang Liu <liuyongqiang13@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>,
+        Zhang Xiaoxu <zhangxiaoxu5@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 4.19 02/32] ntfs: fix use-after-free in ntfs_ucsncmp()
+Date:   Tue,  9 Aug 2022 19:59:53 +0200
+Message-Id: <20220809175513.165252309@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
 References: <20220809175513.082573955@linuxfoundation.org>
@@ -54,105 +53,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: ChenXiaoSong <chenxiaosong2@huawei.com>
 
-commit e27326009a3d247b831eda38878c777f6f4eb3d1 upstream.
+commit 38c9c22a85aeed28d0831f230136e9cf6fa2ed44 upstream.
 
-When we close ping6 sockets, some resources are left unfreed because
-pingv6_prot is missing sk->sk_prot->destroy().  As reported by
-syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
+Syzkaller reported use-after-free bug as follows:
 
-    struct ipv6_sr_hdr *hdr;
-    char data[24] = {0};
-    int fd;
+==================================================================
+BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
+Read of size 2 at addr ffff8880751acee8 by task a.out/879
 
-    hdr = (struct ipv6_sr_hdr *)data;
-    hdr->hdrlen = 2;
-    hdr->type = IPV6_SRCRT_TYPE_4;
+CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x1c0/0x2b0
+ print_address_description.constprop.0.cold+0xd4/0x484
+ print_report.cold+0x55/0x232
+ kasan_report+0xbf/0xf0
+ ntfs_ucsncmp+0x123/0x130
+ ntfs_are_names_equal.cold+0x2b/0x41
+ ntfs_attr_find+0x43b/0xb90
+ ntfs_attr_lookup+0x16d/0x1e0
+ ntfs_read_locked_attr_inode+0x4aa/0x2360
+ ntfs_attr_iget+0x1af/0x220
+ ntfs_read_locked_inode+0x246c/0x5120
+ ntfs_iget+0x132/0x180
+ load_system_files+0x1cc6/0x3480
+ ntfs_fill_super+0xa66/0x1cf0
+ mount_bdev+0x38d/0x460
+ legacy_get_tree+0x10d/0x220
+ vfs_get_tree+0x93/0x300
+ do_new_mount+0x2da/0x6d0
+ path_mount+0x496/0x19d0
+ __x64_sys_mount+0x284/0x300
+ do_syscall_64+0x3b/0xc0
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f3f2118d9ea
+Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
+RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
+R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
-    fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
-    setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
-    close(fd);
+The buggy address belongs to the physical page:
+page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
+memcg:ffff888101f7e180
+anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
+raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
+raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
+page dumped because: kasan: bad access detected
 
-To fix memory leaks, let's add a destroy function.
+Memory state around the buggy address:
+ ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                                                          ^
+ ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
 
-Note the socket() syscall checks if the GID is within the range of
-net.ipv4.ping_group_range.  The default value is [1, 0] so that no
-GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
-not succeed until we change the default value.  However, at least
-Ubuntu/Fedora/RHEL loosen it.
+The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
+name string is out of bounds.
 
-    $ cat /usr/lib/sysctl.d/50-default.conf
-    ...
-    -net.ipv4.ping_group_range = 0 2147483647
+Fix this by adding sanity check on end address of attribute name string.
 
-Also, there could be another path reported with these options, and
-some of them require CAP_NET_RAW.
-
-  setsockopt
-      IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
-      IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
-      IPV6_HOPOPTS (inet6_sk(sk)->opt)
-      IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
-      IPV6_RTHDR (inet6_sk(sk)->opt)
-      IPV6_DSTOPTS (inet6_sk(sk)->opt)
-      IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
-
-  getsockopt
-      IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
-
-For the record, I left a different splat with syzbot's one.
-
-  unreferenced object 0xffff888006270c60 (size 96):
-    comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
-    hex dump (first 32 bytes):
-      01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    backtrace:
-      [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
-      [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
-      [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
-      [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
-      [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
-      [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-      [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-
-[0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
-
-Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
-Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
-Reported-by: Ayushman Dutta <ayudutta@amazon.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220728012220.46918-1-kuniyu@amazon.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[akpm@linux-foundation.org: coding-style cleanups]
+[chenxiaosong2@huawei.com: cleanup suggested by Hawkins Jiawei]
+  Link: https://lkml.kernel.org/r/20220709064511.3304299-1-chenxiaosong2@huawei.com
+Link: https://lkml.kernel.org/r/20220707105329.4020708-1-chenxiaosong2@huawei.com
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+Cc: Anton Altaparmakov <anton@tuxera.com>
+Cc: ChenXiaoSong <chenxiaosong2@huawei.com>
+Cc: Yongqiang Liu <liuyongqiang13@huawei.com>
+Cc: Zhang Yi <yi.zhang@huawei.com>
+Cc: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ping.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/ntfs/attrib.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/net/ipv6/ping.c
-+++ b/net/ipv6/ping.c
-@@ -27,6 +27,11 @@
- #include <linux/proc_fs.h>
- #include <net/ping.h>
- 
-+static void ping_v6_destroy(struct sock *sk)
-+{
-+	inet6_destroy_sock(sk);
-+}
-+
- /* Compatibility glue so we can support IPv6 when it's compiled as a module */
- static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
- 				 int *addr_len)
-@@ -170,6 +175,7 @@ struct proto pingv6_prot = {
- 	.owner =	THIS_MODULE,
- 	.init =		ping_init_sock,
- 	.close =	ping_close,
-+	.destroy =	ping_v6_destroy,
- 	.connect =	ip6_datagram_connect_v6_only,
- 	.disconnect =	__udp_disconnect,
- 	.setsockopt =	ipv6_setsockopt,
+--- a/fs/ntfs/attrib.c
++++ b/fs/ntfs/attrib.c
+@@ -606,8 +606,12 @@ static int ntfs_attr_find(const ATTR_TYP
+ 		a = (ATTR_RECORD*)((u8*)ctx->attr +
+ 				le32_to_cpu(ctx->attr->length));
+ 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+-		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
+-				le32_to_cpu(ctx->mrec->bytes_allocated))
++		u8 *mrec_end = (u8 *)ctx->mrec +
++		               le32_to_cpu(ctx->mrec->bytes_allocated);
++		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
++			       a->name_length * sizeof(ntfschar);
++		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
++		    name_end > mrec_end)
+ 			break;
+ 		ctx->attr = a;
+ 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
 
 
