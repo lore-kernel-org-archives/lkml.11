@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E013C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06313C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345452AbiHISNc (ORCPT
+        id S1345463AbiHISNj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        Tue, 9 Aug 2022 14:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345792AbiHISLp (ORCPT
+        with ESMTP id S1345743AbiHISLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434672B1A1;
-        Tue,  9 Aug 2022 11:04:51 -0700 (PDT)
+        Tue, 9 Aug 2022 14:11:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BC527B0F;
+        Tue,  9 Aug 2022 11:04:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7706961070;
-        Tue,  9 Aug 2022 18:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE977C433D6;
-        Tue,  9 Aug 2022 18:04:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B56F7B81719;
+        Tue,  9 Aug 2022 18:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C552C433D6;
+        Tue,  9 Aug 2022 18:04:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068289;
-        bh=S2xxbuptJ7V+bMWXdehtQv+Fi2QhUDp4XHIgVKjwTfM=;
+        s=korg; t=1660068286;
+        bh=e+Sqdz09GdVHe1dlbhbcgQasCVxSYIYnh6jIqbIAANo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0VLQxqus1+xsRqbvBsMZdCcgE7DdY0MfB9ildAqe1u2t02MT39/eP8Lj0zBARpdfL
-         xpDxAlF0rYiX7OqjRunfdrCoNV3hzizIzy2wGMivvQzeqMOYCQ3azBqVHsxssGX6cS
-         d54PCbHwY/7bKjiu5TNH+kJ3ncC36JHFIdbeur+c=
+        b=Xpe+rLEeqeNvvRyaFoS2thI+15aEGMBSsLcG+OBdkUp0im93yMCrtMk8kJZmKVuxP
+         j48+g6MoKd9gSzfV1cSO4KazZScDV77S6il/xPAZSP3jJs/d1nglrXXTg+rCdL00ug
+         ErKKUCFPqyXTp/9fbkRzNJU4mjImSqQYZnMsMtZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 01/30] x86/speculation: Make all RETbleed mitigations 64-bit only
-Date:   Tue,  9 Aug 2022 20:00:26 +0200
-Message-Id: <20220809175514.322531397@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Ning Qiang <sohu0106@126.com>,
+        Kees Cook <keescook@chromium.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 21/23] macintosh/adb: fix oob read in do_adb_query() function
+Date:   Tue,  9 Aug 2022 20:00:39 +0200
+Message-Id: <20220809175513.580399042@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
-References: <20220809175514.276643253@linuxfoundation.org>
+In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
+References: <20220809175512.853274191@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,66 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Ning Qiang <sohu0106@126.com>
 
-commit b648ab487f31bc4c38941bc770ea97fe394304bb upstream.
+commit fd97e4ad6d3b0c9fce3bca8ea8e6969d9ce7423b upstream.
 
-The mitigations for RETBleed are currently ineffective on x86_32 since
-entry_32.S does not use the required macros.  However, for an x86_32
-target, the kconfig symbols for them are still enabled by default and
-/sys/devices/system/cpu/vulnerabilities/retbleed will wrongly report
-that mitigations are in place.
+In do_adb_query() function of drivers/macintosh/adb.c, req->data is copied
+form userland. The parameter "req->data[2]" is missing check, the array
+size of adb_handler[] is 16, so adb_handler[req->data[2]].original_address and
+adb_handler[req->data[2]].handler_id will lead to oob read.
 
-Make all of these symbols depend on X86_64, and only enable RETHUNK by
-default on X86_64.
-
-Fixes: f43b9876e857 ("x86/retbleed: Add fine grained Kconfig knobs")
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/YtwSR3NNsWp1ohfV@decadent.org.uk
-[bwh: Backported to 5.10/5.15/5.18: adjust context]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Ning Qiang <sohu0106@126.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220713153734.2248-1-sohu0106@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/Kconfig |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/macintosh/adb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2427,7 +2427,7 @@ config RETPOLINE
- config RETHUNK
- 	bool "Enable return-thunks"
- 	depends on RETPOLINE && CC_HAS_RETURN_THUNK
--	default y
-+	default y if X86_64
- 	help
- 	  Compile the kernel with the return-thunks compiler option to guard
- 	  against kernel-to-user data leaks by avoiding return speculation.
-@@ -2436,21 +2436,21 @@ config RETHUNK
+--- a/drivers/macintosh/adb.c
++++ b/drivers/macintosh/adb.c
+@@ -647,7 +647,7 @@ do_adb_query(struct adb_request *req)
  
- config CPU_UNRET_ENTRY
- 	bool "Enable UNRET on kernel entry"
--	depends on CPU_SUP_AMD && RETHUNK
-+	depends on CPU_SUP_AMD && RETHUNK && X86_64
- 	default y
- 	help
- 	  Compile the kernel with support for the retbleed=unret mitigation.
- 
- config CPU_IBPB_ENTRY
- 	bool "Enable IBPB on kernel entry"
--	depends on CPU_SUP_AMD
-+	depends on CPU_SUP_AMD && X86_64
- 	default y
- 	help
- 	  Compile the kernel with support for the retbleed=ibpb mitigation.
- 
- config CPU_IBRS_ENTRY
- 	bool "Enable IBRS on kernel entry"
--	depends on CPU_SUP_INTEL
-+	depends on CPU_SUP_INTEL && X86_64
- 	default y
- 	help
- 	  Compile the kernel with support for the spectre_v2=ibrs mitigation.
+ 	switch(req->data[1]) {
+ 	case ADB_QUERY_GETDEVINFO:
+-		if (req->nbytes < 3)
++		if (req->nbytes < 3 || req->data[2] >= 16)
+ 			break;
+ 		mutex_lock(&adb_handler_mutex);
+ 		req->reply[0] = adb_handler[req->data[2]].original_address;
 
 
