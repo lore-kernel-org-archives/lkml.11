@@ -2,103 +2,327 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73959C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35544C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345418AbiHITFQ (ORCPT
+        id S1344039AbiHITH1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
+        Tue, 9 Aug 2022 15:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344647AbiHITEQ (ORCPT
+        with ESMTP id S1345971AbiHITGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:04:16 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6E313D5D
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:41:09 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id b96so16332817edf.0
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:41:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kVwCZBP8xiCx+3wLLImCHnMmFFTnJkwj0aGJ2jKqccw=;
-        b=DHx27yMkHy1skZqXZ2CMAcU3H+mg0HNfe2zU+1flo3YTkK3PYdBupattYbASdmKGP4
-         onlUm7uo5x58CUDTPSu0jSnI7jo4ZZMSdXxIK1xDJQ9zk0fM5KJrUtY9XVGV0r2ipCGE
-         BmeEPBiTPHYD5cEp/375GgspyWLVT8sZcz/cI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kVwCZBP8xiCx+3wLLImCHnMmFFTnJkwj0aGJ2jKqccw=;
-        b=sVAlqXiuu21/p465q6sQO0RUePCAXzDXwMs+D99qarB2OshS5PNwXrkjLbKqJ6uqA7
-         Hk+1oN9JGW8UPf0SOkE327YYvCW9RrE2fd2PPHNIN7UF1GY8nRmkS6qicyjwuQ7e/6ay
-         7TeASRfWc6j7RlUL5y1q6s/HRRvfuqviai/91CPslPOlWOdufSHj2/fYLhdPIeeWf1Bw
-         f84+ZqizOur7IcEk3+vXn+WXqo+Rdf3lyJHQqJbBr7qc8MSHGumRg4y9ILWOHO75gc1K
-         CgXEguUnRnyhIEcnS8bsVv5/vWNQpB8j0FzR9aTY6iixaA6xXHL5fd6G4z2nk/XLR8a2
-         XjMQ==
-X-Gm-Message-State: ACgBeo3FpHCZ50M4s57g4Q+JN7jt9iP/5kflVau2ik5AwMpjitHxgelk
-        z8063mpwoqM0M/96iXRA5w36YJM+B3WhilefwIg=
-X-Google-Smtp-Source: AA6agR6VLVHMKKCMntAbDhzCK4WlTIdJjuzweABBUPLT0U6GpTAs+vJBjGbLQQeWf0LOuKNaLsNSfg==
-X-Received: by 2002:a05:6402:40c9:b0:43d:cc0d:e9de with SMTP id z9-20020a05640240c900b0043dcc0de9demr23135280edb.319.1660070467451;
-        Tue, 09 Aug 2022 11:41:07 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id kv21-20020a17090778d500b0072b8fbc9be1sm1397499ejc.187.2022.08.09.11.41.06
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 11:41:07 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id bv3so15253006wrb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:41:06 -0700 (PDT)
-X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
- p11-20020a5d638b000000b002206e1a8794mr15353489wru.193.1660070466444; Tue, 09
- Aug 2022 11:41:06 -0700 (PDT)
+        Tue, 9 Aug 2022 15:06:15 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67CC109;
+        Tue,  9 Aug 2022 11:46:31 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9800329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9800:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D0E8D1EC050F;
+        Tue,  9 Aug 2022 20:46:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660070786;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=isELGFuYHhfnrRtAt5/XPB2ebAau9OPRcs9FGy+PSbc=;
+        b=Hxoy+RtUpZ/w/UKftVYnwLRTTT0rEO7w8pYKPx9or6CQWCQH0qQjzSfKfbPURvIEIsVqPP
+        IXktObR7fQ+e4BG30rhKCFGcrGZTja01CZssG0krf7ZO9o0168V41Bc0DgGnklW3UYFVIU
+        sm1NJr378G8BI4o3uC4D44Y2gJH2jqo=
+Date:   Tue, 9 Aug 2022 20:46:22 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Justin He <Justin.He@arm.com>
+Cc:     "Kani, Toshi" <toshi.kani@hpe.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>
+Subject: Re: =?utf-8?B?5Zue5aSNOiBbUEFUQ0hdIEFDUEk=?= =?utf-8?Q?=3A?= APEI:
+ move edac_init ahead of ghes platform drv register
+Message-ID: <YvKrfqAsVLUqW5PN@zn.tnic>
+References: <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF4p01WJGGUwIJC@zn.tnic>
+ <PH7PR84MB1838492812F5ABAA4BB54D9982639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF+J/dfyOEVSbSQ@zn.tnic>
+ <PH7PR84MB1838BF4F8B56EF1E24FCF1DC82639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvIPf/m3hU46S9Ik@zn.tnic>
+ <DBBPR08MB4538A5C080B09A96A77CCDA9F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <YvJB5cxSldpigw1g@zn.tnic>
+ <DBBPR08MB453870FA5C5D26AADFDF05C7F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <YvKWP2BcAh/+YKXM@zn.tnic>
 MIME-Version: 1.0
-References: <20220808073232.8808-1-david@redhat.com>
-In-Reply-To: <20220808073232.8808-1-david@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 9 Aug 2022 11:40:50 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi81ujYGP0gmyy2kDke_ExL742Lo_hLepGjCa8mS81A7w@mail.gmail.com>
-Message-ID: <CAHk-=wi81ujYGP0gmyy2kDke_ExL742Lo_hLepGjCa8mS81A7w@mail.gmail.com>
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YvKWP2BcAh/+YKXM@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
->
-> For example, a write() via /proc/self/mem to a uffd-wp-protected range has
-> to fail instead of silently granting write access and bypassing the
-> userspace fault handler. Note that FOLL_FORCE is not only used for debug
-> access, but also triggered by applications without debug intentions, for
-> example, when pinning pages via RDMA.
+On Tue, Aug 09, 2022 at 07:15:43PM +0200, Borislav Petkov wrote:
+> Yes, I think you do. Lemme write something and you can finish it/test
+> it.
 
-So this made me go "Whaa?"
+Here's something to only show what I'm thinking of. It doesn't build
+because of:
 
-I didn't even realize that the media drivers and rdma used FOLL_FORCE.
+drivers/acpi/apei/ghes.c: In function ‘ghes_do_proc’:
+drivers/acpi/apei/ghes.c:651:25: error: implicit declaration of function ‘ghes_edac_report_mem_error’; did you mean ‘arch_apei_report_mem_error’? [-Werror=implicit-function-declaration]
+  651 |                         ghes_edac_report_mem_error(sev, mem_err);
 
-That's just completely bogus.
 
-Why do they do that?
+and that needs more thinking what to do. My idea currently is to do a
+notifier like we do for MCA...
 
-It seems to be completely bogus, and seems to have no actual valid
-reason for it. Looking through the history, it goes back to the
-original code submission in 2006, and doesn't have a mention of why.
+And I'm not really happy about returning a list of ghes devices just so
+ghes_edac instances can get their struct device * pointers. Maybe we'll
+think of something better.
 
-I think the original reason was that the code didn't have pinning, so
-it used "do a write" as a pin mechanism - even for reads.
+But this is the general goal: not call module code from builtin code -
+i.e., call ghes_edac.c code from ghes.c. It works now because ghes_edac
+is forced builtin which is ugly as hell.
 
-IOW, I think the non-ptrace use of FOLL_FORCE should just be removed.
+Anyway, enough for today...
 
-                 Linus
+---
+diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+index d91ad378c00d..0919317b8313 100644
+--- a/drivers/acpi/apei/ghes.c
++++ b/drivers/acpi/apei/ghes.c
+@@ -118,6 +118,9 @@ module_param_named(disable, ghes_disable, bool, 0);
+ static LIST_HEAD(ghes_hed);
+ static DEFINE_MUTEX(ghes_list_mutex);
+ 
++static LIST_HEAD(ghes_devs);
++static DEFINE_MUTEX(ghes_devs_mutex);
++
+ /*
+  * Because the memory area used to transfer hardware error information
+  * from BIOS to Linux can be determined only in NMI, IRQ or timer
+@@ -1376,7 +1379,11 @@ static int ghes_probe(struct platform_device *ghes_dev)
+ 
+ 	platform_set_drvdata(ghes_dev, ghes);
+ 
+-	ghes_edac_register(ghes, &ghes_dev->dev);
++	ghes->dev = &ghes_dev->dev;
++
++	mutex_lock(&ghes_devs_mutex);
++	list_add_tail(&ghes->elist, &ghes_devs);
++	mutex_unlock(&ghes_devs_mutex);
+ 
+ 	/* Handle any pending errors right away */
+ 	spin_lock_irqsave(&ghes_notify_lock_irq, flags);
+@@ -1440,8 +1447,6 @@ static int ghes_remove(struct platform_device *ghes_dev)
+ 
+ 	ghes_fini(ghes);
+ 
+-	ghes_edac_unregister(ghes);
+-
+ 	kfree(ghes);
+ 
+ 	platform_set_drvdata(ghes_dev, NULL);
+@@ -1497,3 +1502,25 @@ void __init acpi_ghes_init(void)
+ 	else
+ 		pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
+ }
++
++/*
++ * Known x86 systems that prefer GHES error reporting:
++ */
++static struct acpi_platform_list plat_list[] = {
++	{"HPE   ", "Server  ", 0, ACPI_SIG_FADT, all_versions},
++	{ } /* End */
++};
++
++struct list_head *ghes_get_devices(bool force)
++{
++	int idx = -1;
++
++	if (IS_ENABLED(CONFIG_X86)) {
++		idx = acpi_match_platform_list(plat_list);
++		if (idx < 0 && !force)
++			return NULL;
++	}
++
++	return &ghes_devs;
++}
++EXPORT_SYMBOL_GPL(ghes_get_devices);
+diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+index 17562cf1fe97..df45db81858b 100644
+--- a/drivers/edac/Kconfig
++++ b/drivers/edac/Kconfig
+@@ -53,8 +53,8 @@ config EDAC_DECODE_MCE
+ 	  has been initialized.
+ 
+ config EDAC_GHES
+-	bool "Output ACPI APEI/GHES BIOS detected errors via EDAC"
+-	depends on ACPI_APEI_GHES && (EDAC=y)
++	tristate "Output ACPI APEI/GHES BIOS detected errors via EDAC"
++	depends on ACPI_APEI_GHES
+ 	select UEFI_CPER
+ 	help
+ 	  Not all machines support hardware-driven error report. Some of those
+diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
+index c8fa7dcfdbd0..da6d1a9e107d 100644
+--- a/drivers/edac/ghes_edac.c
++++ b/drivers/edac/ghes_edac.c
+@@ -59,6 +59,8 @@ module_param(force_load, bool, 0);
+ 
+ static bool system_scanned;
+ 
++static struct list_head *ghes_devs;
++
+ /* Memory Device - Type 17 of SMBIOS spec */
+ struct memdev_dmi_entry {
+ 	u8 type;
+@@ -376,34 +378,15 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
+ 	spin_unlock_irqrestore(&ghes_lock, flags);
+ }
+ 
+-/*
+- * Known systems that are safe to enable this module.
+- */
+-static struct acpi_platform_list plat_list[] = {
+-	{"HPE   ", "Server  ", 0, ACPI_SIG_FADT, all_versions},
+-	{ } /* End */
+-};
+-
+-int ghes_edac_register(struct ghes *ghes, struct device *dev)
++static int ghes_edac_register(struct device *dev)
+ {
+ 	bool fake = false;
+ 	struct mem_ctl_info *mci;
+ 	struct ghes_pvt *pvt;
+ 	struct edac_mc_layer layers[1];
+ 	unsigned long flags;
+-	int idx = -1;
+ 	int rc = 0;
+ 
+-	if (IS_ENABLED(CONFIG_X86)) {
+-		/* Check if safe to enable on this system */
+-		idx = acpi_match_platform_list(plat_list);
+-		if (!force_load && idx < 0)
+-			return -ENODEV;
+-	} else {
+-		force_load = true;
+-		idx = 0;
+-	}
+-
+ 	/* finish another registration/unregistration instance first */
+ 	mutex_lock(&ghes_reg_mutex);
+ 
+@@ -447,7 +430,7 @@ int ghes_edac_register(struct ghes *ghes, struct device *dev)
+ 		pr_info("This system has a very crappy BIOS: It doesn't even list the DIMMS.\n");
+ 		pr_info("Its SMBIOS info is wrong. It is doubtful that the error report would\n");
+ 		pr_info("work on such system. Use this driver with caution\n");
+-	} else if (idx < 0) {
++	} else if (force_load) {
+ 		pr_info("This EDAC driver relies on BIOS to enumerate memory and get error reports.\n");
+ 		pr_info("Unfortunately, not all BIOSes reflect the memory layout correctly.\n");
+ 		pr_info("So, the end result of using this driver varies from vendor to vendor.\n");
+@@ -517,7 +500,7 @@ int ghes_edac_register(struct ghes *ghes, struct device *dev)
+ 	return rc;
+ }
+ 
+-void ghes_edac_unregister(struct ghes *ghes)
++static void ghes_edac_unregister(struct ghes *ghes)
+ {
+ 	struct mem_ctl_info *mci;
+ 	unsigned long flags;
+@@ -551,3 +534,30 @@ void ghes_edac_unregister(struct ghes *ghes)
+ unlock:
+ 	mutex_unlock(&ghes_reg_mutex);
+ }
++
++static int __init ghes_edac_init(void)
++{
++	struct ghes *g, *g_tmp;
++
++	ghes_devs = ghes_get_devices(force_load);
++	if (ghes_devs)
++		return -ENODEV;
++
++	list_for_each_entry_safe(g, g_tmp, ghes_devs, elist) {
++		ghes_edac_register(g->dev);
++	}
++
++	return 0;
++}
++module_init(ghes_edac_init);
++
++static void __exit ghes_edac_exit(void)
++{
++	struct ghes *g, *g_tmp;
++
++
++	list_for_each_entry_safe(g, g_tmp, ghes_devs, elist) {
++		ghes_edac_unregister(g);
++	}
++}
++module_exit(ghes_edac_exit);
+diff --git a/include/acpi/ghes.h b/include/acpi/ghes.h
+index 34fb3431a8f3..f39b75c3f9c6 100644
+--- a/include/acpi/ghes.h
++++ b/include/acpi/ghes.h
+@@ -27,6 +27,8 @@ struct ghes {
+ 		struct timer_list timer;
+ 		unsigned int irq;
+ 	};
++	struct device *dev;
++	struct list_head elist;
+ };
+ 
+ struct ghes_estatus_node {
+@@ -69,35 +71,13 @@ int ghes_register_vendor_record_notifier(struct notifier_block *nb);
+  * @nb: pointer to the notifier_block structure of the vendor record handler.
+  */
+ void ghes_unregister_vendor_record_notifier(struct notifier_block *nb);
++struct list_head *ghes_get_devices(bool force);
++#else
++static inline struct list_head *ghes_get_devices(bool force) { return NULL; }
+ #endif
+ 
+ int ghes_estatus_pool_init(int num_ghes);
+ 
+-/* From drivers/edac/ghes_edac.c */
+-
+-#ifdef CONFIG_EDAC_GHES
+-void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
+-
+-int ghes_edac_register(struct ghes *ghes, struct device *dev);
+-
+-void ghes_edac_unregister(struct ghes *ghes);
+-
+-#else
+-static inline void ghes_edac_report_mem_error(int sev,
+-				       struct cper_sec_mem_err *mem_err)
+-{
+-}
+-
+-static inline int ghes_edac_register(struct ghes *ghes, struct device *dev)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline void ghes_edac_unregister(struct ghes *ghes)
+-{
+-}
+-#endif
+-
+ static inline int acpi_hest_get_version(struct acpi_hest_generic_data *gdata)
+ {
+ 	return gdata->revision >> 8;
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
