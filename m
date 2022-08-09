@@ -2,71 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1341C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2596EC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345492AbiHITIN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
+        id S245407AbiHITI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 15:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348391AbiHITGu (ORCPT
+        with ESMTP id S1345864AbiHITGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:06:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3787286E7
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:53:05 -0700 (PDT)
+        Tue, 9 Aug 2022 15:06:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C6B82AC50
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:45:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660071185;
+        s=mimecast20190719; t=1660070737;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5MxbEkPFfHnhv9lIG9SKrVYa+3yd5Ii2mgv7KMCMiKA=;
-        b=MwVPwrnkbAFEUC9IAx+zOQqkmwQfCd6a7ltEHWCNbPk67eHZPR1jwf7uDDEwWZB/eJon8s
-        3qycWranGQzYZcaupPw1qLifh2lQ2Osl1GA2nNHQoAenDGtHeci32O0E2GVvoLxtpCRubP
-        AHLKWXkzo5ngpzYg7O9qxK0agRfxhsk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=8IbhLYjobqT2aTBvz3U46stbRUAh6ZahUb2ByDCNf0A=;
+        b=TNum+KWLYec3Di+h32/Isu0qH5SxlmanT4GbdNIxh3jmBA884JDTCtS5w9vjNYDwMHMmMI
+        uoO28ARsiR+cLEhQcRJi/M6dfkWixFbMQPwPEOxGstNyrd4sl3+uBS8BqdAvdjKBkr6up2
+        isY4LCfCaxaIvJuUKfg0dbRd9g0HP+M=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-67-9_fQZhxqMiax6J7_tDvuYw-1; Tue, 09 Aug 2022 14:53:03 -0400
-X-MC-Unique: 9_fQZhxqMiax6J7_tDvuYw-1
-Received: by mail-wr1-f69.google.com with SMTP id n7-20020adfc607000000b0021a37d8f93aso1999192wrg.21
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:53:03 -0700 (PDT)
+ us-mta-206-w2xqpGlCNeyiGP6-xucRZg-1; Tue, 09 Aug 2022 14:45:36 -0400
+X-MC-Unique: w2xqpGlCNeyiGP6-xucRZg-1
+Received: by mail-wm1-f70.google.com with SMTP id j36-20020a05600c1c2400b003a540d88677so2805607wms.1
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:45:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc;
-        bh=5MxbEkPFfHnhv9lIG9SKrVYa+3yd5Ii2mgv7KMCMiKA=;
-        b=lpbbcE9yWrJmKIuGTtOZ10276m8AGjepsxWffxlddJZtdphskflzEMCxbOBdZotI/6
-         S498q5adoIcaIfaF+oj11e3WS6ZBkv3sRJsTAHJ8STxHVxLJVxJHVEcQAci1SPaBxsQB
-         E0LQtsz12podyzMROx/fXBrWIcZ4X/FE6rMAWsEOb0dhpfPLyohHCLeYwkzAz4tYtGYS
-         yDjiXBw0IQBet4/01ugNYUY8XvGOvV0V/a4u7nfqsPWcxbSTwXl0rIjrUg0SMa1MD2qM
-         PqGSJVjnbn+mguV+N4v+DMmXKrksvY8LIIq3iA/8tX+NGpm+/09oEhjZBCPGffeIaWLk
-         +FOw==
-X-Gm-Message-State: ACgBeo2ZCz+2ITfVfDXhqch9JNv/Fob8aOHzy2sCV84lu0QKL4+aP5ac
-        r/6szM180XhA/u6LV88egCfvWPNiFygq97Fq2N3v0lFeoTYKiF4CWF+CsyAfau7DFA5DHZOQceU
-        SpRXUb05MkJoa4BDJgKqs45Xy
-X-Received: by 2002:a05:6000:15c5:b0:220:727a:24bf with SMTP id y5-20020a05600015c500b00220727a24bfmr15682594wry.621.1660071182504;
-        Tue, 09 Aug 2022 11:53:02 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7B1MwvtmEN6yaB1m5uxgVV9LrfTrVuas1WczTE6dxZ7xo83OW/ncC8YwQvF+UDacFqG6b94g==
-X-Received: by 2002:a05:6000:15c5:b0:220:727a:24bf with SMTP id y5-20020a05600015c500b00220727a24bfmr15682577wry.621.1660071182244;
-        Tue, 09 Aug 2022 11:53:02 -0700 (PDT)
+        bh=8IbhLYjobqT2aTBvz3U46stbRUAh6ZahUb2ByDCNf0A=;
+        b=ri4c6f6gaAkj5rbo9/Q3fb75eUQl6DoZ3ejfB4LK73Kl/w+v5UDpS5gJmcGW50ikMY
+         walzKB8QsQ8a/SeR6uuIi/9NahTpghBMrEgL6CwWV8pY7h7AovyOTTJN5Z2+s/UitfVS
+         LJKT5aJdqMNxg4oexsqr+SzuZzIH1JPXzLRzMFlKlQYZbH3DDKtbTk01hSqb1lwowoyk
+         F+qskESPpyGGbU+xMtWQfJzwXbMXuEVBAGZSVkl47r0Y/6GuddMZ6+ThUdE+oIbay3lV
+         cJiu39a6k575TALV7MKm2F/gMP6M2G4FCNhanVWLW+UsX8k1fA+P3CzRWYNcjUv0GnGL
+         vsAQ==
+X-Gm-Message-State: ACgBeo0vYmfBAvrbZKoVBZJWonK+2WW556SPUiUgdJgMYRYGCoMtuHXo
+        L2LdEktMd5vHVXXHeins9CL1bz4V0cjGNcMqzJsMvfI/8Uja5jzHKXbkzjtNZk8JXgPwutr9n3u
+        yMGOO0+fql90nh1/uDsn3B7J3
+X-Received: by 2002:a05:6000:1b88:b0:21f:eae8:d695 with SMTP id r8-20020a0560001b8800b0021feae8d695mr15071127wru.26.1660070735052;
+        Tue, 09 Aug 2022 11:45:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR69MLCunWf5SVWzymZ3UNdd8BL3fDtH5qkRFmVvHOW7S1grl/vbJS0Sb54Gqln+3VynlhGkbA==
+X-Received: by 2002:a05:6000:1b88:b0:21f:eae8:d695 with SMTP id r8-20020a0560001b8800b0021feae8d695mr15071118wru.26.1660070734738;
+        Tue, 09 Aug 2022 11:45:34 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c705:3700:aed2:a0f8:c270:7f30? (p200300cbc7053700aed2a0f8c2707f30.dip0.t-ipconnect.de. [2003:cb:c705:3700:aed2:a0f8:c270:7f30])
-        by smtp.gmail.com with ESMTPSA id o4-20020a056000010400b0021e501519d3sm14070439wrx.67.2022.08.09.11.53.01
+        by smtp.gmail.com with ESMTPSA id i2-20020a05600c14c200b003a53ec3d847sm7225855wmh.29.2022.08.09.11.45.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 11:53:01 -0700 (PDT)
-Message-ID: <d8765f51-c6f6-1d21-82ba-877515acf17d@redhat.com>
-Date:   Tue, 9 Aug 2022 20:53:01 +0200
+        Tue, 09 Aug 2022 11:45:34 -0700 (PDT)
+Message-ID: <1a48d71d-41ee-bf39-80d2-0102f4fe9ccb@redhat.com>
+Date:   Tue, 9 Aug 2022 20:45:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
 Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -75,76 +71,64 @@ Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         Andrea Arcangeli <aarcange@redhat.com>,
         Matthew Wilcox <willy@infradead.org>,
         Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
 References: <20220808073232.8808-1-david@redhat.com>
- <CAHk-=wi81ujYGP0gmyy2kDke_ExL742Lo_hLepGjCa8mS81A7w@mail.gmail.com>
- <YvKsBUuwLNlHwhnE@nvidia.com>
+ <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
 From:   David Hildenbrand <david@redhat.com>
 Organization: Red Hat
-In-Reply-To: <YvKsBUuwLNlHwhnE@nvidia.com>
+Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
+ FOLL_COW
+In-Reply-To: <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.08.22 20:48, Jason Gunthorpe wrote:
-> On Tue, Aug 09, 2022 at 11:40:50AM -0700, Linus Torvalds wrote:
->> On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
->>>
->>> For example, a write() via /proc/self/mem to a uffd-wp-protected range has
->>> to fail instead of silently granting write access and bypassing the
->>> userspace fault handler. Note that FOLL_FORCE is not only used for debug
->>> access, but also triggered by applications without debug intentions, for
->>> example, when pinning pages via RDMA.
+On 09.08.22 20:27, Linus Torvalds wrote:
+> I'm still reading through this, but
+> 
+>  STOP DOING THIS
+> 
+> On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
 >>
->> So this made me go "Whaa?"
->>
->> I didn't even realize that the media drivers and rdma used FOLL_FORCE.
->>
->> That's just completely bogus.
->>
->> Why do they do that?
->>
->> It seems to be completely bogus, and seems to have no actual valid
->> reason for it. Looking through the history, it goes back to the
->> original code submission in 2006, and doesn't have a mention of why.
+>> +       VM_BUG_ON(!is_cow_mapping(vma->vm_flags));
 > 
-> It is because of all this madness with COW.
+> Using BUG_ON() for debugging is simply not ok.
 > 
-> Lets say an app does:
+> And saying "but it's just a VM_BUG_ON()" does not change *anything*.
+> At least Fedora enables that unconditionally for normal people, it is
+> not some kind of "only VM people do this".
 > 
->  buf = mmap(MAP_PRIVATE)
->  rdma_pin_for_read(buf)
->  buf[0] = 1 
-> 
-> Then the store to buf[0] will COW the page and the pin will become
-> decoherent.
-> 
-> The purpose of the FORCE is to force COW to happen early so this is
-> avoided.
-> 
-> Sadly there are real apps that end up working this way, eg because
-> they are using buffer in .data or something.
-> 
-> I've hoped David's new work on this provided some kind of path to a
-> proper solution, as the need is very similar to all the other places
-> where we need to ensure there is no possiblity of future COW.
-> 
-> So, these usage can be interpreted as a FOLL flag we don't have - some
-> kind of (FOLL_EXCLUSIVE | FOLL_READ) to match the PG_anon_exclusive
-> sort of idea.
+> Really. BUG_ON() IS NOT FOR DEBUGGING.
 
-Thanks Jason for the explanation.
+I totally agree with BUG_ON ... but if I get talked to in all-caps on a
+Thursday evening and feel like I just touched the forbidden fruit, I
+have to ask for details about VM_BUG_ON nowadays.
 
-I have patches in the works to no longer use FOLL_FORCE|FOLL_WRITE for
-taking a reliable longerterm R/O pin in a MAP_PRIVATE mapping. The
-patches are mostly done (and comparably simple), I merely deferred
-sending them out because I stumbled over this issue first.
+VM_BUG_ON is only active with CONFIG_DEBUG_VM. ... which indicated some
+kind of debugging at least to me. I *know* that Fedora enables it and I
+*know* that this will make Fedora crash.
 
-Some ugly corner cases of MAP_SHARED remain, but for most prominent use
-cases, my upcoming patches should allow us to just have longterm R/O
-pins working as expected.
+I know why Fedora enables this debug option, but it somewhat destorys
+the whole purpose of VM_BUG_ON kind of nowadays?
+
+For this case, this condition will never trigger and I consider it much
+more a hint to the reader that we can rest assured that this condition
+holds. And on production systems, it will get optimized out.
+
+Should we forbid any new usage of VM_BUG_ON just like we mostly do with
+BUG_ON?
+
+> 
+> Stop it. Now.
+> 
+> If you have a condition that must not happen, you either write that
+> condition into the code, or - if you are convinced it cannot happen -
+> you make it a WARN_ON_ONCE() so that people can report it to you.
+
+I can just turn that into a WARN_ON_ONCE() or even a VM_WARN_ON_ONCE().
 
 -- 
 Thanks,
