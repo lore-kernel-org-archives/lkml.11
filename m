@@ -2,118 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC46C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 266BAC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229462AbiHIWOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 18:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
+        id S229525AbiHIWOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 18:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiHIWNi (ORCPT
+        with ESMTP id S229518AbiHIWNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 18:13:38 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E794186D6
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:12:47 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id k26so24609099ejx.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:12:47 -0700 (PDT)
+        Tue, 9 Aug 2022 18:13:54 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831FB10FEA;
+        Tue,  9 Aug 2022 15:13:43 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id c28so777718qko.9;
+        Tue, 09 Aug 2022 15:13:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=1VsFqqcFXS3n/9+2goZhST4QJC7Ug49yVOYAb2PF94c=;
-        b=g2oKOWygAqs06kX5yZw9/NAo7v0Zm7bWI2z8kj3BN5Dj/ubZ2QDeilkkWtUk2RqnEi
-         hCByUhB0cGj/zaxF286P463nEiuoqSY2NIrqaf4TqFohK7JVfsZncQBKsB+C8/dWd6Ut
-         /p2j7+iJhaHzQ2HabVc05AxIr7TdReAYHEL/s=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=OoSIIGP86FduPSeti5lKZKH5Cp2L8PK56m/1OZAxWMI=;
+        b=hJDlzknlpXy0oF13g+XI0QhRk01/uI5U3bSa8Iid443LWBnk4eMmzQ6lMWQIFjgXmP
+         DVzQhESbxEDEPRAxls3r/wMDNsyFrhKYTtja2Wh4UnyzOvNqbPpB0AS1F++pgUSNHhIY
+         GToFJXqVvo/CdI57XXJTB+UqTpvgNQpaLC7PFTlBISxsW9OpWks8zYEHzC8Na+wtjme3
+         XN+uDWAroN5NKV8PC8svOiTTFcE7+jId/rUvl519LmwnfMb7cXbmCS6v1rzoZEQw0z60
+         YjrAaU4uFz4S2b1ogKJG0Inn8fl8qvbq6ON45jMbGxDulBJ3PYuTlkByn3+9XKCAk1sl
+         A0Ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=1VsFqqcFXS3n/9+2goZhST4QJC7Ug49yVOYAb2PF94c=;
-        b=r9Dn8k8+YfJ9B6N7es/86G9zSDIPfRY1uVeTkgh7QKFZzbIvKEY/LUkmSCTZ7heuG4
-         RNAZNBkjx0a3CDps80WScxa4jhsWizEYqh47D1o2e1FXZSZWVf49GVxdcbuaZ8+VzIZY
-         6ikcUYZl20qFPu+Lfr21pYc3Cx30gUfM5GUA1HfhH4hflF/xDvQ4FmFWiybl8z03fJ8r
-         Wjvy/S6dsPOhITt+auvXsHdtPG9i1nhngdbxR4qC4P4N3Kaa/E4scaF8N9quUq8R8rwK
-         pO1vn3M5Xzi0ffpzL3QGrCGl8fif09ml7m8Rzy5mkc9OEK1gplaqyA8yqWxZ/csfLCAe
-         amTw==
-X-Gm-Message-State: ACgBeo1ZgUlfhIXrGbRSqis88hWsEeJsPTyy64OzDpIxmmFEcNpv1VOS
-        jgcWayPdP3pNF6PgCBz9a70SHYYZiDwUN4iHGPE=
-X-Google-Smtp-Source: AA6agR49kQ/9mT6fOc3EnTMBQza3CnfVN2vZpHfpmf10lcp3w5kehCWvoRGRsVumYR9KpDwziy6Ksg==
-X-Received: by 2002:a17:907:d0f:b0:731:5c2:a9a5 with SMTP id gn15-20020a1709070d0f00b0073105c2a9a5mr13638747ejc.413.1660083165528;
-        Tue, 09 Aug 2022 15:12:45 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id f23-20020a17090631d700b00722e8c47cc9sm1573901ejf.181.2022.08.09.15.12.45
-        for <linux-kernel@vger.kernel.org>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=OoSIIGP86FduPSeti5lKZKH5Cp2L8PK56m/1OZAxWMI=;
+        b=u2HOloXIggeeAl7DH6k2UjBbvPEc5kz4cINqT9mOBmdsDHisouYQsAEjLmtW+2IA7c
+         vYJ2jjpu4EHhUW9E/Ox/6w4f9E+La3oNi7g++yAjb9McXvUOVCfy3NNZIeRVeEzjExcO
+         4OqMPc6A9g3NJsQixIfgJ18KcRDfw9zDLPYLyKw5zGlvLh4VZLYJOCdaOofatml0Rr7l
+         m0UI1DRB8YlxP0d1+T74rT4eX4hnnmScXQOY2/AokiXUqnMIjZNeDI273PzM15ELBC3y
+         tyrjIcUkPEjnR+/EUTTcGz5scOrSRRahMXjd9z6I72PoRm8vD6pd2T3b794gPFmmYAuE
+         nPzA==
+X-Gm-Message-State: ACgBeo3BTCM8we2n+MzO9cA98T2w/iS86TVp9I6vWJDfwRpTyOiKXPbH
+        kfRRLNXAsYq8qdBrTMQPda0=
+X-Google-Smtp-Source: AA6agR7pG10RM2AyYeVGBTtOheRihYeXyBHSE2J+23YQSkukQ73K/LruxWSJidlyPp7Fk6B3jQqipg==
+X-Received: by 2002:a05:620a:b95:b0:6b9:76a1:d79b with SMTP id k21-20020a05620a0b9500b006b976a1d79bmr4541452qkh.166.1660083222466;
+        Tue, 09 Aug 2022 15:13:42 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id i5-20020ac860c5000000b0034305a91aaesm2384533qtm.83.2022.08.09.15.13.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 15:12:45 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so119551wms.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:12:45 -0700 (PDT)
-X-Received: by 2002:a05:600c:1d94:b0:3a4:ffd9:bb4a with SMTP id
- p20-20020a05600c1d9400b003a4ffd9bb4amr283826wms.8.1660082801459; Tue, 09 Aug
- 2022 15:06:41 -0700 (PDT)
+        Tue, 09 Aug 2022 15:13:39 -0700 (PDT)
+Message-ID: <c7740731-01c4-6528-b5ea-aedf2d927a8f@gmail.com>
+Date:   Tue, 9 Aug 2022 15:13:31 -0700
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2208010628510.22006@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2208010642220.22006@file01.intranet.prod.int.rdu2.redhat.com>
- <YuflGG60pHiXp2z/@casper.infradead.org> <alpine.LRH.2.02.2208011040190.27101@file01.intranet.prod.int.rdu2.redhat.com>
- <YuyNE5c06WStxQ2z@casper.infradead.org> <alpine.LRH.2.02.2208070732160.30857@file01.intranet.prod.int.rdu2.redhat.com>
- <Yu/RJtoJPhkWXIdP@casper.infradead.org> <alpine.LRH.2.02.2208080928580.8160@file01.intranet.prod.int.rdu2.redhat.com>
- <YvEgZuSdv8XHtkJg@casper.infradead.org> <alpine.LRH.2.02.2208081050330.8160@file01.intranet.prod.int.rdu2.redhat.com>
- <YvEuIg3669UeSwjD@casper.infradead.org> <alpine.LRH.2.02.2208091359220.5899@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2208091359220.5899@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 9 Aug 2022 15:06:25 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiivNAj+jdXUdo91PQgh__vtE3WCFgufV0yVu7mWAKQWg@mail.gmail.com>
-Message-ID: <CAHk-=wiivNAj+jdXUdo91PQgh__vtE3WCFgufV0yVu7mWAKQWg@mail.gmail.com>
-Subject: Re: [PATCH v6] add barriers to buffer_uptodate and set_buffer_uptodate
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 5.19 00/21] 5.19.1-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220809175513.345597655@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 11:32 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
->
-> Let's have a look at this piece of code in __bread_slow:
->         get_bh(bh);
->         bh->b_end_io = end_buffer_read_sync;
->         submit_bh(REQ_OP_READ, 0, bh);
->         wait_on_buffer(bh);
->         if (buffer_uptodate(bh))
->                 return bh;
-> Neither wait_on_buffer nor buffer_uptodate contain any memory barrier.
-> Consequently, if someone calls sb_bread and then reads the buffer data,
-> the read of buffer data may be executed before wait_on_buffer(bh) on
-> architectures with weak memory ordering and it may return invalid data.
->
-> Fix this bug by adding a memory barrier to set_buffer_uptodate and an
-> acquire barrier to buffer_uptodate (in a similar way as
-> folio_test_uptodate and folio_mark_uptodate).
+On 8/9/22 11:00, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.19.1 release.
+> There are 21 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.1-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Ok, I've applied this to my tree.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels and build tested 
+with BMIPS_GENERIC:
 
-I still feel that we should probably take a long look at having the
-proper "acquire/release" uses everywhere for the buffer / page / folio
-flags, but that wouldn't really work for backporting to stable, so I
-think that's a "future fixes/cleanup" thing.
-
-Thanks,
-              Linus
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
