@@ -2,86 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6B6C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA89C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243970AbiHINnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 09:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
+        id S243987AbiHINoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 09:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbiHINnE (ORCPT
+        with ESMTP id S231377AbiHINoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 09:43:04 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5753D18B13
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 06:43:02 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2DhM4j6czjXPs;
-        Tue,  9 Aug 2022 21:39:47 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 21:42:58 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
- 2022 21:42:57 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <maz@kernel.org>, <james.morse@arm.com>,
-        <alexandru.elisei@arm.com>, <suzuki.poulose@arm.com>,
-        <oliver.upton@linux.dev>
-Subject: [PATCH v2] KVM: arm64: fix compile error because of shift overflow
-Date:   Tue, 9 Aug 2022 21:51:27 +0800
-Message-ID: <20220809135127.480285-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 9 Aug 2022 09:44:19 -0400
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3A118B13;
+        Tue,  9 Aug 2022 06:44:18 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 977AA429DBD;
+        Tue,  9 Aug 2022 09:44:17 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id A2tXyMn9D4L2; Tue,  9 Aug 2022 09:44:17 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 17218429DBC;
+        Tue,  9 Aug 2022 09:44:17 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 17218429DBC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1660052657;
+        bh=s4MwCgSocyslqz8qzo8aK6OHgXabE2tT23dUh+6dXe0=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=WY/02Qm5yS41kNoN/cNg3tLp3INF8QD6x80M50bSMHG0rPvTpcohEzEJ+m9T0Sgh8
+         m63RBvDXINU2u2nkSES8DSygcKfYNJZBCeCdrMLLmGqHWOdrFkpRVl0PBpOIPHWFst
+         S5zitE8F0woj3d8UGX0G9XzsWhMfCoVSednEvGn5QPf6piJoF83OMVE/g+Q+2g94SA
+         x5vJNBJ6yDt//R57FTo3OATfaEfK2wV6lmRTHwL0s/hFHIOOVfcMKhgIfKklGUn1yd
+         GofDXEDGnRNV11dizNmeF10xLouUIm2X1uRyHpFWKfGCmMm/VTaUCK3nv3dqMAXuPF
+         wlRS+WWD8OA4w==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id kq9Zg0-sw3D5; Tue,  9 Aug 2022 09:44:17 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 034A1429DBB;
+        Tue,  9 Aug 2022 09:44:17 -0400 (EDT)
+Date:   Tue, 9 Aug 2022 09:44:16 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Gavin Shan <gshan@redhat.com>, shuah <shuah@kernel.org>
+Cc:     Florian Weimer <fweimer@redhat.com>, kvmarm@lists.cs.columbia.edu,
+        KVM list <kvm@vger.kernel.org>,
+        linux-kselftest <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>, maz <maz@kernel.org>,
+        oliver upton <oliver.upton@linux.dev>,
+        andrew jones <andrew.jones@linux.dev>,
+        Sean Christopherson <seanjc@google.com>, yihyu@redhat.com,
+        shan gavin <shan.gavin@gmail.com>
+Message-ID: <1014177394.115022.1660052656961.JavaMail.zimbra@efficios.com>
+In-Reply-To: <797306043.114963.1660047714774.JavaMail.zimbra@efficios.com>
+References: <20220809060627.115847-1-gshan@redhat.com> <20220809060627.115847-2-gshan@redhat.com> <8735e6ncxw.fsf@oldenburg.str.redhat.com> <7844e3fa-e49e-de75-e424-e82d3a023dd6@redhat.com> <87o7wtnay6.fsf@oldenburg.str.redhat.com> <616d4de6-81f6-9d14-4e57-4a79fec45690@redhat.com> <797306043.114963.1660047714774.JavaMail.zimbra@efficios.com>
+Subject: Re: [PATCH 1/2] KVM: selftests: Make rseq compatible with
+ glibc-2.35
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4304 (ZimbraWebClient - FF103 (Linux)/8.8.15_GA_4304)
+Thread-Topic: selftests: Make rseq compatible with glibc-2.35
+Thread-Index: oHLHOFY5Vh2uVE5+gR7UtW52F8t44qAjgRJ1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using GENMASK() to generate the masks of device type and device id, it makes
-code unambiguous, also it can fix the following fix compile error because of
-shift overflow when using low verison gcc(mine version is 7.5):
+----- On Aug 9, 2022, at 8:21 AM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
 
-In function ‘kvm_vm_ioctl_set_device_addr.isra.38’,
-    inlined from ‘kvm_arch_vm_ioctl’ at arch/arm64/kvm/arm.c:1454:10:
-././include/linux/compiler_types.h:354:38: error: call to ‘__compiletime_assert_599’ \
-declared with attribute error: FIELD_GET: mask is not constant
-  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+> ----- Gavin Shan <gshan@redhat.com> wrote:
+>> Hi Florian,
+>> 
+>> On 8/9/22 5:16 PM, Florian Weimer wrote:
+>> >>> __builtin_thread_pointer doesn't work on all architectures/GCC
+>> >>> versions.
+>> >>> Is this a problem for selftests?
+>> >>>
+>> >>
+>> >> It's a problem as the test case is running on all architectures. I think I
+>> >> need introduce our own __builtin_thread_pointer() for where it's not
+>> >> supported: (1) PowerPC  (2) x86 without GCC 11
+>> >>
+>> >> Please let me know if I still have missed cases where
+>> >> __buitin_thread_pointer() isn't supported?
+>> > 
+>> > As far as I know, these are the two outliers that also have rseq
+>> > support.  The list is a bit longer if we also consider non-rseq
+>> > architectures (csky, hppa, ia64, m68k, microblaze, sparc, don't know
+>> > about the Linux architectures without glibc support).
+>> > 
+>> 
+>> For kvm/selftests, there are 3 architectures involved actually. So we
+>> just need consider 4 cases: aarch64, x86, s390 and other. For other
+>> case, we just use __builtin_thread_pointer() to maintain code's
+>> integrity, but it's not called at all.
+>> 
+>> I think kvm/selftest is always relying on glibc if I'm correct.
+> 
+> All those are handled in the rseq selftests and in librseq. Why duplicate all
+> that logic again?
 
-Fixes: 9f968c9266aa ("KVM: arm64: vgic-v2: Add helper for legacy dist/cpuif base address setting")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  Using GENMASK() to generate the masks.
----
- arch/arm64/include/uapi/asm/kvm.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+More to the point, considering that we have all the relevant rseq registration
+code in tools/testing/selftests/rseq/rseq.c already, and the relevant thread
+pointer getter code in tools/testing/selftests/rseq/rseq-*thread-pointer.h,
+is there an easy way to get test applications in tools/testing/selftests/kvm
+and in tools/testing/selftests/rseq to share that common code ?
 
-diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
-index 3bb134355874..5e7dfaf76ec1 100644
---- a/arch/arm64/include/uapi/asm/kvm.h
-+++ b/arch/arm64/include/uapi/asm/kvm.h
-@@ -75,9 +75,9 @@ struct kvm_regs {
- 
- /* KVM_ARM_SET_DEVICE_ADDR ioctl id encoding */
- #define KVM_ARM_DEVICE_TYPE_SHIFT	0
--#define KVM_ARM_DEVICE_TYPE_MASK	(0xffff << KVM_ARM_DEVICE_TYPE_SHIFT)
-+#define KVM_ARM_DEVICE_TYPE_MASK	GENMASK(15, KVM_ARM_DEVICE_TYPE_SHIFT)
- #define KVM_ARM_DEVICE_ID_SHIFT		16
--#define KVM_ARM_DEVICE_ID_MASK		(0xffff << KVM_ARM_DEVICE_ID_SHIFT)
-+#define KVM_ARM_DEVICE_ID_MASK		GENMASK(31, KVM_ARM_DEVICE_ID_SHIFT)
- 
- /* Supported device IDs */
- #define KVM_ARM_DEVICE_VGIC_V2		0
+Keeping duplicated compatibility code is bad for long-term maintainability.
+
+Thanks,
+
+Mathieu
+
 -- 
-2.25.1
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
