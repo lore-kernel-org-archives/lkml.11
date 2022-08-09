@@ -2,109 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F8FC25B0C
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 15:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14AB0C25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 15:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239746AbiHIPsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 11:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48700 "EHLO
+        id S243841AbiHIPwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 11:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234503AbiHIPsW (ORCPT
+        with ESMTP id S241959AbiHIPwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 11:48:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94243115A;
-        Tue,  9 Aug 2022 08:48:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D413B80B7F;
-        Tue,  9 Aug 2022 15:48:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3D29C433C1;
-        Tue,  9 Aug 2022 15:48:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660060098;
-        bh=jzxpOtEPbQM8mbY4SedlJQVQXOxJmNcc1pN13oORODs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nV15EUVI7mCkEaWl1Zy+XOTgtawbJNPw/pFkEtXA7gD0PYSYcu7g7YtRf2j+M8A0P
-         hJ87HwNnj1lAXc+6EDt6FAPQx/tEgm91qH3fllxplCnyNwUmhm5/ozh7bJJGUdwG/f
-         MNLDk/pvMAiBrjj3WS2ewvFQTyGV8mAY+Nbaf19Onr6fcZex6Br/Y3N7ZH3/3XL2tR
-         eZt4C0RnEerkG9Ea+2u11W91GJrZ2fe49BkTRRxbXg1Y0A2/7NBXjRpZI6kMaIxbJw
-         O+B/KxQomxz3/hcpgipI/FHtj8Vd9dDok8OZ60dXA3ZUpv2aFb/PMydSQs2A12djpq
-         Pf/r0o8sf3Y0Q==
-Received: by pali.im (Postfix)
-        id E920FC1F; Tue,  9 Aug 2022 17:48:15 +0200 (CEST)
-Date:   Tue, 9 Aug 2022 17:48:15 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: marvell: Update Armada 37xx platform
- bindings
-Message-ID: <20220809154815.ja2mu6ponqxnubsd@pali>
-References: <20220713200123.22612-1-pali@kernel.org>
- <20220808202352.iimhb2q6yawi35y6@pali>
- <20a349c9-a479-ad5b-fe33-4758a773972e@linaro.org>
- <20220809131357.u3dfsy3gu3iamiv7@pali>
- <400b78db-17ac-b9d8-fcf9-3a4dc7821ea8@linaro.org>
+        Tue, 9 Aug 2022 11:52:04 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E721758A
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 08:52:03 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id bq11so17601687lfb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 08:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7luNtuPXP34XcP/NCS8jrOTG+DNTpVMVakj9FLoruiQ=;
+        b=fZWqyo0qDtvMLTwKxsTHCN9jYJPz9hlujy4EwQXMgREL112hq3UvmNw0c717YRVyum
+         IQnaeryQNLbVjbAApBuw0A2i77KndMaeNoYZe2xF0yzS54cyfbvGA5G/mHyvcWq3g/wd
+         XfD0VhO7jmAsh0xWa2STilRdONSCDgwFW3/6OM13xnY/yqxdEc6j5nVgQD1n+OhsP/1B
+         qHv1qBcegq3KL3/4ky1u7eQ55DexdvOD+TJbqo7uXBMsezG34KkjZSKA77vziXbd48iN
+         XNmu2lHzveNaHdmUHRkE+nhjqwDvyzXpmaqCYXULBalWCrEBD8mWSQ77EuIZOd+T651s
+         25EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7luNtuPXP34XcP/NCS8jrOTG+DNTpVMVakj9FLoruiQ=;
+        b=sek179FUUL91U8YDDItl1mShbAC9JEChkZvdivQ1fvUxkOLawPk28yIdboszxbEPow
+         8/ONXZRCUHsmxXQrG1rovG1AQadAkKc+FNT+dntVVSNsh3K9Yqf41VjVVqOeD8UGuH13
+         0bOHf7UzCMINbdVkdgIJDK3t4k7wB0fKRo63DrqgcTVkgtpIzDgdKIkFdSc7qc4ebQBQ
+         sNUMMfCKxa83J9oPEfONAlICCnkwMBP+/ATaKC1pxAznRwuimaC+l1x4jaGKiiJqTrD4
+         xn1d3+gUQaod2BPjfhZT5rQP8qmUjI/akoiw+5xdkLVsbLv/z2r8e/RMnul04sZXgsg+
+         bkcQ==
+X-Gm-Message-State: ACgBeo1FckHKBPJWd64CgQup9KkKPaXYnKDWec66zbc6b+N6kkQxmPsH
+        GBflBoBlixg2OrRKpfOIilRhYA==
+X-Google-Smtp-Source: AA6agR7r+SUF5C/1PAK7LvhFkrThl9JElxkvc5b36lhq9wWn37Z8fjNGg483pize6dt2qzvBXREfxw==
+X-Received: by 2002:a05:6512:3483:b0:48b:403:ee89 with SMTP id v3-20020a056512348300b0048b0403ee89mr7822911lfr.468.1660060321951;
+        Tue, 09 Aug 2022 08:52:01 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id c16-20020a05651c015000b0025e6e1c836dsm6706ljd.126.2022.08.09.08.52.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 08:52:00 -0700 (PDT)
+Message-ID: <21b84f49-67af-6217-a662-f890db5525a8@linaro.org>
+Date:   Tue, 9 Aug 2022 18:51:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <400b78db-17ac-b9d8-fcf9-3a4dc7821ea8@linaro.org>
-User-Agent: NeoMutt/20180716
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 13/28] mfd: sec: Remove #ifdef guards for PM related
+ functions
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Paul Cercueil <paul@crapouillou.net>, linux-kernel@vger.kernel.org,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        linux-samsung-soc@vger.kernel.org, Lee Jones <lee@kernel.org>
+References: <20220807145247.46107-1-paul@crapouillou.net>
+ <20220807145247.46107-14-paul@crapouillou.net>
+ <a625a1b4-6ecd-79d9-3d13-f42fd5b8275c@linaro.org>
+ <YvJ+YPAynhFKj5DR@google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YvJ+YPAynhFKj5DR@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday 09 August 2022 18:46:04 Krzysztof Kozlowski wrote:
-> On 09/08/2022 16:13, Pali Rohár wrote:
-> > On Tuesday 09 August 2022 08:58:50 Krzysztof Kozlowski wrote:
-> >> On 08/08/2022 23:23, Pali Rohár wrote:
-> >>> PING?
-> >>>
-> >>> On Wednesday 13 July 2022 22:01:23 Pali Rohár wrote:
-> >>>> Distinguish between Armada 3700 family, Armada 3710 SoC and Armada 3720 SoC.
-> >>>> Armada 3720 DB is name of the board with Armada 3720 SoC, so correctly
-> >>>> indicate SoC in example.
-> >>>>
-> >>>> Signed-off-by: Pali Rohár <pali@kernel.org>
-> >>>> ---
-> >>>>  .../devicetree/bindings/arm/marvell/armada-37xx.txt        | 7 ++++++-
-> >>>>  1 file changed, 6 insertions(+), 1 deletion(-)
-> >>>>
-> >>>> diff --git a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
-> >>>> index f6d6642d81c0..d2ca008de266 100644
-> >>>> --- a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
-> >>>> +++ b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
-> >>>> @@ -4,6 +4,11 @@ Marvell Armada 37xx Platforms Device Tree Bindings
-> >>>>  Boards using a SoC of the Marvell Armada 37xx family must carry the
-> >>>>  following root node property:
-> >>>>  
-> >>>> + - compatible: must contain "marvell,armada3700"
-> >>>> +
-> >>>> +In addition, boards using the Marvell Armada 3710 SoC shall have the
-> >>>> +following property before the previous one:
-> >>>> +
-> >>
-> >> The change is an ABI break, which looks reasonable, but still platform
-> >> maintainer should comment on it. Especially on the aspect why the
-> >> marvell,armada3710 fallback was chosen at the first place.
-> > 
-> > I do not think this is ABI break but rather incorrect documentation and
-> > bug in some board dts files.
+On 09/08/2022 18:33, Lee Jones wrote:
+> On Mon, 08 Aug 2022, Krzysztof Kozlowski wrote:
 > 
-> This documentation is the ABI, especially if actually implemented in the
-> DTS files, therefore by all definitions of DT ABI this is an ABI break.
-
-Ok.
-
-> What you are saying about "incorrect documentation and bug in some DTS
-> files" is a good reason to break the ABI, but it is still a break.
+>> On 07/08/2022 17:52, Paul Cercueil wrote:
+>>> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
+>>> to handle the .suspend/.resume callbacks.
+>>>
+>>> These macros allow the suspend and resume functions to be automatically
+>>> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+>>> to use #ifdef guards.
+>>>
+>>> The advantage is then that these functions are now always compiled
+>>> independently of any Kconfig option, and thanks to that bugs and
+>>> regressions are easier to catch.
+>>>
+>>> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>>> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+>>
+>> The address does not work. Please don't add it to commit log.
+>>
+>>> Cc: linux-samsung-soc@vger.kernel.org
+>>
+>> This is also not really needed in commit log... it's just a mailing list...
+>>
+>> I actually never understood why people want to add to commit log, so to
+>> something which will last 10 years, Cc-ing other folks, instead of
+>> adding such tags after '---'. Imagine 10 years from now:
+>>
+>> 1. What's the point to be cced on this patch after 10 years instead of
+>> using maintainers file (the one in 10 years)? Why Cc-ing me in 10 years?
+>> If I am a maintainer of this driver in that time, I will be C-ced based
+>> on maintainers file. If I am not a maintainer in 10 years, why the heck
+>> cc-ing me based on some 10-year old commit? Just because I was a
+>> maintainer once, like 10 years ago?
 > 
-> Best regards,
-> Krzysztof
+> Why would that happen?
+> 
+> These tags are only used during initial submission.
 
-I think it is now clear what we both mean, just we used different
-terminology for the same thing.
+No, the tags are used in any other resends, backports etc while
+traveling through different trees. I think only stable-backports do not
+use them, but all other gfp+git-send will follow the tags.
+
+> 
+>> 2. Or why cc-ing such people when backporting to stable?
+> 
+> That doesn't happen either.
+
+Indeed, stable does not use these Cc.
+
+> 
+>> It's quite a lot of unnecessary emails which many of us won't actually
+>> handle later...
+>>
+>> I sincerely admit I was once also adding such Cc-tags. But that time my
+>> employer was counting lines-of-patch (including commit log)... crazy, right?
+> 
+> Nothing wrong with adding these tags IMHO.  It's what they're for.
+> 
+> I use them when I'm maintaining a large amount of out-of-tree, but
+> to-be-upstreamed patches over several versions.  Re-applying the
+> recipients list can become pretty labour-some after several
+> iterations.
+
+You can do it still while keeping the tags after ---. Only patch-related
+workflows strip such tags. If you cherry-pick, rebase, merge, you always
+get the content of ---.
+
+The same as typical changelog (not cover letter but one in the patch) -
+you keep it after --- and it does not disappear.
+
+> 
+> Adding them under the '---' doesn't work when the purpose of them is
+> to keep the recipients list in Git history.
+
+This I understand, what I did not understand (and you did not explain)
+is what would be the purpose to keep them in Git history. What is the
+point to have them in commit log of 10 year old commit?
+
+Best regards,
+Krzysztof
