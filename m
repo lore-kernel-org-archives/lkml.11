@@ -2,182 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B43C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E63C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245708AbiHISWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S245588AbiHISWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245464AbiHISSn (ORCPT
+        with ESMTP id S1343778AbiHISSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:18:43 -0400
+        Tue, 9 Aug 2022 14:18:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0111F2F679;
-        Tue,  9 Aug 2022 11:07:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619472FFD2;
+        Tue,  9 Aug 2022 11:07:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FA6EB81895;
-        Tue,  9 Aug 2022 18:06:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D953C433C1;
-        Tue,  9 Aug 2022 18:06:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA74EB81908;
+        Tue,  9 Aug 2022 18:06:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E127BC433C1;
+        Tue,  9 Aug 2022 18:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068406;
-        bh=kyH58hFaNVvGkfde/a9XwzjhZRFLQg7liGu7TyinB0A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nrxR28g/m2JBhXKX9OAxpYZQfL+qkaM5F3pCX9Pb5mEMfpTB3NLc5XxANatdc9byX
-         QyatxtqxV/ZD80NA0600PhSUxbkMLuhWGznTJxIwWrA07U0yuEplAXjeJW8oFvUd9q
-         H/vhW6PZShCc4hWwFAsDuEUDvnDoYwnkguE86u0A=
+        s=korg; t=1660068412;
+        bh=FgMx2k0++9td5Qd6Hgc7T8JaZ8hV1xZfSCu0Pn1+LhE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=2Q4cMp76wm1r+Nv9E9or2X1wG6jQ96x5ylj3lyCqrz60qH6GedMoAdFQfG2cWcUVb
+         tRrY02wZtoCPao7Xy7RBp9Ytp5OUraqN2xF72EImDvFmNALsRDuhBGk4rYXAyVra75
+         X9ZWRGh4SH5pQ0lJl+xlXgBA8TZRUTvWZ4r+n2jM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 08/35] KVM: x86: do not report a vCPU as preempted outside instruction boundaries
-Date:   Tue,  9 Aug 2022 20:00:37 +0200
-Message-Id: <20220809175515.374218393@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.18 00/35] 5.18.17-rc1 review
+Date:   Tue,  9 Aug 2022 20:00:29 +0200
+Message-Id: <20220809175515.046484486@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
-References: <20220809175515.046484486@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.17-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.18.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.18.17-rc1
+X-KernelTest-Deadline: 2022-08-11T17:55+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+This is the start of the stable review cycle for the 5.18.17 release.
+There are 35 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit 6cd88243c7e03845a450795e134b488fc2afb736 ]
+Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+Anything received after that time might be too late.
 
-If a vCPU is outside guest mode and is scheduled out, it might be in the
-process of making a memory access.  A problem occurs if another vCPU uses
-the PV TLB flush feature during the period when the vCPU is scheduled
-out, and a virtual address has already been translated but has not yet
-been accessed, because this is equivalent to using a stale TLB entry.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.17-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+and the diffstat can be found below.
 
-To avoid this, only report a vCPU as preempted if sure that the guest
-is at an instruction boundary.  A rescheduling request will be delivered
-to the host physical CPU as an external interrupt, so for simplicity
-consider any vmexit *not* instruction boundary except for external
-interrupts.
+thanks,
 
-It would in principle be okay to report the vCPU as preempted also
-if it is sleeping in kvm_vcpu_block(): a TLB flush IPI will incur the
-vmentry/vmexit overhead unnecessarily, and optimistic spinning is
-also unlikely to succeed.  However, leave it for later because right
-now kvm_vcpu_check_block() is doing memory accesses.  Even
-though the TLB flush issue only applies to virtual memory address,
-it's very much preferrable to be conservative.
+greg k-h
 
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/svm/svm.c          |  2 ++
- arch/x86/kvm/vmx/vmx.c          |  1 +
- arch/x86/kvm/x86.c              | 22 ++++++++++++++++++++++
- 4 files changed, 28 insertions(+)
+-------------
+Pseudo-Shortlog of commits:
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 4ff36610af6a..9fdaa847d4b6 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -651,6 +651,7 @@ struct kvm_vcpu_arch {
- 	u64 ia32_misc_enable_msr;
- 	u64 smbase;
- 	u64 smi_count;
-+	bool at_instruction_boundary;
- 	bool tpr_access_reporting;
- 	bool xsaves_enabled;
- 	bool xfd_no_write_intercept;
-@@ -1289,6 +1290,8 @@ struct kvm_vcpu_stat {
- 	u64 nested_run;
- 	u64 directed_yield_attempted;
- 	u64 directed_yield_successful;
-+	u64 preemption_reported;
-+	u64 preemption_other;
- 	u64 guest_mode;
- };
- 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 6bfb0b0e66bd..c667214c630b 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4166,6 +4166,8 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
- 
- static void svm_handle_exit_irqoff(struct kvm_vcpu *vcpu)
- {
-+	if (to_svm(vcpu)->vmcb->control.exit_code == SVM_EXIT_INTR)
-+		vcpu->arch.at_instruction_boundary = true;
- }
- 
- static void svm_sched_in(struct kvm_vcpu *vcpu, int cpu)
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 4b6a0268c78e..597c3c08da50 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6630,6 +6630,7 @@ static void handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu)
- 		return;
- 
- 	handle_interrupt_nmi_irqoff(vcpu, gate_offset(desc));
-+	vcpu->arch.at_instruction_boundary = true;
- }
- 
- static void vmx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 53b6fdf30c99..df74ec51c7f3 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -291,6 +291,8 @@ const struct _kvm_stats_desc kvm_vcpu_stats_desc[] = {
- 	STATS_DESC_COUNTER(VCPU, nested_run),
- 	STATS_DESC_COUNTER(VCPU, directed_yield_attempted),
- 	STATS_DESC_COUNTER(VCPU, directed_yield_successful),
-+	STATS_DESC_COUNTER(VCPU, preemption_reported),
-+	STATS_DESC_COUNTER(VCPU, preemption_other),
- 	STATS_DESC_ICOUNTER(VCPU, guest_mode)
- };
- 
-@@ -4607,6 +4609,19 @@ static void kvm_steal_time_set_preempted(struct kvm_vcpu *vcpu)
- 	struct kvm_memslots *slots;
- 	static const u8 preempted = KVM_VCPU_PREEMPTED;
- 
-+	/*
-+	 * The vCPU can be marked preempted if and only if the VM-Exit was on
-+	 * an instruction boundary and will not trigger guest emulation of any
-+	 * kind (see vcpu_run).  Vendor specific code controls (conservatively)
-+	 * when this is true, for example allowing the vCPU to be marked
-+	 * preempted if and only if the VM-Exit was due to a host interrupt.
-+	 */
-+	if (!vcpu->arch.at_instruction_boundary) {
-+		vcpu->stat.preemption_other++;
-+		return;
-+	}
-+
-+	vcpu->stat.preemption_reported++;
- 	if (!(vcpu->arch.st.msr_val & KVM_MSR_ENABLED))
- 		return;
- 
-@@ -10363,6 +10378,13 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
- 	vcpu->arch.l1tf_flush_l1d = true;
- 
- 	for (;;) {
-+		/*
-+		 * If another guest vCPU requests a PV TLB flush in the middle
-+		 * of instruction emulation, the rest of the emulation could
-+		 * use a stale page translation. Assume that any code after
-+		 * this point can start executing an instruction.
-+		 */
-+		vcpu->arch.at_instruction_boundary = false;
- 		if (kvm_vcpu_running(vcpu)) {
- 			r = vcpu_enter_guest(vcpu);
- 		} else {
--- 
-2.35.1
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.18.17-rc1
 
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add LFENCE to RSB fill sequence
+
+Daniel Sneddon <daniel.sneddon@linux.intel.com>
+    x86/speculation: Add RSB VM Exit protections
+
+Ning Qiang <sohu0106@126.com>
+    macintosh/adb: fix oob read in do_adb_query() function
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3586
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3587
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x0CB8:0xC558
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
+
+Aaron Ma <aaron.ma@canonical.com>
+    Bluetooth: btusb: Add support of IMC Networks PID 0x3568
+
+Ahmad Fatoum <a.fatoum@pengutronix.de>
+    dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding
+
+Hakan Jansson <hakan.jansson@infineon.com>
+    Bluetooth: hci_bcm: Add DT compatible for CYW55572
+
+Ahmad Fatoum <a.fatoum@pengutronix.de>
+    Bluetooth: hci_bcm: Add BCM4349B1 variant
+
+Sai Teja Aluvala <quic_saluvala@quicinc.com>
+    Bluetooth: hci_qca: Return wakeup for qca_wakeup
+
+Naohiro Aota <naohiro.aota@wdc.com>
+    btrfs: zoned: drop optimization of zone finish
+
+Naohiro Aota <naohiro.aota@wdc.com>
+    btrfs: zoned: fix critical section of relocation inode writeback
+
+Naohiro Aota <naohiro.aota@wdc.com>
+    btrfs: zoned: prevent allocation from previous data relocation BG
+
+Peter Collingbourne <pcc@google.com>
+    arm64: set UXN on swapper page tables
+
+Mingwei Zhang <mizhang@google.com>
+    KVM: x86/svm: add __GFP_ACCOUNT to __sev_dbg_{en,de}crypt_user()
+
+Raghavendra Rao Ananta <rananta@google.com>
+    selftests: KVM: Handle compiler optimizations in ucall
+
+Dmitry Klochkov <kdmitry556@gmail.com>
+    tools/kvm_stat: fix display of error when multiple processes are found
+
+David Matlack <dmatlack@google.com>
+    KVM: selftests: Restrict test region to 48-bit physical addresses when using nested
+
+Maxim Levitsky <mlevitsk@redhat.com>
+    KVM: x86: disable preemption around the call to kvm_arch_vcpu_{un|}blocking
+
+Maxim Levitsky <mlevitsk@redhat.com>
+    KVM: x86: disable preemption while updating apicv inhibition
+
+Seth Forshee <sforshee@digitalocean.com>
+    entry/kvm: Exit to user mode when TIF_NOTIFY_SIGNAL is set
+
+Ben Gardon <bgardon@google.com>
+    KVM: x86/MMU: Zap non-leaf SPTEs when disabling dirty logging
+
+Vitaly Kuznetsov <vkuznets@redhat.com>
+    KVM: selftests: Make hyperv_clock selftest more stable
+
+Paolo Bonzini <pbonzini@redhat.com>
+    KVM: x86: do not set st->preempted when going back to user space
+
+Paolo Bonzini <pbonzini@redhat.com>
+    KVM: x86: do not report a vCPU as preempted outside instruction boundaries
+
+GUO Zihua <guozihua@huawei.com>
+    crypto: arm64/poly1305 - fix a read out-of-bound
+
+Tony Luck <tony.luck@intel.com>
+    ACPI: APEI: Better fix to avoid spamming the console with old error logs
+
+Werner Sembach <wse@tuxedocomputers.com>
+    ACPI: video: Shortening quirk list by identifying Clevo by board_name only
+
+Werner Sembach <wse@tuxedocomputers.com>
+    ACPI: video: Force backlight native for some TongFang devices
+
+Stéphane Graber <stgraber@ubuntu.com>
+    tools/vm/slabinfo: Handle files in debugfs
+
+Jan Kara <jack@suse.cz>
+    block: fix default IO priority handling again
+
+Ben Hutchings <ben@decadent.org.uk>
+    x86/speculation: Make all RETbleed mitigations 64-bit only
+
+
+-------------
+
+Diffstat:
+
+ Documentation/admin-guide/hw-vuln/spectre.rst      |  8 ++
+ .../bindings/net/broadcom-bluetooth.yaml           |  1 +
+ Makefile                                           |  4 +-
+ arch/arm64/crypto/poly1305-glue.c                  |  2 +-
+ arch/arm64/include/asm/kernel-pgtable.h            |  4 +-
+ arch/arm64/kernel/head.S                           |  2 +-
+ arch/x86/Kconfig                                   |  8 +-
+ arch/x86/include/asm/cpufeatures.h                 |  2 +
+ arch/x86/include/asm/kvm_host.h                    |  3 +
+ arch/x86/include/asm/msr-index.h                   |  4 +
+ arch/x86/include/asm/nospec-branch.h               | 21 +++++-
+ arch/x86/kernel/cpu/bugs.c                         | 86 ++++++++++++++++------
+ arch/x86/kernel/cpu/common.c                       | 12 ++-
+ arch/x86/kvm/mmu/tdp_iter.c                        |  9 +++
+ arch/x86/kvm/mmu/tdp_iter.h                        |  1 +
+ arch/x86/kvm/mmu/tdp_mmu.c                         | 38 ++++++++--
+ arch/x86/kvm/svm/sev.c                             |  4 +-
+ arch/x86/kvm/svm/svm.c                             |  2 +
+ arch/x86/kvm/vmx/vmenter.S                         |  8 +-
+ arch/x86/kvm/vmx/vmx.c                             |  1 +
+ arch/x86/kvm/x86.c                                 | 50 ++++++++++---
+ arch/x86/kvm/xen.h                                 |  6 +-
+ block/blk-ioc.c                                    |  2 +
+ block/ioprio.c                                     |  4 +-
+ drivers/acpi/apei/bert.c                           | 31 ++++++--
+ drivers/acpi/video_detect.c                        | 55 +++++++++-----
+ drivers/bluetooth/btbcm.c                          |  2 +
+ drivers/bluetooth/btusb.c                          | 15 ++++
+ drivers/bluetooth/hci_bcm.c                        |  2 +
+ drivers/bluetooth/hci_qca.c                        |  2 +-
+ drivers/macintosh/adb.c                            |  2 +-
+ fs/btrfs/block-group.h                             |  1 +
+ fs/btrfs/extent-tree.c                             | 20 ++++-
+ fs/btrfs/extent_io.c                               |  3 +-
+ fs/btrfs/inode.c                                   |  2 +
+ fs/btrfs/zoned.c                                   | 50 +++++++++++--
+ fs/btrfs/zoned.h                                   |  5 ++
+ include/linux/ioprio.h                             |  2 +-
+ kernel/entry/kvm.c                                 |  6 --
+ tools/arch/x86/include/asm/cpufeatures.h           |  1 +
+ tools/arch/x86/include/asm/msr-index.h             |  4 +
+ tools/kvm/kvm_stat/kvm_stat                        |  3 +-
+ tools/testing/selftests/kvm/lib/aarch64/ucall.c    |  9 +--
+ tools/testing/selftests/kvm/lib/perf_test_util.c   | 18 ++++-
+ tools/testing/selftests/kvm/x86_64/hyperv_clock.c  | 10 ++-
+ tools/vm/slabinfo.c                                | 26 ++++++-
+ virt/kvm/kvm_main.c                                |  8 +-
+ 47 files changed, 434 insertions(+), 125 deletions(-)
 
 
