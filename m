@@ -2,128 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C286C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F88AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234509AbiHIJbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
+        id S232302AbiHIJdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:33:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbiHIJbo (ORCPT
+        with ESMTP id S229963AbiHIJde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:31:44 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C75910F7;
-        Tue,  9 Aug 2022 02:31:43 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id CE9C05C0098;
-        Tue,  9 Aug 2022 05:31:42 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Tue, 09 Aug 2022 05:31:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1660037502; x=
-        1660123902; bh=RrfMx3XRdnUfuzzc7yUQQwGDi3u7LUZo67YnJ/L3d3c=; b=S
-        v4kAauOp+Bg34ycYRn6sJgSlkTLVCeURT1/04F+hamVybMPb45SJb3b5lWGLU1rz
-        VLku2vbDlOSBws2qqYEuwvYsbHwfcGu5K9gym9H/dFLI1asFy5k7FTv/D/xKh23C
-        J5lg5j2Qm9atBWdQGrXRq4D+39cx9Kn8RlOQhq3t/tYrbi2/LnmboPwKmq9Gwd/E
-        /IUaXvUKQzE+srPYW9PiQtnrabe7QgN78/fBO8ikb1W+t5TsViRwAQKRjCXvy+Pn
-        GLLU16ydP9SjpiNjO40I09c3kdYcdvTEozAg7vF8mQms5/RsifnoqZo576vt9cPg
-        HdhIaKlK/r+bNPSua6X+g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660037502; x=
-        1660123902; bh=RrfMx3XRdnUfuzzc7yUQQwGDi3u7LUZo67YnJ/L3d3c=; b=s
-        +WUAV6CkSStaUhLmmr8+38tBYjfhkBfdtEWK4iUFxGx8ETxPdXXjCwxmw6BRD2d0
-        TQq365BVk2baaHmzs1InREXgvVS/pTPY6PABfcOA7IBic0jiSeU+I0iim3845bcs
-        nES4qJb6gUl/3fljzGlPcbIEb/HTpom4wljt2q04iMUGjRH9AXHYi8gAhd513Anu
-        6LTTJNsDprQMiee8HgL1eJ3dDhxaXC+xmMsb3mCs3qWiV7keg8Ng7Ms2islf5Wgf
-        ofUEpjqs0qxLwBxcKzrS9KEW/LWaWMuCL/9TI2v4rxNexOsBwQ87f1qMJAPyEYFz
-        B0Y/uv5YsVHyqtHY5Q2zg==
-X-ME-Sender: <xms:finyYi97fI5uPBQIqpXxs5kGRxriswRHsyPUYcPDrUL5-ve69yx33g>
-    <xme:finyYivJ9hocbzFwbB_oEbZEIjo9Z0UMTJm9JhAENI76H03f16Y3ivsjzfca4FB6s
-    TXgaBS2_I7Ib3Hn5A0>
-X-ME-Received: <xmr:finyYoCh1Oi-HJ8Ex3RBQmOHNfTKAuk4dq6u5hrbtTSkoN5Z6CT74zQMsRhkToqE9ybswg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegtddgudejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkffuhffvveffjghftgfgfgggsehtqhertddtreejnecuhfhrohhmpefnuhhk
-    vgculfhonhgvshcuoehluhhkvgeslhhjohhnvghsrdguvghvqeenucggtffrrghtthgvrh
-    hnpeejffejjeejueehueetleeukedvgfffteeigffgieffgeevhfejieekgeduleduheen
-    ucffohhmrghinhepuhhitgdrvgguuhenucevlhhushhtvghrufhiiigvpedtnecurfgrrh
-    grmhepmhgrihhlfhhrohhmpehluhhkvgeslhhjohhnvghsrdguvghv
-X-ME-Proxy: <xmx:finyYqcvhVL7psKOpQp7XulgcOqmjyDGjmecEHTdS2HcqXJRh_V3bw>
-    <xmx:finyYnMYvccqN9Vd1QacZZhWiIERS8J6RJbPaKPf8m_uCZ5yZpVI2w>
-    <xmx:finyYklXZbSdCHeQao5XimVQpWPbd2Kxxq7kQEAKbtbTUdPjqdQBDA>
-    <xmx:finyYgr9ewx0WNXGxSyGSEIcMON0U30_UR9XsWX-BA8FPz8xPz6Czg>
-Feedback-ID: i5ec1447f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Aug 2022 05:31:40 -0400 (EDT)
-Message-ID: <6fee3e143bd339ac9e4e8513c96a3af2137a3b3a.camel@ljones.dev>
-Subject: Re: [PATCH v3 1/6] asus-wmi: Implement TUF laptop keyboard RGB
- control
-From:   Luke Jones <luke@ljones.dev>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Tue, 09 Aug 2022 21:31:34 +1200
-In-Reply-To: <CAHp75VepmbLv1cx2cS6gbe_prs+cHZ0DYjJNkcuOXxeJaCqDGw@mail.gmail.com>
-References: <20220809025054.1626339-1-luke@ljones.dev>
-         <20220809025054.1626339-2-luke@ljones.dev>
-         <CAHp75VfZeuuQjfM+CY4nxrFJQcfpdHVVzyj6GLjeweT3ycSn5A@mail.gmail.com>
-         <AHBCGR.7I4U7CDRZ3J83@ljones.dev>
-         <CAHp75VepmbLv1cx2cS6gbe_prs+cHZ0DYjJNkcuOXxeJaCqDGw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (by Flathub.org) 
+        Tue, 9 Aug 2022 05:33:34 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EFD10F7
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 02:33:32 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M278W3cP5zjXWx;
+        Tue,  9 Aug 2022 17:30:19 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 17:33:29 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
+ 2022 17:33:29 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <maz@kernel.org>
+Subject: [PATCH] KVM: arm64: fix compile error because of shift overflow
+Date:   Tue, 9 Aug 2022 17:41:58 +0800
+Message-ID: <20220809094158.4080636-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-08-09 at 11:29 +0200, Andy Shevchenko wrote:
-> On Tue, Aug 9, 2022 at 10:56 AM Luke Jones <luke@ljones.dev> wrote:
-> > On Tue, Aug 9 2022 at 10:46:33 +0200, Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > > On Tue, Aug 9, 2022 at 4:51 AM Luke D. Jones <luke@ljones.dev>
-> > > wrote:
->=20
-> ...
->=20
-> > > > =C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D
-> > > > asus_wmi_evaluate_method3(ASUS_WMI_METHODID_DEVS,
-> > > > ASUS_WMI_DEVID_TUF_RGB_MODE,
-> > > > =C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rgb->save | (rgb->mode << 8) =
-|
-> > > > (r
-> > > > << 16) | (g << 24),
-> > > > =C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (b) | (rgb->speed << 8),
-> > >=20
-> > > Too many parentheses.
-> >=20
-> > Uh, yeah. I was unable to find concrete info on this. I at one
-> > point
-> > experienced an issue where the order of operations *without*
-> > parentheses ended up as "x | y << (8 | z) << 16". But now I'm not
-> > even
-> > sure if I remember that correctly. I see the order here
-> > https://www.cs.uic.edu/~i109/Notes/COperatorPrecedenceTable.pdf
-> >=20
-> > I'll do as said and test it to be certain.
->=20
-> I'm talking about the '(b)' part. The rest is okay to me.
->=20
+Change the mask to unsigned to fix the following fix compile error
+because of shift overflow when using low verison gcc(mine version is 7.5):
 
-Understood, thanks.
+In function ‘kvm_vm_ioctl_set_device_addr.isra.38’,
+    inlined from ‘kvm_arch_vm_ioctl’ at arch/arm64/kvm/arm.c:1454:10:
+././include/linux/compiler_types.h:354:38: error: call to ‘__compiletime_assert_599’ \
+declared with attribute error: FIELD_GET: mask is not constant
+  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+
+Fixes: 9f968c9266aa ("KVM: arm64: vgic-v2: Add helper for legacy dist/cpuif base address setting")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ arch/arm64/include/uapi/asm/kvm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+index 3bb134355874..04ffa13d5e0a 100644
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -77,7 +77,7 @@ struct kvm_regs {
+ #define KVM_ARM_DEVICE_TYPE_SHIFT	0
+ #define KVM_ARM_DEVICE_TYPE_MASK	(0xffff << KVM_ARM_DEVICE_TYPE_SHIFT)
+ #define KVM_ARM_DEVICE_ID_SHIFT		16
+-#define KVM_ARM_DEVICE_ID_MASK		(0xffff << KVM_ARM_DEVICE_ID_SHIFT)
++#define KVM_ARM_DEVICE_ID_MASK		(0xffffu << KVM_ARM_DEVICE_ID_SHIFT)
+ 
+ /* Supported device IDs */
+ #define KVM_ARM_DEVICE_VGIC_V2		0
+-- 
+2.25.1
 
