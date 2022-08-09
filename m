@@ -2,123 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 542E3C25B0C
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10947C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242624AbiHIRg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 13:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
+        id S244924AbiHIRhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 13:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245604AbiHIRgr (ORCPT
+        with ESMTP id S245634AbiHIRhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 13:36:47 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D76E252AA
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 10:36:43 -0700 (PDT)
-Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 17A38308CE0;
-        Tue,  9 Aug 2022 19:36:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1660066601;
+        Tue, 9 Aug 2022 13:37:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AF0B25287
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 10:37:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660066624;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=whJ8JdfyDmkVHTS7IW0UaNVlONqZJHPYMWt03zZsZbY=;
-        b=W1XMXk3a7QpeAH/rxCzm0kWh2//sPRluPe7v5CfdaSrXnrX+lMxZmRvAfLTR1eqfcyoV7T
-        KTW+7fbe1/m+QeOTMQSxPkXcOuqS8UShCBKVt7zaNfsIpts3lxLx9LAbhRcPIDjxuj8Fyq
-        dgalPf8VFX5WxDUaFpP4+SqlOLtgYSA4MX+Kmjo02wF+Cg67tcDfbu1xlSiolC/6EtGuk/
-        7rMBmjsCR7CMXFCWQCE4oDdZIgTtYKt1VI6wIbx9Bcl2lXWYNr6iMtqQfBO1g0Psbvdwgc
-        PGqxTiz++yUjtMMmWTbZdNV0+IGIDSnPgjOPg+2JpHnObbvTmQDnFax6G5gfnA==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     linux-kernel@vger.kernel.org,
-        Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v1 2/3] lib/cpumask: add inline cpumask_next_wrap() for UP
-Date:   Tue,  9 Aug 2022 19:36:34 +0200
-Message-Id: <e2d40f6ab6758d11054c40272457d164f201d987.1660066581.git.sander@svanheule.net>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1660066581.git.sander@svanheule.net>
-References: <cover.1660066581.git.sander@svanheule.net>
+        bh=EpsfinQmEWM+SHyZD/utaFr+TSXXqftEifyBCQeGArk=;
+        b=JhiHI6G9Q3Rg713hTTgKC+6o3pw78HSSRkgXUSwJAaZEF/q+qprx28EHoZaKguxDc9UnLJ
+        s3OI1IvuhZtLRzJCr8sV79eIp7uk14Nw/mcliUO6vpgaKmfYdi5Oly+Z1SdTTTQeBjSzEE
+        Kac7hTfIw8ozCEhZJ2s4HBd7klP3jzk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-606-ye-AW4zNN32hW3ycAyBOiQ-1; Tue, 09 Aug 2022 13:37:03 -0400
+X-MC-Unique: ye-AW4zNN32hW3ycAyBOiQ-1
+Received: by mail-wm1-f69.google.com with SMTP id j22-20020a05600c485600b003a50fa6981bso8353199wmo.9
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 10:37:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=EpsfinQmEWM+SHyZD/utaFr+TSXXqftEifyBCQeGArk=;
+        b=7al2eDqbQjkfu9ltUaZS3XtThSbpgeuaonLDoLDQnHpXfbd/TsLc2s9RrQfVTprXOR
+         y8uByY+V0Xl5EpjGRWO5ZPXsgZhDiMN8zihCZ6Ypjm8F4Uaa8LR4qw5kGSsziN9dgPTQ
+         fPmxTc1phjBD8dIj5lJgG6xSKd9QfG/yk8NumoPA4DBY5tqinqc1jyMMrIcK7Ax+2jY6
+         IwxSQvkO/V68UqKAD64bomuNwr7jCj5HtdAGgsrPVFvX54hp3ZRwnooVMPvq9uCZFpxQ
+         V+mt+/9UJe1l6a4+0k/Lr8N1OEcJefe+/+V+qcT+fMx7oUQo1Qq87QFRZCYD42JQbhh9
+         y4yg==
+X-Gm-Message-State: ACgBeo10oEvJcWimz58vF6IIueqEHmSbdS4czdAarBvDJWJuCbi5T9WE
+        baDWgejI761usAuDE715coaTAmgGTpcptPDhLjxg+/HrnzNHiVoycQZ5VhEX/FuvWGZwo9paeAm
+        CIjKm497yNJ0mm7SlM7cAggrGZgwl5SD28BO2iEEVtUq/PNpKEIh6Jm/94F71NOlSu4YDKgfUU0
+        IQ
+X-Received: by 2002:adf:ed4f:0:b0:220:5fe9:9995 with SMTP id u15-20020adfed4f000000b002205fe99995mr15127524wro.388.1660066621807;
+        Tue, 09 Aug 2022 10:37:01 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6mkGTB7+aLk5uKplC4+jkPFwpYsueIl6Qwhh9EU9hVZuwEODF0Nc7JyFKPBKl80Pk0ZKkREA==
+X-Received: by 2002:adf:ed4f:0:b0:220:5fe9:9995 with SMTP id u15-20020adfed4f000000b002205fe99995mr15127500wro.388.1660066621582;
+        Tue, 09 Aug 2022 10:37:01 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id b6-20020adfee86000000b00220606afdf4sm14366974wro.43.2022.08.09.10.37.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 10:37:01 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
+ spread API
+In-Reply-To: <69829c71-d51c-b25f-2d74-5fdd231ed9e4@gmail.com>
+References: <20220728191203.4055-1-tariqt@nvidia.com>
+ <20220728191203.4055-2-tariqt@nvidia.com>
+ <xhsmhedxvdikz.mognet@vschneid.remote.csb>
+ <df8b684d-ede6-7412-423d-51d57365e065@gmail.com>
+ <xhsmh35e5d9b4.mognet@vschneid.remote.csb>
+ <12fd25f9-96fb-d0e0-14ec-3f08c01a5a4b@gmail.com>
+ <xhsmhzggdbmv6.mognet@vschneid.remote.csb>
+ <69829c71-d51c-b25f-2d74-5fdd231ed9e4@gmail.com>
+Date:   Tue, 09 Aug 2022 18:36:59 +0100
+Message-ID: <xhsmhwnbhb9ok.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the uniprocessor case, cpumask_next_wrap() can be simplified, as the
-number of valid argument combinations is limited:
-    - 'start' can only be 0
-    - 'n' can only be -1 or 0
+On 09/08/22 17:04, Tariq Toukan wrote:
+> On 8/9/2022 3:52 PM, Valentin Schneider wrote:
+>> On 09/08/22 13:18, Tariq Toukan wrote:
+>>> On 8/9/2022 1:02 PM, Valentin Schneider wrote:
+>>>>
+>>>> Are there cases where we can't figure this out in advance? From what I grok
+>>>> out of the two callsites you patched, all vectors will be used unless some
+>>>> error happens, so compressing the CPUs in a single cpumask seemed
+>>>> sufficient.
+>>>>
+>>>
+>>> All vectors will be initialized to support the maximum number of traffic
+>>> rings. However, the actual number of traffic rings can be controlled and
+>>> set to a lower number N_actual < N. In this case, we'll be using only
+>>> N_actual instances and we want them to be the first/closest.
+>>
+>> Ok, that makes sense, thank you.
+>>
+>> In that case I wonder if we'd want a public-facing iterator for
+>> sched_domains_numa_masks[%i][node], rather than copy a portion of
+>> it. Something like the below (naming and implementation haven't been
+>> thought about too much).
+>>
+>>    const struct cpumask *sched_numa_level_mask(int node, int level)
+>>    {
+>>            struct cpumask ***masks = rcu_dereference(sched_domains_numa_masks);
+>>
+>>            if (node >= nr_node_ids || level >= sched_domains_numa_levels)
+>>                    return NULL;
+>>
+>>            if (!masks)
+>>                    return NULL;
+>>
+>>            return masks[level][node];
+>>    }
+>>    EXPORT_SYMBOL_GPL(sched_numa_level_mask);
+>>
+>
+> The above can be kept static, and expose only the foo() function below,
+> similar to my sched_cpus_set_spread().
+>
 
-The only valid CPU that can then be returned, if any, will be the first
-one set in the provided 'mask'.
+So what I was thinking with this was to only have to export the
+sched_numa_level_mask() thing and the iterator, and then consumers would be
+free to use whatever storage form they want (cpumask, array, list...).
 
-For NR_CPUS == 1, include/linux/cpumask.h now provides an inline
-definition of cpumask_next_wrap(), which will conflict with the one
-provided by lib/cpumask.c.  Make building of lib/cpumask.o again depend
-on CONFIG_SMP=y (i.e. NR_CPUS > 1) to avoid the re-definition.
+Right now I believe sched_domains_numa_masks has the right shape for the
+interface (for a given node, you a cpumask per distance level) and I
+don't want to impose an interface that uses just an array, but perhaps I'm
+being silly and the array isn't so bad and simpler to use - that said we
+could always build an array-based helper on top of the array of cpumasks
+thing.
 
-Suggested-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
----
- include/linux/cpumask.h | 19 +++++++++++++++++++
- lib/Makefile            |  3 ++-
- 2 files changed, 21 insertions(+), 1 deletion(-)
+Clearly I need to scratch my head a bit longer :-)
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index d8c2a40f8beb..bd047864c7ac 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -262,7 +262,26 @@ unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
- 		(cpu) = cpumask_next_zero((cpu), (mask)),	\
- 		(cpu) < nr_cpu_ids;)
- 
-+#if NR_CPUS == 1
-+static inline
-+unsigned int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap)
-+{
-+	cpumask_check(start);
-+	if (n != -1)
-+		cpumask_check(n);
-+
-+	/*
-+	 * Return the first available CPU when wrapping, or when starting before cpu0,
-+	 * since there is only one valid option.
-+	 */
-+	if (wrap && n >= 0)
-+		return nr_cpumask_bits;
-+
-+	return cpumask_first(mask);
-+}
-+#else
- unsigned int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
-+#endif
- 
- /**
-  * for_each_cpu_wrap - iterate over every cpu in a mask, starting at a specified location
-diff --git a/lib/Makefile b/lib/Makefile
-index c95212141928..5927d7fa0806 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -34,9 +34,10 @@ lib-y := ctype.o string.o vsprintf.o cmdline.o \
- 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
- 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
- 	 nmi_backtrace.o win_minmax.o memcat_p.o \
--	 buildid.o cpumask.o
-+	 buildid.o
- 
- lib-$(CONFIG_PRINTK) += dump_stack.o
-+lib-$(CONFIG_SMP) += cpumask.o
- 
- lib-y	+= kobject.o klist.o
- obj-y	+= lockref.o
--- 
-2.37.1
+> LGTM.
+> How do you suggest to proceed?
+> You want to formalize it? Or should I take it from here?
+>
+
+I need to have a think (feel free to ponder and share your thoughts as
+well) - I'm happy to push something if I get a brain-wave, but don't let
+that hold you back either.
 
