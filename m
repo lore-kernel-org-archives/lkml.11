@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C751CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B8FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238136AbiHIGgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
+        id S238606AbiHIGgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237907AbiHIGfg (ORCPT
+        with ESMTP id S238427AbiHIGfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:35:36 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B452C13CD9;
-        Mon,  8 Aug 2022 23:35:35 -0700 (PDT)
+        Tue, 9 Aug 2022 02:35:48 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB02205D1;
+        Mon,  8 Aug 2022 23:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1660026935; x=1691562935;
+  t=1660026942; x=1691562942;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=swVuUmF0bTOAzZMO6ojma8UhLwNmlKWpyVYUPk9NakM=;
-  b=IGOOPAJySgaqnPwNrMVE7DhF/N78Hv3urvG+8/1PWlZt6z+bvtNoYM7R
-   K849/AuvIy5O1tAyfPuJsYFqndFVQl/BWCBzgnlLuGqyYJmM+Ws/1Fqpy
-   rfFZtgoTf+jn3OfLPuLeIR6uVHdLhQj3nnFU94yuVwlU/PUvvyeGBL4Ze
-   s=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Aug 2022 23:35:34 -0700
+  bh=4wMwSe7QmPLeAfnAg9r5jQIIozAKquymAAMILjnSp4o=;
+  b=w25jjKcpsFSsN+5Jl1wpwewNmAu9L6p91iEv0ygYP3fkzasd9XoqPWcQ
+   NqsfGaFkYqfM6IlzKyK7fHG3gbgQIMHWDwzGE8VSaeHed38S26VUvBhLc
+   fTbU0OAw5Dkrr7uUa9umHnxXXc3czJqRP0OnYLtBDXaZu22Rz05flZQuP
+   0=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 08 Aug 2022 23:35:41 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 23:35:34 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 23:35:41 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 8 Aug 2022 23:35:33 -0700
+ 15.2.986.22; Mon, 8 Aug 2022 23:35:41 -0700
 Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 8 Aug 2022 23:35:30 -0700
+ 15.2.986.22; Mon, 8 Aug 2022 23:35:37 -0700
 From:   Satya Priya <quic_c_skakit@quicinc.com>
 To:     Rob Herring <robh@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -46,9 +46,9 @@ CC:     Douglas Anderson <dianders@chromium.org>,
         Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>
-Subject: [PATCH V4 1/3] arm64: dts: qcom: sc7280: Cleanup the lpasscc node
-Date:   Tue, 9 Aug 2022 12:05:07 +0530
-Message-ID: <1660026909-7365-2-git-send-email-quic_c_skakit@quicinc.com>
+Subject: [PATCH V4 3/3] arm64: dts: qcom: sc7280: Update lpasscore node
+Date:   Tue, 9 Aug 2022 12:05:09 +0530
+Message-ID: <1660026909-7365-4-git-send-email-quic_c_skakit@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1660026909-7365-1-git-send-email-quic_c_skakit@quicinc.com>
 References: <1660026909-7365-1-git-send-email-quic_c_skakit@quicinc.com>
@@ -61,40 +61,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove "cc" regmap from lpasscc node which is overlapping
-with the lpass_aon regmap.
+To maintain consistency with other lpass nodes(lpass_audiocc,
+lpass_aon and lpass_hm), update lpasscore to lpass_core.
 
-Fixes: 422a295221bb ("arm64: dts: qcom: sc7280: Add clock controller nodes")
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Fixes: 9499240d15f2 ("arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers")
 Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 ---
 Changes since v3:
- - None.
+ - This is newly added in v4, inorder to update the lpasscore node in a
+   separate patch.
 
-Changes since v2:
- - Cleanup the lpasscc node to handle regmap overlap with lpass_aon
-   instead of disabling the lpasscc node.
- - This patch is added in v3.
-
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 13d7f26..71735bb 100644
+index 634f15e..c641f0b 100644
 --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2168,9 +2168,8 @@
- 		lpasscc: lpasscc@3000000 {
- 			compatible = "qcom,sc7280-lpasscc";
- 			reg = <0 0x03000000 0 0x40>,
--			      <0 0x03c04000 0 0x4>,
--			      <0 0x03389000 0 0x24>;
--			reg-names = "qdsp6ss", "top_cc", "cc";
-+				  <0 0x03c04000 0 0x4>;
-+			reg-names = "qdsp6ss", "top_cc";
- 			clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
- 			clock-names = "iface";
+@@ -2192,13 +2192,13 @@
+ 			reg = <0 0x03380000 0 0x30000>;
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>,
+ 			       <&rpmhcc RPMH_CXO_CLK_A>,
+-			       <&lpasscore LPASS_CORE_CC_CORE_CLK>;
++			       <&lpass_core LPASS_CORE_CC_CORE_CLK>;
+ 			clock-names = "bi_tcxo", "bi_tcxo_ao", "iface";
  			#clock-cells = <1>;
+ 			#power-domain-cells = <1>;
+ 		};
+ 
+-		lpasscore: clock-controller@3900000 {
++		lpass_core: clock-controller@3900000 {
+ 			compatible = "qcom,sc7280-lpasscorecc";
+ 			reg = <0 0x03900000 0 0x50000>;
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>;
 -- 
 2.7.4
 
