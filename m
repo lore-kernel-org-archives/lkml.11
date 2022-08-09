@@ -2,75 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A85C25B0C
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44704C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242079AbiHINVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 09:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38224 "EHLO
+        id S243397AbiHINWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 09:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbiHINVE (ORCPT
+        with ESMTP id S240890AbiHINW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 09:21:04 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB433270A;
-        Tue,  9 Aug 2022 06:20:59 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPv6:2001:861:4a40:8620:d901:c525:a85f:2da3])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: gtucker)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 146FF6601C45;
-        Tue,  9 Aug 2022 14:20:58 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1660051258;
-        bh=IRRAMUEUPxNXQ73JNz6LTxgshzzauiZ5jk1N1jdJQNk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZbWIrGOcD4FwA0rzsff8Ft3NU2YDbX1+dx6DbnBlSvS+cNPwtaf+EdFYKCTwuwXIS
-         OVuIgBOmgWe194wf0m3BInrxWEFzwZEfAfPeyzgkWz/oZdObqH52DwwcyJgNcb1p/l
-         Fez/zGZrgD2Fae0+vEExqEo/eyN6Iy7MhQzKLbhlWm/qyr+rlJWF1fz99h4RmmW2Ol
-         lJaD2w0vMi3TtU6Y9IIMLeOTJU86KQc0yncP6Mdt5ZMNb4x8sp+a0DhsVkW3cJ+Kd1
-         UPwnwxGsBOgr0Yan6SOiKzKdEoMRygULcHL8AANYB1tIrhfFHFVHMSzYjwXnsnb5U7
-         zJwqxK2v3pTDg==
-From:   Guillaume Tucker <guillaume.tucker@collabora.com>
-To:     Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Mark Brown <broonie@kernel.org>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] selftests: add missing ')' in lib.mk
-Date:   Tue,  9 Aug 2022 15:20:46 +0200
-Message-Id: <7de08f7f11551d6b8195c3e5d801db2fae3f49a9.1660048017.git.guillaume.tucker@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 9 Aug 2022 09:22:27 -0400
+Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DEB18B0F
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 06:22:27 -0700 (PDT)
+Received: by mail-pg1-f174.google.com with SMTP id r69so4799744pgr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 06:22:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=B7uQTub1ahljxDOniVaW04DLGF0sT86p8KJIWqRumqI=;
+        b=P/tWjiPKQiglwsFjq0880HKShXoycGYtDqhLWkZsXyZQabazPhqPCa7+uG70R/vRmZ
+         GwW0+VJ2zlsKx1QXCBbW7gnwjj8Micqi9e34GmiJ52OhokHBIqpCgOo23+ONTRtgNiFo
+         uGo6supJCMLufIRx1kfT0jaGtm2V9bjDHUgs08HbLKHK8ZDN9opJXNPE1ZH3rQfpFBYf
+         beCyK7Kb0dMIVogW0vyywqB47+YrEILbTjo3AcSwFqKjWMnvWGr2HJFpKynZRQwWJUYU
+         KsoAgKPx28olgSvB7KETPDeUnl9gI2bV3uxHWIDMZxAqbO3c6/q2/B9k/vKVJNVq80rs
+         CDjQ==
+X-Gm-Message-State: ACgBeo16TRyC8zr43FvW1iv4gkBd+BL/+rQCSGRBe6/YGTUXdz8+ysfq
+        BjmbIvL2bF03OQ0ES554ooZKB0jgj7k=
+X-Google-Smtp-Source: AA6agR4tAnjlYEo90WCcd2wTNnl6yimFsFXXxb3LxkBsGO1YIjs6GCBTnJpAWY6gaM87U16z41e3Kw==
+X-Received: by 2002:a63:1502:0:b0:411:4cc0:3ec1 with SMTP id v2-20020a631502000000b004114cc03ec1mr19498300pgl.91.1660051346506;
+        Tue, 09 Aug 2022 06:22:26 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id t15-20020a170902e84f00b0016d1bee1519sm11020225plg.102.2022.08.09.06.22.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 06:22:25 -0700 (PDT)
+Message-ID: <8f6abe4e-17a0-7f20-1383-a044188e0bc8@acm.org>
+Date:   Tue, 9 Aug 2022 06:22:23 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [kbuild-all] Re: drivers/md/raid10.c:2647:60: sparse: sparse:
+ incorrect type in argument 5 (different base types)
+Content-Language: en-US
+To:     "Chen, Rong A" <rong.a.chen@intel.com>,
+        kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>
+References: <202208061258.jAwlaAXe-lkp@intel.com>
+ <dc0dbf3d-d524-7edc-6fbf-0067c75c3d03@acm.org>
+ <bd67a6dd-4d43-28f6-e2bb-a283f581a7a9@intel.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <bd67a6dd-4d43-28f6-e2bb-a283f581a7a9@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing closing ')' in lib.mk in a call to $error().  This only
-affects LLVM / Clang builds.
+On 8/9/22 03:23, Chen, Rong A wrote:
+> Only the warning prefixed by '>>' is related to this commit 4ce4c73f662b:
+> 
+>  >> drivers/md/raid10.c:2647:60: sparse: sparse: incorrect type in 
+> argument 5 (different base types) @@     expected restricted blk_opf_t 
+> [usertype] opf @@     got int rw @@
 
-Fixes: 795285ef2425 ("selftests: Fix clang cross compilation")
-Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
----
- tools/testing/selftests/lib.mk | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks, I can reproduce this warning. I will send a fix.
 
-diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-index 947fc72413e9..a87f60873e5b 100644
---- a/tools/testing/selftests/lib.mk
-+++ b/tools/testing/selftests/lib.mk
-@@ -20,7 +20,7 @@ CLANG_TARGET_FLAGS              := $(CLANG_TARGET_FLAGS_$(ARCH))
- 
- ifeq ($(CROSS_COMPILE),)
- ifeq ($(CLANG_TARGET_FLAGS),)
--$(error Specify CROSS_COMPILE or add '--target=' option to lib.mk
-+$(error Specify CROSS_COMPILE or add '--target=' option to lib.mk)
- else
- CLANG_FLAGS     += --target=$(CLANG_TARGET_FLAGS)
- endif # CLANG_TARGET_FLAGS
--- 
-2.30.2
+Best regards,
 
+Bart.
