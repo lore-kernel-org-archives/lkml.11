@@ -2,152 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF59C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CD8C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240789AbiHIJux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42462 "EHLO
+        id S241021AbiHIJvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240176AbiHIJup (ORCPT
+        with ESMTP id S240176AbiHIJvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:50:45 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D6CE94;
-        Tue,  9 Aug 2022 02:50:44 -0700 (PDT)
-Received: from dev011.ch-qa.sw.ru ([172.29.1.16])
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <alexander.atanasov@virtuozzo.com>)
-        id 1oLLqu-00ElUd-O7;
-        Tue, 09 Aug 2022 11:49:43 +0200
-From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     kernel@openvz.org,
-        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
-        David Hildenbrand <david@redhat.com>,
-        Wei Liu <wei.liu@kernel.org>, Nadav Amit <namit@vmware.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH v1 1/2] Enable balloon drivers to report inflated memory
-Date:   Tue,  9 Aug 2022 12:49:32 +0300
-Message-Id: <20220809094933.2203087-1-alexander.atanasov@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <7bfac48d-2e50-641b-6523-662ea4df0240@virtuozzo.com>
-References: <7bfac48d-2e50-641b-6523-662ea4df0240@virtuozzo.com>
+        Tue, 9 Aug 2022 05:51:17 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEC31EC7B;
+        Tue,  9 Aug 2022 02:51:16 -0700 (PDT)
+Received: from [192.168.1.111] (91-158-154-79.elisa-laajakaista.fi [91.158.154.79])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 5C2C8481;
+        Tue,  9 Aug 2022 11:51:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1660038674;
+        bh=r2sdgyuhzqotsEz/pACTyQCNacvrrwjhRBMGFPAHOqE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=O7h2FKBjjAc9l33om8vVHf+MwJNoHWfqMy7RO9Hq0c8XGI00KcfLktFxoIGSyCssg
+         iw5onPCppQwZFyuYL4IuWp4hdxLbNvkk6UjEUn9UgIT4Nx5zxMmT8sSVqswRQo6fCh
+         Kjp3KRR3vjbv6JDpH7AUxBlju4oViuDMFnJXSn7o=
+Message-ID: <ff7448fd-e50c-1c6d-ad28-ea7e555cdd24@ideasonboard.com>
+Date:   Tue, 9 Aug 2022 12:51:10 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 4/8] drm/tidss: Add support for Dual Link LVDS Bus Format
+Content-Language: en-US
+To:     Aradhya Bhatia <a-bhatia1@ti.com>
+Cc:     Darren Etheridge <detheridge@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rahul T R <r-ravikumar@ti.com>,
+        Krunal Bhargav <k-bhargav@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>,
+        DRI Development List <dri-devel@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jyri Sarha <jyri.sarha@iki.fi>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220719080845.22122-1-a-bhatia1@ti.com>
+ <20220719080845.22122-5-a-bhatia1@ti.com>
+ <f2909af1-be23-009b-ba71-34206f099473@ideasonboard.com>
+ <ec8dce9b-51d6-a566-67bb-b76f6f3458d7@ideasonboard.com>
+ <1f9de2d8-7507-bdc2-93c1-470c8e060586@ti.com>
+ <b8fd1719-b0ec-495b-54f9-1d591ff8af9e@ideasonboard.com>
+ <09682120-632a-1bfb-c0d7-034f5f076421@ti.com>
+From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+In-Reply-To: <09682120-632a-1bfb-c0d7-034f5f076421@ti.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Display reported in /proc/meminfo as:
+On 09/08/2022 12:06, Aradhya Bhatia wrote:
 
-Inflated(total) or Inflated(free)
+>>> Even in DT, the dss port (for OLDI) connects to the panel port's
+>>> endpoint directly. Even in cases of dual link or cloning, it's only a
+>>> singular remote-to-endpoint connection between the (OLDI) VP and the
+>>> panel port. Hence the requirement of the properties in the earlier
+>>> patches of the series.
+>>
+>> Sorry, I don't follow. If you use cloning, you have two TX outputs, 
+>> going to two panels, right? So you need two panel DT nodes, and those 
+>> would connect to two OLDI TX ports in the DSS.
+>>  > Afaics the existing dual link bridge/panel drivers also use two ports
+>> for the connection, so to use the dual link you need two ports in the 
+>> DSS.
+>>
+>> I admit I'm not familiar with LVDS dual link, but it's not clear to me 
+>> how you see the dual OLDI TX being used with other drivers if you have 
+>> only one port. What kind of setups have you tested?
+>>
+> In the DTs, the OLDIs are not modeled at all. Since the DSS only has a
+> single VP for OLDI, the DT dss port (for OLDI) is connected to a single
+> simple-panel node for dual link, bypassing the OLDI TX in DT. I have
+> this same OLDI setup and have been testing on this.
 
-depending on the driver.
+A DSS VP is a DSS internal port, whereas a port node in the DT is an 
+external port. There doesn't have to be a 1:1 match between those.
 
-Drivers use the sign bit to indicate where they do account
-the inflated memory.
+The port in the DT represents some kind of "connector" to the outside 
+world, which is usually a collection of pins that provide a video bus.
 
-Amount of inflated memory can be used by:
- - as a hint for the oom a killer
- - user space software that monitors memory pressure
+Here, as far as I can see, the DSS clearly has three external ports, two 
+OLDI ports and one DPI port.
 
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: Nadav Amit <namit@vmware.com>
+> I do not have a cloning display setup with me, but I have seen DT DSS
+> port connected to one of 2 panel nodes while the other panel (remains as
+> a companion panel to the first) without any endpoint connections. Since,
+> the OLDI TXes (0 and 1), receive the same clocks and inputs from DSS
+> OLDI VP, this 'method' has worked too.
 
-Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
----
- Documentation/filesystems/proc.rst |  5 +++++
- fs/proc/meminfo.c                  | 11 +++++++++++
- include/linux/mm.h                 |  4 ++++
- mm/page_alloc.c                    |  4 ++++
- 4 files changed, 24 insertions(+)
+This, and using simple-panel for dual link with single port connection, 
+sounds like a hack.
 
-diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-index 1bc91fb8c321..064b5b3d5bd8 100644
---- a/Documentation/filesystems/proc.rst
-+++ b/Documentation/filesystems/proc.rst
-@@ -986,6 +986,7 @@ Example output. You may not have all of these fields.
-     VmallocUsed:       40444 kB
-     VmallocChunk:          0 kB
-     Percpu:            29312 kB
-+    Inflated(total):  2097152 kB
-     HardwareCorrupted:     0 kB
-     AnonHugePages:   4149248 kB
-     ShmemHugePages:        0 kB
-@@ -1133,6 +1134,10 @@ VmallocChunk
- Percpu
-               Memory allocated to the percpu allocator used to back percpu
-               allocations. This stat excludes the cost of metadata.
-+Inflated(total) or Inflated(free)
-+               Amount of memory that is inflated by the balloon driver.
-+               Due to differences among balloon drivers inflated memory
-+               is either subtracted from TotalRam or from MemFree.
- HardwareCorrupted
-               The amount of RAM/memory in KB, the kernel identifies as
-               corrupted.
-diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-index 6e89f0e2fd20..ebbe52ccbb93 100644
---- a/fs/proc/meminfo.c
-+++ b/fs/proc/meminfo.c
-@@ -38,6 +38,9 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 	unsigned long pages[NR_LRU_LISTS];
- 	unsigned long sreclaimable, sunreclaim;
- 	int lru;
-+#ifdef CONFIG_MEMORY_BALLOON
-+	long inflated_kb;
-+#endif
- 
- 	si_meminfo(&i);
- 	si_swapinfo(&i);
-@@ -153,6 +156,14 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 		    global_zone_page_state(NR_FREE_CMA_PAGES));
- #endif
- 
-+#ifdef CONFIG_MEMORY_BALLOON
-+	inflated_kb = atomic_long_read(&mem_balloon_inflated_kb);
-+	if (inflated_kb >= 0)
-+		seq_printf(m,  "Inflated(total): %8ld kB\n", inflated_kb);
-+	else
-+		seq_printf(m,  "Inflated(free): %8ld kB\n", -inflated_kb);
-+#endif
-+
- 	hugetlb_report_meminfo(m);
- 
- 	arch_report_meminfo(m);
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 7898e29bcfb5..b190811dc16e 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2582,6 +2582,10 @@ extern int watermark_boost_factor;
- extern int watermark_scale_factor;
- extern bool arch_has_descending_max_zone_pfns(void);
- 
-+#ifdef CONFIG_MEMORY_BALLOON
-+extern atomic_long_t mem_balloon_inflated_kb;
-+#endif
-+
- /* nommu.c */
- extern atomic_long_t mmap_pages_allocated;
- extern int nommu_shrink_inode_mappings(struct inode *, size_t, size_t);
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index b0bcab50f0a3..12359179a3a2 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -194,6 +194,10 @@ EXPORT_SYMBOL(init_on_alloc);
- DEFINE_STATIC_KEY_MAYBE(CONFIG_INIT_ON_FREE_DEFAULT_ON, init_on_free);
- EXPORT_SYMBOL(init_on_free);
- 
-+#ifdef CONFIG_MEMORY_BALLOON
-+atomic_long_t mem_balloon_inflated_kb = ATOMIC_LONG_INIT(0);
-+#endif
-+
- static bool _init_on_alloc_enabled_early __read_mostly
- 				= IS_ENABLED(CONFIG_INIT_ON_ALLOC_DEFAULT_ON);
- static int __init early_init_on_alloc(char *buf)
--- 
-2.31.1
+A practical example: TI's customer wants to use AM625 and THC63LVD1024 
+bridge. How does it work? THC63LVD1024 driver uses two LVDS ports for 
+input, both of which are used in dual-link mode.
 
+>>> The use of lvds helper functions does not seem feasible in this case,
+>>> because even they read DT properties to determine the dual link
+>>> connection and those properties need to be a part of a lvds bridge
+>>> device.
+>>
+>> Can you elaborate a bit more why the DRM helpers couldn't be used here?
+>>
+> The drm_of.c helpers use DT properties to ascertain the presence of a
+> dual-link connection. While there wasn't a specific helper to determine
+> dual-link or not, the drivers use the odd/even pixel order helper which
+> is based on the properties "dual-lvds-odd-pixels" and "dual-lvds-odd-
+> pixels". If either of the properties are absent, the helper returns an
+> error making the driver to use single link.
+> 
+> These properties are LVDS specific, but they could not be added in the
+> DT because there is no OLDI TX DT node for our case.
+
+If I'm not mistaken, those properties are in the port node, not the 
+device node, and also, I believe those properties are on the sink side, 
+so they wouldn't even be in the AM625 data. See, for example:
+
+arch/arm64/boot/dts/renesas/r8a774c0-ek874-idk-2121wr.dts
+
+>>> I have also been considering the idea of implementing a new device
+>>> driver for the OLDI TXes, not unlike the renesas' one. That way the
+>>> driver could have the properties and the lvds helper functions at their
+>>> disposal. I am just slightly unsure if that would allow space for any
+>>> conflicts because of the shared register space.
+>>
+>> No, I don't think new devices are needed here.
+> Okay...
+> 
+> I am not quite sure I understand completely what you are recommending
+> the OLDI to be. It seems to me that you want the OLDI TXes to be modeled
+> as nodes, right? Wouldn't that automatically require some sort of
+> standalone driver arrangement for them? Or am I missing something
+> important here?
+
+No, I'm only talking about the DT port nodes. At the moment the AM65x DT 
+bindings doc says that there are two ports, port@0 for OLDI and port@1 
+for DPI. I'm saying AM625 needs three ports.
+
+  Tomi
