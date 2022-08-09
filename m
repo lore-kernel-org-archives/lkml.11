@@ -2,194 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9C2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E48BBC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237488AbiHIHPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 03:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
+        id S238831AbiHIHQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 03:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238884AbiHIHPi (ORCPT
+        with ESMTP id S236554AbiHIHQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 03:15:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B52FFA
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 00:15:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id B928A336BF;
-        Tue,  9 Aug 2022 07:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1660029335; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M//xmn5LutYADQgn/epE+LDRLxNBhunceyOYbX10LMo=;
-        b=Ol5Iyd0mbOYphIFJlKMx4OTlKXgXt5p0YHgtPXABkzEtsSVccJBR0+ZGITnYRRsxA2KCZj
-        sUJXQOYVMoBX3kkla+cw2hsyh0miuFS/V9zLos4oErj8+nqv6JatirXL15GUooB7aG8wl0
-        AXHvGmd57TYuRgHZs6v79WK0wq5ybXw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1660029335;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M//xmn5LutYADQgn/epE+LDRLxNBhunceyOYbX10LMo=;
-        b=eKnwwTBJHEBTC7q4QcXmf2lw8j/MFI6m5eW/0m2HJPzU15BQAXvAfFLHg0xU5f7TDRR5wH
-        JgHueNb5cIGNL2BA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8932913A9D;
-        Tue,  9 Aug 2022 07:15:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Si9zHZcJ8mLpcQAAMHmgww
-        (envelope-from <tiwai@suse.de>); Tue, 09 Aug 2022 07:15:35 +0000
-Date:   Tue, 09 Aug 2022 09:15:35 +0200
-Message-ID: <87h72lx4yw.wl-tiwai@suse.de>
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Takashi Iwai <tiwai@suse.de>, dri-devel@lists.freedesktop.org,
-        Dave Airlie <airlied@redhat.com>, Sean Paul <sean@poorly.run>,
+        Tue, 9 Aug 2022 03:16:43 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9034320BC7;
+        Tue,  9 Aug 2022 00:16:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660029402; x=1691565402;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kN3AiDLfCB7xaHjL4RjTVvZ38gIhqA9fc7KA5S545+k=;
+  b=j2zqk8Cwg0LOJXkDKxj3VRGJTjUEQwvlS+sptScb78fSMSa6dN7+tSDt
+   yj8o5qAhny2n6Hal1L0ANY2r+XcMee9hI+ZbAugeg64YD54gXhUkL1JW2
+   GrSiwt8XU2MWLgU9XL5qfk/TNaL1cbuXbP0SNvWw7elIyryp8oIHnjM0l
+   hWK9AMXDEl5NphhKxCot4ke0lyh8OVMYKCNGBMoqqM6VVl+1Nd0uIQJAy
+   tL1NMQeAA9dM9kPFnzThQZ1yCybjwE5CiqTUxOrhtRGBbQWVm1XpwHzcd
+   U5WC6ri3O5cxHjSXHdz4z4YQ9K0WXxaRTnhaP98YaeIWHm/g38lKXjv+f
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="271158486"
+X-IronPort-AV: E=Sophos;i="5.93,223,1654585200"; 
+   d="scan'208";a="271158486"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 00:16:42 -0700
+X-IronPort-AV: E=Sophos;i="5.93,223,1654585200"; 
+   d="scan'208";a="672786175"
+Received: from binbinwu-mobl.ccr.corp.intel.com (HELO [10.249.171.147]) ([10.249.171.147])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 00:16:40 -0700
+Message-ID: <dacf1c28-88c2-d0f4-b6aa-5556101eca86@linux.intel.com>
+Date:   Tue, 9 Aug 2022 15:16:38 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH v8 003/103] KVM: Refactor CPU compatibility check on
+ module initialization
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] drm/udl: Kill pending URBs at suspend and disconnect
-In-Reply-To: <bebcfa4a-7908-d8ba-3bff-ea7c2ee2d7a9@suse.de>
-References: <20220804075826.27036-1-tiwai@suse.de>
-        <20220804075826.27036-4-tiwai@suse.de>
-        <bebcfa4a-7908-d8ba-3bff-ea7c2ee2d7a9@suse.de>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
+Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+References: <cover.1659854790.git.isaku.yamahata@intel.com>
+ <4092a37d18f377003c6aebd9ced1280b0536c529.1659854790.git.isaku.yamahata@intel.com>
+From:   Binbin Wu <binbin.wu@linux.intel.com>
+In-Reply-To: <4092a37d18f377003c6aebd9ced1280b0536c529.1659854790.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 09 Aug 2022 09:13:16 +0200,
-Thomas Zimmermann wrote:
-> 
-> Hi
-> 
-> Am 04.08.22 um 09:58 schrieb Takashi Iwai:
-> > At both suspend and disconnect, we should rather cancel the pending
-> > URBs immediately.  For the suspend case, the display will be turned
-> > off, so it makes no sense to process the rendering.  And for the
-> > disconnect case, the device may be no longer accessible, hence we
-> > shouldn't do any submission.
-> > 
-> > Tested-by: Thomas Zimmermann <tzimmermann@suse.de>
-> > Signed-off-by: Takashi Iwai <tiwai@suse.de>
-> > ---
-> >   drivers/gpu/drm/udl/udl_drv.h     |  2 ++
-> >   drivers/gpu/drm/udl/udl_main.c    | 25 ++++++++++++++++++++++---
-> >   drivers/gpu/drm/udl/udl_modeset.c |  2 ++
-> >   3 files changed, 26 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/udl/udl_drv.h b/drivers/gpu/drm/udl/udl_drv.h
-> > index f01e50c5b7b7..28aaf75d71cf 100644
-> > --- a/drivers/gpu/drm/udl/udl_drv.h
-> > +++ b/drivers/gpu/drm/udl/udl_drv.h
-> > @@ -39,6 +39,7 @@ struct urb_node {
-> >     struct urb_list {
-> >   	struct list_head list;
-> > +	struct list_head in_flight;
-> >   	spinlock_t lock;
-> >   	wait_queue_head_t sleep;
-> >   	int available;
-> > @@ -84,6 +85,7 @@ static inline struct urb *udl_get_urb(struct drm_device *dev)
-> >     int udl_submit_urb(struct drm_device *dev, struct urb *urb,
-> > size_t len);
-> >   int udl_sync_pending_urbs(struct drm_device *dev);
-> > +void udl_kill_pending_urbs(struct drm_device *dev);
-> >   void udl_urb_completion(struct urb *urb);
-> >     int udl_init(struct udl_device *udl);
-> > diff --git a/drivers/gpu/drm/udl/udl_main.c b/drivers/gpu/drm/udl/udl_main.c
-> > index 93615648414b..47204b7eb10e 100644
-> > --- a/drivers/gpu/drm/udl/udl_main.c
-> > +++ b/drivers/gpu/drm/udl/udl_main.c
-> > @@ -135,7 +135,7 @@ void udl_urb_completion(struct urb *urb)
-> >   	urb->transfer_buffer_length = udl->urbs.size; /* reset to actual */
-> >     	spin_lock_irqsave(&udl->urbs.lock, flags);
-> > -	list_add_tail(&unode->entry, &udl->urbs.list);
-> > +	list_move(&unode->entry, &udl->urbs.list);
-> >   	udl->urbs.available++;
-> >   	spin_unlock_irqrestore(&udl->urbs.lock, flags);
-> >   @@ -180,6 +180,7 @@ static int udl_alloc_urb_list(struct
-> > drm_device *dev, int count, size_t size)
-> >   retry:
-> >   	udl->urbs.size = size;
-> >   	INIT_LIST_HEAD(&udl->urbs.list);
-> > +	INIT_LIST_HEAD(&udl->urbs.in_flight);
-> >     	init_waitqueue_head(&udl->urbs.sleep);
-> >   	udl->urbs.count = 0;
-> > @@ -246,7 +247,7 @@ struct urb *udl_get_urb_timeout(struct drm_device *dev, long timeout)
-> >   	}
-> >     	unode = list_first_entry(&udl->urbs.list, struct urb_node,
-> > entry);
-> > -	list_del_init(&unode->entry);
-> > +	list_move(&unode->entry, &udl->urbs.in_flight);
-> >   	udl->urbs.available--;
-> >     unlock:
-> > @@ -279,7 +280,7 @@ int udl_sync_pending_urbs(struct drm_device *dev)
-> >   	spin_lock_irq(&udl->urbs.lock);
-> >   	/* 2 seconds as a sane timeout */
-> >   	if (!wait_event_lock_irq_timeout(udl->urbs.sleep,
-> > -					 udl->urbs.available == udl->urbs.count,
-> > +					 list_empty(&udl->urbs.in_flight),
-> >   					 udl->urbs.lock,
-> >   					 msecs_to_jiffies(2000)))
-> >   		ret = -ETIMEDOUT;
-> > @@ -287,6 +288,23 @@ int udl_sync_pending_urbs(struct drm_device *dev)
-> >   	return ret;
-> >   }
-> >   +/* kill pending URBs */
-> > +void udl_kill_pending_urbs(struct drm_device *dev)
-> > +{
-> > +	struct udl_device *udl = to_udl(dev);
-> > +	struct urb_node *unode;
-> > +
-> > +	spin_lock_irq(&udl->urbs.lock);
-> > +	while (!list_empty(&udl->urbs.in_flight)) {
-> > +		unode = list_first_entry(&udl->urbs.in_flight,
-> > +					 struct urb_node, entry);
-> > +		spin_unlock_irq(&udl->urbs.lock);
-> > +		usb_kill_urb(unode->urb);
-> > +		spin_lock_irq(&udl->urbs.lock);
-> > +	}
-> > +	spin_unlock_irq(&udl->urbs.lock);
-> > +}
-> > +
-> >   int udl_init(struct udl_device *udl)
-> >   {
-> >   	struct drm_device *dev = &udl->drm;
-> > @@ -335,6 +353,7 @@ int udl_drop_usb(struct drm_device *dev)
-> >   {
-> >   	struct udl_device *udl = to_udl(dev);
-> >   +	udl_kill_pending_urbs(dev);
-> >   	udl_free_urb_list(dev);
-> >   	put_device(udl->dmadev);
-> >   	udl->dmadev = NULL;
-> > diff --git a/drivers/gpu/drm/udl/udl_modeset.c b/drivers/gpu/drm/udl/udl_modeset.c
-> > index 50025606b6ad..169110d8fc2e 100644
-> > --- a/drivers/gpu/drm/udl/udl_modeset.c
-> > +++ b/drivers/gpu/drm/udl/udl_modeset.c
-> > @@ -397,6 +397,8 @@ udl_simple_display_pipe_disable(struct drm_simple_display_pipe *pipe)
-> >   	struct urb *urb;
-> >   	char *buf;
-> >   +	udl_kill_pending_urbs(dev);
-> > +
-> 
-> I already reviewed the patchset, but I have another comment. I think
-> we should only kill urbs from within the suspend handler. Same for the
-> call to the URB-sync function in patch 2.
-> 
-> This disable function is part of the regular modeset path. It's
-> probably not appropriate to outright remove pending URBs here. This
-> can lead to failed modesets, which would have succeeded otherwise.
 
-Well, the device shall be turned off right after that point, so the
-all pending rendering makes little sense, no?
+On 2022/8/8 6:00, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+>
+> TDX module requires its initialization.  It requires VMX to be enabled.
+> Although there are several options of when to initialize it, the choice is
+> the initialization time of the KVM kernel module.  There is no usable
+> arch-specific hook for the TDX module to utilize during the KVM kernel module
+> initialization.  The code doesn't enable/disable hardware (VMX in TDX case)
+> during the kernel module initialization.  Add a hook for enabling hardware,
+> arch-specific initialization, and disabling hardware during KVM kernel
+> module initialization to make a room for TDX module initialization.  The
+> current KVM enables hardware when the first VM is created and disables
+> hardware when the last VM is destroyed.  When no VM is running, hardware is
+> disabled.  To follow these semantics, the kernel module initialization needs
+> to disable hardware. Opportunistically refactor the code to enable/disable
+> hardware.
+>
+> Add hadware_enable_all() and hardware_disable_all() to kvm_init() and
+> introduce a new arch-specific callback function,
+> kvm_arch_post_hardware_enable_setup, for arch to do arch-specific
+> initialization that requires hardware_enable_all().  Opportunistically,
+> move kvm_arch_check_processor_compat() to to hardware_enabled_nolock().
+> TDX module initialization code will go into
+> kvm_arch_post_hardware_enable_setup().
+>
+> This patch reorders some function calls as below from (*) (**) (A) and (B)
+> to (A) (B) and (*).  Here (A) and (B) depends on (*), but not (**).  By
+> code inspection, only mips and VMX has the code of (*).  No other
+No other or other?
 
 
-Takashi
+> arch has empty (*).  So refactor mips and VMX and eliminate the
+> necessity hook for (*) instead of adding an unused hook.
+>
+> Before this patch:
+> - Arch module initialization
+>    - kvm_init()
+>      - kvm_arch_init()
+>      - kvm_arch_check_processor_compat() on each CPUs
+>    - post-arch-specific initialization -- (*): (A) and (B) depends on this
+>    - post-arch-specific initialization -- (**): no dependency to (A) and (B)
+>
+> - When creating/deleting the first/last VM
+>     - kvm_arch_hardware_enable() on each CPUs -- (A)
+>     - kvm_arch_hardware_disable() on each CPUs -- (B)
+>
+> After this patch:
+> - Arch module initialization
+>    - kvm_init()
+>      - kvm_arch_init()
+>      - arch-specific initialization -- (*)
+>      - kvm_arch_check_processor_compat() on each CPUs
+>      - kvm_arch_hardware_enable() on each CPUs -- (A)
+
+
+Maybe also put the new added kvm_arch_post_hardware_enable_setup here?
+After all, this is the purpose of this patch.
+
+
+>      - kvm_arch_hardware_disable() on each CPUs -- (B)
+>    - post-arch-specific initialization  -- (**)
+>
+> - When creating/deleting the first/last VM (no logic change)
+>     - kvm_arch_hardware_enable() on each CPUs -- (A)
+>     - kvm_arch_hardware_disable() on each CPUs -- (B)
+>
