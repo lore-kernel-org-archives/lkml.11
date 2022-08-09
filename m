@@ -2,69 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82738C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2BAC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345559AbiHITHv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
+        id S245223AbiHITIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 15:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348377AbiHITGs (ORCPT
+        with ESMTP id S1345102AbiHITFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:06:48 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6684286E3
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:52:01 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id F0ABB68AA6; Tue,  9 Aug 2022 20:51:57 +0200 (CEST)
-Date:   Tue, 9 Aug 2022 20:51:57 +0200
-From:   "hch@lst.de" <hch@lst.de>
-To:     "Hellstrom, Thomas" <thomas.hellstrom@intel.com>
-Cc:     "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        "bob.beckett@collabora.com" <bob.beckett@collabora.com>,
-        "tvrtko.ursulin@linux.intel.com" <tvrtko.ursulin@linux.intel.com>,
-        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
-        "airlied@linux.ie" <airlied@linux.ie>, "hch@lst.de" <hch@lst.de>,
-        "Ursulin, Tvrtko" <tvrtko.ursulin@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kernel@collabora.com" <kernel@collabora.com>,
-        "Auld, Matthew" <matthew.auld@intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>
-Subject: Re: [PATCH v5] drm/i915: stop using swiotlb
-Message-ID: <20220809185157.GA15307@lst.de>
-References: <20220726153935.2272777-1-bob.beckett@collabora.com> <1160a7c31084ab2259088e4bfe88b41ad61c2bcc.camel@intel.com>
+        Tue, 9 Aug 2022 15:05:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE9414D24
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:43:40 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1oLUCR-0005YX-Q3; Tue, 09 Aug 2022 20:43:31 +0200
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1oLUCQ-0000nP-Ee; Tue, 09 Aug 2022 20:43:30 +0200
+Date:   Tue, 9 Aug 2022 20:43:30 +0200
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Stuebner <heiko@sntech.de>, linux-media@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/3] media: hantro: Add support for RK356x JPEG encoder
+Message-ID: <20220809184330.GA4380@pengutronix.de>
+References: <20220427224438.335327-1-frattaroli.nicolas@gmail.com>
+ <20220427224438.335327-3-frattaroli.nicolas@gmail.com>
+ <20220809124508.GL14307@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
 Content-Disposition: inline
-In-Reply-To: <1160a7c31084ab2259088e4bfe88b41ad61c2bcc.camel@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20220809124508.GL14307@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 03:48:02PM +0000, Hellstrom, Thomas wrote:
-> This whole thing looks a bit strange to me since with SWIOTLB actually
-> used for i915, the driver should malfunction anyway as it doesn't do
-> any dma_sync_sg_for_cpu() or dma_sync_sg_for_device(),
 
-Yeah, I can't actually see any syncs in i915.
+--azLHFNyN32YCQGCU
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> and the driver
-> assumes all coherent dma. Is that SWIOTLB=force kernel option still
-> available?
+On Tue, Aug 09, 2022 at 02:45:08PM +0200, Michael Grzeschik wrote:
+>On Thu, Apr 28, 2022 at 12:44:37AM +0200, Nicolas Frattaroli wrote:
+>>The RK3566 and RK3568 SoCs come with a small Hantro instance which
+>>is solely dedicated to encoding JPEG. This patch adds the necessary
+>>structs to the Hantro driver to allow it to function.
+>>
+>>Tested with the following GStreamer command:
+>>
+>>gst-launch-1.0 videotestsrc ! v4l2jpegenc ! matroskamux ! \
+>>              filesink location=3Dfoo.mkv
+>
+>I just tried this pipeline on v5.19. The filesize generated is increasing =
+and
+>data is generated. However the content seems to be unusable.
+>
+>When playing foo.mkv with e.g. vlc the following errors, that no JPEG data=
+ was found
+>in the images, is generated:
+>
+>
+>[mjpeg @ 0x7f2f08c1f780] No JPEG data found in image
+>[mjpeg @ 0x7f2f08c1f780] No JPEG data found in image
+>[mjpeg @ 0x7f2f08c1f780] No JPEG data found in image
+>...
+>
+>
+>The same with gstreamer:
+>
+>gst-launch-1.0 filesrc location=3Dfoo.mkv ! decodebin ! glimagesink
+>../ext/jpeg/gstjpegdec.c(1418): gst_jpeg_dec_handle_frame (): /GstPipeline=
+:pipeline0/GstDecodeBin:decodebin0/GstJpegDec:jpegdec0:
+>Decode error #53: Not a JPEG file: starts with 0x00 0x00
+>..
+>
+>
+>Do you have an idea why that is? Did you test the pipeline with an earlier
+>kernelversion and validated the generated content of foo.mkv?
 
-Yes, although it is (and always has been) lower case swiotlb for the
-option.
+After further debugging, I found out that my latest port of the bootlin
+patches to support h264 encoding broke the hantro driver somehow.
 
-> Also, correct me if I'm wrong, but the original driver segment size
-> appears to mean "the largest contiguous area that can be handled either
-> by the device or the dma mapping layer" rather than the total space
-> available for dma mappings? Not completely sure what
-> dma_max_mapping_size() is returning, though?
+https://git.pengutronix.de/cgit/mgr/linux/log/?h=3Dv5.19/topic/rk3568-vepu-=
+h264-stateless-bootlin
 
-dma_max_mapping_size is sort of both.  It is is the largest contigous
-size, but we really should not go above that to avoid starvation.
+The good news about that is; it is possible that the same issue
+was the cause that I thought the h264 encoding is not supported on
+the VEPU121. So the support is still unknown
+
+I will come back to that.
+
+Regards,
+Michael
+
+
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--azLHFNyN32YCQGCU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAmLyqs8ACgkQC+njFXoe
+LGQItRAAj/Maz6S+qvjgj2qxwTHOXNKpxXLuukYWID55zyIjCBhMX0TmPsGTIQQD
+bkD2FB31dykYjtx5JepDztiDPoTFe1JH8FFrnOR/d1rNl40oZRVefBBMxgcS3niF
+PZXOD0tQ3Z3jyXOVD9AUPUJWsJl0w5ROBJjtkgCpF0KfH+29S90xPe3ktFZaU6bY
+KScHe3dLKEKNEHs/6tjgI3VphHabmxcFj3iucSm88jio8GLx67uWN6rKjKkZxHz8
+f5yw6Ta96yVUL3G0mPrlMVL4SlI7jnEinbGL5lYHXO5sfKej4nZfLEIbtVxXTHP2
+TfHup6Ws6dFAoYUcKTGwvzblbtH5Y/6Nk8LyCud/NZT3DBEr9MZRbjizlC/QGeAY
+yjryjYiCJMxi0f7IkhCGYupBRKb7eofugJAymiaMKHrGRctRSXUfj0twHxrBzMz6
+fYVWhYqSmjrZjsRIqg1q0GUu24kG1UtCnvqnkhSJIvSGYpIXmKeeKkDaEVhD0V6r
+wP2VX0dJfbf5Jp9zpNynVY0YacOngis5muLKTnbBeATXEH1Inv+ShzoaiHRrk1t8
+FQ6IFRv8HiR+zZFy4y3vWDo4m1xzoRR03Jmhf/CYBASPIHhQk3oU3ArqtEEigkA9
+OO2fTaFTnrFipkOSgysdGAl9/KXpuwXFdmiwoXmWlzj1ZEsFlGI=
+=BxJZ
+-----END PGP SIGNATURE-----
+
+--azLHFNyN32YCQGCU--
