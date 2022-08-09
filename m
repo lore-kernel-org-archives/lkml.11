@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEC9C25B07
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84853C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345434AbiHISNI (ORCPT
+        id S1345364AbiHISNQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        Tue, 9 Aug 2022 14:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345287AbiHISKq (ORCPT
+        with ESMTP id S1345867AbiHISLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:10:46 -0400
+        Tue, 9 Aug 2022 14:11:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964BD2A421;
-        Tue,  9 Aug 2022 11:04:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDCB2B263;
+        Tue,  9 Aug 2022 11:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA3CE61113;
-        Tue,  9 Aug 2022 18:04:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE597C433D7;
-        Tue,  9 Aug 2022 18:04:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1D7E61139;
+        Tue,  9 Aug 2022 18:04:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C028C43141;
+        Tue,  9 Aug 2022 18:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068253;
-        bh=P9zgd7JuiwO8OBeKEHDPDKd4VJKE3lWpZ0m1ks9qXE0=;
+        s=korg; t=1660068297;
+        bh=eZWrVdJWq375kXAsIUU8k4S8P/O7f2H0xgz4sXsXJrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sSagXe7VNPOy/er5JZo6tuXhIH9rm5ojIXxVbyI/vWINxyfLsIJ1bD58teBKQf7AU
-         EginlAloUHDEsyjh8qFwyUCdzonf4AUZ66+YO+25Hp0wln3XqQmyeLXUis1AJUKxln
-         /EJ0mtYR91ZCpboVfeXpHU/BDNIbTzF+EO+X4CW0=
+        b=M99R9irRchQ3ZbjVVXO2qlHc1rAugBrBJBGyu3x0YYTrL+0jTK7loODSAu+5s8+3i
+         YXck3mjcqywzo/G/Kj8vIYK+XoYdKGUXY4Wngif3rZY0Q7wILquET8otOgbyWh9ANA
+         BrGq4A9nNOG1RgGVASokdpSYfEBXsjwyISYdrhoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.10 20/23] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3586
-Date:   Tue,  9 Aug 2022 20:00:38 +0200
-Message-Id: <20220809175513.550681802@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 04/30] block: fix default IO priority handling again
+Date:   Tue,  9 Aug 2022 20:00:29 +0200
+Message-Id: <20220809175514.433647534@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
-References: <20220809175512.853274191@linuxfoundation.org>
+In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
+References: <20220809175514.276643253@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,62 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hilda Wu <hildawu@realtek.com>
+From: Jan Kara <jack@suse.cz>
 
-commit 6ad353dfc8ee3230a5e123c21da50f1b64cc4b39 upstream.
+commit e589f46445960c274cc813a1cc8e2fc73b2a1849 upstream.
 
-Add the support ID(0x13D3, 0x3586) to usb_device_id table for
-Realtek RTL8852C.
+Commit e70344c05995 ("block: fix default IO priority handling")
+introduced an inconsistency in get_current_ioprio() that tasks without
+IO context return IOPRIO_DEFAULT priority while tasks with freshly
+allocated IO context will return 0 (IOPRIO_CLASS_NONE/0) IO priority.
+Tasks without IO context used to be rare before 5a9d041ba2f6 ("block:
+move io_context creation into where it's needed") but after this commit
+they became common because now only BFQ IO scheduler setups task's IO
+context. Similar inconsistency is there for get_task_ioprio() so this
+inconsistency is now exposed to userspace and userspace will see
+different IO priority for tasks operating on devices with BFQ compared
+to devices without BFQ. Furthemore the changes done by commit
+e70344c05995 change the behavior when no IO priority is set for BFQ IO
+scheduler which is also documented in ioprio_set(2) manpage:
 
-The device info from /sys/kernel/debug/usb/devices as below.
+"If no I/O scheduler has been set for a thread, then by default the I/O
+priority will follow the CPU nice value (setpriority(2)).  In Linux
+kernels before version 2.6.24, once an I/O priority had been set using
+ioprio_set(), there was no way to reset the I/O scheduling behavior to
+the default. Since Linux 2.6.24, specifying ioprio as 0 can be used to
+reset to the default I/O scheduling behavior."
 
-T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
-D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=13d3 ProdID=3586 Rev= 0.00
-S:  Manufacturer=Realtek
-S:  Product=Bluetooth Radio
-S:  SerialNumber=00e04c000001
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+So make sure we default to IOPRIO_CLASS_NONE as used to be the case
+before commit e70344c05995. Also cleanup alloc_io_context() to
+explicitely set this IO priority for the allocated IO context to avoid
+future surprises. Note that we tweak ioprio_best() to maintain
+ioprio_get(2) behavior and make this commit easily backportable.
 
-Signed-off-by: Hilda Wu <hildawu@realtek.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+CC: stable@vger.kernel.org
+Fixes: e70344c05995 ("block: fix default IO priority handling")
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220623074840.5960-1-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    2 ++
- 1 file changed, 2 insertions(+)
+ block/blk-ioc.c        |    1 +
+ block/ioprio.c         |    4 ++--
+ include/linux/ioprio.h |    2 +-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -408,6 +408,8 @@ static const struct usb_device_id blackl
- 						     BTUSB_WIDEBAND_SPEECH },
- 	{ USB_DEVICE(0x13d3, 0x3587), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
-+	{ USB_DEVICE(0x13d3, 0x3586), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
+--- a/block/blk-ioc.c
++++ b/block/blk-ioc.c
+@@ -265,6 +265,7 @@ int create_task_io_context(struct task_s
+ 	INIT_RADIX_TREE(&ioc->icq_tree, GFP_ATOMIC);
+ 	INIT_HLIST_HEAD(&ioc->icq_list);
+ 	INIT_WORK(&ioc->release_work, ioc_release_fn);
++	ioc->ioprio = IOPRIO_DEFAULT;
  
- 	/* Realtek Bluetooth devices */
- 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+ 	/*
+ 	 * Try to install.  ioc shouldn't be installed if someone else
+--- a/block/ioprio.c
++++ b/block/ioprio.c
+@@ -189,9 +189,9 @@ out:
+ int ioprio_best(unsigned short aprio, unsigned short bprio)
+ {
+ 	if (!ioprio_valid(aprio))
+-		aprio = IOPRIO_DEFAULT;
++		aprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
+ 	if (!ioprio_valid(bprio))
+-		bprio = IOPRIO_DEFAULT;
++		bprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
+ 
+ 	return min(aprio, bprio);
+ }
+--- a/include/linux/ioprio.h
++++ b/include/linux/ioprio.h
+@@ -11,7 +11,7 @@
+ /*
+  * Default IO priority.
+  */
+-#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM)
++#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0)
+ 
+ /*
+  * Check that a priority value has a valid class.
 
 
