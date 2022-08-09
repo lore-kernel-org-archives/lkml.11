@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDC9C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50BE9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345132AbiHISJU (ORCPT
+        id S1345139AbiHISJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        Tue, 9 Aug 2022 14:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345069AbiHISIn (ORCPT
+        with ESMTP id S1344236AbiHISI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:08:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4792613C;
-        Tue,  9 Aug 2022 11:03:37 -0700 (PDT)
+        Tue, 9 Aug 2022 14:08:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06CD2980F;
+        Tue,  9 Aug 2022 11:03:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DBA761118;
-        Tue,  9 Aug 2022 18:03:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E767AC43470;
-        Tue,  9 Aug 2022 18:03:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58C31B8171C;
+        Tue,  9 Aug 2022 18:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A486EC433D6;
+        Tue,  9 Aug 2022 18:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068217;
-        bh=HZjsLh9G/XseI4c+wAmiE/T9/sW2B0EUIKAtM7s2Wyk=;
+        s=korg; t=1660068220;
+        bh=e+Sqdz09GdVHe1dlbhbcgQasCVxSYIYnh6jIqbIAANo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dUiS6DWR8seUhj39Yb3c6FfiGqNBfv4Q96eJMuEoR5mTM6bPhhavNTdNd1Pmy4hCn
-         QldTQ3lE9MYerpZFQNG2ASTHLF2T6W8Cg7aWRs9bgyCR7C4DaOo7wq8cp1zfH/BIbn
-         YFLHsokwItyDqQJrIZlX1qzimqBtAIxY0LSWFRu8=
+        b=w1KPWZdJ8g6rFaqjj4X1f0SjMdLwBBDRFuaUxBTiY+5OLRwpSdSdYDKtdiJH+xH0V
+         K0xcohnokrs+sYEmlFAqqWXNTMyOlZqFbi27D+YQ+EDzOXRGP4J1nrG66bT5ZX1z/w
+         BBVLm8z6X9HUmyjLTzMdJqKzlW9rglT2HQCDtlaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.4 15/15] x86/speculation: Add LFENCE to RSB fill sequence
-Date:   Tue,  9 Aug 2022 20:00:33 +0200
-Message-Id: <20220809175510.849644425@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Ning Qiang <sohu0106@126.com>,
+        Kees Cook <keescook@chromium.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.4 13/15] macintosh/adb: fix oob read in do_adb_query() function
+Date:   Tue,  9 Aug 2022 20:00:31 +0200
+Message-Id: <20220809175510.763868106@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
 References: <20220809175510.312431319@linuxfoundation.org>
@@ -50,61 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Ning Qiang <sohu0106@126.com>
 
-commit ba6e31af2be96c4d0536f2152ed6f7b6c11bca47 upstream.
+commit fd97e4ad6d3b0c9fce3bca8ea8e6969d9ce7423b upstream.
 
-RSB fill sequence does not have any protection for miss-prediction of
-conditional branch at the end of the sequence. CPU can speculatively
-execute code immediately after the sequence, while RSB filling hasn't
-completed yet.
+In do_adb_query() function of drivers/macintosh/adb.c, req->data is copied
+form userland. The parameter "req->data[2]" is missing check, the array
+size of adb_handler[] is 16, so adb_handler[req->data[2]].original_address and
+adb_handler[req->data[2]].handler_id will lead to oob read.
 
-  #define __FILL_RETURN_BUFFER(reg, nr, sp)	\
-  	mov	$(nr/2), reg;			\
-  771:						\
-  	call	772f;				\
-  773:	/* speculation trap */			\
-  	pause;					\
-  	lfence;					\
-  	jmp	773b;				\
-  772:						\
-  	call	774f;				\
-  775:	/* speculation trap */			\
-  	pause;					\
-  	lfence;					\
-  	jmp	775b;				\
-  774:						\
-  	dec	reg;				\
-  	jnz	771b;  <----- CPU can miss-predict here.				\
-  	add	$(BITS_PER_LONG/8) * nr, sp;
-
-Before RSB is filled, RETs that come in program order after this macro
-can be executed speculatively, making them vulnerable to RSB-based
-attacks.
-
-Mitigate it by adding an LFENCE after the conditional branch to prevent
-speculation while RSB is being filled.
-
-Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Ning Qiang <sohu0106@126.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220713153734.2248-1-sohu0106@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/macintosh/adb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -61,7 +61,9 @@
- 774:						\
- 	dec	reg;				\
- 	jnz	771b;				\
--	add	$(BITS_PER_LONG/8) * nr, sp;
-+	add	$(BITS_PER_LONG/8) * nr, sp;	\
-+	/* barrier for jnz misprediction */	\
-+	lfence;
+--- a/drivers/macintosh/adb.c
++++ b/drivers/macintosh/adb.c
+@@ -647,7 +647,7 @@ do_adb_query(struct adb_request *req)
  
- #define __ISSUE_UNBALANCED_RET_GUARD(sp)	\
- 	call	881f;				\
+ 	switch(req->data[1]) {
+ 	case ADB_QUERY_GETDEVINFO:
+-		if (req->nbytes < 3)
++		if (req->nbytes < 3 || req->data[2] >= 16)
+ 			break;
+ 		mutex_lock(&adb_handler_mutex);
+ 		req->reply[0] = adb_handler[req->data[2]].original_address;
 
 
