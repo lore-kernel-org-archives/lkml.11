@@ -2,88 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59601C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2987C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238747AbiHIRJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 13:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
+        id S236813AbiHIRLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 13:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245220AbiHIRJC (ORCPT
+        with ESMTP id S234920AbiHIRK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 13:09:02 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0E423BDF;
-        Tue,  9 Aug 2022 10:09:01 -0700 (PDT)
-Received: from localhost.localdomain (1.general.cascardo.us.vpn [10.172.70.58])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id E41443F100;
-        Tue,  9 Aug 2022 17:08:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1660064940;
-        bh=ze03xbUn78LgfJuUNKBQC8X3WibtV+sxEkKu8Gimsms=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=EhmyyTKZ/QJB9cIsfZFTVMaOrn3p4V6YsWSI4GrzMgFS1hCxx+Fs/wyIKYzYewgYV
-         aDifqbzhUlzANm+/3pVTMtLlC6fWEe9kYWJCj8c1TVNOiH/zu+uXfAeFpXM5P+6x+C
-         xAOAzfIWZMIeVGAHSpYyPPs7LRD8dOKnELXMHE+Nzc9Dur0CW+rDUt0oHVfKtowElX
-         Hzn5d2t58IluQi7KaM0baIgiAyshflezDnUHkP1TJWprlDX0x36eFK3FuDrTrKgzFR
-         UxwjlyEfg3kZeVTr7tTcRdWw/Vt7FBnjzGu+1V9W3D0rXJYpLc3TKT8yJT/DzVUzc8
-         XzHJSw126s7GQ==
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Thomas Gleixner <tglx@linutronix.de>, stable@vger.kernel.org
-Subject: [PATCH] posix-cpu-timers: Cleanup CPU timers before freeing them during exec
-Date:   Tue,  9 Aug 2022 14:07:51 -0300
-Message-Id: <20220809170751.164716-1-cascardo@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 9 Aug 2022 13:10:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C7424084;
+        Tue,  9 Aug 2022 10:10:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=+KPJVKlTwuYIORvuCVRCrV6LokfH4QqszDshfU9K54Q=; b=X5z6LKKr7QwM8LZY6AXoIYPfDF
+        0C1yUFTluKmCni7s0pYmN595Khet/lFEm8MTLi/Z0ao95MTQQ2FvmnKIZL8a4Chp8seLiQ59txKKU
+        vYRH6dFU0aj1Z+Yx7wauBQH7OlbbpbPb646BTO3Sy24FMtjr28mKXgpMM8y5VCBGVvV0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oLSki-00CrYV-Om; Tue, 09 Aug 2022 19:10:48 +0200
+Date:   Tue, 9 Aug 2022 19:10:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ravi Gunasekaran <r-gunasekaran@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
+        vigneshr@ti.com
+Subject: Re: [EXTERNAL] Re: [RESEND PATCH] net: ethernet: ti: davinci_mdio:
+ Add workaround for errata i2329
+Message-ID: <YvKVGJiC9W6nR67f@lunn.ch>
+References: <20220808111229.11951-1-r-gunasekaran@ti.com>
+ <YvFubdCiU7J8Ufi4@lunn.ch>
+ <27860709-db8f-49be-fec7-a76496bfb948@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <27860709-db8f-49be-fec7-a76496bfb948@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 55e8c8eb2c7b ("posix-cpu-timers: Store a reference to a pid not a
-task") started looking up tasks by PID when deleting a CPU timer.
+> Thanks for reviewing the patch. Since mdiobb_{read,write}() are exported, I
+> can invoke these in my mdio read/write implementation. I will rework and
+> send the v2 patch
 
-When a non-leader thread calls execve, it will switch PIDs with the leader
-process. Then, as it calls exit_itimers, posix_cpu_timer_del cannot find
-the task because the timer still points out to the old PID.
+What you should do is fill a struct mdiobb_ops and pass it to
+alloc_mdio_bitbang(). It looks like you can provide:
 
-That means that armed timers won't be disarmed, that is, they won't be
-removed from the timerqueue_list. exit_itimers will still release their
-memory, and when that list is later processed, it leads to a
-use-after-free.
+struct mdiobb_ops {
+	struct module *owner;
 
-Clean up the timers from the de-threaded task before freeing them. This
-prevents a reported use-after-free.
+	/* Set the Management Data Clock high if level is one,
+	 * low if level is zero.
+	 */
+	void (*set_mdc)(struct mdiobb_ctrl *ctrl, int level);
 
-Fixes: 55e8c8eb2c7b ("posix-cpu-timers: Store a reference to a pid not a task")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: <stable@vger.kernel.org>
----
- fs/exec.c | 3 +++
- 1 file changed, 3 insertions(+)
+	/* Configure the Management Data I/O pin as an input if
+	 * "output" is zero, or an output if "output" is one.
+	 */
+	void (*set_mdio_dir)(struct mdiobb_ctrl *ctrl, int output);
 
-diff --git a/fs/exec.c b/fs/exec.c
-index 778123259e42..1c6b477dad69 100644
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1301,6 +1301,9 @@ int begin_new_exec(struct linux_binprm * bprm)
- 	bprm->mm = NULL;
- 
- #ifdef CONFIG_POSIX_TIMERS
-+	spin_lock_irq(&me->sighand->siglock);
-+	posix_cpu_timers_exit(me);
-+	spin_unlock_irq(&me->sighand->siglock);
- 	exit_itimers(me);
- 	flush_itimer_signals();
- #endif
--- 
-2.34.1
+	/* Set the Management Data I/O pin high if value is one,
+	 * low if "value" is zero.  This may only be called
+	 * when the MDIO pin is configured as an output.
+	 */
+	void (*set_mdio_data)(struct mdiobb_ctrl *ctrl, int value);
 
+	/* Retrieve the state Management Data I/O pin. */
+	int (*get_mdio_data)(struct mdiobb_ctrl *ctrl);
+};
+
+Look at ravb_mdio_init() for an example, and there are a few others.
+
+     Andrew
