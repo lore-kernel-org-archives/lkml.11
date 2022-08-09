@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE9CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054E5C25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245493AbiHISUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S1344714AbiHISUu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346881AbiHISR4 (ORCPT
+        with ESMTP id S1347049AbiHISSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:17:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA62E2F016;
-        Tue,  9 Aug 2022 11:07:06 -0700 (PDT)
+        Tue, 9 Aug 2022 14:18:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7860E2F3A2;
+        Tue,  9 Aug 2022 11:07:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4140B81890;
-        Tue,  9 Aug 2022 18:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 399FDC433B5;
-        Tue,  9 Aug 2022 18:06:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B20FB818EC;
+        Tue,  9 Aug 2022 18:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C282BC433D6;
+        Tue,  9 Aug 2022 18:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068395;
-        bh=u4lI2lMYiinJQmQwYUWckHKjbNmaK8/9yZABUkeTu6g=;
+        s=korg; t=1660068401;
+        bh=aS6kC7/UR/+s4cEQ6IbqOtahiGkvu5P7CX0AzJ/IWIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cOAt6xZQJKQa3reEws0BTxxFSg8JgvWa+yaeUtdvVe3+Y7x4cjEaBmMICEy5SKfBt
-         IcDtMNGlNZG7BH8K6MInRnhjb3qoYC016Q3GVML3oCzQBGq8B6UE1ynfUXxWO43DL7
-         ttcNhogWhAV8FGErlf1BRqAz/96Q6WvEUFRG2FYA=
+        b=KQ9lv3fUflTGCqwLRYIHGDPsvsh2/dU3/hNfDvFWFfxVQC/uXYgj8mB8Lue/sjth1
+         a0rtm3zaqd2IEXnXyLpFoqa3wNISwZpSWbAX7tqZ4VcZbDXe6D+K6RtmukCad/jf2+
+         GoYm+2nALGdKKZ6E7sQsP5SOdHQdAuNmsLTyXlb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.18 04/35] ACPI: video: Force backlight native for some TongFang devices
-Date:   Tue,  9 Aug 2022 20:00:33 +0200
-Message-Id: <20220809175515.223731007@linuxfoundation.org>
+Subject: [PATCH 5.18 06/35] ACPI: APEI: Better fix to avoid spamming the console with old error logs
+Date:   Tue,  9 Aug 2022 20:00:35 +0200
+Message-Id: <20220809175515.299942787@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -49,90 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Tony Luck <tony.luck@intel.com>
 
-commit c752089f7cf5b5800c6ace4cdd1a8351ee78a598 upstream.
+commit c3481b6b75b4797657838f44028fd28226ab48e0 upstream.
 
-The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
-Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
-NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
-They have a working native and video interface. However the default
-detection mechanism first registers the video interface before
-unregistering it again and switching to the native interface during boot.
-This results in a dangling SBIOS request for backlight change for some
-reason, causing the backlight to switch to ~2% once per boot on the first
-power cord connect or disconnect event. Setting the native interface
-explicitly circumvents this buggy behaviour by avoiding the unregistering
-process.
+The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
+table data") does not work as intended on systems where the BIOS has a
+fixed size block of memory for the BERT table, relying on s/w to quit
+when it finds a record with estatus->block_status == 0. On these systems
+all errors are suppressed because the check:
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+	if (region_len < ACPI_BERT_PRINT_MAX_LEN)
+
+always fails.
+
+New scheme skips individual CPER records that are too large, and also
+limits the total number of records that will be printed to 5.
+
+Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
 Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/video_detect.c |   51 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+ drivers/acpi/apei/bert.c |   31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -490,7 +490,56 @@ static const struct dmi_system_id video_
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
--
-+	/*
-+	 * The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
-+	 * Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
-+	 * NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2. See the description
-+	 * above.
-+	 */
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5PU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5PU1G"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF4NU1F",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF4NU1F"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF4NU1F",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-+		DMI_MATCH(DMI_BOARD_NAME, "PULSE1401"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5NU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5NU1G"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5NU1G",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-+		DMI_MATCH(DMI_BOARD_NAME, "PULSE1501"),
-+		},
-+	},
-+	{
-+	.callback = video_detect_force_native,
-+	.ident = "TongFang PF5LUXG",
-+	.matches = {
-+		DMI_MATCH(DMI_BOARD_NAME, "PF5LUXG"),
-+		},
-+	},
- 	/*
- 	 * Desktops which falsely report a backlight and which our heuristics
- 	 * for this do not catch.
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,16 +29,26 @@
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++
++#define ACPI_BERT_PRINT_MAX_RECORDS 5
+ #define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
++/*
++ * Print "all" the error records in the BERT table, but avoid huge spam to
++ * the console if the BIOS included oversize records, or too many records.
++ * Skipping some records here does not lose anything because the full
++ * data is available to user tools in:
++ *	/sys/firmware/acpi/tables/data/BERT
++ */
+ static void __init bert_print_all(struct acpi_bert_region *region,
+ 				  unsigned int region_len)
+ {
+ 	struct acpi_hest_generic_status *estatus =
+ 		(struct acpi_hest_generic_status *)region;
+ 	int remain = region_len;
++	int printed = 0, skipped = 0;
+ 	u32 estatus_len;
+ 
+ 	while (remain >= sizeof(struct acpi_bert_region)) {
+@@ -46,24 +56,26 @@ static void __init bert_print_all(struct
+ 		if (remain < estatus_len) {
+ 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
+ 			       estatus_len);
+-			return;
++			break;
+ 		}
+ 
+ 		/* No more error records. */
+ 		if (!estatus->block_status)
+-			return;
++			break;
+ 
+ 		if (cper_estatus_check(estatus)) {
+ 			pr_err(FW_BUG "Invalid error record.\n");
+-			return;
++			break;
+ 		}
+ 
+-		pr_info_once("Error records from previous boot:\n");
+-		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++		if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
++		    printed < ACPI_BERT_PRINT_MAX_RECORDS) {
++			pr_info_once("Error records from previous boot:\n");
+ 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
+-		else
+-			pr_info_once("Max print length exceeded, table data is available at:\n"
+-				     "/sys/firmware/acpi/tables/data/BERT");
++			printed++;
++		} else {
++			skipped++;
++		}
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
+@@ -75,6 +87,9 @@ static void __init bert_print_all(struct
+ 		estatus = (void *)estatus + estatus_len;
+ 		remain -= estatus_len;
+ 	}
++
++	if (skipped)
++		pr_info(HW_ERR "Skipped %d error records\n", skipped);
+ }
+ 
+ static int __init setup_bert_disable(char *str)
 
 
