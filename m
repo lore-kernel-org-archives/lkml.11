@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C498C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE75C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232983AbiHISI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
+        id S1345057AbiHISIk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344977AbiHISHs (ORCPT
+        with ESMTP id S1344751AbiHISIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:07:48 -0400
+        Tue, 9 Aug 2022 14:08:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCA02873B;
-        Tue,  9 Aug 2022 11:03:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350C328E19;
+        Tue,  9 Aug 2022 11:03:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A99061083;
-        Tue,  9 Aug 2022 18:03:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87563C43470;
-        Tue,  9 Aug 2022 18:03:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCC01610A1;
+        Tue,  9 Aug 2022 18:03:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38DCEC433D6;
+        Tue,  9 Aug 2022 18:03:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068200;
-        bh=VD83UgiWufcDQMx6LODuf28lgLU0KcghxVGdBDnS4P0=;
+        s=korg; t=1660068203;
+        bh=D72SDJymXEr5HiwtViNEKBFav7YyUbHL7TahIGNr7qQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fn5lRlwgI721pFN6J3ICkXDbZXwJu4GZViHqU0avlcxDprjZouMu2uZ7ib+A9wJZj
-         4I/sX5EU47iSRBot+hv4lhMguoHrHNE6OAY5Dy2ug2UnKKeP+qJF16nA67lpzsn1xu
-         w1c3QxGsgit+VnudGG8j9+iVrjzxE+uf4PKWu2Ko=
+        b=gtNrUOv3+2xRbQmp3vIVSJbyVEltirl9gc4kD7f2JT3w43QpApwShPOTRFHeKlyDi
+         u1SzUkt+DA/YRF+6spgZh6iEepeQJJPjWk7lbLI0KlarD+7NccDh8gKCna7le/FEyt
+         ChEl/mjZdY9eQMH7YDD/knKRqsDAt0Q185l9ufsM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 07/15] bpf: Test_verifier, #70 error message updates for 32-bit right shift
-Date:   Tue,  9 Aug 2022 20:00:25 +0200
-Message-Id: <20220809175510.564956957@linuxfoundation.org>
+Subject: [PATCH 5.4 08/15] selftests/bpf: Fix test_align verifier log patterns
+Date:   Tue,  9 Aug 2022 20:00:26 +0200
+Message-Id: <20220809175510.601238672@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
 References: <20220809175510.312431319@linuxfoundation.org>
@@ -49,150 +50,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Fastabend <john.fastabend@gmail.com>
+From: Stanislav Fomichev <sdf@google.com>
 
-commit aa131ed44ae1d76637f0dbec33cfcf9115af9bc3 upstream.
+commit 5366d2269139ba8eb6a906d73a0819947e3e4e0a upstream.
 
-After changes to add update_reg_bounds after ALU ops and adding ALU32
-bounds tracking the error message is changed in the 32-bit right shift
-tests.
+Commit 294f2fc6da27 ("bpf: Verifer, adjust_scalar_min_max_vals to always
+call update_reg_bounds()") changed the way verifier logs some of its state,
+adjust the test_align accordingly. Where possible, I tried to not copy-paste
+the entire log line and resorted to dropping the last closing brace instead.
 
-Test "#70/u bounds check after 32-bit right shift with 64-bit input FAIL"
-now fails with,
-
-Unexpected error message!
-	EXP: R0 invalid mem access
-	RES: func#0 @0
-
-7: (b7) r1 = 2
-8: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP2 R10=fp0 fp-8_w=mmmmmmmm
-8: (67) r1 <<= 31
-9: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP4294967296 R10=fp0 fp-8_w=mmmmmmmm
-9: (74) w1 >>= 31
-10: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP0 R10=fp0 fp-8_w=mmmmmmmm
-10: (14) w1 -= 2
-11: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP4294967294 R10=fp0 fp-8_w=mmmmmmmm
-11: (0f) r0 += r1
-math between map_value pointer and 4294967294 is not allowed
-
-And test "#70/p bounds check after 32-bit right shift with 64-bit input
-FAIL" now fails with,
-
-Unexpected error message!
-	EXP: R0 invalid mem access
-	RES: func#0 @0
-
-7: (b7) r1 = 2
-8: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv2 R10=fp0 fp-8_w=mmmmmmmm
-8: (67) r1 <<= 31
-9: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv4294967296 R10=fp0 fp-8_w=mmmmmmmm
-9: (74) w1 >>= 31
-10: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv0 R10=fp0 fp-8_w=mmmmmmmm
-10: (14) w1 -= 2
-11: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv4294967294 R10=fp0 fp-8_w=mmmmmmmm
-11: (0f) r0 += r1
-last_idx 11 first_idx 0
-regs=2 stack=0 before 10: (14) w1 -= 2
-regs=2 stack=0 before 9: (74) w1 >>= 31
-regs=2 stack=0 before 8: (67) r1 <<= 31
-regs=2 stack=0 before 7: (b7) r1 = 2
-math between map_value pointer and 4294967294 is not allowed
-
-Before this series we did not trip the "math between map_value pointer..."
-error because check_reg_sane_offset is never called in
-adjust_ptr_min_max_vals(). Instead we have a register state that looks
-like this at line 11*,
-
-11: R0_w=map_value(id=0,off=0,ks=8,vs=8,
-                   smin_value=0,smax_value=0,
-                   umin_value=0,umax_value=0,
-                   var_off=(0x0; 0x0))
-    R1_w=invP(id=0,
-              smin_value=0,smax_value=4294967295,
-              umin_value=0,umax_value=4294967295,
-              var_off=(0xfffffffe; 0x0))
-    R10=fp(id=0,off=0,
-           smin_value=0,smax_value=0,
-           umin_value=0,umax_value=0,
-           var_off=(0x0; 0x0)) fp-8_w=mmmmmmmm
-11: (0f) r0 += r1
-
-In R1 'smin_val != smax_val' yet we have a tnum_const as seen
-by 'var_off(0xfffffffe; 0x0))' with a 0x0 mask. So we hit this check
-in adjust_ptr_min_max_vals()
-
- if ((known && (smin_val != smax_val || umin_val != umax_val)) ||
-      smin_val > smax_val || umin_val > umax_val) {
-       /* Taint dst register if offset had invalid bounds derived from
-        * e.g. dead branches.
-        */
-       __mark_reg_unknown(env, dst_reg);
-       return 0;
- }
-
-So we don't throw an error here and instead only throw an error
-later in the verification when the memory access is made.
-
-The root cause in verifier without alu32 bounds tracking is having
-'umin_value = 0' and 'umax_value = U64_MAX' from BPF_SUB which we set
-when 'umin_value < umax_val' here,
-
- if (dst_reg->umin_value < umax_val) {
-    /* Overflow possible, we know nothing */
-    dst_reg->umin_value = 0;
-    dst_reg->umax_value = U64_MAX;
- } else { ...}
-
-Later in adjust_calar_min_max_vals we previously did a
-coerce_reg_to_size() which will clamp the U64_MAX to U32_MAX by
-truncating to 32bits. But either way without a call to update_reg_bounds
-the less precise bounds tracking will fall out of the alu op
-verification.
-
-After latest changes we now exit adjust_scalar_min_max_vals with the
-more precise umin value, due to zero extension propogating bounds from
-alu32 bounds into alu64 bounds and then calling update_reg_bounds.
-This then causes the verifier to trigger an earlier error and we get
-the error in the output above.
-
-This patch updates tests to reflect new error message.
-
-* I have a local patch to print entire verifier state regardless if we
- believe it is a constant so we can get a full picture of the state.
- Usually if tnum_is_const() then bounds are also smin=smax, etc. but
- this is not always true and is a bit subtle. Being able to see these
- states helps understand dataflow imo. Let me know if we want something
- similar upstream.
-
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/158507161475.15666.3061518385241144063.stgit@john-Precision-5820-Tower
+Fixes: 294f2fc6da27 ("bpf: Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()")
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20200515194904.229296-1-sdf@google.com
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/verifier/bounds.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/test_align.c |   41 +++++++++++++++----------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
---- a/tools/testing/selftests/bpf/verifier/bounds.c
-+++ b/tools/testing/selftests/bpf/verifier/bounds.c
-@@ -411,16 +411,14 @@
- 	BPF_ALU32_IMM(BPF_RSH, BPF_REG_1, 31),
- 	/* r1 = 0xffff'fffe (NOT 0!) */
- 	BPF_ALU32_IMM(BPF_SUB, BPF_REG_1, 2),
--	/* computes OOB pointer */
-+	/* error on computing OOB pointer */
- 	BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1),
--	/* OOB access */
--	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_0, 0),
- 	/* exit */
- 	BPF_MOV64_IMM(BPF_REG_0, 0),
- 	BPF_EXIT_INSN(),
+--- a/tools/testing/selftests/bpf/test_align.c
++++ b/tools/testing/selftests/bpf/test_align.c
+@@ -359,15 +359,15 @@ static struct bpf_align_test tests[] = {
+ 			 * is still (4n), fixed offset is not changed.
+ 			 * Also, we create a new reg->id.
+ 			 */
+-			{29, "R5_w=pkt(id=4,off=18,r=0,umax_value=2040,var_off=(0x0; 0x7fc))"},
++			{29, "R5_w=pkt(id=4,off=18,r=0,umax_value=2040,var_off=(0x0; 0x7fc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (18)
+ 			 * which is 20.  Then the variable offset is (4n), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{33, "R4=pkt(id=4,off=22,r=22,umax_value=2040,var_off=(0x0; 0x7fc))"},
+-			{33, "R5=pkt(id=4,off=18,r=22,umax_value=2040,var_off=(0x0; 0x7fc))"},
++			{33, "R4=pkt(id=4,off=22,r=22,umax_value=2040,var_off=(0x0; 0x7fc)"},
++			{33, "R5=pkt(id=4,off=18,r=22,umax_value=2040,var_off=(0x0; 0x7fc)"},
+ 		},
  	},
- 	.fixup_map_hash_8b = { 3 },
--	.errstr = "R0 invalid mem access",
-+	.errstr = "math between map_value pointer and 4294967294 is not allowed",
- 	.result = REJECT,
- },
- {
+ 	{
+@@ -410,15 +410,15 @@ static struct bpf_align_test tests[] = {
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{9, "R6_w=inv(id=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
+ 			/* Packet pointer has (4n+2) offset */
+-			{11, "R5_w=pkt(id=1,off=0,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
+-			{13, "R4=pkt(id=1,off=4,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
++			{11, "R5_w=pkt(id=1,off=0,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
++			{13, "R4=pkt(id=1,off=4,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{15, "R5=pkt(id=1,off=0,r=4,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
++			{15, "R5=pkt(id=1,off=0,r=4,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
+ 			/* Newly read value in R6 was shifted left by 2, so has
+ 			 * known alignment of 4.
+ 			 */
+@@ -426,15 +426,15 @@ static struct bpf_align_test tests[] = {
+ 			/* Added (4n) to packet pointer's (4n+2) var_off, giving
+ 			 * another (4n+2).
+ 			 */
+-			{19, "R5_w=pkt(id=2,off=0,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
+-			{21, "R4=pkt(id=2,off=4,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
++			{19, "R5_w=pkt(id=2,off=0,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
++			{21, "R4=pkt(id=2,off=4,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{23, "R5=pkt(id=2,off=0,r=4,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
++			{23, "R5=pkt(id=2,off=0,r=4,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
+ 		},
+ 	},
+ 	{
+@@ -469,16 +469,16 @@ static struct bpf_align_test tests[] = {
+ 		.matches = {
+ 			{4, "R5_w=pkt_end(id=0,off=0,imm=0)"},
+ 			/* (ptr - ptr) << 2 == unknown, (4n) */
+-			{6, "R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 0xfffffffffffffffc))"},
++			{6, "R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 0xfffffffffffffffc)"},
+ 			/* (4n) + 14 == (4n+2).  We blow our bounds, because
+ 			 * the add could overflow.
+ 			 */
+-			{7, "R5_w=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))"},
++			{7, "R5_w=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+ 			/* Checked s>=0 */
+-			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 			/* packet pointer + nonnegative (4n+2) */
+-			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+-			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
++			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
+ 			 * We checked the bounds, but it might have been able
+ 			 * to overflow if the packet pointer started in the
+@@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
+ 			 * So we did not get a 'range' on R6, and the access
+ 			 * attempt will fail.
+ 			 */
+-			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
+ 		}
+ 	},
+ 	{
+@@ -528,7 +528,7 @@ static struct bpf_align_test tests[] = {
+ 			/* New unknown value in R7 is (4n) */
+ 			{11, "R7_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
+ 			/* Subtracting it from R6 blows our unsigned bounds */
+-			{12, "R6=inv(id=0,smin_value=-1006,smax_value=1034,var_off=(0x2; 0xfffffffffffffffc))"},
++			{12, "R6=inv(id=0,smin_value=-1006,smax_value=1034,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
+ 			/* Checked s>= 0 */
+ 			{14, "R6=inv(id=0,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc))"},
+ 			/* At the time the word size load is performed from R5,
+@@ -537,7 +537,8 @@ static struct bpf_align_test tests[] = {
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{20, "R5=pkt(id=1,off=0,r=4,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc))"},
++			{20, "R5=pkt(id=1,off=0,r=4,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc)"},
++
+ 		},
+ 	},
+ 	{
+@@ -579,18 +580,18 @@ static struct bpf_align_test tests[] = {
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{11, "R6_w=inv(id=0,umin_value=14,umax_value=74,var_off=(0x2; 0x7c))"},
+ 			/* Subtracting from packet pointer overflows ubounds */
+-			{13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c))"},
++			{13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c)"},
+ 			/* New unknown value in R7 is (4n), >= 76 */
+ 			{15, "R7_w=inv(id=0,umin_value=76,umax_value=1096,var_off=(0x0; 0x7fc))"},
+ 			/* Adding it to packet pointer gives nice bounds again */
+-			{16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
++			{16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
+ 			/* At the time the word size load is performed from R5,
+ 			 * its total fixed offset is NET_IP_ALIGN + reg->off (0)
+ 			 * which is 2.  Then the variable offset is (4n+2), so
+ 			 * the total offset is 4-byte aligned and meets the
+ 			 * load's requirements.
+ 			 */
+-			{20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
++			{20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
+ 		},
+ 	},
+ };
 
 
