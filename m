@@ -2,147 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D241C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4454CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242834AbiHILut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
+        id S242905AbiHILvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 07:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242871AbiHILuq (ORCPT
+        with ESMTP id S232697AbiHILvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:50:46 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D8E15FCB
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 04:50:45 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id t22so11452217pjy.1
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 04:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=kOOdMCqFf2vHQIse3uLmGH4VNLU9Ww6hckbBKMi+bEA=;
-        b=pVeoR7wqc1FYj6Cs2MjB8QDRTf+bQeOlo7HZd21fLYhnpgtelarQvPIsU86jFgGTuM
-         vkEh7AfsnY9mhbIrMGiZUy9gLICLmds6l5/TOFXzQARlUAhgawFY0Y5xSxNqANVGY9Fh
-         FVnxENTcQwfreMmPTP2EYO9vnuG+dir1trWFg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=kOOdMCqFf2vHQIse3uLmGH4VNLU9Ww6hckbBKMi+bEA=;
-        b=QS8sDiK4C8GBVYAO8M5HV/Q4UXGYdKrHE5cQkN6OsCW6oLSeYz51V+wxm/WgB8TfLZ
-         5399Ftjr4sAyB73XWrlKu6vamGChTbzDRr+gq7CS9DiUhopvtekfrK1DarMrKaAAAabP
-         G4dJmkeeplGyvKepPCC7EtzcEqLE0Pe6c5m3pITYPwJrnHxQQMB93EoCxsWrNhKfiANB
-         nbs14g2APJY6NerVvYSMSXuIbOlW7shjffKTEW8ydEzNfNG5GnEPXvsHqxfIQMUwxVtP
-         xMM7Hm4fhDug3CJvZJ+fclZwahz2fc71tOfHPQiE+xjLtWKAB179dCOMZAHD6cu7J/sx
-         b9Kg==
-X-Gm-Message-State: ACgBeo1FWToTTChqSpA9sRsh3KlhXM65VkDWCKuCBAMnl/LXXCCpfA9P
-        /5Xkc/7KVP46qTvxmCLk3heEiw==
-X-Google-Smtp-Source: AA6agR5sgZW7V6P2n37l3umSHwRMu16Lrj/LUpnhjp2+CmUc1eJTUjhPRwTlg3uULnQKGKj/NhM/6g==
-X-Received: by 2002:a17:90b:3e86:b0:1f5:2b4f:7460 with SMTP id rj6-20020a17090b3e8600b001f52b4f7460mr34379547pjb.97.1660045845130;
-        Tue, 09 Aug 2022 04:50:45 -0700 (PDT)
-Received: from localhost.localdomain ([183.83.136.224])
-        by smtp.gmail.com with ESMTPSA id a10-20020a1709027d8a00b00170a757a191sm4516096plm.9.2022.08.09.04.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 04:50:44 -0700 (PDT)
-From:   Suniel Mahesh <sunil@amarulasolutions.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kumar Gala <galak@codeaurora.org>,
-        Will Deacon <will@kernel.org>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Jagan Teki <jagan@amarulasolutions.com>, shawn.guo@linaro.org,
-        Maxime Ripard <maxime@cerno.tech>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Pawel Moll <pawel.moll@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-amarula@amarulasolutions.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH] arm64: defconfig: Enable GPIO SYSCON, sync to savedefconfig
-Date:   Tue,  9 Aug 2022 17:20:33 +0530
-Message-Id: <20220809115033.693145-1-sunil@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 9 Aug 2022 07:51:37 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC18C15FCB;
+        Tue,  9 Aug 2022 04:51:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660045895; x=1691581895;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eDgcat5jz2gPDhDhIYJ5SQ3oYmJhT05bUBFYCgTExWE=;
+  b=jubm97hKIGKMHQ2kVDVwxIrF+zt3G0AfnfaL16pa/3x7IKtQyfee1goa
+   tzui3e3Nqy/JxqxiU7yzWzw1mj0Ig05m0Zf+NmQCz5WzjfHOPyuSi4G7h
+   cgVWc5jiBWVWY88HJjYXf3TCtyhY0omVeCSdl46KBIkBoqmScnky+9cTY
+   OH8yVMdhMvbYfXMIY5tTroA3bYHhvGVLJRcB9uYOVv03aTqr7qdp9xsus
+   7Y4yejQMTKmC+JErasdalJNbs7YtF5qVtYotIyV/YJuEJBMJhAVJafwI3
+   HPrwgqhFGB7HOTZRUF3Sh81bBdFhf/dt6QpqDh/04rheyDuc0IunM9+3o
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="316744620"
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="316744620"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:51:35 -0700
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="747012231"
+Received: from labukara-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.251.214.212])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:51:29 -0700
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 7CAAF103886; Tue,  9 Aug 2022 14:54:27 +0300 (+03)
+Date:   Tue, 9 Aug 2022 14:54:27 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Dave Hansen <dave.hansen@intel.com>, Marc Orr <marcorr@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dionna Amalie Glaze <dionnaglaze@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com,
+        Khalid ElMously <khalid.elmously@canonical.com>,
+        philip.cox@canonical.com,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Yao, Jiewen" <jiewen.yao@intel.com>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted
+ memory
+Message-ID: <20220809115427.bmkbap434oupinq2@box.shutemov.name>
+References: <CAMj1kXEKtcieycyyFMyuLKJK61FgaDwtLieC0N47W1Sa5LaBsA@mail.gmail.com>
+ <YtcgxxMyFTReuuRw@zn.tnic>
+ <bb7479df-7871-9861-600d-c2fed783b659@intel.com>
+ <YtcnQbiRgZPtR+rQ@zn.tnic>
+ <22d54786-bc12-ecc5-2b37-cbaa56090aa8@intel.com>
+ <CAA03e5FMEyswDhoXRJ5U_n9RG4QM524aQYpF4473ydnAVJr1PA@mail.gmail.com>
+ <ffb4ae72-7fd4-d2a0-df10-3969cf8ca07f@intel.com>
+ <CAMj1kXHEc=vEt=CtfdiPEsUe2i8QogAi+jvtY6h1awo7GZ-nRg@mail.gmail.com>
+ <20220809111436.kudwg2nprnnsfvuh@box.shutemov.name>
+ <CAMj1kXE67H_cgYbufUxQ7HXg929dFopWH+cKX5ijAdePP8Zt-g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXE67H_cgYbufUxQ7HXg929dFopWH+cKX5ijAdePP8Zt-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable driver for SYSCON-based GPIOs and sync up the defconfig to
-savedefconfig output.
+On Tue, Aug 09, 2022 at 01:36:00PM +0200, Ard Biesheuvel wrote:
+> On Tue, 9 Aug 2022 at 13:11, Kirill A. Shutemov
+> <kirill.shutemov@linux.intel.com> wrote:
+> >
+> > On Sat, Jul 23, 2022 at 01:14:07PM +0200, Ard Biesheuvel wrote:
+> > > On Thu, 21 Jul 2022 at 19:13, Dave Hansen <dave.hansen@intel.com> wrote:
+> > > >
+> > > > On 7/19/22 17:26, Marc Orr wrote:
+> > > > > - Dave's suggestion to "2. Boot some intermediate thing like a
+> > > > > bootloader that does acceptance ..." is pretty clever! So if upstream
+> > > > > thinks this FW-kernel negotiation is not a good direction, maybe we
+> > > > > (Google) can pursue this idea to avoid introducing yet another tag on
+> > > > > our images.
+> > > >
+> > > > I'm obviously speaking only for myself here and not for "upstream" as a
+> > > > whole, but I clearly don't like the FW/kernel negotiation thing.  It's a
+> > > > permanent pain in our necks to solve a very temporary problem.
+> > >
+> > > EFI is basically our existing embodiment of this fw/kernel negotiation
+> > > thing, and iff we need it, I have no objection to using it for this
+> > > purpose, i.e., to allow the firmware to infer whether or not it should
+> > > accept all available memory on behalf of the OS before exiting boot
+> > > services. But if we don't need this, even better.
+> >
+> > FW/kernel negotiation does not work if there's a boot loader in the middle
+> > that does ExitBootServices(). By the time kernel can announce if it
+> > supports unaccepted memory there's nobody to announce to.
+> >
+> 
+> Why would you want to support such bootloaders for TDX anyway? TDX
+> heavily relies on measured boot abstractions and other things that are
+> heavily tied to firmware.
 
-Signed-off-by: Suniel Mahesh <sunil@amarulasolutions.com>
----
- arch/arm64/configs/defconfig | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+I don't understand it either. And, yet, there's demand for it.
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index d5b2d2dd4904..abfb77182528 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -80,7 +80,6 @@ CONFIG_RANDOMIZE_BASE=y
- CONFIG_HIBERNATION=y
- CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y
- CONFIG_ENERGY_MODEL=y
--CONFIG_ARM_CPUIDLE=y
- CONFIG_ARM_PSCI_CPUIDLE=y
- CONFIG_CPU_FREQ=y
- CONFIG_CPU_FREQ_STAT=y
-@@ -178,10 +177,6 @@ CONFIG_NET_ACT_GATE=m
- CONFIG_QRTR_SMD=m
- CONFIG_QRTR_TUN=m
- CONFIG_CAN=m
--CONFIG_CAN_FLEXCAN=m
--CONFIG_CAN_RCAR=m
--CONFIG_CAN_RCAR_CANFD=m
--CONFIG_CAN_MCP251XFD=m
- CONFIG_BT=m
- CONFIG_BT_HIDP=m
- # CONFIG_BT_LE is not set
-@@ -368,6 +363,10 @@ CONFIG_REALTEK_PHY=y
- CONFIG_ROCKCHIP_PHY=y
- CONFIG_DP83867_PHY=y
- CONFIG_VITESSE_PHY=y
-+CONFIG_CAN_FLEXCAN=m
-+CONFIG_CAN_RCAR=m
-+CONFIG_CAN_RCAR_CANFD=m
-+CONFIG_CAN_MCP251XFD=m
- CONFIG_MDIO_BUS_MUX_MULTIPLEXER=y
- CONFIG_MDIO_BUS_MUX_MMIOREG=y
- CONFIG_USB_PEGASUS=m
-@@ -549,6 +548,7 @@ CONFIG_GPIO_MPC8XXX=y
- CONFIG_GPIO_MXC=y
- CONFIG_GPIO_PL061=y
- CONFIG_GPIO_RCAR=y
-+CONFIG_GPIO_SYSCON=y
- CONFIG_GPIO_UNIPHIER=y
- CONFIG_GPIO_VISCONTI=y
- CONFIG_GPIO_WCD934X=m
-@@ -612,6 +612,7 @@ CONFIG_ARM_SBSA_WATCHDOG=y
- CONFIG_S3C2410_WATCHDOG=y
- CONFIG_DW_WATCHDOG=y
- CONFIG_SUNXI_WATCHDOG=m
-+CONFIG_NPCM7XX_WATCHDOG=y
- CONFIG_IMX2_WDT=y
- CONFIG_IMX_SC_WDT=m
- CONFIG_QCOM_WDT=m
-@@ -624,7 +625,6 @@ CONFIG_UNIPHIER_WATCHDOG=y
- CONFIG_PM8916_WATCHDOG=m
- CONFIG_BCM2835_WDT=y
- CONFIG_BCM7038_WDT=m
--CONFIG_NPCM7XX_WATCHDOG=y
- CONFIG_MFD_ALTERA_SYSMGR=y
- CONFIG_MFD_BD9571MWV=y
- CONFIG_MFD_AXP20X_I2C=y
-@@ -1032,7 +1032,6 @@ CONFIG_COMMON_CLK_FSL_SAI=y
- CONFIG_COMMON_CLK_S2MPS11=y
- CONFIG_COMMON_CLK_PWM=y
- CONFIG_COMMON_CLK_VC5=y
--CONFIG_COMMON_CLK_NPCM8XX=y
- CONFIG_COMMON_CLK_BD718XX=m
- CONFIG_CLK_RASPBERRYPI=m
- CONFIG_CLK_IMX8MM=y
 -- 
-2.25.1
-
+  Kiryl Shutsemau / Kirill A. Shutemov
