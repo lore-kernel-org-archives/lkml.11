@@ -2,112 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0E8C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 21:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344F1C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 21:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbiHIVQb convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 17:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
+        id S229520AbiHIVMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 17:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiHIVQV (ORCPT
+        with ESMTP id S229712AbiHIVLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 17:16:21 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F38F24C619
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 14:16:19 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-15-SVGnQXmVON2x51L-BKgQXQ-1; Tue, 09 Aug 2022 22:16:17 +0100
-X-MC-Unique: SVGnQXmVON2x51L-BKgQXQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Tue, 9 Aug 2022 22:16:15 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Tue, 9 Aug 2022 22:16:15 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jason Gunthorpe' <jgg@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-CC:     David Hildenbrand <david@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        "Hugh Dickins" <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Matthew Wilcox" <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: RE: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
-Thread-Topic: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
-Thread-Index: AQHYrCRe/fPaEDNbYU+8sVbKwVGyX62nEPVw
-Date:   Tue, 9 Aug 2022 21:16:15 +0000
-Message-ID: <09715a42c73a499f9c90cbe3e2714389@AcuMS.aculab.com>
-References: <20220808073232.8808-1-david@redhat.com>
- <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
- <1a48d71d-41ee-bf39-80d2-0102f4fe9ccb@redhat.com>
- <CAHk-=wg40EAZofO16Eviaj7mfqDhZ2gVEbvfsMf6gYzspRjYvw@mail.gmail.com>
- <YvKwhrjnFQJ7trT1@nvidia.com>
-In-Reply-To: <YvKwhrjnFQJ7trT1@nvidia.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 9 Aug 2022 17:11:42 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6015E31E
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 14:11:39 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-10dc1b16c12so15507427fac.6
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 14:11:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=0RDlI0yOZFKLzfsXOiJhSEf3VmQ/yEncp6iJ3cB4fto=;
+        b=gMasx+0sDjRymuLWGt9b7mXSG5oWJydXMpw9X46dcNXprWjNn48EPwebcrs61YCsgv
+         0rCLP6e5Z6aVOtJKVpYWqBFdk9JTfPWxh4Dx6aecrZXlwWaqMSfmUEaYBgrDmWK4gyv7
+         s/1CoZljQU/Xv48NHvR/z9cFORA+T+mDbX3JmnE8mfvQhVO4mhDnIDnlrmC/fln4L8Ky
+         Ku/GzFC+NkTh/IXenqQPvCJcWPcrpyNkhSTr2tI4xYdpofLdSj9RFkS13/2K6xOlwAbn
+         kIVpAaV6354QUOirWlVKniNri7W5et4VYRcd5M87hQlMJXcu26xskMLjwKkXHAN2ljH9
+         1ofQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=0RDlI0yOZFKLzfsXOiJhSEf3VmQ/yEncp6iJ3cB4fto=;
+        b=b75VZ+fi/LnrfbgcnPemHBEmslXspIyeMReOFMJhOIt5Iyc3uyJh6udKuZc2wHEsB9
+         FKZYe6Mp0fBwR7sy2elqpnrZp2ilwnoMYSh2ADhSkJ8x50+NfKB3eid81V2tFTqdL92J
+         ihrJJ1Gx127aPqXWiVKmOZOuK8MFgJRRpvUbt/tUd0BwHuoyQOpGPlSwu1c/7Tv6mR1c
+         gi9GsEFZag8QcAUAAiFfqIMffYOC6ImIFxFoy5yDP9Le1pF0bn4uvlQnnrMrPAdg4Z4c
+         MKpsoEONWR+W+A9fInHlPQbLCahO2FsWHRwaQO9dB6wNSQjWP5X3exUjEpAU7Eh5QmS/
+         GNWw==
+X-Gm-Message-State: ACgBeo3gM49mlQwTqGmOXi3K47XHa0eZuNGymc/JEbiXCmxZMzAuBgt9
+        pc4RZkmvwNu/J5XCtnnm44zMaw==
+X-Google-Smtp-Source: AA6agR5Dm0fRPPYug/WAD/FJ+8g5sch6O4DIf560RcIw2R1zzt4YkkkbsV4kVW1csUcD7MQX3u72qg==
+X-Received: by 2002:a05:6870:3281:b0:10e:4d35:dcb2 with SMTP id q1-20020a056870328100b0010e4d35dcb2mr149316oac.283.1660079499050;
+        Tue, 09 Aug 2022 14:11:39 -0700 (PDT)
+Received: from baldur ([2600:380:785a:7aa8:200:ff:fe00:0])
+        by smtp.gmail.com with ESMTPSA id s9-20020a056870630900b0010c17e6c699sm3391992oao.47.2022.08.09.14.11.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 14:11:38 -0700 (PDT)
+Date:   Tue, 9 Aug 2022 16:11:32 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Shinjo Park <peremen@gmail.com>
+Cc:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] ARM: dts: qcom: msm8960: add the device node of
+ USB1
+Message-ID: <YvLNhO4DmeaF2GyM@baldur>
+References: <2654048.mvXUDI8C0e@ainazi>
+ <20220803074608.21048-1-peremen@gmail.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220803074608.21048-1-peremen@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gunthorpe
-> Sent: 09 August 2022 20:08
+On Wed 03 Aug 02:46 CDT 2022, Shinjo Park wrote:
+
+> Use the same USB definition as qcom-apq8064.dtsi, tested on Casio GzOne.
 > 
-> On Tue, Aug 09, 2022 at 11:59:45AM -0700, Linus Torvalds wrote:
+
+I think this looks good, but I have a v2 of patch 1 and a v3 of patch 2,
+and I don't seem to have patch 3 in my inbox(?)
+
+Can you please resubmit the 3 patches with a --cover-letter, instead of
+each patch being a reply of the previous instance of that particular
+patch? This will make it much easier for me to merge the end result.
+
+Thanks,
+Bjorn
+
+> Signed-off-by: Shinjo Park <peremen@gmail.com>
+> Reviewed-by: David Heidelberg <david@ixit.cz>
+> ---
 > 
-> > But as a very good approximation, the rule is "absolutely no new
-> > BUG_ON() calls _ever_". Because I really cannot see a single case
-> > where "proper error handling and WARN_ON_ONCE()" isn't the right
-> > thing.
+> v3:
+>  - Include missing clock/qcom,lcc-msm8960.h to make cleanly applicable
 > 
-> Parallel to this discussion I've had ones where people more or less
-> say
+> v2:
+>  - Rewrite commit message
+>  - Reorder status line
 > 
->  Since BUG_ON crashes the machine and Linus says that crashing the
->  machine is bad, WARN_ON will also crash the machine if you set the
->  panic_on_warn parameter, so it is also bad, thus we shouldn't use
->  anything.
+>  arch/arm/boot/dts/qcom-msm8960.dtsi | 33 +++++++++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
 > 
-> I've generally maintained that people who set the panic_on_warn *want*
-> these crashes, because that is the entire point of it. So we should
-> use WARN_ON with an error recovery for "can't happen" assertions like
-> these. I think it is what you are saying here.
-
-They don't necessarily want the crashes, it is more the people who
-built the distribution think they want the crashes.
-
-I have had issues with a customer system (with our drivers) randomly
-locking up.
-Someone had decided that 'PANIC_ON_OOPS' was a good idea but hadn't
-enabled anything to actually take the dump.
-
-So instead of a diagnosable problem (and a 'doh' moment) you
-get several weeks of head scratching and a very annoyed user.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+> diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+> index e14e1c5d1..0e099aa7c 100644
+> --- a/arch/arm/boot/dts/qcom-msm8960.dtsi
+> +++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+> @@ -3,6 +3,8 @@
+>  
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+>  #include <dt-bindings/clock/qcom,gcc-msm8960.h>
+> +#include <dt-bindings/clock/qcom,lcc-msm8960.h>
+> +#include <dt-bindings/reset/qcom,gcc-msm8960.h>
+>  #include <dt-bindings/mfd/qcom-rpm.h>
+>  #include <dt-bindings/soc/qcom,gsbi.h>
+>  
+> @@ -167,6 +169,37 @@ regulators {
+>  			};
+>  		};
+>  
+> +		usb1: usb@12500000 {
+> +			compatible = "qcom,ci-hdrc";
+> +			reg = <0x12500000 0x200>,
+> +			      <0x12500200 0x200>;
+> +			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
+> +			clocks = <&gcc USB_HS1_XCVR_CLK>, <&gcc USB_HS1_H_CLK>;
+> +			clock-names = "core", "iface";
+> +			assigned-clocks = <&gcc USB_HS1_XCVR_CLK>;
+> +			assigned-clock-rates = <60000000>;
+> +			resets = <&gcc USB_HS1_RESET>;
+> +			reset-names = "core";
+> +			phy_type = "ulpi";
+> +			ahb-burst-config = <0>;
+> +			phys = <&usb_hs1_phy>;
+> +			phy-names = "usb-phy";
+> +			#reset-cells = <1>;
+> +			status = "disabled";
+> +
+> +			ulpi {
+> +				usb_hs1_phy: phy {
+> +					compatible = "qcom,usb-hs-phy-msm8960",
+> +						     "qcom,usb-hs-phy";
+> +					clocks = <&sleep_clk>, <&cxo_board>;
+> +					clock-names = "sleep", "ref";
+> +					resets = <&usb1 0>;
+> +					reset-names = "por";
+> +					#phy-cells = <0>;
+> +				};
+> +			};
+> +		};
+> +
+>  		acc0: clock-controller@2088000 {
+>  			compatible = "qcom,kpss-acc-v1";
+>  			reg = <0x02088000 0x1000>, <0x02008000 0x1000>;
+> -- 
+> 2.34.1
+> 
