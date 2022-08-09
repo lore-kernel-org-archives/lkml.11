@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F236CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D56DCC25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345542AbiHISON (ORCPT
+        id S1345540AbiHISOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57038 "EHLO
+        Tue, 9 Aug 2022 14:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345798AbiHISLp (ORCPT
+        with ESMTP id S1345304AbiHISKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2982AE3C;
-        Tue,  9 Aug 2022 11:04:56 -0700 (PDT)
+        Tue, 9 Aug 2022 14:10:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864512A429;
+        Tue,  9 Aug 2022 11:04:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91FE96109E;
-        Tue,  9 Aug 2022 18:04:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 984A1C433C1;
-        Tue,  9 Aug 2022 18:04:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E73661070;
+        Tue,  9 Aug 2022 18:04:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BFEAC433D7;
+        Tue,  9 Aug 2022 18:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068295;
-        bh=eTqp+mS2QGd6/HOEequo25/mWWN1lPw0MY+Bc27lKjU=;
+        s=korg; t=1660068255;
+        bh=aS6kC7/UR/+s4cEQ6IbqOtahiGkvu5P7CX0AzJ/IWIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xzuhbOllUMf+3TfGvj3qsbjSCcjsFmszE2J/Qh5aY0WpwX/ooF6dnViKXA2wxVmEO
-         IJJ+fZZerFZcyHdpNOvoVYjmejLWzepNsmf2EMqxYygN8uRKcJqJmCCqqirk5rnqs1
-         MVRz+qbjV6XTt0ajc9tbC6KocaBSLBgg9HrmXMGU=
+        b=R4Dq/Fv/FA/36WfBT0+Zm0Dlz7o3Oa0B95jUoBeEO/wYGjzsJn2y8uSo42YhzOeXo
+         tCf5w4rfG8rI1albAn1ZxKBEw1soUcp3iOl3VG3bibi3Jmr2ZUsYGFsUKdv6lmb8iV
+         CHaZFuLMMc8u24rgym2x6ZlKTbg4Hj8v9N2jg9r0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.15 03/30] selftests/bpf: Check dst_port only on the client socket
-Date:   Tue,  9 Aug 2022 20:00:28 +0200
-Message-Id: <20220809175514.383072069@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 09/23] ACPI: APEI: Better fix to avoid spamming the console with old error logs
+Date:   Tue,  9 Aug 2022 20:00:27 +0200
+Message-Id: <20220809175513.207066218@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
-References: <20220809175514.276643253@linuxfoundation.org>
+In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
+References: <20220809175512.853274191@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,45 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Tony Luck <tony.luck@intel.com>
 
-commit 2d2202ba858c112b03f84d546e260c61425831a1 upstream.
+commit c3481b6b75b4797657838f44028fd28226ab48e0 upstream.
 
-cgroup_skb/egress programs which sock_fields test installs process packets
-flying in both directions, from the client to the server, and in reverse
-direction.
+The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
+table data") does not work as intended on systems where the BIOS has a
+fixed size block of memory for the BERT table, relying on s/w to quit
+when it finds a record with estatus->block_status == 0. On these systems
+all errors are suppressed because the check:
 
-Recently added dst_port check relies on the fact that destination
-port (remote peer port) of the socket which sends the packet is known ahead
-of time. This holds true only for the client socket, which connects to the
-known server port.
+	if (region_len < ACPI_BERT_PRINT_MAX_LEN)
 
-Filter out any traffic that is not egressing from the client socket in the
-BPF program that tests reading the dst_port.
+always fails.
 
-Fixes: 8f50f16ff39d ("selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads")
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/20220317113920.1068535-3-jakub@cloudflare.com
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+New scheme skips individual CPER records that are too large, and also
+limits the total number of records that will be printed to 5.
+
+Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/progs/test_sock_fields.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/acpi/apei/bert.c |   31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
---- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
-+++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
-@@ -281,6 +281,10 @@ int read_sk_dst_port(struct __sk_buff *s
- 	if (!sk)
- 		RET_LOG();
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,16 +29,26 @@
  
-+	/* Ignore everything but the SYN from the client socket */
-+	if (sk->state != BPF_TCP_SYN_SENT)
-+		return CG_OK;
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
 +
- 	if (!sk_dst_port__load_word(sk))
- 		RET_LOG();
- 	if (!sk_dst_port__load_half(sk))
++#define ACPI_BERT_PRINT_MAX_RECORDS 5
+ #define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
++/*
++ * Print "all" the error records in the BERT table, but avoid huge spam to
++ * the console if the BIOS included oversize records, or too many records.
++ * Skipping some records here does not lose anything because the full
++ * data is available to user tools in:
++ *	/sys/firmware/acpi/tables/data/BERT
++ */
+ static void __init bert_print_all(struct acpi_bert_region *region,
+ 				  unsigned int region_len)
+ {
+ 	struct acpi_hest_generic_status *estatus =
+ 		(struct acpi_hest_generic_status *)region;
+ 	int remain = region_len;
++	int printed = 0, skipped = 0;
+ 	u32 estatus_len;
+ 
+ 	while (remain >= sizeof(struct acpi_bert_region)) {
+@@ -46,24 +56,26 @@ static void __init bert_print_all(struct
+ 		if (remain < estatus_len) {
+ 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
+ 			       estatus_len);
+-			return;
++			break;
+ 		}
+ 
+ 		/* No more error records. */
+ 		if (!estatus->block_status)
+-			return;
++			break;
+ 
+ 		if (cper_estatus_check(estatus)) {
+ 			pr_err(FW_BUG "Invalid error record.\n");
+-			return;
++			break;
+ 		}
+ 
+-		pr_info_once("Error records from previous boot:\n");
+-		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++		if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
++		    printed < ACPI_BERT_PRINT_MAX_RECORDS) {
++			pr_info_once("Error records from previous boot:\n");
+ 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
+-		else
+-			pr_info_once("Max print length exceeded, table data is available at:\n"
+-				     "/sys/firmware/acpi/tables/data/BERT");
++			printed++;
++		} else {
++			skipped++;
++		}
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
+@@ -75,6 +87,9 @@ static void __init bert_print_all(struct
+ 		estatus = (void *)estatus + estatus_len;
+ 		remain -= estatus_len;
+ 	}
++
++	if (skipped)
++		pr_info(HW_ERR "Skipped %d error records\n", skipped);
+ }
+ 
+ static int __init setup_bert_disable(char *str)
 
 
