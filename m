@@ -2,153 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BFDC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 12:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4258DC25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 12:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239002AbiHIMTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 08:19:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S231308AbiHIMVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 08:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234170AbiHIMTu (ORCPT
+        with ESMTP id S232784AbiHIMVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 08:19:50 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1CA1ADA9
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 05:19:49 -0700 (PDT)
+        Tue, 9 Aug 2022 08:21:45 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6621614024;
+        Tue,  9 Aug 2022 05:21:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660047589; x=1691583589;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EN0BtWfGZj+U4kbcfOmfGPZUzYI/nONzeDPEL/tkMOM=;
-  b=QHsR3qv83UQv0/1hyu9qHLlr84HO17/x1B0ro48toe6KbYMQitWB+JEh
-   JscakzdE9jeozbutDcoaPzcfhJaReFLoUYFuDx3811L08ZqqkBsuUHLl8
-   vLbdd7J6cqAkrvONfXYGngW30TtuvVgcCiNs2QXKYsIklElJxnRwlUdmF
-   mB+hfC+ppLEHG8peYxhjZhXHPLAxZPolpl64y0GE+BPXaac3rClOwPaFR
-   usiyA6X/VZFEfsrWMDdFu5UknqQFHYAFhOnhLIrszeC1aaJfJS46CgfiS
-   TIDOk4SRReev8KHKXdZOESE4faW7L7n5Ue7dVfMFVSiGcZNchLiTwZb9v
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="271204497"
+  t=1660047703; x=1691583703;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=/SqLOHFpZ5uc8Rb+V3yasWUP56wQ9Yw6Pfb06UsviCE=;
+  b=Pg4RaMJ+NYp3zK7N3wmqtM4UUsx0JpkyGkX3PqkNYE/MIw4J/ALTD3HW
+   4COEJVTs3QNGPgn5ktyK53xen7QiBGu4ZGZFGYTk4fZt2rFe5RfKlrMbn
+   VqcJRecNqIB84wCx+rv5aIkcojIL2ewggDCjY9kGEkUvV171SNM6ZnVGs
+   QjqfQ5fqZxEyc8vI6ZGJ4pfAW9ahRfT6FRVL7LTV2OrjXjVL4TzGrcI4z
+   rbPYKbaN34i5nN+Ki/223M90ANPhT4nv7Go+/IdBFqVeD+bYT//0ZfBr1
+   plfjlEAQsdkojkqscgg/c5+Ox2cyP2NXc4ULefwxOXK16M3J84SHL1zrg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="290822906"
 X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="271204497"
+   d="scan'208";a="290822906"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 05:19:48 -0700
-X-ExtLoop1: 1
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 05:21:43 -0700
 X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="664410992"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 09 Aug 2022 05:19:47 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oLOD4-000Mvd-2G;
-        Tue, 09 Aug 2022 12:19:46 +0000
-Date:   Tue, 9 Aug 2022 20:19:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jack Xiao <Jack.Xiao@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Subject: drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:864:13: warning: variable
- 'r' set but not used
-Message-ID: <202208092032.V6o0PjnJ-lkp@intel.com>
+   d="scan'208";a="664411669"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.48.82])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 05:21:40 -0700
+Message-ID: <90a76d0f-78ef-8304-1d22-cc65ce3ad964@intel.com>
+Date:   Tue, 9 Aug 2022 15:21:36 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH 08/35] perf buildid-cache: Add guestmount'd files to the
+ build ID cache
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20220711093218.10967-1-adrian.hunter@intel.com>
+ <20220711093218.10967-9-adrian.hunter@intel.com>
+ <CAP-5=fUF_feSL-+=LQpg=6cRd_nXTWKCM4zU1k8TP-6veP26Rw@mail.gmail.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <CAP-5=fUF_feSL-+=LQpg=6cRd_nXTWKCM4zU1k8TP-6veP26Rw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jack,
+On 19/07/22 20:41, Ian Rogers wrote:
+> On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>
+>> When the guestmount option is used, a guest machine's file system mount
+>> point is recorded in machine->root_dir.
+>>
+>> perf already iterates guest machines when adding files to the build ID
+>> cache, but does not take machine->root_dir into account.
+>>
+>> Use machine->root_dir to find files for guest build IDs, and add them to
+>> the build ID cache using the "proper" name i.e. relative to the guest root
+>> directory not the host root directory.
+>>
+>> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> 
+> Is it plausible to add a test for this? Our tests create workload but
+> there's no existing hypervisor way to do this. Perhaps the test can
+> run in a hypervisor? Or maybe there's a route that doesn't involve
+> hypervisors.
 
-FYI, the error/warning still remains.
+Too complicated I think.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   eb555cb5b794f4e12a9897f3d46d5a72104cd4a7
-commit: e3652b0976f383dea912607a404e974632b019b1 drm/amdgpu/mes: add helper functions to alloc/free ctx metadata
-date:   3 months ago
-config: arc-randconfig-r043-20220808 (https://download.01.org/0day-ci/archive/20220809/202208092032.V6o0PjnJ-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e3652b0976f383dea912607a404e974632b019b1
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e3652b0976f383dea912607a404e974632b019b1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+> 
+> Acked-by: Ian Rogers <irogers@google.com>
+> 
+> Thanks,
+> Ian
+> 
+>> ---
+>>  tools/perf/util/build-id.c | 67 +++++++++++++++++++++++++++++---------
+>>  tools/perf/util/build-id.h | 16 ++++++---
+>>  2 files changed, 63 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/tools/perf/util/build-id.c b/tools/perf/util/build-id.c
+>> index 4c9093b64d1f..7c9f441936ee 100644
+>> --- a/tools/perf/util/build-id.c
+>> +++ b/tools/perf/util/build-id.c
+>> @@ -625,9 +625,12 @@ static int build_id_cache__add_sdt_cache(const char *sbuild_id,
+>>  #endif
+>>
+>>  static char *build_id_cache__find_debug(const char *sbuild_id,
+>> -                                       struct nsinfo *nsi)
+>> +                                       struct nsinfo *nsi,
+>> +                                       const char *root_dir)
+>>  {
+>> +       const char *dirname = "/usr/lib/debug/.build-id/";
+>>         char *realname = NULL;
+>> +       char dirbuf[PATH_MAX];
+>>         char *debugfile;
+>>         struct nscookie nsc;
+>>         size_t len = 0;
+>> @@ -636,8 +639,12 @@ static char *build_id_cache__find_debug(const char *sbuild_id,
+>>         if (!debugfile)
+>>                 goto out;
+>>
+>> -       len = __symbol__join_symfs(debugfile, PATH_MAX,
+>> -                                  "/usr/lib/debug/.build-id/");
+>> +       if (root_dir) {
+>> +               path__join(dirbuf, PATH_MAX, root_dir, dirname);
+>> +               dirname = dirbuf;
+>> +       }
+>> +
+>> +       len = __symbol__join_symfs(debugfile, PATH_MAX, dirname);
+>>         snprintf(debugfile + len, PATH_MAX - len, "%.2s/%s.debug", sbuild_id,
+>>                  sbuild_id + 2);
+>>
+>> @@ -668,14 +675,18 @@ static char *build_id_cache__find_debug(const char *sbuild_id,
+>>
+>>  int
+>>  build_id_cache__add(const char *sbuild_id, const char *name, const char *realname,
+>> -                   struct nsinfo *nsi, bool is_kallsyms, bool is_vdso)
+>> +                   struct nsinfo *nsi, bool is_kallsyms, bool is_vdso,
+>> +                   const char *proper_name, const char *root_dir)
+>>  {
+>>         const size_t size = PATH_MAX;
+>>         char *filename = NULL, *dir_name = NULL, *linkname = zalloc(size), *tmp;
+>>         char *debugfile = NULL;
+>>         int err = -1;
+>>
+>> -       dir_name = build_id_cache__cachedir(sbuild_id, name, nsi, is_kallsyms,
+>> +       if (!proper_name)
+>> +               proper_name = name;
+>> +
+>> +       dir_name = build_id_cache__cachedir(sbuild_id, proper_name, nsi, is_kallsyms,
+>>                                             is_vdso);
+>>         if (!dir_name)
+>>                 goto out_free;
+>> @@ -715,7 +726,7 @@ build_id_cache__add(const char *sbuild_id, const char *name, const char *realnam
+>>          */
+>>         if (!is_kallsyms && !is_vdso &&
+>>             strncmp(".ko", name + strlen(name) - 3, 3)) {
+>> -               debugfile = build_id_cache__find_debug(sbuild_id, nsi);
+>> +               debugfile = build_id_cache__find_debug(sbuild_id, nsi, root_dir);
+>>                 if (debugfile) {
+>>                         zfree(&filename);
+>>                         if (asprintf(&filename, "%s/%s", dir_name,
+>> @@ -781,8 +792,9 @@ build_id_cache__add(const char *sbuild_id, const char *name, const char *realnam
+>>         return err;
+>>  }
+>>
+>> -int build_id_cache__add_s(const char *sbuild_id, const char *name,
+>> -                         struct nsinfo *nsi, bool is_kallsyms, bool is_vdso)
+>> +int __build_id_cache__add_s(const char *sbuild_id, const char *name,
+>> +                           struct nsinfo *nsi, bool is_kallsyms, bool is_vdso,
+>> +                           const char *proper_name, const char *root_dir)
+>>  {
+>>         char *realname = NULL;
+>>         int err = -1;
+>> @@ -796,8 +808,8 @@ int build_id_cache__add_s(const char *sbuild_id, const char *name,
+>>                         goto out_free;
+>>         }
+>>
+>> -       err = build_id_cache__add(sbuild_id, name, realname, nsi, is_kallsyms, is_vdso);
+>> -
+>> +       err = build_id_cache__add(sbuild_id, name, realname, nsi,
+>> +                                 is_kallsyms, is_vdso, proper_name, root_dir);
+>>  out_free:
+>>         if (!is_kallsyms)
+>>                 free(realname);
+>> @@ -806,14 +818,16 @@ int build_id_cache__add_s(const char *sbuild_id, const char *name,
+>>
+>>  static int build_id_cache__add_b(const struct build_id *bid,
+>>                                  const char *name, struct nsinfo *nsi,
+>> -                                bool is_kallsyms, bool is_vdso)
+>> +                                bool is_kallsyms, bool is_vdso,
+>> +                                const char *proper_name,
+>> +                                const char *root_dir)
+>>  {
+>>         char sbuild_id[SBUILD_ID_SIZE];
+>>
+>>         build_id__sprintf(bid, sbuild_id);
+>>
+>> -       return build_id_cache__add_s(sbuild_id, name, nsi, is_kallsyms,
+>> -                                    is_vdso);
+>> +       return __build_id_cache__add_s(sbuild_id, name, nsi, is_kallsyms,
+>> +                                      is_vdso, proper_name, root_dir);
+>>  }
+>>
+>>  bool build_id_cache__cached(const char *sbuild_id)
+>> @@ -896,6 +910,10 @@ static int dso__cache_build_id(struct dso *dso, struct machine *machine,
+>>         bool is_kallsyms = dso__is_kallsyms(dso);
+>>         bool is_vdso = dso__is_vdso(dso);
+>>         const char *name = dso->long_name;
+>> +       const char *proper_name = NULL;
+>> +       const char *root_dir = NULL;
+>> +       char *allocated_name = NULL;
+>> +       int ret = 0;
+>>
+>>         if (!dso->has_build_id)
+>>                 return 0;
+>> @@ -905,11 +923,28 @@ static int dso__cache_build_id(struct dso *dso, struct machine *machine,
+>>                 name = machine->mmap_name;
+>>         }
+>>
+>> +       if (!machine__is_host(machine)) {
+>> +               if (*machine->root_dir) {
+>> +                       root_dir = machine->root_dir;
+>> +                       ret = asprintf(&allocated_name, "%s/%s", root_dir, name);
+>> +                       if (ret < 0)
+>> +                               return ret;
+>> +                       proper_name = name;
+>> +                       name = allocated_name;
+>> +               } else if (is_kallsyms) {
+>> +                       /* Cannot get guest kallsyms */
+>> +                       return 0;
+>> +               }
+>> +       }
+>> +
+>>         if (!is_kallsyms && dso__build_id_mismatch(dso, name))
+>> -               return 0;
+>> +               goto out_free;
+>>
+>> -       return build_id_cache__add_b(&dso->bid, name, dso->nsinfo,
+>> -                                    is_kallsyms, is_vdso);
+>> +       ret = build_id_cache__add_b(&dso->bid, name, dso->nsinfo,
+>> +                                   is_kallsyms, is_vdso, proper_name, root_dir);
+>> +out_free:
+>> +       free(allocated_name);
+>> +       return ret;
+>>  }
+>>
+>>  static int
+>> diff --git a/tools/perf/util/build-id.h b/tools/perf/util/build-id.h
+>> index c19617151670..4e3a1169379b 100644
+>> --- a/tools/perf/util/build-id.h
+>> +++ b/tools/perf/util/build-id.h
+>> @@ -66,10 +66,18 @@ int build_id_cache__list_build_ids(const char *pathname, struct nsinfo *nsi,
+>>                                    struct strlist **result);
+>>  bool build_id_cache__cached(const char *sbuild_id);
+>>  int build_id_cache__add(const char *sbuild_id, const char *name, const char *realname,
+>> -                       struct nsinfo *nsi, bool is_kallsyms, bool is_vdso);
+>> -int build_id_cache__add_s(const char *sbuild_id,
+>> -                         const char *name, struct nsinfo *nsi,
+>> -                         bool is_kallsyms, bool is_vdso);
+>> +                       struct nsinfo *nsi, bool is_kallsyms, bool is_vdso,
+>> +                       const char *proper_name, const char *root_dir);
+>> +int __build_id_cache__add_s(const char *sbuild_id,
+>> +                           const char *name, struct nsinfo *nsi,
+>> +                           bool is_kallsyms, bool is_vdso,
+>> +                           const char *proper_name, const char *root_dir);
+>> +static inline int build_id_cache__add_s(const char *sbuild_id,
+>> +                                       const char *name, struct nsinfo *nsi,
+>> +                                       bool is_kallsyms, bool is_vdso)
+>> +{
+>> +       return __build_id_cache__add_s(sbuild_id, name, nsi, is_kallsyms, is_vdso, NULL, NULL);
+>> +}
+>>  int build_id_cache__remove_s(const char *sbuild_id);
+>>
+>>  extern char buildid_dir[];
+>> --
+>> 2.25.1
+>>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/arc/include/asm/bug.h:30,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/current.h:5,
-                    from arch/arc/include/asm/current.h:20,
-                    from include/linux/mutex.h:14,
-                    from include/linux/kernfs.h:11,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from drivers/gpu/drm/amd/amdgpu/amdgpu_irq.h:27,
-                    from drivers/gpu/drm/amd/amdgpu/amdgpu_mes.h:27,
-                    from drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:24:
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c: In function 'amdgpu_mes_doorbell_init':
-   include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 2 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/drm/drm_print.h:494:9: note: in expansion of macro 'printk'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
-      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
-         |                         ^~~~~~~~
-   include/drm/drm_print.h:494:22: note: in expansion of macro 'KERN_INFO'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |                      ^~~~~
-   include/drm/drm_print.h:498:9: note: in expansion of macro '_DRM_PRINTK'
-     498 |         _DRM_PRINTK(, INFO, fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:131:9: note: in expansion of macro 'DRM_INFO'
-     131 |         DRM_INFO("max_doorbell_slices=%ld\n", doorbell_process_limit);
-         |         ^~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c: In function 'amdgpu_mes_ctx_alloc_meta_data':
->> drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:864:13: warning: variable 'r' set but not used [-Wunused-but-set-variable]
-     864 |         int r;
-         |             ^
-
-
-vim +/r +864 drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c
-
-   860	
-   861	int amdgpu_mes_ctx_alloc_meta_data(struct amdgpu_device *adev,
-   862					   struct amdgpu_mes_ctx_data *ctx_data)
-   863	{
- > 864		int r;
-   865	
-   866		r = amdgpu_bo_create_kernel(adev,
-   867				    sizeof(struct amdgpu_mes_ctx_meta_data),
-   868				    PAGE_SIZE, AMDGPU_GEM_DOMAIN_GTT,
-   869				    &ctx_data->meta_data_obj, NULL,
-   870				    &ctx_data->meta_data_ptr);
-   871		if (!ctx_data->meta_data_obj)
-   872			return -ENOMEM;
-   873	
-   874		memset(ctx_data->meta_data_ptr, 0,
-   875		       sizeof(struct amdgpu_mes_ctx_meta_data));
-   876	
-   877		return 0;
-   878	}
-   879	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
