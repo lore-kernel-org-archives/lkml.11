@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFA6C25B07
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 118D9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344162AbiHISGD (ORCPT
+        id S1344094AbiHISGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39984 "EHLO
+        Tue, 9 Aug 2022 14:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344672AbiHISFT (ORCPT
+        with ESMTP id S245729AbiHISF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:05:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF2827CEA;
-        Tue,  9 Aug 2022 11:02:29 -0700 (PDT)
+        Tue, 9 Aug 2022 14:05:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2447F27CF4;
+        Tue,  9 Aug 2022 11:02:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 649EEB81722;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6B4E61059;
+        Tue,  9 Aug 2022 18:02:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FDE6C43140;
         Tue,  9 Aug 2022 18:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22D78C433D7;
-        Tue,  9 Aug 2022 18:02:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660068148;
-        bh=lJgNFnKBAD3W6+nMLS3KtRGHN5jjeaSLik2catrtBLQ=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=EVR37ynfgVxGgjgEcwtYqTtzrPixXH1kEcatTawE2JTaQLXiYyQYFS0BBFgeu+h8v
-         EZPPjLlL/PYOBVCfiH6txoSdeeTnHfasPst7YWKv2JM/YJ4GYmcU3rR37gYXoG6T8G
-         tP3gn/ge/WhxnN44ArX0nXU7HFUhS3tkP4Zx6HylJl5+wXPeC49Wp/ofPrRlTGdNNQ
-         CUQ1VOZ0EcrHZIDDngG6IXDCLZo9KD7Y73NN7nfVNkqbmKCVH7EvYpfFwnsb1DQ10F
-         j2JbGFZ3NV0Bqz36vvyXli++/yhGzj4O+GzL4xloblwzImWisqCTTFFhT3W0ST4dWB
-         IuAaqtX+CtyuQ==
-Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660068150;
+        bh=RPpTH3ijHdIcyCKVdvgk0xcCqRlXftJTxWnJmnRkBSc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mqghpZnKH2DL0I5pFYprP0kEkxcXh2eFCMXochGjmu8/zBpezqNchVVrlPjr88TtE
+         2So7E9a5pfEpDa2YBhkIeR71fxNkcHlGghhm2lhHOlDvL+yTzqgHDs+rDApL9pkEB5
+         VwdA6Ov57EvQraI9JdJ3mDfBZFdz9ity9t75QhaQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 19/32] tcp: Fix a data-race around sysctl_tcp_comp_sack_delay_ns.
+Date:   Tue,  9 Aug 2022 20:00:10 +0200
+Message-Id: <20220809175513.692599259@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
+References: <20220809175513.082573955@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAP6Zq1ib==k_E3XaS2bZB3m=yn0B_3hL2XuaHe1UiyM670snoA@mail.gmail.com>
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com> <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com> <20220729225603.12528C433D6@smtp.kernel.org> <CAP6Zq1hOxG+2X-qTbvPkrVHQ5zf04GO21m1n328Jiqgzns2CMA@mail.gmail.com> <20220804200549.60512C433C1@smtp.kernel.org> <CAP6Zq1j2r9df0CpT7pi32JuVLQBDjt7cCK7LmDJehtufG8M4-Q@mail.gmail.com> <CAP6Zq1ib==k_E3XaS2bZB3m=yn0B_3hL2XuaHe1UiyM670snoA@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Date:   Tue, 09 Aug 2022 11:02:26 -0700
-User-Agent: alot/0.10
-Message-Id: <20220809180228.22D78C433D7@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Tomer Maimon (2022-08-08 06:08:08)
-> On Mon, 8 Aug 2022 at 15:37, Tomer Maimon <tmaimon77@gmail.com> wrote:
-> > > Using platform APIs means using platform_*() functions, not of_*()
-> > > functions, which are open-firmware/DT related. Regmap can be used to
-> > > operate on registers mapped as __iomem, which is different from platf=
-orm
-> > > APIs.
-> > I will use platform_get_resource() and devm_ioremap_resource()
-> > functions in the next version.
-> I will use platform_get_resource() and ioremap() function next
-> veriosn, is it fine?
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-As stated earlier it will work for now but eventually you'll get patches
-from janitors trying to convert to a devm based API that reserves the
-register region. Can you ioremap the register once and register an
-auxiliary device and driver for the reset (or clk) part so that the
-driver can be moved out to the drivers/reset/ path?
+[ Upstream commit 4866b2b0f7672b6d760c4b8ece6fb56f965dcc8a ]
+
+While reading sysctl_tcp_comp_sack_delay_ns, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
+
+Fixes: 6d82aa242092 ("tcp: add tcp_comp_sack_delay_ns sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 38412d93400a..b71866aba426 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5262,7 +5262,8 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
+ 	if (tp->srtt_us && tp->srtt_us < rtt)
+ 		rtt = tp->srtt_us;
+ 
+-	delay = min_t(unsigned long, sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns,
++	delay = min_t(unsigned long,
++		      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns),
+ 		      rtt * (NSEC_PER_USEC >> 3)/20);
+ 	sock_hold(sk);
+ 	hrtimer_start(&tp->compressed_ack_timer, ns_to_ktime(delay),
+-- 
+2.35.1
+
+
+
