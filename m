@@ -2,77 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4EEC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C887FC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345190AbiHISPY (ORCPT
+        id S1345746AbiHISP2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        Tue, 9 Aug 2022 14:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343605AbiHISM0 (ORCPT
+        with ESMTP id S1346050AbiHISMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:12:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3322714B;
-        Tue,  9 Aug 2022 11:05:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF11E61197;
-        Tue,  9 Aug 2022 18:05:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 575ACC433D6;
-        Tue,  9 Aug 2022 18:05:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068319;
-        bh=07XILznEZOuoja2cV7Gdt4pByEIi41K1htggnTTPuIY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=la4+KLKdo7q6vNYa+aUM7i1ZPsXWhW0fR2rIGX5mD0YtTsb6xImU4pKDXZiKw1xd9
-         fmnBPPSMMJqW6WcVQ1ARalHzQmSG6qlCxjQLKKe47eNdw6eSR4ZSuqx2UGw8ddpPCs
-         YYWw90O67X02K7+EoiKE0Nk98GlPXSKiGzMU8HSo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hakan Jansson <hakan.jansson@infineon.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.15 20/30] Bluetooth: hci_bcm: Add DT compatible for CYW55572
-Date:   Tue,  9 Aug 2022 20:00:45 +0200
-Message-Id: <20220809175515.049047795@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
-References: <20220809175514.276643253@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 9 Aug 2022 14:12:15 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A191F2CB
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:05:18 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id h4so2564911qtj.11
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dubeyko-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ojEQCV/0pE7IwI4Y8EDpXWBWiQ0oIulQ6mpfQVQvenk=;
+        b=0rGj0tb+d4WfgCzkddJDJ2zOaPyR0l4IA5p49/7h+TACbxmxk+7lZjPwXsCiTt4aeP
+         ZQnRaT9yR7vW8U/ExXn5iPlQvLp3G/dG/FZP60M8vhKMZx8BJfO2SKdnzMDWD+sQf+jx
+         irHjQYu3n3d6O7YvoewTLF6CLobE56pyV2Y+KARn3tMZvderIhPB+wPWjxABw7kRiGbO
+         KiYOGjkYVvCAc7QFFTDqjpwqYEWMo79p1ldeaktOGGH+I8z1m7/pNHfucdLdzrTQqILD
+         JEnPUltXEwqUjPwJ8r8COFlDc4tnkhgw33K6oRZLN+nxOW+m2vqoj9c1yg4LM/5eZg/I
+         ZLdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ojEQCV/0pE7IwI4Y8EDpXWBWiQ0oIulQ6mpfQVQvenk=;
+        b=5TaWmujX0r5D2JPlJs/tGHBbWmjMYRtA6Lrgq+5zTFNfz/8+imh/YU1I72IvPHeO7X
+         P1GGutv89BBg8JThhJsNbNXB59VzpRNugAqKRc+ppciPmQAkVRK79veBR5vEJ7VW1MFF
+         1C33QmxJ0Mz8uS/YTzjSXIB6wXD615x5ypletC/uvgyb9qcHJvFu5CMEYQatA1xjPwBU
+         1HfRf91IMkojyjysTAjITliWOW3viReZcYhEDW+iht327i4KRQkMFud0UiFgPx5qcflO
+         fFdOpIIfMMX8nClcxYqwFnXfKAQJ17uE5hNXLHB2DUxDNElFckJi1N1sX5FWN53dTbCY
+         5NnA==
+X-Gm-Message-State: ACgBeo0oEMaafjk41C7jcXz899bUE8RqiP5lZstyARkeyYcudOVdtBTu
+        nN2JHLD0JIJnxpi8wUao/HijMg==
+X-Google-Smtp-Source: AA6agR4CTAGOJKkVFFQeQ+YGH1MKJckK/ePANF7t+WaHbsh7iCeQLChmX0ZJO5D1C2Fw1HpEyMZpAA==
+X-Received: by 2002:a05:622a:4c88:b0:33b:f61b:d17f with SMTP id ez8-20020a05622a4c8800b0033bf61bd17fmr21073735qtb.23.1660068315186;
+        Tue, 09 Aug 2022 11:05:15 -0700 (PDT)
+Received: from smtpclient.apple ([2600:1700:42f0:6600:b19b:cbb5:a678:767c])
+        by smtp.gmail.com with ESMTPSA id u33-20020a05622a19a100b00342e86b3bdasm8905881qtc.12.2022.08.09.11.05.12
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Aug 2022 11:05:14 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH 1/3] hfs: Unmap the page in the "fail_page" label
+From:   Viacheslav Dubeyko <slava@dubeyko.com>
+In-Reply-To: <20220809152004.9223-2-fmdefrancesco@gmail.com>
+Date:   Tue, 9 Aug 2022 11:05:03 -0700
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ira Weiny <ira.weiny@intel.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <79023F53-CAC5-4D88-B171-317B92A2EEE1@dubeyko.com>
+References: <20220809152004.9223-1-fmdefrancesco@gmail.com>
+ <20220809152004.9223-2-fmdefrancesco@gmail.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hakan Jansson <hakan.jansson@infineon.com>
 
-commit f8cad62002a7699fd05a23b558b980b5a77defe0 upstream.
 
-CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
+> On Aug 9, 2022, at 8:20 AM, Fabio M. De Francesco =
+<fmdefrancesco@gmail.com> wrote:
+>=20
+> Several paths within hfs_btree_open() jump to the "fail_page" label
+> where put_page() is called while the page is still mapped.
+>=20
+> Call kunmap() to unmap the page soon before put_page().
+>=20
+> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+> fs/hfs/btree.c | 1 +
+> 1 file changed, 1 insertion(+)
+>=20
+> diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
+> index 19017d296173..56c6782436e9 100644
+> --- a/fs/hfs/btree.c
+> +++ b/fs/hfs/btree.c
+> @@ -124,6 +124,7 @@ struct hfs_btree *hfs_btree_open(struct =
+super_block *sb, u32 id, btree_keycmp ke
+> 	return tree;
+>=20
+> fail_page:
+> +	kunmap(page);
+> 	put_page(page);
+> free_inode:
+> 	tree->inode->i_mapping->a_ops =3D &hfs_aops;
+> --=20
+> 2.37.1
+>=20
 
-Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/bluetooth/hci_bcm.c |    1 +
- 1 file changed, 1 insertion(+)
 
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -1518,6 +1518,7 @@ static const struct of_device_id bcm_blu
- 	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
- 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
- 	{ .compatible = "brcm,bcm4335a0" },
-+	{ .compatible = "infineon,cyw55572-bt" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
+Looks good.
 
+Reviewed-by: Viacheslav Dubeyko <slava@dubeyko.com>
+
+Thanks,
+Slava.
 
