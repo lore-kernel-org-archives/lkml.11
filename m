@@ -2,66 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 857A8C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4078EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230325AbiHIWHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 18:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
+        id S230202AbiHIWH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 18:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiHIWFX (ORCPT
+        with ESMTP id S229993AbiHIWFb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 18:05:23 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E99DFC6
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:05:22 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id h13so15764253wrf.6
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:05:22 -0700 (PDT)
+        Tue, 9 Aug 2022 18:05:31 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D8BF5A7
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:05:27 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id l4so15720522wrm.13
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:05:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=sBYa4Rhtbyvq+yIdiazGYXFIbq9Mwdu4iyysvjHUIN4=;
-        b=mEX3xTvfFlN0NV1z/xNRux4lUTX5w7XjFn0/jm7NWAOE6isEbikoTlNpysc7AdceU8
-         EcGs71KybDrzC7iHrsMpao2m8tNXmSE2GivlJJ3jAmblj9CpFyB26pkbdu6O3nG1qAV/
-         YhlUlsG2MgRgHACjx3ZySwVBY2d4Kwky1mpbfU5l/86F0X/a+/uEMPg+GXL4Tcavyavn
-         fZElqmE8FCRhbNrZap5z7e//BH0fj3kzuQ7ymUvK1DrwLV7CGaEogg1X7TwT0F3l3BrI
-         UZQl1xVISD+dmfEnIdw9lajBsCvfKALErTBjvNzXHUW2I7HGRqS/012czxq/BHP/95Wy
-         L0ng==
+        bh=v9HOYNemLB65v2s3X2Chh/1DsPPvYHZYg0+K/15aDgQ=;
+        b=bFg1GUKpiDV2Wa5Z/VYETOFzVV963xVsUH3QvrLhSGNNWPp/xqMyOGX0Zhl/qKKmxm
+         Ad7Osv2Yqq93VYOQQMjNugMHyQJ1xs+ZaGpl+qsYoyeFEHJX0gGV/noCTwbzy978WuGO
+         lZVYICEtV3/CnRGA0iJjDqUggzqzsx2gp7OyOBwwNf+Bk7wBGi/aiGzmcwavyZ0YAmuZ
+         tMpTgI/zmUYFxNZn9SJh3d9XqXtZc2k/9ZBt8cObjbPdZBF8lvUREOO73qEPf/bNYT2v
+         a6iNxynWotqme7RyFH++cw2Ra0e/e7OmEY/Q7Rv6ssADcG53xF2TE5kxFQtXsrlceanf
+         s3kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=sBYa4Rhtbyvq+yIdiazGYXFIbq9Mwdu4iyysvjHUIN4=;
-        b=TzGce7dUgOVsPhFbF5M4LqR6jiV/AfbFOxMLQJvjUmaHi+n/sDHetX/nf6PYhiwwbv
-         zr7RfSIHjREMT2TKTSJZV9XkOJyF0IjT5TD3t5XGa93q0VSkkvw+lJOzCWDqvHvzV3JW
-         gzEKfv/6UZxZ2q0FUkq3M3ovOx8daiC+Dp32xKjlV0rwoCDQcP4LzXEnMq75TPyJogHj
-         8kHtVYQd6udJp8xoiKQwYzr6/920B2tThdN2pGTDp4oQDDbMnhIuDKhiGFm07bQfe64M
-         ieu0R+iC6B4oI7+mmgQJrF6azRkPrHk4dxDYQ/gnz+xnMrPUnFu+yHZp3FVCa7xf1iIB
-         77bA==
-X-Gm-Message-State: ACgBeo29BkDhlIcEk2wgDwKmUXOQVIIv7yrNxWWsC49c/eeV0QIYlMYQ
-        pWuRHMHwasMOdpUnnsvPLk+/gA==
-X-Google-Smtp-Source: AA6agR7xH6WppoqE1kaWBqcxMOWRBv4HmMyJqcF+ejWZ5KwQd7WWsQhSatAYRK+3Q08IiH3qghHtSg==
-X-Received: by 2002:a05:6000:188a:b0:21f:c4c:8368 with SMTP id a10-20020a056000188a00b0021f0c4c8368mr15842851wri.299.1660082720826;
-        Tue, 09 Aug 2022 15:05:20 -0700 (PDT)
+        bh=v9HOYNemLB65v2s3X2Chh/1DsPPvYHZYg0+K/15aDgQ=;
+        b=y6LJNZvYoJJ7gygqNGY/frBrboRNGB8hKs3V5VS1pLyI6j9teS9hDYdZsmPLRFNNjO
+         xU5LGZPtyoeNHlwcKy1gDXnY51J6g9yOlCKWl8mmLO672UGz8wElUdKso6EDQ4L/CIux
+         amtCxuERttXvyg9dK7Wjyot8HiLU7SnlKGUbY9pgSuZlyeBf471mKyaY0IBDX7LXahT2
+         tZKUmRYbI2EUp52ID0rQ6WOGi1S9r0/1lPNrPxaGU9OHsvqLDTbuYJS4x13MS+wbBkyv
+         vEENeRy/t8OS5B3+ASBUfBbphqCQMzzRTauu1B+XMlG3qwW7CRELt5DTNYJ/SGTgxXRm
+         102Q==
+X-Gm-Message-State: ACgBeo1Mn5l7zPQ3Ze4CeHFzmOfXfQnL5/bM59bnkRh85V2YvnYwsLGK
+        mnUN3tWNSQKNDk1Ys2nOg/G4Fw==
+X-Google-Smtp-Source: AA6agR5IekVvgBURn6hz3jtsSLj3jSB1ikOgx3VaKNEVj6epeJRQ6Y5gecqcxCHvhKAWmzCetU715g==
+X-Received: by 2002:a05:6000:1ac8:b0:220:6af3:935d with SMTP id i8-20020a0560001ac800b002206af3935dmr15261728wry.549.1660082726323;
+        Tue, 09 Aug 2022 15:05:26 -0700 (PDT)
 Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm293583wms.2.2022.08.09.15.05.19
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm293583wms.2.2022.08.09.15.05.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 15:05:20 -0700 (PDT)
+        Tue, 09 Aug 2022 15:05:25 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linaro.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-samsung-soc@vger.kernel.org (open list:SAMSUNG THERMAL DRIVER),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/SAMSUNG S3C,
-        S5P AND EXYNOS ARM ARCHITECTURES)
-Subject: [PATCH v2 18/26] thermal/drivers/exynos: Replace of_thermal_is_trip_valid() by thermal_zone_get_trip()
-Date:   Wed, 10 Aug 2022 00:04:28 +0200
-Message-Id: <20220809220436.711020-19-daniel.lezcano@linaro.org>
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>, Amit Kucheria <amitk@kernel.org>,
+        linux-omap@vger.kernel.org (open list:TI BANDGAP AND THERMAL DRIVER)
+Subject: [PATCH v2 22/26] thermal/drivers/ti: Remove unused macros ti_thermal_get_trip_value() / ti_thermal_trip_is_valid()
+Date:   Wed, 10 Aug 2022 00:04:32 +0200
+Message-Id: <20220809220436.711020-23-daniel.lezcano@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220809220436.711020-1-daniel.lezcano@linaro.org>
 References: <20220809220436.711020-1-daniel.lezcano@linaro.org>
@@ -71,66 +67,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The macros:
+
+ti_thermal_get_trip_value()
+ ti_thermal_trip_is_valid()
+
+are unused. Remove them.
+
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/thermal/samsung/exynos_tmu.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/thermal/ti-soc-thermal/ti-thermal.h | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-diff --git a/drivers/thermal/samsung/exynos_tmu.c b/drivers/thermal/samsung/exynos_tmu.c
-index ac47c716c1f0..9def8c76ef9a 100644
---- a/drivers/thermal/samsung/exynos_tmu.c
-+++ b/drivers/thermal/samsung/exynos_tmu.c
-@@ -552,13 +552,15 @@ static void exynos4210_tmu_control(struct platform_device *pdev, bool on)
- {
- 	struct exynos_tmu_data *data = platform_get_drvdata(pdev);
- 	struct thermal_zone_device *tz = data->tzd;
-+	struct thermal_trip trip;
- 	unsigned int con, interrupt_en = 0, i;
+diff --git a/drivers/thermal/ti-soc-thermal/ti-thermal.h b/drivers/thermal/ti-soc-thermal/ti-thermal.h
+index c388ecf31834..4fd2c20182d7 100644
+--- a/drivers/thermal/ti-soc-thermal/ti-thermal.h
++++ b/drivers/thermal/ti-soc-thermal/ti-thermal.h
+@@ -38,21 +38,6 @@
+ /* Update rates */
+ #define FAST_TEMP_MONITORING_RATE				250
  
- 	con = get_con_reg(data, readl(data->base + EXYNOS_TMU_REG_CONTROL));
- 
- 	if (on) {
- 		for (i = 0; i < data->ntrip; i++) {
--			if (!of_thermal_is_trip_valid(tz, i))
-+
-+			if (thermal_zone_get_trip(tz, i, &trip))
- 				continue;
- 
- 			interrupt_en |=
-@@ -582,13 +584,15 @@ static void exynos5433_tmu_control(struct platform_device *pdev, bool on)
- {
- 	struct exynos_tmu_data *data = platform_get_drvdata(pdev);
- 	struct thermal_zone_device *tz = data->tzd;
-+	struct thermal_trip trip;
- 	unsigned int con, interrupt_en = 0, pd_det_en, i;
- 
- 	con = get_con_reg(data, readl(data->base + EXYNOS_TMU_REG_CONTROL));
- 
- 	if (on) {
- 		for (i = 0; i < data->ntrip; i++) {
--			if (!of_thermal_is_trip_valid(tz, i))
-+
-+			if (thermal_zone_get_trip(tz, i, &trip))
- 				continue;
- 
- 			interrupt_en |=
-@@ -613,13 +617,15 @@ static void exynos7_tmu_control(struct platform_device *pdev, bool on)
- {
- 	struct exynos_tmu_data *data = platform_get_drvdata(pdev);
- 	struct thermal_zone_device *tz = data->tzd;
-+	struct thermal_trip trip;
- 	unsigned int con, interrupt_en = 0, i;
- 
- 	con = get_con_reg(data, readl(data->base + EXYNOS_TMU_REG_CONTROL));
- 
- 	if (on) {
- 		for (i = 0; i < data->ntrip; i++) {
--			if (!of_thermal_is_trip_valid(tz, i))
-+
-+			if (thermal_zone_get_trip(tz, i, &trip))
- 				continue;
- 
- 			interrupt_en |=
+-/* helper macros */
+-/**
+- * ti_thermal_get_trip_value - returns trip temperature based on index
+- * @i:	trip index
+- */
+-#define ti_thermal_get_trip_value(i)					\
+-	(OMAP_TRIP_HOT + ((i) * OMAP_TRIP_STEP))
+-
+-/**
+- * ti_thermal_is_valid_trip - check for trip index
+- * @i:	trip index
+- */
+-#define ti_thermal_is_valid_trip(trip)				\
+-	((trip) >= 0 && (trip) < OMAP_TRIP_NUMBER)
+-
+ #ifdef CONFIG_TI_THERMAL
+ int ti_thermal_expose_sensor(struct ti_bandgap *bgp, int id, char *domain);
+ int ti_thermal_remove_sensor(struct ti_bandgap *bgp, int id);
 -- 
 2.34.1
 
