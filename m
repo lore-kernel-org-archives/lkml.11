@@ -2,136 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2596EC25B08
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1008CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245407AbiHITI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
+        id S1345656AbiHITIc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 15:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345864AbiHITGK (ORCPT
+        with ESMTP id S1348535AbiHITHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:06:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C6B82AC50
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660070737;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8IbhLYjobqT2aTBvz3U46stbRUAh6ZahUb2ByDCNf0A=;
-        b=TNum+KWLYec3Di+h32/Isu0qH5SxlmanT4GbdNIxh3jmBA884JDTCtS5w9vjNYDwMHMmMI
-        uoO28ARsiR+cLEhQcRJi/M6dfkWixFbMQPwPEOxGstNyrd4sl3+uBS8BqdAvdjKBkr6up2
-        isY4LCfCaxaIvJuUKfg0dbRd9g0HP+M=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-206-w2xqpGlCNeyiGP6-xucRZg-1; Tue, 09 Aug 2022 14:45:36 -0400
-X-MC-Unique: w2xqpGlCNeyiGP6-xucRZg-1
-Received: by mail-wm1-f70.google.com with SMTP id j36-20020a05600c1c2400b003a540d88677so2805607wms.1
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:45:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=8IbhLYjobqT2aTBvz3U46stbRUAh6ZahUb2ByDCNf0A=;
-        b=ri4c6f6gaAkj5rbo9/Q3fb75eUQl6DoZ3ejfB4LK73Kl/w+v5UDpS5gJmcGW50ikMY
-         walzKB8QsQ8a/SeR6uuIi/9NahTpghBMrEgL6CwWV8pY7h7AovyOTTJN5Z2+s/UitfVS
-         LJKT5aJdqMNxg4oexsqr+SzuZzIH1JPXzLRzMFlKlQYZbH3DDKtbTk01hSqb1lwowoyk
-         F+qskESPpyGGbU+xMtWQfJzwXbMXuEVBAGZSVkl47r0Y/6GuddMZ6+ThUdE+oIbay3lV
-         cJiu39a6k575TALV7MKm2F/gMP6M2G4FCNhanVWLW+UsX8k1fA+P3CzRWYNcjUv0GnGL
-         vsAQ==
-X-Gm-Message-State: ACgBeo0vYmfBAvrbZKoVBZJWonK+2WW556SPUiUgdJgMYRYGCoMtuHXo
-        L2LdEktMd5vHVXXHeins9CL1bz4V0cjGNcMqzJsMvfI/8Uja5jzHKXbkzjtNZk8JXgPwutr9n3u
-        yMGOO0+fql90nh1/uDsn3B7J3
-X-Received: by 2002:a05:6000:1b88:b0:21f:eae8:d695 with SMTP id r8-20020a0560001b8800b0021feae8d695mr15071127wru.26.1660070735052;
-        Tue, 09 Aug 2022 11:45:35 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR69MLCunWf5SVWzymZ3UNdd8BL3fDtH5qkRFmVvHOW7S1grl/vbJS0Sb54Gqln+3VynlhGkbA==
-X-Received: by 2002:a05:6000:1b88:b0:21f:eae8:d695 with SMTP id r8-20020a0560001b8800b0021feae8d695mr15071118wru.26.1660070734738;
-        Tue, 09 Aug 2022 11:45:34 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:3700:aed2:a0f8:c270:7f30? (p200300cbc7053700aed2a0f8c2707f30.dip0.t-ipconnect.de. [2003:cb:c705:3700:aed2:a0f8:c270:7f30])
-        by smtp.gmail.com with ESMTPSA id i2-20020a05600c14c200b003a53ec3d847sm7225855wmh.29.2022.08.09.11.45.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 11:45:34 -0700 (PDT)
-Message-ID: <1a48d71d-41ee-bf39-80d2-0102f4fe9ccb@redhat.com>
-Date:   Tue, 9 Aug 2022 20:45:33 +0200
+        Tue, 9 Aug 2022 15:07:09 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB00E2A70B;
+        Tue,  9 Aug 2022 11:53:42 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 279GdUCX022291;
+        Tue, 9 Aug 2022 18:53:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2022-7-12; bh=wBegZrI6Yy2+0qa5LzfubNn1b6U+pn8guQo1B15Uc/0=;
+ b=TnDawfdf3x9tX14cjKyl/S9tba+xwGjNTa9neSjjuM/UYbLBhE1PpAC7iS9W1S5Zcoxm
+ nC9f6XVnzR3Zity7FlVEchbVmzZBit//fiE7hi6BzvQcxnl/q5jRA/s0V6MTyoOKP2Iw
+ /+268aCPersgUJ80Sy+qCqeEtP8tdu7+b1lWQSATmx3ikbbC/q1ht4wr964hWuZaQKrp
+ C56gN1dWkiljqG2RQLR6JrQtTEATIonL5sH2ld8aXCg0auobFxdx2Y5W139JpLxECabi
+ EP0HOsSon9GXuG69+JMgOInT5UdLBpPj/+kz9vLHxbuH3B6aQsYjJx/N+0xYCJshY2XW vg== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hsfwsqct7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 09 Aug 2022 18:53:29 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 279IXPsb038052;
+        Tue, 9 Aug 2022 18:53:28 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hu0n3tsx9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 09 Aug 2022 18:53:28 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 279IrR59004359;
+        Tue, 9 Aug 2022 18:53:27 GMT
+Received: from t460.home (dhcp-10-175-40-68.vpn.oracle.com [10.175.40.68])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3hu0n3tswd-1;
+        Tue, 09 Aug 2022 18:53:27 +0000
+From:   Vegard Nossum <vegard.nossum@oracle.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Vegard Nossum <vegard.nossum@oracle.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org, John Haxby <john.haxby@oracle.com>
+Subject: [PATCH] capabilities: new kernel.ns_modules_allowed sysctl
+Date:   Tue,  9 Aug 2022 20:52:29 +0200
+Message-Id: <20220809185229.28417-1-vegard.nossum@oracle.com>
+X-Mailer: git-send-email 2.35.1.46.g38062e73e0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-References: <20220808073232.8808-1-david@redhat.com>
- <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
-In-Reply-To: <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-09_05,2022-08-09_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
+ phishscore=0 malwarescore=0 suspectscore=0 adultscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208090072
+X-Proofpoint-ORIG-GUID: Dqaosq_BvBC0LPQSk9U-HCf_CNK3skzN
+X-Proofpoint-GUID: Dqaosq_BvBC0LPQSk9U-HCf_CNK3skzN
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.08.22 20:27, Linus Torvalds wrote:
-> I'm still reading through this, but
-> 
->  STOP DOING THIS
-> 
-> On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
->>
->> +       VM_BUG_ON(!is_cow_mapping(vma->vm_flags));
-> 
-> Using BUG_ON() for debugging is simply not ok.
-> 
-> And saying "but it's just a VM_BUG_ON()" does not change *anything*.
-> At least Fedora enables that unconditionally for normal people, it is
-> not some kind of "only VM people do this".
-> 
-> Really. BUG_ON() IS NOT FOR DEBUGGING.
+Creating a new user namespace grants you the ability to reach a lot of code
+(including loading certain kernel modules) that would otherwise be out of
+reach of an attacker. We can reduce the attack surface and block exploits
+by ensuring that user namespaces cannot trigger module (auto-)loading.
 
-I totally agree with BUG_ON ... but if I get talked to in all-caps on a
-Thursday evening and feel like I just touched the forbidden fruit, I
-have to ask for details about VM_BUG_ON nowadays.
+A cursory search of exploits found online yields the following extremely
+non-exhaustive list of vulnerabilities, and shows that the technique is
+both old and still in use:
 
-VM_BUG_ON is only active with CONFIG_DEBUG_VM. ... which indicated some
-kind of debugging at least to me. I *know* that Fedora enables it and I
-*know* that this will make Fedora crash.
+- CVE-2016-8655
+- CVE-2017-1000112
+- CVE-2021-32606
+- CVE-2022-2588
+- CVE-2022-27666
+- CVE-2022-34918
 
-I know why Fedora enables this debug option, but it somewhat destorys
-the whole purpose of VM_BUG_ON kind of nowadays?
+This patch adds a new sysctl, kernel.ns_modules_allowed, which when set to
+0 will block requests to load modules when the request originates in a
+process running in a user namespace.
 
-For this case, this condition will never trigger and I consider it much
-more a hint to the reader that we can rest assured that this condition
-holds. And on production systems, it will get optimized out.
+For backwards compatibility, the default value of the sysctl is set to
+CONFIG_NS_MODULES_ALLOWED_DEFAULT_ON, which in turn defaults to 1, meaning
+there should be absolutely no change in behaviour unless you opt in either
+at compile time or at runtime.
 
-Should we forbid any new usage of VM_BUG_ON just like we mostly do with
-BUG_ON?
+This mitigation obviously offers no protection if the vulnerable module is
+already loaded, but for many of these exploits the vast majority of users
+will never actually load or use these modules on purpose; in other words,
+for the vast majority of users, this would block exploits for the above
+list of vulnerabilities.
 
-> 
-> Stop it. Now.
-> 
-> If you have a condition that must not happen, you either write that
-> condition into the code, or - if you are convinced it cannot happen -
-> you make it a WARN_ON_ONCE() so that people can report it to you.
+Testing: Running the reproducer for CVE-2022-2588 fails and results in the
+following message in the kernel log:
 
-I can just turn that into a WARN_ON_ONCE() or even a VM_WARN_ON_ONCE().
+    [  130.208030] request_module: pid 4107 (a.out) requested kernel module rtnl-link-dummy; denied due to kernel.ns_modules_allowed sysctl
 
+Cc: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: Serge Hallyn <serge@hallyn.com>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: linux-hardening@vger.kernel.org
+Cc: John Haxby <john.haxby@oracle.com>
+Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
+---
+ Documentation/admin-guide/sysctl/kernel.rst | 11 ++++++
+ init/Kconfig                                | 17 +++++++++
+ kernel/kmod.c                               | 39 +++++++++++++++++++++
+ 3 files changed, 67 insertions(+)
+
+diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
+index ddccd10774623..551de7bce836c 100644
+--- a/Documentation/admin-guide/sysctl/kernel.rst
++++ b/Documentation/admin-guide/sysctl/kernel.rst
+@@ -592,6 +592,17 @@ to the guest kernel command line (see
+ Documentation/admin-guide/kernel-parameters.rst).
+ 
+ 
++ns_modules_allowed
++==================
++
++Control whether processes may trigger module loading inside a user namespace.
++
++= =================================
++0 Deny module loading requests.
++1 Accept module loading requests.
++= =================================
++
++
+ numa_balancing
+ ==============
+ 
+diff --git a/init/Kconfig b/init/Kconfig
+index c984afc489dea..6734373995936 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1226,6 +1226,23 @@ config USER_NS
+ 
+ 	  If unsure, say N.
+ 
++config NS_MODULES_ALLOWED_DEFAULT_ON
++	bool "Allow user namespaces to auto-load kernel modules by default"
++	depends on MODULES
++	depends on USER_NS
++	default y
++	help
++	  This option makes it so that processes running inside user
++	  namespaces may auto-load kernel modules.
++
++	  Say N to mitigate some exploits that rely on being able to
++	  auto-load kernel modules; however, this may also cause some
++	  legitimate programs to fail unless kernel modules are loaded by
++	  hand.
++
++	  You can write 0 or 1 to /proc/sys/kernel/ns_modules_allowed to
++	  change behaviour at run-time.
++
+ config PID_NS
+ 	bool "PID Namespaces"
+ 	default y
+diff --git a/kernel/kmod.c b/kernel/kmod.c
+index b717134ebe170..53e26009410ef 100644
+--- a/kernel/kmod.c
++++ b/kernel/kmod.c
+@@ -105,6 +105,12 @@ static int call_modprobe(char *module_name, int wait)
+ 	return -ENOMEM;
+ }
+ 
++/*
++ * Allow processes running inside namespaces to trigger module loading?
++ */
++static bool sysctl_ns_modules_allowed __read_mostly =
++	IS_BUILTIN(CONFIG_NS_MODULES_ALLOWED_DEFAULT_ON);
++
+ /**
+  * __request_module - try to load a kernel module
+  * @wait: wait (or not) for the operation to complete
+@@ -148,6 +154,21 @@ int __request_module(bool wait, const char *fmt, ...)
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * Disallow if we're in a user namespace and we don't have
++	 * CAP_SYS_MODULE in the init namespace.
++	 */
++	if (current_user_ns() != &init_user_ns && !capable(CAP_SYS_MODULE)) {
++		if (sysctl_ns_modules_allowed) {
++			pr_warn_ratelimited("request_module: pid %d (%s) in user namespace requested kernel module %s\n",
++				task_pid_nr(current), current->comm, module_name);
++		} else {
++			pr_warn_ratelimited("request_module: pid %d (%s) in user namespace requested kernel module %s; denied due to kernel.ns_modules_allowed sysctl\n",
++				task_pid_nr(current), current->comm, module_name);
++			return -EPERM;
++		}
++	}
++
+ 	if (atomic_dec_if_positive(&kmod_concurrent_max) < 0) {
+ 		pr_warn_ratelimited("request_module: kmod_concurrent_max (%u) close to 0 (max_modprobes: %u), for module %s, throttling...",
+ 				    atomic_read(&kmod_concurrent_max),
+@@ -175,3 +196,21 @@ int __request_module(bool wait, const char *fmt, ...)
+ 	return ret;
+ }
+ EXPORT_SYMBOL(__request_module);
++
++static struct ctl_table kmod_sysctl_table[] = {
++	{
++		.procname       = "ns_modules_allowed",
++		.data           = &sysctl_ns_modules_allowed,
++		.maxlen         = sizeof(sysctl_ns_modules_allowed),
++		.mode           = 0644,
++		.proc_handler   = proc_dobool,
++	},
++	{ }
++};
++
++static int __init kmod_sysctl_init(void)
++{
++	register_sysctl_init("kernel", kmod_sysctl_table);
++	return 0;
++}
++late_initcall(kmod_sysctl_init);
 -- 
-Thanks,
-
-David / dhildenb
+2.35.1.46.g38062e73e0
 
