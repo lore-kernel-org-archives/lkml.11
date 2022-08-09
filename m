@@ -2,300 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44570C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D31C25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241886AbiHIJE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
+        id S241968AbiHIJGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241868AbiHIJE4 (ORCPT
+        with ESMTP id S241868AbiHIJGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:04:56 -0400
-Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0662F2251C
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 02:04:54 -0700 (PDT)
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2798PRL3009090;
-        Tue, 9 Aug 2022 02:04:40 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=subject : to : cc
- : references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=PPS06212021;
- bh=k7U9HogEv4Gr0EhpGvcbjtNzaSLUHi5ZPQPi6A3dfr4=;
- b=cnQjnPhWxw3rFcZR1GWJl9EdR0+oNo90ZlmhPGp+/uW83uPQz+UWyY0IEzRhkZowR6Fg
- nDZUBJc8fvmp6eBrthqDnLsuLlV1wDuvq7Epc2uyvODJ/Uk+72guG42ta7q15SQcZSvo
- FXI9kkqYyjZkQktUY7TDB1Ift0mdsFS1c0MNlsl0SoFRUQKD2gX6DOH1S7mDtls4+FcI
- pscQ8ruv8CwaY1Sl0tKTpcnZY9hL0OVXv8u+563kidZPJv1GgxKQje6EFbAyviBr4cRK
- P9QEU4eGwM0PTfxS733So/yJLfF9skmajiSTTrWHXziqz25BnljizTStP44MB32QqJyb Tg== 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2107.outbound.protection.outlook.com [104.47.55.107])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hsqtka4sn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Aug 2022 02:04:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UG3iYauW8V2l+TiTAPHB6soF/bMdnP027ZrSwcNTV1ZUDznjfQ+CIb++HgIoXrXQa8Y6qLrRRjN6PeLVkfSaPbFyTwFhw5ocl9dzqeVnvodWCddkBLHetvEcgCpmvlP9slLG/F44mJZWWUqRC/1fllvRC3xhbVmlgNmBJn09zEm9KRY4RpcQC5b+VLzV9AJY/G55JhbKpNuTeqTBvFEIuSM6Klpb154GdRlcXUrCmfpi1tIS08XE6yRr2j4FBX441ekcENN8tp+kLH+pwo8ItdI3eppn80bi0T4aaAxxMJ+V/iSzGnwZpdXbOkii2XHo/vo5B0cFOVoEphU9/72CNg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k7U9HogEv4Gr0EhpGvcbjtNzaSLUHi5ZPQPi6A3dfr4=;
- b=SiP172QHLHzMMQciXchscpbxIfR+H6l0yCXVcF35N/umSYs5/+H0+7N37JexanG+neGZN8w0IDGNBtM4isZZCFDtuZ/r1Hyx3IY6eLYClE0I7bRPQK6q+E+IWKphIBRM0SCDr/zgG9sLML8tL3I4ZW+QVxHOBsD2o57EopPLgJLxuuVD4jeS5ENZlgRJ6XSRZ08opD/PQMzPhTV09FJI8XNBCGWq8/7jwBTW/rFv6oeQ2YnslX75hH4vua/gaWCi688wzDI73wOz4pIFRXXe4qu9I3eB7Nlkklud7lcbTPDoKfZx92mWesyIsWsCqje6qatEiEBosWr+TqxHxznXGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Received: from CH0PR11MB5348.namprd11.prod.outlook.com (2603:10b6:610:bb::16)
- by MN2PR11MB4272.namprd11.prod.outlook.com (2603:10b6:208:196::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 9 Aug
- 2022 09:04:37 +0000
-Received: from CH0PR11MB5348.namprd11.prod.outlook.com
- ([fe80::d504:d329:815b:10ba]) by CH0PR11MB5348.namprd11.prod.outlook.com
- ([fe80::d504:d329:815b:10ba%8]) with mapi id 15.20.5504.020; Tue, 9 Aug 2022
- 09:04:37 +0000
-Subject: Re: [PATCH] mtd_blkdevs: add mtd_table_mutex lock back to
- blktrans_{open, release} to avoid race condition
-To:     ChristophHellwig <hch@lst.de>
-Cc:     MiquelRaynal <miquel.raynal@bootlin.com>,
-        RichardWeinberger <richard@nod.at>,
-        VigneshRaghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220809075753.21950-1-liwei.song@windriver.com>
- <20220809080809.GB14727@lst.de>
-From:   Liwei Song <liwei.song@windriver.com>
-Message-ID: <7f925359-69b0-49b1-cdbb-337912da4f9c@windriver.com>
-Date:   Tue, 9 Aug 2022 17:03:41 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-In-Reply-To: <20220809080809.GB14727@lst.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0085.apcprd02.prod.outlook.com
- (2603:1096:4:90::25) To CH0PR11MB5348.namprd11.prod.outlook.com
- (2603:10b6:610:bb::16)
+        Tue, 9 Aug 2022 05:06:32 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F62E625A;
+        Tue,  9 Aug 2022 02:06:27 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27996EDE084506;
+        Tue, 9 Aug 2022 04:06:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660035974;
+        bh=u9den4aP9t9EdFRqBHaFEr+FWWBnwxtj/t6ivS/lTWs=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=x6D6KLxaUZZZOqV8MbGektpeDtFPPoN9aXcv1WRgYJQavv5QUljmV2B/zOSrANWPF
+         W/HsoR7XwEt3cqXWQXwM2wKY5Dc0vfxHgyS4rsVDgACy7FEE9j/UbKUg8KEXHdPA4H
+         1QInDU7W70oQ98HsFklMZ80K8AGjOtTcZhqO8S38=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27996Exx050954
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 9 Aug 2022 04:06:14 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 9
+ Aug 2022 04:06:13 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 9 Aug 2022 04:06:13 -0500
+Received: from [172.24.157.172] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 279969Ql085552;
+        Tue, 9 Aug 2022 04:06:09 -0500
+Message-ID: <09682120-632a-1bfb-c0d7-034f5f076421@ti.com>
+Date:   Tue, 9 Aug 2022 14:36:08 +0530
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6eafbb9e-3a2f-450a-ce70-08da79e62f53
-X-MS-TrafficTypeDiagnostic: MN2PR11MB4272:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VIMSFaJzC7QTnStFz9H1JGlJX6MbhLx3hU8aY8MmAI0gqvxnI0U/5y3zZxY/jayvt43fXlYuCadGE15fw4cm0c6tgm3UHCkOfdByaGTwVPln5sd6NQazm8bOU6cSU/j2+Hv2pjEZCFOJ5O+YGREpHK987TPLlqqg1WPZHUO+wIiQjVTtYQVFy5c6K45/5GR3y9+pzWrXod77UML104LoDHYNPKCEe4kOcFWOyqcci66okwi6EBhXavuTmlCzxHRZ5PVgmNo2I+u8nGXcalBlxN3F8y0eB2BD3p8EHWkcSMUpMtBi79PvBn4P9jgkUFnxa2KfYC5ZbWOVprHygOSox/p+QwGBLdvoGQlxC35ZXUuzvT1Gd17g3vmjBnEhlQk1g3GiEdR+ZPQ9GBCnw+jFQWWKj1a0aJckjwfxlzru1wc56R+J9ek2tjeCE8ia3dzAYYYvfpgQJ8RjKpztqAUzJlVyUgGpFcG602CMDw1yl0Zv8965Cr/KwiajqrwXqiYRJ6DCBOugP5XuhGXQCO3LJXZiY6p8i7lKIdFdrse8ceGwt1KHUEYxbMIZ0u2Gs1lDOGrhlPuxgbRlf6rPUIfSN5TbAn0Qbc3uK8tH+dEUUxqDC0xFVdHNY07HWyuBbNDnr4+mqGerqI3k9IrKXjNYXVvlDaNwldQCM348atiYRD4nj4cItfXPY8OOd7AajtWRoAIKUt4vqvvtDNO2qpRIrU0sooVT2nj7T4v9c80hGc31L2U4RZFpfEL4s6K9NHMTiKFjlArcRnfbbqCa/pvSXJ6ifCJfjzButqxvlnV4z2n72feJ1fIzHI9luUia0MYBBMMhBtmAdXvr5gRFQVaerYv7PHUmza3Rac1BrXVh1qM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5348.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(396003)(376002)(39850400004)(346002)(83380400001)(53546011)(41300700001)(8676002)(6506007)(45080400002)(52116002)(6486002)(4326008)(66476007)(6666004)(66556008)(2616005)(316002)(186003)(66946007)(6916009)(6512007)(26005)(54906003)(2906002)(86362001)(36756003)(38100700002)(38350700002)(8936002)(478600001)(31696002)(31686004)(44832011)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aG5NdGVHNXk3MythWXU5YTU5dWVhL2MvL2xwQmY4RWJpSmYydzJNTE1GN1Nj?=
- =?utf-8?B?Y1hQTlJjNGJCZ09hZmRKNFdVS1daZlFVRytMWEkwT1Z2Qk9QcVJUUjZkSDhI?=
- =?utf-8?B?OUMyTHdLOHFiK1Njb080RThWTGZtTjJad3pWMDlYNGZ1YkFGTkZxb1NWalZU?=
- =?utf-8?B?b1pBcG1UNEkzZkliTGtlTnpqYVM2ak1LbmlJbitDUEhWNzM1T1I3NURRWDNE?=
- =?utf-8?B?M0pNLzVlTXFBc0Q3QTFmREk5bXVXR0NqdVduME91SGtwdEt2WTFSeWNkSUdh?=
- =?utf-8?B?YW04a2U1eXRYSWk0eDRzU2N5ZVFHUGVlQ0cvTmlnUXJQZGE0a0ZDVkduV1Uy?=
- =?utf-8?B?THFzMmFjblcwUlorcXhvTkpIU01SVVhLL1N5QU9IVzQ2KzBGRHRyUHJXUUtO?=
- =?utf-8?B?RmxjUGVUTGIzZExxZVVQcXYwOXJuQ1NmeTdlc09GR2xaenpoNTVERGxrd2Yw?=
- =?utf-8?B?SUtHMDU2LzhPNFJ6amZ4NytEY2J4ZkJmMWZsRVFOYWJzQWVtNUFVTEREZkhh?=
- =?utf-8?B?ZUJpc0pDTG5XaTJpcVFOTXc4eWN1L09PQ0ZaK3RyQU5FN2JYclBTZitYdGFy?=
- =?utf-8?B?K253ZVpmeGdmNTBqd21vNXJMWElrUEFnYnVoY3l0eWJ4R3BVTmtId1ZaOXlu?=
- =?utf-8?B?dUVlWnluNngvRzR5Tm8wTHNDOTZFeVJLdmJGUTVURFpadEhVWGZPUmEySUEv?=
- =?utf-8?B?SHBHMDdlSFU2WmJ0UWNYbnNBYmxQbEpFeWdEbDhIVE0rZ1dkaERBdlp4b21k?=
- =?utf-8?B?UlJVdFVraitDTHFnbW9aR1hnYit0dU9jMXZXRUl4b0RCbUZ1WSsvVFNQSzgw?=
- =?utf-8?B?TjRweUtFajlMUWZkNG11U1BEcTZFUWtJWG1XVG1jTU8zYVd3QXJoNW5MUXRv?=
- =?utf-8?B?SVA1WVFkQkN5ek50Q0FsSUZoclg2VE0wdVB1Nks4UE4wWVJVQXdEb2NmekhP?=
- =?utf-8?B?Z1J6K0xpQjNiQm85NFk0NnNmUmpCSXVuc2hyNkZCVGFSL1JpZWNoT3VidTNs?=
- =?utf-8?B?enhGUnZOVnZpSGRjKzRGbGdaQTJXTlQ1WjdMMFUvSjM0RjNIV0RaNXVLSXZX?=
- =?utf-8?B?WjBXQ1lnaWhqOUVCSFZBaCtTMUdXbjUvSkZqNm9kamdDVjZSREFmdStlNmpZ?=
- =?utf-8?B?Q0FzNm1wT1VpVUVKQUdIMDZmd3hZK3BhalF4OUZacWRVVnZobjc1bU44S2ds?=
- =?utf-8?B?MmtMOFAxdjVjSU9HZTVBdG1pOUd0bzBoMUZtRlNLL3Z2bVFlN3JCckl3NUox?=
- =?utf-8?B?WUE0Y2xBNGh6NWdWNUw4ZFAyRTFLRU1mSTF3QnBFL2V6QzhFeDdUR0w3RkxB?=
- =?utf-8?B?bUFYY2hYeTBKeVY3QURKdDg2NzNoUTJ3R05yY0w0Z3hXVmUxdjYvaytrUlRj?=
- =?utf-8?B?NTE3QUloZVJ3RHkrTzFDODB1VVFVeW5ENWRFZ2lpbTFBOWZaR2ppU2ZXN1Ra?=
- =?utf-8?B?WEhLK0J3K1NhMHkzUktDS2x0MzNISDBiYjY5WW1xa1RvQWhSWkZBcnppdlZl?=
- =?utf-8?B?dXlmSXhQNTNjaytrVkliM2RqOVY3NHhXNGo5WlpQelZsaEVFVzJDem01c0Yr?=
- =?utf-8?B?ZXR6dVpteDlwblVJSks0aWtveGgwNjRWMFo5R1VEanRXMFZncmtKTU9NUmF1?=
- =?utf-8?B?emtLSkNNelVnRiszTkZHejhCOVIvT2E4NzM3UUN1QmcweFlHOUxQRm4rMzhZ?=
- =?utf-8?B?QUpmVm9UNk1YSjNTQ2c4SnhLckgwQnJBNnVpZlBwTmJ2VHpZS1NZZnFud2h5?=
- =?utf-8?B?UExOV0R2cWptYnhwV3BTNGlSemRkTklER0RacXQvazFjK3NDQlRJQnAxZjl3?=
- =?utf-8?B?RS9pbkVMY05IYVpOTWNUK3BkOGJPdFZDa1liQ3VJKzg5azJ4R29aVUhaNU5a?=
- =?utf-8?B?NFkyaFgzb2NJdTY5UHI0OTlXbGtmOC9yRUhOOUMrVDh4V25UVlBkTUYrZEhH?=
- =?utf-8?B?d0oybDk2cFdFWm1lQjJiak5YQ29xT1VRWVU3SDFFK2I1ZmsrN0hXMGRSRW53?=
- =?utf-8?B?ekRRc0VtZ2ZqdUJnQ1BZWUE1OFh5bTJRRkFhc2QvQ2cwVXdWL2R5bm1paWha?=
- =?utf-8?B?aFBIUmtsQVU3K21Ka1lXODk2aEhpZHZMMDM1VjQ2N3pmSG1NcFZRS0JOQUdJ?=
- =?utf-8?B?b3NRNlpvOTBzdDhISXExTTQwMm1XRkxpcHlzY1NYT1MwT2NBTE5CejdJZmV0?=
- =?utf-8?B?RlE9PQ==?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6eafbb9e-3a2f-450a-ce70-08da79e62f53
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5348.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 09:04:37.0745
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RaG6tvRjPiQQOZ+61ToapM0wkxIVpc1zBTXg6VwVgtqx95ABc2410JP5/y8u+4DAEHUce6fpoSGUxHp1gZRxYRbZ6iSmCKso7ZQf7lWH7E4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4272
-X-Proofpoint-GUID: xUUPy97R1ViKErwmEPEodwwDRdOVWoY-
-X-Proofpoint-ORIG-GUID: xUUPy97R1ViKErwmEPEodwwDRdOVWoY-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-09_03,2022-08-09_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
- bulkscore=0 phishscore=0 priorityscore=1501 mlxlogscore=947 spamscore=0
- impostorscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2208090040
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH 4/8] drm/tidss: Add support for Dual Link LVDS Bus Format
+Content-Language: en-US
+To:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+CC:     Darren Etheridge <detheridge@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rahul T R <r-ravikumar@ti.com>,
+        Krunal Bhargav <k-bhargav@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>,
+        DRI Development List <dri-devel@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jyri Sarha <jyri.sarha@iki.fi>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220719080845.22122-1-a-bhatia1@ti.com>
+ <20220719080845.22122-5-a-bhatia1@ti.com>
+ <f2909af1-be23-009b-ba71-34206f099473@ideasonboard.com>
+ <ec8dce9b-51d6-a566-67bb-b76f6f3458d7@ideasonboard.com>
+ <1f9de2d8-7507-bdc2-93c1-470c8e060586@ti.com>
+ <b8fd1719-b0ec-495b-54f9-1d591ff8af9e@ideasonboard.com>
+From:   Aradhya Bhatia <a-bhatia1@ti.com>
+In-Reply-To: <b8fd1719-b0ec-495b-54f9-1d591ff8af9e@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Tomi,
 
-
-On 8/9/22 16:08, ChristophHellwig wrote:
-> On Tue, Aug 09, 2022 at 03:57:53PM +0800, Liwei Song wrote:
->> without lock mtd_table_mutex in blktrans_{open, release}, there will
->> be a race condition when access devices /dev/mtd1 and /dev/mtdblock1
->> at the same time with a high frequency open and close test:
+On 09-Aug-22 11:58, Tomi Valkeinen wrote:
+> Hi,
+> 
+> On 09/08/2022 08:58, Aradhya Bhatia wrote:
+>> Hi Tomi,
 >>
->> kernel BUG at drivers/mtd/mtdcore.c:1221!
->> lr : blktrans_release+0xb0/0x120
+>> On 28-Jul-22 17:15, Tomi Valkeinen wrote:
+>>> On 28/07/2022 14:03, Tomi Valkeinen wrote:
+>>>> On 19/07/2022 11:08, Aradhya Bhatia wrote:
+>>>>> The 2 OLDI TXes in the AM625 SoC can be synced together to output a 2K
+>>>>> resolution video.
+>>>>>
+>>>>> Add support in the driver for the discovery of such a dual mode
+>>>>> connection on the OLDI video port, using the values of "ti,oldi-mode"
+>>>>> property.
+>>>>>
+>>>>> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
+>>>>> ---
+>>>>>   drivers/gpu/drm/tidss/tidss_dispc.c | 39 
+>>>>> +++++++++++++++++++++--------
+>>>>>   1 file changed, 28 insertions(+), 11 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c 
+>>>>> b/drivers/gpu/drm/tidss/tidss_dispc.c
+>>>>> index add725fa682b..fb1fdecfc83a 100644
+>>>>> --- a/drivers/gpu/drm/tidss/tidss_dispc.c
+>>>>> +++ b/drivers/gpu/drm/tidss/tidss_dispc.c
+>>>>> @@ -853,25 +853,36 @@ void dispc_set_irqenable(struct dispc_device 
+>>>>> *dispc, dispc_irq_t mask)
+>>>>>       }
+>>>>>   }
+>>>>> -enum dispc_oldi_mode_reg_val { SPWG_18 = 0, JEIDA_24 = 1, SPWG_24 
+>>>>> = 2 };
+>>>>> +enum dispc_oldi_mode_reg_val {
+>>>>> +    SPWG_18        = 0,
+>>>>> +    JEIDA_24    = 1,
+>>>>> +    SPWG_24        = 2,
+>>>>> +    DL_SPWG_18    = 4,
+>>>>> +    DL_JEIDA_24    = 5,
+>>>>> +    DL_SPWG_24    = 6,
+>>>>> +};
+>>>>>   struct dispc_bus_format {
+>>>>>       u32 bus_fmt;
+>>>>>       u32 data_width;
+>>>>>       bool is_oldi_fmt;
+>>>>> +    bool is_dual_link;
+>>>>>       enum dispc_oldi_mode_reg_val oldi_mode_reg_val;
+>>>>>   };
+>>>>>   static const struct dispc_bus_format dispc_bus_formats[] = {
+>>>>> -    { MEDIA_BUS_FMT_RGB444_1X12,        12, false, 0 },
+>>>>> -    { MEDIA_BUS_FMT_RGB565_1X16,        16, false, 0 },
+>>>>> -    { MEDIA_BUS_FMT_RGB666_1X18,        18, false, 0 },
+>>>>> -    { MEDIA_BUS_FMT_RGB888_1X24,        24, false, 0 },
+>>>>> -    { MEDIA_BUS_FMT_RGB101010_1X30,        30, false, 0 },
+>>>>> -    { MEDIA_BUS_FMT_RGB121212_1X36,        36, false, 0 },
+>>>>> -    { MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,    18, true, SPWG_18 },
+>>>>> -    { MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,    24, true, SPWG_24 },
+>>>>> -    { MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA,    24, true, JEIDA_24 },
+>>>>> +    { MEDIA_BUS_FMT_RGB444_1X12,        12, false, false, 0 },
+>>>>> +    { MEDIA_BUS_FMT_RGB565_1X16,        16, false, false, 0 },
+>>>>> +    { MEDIA_BUS_FMT_RGB666_1X18,        18, false, false, 0 },
+>>>>> +    { MEDIA_BUS_FMT_RGB888_1X24,        24, false, false, 0 },
+>>>>> +    { MEDIA_BUS_FMT_RGB101010_1X30,        30, false, false, 0 },
+>>>>> +    { MEDIA_BUS_FMT_RGB121212_1X36,        36, false, false, 0 },
+>>>>> +    { MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,    18, true, false, SPWG_18 },
+>>>>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,    24, true, false, SPWG_24 },
+>>>>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA,    24, true, false, 
+>>>>> JEIDA_24 },
+>>>>> +    { MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,    18, true, true, 
+>>>>> DL_SPWG_18 },
+>>>>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,    24, true, true, 
+>>>>> DL_SPWG_24 },
+>>>>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA,    24, true, true, 
+>>>>> DL_JEIDA_24 },
+>>>>>   };
+>>>>
+>>>> So the dual link sends two pixels per clock, right? Are there panel 
+>>>> or bridge drivers that support this? My initial thought was that it 
+>>>> should be a new bus format.
+>>>
+>>> Looks like we have drm bridges supporting dual link, and they use the 
+>>> "normal" bus format. Did you have a look at them? They require two 
+>>> port nodes for dual link, and use the existence of the second one to 
+>>> decide if dual link is used or not.
+>> The above edits were not for adding a new bus format for dual link
+>> connections. I added them in order to be able to write the correct OLDI
+>> config values in the register.
+>>
+>>>
+>>> There are also lvds helpers in drm_of.c. I didn't look closely, but 
+>>> it looked to me that the helpers can tell you if the ports are 
+>>> connected to a dual link bridge. If not, you could fall back to 
+>>> cloning. This way no extra properties are needed. But you will need 
+>>> to add a port node, which I think you need to add anyway for cloning.
+>> I have now seen drm_of.c and examples (renesas' rcar lvds) that use the
+>> apis that drm_of.c is offering. In those cases, the OLDI TXes are being
+>> modeled as separate devices, which is not the case with the tidss' OLDI
+>> TXes. Since the only few OLDI registers are in the DSS address space,
+>> they were just being configured through the tidss driver.
 > 
-> This does not seem on a current mainline kernel and seems to be
-> a somewhat incomplete backtrace.  Can you send the full dmesg of
-> a latest mainline run and maybe share the reproducer?
-
-Yes, the kernel I used is 5.15, unfortunately this is the latest version
-that worked on my board, the whole log is:
-
-[   31.301343] ------------[ cut here ]------------
-[   31.301343] ------------[ cut here ]------------
-[   31.301365] kernel BUG at drivers/mtd/mtdcore.c:1221!
-[   31.314981] kernel BUG at drivers/mtd/mtdcore.c:1221!
-[   31.329328] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-[   31.374117] Modules linked in: 8021q sch_fq_codel openvswitch nsh nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 fuse
-[   31.395820] CPU: 2 PID: 390 Comm: a.out Not tainted 5.15.58-yocto-standard #1
-[   31.412672] Hardware name: SoCFPGA Agilex SoCDK (DT)
-[   31.427372] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   31.444058] pc : __put_mtd_device+0x4c/0x84
-[   31.457977] lr : put_mtd_device+0x3c/0x5c
-[   31.464122] sp : ffff80000c26bc50
-[   31.466126] x29: ffff80000c26bc50 x28: ffff000285785100 x27: 0000000000000000
-[   31.471945] x26: 0000000045585401 x25: 0000000000000000 x24: ffff000285785768
-[   31.477762] x23: ffff0002803ee520 x22: ffff0002804f8900 x21: ffff000281956800
-[   31.483580] x20: ffff000281956800 x19: ffff000281955080 x18: 0000000000000000
-[   31.489402] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
-[   31.495219] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
-[   31.501037] x11: 0000000000000000 x10: 0000000000000000 x9 : ffff8000088a79b0
-[   31.506855] x8 : ffff80000c26bcb0 x7 : 0000000000000000 x6 : 0000000000000001
-[   31.512673] x5 : ffff000280959488 x4 : 0000000000000000 x3 : 0000000000000000
-[   31.518491] x2 : ffff000281956800 x1 : 00000000ffffffff x0 : ffff000281955080
-[   31.524310] Call trace:
-[   31.525450]  __put_mtd_device+0x4c/0x84
-[   31.527979]  put_mtd_device+0x3c/0x5c
-[   31.530333]  mtdchar_close+0x3c/0x84
-[   31.532604]  __fput+0x78/0x220
-[   31.534357]  ____fput+0x1c/0x30
-[   31.536193]  task_work_run+0x88/0xc0
-[   31.538467]  do_notify_resume+0x384/0x12a0
-[   31.541261]  el0_svc+0x6c/0x80
-[   31.543015]  el0t_64_sync_handler+0xa4/0x130
-[   31.545977]  el0t_64_sync+0x1a0/0x1a4
-[   31.548338] Code: b9448841 51000421 b9048841 36ffff41 (d4210000) 
-[   31.553115] ---[ end trace 9652b26ea1d7daa1 ]---
-[   31.556420] Internal error: Oops - BUG: 0 [#2] PREEMPT SMP
-[   31.556420] note: a.out[390] exited with preempt_count 1
-[   31.560588] Modules linked in: 8021q sch_fq_codel openvswitch nsh nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 fuse
-[   31.575265] CPU: 3 PID: 391 Comm: a.out Tainted: G      D           5.15.58-yocto-standard #1
-[   31.582466] Hardware name: SoCFPGA Agilex SoCDK (DT)
-[   31.586115] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   31.591757] pc : __put_mtd_device+0x4c/0x84
-[   31.594642] lr : blktrans_release+0xb0/0x120
-[   31.597603] sp : ffff80000c22bc20
-[   31.599608] x29: ffff80000c22bc20 x28: ffff000285785e80 x27: 0000000000000000
-[   31.605428] x26: 0000000045585401 x25: 0000000000000000 x24: ffff0002857864e8
-[   31.611247] x23: ffff0002803ee520 x22: ffff0002803e3470 x21: ffff0002803e3400
-[   31.617066] x20: ffff0002803e3020 x19: ffff000281955080 x18: 0000000000000000
-[   31.622884] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
-[   31.628702] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
-[   31.634519] x11: 0000000000000000 x10: 0000000000000000 x9 : ffff8000088b0230
-[   31.640337] x8 : ffff80000c22bb90 x7 : 0000000000000000 x6 : 0000000000000001
-[   31.646155] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
-[   31.651973] x2 : ffff000281956800 x1 : 00000000ffffffff x0 : ffff000281955080
-[   31.657792] Call trace:
-[   31.658933]  __put_mtd_device+0x4c/0x84
-[   31.661462]  blktrans_release+0xb0/0x120
-[   31.664077]  blkdev_put+0xd4/0x210
-[   31.666175]  blkdev_close+0x34/0x50
-[   31.668355]  __fput+0x78/0x220
-[   31.670108]  ____fput+0x1c/0x30
-[   31.671943]  task_work_run+0x88/0xc0
-[   31.674217]  do_notify_resume+0x384/0x12a0
-[   31.677009]  el0_svc+0x6c/0x80
-[   31.678762]  el0t_64_sync_handler+0xa4/0x130
-[   31.681723]  el0t_64_sync+0x1a0/0x1a4
-[   31.684082] Code: b9448841 51000421 b9048841 36ffff41 (d4210000) 
-[   31.688857] ---[ end trace 9652b26ea1d7daa2 ]---
-[   31.692161] note: a.out[391] exited with preempt_count 1
-
-the testcase  a.out is compiled from below code:
-when run the case /dev/mtd1 and /dev/mtdblock1 will be used for open and close test.
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <signal.h>
-#include <unistd.h>
-
-int main(int argc, char *argv[])
-{
-    pid_t pid, pid1, pid2;
-    int fd,ret = 0;
-    int status = 0;
-    char device_char[12]="/dev/mtd";
-    char device_block[17]="/dev/mtdblock";
-
-    strcat(device_char, argv[1]);
-    strcat(device_block, argv[1]);
-
-    pid1 = fork();
-    if(pid1 == 0){
-        while(1){
-            fd = open(device_char, O_SYNC|O_RDWR);
-            ret = close(fd);
-        }
-    }
-    pid2 = fork();
-    if(pid2 == 0){
-        while(1){
-            fd = open(device_block, O_SYNC|O_RDWR);
-            ret = close(fd);
-        }
-    }
-    sleep(10);
-    kill(pid1, SIGKILL);
-    kill(pid2, SIGKILL);
-    pid = wait(&status);
-    pid = wait(&status);
-    return 0;
-} 
-
+> I think it's irrelevant (in the bigger picture) whether the TXes are 
+> separate devices, single device or part of some other device. Or why do 
+> you think it matters?
 > 
->> diff --git a/drivers/mtd/mtd_blkdevs.c b/drivers/mtd/mtd_blkdevs.c
->> index b8ae1ec14e17..147e4a11dfe4 100644
->> --- a/drivers/mtd/mtd_blkdevs.c
->> +++ b/drivers/mtd/mtd_blkdevs.c
->> @@ -188,6 +188,8 @@ static int blktrans_open(struct block_device *bdev, fmode_t mode)
->>  
->>  	kref_get(&dev->ref);
->>  
->> +	if (!mutex_trylock(&mtd_table_mutex))
->> +		return ret;
+Sorry, by separate I meant having a separate driver irrespective of
+whether or not its a part of another device.
+
+>> Even in DT, the dss port (for OLDI) connects to the panel port's
+>> endpoint directly. Even in cases of dual link or cloning, it's only a
+>> singular remote-to-endpoint connection between the (OLDI) VP and the
+>> panel port. Hence the requirement of the properties in the earlier
+>> patches of the series.
 > 
-> No, that's not really the solution.
+> Sorry, I don't follow. If you use cloning, you have two TX outputs, 
+> going to two panels, right? So you need two panel DT nodes, and those 
+> would connect to two OLDI TX ports in the DSS.
+>  > Afaics the existing dual link bridge/panel drivers also use two ports
+> for the connection, so to use the dual link you need two ports in the DSS.
 > 
-> Turning the kref_get above into a kref_get_unless_zero might be better
-> path to look into.
-
-Thanks, I will have a look at this.
-
-Liwei.
-
-
+> I admit I'm not familiar with LVDS dual link, but it's not clear to me 
+> how you see the dual OLDI TX being used with other drivers if you have 
+> only one port. What kind of setups have you tested?
 > 
+In the DTs, the OLDIs are not modeled at all. Since the DSS only has a
+single VP for OLDI, the DT dss port (for OLDI) is connected to a single
+simple-panel node for dual link, bypassing the OLDI TX in DT. I have
+this same OLDI setup and have been testing on this.
+
+I do not have a cloning display setup with me, but I have seen DT DSS
+port connected to one of 2 panel nodes while the other panel (remains as
+a companion panel to the first) without any endpoint connections. Since,
+the OLDI TXes (0 and 1), receive the same clocks and inputs from DSS
+OLDI VP, this 'method' has worked too.
+
+>> The use of lvds helper functions does not seem feasible in this case,
+>> because even they read DT properties to determine the dual link
+>> connection and those properties need to be a part of a lvds bridge
+>> device.
+> 
+> Can you elaborate a bit more why the DRM helpers couldn't be used here?
+> 
+The drm_of.c helpers use DT properties to ascertain the presence of a
+dual-link connection. While there wasn't a specific helper to determine
+dual-link or not, the drivers use the odd/even pixel order helper which
+is based on the properties "dual-lvds-odd-pixels" and "dual-lvds-odd-
+pixels". If either of the properties are absent, the helper returns an
+error making the driver to use single link.
+
+These properties are LVDS specific, but they could not be added in the
+DT because there is no OLDI TX DT node for our case.
+
+>> I have also been considering the idea of implementing a new device
+>> driver for the OLDI TXes, not unlike the renesas' one. That way the
+>> driver could have the properties and the lvds helper functions at their
+>> disposal. I am just slightly unsure if that would allow space for any
+>> conflicts because of the shared register space.
+> 
+> No, I don't think new devices are needed here.
+Okay...
+
+I am not quite sure I understand completely what you are recommending
+the OLDI to be. It seems to me that you want the OLDI TXes to be modeled
+as nodes, right? Wouldn't that automatically require some sort of
+standalone driver arrangement for them? Or am I missing something
+important here?
+
+
+Regards
+Aradhya
