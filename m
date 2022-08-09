@@ -2,169 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE347C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C687AC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245676AbiHISCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34318 "EHLO
+        id S1344415AbiHISDI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344375AbiHISBx (ORCPT
+        with ESMTP id S245685AbiHISCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:01:53 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAFF27158
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:01:08 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id 15-20020a63020f000000b0041b578f43f9so4712422pgc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=0naQsNDIr7/tAK4RQoashO+D0OWwjfQP9uh6N2f59FQ=;
-        b=E0OZstROSh47tpxJpKX8HBf3moLKJy6IFfy5NC6Hdzk0TlaJw8ObdAjRoyJkZOub/n
-         65iscEokmC+ZvKgUCnkydveYOtQ6dpB5plLMkvBOr7wP6ZWHsTfCS6f/gQYq9nN2YXVj
-         MBV/LRFKcVeiqThCoaxjac2rfymZGfHhvJTTe/tVwqOQ+ziqt6HWSOii2XsUBNyOd+Ys
-         cgE3EZHeickYunSaJVvj4WRSHSpRssiPMyL2uHKkwkDjzcJshWYOENq1rVPncvwZzWYX
-         VyyfaLgtIxFWEFRG0HEecXYX3KwnuVm21ycKciBHsAQeGwSdiEYeGlJuwzfrV2uUZ0gO
-         4Spg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=0naQsNDIr7/tAK4RQoashO+D0OWwjfQP9uh6N2f59FQ=;
-        b=R7lcDfJifKTJjZY5as92/LpTyW9BVTSVloUv3zhklBPUiB1vyGQjgowsUEjhNRNHqh
-         wAEo/JK3fo5doK88SiclTIbaO5UrFeonQ9lzAMB3gyNOW4w/HWWZ2ZWFI0B8vNXoqdqz
-         5Br0uTR5V1bIeulU2cKy0kaPzUgBydwd2afRk3M6hV/VwiPqcBV934ScyyGpQPl/Zotx
-         K5fhr7CBBGXUombgp8JLxPKC3X8rFoDHo1Bo/vKoziwGGqT9zFm76FZdu47uprAvmlQT
-         MC7wqHgkMVHInK4PFfyv+kRhvUHRZaawk5B0xRgMRVlmFkylYUJMYk/QYGmJJBusL+i9
-         96Ew==
-X-Gm-Message-State: ACgBeo3Iv2XpHz29MKNd21ZJSpfTYqce75ZFkozz4WBhJZHm9kNbVXOJ
-        tB8YC2zplyKCUTkznOmPY8uM5+jERrh7+34LsrQ=
-X-Google-Smtp-Source: AA6agR48VRt/dvuYwc+vflV/Z+atvVVKkGsHFrM7H1GhF17Pfeyb5NTYc06R9UeQBXtLcDO2b7iYAntU0oxxR0aEKVM=
-X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
- (user=willmcvicker job=sendgmr) by 2002:a17:903:234d:b0:16f:3e9:491b with
- SMTP id c13-20020a170903234d00b0016f03e9491bmr24194019plh.89.1660068067582;
- Tue, 09 Aug 2022 11:01:07 -0700 (PDT)
-Date:   Tue,  9 Aug 2022 18:00:50 +0000
-In-Reply-To: <20220809180051.1063653-1-willmcvicker@google.com>
-Message-Id: <20220809180051.1063653-3-willmcvicker@google.com>
-Mime-Version: 1.0
-References: <20220809180051.1063653-1-willmcvicker@google.com>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
-Subject: [PATCH v1 2/2] PCI: dwc: add support for 64-bit MSI target address
-From:   Will McVicker <willmcvicker@google.com>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Will McVicker <willmcvicker@google.com>
-Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 9 Aug 2022 14:02:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C4E26103;
+        Tue,  9 Aug 2022 11:01:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B1A361028;
+        Tue,  9 Aug 2022 18:01:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1312FC433B5;
+        Tue,  9 Aug 2022 18:01:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660068085;
+        bh=iJZpFLRwvDbeVZ/DqC+ffQrnPhgOnA1QgJ3ZxT8FJCc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WmOK7Pd7yvlhE9xMi9f4xQ2hoPbbN6PRhhefvZNY/617vqAv4F8GXJc8Vh+u4Aunb
+         vHjvSlzLlAQjtyLEFAb7/onKad+u2eEo9XjiVllzutyIVyA+l6K3HerdD/i4yYPO/2
+         crPcWOT1ZSuTLmxV4Itr2FQH5beEkLWuvndoD0pY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable@kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 4.19 01/32] Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put
+Date:   Tue,  9 Aug 2022 19:59:52 +0200
+Message-Id: <20220809175513.135324082@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
+References: <20220809175513.082573955@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since not all devices require a 32-bit MSI address, add support to the
-PCIe host driver to allow setting the DMA mask to 64-bits. This allows
-kernels to disable ZONE_DMA32 and bounce buffering (swiotlb) without
-risking not being able to get a 32-bit address during DMA allocation.
-Basically, in the slim chance that there are no 32-bit allocations
-available, the current PCIe host driver will fail to allocate the
-msi_msg page due to a DMA address overflow (seen in [1]). With this
-patch, the PCIe driver can advertise 64-bit support via it's MSI
-capabilities to hint to the PCIe host driver to set the DMA mask to
-64-bits.
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[1] https://lore.kernel.org/all/Yo0soniFborDl7+C@google.com/
+commit d0be8347c623e0ac4202a1d4e0373882821f56b0 upstream.
 
-Signed-off-by: Will McVicker <willmcvicker@google.com>
+This fixes the following trace which is caused by hci_rx_work starting up
+*after* the final channel reference has been put() during sock_close() but
+*before* the references to the channel have been destroyed, so instead
+the code now rely on kref_get_unless_zero/l2cap_chan_hold_unless_zero to
+prevent referencing a channel that is about to be destroyed.
+
+  refcount_t: increment on 0; use-after-free.
+  BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
+  Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
+
+  CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W
+  4.14.234-00003-g1fb6d0bd49a4-dirty #28
+  Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150
+  Google Inc. MSM sm8150 Flame DVT (DT)
+  Workqueue: hci0 hci_rx_work
+  Call trace:
+   dump_backtrace+0x0/0x378
+   show_stack+0x20/0x2c
+   dump_stack+0x124/0x148
+   print_address_description+0x80/0x2e8
+   __kasan_report+0x168/0x188
+   kasan_report+0x10/0x18
+   __asan_load4+0x84/0x8c
+   refcount_dec_and_test+0x20/0xd0
+   l2cap_chan_put+0x48/0x12c
+   l2cap_recv_frame+0x4770/0x6550
+   l2cap_recv_acldata+0x44c/0x7a4
+   hci_acldata_packet+0x100/0x188
+   hci_rx_work+0x178/0x23c
+   process_one_work+0x35c/0x95c
+   worker_thread+0x4cc/0x960
+   kthread+0x1a8/0x1c4
+   ret_from_fork+0x10/0x18
+
+Cc: stable@kernel.org
+Reported-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-designware-host.c | 14 ++++++++++++--
- drivers/pci/controller/dwc/pcie-designware.c      |  9 +++++++++
- drivers/pci/controller/dwc/pcie-designware.h      |  6 ++++++
- 3 files changed, 27 insertions(+), 2 deletions(-)
+ include/net/bluetooth/l2cap.h |    1 
+ net/bluetooth/l2cap_core.c    |   61 +++++++++++++++++++++++++++++++++---------
+ 2 files changed, 49 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 0cfc3c098f13..630615719236 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -338,6 +338,8 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
- 	struct platform_device *pdev = to_platform_device(dev);
- 	int ret;
- 	u32 ctrl, num_ctrls;
-+	bool msi_64b = false;
-+	u16 msi_capabilities;
+--- a/include/net/bluetooth/l2cap.h
++++ b/include/net/bluetooth/l2cap.h
+@@ -798,6 +798,7 @@ enum {
+ };
  
- 	for (ctrl = 0; ctrl < MAX_MSI_CTRLS; ctrl++)
- 		pp->irq_mask[ctrl] = ~0;
-@@ -375,9 +377,17 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
- 						    dw_chained_msi_isr, pp);
+ void l2cap_chan_hold(struct l2cap_chan *c);
++struct l2cap_chan *l2cap_chan_hold_unless_zero(struct l2cap_chan *c);
+ void l2cap_chan_put(struct l2cap_chan *c);
+ 
+ static inline void l2cap_chan_lock(struct l2cap_chan *chan)
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -113,7 +113,8 @@ static struct l2cap_chan *__l2cap_get_ch
+ }
+ 
+ /* Find channel with given SCID.
+- * Returns locked channel. */
++ * Returns a reference locked channel.
++ */
+ static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn *conn,
+ 						 u16 cid)
+ {
+@@ -121,15 +122,19 @@ static struct l2cap_chan *l2cap_get_chan
+ 
+ 	mutex_lock(&conn->chan_lock);
+ 	c = __l2cap_get_chan_by_scid(conn, cid);
+-	if (c)
+-		l2cap_chan_lock(c);
++	if (c) {
++		/* Only lock if chan reference is not 0 */
++		c = l2cap_chan_hold_unless_zero(c);
++		if (c)
++			l2cap_chan_lock(c);
++	}
+ 	mutex_unlock(&conn->chan_lock);
+ 
+ 	return c;
+ }
+ 
+ /* Find channel with given DCID.
+- * Returns locked channel.
++ * Returns a reference locked channel.
+  */
+ static struct l2cap_chan *l2cap_get_chan_by_dcid(struct l2cap_conn *conn,
+ 						 u16 cid)
+@@ -138,8 +143,12 @@ static struct l2cap_chan *l2cap_get_chan
+ 
+ 	mutex_lock(&conn->chan_lock);
+ 	c = __l2cap_get_chan_by_dcid(conn, cid);
+-	if (c)
+-		l2cap_chan_lock(c);
++	if (c) {
++		/* Only lock if chan reference is not 0 */
++		c = l2cap_chan_hold_unless_zero(c);
++		if (c)
++			l2cap_chan_lock(c);
++	}
+ 	mutex_unlock(&conn->chan_lock);
+ 
+ 	return c;
+@@ -164,8 +173,12 @@ static struct l2cap_chan *l2cap_get_chan
+ 
+ 	mutex_lock(&conn->chan_lock);
+ 	c = __l2cap_get_chan_by_ident(conn, ident);
+-	if (c)
+-		l2cap_chan_lock(c);
++	if (c) {
++		/* Only lock if chan reference is not 0 */
++		c = l2cap_chan_hold_unless_zero(c);
++		if (c)
++			l2cap_chan_lock(c);
++	}
+ 	mutex_unlock(&conn->chan_lock);
+ 
+ 	return c;
+@@ -491,6 +504,16 @@ void l2cap_chan_hold(struct l2cap_chan *
+ 	kref_get(&c->kref);
+ }
+ 
++struct l2cap_chan *l2cap_chan_hold_unless_zero(struct l2cap_chan *c)
++{
++	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
++
++	if (!kref_get_unless_zero(&c->kref))
++		return NULL;
++
++	return c;
++}
++
+ void l2cap_chan_put(struct l2cap_chan *c)
+ {
+ 	BT_DBG("chan %p orig refcnt %d", c, kref_read(&c->kref));
+@@ -1803,7 +1826,10 @@ static struct l2cap_chan *l2cap_global_c
+ 			src_match = !bacmp(&c->src, src);
+ 			dst_match = !bacmp(&c->dst, dst);
+ 			if (src_match && dst_match) {
+-				l2cap_chan_hold(c);
++				c = l2cap_chan_hold_unless_zero(c);
++				if (!c)
++					continue;
++
+ 				read_unlock(&chan_list_lock);
+ 				return c;
+ 			}
+@@ -1818,7 +1844,7 @@ static struct l2cap_chan *l2cap_global_c
  	}
  
--	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
-+	msi_capabilities = dw_pcie_msi_capabilities(pci);
-+	if (msi_capabilities & PCI_MSI_FLAGS_ENABLE)
-+		msi_64b = msi_capabilities & PCI_MSI_FLAGS_64BIT ? true : false;
-+
-+	dev_dbg(dev, "Setting MSI DMA mask to %s-bit.\n",
-+		msi_64b ? "64" : "32");
-+	ret = dma_set_mask_and_coherent(dev, msi_64b ?
-+					DMA_BIT_MASK(64) : DMA_BIT_MASK(32));
- 	if (ret)
--		dev_warn(dev, "Failed to set DMA mask to 32-bit. Devices with only 32-bit MSI support may not work properly\n");
-+		dev_warn(dev, "Failed to set DMA mask to %s-bit.\n",
-+			 msi_64b ? "64" : "32");
+ 	if (c1)
+-		l2cap_chan_hold(c1);
++		c1 = l2cap_chan_hold_unless_zero(c1);
  
- 	pp->msi_page = dma_alloc_coherent(dev, PAGE_SIZE, &pp->msi_data,
- 					  GFP_KERNEL);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index c6725c519a47..8ed402307d7f 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -82,6 +82,15 @@ u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap)
+ 	read_unlock(&chan_list_lock);
+ 
+@@ -4204,6 +4230,7 @@ static inline int l2cap_config_req(struc
+ 
+ unlock:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 	return err;
  }
- EXPORT_SYMBOL_GPL(dw_pcie_find_capability);
  
-+u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
-+{
-+	u8 offset;
-+
-+	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
-+	return dw_pcie_readw_dbi(pci, offset + PCI_MSI_FLAGS);
-+}
-+EXPORT_SYMBOL_GPL(dw_pcie_msi_capabilities);
-+
- static u16 dw_pcie_find_next_ext_capability(struct dw_pcie *pci, u16 start,
- 					    u8 cap)
- {
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index 09b887093a84..70a251c8f72b 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -432,6 +432,7 @@ void dw_pcie_host_deinit(struct dw_pcie_rp *pp);
- int dw_pcie_allocate_domains(struct dw_pcie_rp *pp);
- void __iomem *dw_pcie_own_conf_map_bus(struct pci_bus *bus, unsigned int devfn,
- 				       int where);
-+u16 dw_pcie_msi_capabilities(struct dw_pcie *pci);
- #else
- static inline irqreturn_t dw_handle_msi_irq(struct dw_pcie_rp *pp)
- {
-@@ -462,6 +463,11 @@ static inline void __iomem *dw_pcie_own_conf_map_bus(struct pci_bus *bus,
- {
- 	return NULL;
+@@ -4316,6 +4343,7 @@ static inline int l2cap_config_rsp(struc
+ 
+ done:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 	return err;
  }
-+
-+static inline u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
-+{
-+	return 0;
-+}
- #endif
  
- #ifdef CONFIG_PCIE_DW_EP
--- 
-2.37.1.559.g78731f0fdb-goog
+@@ -5044,6 +5072,7 @@ send_move_response:
+ 	l2cap_send_move_chan_rsp(chan, result);
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -5136,6 +5165,7 @@ static void l2cap_move_continue(struct l
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ }
+ 
+ static void l2cap_move_fail(struct l2cap_conn *conn, u8 ident, u16 icid,
+@@ -5165,6 +5195,7 @@ static void l2cap_move_fail(struct l2cap
+ 	l2cap_send_move_chan_cfm(chan, L2CAP_MC_UNCONFIRMED);
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ }
+ 
+ static int l2cap_move_channel_rsp(struct l2cap_conn *conn,
+@@ -5228,6 +5259,7 @@ static int l2cap_move_channel_confirm(st
+ 	l2cap_send_move_chan_cfm_rsp(conn, cmd->ident, icid);
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -5263,6 +5295,7 @@ static inline int l2cap_move_channel_con
+ 	}
+ 
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -5635,12 +5668,11 @@ static inline int l2cap_le_credits(struc
+ 	if (credits > max_credits) {
+ 		BT_ERR("LE credits overflow");
+ 		l2cap_send_disconn_req(chan, ECONNRESET);
+-		l2cap_chan_unlock(chan);
+ 
+ 		/* Return 0 so that we don't trigger an unnecessary
+ 		 * command reject packet.
+ 		 */
+-		return 0;
++		goto unlock;
+ 	}
+ 
+ 	chan->tx_credits += credits;
+@@ -5651,7 +5683,9 @@ static inline int l2cap_le_credits(struc
+ 	if (chan->tx_credits)
+ 		chan->ops->resume(chan);
+ 
++unlock:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ 
+ 	return 0;
+ }
+@@ -6949,6 +6983,7 @@ drop:
+ 
+ done:
+ 	l2cap_chan_unlock(chan);
++	l2cap_chan_put(chan);
+ }
+ 
+ static void l2cap_conless_channel(struct l2cap_conn *conn, __le16 psm,
+@@ -7353,7 +7388,7 @@ static struct l2cap_chan *l2cap_global_f
+ 		if (src_type != c->src_type)
+ 			continue;
+ 
+-		l2cap_chan_hold(c);
++		c = l2cap_chan_hold_unless_zero(c);
+ 		read_unlock(&chan_list_lock);
+ 		return c;
+ 	}
+
 
