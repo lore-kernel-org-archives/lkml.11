@@ -2,80 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D4CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6F8C25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239445AbiHIIc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
+        id S240615AbiHIIdN convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239186AbiHIIcv (ORCPT
+        with ESMTP id S240542AbiHIIdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:32:51 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E54205F9
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 01:32:49 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M25qm4dsvzmVJS;
-        Tue,  9 Aug 2022 16:30:44 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 16:32:47 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 16:32:47 +0800
-Message-ID: <abe62159-c218-2fb5-e096-3c71c10c28e1@huawei.com>
-Date:   Tue, 9 Aug 2022 16:32:46 +0800
+        Tue, 9 Aug 2022 04:33:10 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EC5201B2
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 01:33:10 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oLKfR-0006K1-7S; Tue, 09 Aug 2022 10:32:49 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oLKfM-002fas-63; Tue, 09 Aug 2022 10:32:46 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oLKfN-0001Qi-La; Tue, 09 Aug 2022 10:32:45 +0200
+Message-ID: <b18ef07670c09d4a58b70dc3671549a9b7d5b4e2.camel@pengutronix.de>
+Subject: Re: [PATCH 2/3] ASoC: apple: mca: Start new platform driver
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Martin =?UTF-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     asahi@lists.linux.dev, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 09 Aug 2022 10:32:45 +0200
+In-Reply-To: <20220808224153.3634-3-povik+lin@cutebit.org>
+References: <20220808224153.3634-1-povik+lin@cutebit.org>
+         <20220808224153.3634-3-povik+lin@cutebit.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] mm: add warning if __vm_enough_memory fails
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     David Hildenbrand <david@redhat.com>,
-        Yongqiang Liu <liuyongqiang13@huawei.com>
-References: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi maintainer, any comments, thanks
+Hi Martin,
 
-On 2022/7/26 22:54, Kefeng Wang wrote:
-> If a process has no enough memory to allocate a new virtual mapping, we
-> may meet kinds of error, eg, fork cannot allocate memory, SIGBUS error
-> in shmem, but it is difficult to confirm them, let's add some debug
-> information to easy to check this scenario if __vm_enough_memory fails.
->
-> Reported-by: Yongqiang Liu <liuyongqiang13@huawei.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
-> v2: use pr_warn_ratelimited, suggested by David Hildenbrand
->
->   mm/util.c | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/mm/util.c b/mm/util.c
-> index 1266a33a49ea..c786e21c6051 100644
-> --- a/mm/util.c
-> +++ b/mm/util.c
-> @@ -1020,6 +1020,8 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
->   	if (percpu_counter_read_positive(&vm_committed_as) < allowed)
->   		return 0;
->   error:
-> +	pr_warn_ratelimited("%s: pid: %d, comm: %s, no enough memory for the allocation\n",
-> +			    __func__, current->pid, current->comm);
->   	vm_unacct_memory(pages);
->   
->   	return -ENOMEM;
+On Di, 2022-08-09 at 00:41 +0200, Martin Povišer wrote:
+> +	mca->rstc = devm_reset_control_get_shared(&pdev->dev, NULL);
+> +	if (IS_ERR(mca->rstc)) {
+> +		dev_dbg(&pdev->dev, "couldn't obtain reset control: %pe\n", mca->rstc);
+> +		mca->rstc = NULL;
+> +	}
+
+Please don't ignore errors, this could be -ENOMEM.
+
+For optional resets, use devm_reset_control_get_optional_shared(),
+which returns NULL if there is no resets property in the device tree.
+
+regards
+Philipp
