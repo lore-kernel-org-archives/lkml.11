@@ -2,182 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC02C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A58C25B0F
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245170AbiHITTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S245470AbiHITV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 15:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348576AbiHITRE (ORCPT
+        with ESMTP id S1347127AbiHITVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:17:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB59D273;
-        Tue,  9 Aug 2022 12:10:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0FFDB817B1;
-        Tue,  9 Aug 2022 19:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 061F5C433C1;
-        Tue,  9 Aug 2022 19:10:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660072255;
-        bh=oIx7E1aeFpBP7FxQJEeWu1a5qlcFfnMFvIQQUxlg6M0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TQAkD8W2D7pMBYvP1lYZ+lUMDwDfQd+tMvHVhr6sMgw9oPimMv8D1OrLvPRwz8//Q
-         bHo4HvbgQjR6fciYhl2dWmPioF69kHodJ5l9T8MtCBWqGcmRoxP+XEH6FhdeBNyITD
-         G0UoVNcoj3kHE3lNeS76yMBk7FabdOBIJ9JjlmoNdGad+U0OJIXe2Lom+8cnoNljUj
-         9i7eoqRYgL6PTx5k3jb20HKZ5vUHqXNCxL0NJHrGgepXX+w4yuvLogT954PJFKquOh
-         QcGJagV1mzB8auxH/PQ9tmnsjmTKs1Hk7lMAGXWNxJLE0cs4uYEgNd0/Kf06l7uAs3
-         kqREpt9+K+0IA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1CCDE4035A; Tue,  9 Aug 2022 16:10:52 -0300 (-03)
-Date:   Tue, 9 Aug 2022 16:10:52 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Andres Freund <andres@anarazel.de>
-Cc:     Roberto Sassu <roberto.sassu@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, quentin@isovalent.com,
-        ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, peterz@infradead.org, mingo@redhat.com,
-        terrelln@fb.com, nathan@kernel.org, ndesaulniers@google.com,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: [PATCH 4/4] build: Switch to new openssl API for test-libcrypto
-Message-ID: <YvKxPJLGP1BdsGQ6@kernel.org>
-References: <20220719170555.2576993-1-roberto.sassu@huawei.com>
- <20220719170555.2576993-4-roberto.sassu@huawei.com>
- <5f867295-10d2-0085-d1dc-051f56e7136a@iogearbox.net>
- <YvFW/kBL6YA3Tlnc@kernel.org>
- <YvJ6DbzBNsAgNZS4@kernel.org>
- <YvJ7awkCVBYaZ2dd@kernel.org>
- <20220809170034.hx7fyiosm3tfekwf@awork3.anarazel.de>
- <YvKvzkuUG78q/mkA@kernel.org>
+        Tue, 9 Aug 2022 15:21:45 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0C5A8
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 12:21:44 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z22so16356817edd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 12:21:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=r+avV5S2drX7G/TFGfNe00g1z/YAKwkOT5Ou5nsHkJY=;
+        b=ZIX4nAvOOGcWp15i8uPfVmKtbEGBXCGgBiIwHpC5nNIUBi7Iq5HzVNS9BhUcgOter0
+         Oz2pZJ2RXavV4TVExYGzNgrX3BkQJjqumwDM/WFjxr12SCHjp9H48+PjlxSz0os95unt
+         CPUV9XF+R7aEo6gt5l06ltaPKhdqQRG3D3AK8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=r+avV5S2drX7G/TFGfNe00g1z/YAKwkOT5Ou5nsHkJY=;
+        b=gObHtz+v2KCaX4oy7wLlRak/qiURVdtdmeFF4aFk6YIEQjUQKqqsVyv70fnxqmi//E
+         qi55NGtK4A++eFfVpmkNm5qHmTET+cA6VxDeXXajrHwtZO7wJ3P7Yy0O7Y0hd6lpSWwV
+         hT2GNMuJb8c9PeDPattyRxku3TIzuEFrSnNBN42bY0IM6jvPRevRLkONGvqgRNZ/u30c
+         xTsFm4jcYTG6r37s9dsY0gycpiYthYgOi7YEj1AHNRY7YrPW697pJjRQAPJZtHOJTMwt
+         PaMAun1sLZRPpanB2RMGt9SKZ3Jgo45uwATlmoa1DrtBH9SYwB1aEipAkEX9kBewg2d2
+         Aw1A==
+X-Gm-Message-State: ACgBeo06bmqP5LoFYVeoKV2NPX7AhwJrtzH4LZ+/19wEzajGjjkTozBF
+        qurQlqYJCmbV5+ewIGPGXkxcrXeLjj449gkLKqc=
+X-Google-Smtp-Source: AA6agR6Q/yThW7HcOs+nk883UBM8XonBrPLKXjkuuS+Ii54qGbz8SQ0BsCR++UOavcxtSPXOkqP+zA==
+X-Received: by 2002:a05:6402:a47:b0:43d:17a0:fdc9 with SMTP id bt7-20020a0564020a4700b0043d17a0fdc9mr23270631edb.41.1660072903030;
+        Tue, 09 Aug 2022 12:21:43 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id v12-20020aa7dbcc000000b0042de3d661d2sm6482292edt.1.2022.08.09.12.21.34
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 12:21:37 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id l22so15382023wrz.7
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 12:21:34 -0700 (PDT)
+X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
+ p11-20020a5d638b000000b002206e1a8794mr15428277wru.193.1660072893720; Tue, 09
+ Aug 2022 12:21:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YvKvzkuUG78q/mkA@kernel.org>
-X-Url:  http://acmel.wordpress.com
+References: <20220808073232.8808-1-david@redhat.com> <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
+ <1a48d71d-41ee-bf39-80d2-0102f4fe9ccb@redhat.com> <CAHk-=wg40EAZofO16Eviaj7mfqDhZ2gVEbvfsMf6gYzspRjYvw@mail.gmail.com>
+ <YvKwhrjnFQJ7trT1@nvidia.com>
+In-Reply-To: <YvKwhrjnFQJ7trT1@nvidia.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 9 Aug 2022 12:21:17 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgF7K2gSSpy=m_=K3Nov4zaceUX9puQf1TjkTJLA2XC_g@mail.gmail.com>
+Message-ID: <CAHk-=wgF7K2gSSpy=m_=K3Nov4zaceUX9puQf1TjkTJLA2XC_g@mail.gmail.com>
+Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, stable@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Aug 09, 2022 at 04:04:46PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Tue, Aug 09, 2022 at 10:00:34AM -0700, Andres Freund escreveu:
-> > Hi,
-> > 
-> > On 2022-08-09 12:21:15 -0300, Arnaldo Carvalho de Melo wrote:
-> > > So I backtracked, the way it works needs further consideration with
-> > > regard to the patchkit from Andres, that is already upstream, so it
-> > > would be good for Roberto to take a look at what is in torvalds/master
-> > > now and see if we have to removed that styled thing from Andres.
-> > 
-> > Why would it have to be removed - seems to be fairly independent, leaving the
-> > line conflicts aside? Or do you just mean folding it into one-big-test? If so,
-> > that'd make sense, although I'm not sure how ready the infrastructure
-> 
-> So below is the 3rd patch in Roberto's patchkit adapted, I removed the
-> FEATURE_CHECK_LDFLAGS-disassembler-init-styled setting as we now
-> automatically try with multiple sets of libraries, as with
-> disassembler-four-args.
+On Tue, Aug 9, 2022 at 12:09 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+>  Since BUG_ON crashes the machine and Linus says that crashing the
+>  machine is bad, WARN_ON will also crash the machine if you set the
+>  panic_on_warn parameter, so it is also bad, thus we shouldn't use
+>  anything.
 
-The following also had to be done:
+If you set 'panic_on_warn' you get to keep both pieces when something breaks.
 
-⬢[acme@toolbox perf]$ git log --oneline -1
-aa119945023c4ee7 (HEAD) tools, build: Retry detection of bfd-related features
-⬢[acme@toolbox perf]$ git diff
-diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
-index 928ebc355fb3f2d0..04b07ff8823487a0 100644
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -253,7 +253,8 @@ $(OUTPUT)test-disassembler-four-args.bin:
-        $(BUILD_BFD) -lopcodes -liberty -lz
+The thing is, there are people who *do* want to stop immediately when
+something goes wrong in the kernel.
 
- $(OUTPUT)test-disassembler-init-styled.bin:
--       $(BUILD) -DPACKAGE='"perf"' -lbfd -lopcodes
-+       $(BUILD_BFD) -lopcodes || $(BUILD_BFD) -lopcodes -liberty || \
-+       $(BUILD_BFD) -lopcodes -liberty -lz
+Anybody doing large-scale virtualization presumably has all the
+infrastructure to get debug info out of the virtual environment.
 
- $(OUTPUT)test-reallocarray.bin:
-        $(BUILD)
-⬢[acme@toolbox perf]$
- 
-> - Arnaldo
-> 
-> diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-> index 23648ea54e8d3d2c..0661a1cf98556ed3 100644
-> --- a/tools/perf/Makefile.config
-> +++ b/tools/perf/Makefile.config
-> @@ -297,9 +297,6 @@ FEATURE_CHECK_LDFLAGS-libpython := $(PYTHON_EMBED_LDOPTS)
->  
->  FEATURE_CHECK_LDFLAGS-libaio = -lrt
->  
-> -FEATURE_CHECK_LDFLAGS-disassembler-four-args = -lbfd -lopcodes -ldl
-> -FEATURE_CHECK_LDFLAGS-disassembler-init-styled = -lbfd -lopcodes -ldl
-> -
->  CORE_CFLAGS += -fno-omit-frame-pointer
->  CORE_CFLAGS += -ggdb3
->  CORE_CFLAGS += -funwind-tables
-> @@ -329,8 +326,8 @@ ifneq ($(TCMALLOC),)
->  endif
->  
->  ifeq ($(FEATURES_DUMP),)
-> -# We will display at the end of this Makefile.config, using $(call feature_display_entries)
-> -# As we may retry some feature detection here, see the disassembler-four-args case, for instance
-> +# We will display at the end of this Makefile.config, using $(call feature_display_entries),
-> +# as we may retry some feature detection here.
->    FEATURE_DISPLAY_DEFERRED := 1
->  include $(srctree)/tools/build/Makefile.feature
->  else
-> @@ -924,13 +921,9 @@ ifndef NO_LIBBFD
->  
->      ifeq ($(feature-libbfd-liberty), 1)
->        EXTLIBS += -lbfd -lopcodes -liberty
-> -      FEATURE_CHECK_LDFLAGS-disassembler-four-args += -liberty -ldl
-> -      FEATURE_CHECK_LDFLAGS-disassembler-init-styled += -liberty -ldl
->      else
->        ifeq ($(feature-libbfd-liberty-z), 1)
->          EXTLIBS += -lbfd -lopcodes -liberty -lz
-> -        FEATURE_CHECK_LDFLAGS-disassembler-four-args += -liberty -lz -ldl
-> -        FEATURE_CHECK_LDFLAGS-disassembler-init-styled += -liberty -lz -ldl
->        endif
->      endif
->      $(call feature_check,disassembler-four-args)
-> @@ -1356,7 +1349,7 @@ endif
->  
->  # re-generate FEATURE-DUMP as we may have called feature_check, found out
->  # extra libraries to add to LDFLAGS of some other test and then redo those
-> -# tests, see the block about libbfd, disassembler-four-args, for instance.
-> +# tests.
->  $(shell rm -f $(FEATURE_DUMP_FILENAME))
->  $(foreach feat,$(FEATURE_TESTS),$(shell echo "$(call feature_assign,$(feat))" >> $(FEATURE_DUMP_FILENAME)))
->  
->  
-> > 
-> > FWIW, if I would have to maintain these, I'd probably change FEATURE_TESTS,
-> > FEATURE_DISPLAY into one-item-per-line to make conflicts less common and
-> > easier to resolve.
-> > 
-> > 
-> > > Andres, if you could take a look at Roberto's patchkit as well that
-> > > would be great.
-> > 
-> > I briefly scanned it, and the only real comment I have mirror's Quentin's,
-> > namely that it'd be nice to avoid displaying more tests that don't tell the
-> > user much.
-> > 
-> > Greetings,
-> > 
-> > Andres Freund
-> 
-> -- 
-> 
-> - Arnaldo
+And people who run controlled loads in big server machine setups and
+have a MIS department to manage said machines typically also prefer
+for a machine to just crash over continuing.
 
--- 
+So in those situations, a dead machine is still a dead machine, but
+you get the information out, and panic_on_warn is fine, because panic
+and reboot is fine.
 
-- Arnaldo
+And yes, that's actually a fairly common case. Things like syzkaller
+etc *wants* to abort on the first warning, because that's kind of the
+point.
+
+But while that kind of virtualized automation machinery is very very
+common, and is a big deal, it's by no means the only deal, and the
+most important thing to the point where nothing else matters.
+
+And if you are *not* in a farm, and if you are *not* using
+virtualization, a dead machine is literally a useless brick. Nobody
+has serial lines on individual machines any more. In most cases, the
+hardware literally doesn't even exist any more.
+
+So in that situation, you really cannot afford to take the approach of
+"just kill the machine". If you are on a laptop and are doing power
+management code, you generally cannot do that in a virtual
+environment, and you already have enough problems with suspend and
+resume being hard to debug, without people also going "oh, let's just
+BUG_ON() and kill the machine".
+
+Because the other side of that "we have a lot of machine farms doing
+automated testing" is that those machine farms do not generally find a
+lot of the exciting cases.
+
+Almost every single merge window, I end up having to bisect and report
+an oops or a WARN_ON(), because I actually run on real hardware. And
+said problem was never seen in linux-next.
+
+So we have two very different cases: the "virtual machine with good
+logging where a dead machine is fine" - use 'panic_on_warn'. And the
+actual real hardware with real drivers, running real loads by users.
+
+Both are valid. But the second case means that BUG_ON() is basically
+_never_ valid.
+
+              Linus
