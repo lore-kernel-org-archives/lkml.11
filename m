@@ -2,107 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE9CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6B6C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243945AbiHINlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 09:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50536 "EHLO
+        id S243970AbiHINnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 09:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243891AbiHINlJ (ORCPT
+        with ESMTP id S231377AbiHINnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 09:41:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C125717A8C
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 06:41:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660052467;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6JVEXsrvyIxtqd+XMjC/aUVcu6/6RgSK4DxmHm7rQqM=;
-        b=bx9gNPsOyM5wPHyRQrrlWihNHDbTG04HOpvF56HIOm/TAeSJLxAi/H7ZwBVygcW9UkXrJv
-        hqQdVNkUA6DeWN1Y4EOUDNwE4psoWGKV460G2NiIGKD793Tlj2yQRznV0WCdOILBCBI2kd
-        k2NqxuYwBNV7sNQZsstVV/ieZDeOTBE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-594-lga5l104PYmOVZA0YUR4ug-1; Tue, 09 Aug 2022 09:41:04 -0400
-X-MC-Unique: lga5l104PYmOVZA0YUR4ug-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 457EE185A7B2;
-        Tue,  9 Aug 2022 13:41:04 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7ECB4492C3B;
-        Tue,  9 Aug 2022 13:41:03 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-cc:     dhowells@redhat.com, marc.dionne@auristor.com,
-        linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] afs: Fix refcount handling
+        Tue, 9 Aug 2022 09:43:04 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5753D18B13
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 06:43:02 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2DhM4j6czjXPs;
+        Tue,  9 Aug 2022 21:39:47 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 21:42:58 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
+ 2022 21:42:57 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <maz@kernel.org>, <james.morse@arm.com>,
+        <alexandru.elisei@arm.com>, <suzuki.poulose@arm.com>,
+        <oliver.upton@linux.dev>
+Subject: [PATCH v2] KVM: arm64: fix compile error because of shift overflow
+Date:   Tue, 9 Aug 2022 21:51:27 +0800
+Message-ID: <20220809135127.480285-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <432489.1660052462.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 09 Aug 2022 14:41:02 +0100
-Message-ID: <432490.1660052462@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Using GENMASK() to generate the masks of device type and device id, it makes
+code unambiguous, also it can fix the following fix compile error because of
+shift overflow when using low verison gcc(mine version is 7.5):
 
-Could you pull this pair of patches?  The first patch converts afs to use
-refcount_t for its refcounts and the second patch fixes afs_put_call() and
-afs_put_server() to save the values they're going to log in the tracepoint
-before decrementing the refcount.
+In function ‘kvm_vm_ioctl_set_device_addr.isra.38’,
+    inlined from ‘kvm_arch_vm_ioctl’ at arch/arm64/kvm/arm.c:1454:10:
+././include/linux/compiler_types.h:354:38: error: call to ‘__compiletime_assert_599’ \
+declared with attribute error: FIELD_GET: mask is not constant
+  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
 
-Thanks,
-David
-
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
+Fixes: 9f968c9266aa ("KVM: arm64: vgic-v2: Add helper for legacy dist/cpuif base address setting")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
-The following changes since commit 6e7765cb477a9753670d4351d14de93f1e9dbbd=
-4:
+v2:
+  Using GENMASK() to generate the masks.
+---
+ arch/arm64/include/uapi/asm/kvm.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-  Merge tag 'asm-generic-fixes-5.19-2' of git://git.kernel.org/pub/scm/lin=
-ux/kernel/git/arnd/asm-generic (2022-07-27 09:50:18 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags=
-/afs-fixes-20220802
-
-for you to fetch changes up to 2757a4dc184997c66ef1de32636f73b9f21aac14:
-
-  afs: Fix access after dec in put functions (2022-08-02 18:21:29 +0100)
-
-----------------------------------------------------------------
-AFS fixes
-
-----------------------------------------------------------------
-David Howells (2):
-      afs: Use refcount_t rather than atomic_t
-      afs: Fix access after dec in put functions
-
- fs/afs/cell.c              | 61 ++++++++++++++++++++++-------------------=
------
- fs/afs/cmservice.c         |  4 +--
- fs/afs/internal.h          | 16 ++++++------
- fs/afs/proc.c              |  6 ++---
- fs/afs/rxrpc.c             | 31 ++++++++++++-----------
- fs/afs/server.c            | 46 ++++++++++++++++++++--------------
- fs/afs/vl_list.c           | 19 +++++----------
- fs/afs/volume.c            | 21 ++++++++++------
- include/trace/events/afs.h | 36 +++++++++++++--------------
- 9 files changed, 124 insertions(+), 116 deletions(-)
+diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+index 3bb134355874..5e7dfaf76ec1 100644
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -75,9 +75,9 @@ struct kvm_regs {
+ 
+ /* KVM_ARM_SET_DEVICE_ADDR ioctl id encoding */
+ #define KVM_ARM_DEVICE_TYPE_SHIFT	0
+-#define KVM_ARM_DEVICE_TYPE_MASK	(0xffff << KVM_ARM_DEVICE_TYPE_SHIFT)
++#define KVM_ARM_DEVICE_TYPE_MASK	GENMASK(15, KVM_ARM_DEVICE_TYPE_SHIFT)
+ #define KVM_ARM_DEVICE_ID_SHIFT		16
+-#define KVM_ARM_DEVICE_ID_MASK		(0xffff << KVM_ARM_DEVICE_ID_SHIFT)
++#define KVM_ARM_DEVICE_ID_MASK		GENMASK(31, KVM_ARM_DEVICE_ID_SHIFT)
+ 
+ /* Supported device IDs */
+ #define KVM_ARM_DEVICE_VGIC_V2		0
+-- 
+2.25.1
 
