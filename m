@@ -2,114 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27DA2C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 02:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11974C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 02:11:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbiHICKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 22:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
+        id S229719AbiHICK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 22:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242451AbiHICJZ (ORCPT
+        with ESMTP id S238847AbiHICHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 22:09:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67811A393
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 19:09:21 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M1xKJ4SlrzmVZL;
-        Tue,  9 Aug 2022 10:07:16 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 10:09:18 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 10:09:18 +0800
-Subject: Re: [PATCH] ARM: Remove the special printing format of pc and lr in
- __show_regs()
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>
-References: <20220801032016.1524-1-thunder.leizhen@huawei.com>
- <YvDaYakZnP5Z+2ia@shell.armlinux.org.uk>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <9f630d80-68c7-8816-f2f6-7e39c890c4d1@huawei.com>
-Date:   Tue, 9 Aug 2022 10:09:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Mon, 8 Aug 2022 22:07:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312341A393;
+        Mon,  8 Aug 2022 19:07:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE4BEB80E0F;
+        Tue,  9 Aug 2022 02:07:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7402EC433D6;
+        Tue,  9 Aug 2022 02:07:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660010856;
+        bh=8D00+znaxtmslp8WGIL8uG4PgO8P1iCMgzUX8+8KU6c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=L2LyQUVychSP8SLJFxKTvz/Ys/7tVqVtZWFVZ8nZie+B5YwIDTRbda8bzqDyCnv/G
+         sVbKqfr0EsJyMmkM5hAjUooHdyaxqzKSpeiYDbudFpBGFOzF531tW1ki6KBtn3f/7m
+         5Tt8Nchd2is8JPlI56Pi6MsgC1yKmZrj7zD8fNcSD8Ky3/Qy+n0oqiRI5uZo34J6bT
+         gxVXV9QbSgTFW1kwr+46R/QA6KAj74VYAik2r20DH9auAingou6wH9aNeUb09F8ZaO
+         CaZPPfMQOV4JM+9ACRO3eiqjCXIrHOwMVIYqiRIPUX3yeRgt0Wmy+h/bKyeo4cRVk5
+         LV4ByMYPyQmPA==
+Date:   Mon, 8 Aug 2022 21:07:34 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, pmladek@suse.com,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH v5 27/32] PCI/P2PDMA: Convert to printbuf
+Message-ID: <20220809020734.GA1260912@bhelgaas>
 MIME-Version: 1.0
-In-Reply-To: <YvDaYakZnP5Z+2ia@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1b92761a-c166-b84f-8d77-a966d4c0ef9a@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/8/8 17:41, Russell King (Oracle) wrote:
-> On Mon, Aug 01, 2022 at 11:20:16AM +0800, Zhen Lei wrote:
->> Currently, instruction pointers are printed in [<%08lx>] format to make
->> them more visible. However, it is not necessary in __show_regs() because
->> they have the prefix 'pc :' or 'lr :', and it is also inconsistent with
->> that of other registers, which causes misalignment.
+On Mon, Aug 08, 2022 at 02:42:03PM -0400, Kent Overstreet wrote:
+> On 8/8/22 13:51, Bjorn Helgaas wrote:
+> > I don't object to the patch, but it would be nice if the commit log
+> > hinted at what the advantage is.  I assume it's faster/safer/better in
+> > some way, but I have no idea what.
 > 
-> The formatting is not "to make them more visible" - it was to mark the
-> addresses that we wanted the ksymoops utility to translate to kernel
-> symbols before we had kallsyms in the kernel. If one disables kallsyms,
-> then we still need a way to translate kernel addresses to symbols.
+> Printbufs have some additional features over seq_buf but they're not used
+> here. The main one you might be interested in is heap allocation: that means
+> no need to statically allocate buffers on the stack and no need to calculate
+> the buffer size, printbufs will reallocate as necessary.
 
-I searched the git log and found that the ksymoops utility is discarded.
+This doesn't tell me what the advantage of this patch is, since I
+don't think *this* patch uses heap allocation.
 
-See:
-073a9ecb3a73401662430bb955aedeac1de643d1
-However, a commit in the pre-git era [1] had added the statement,
-"ksymoops is useless on 2.6.  Please use the Oops in its original format".
+As far as I can tell, this particular patch doesn't improve safety or
+readability, so "convert X to Y even though we don't use any fancy Y
+features" is a pointless message.
 
-That statement existed until commit 4eb9241127a0 ("Documentation:
-admin-guide: update bug-hunting.rst") finally removed the stale
-ksymoops information.
+But if printbufs are better than seq_buf overall, and converting this
+gets us closer to the goal of removing seq_buf completely, that's a
+perfectly acceptable reason.  Just say that.
 
-4eb9241127a0b5ac3aaaf1b246728009527ebc86
-- delete all references to ksymoops since it is no longer applicable;
-
+> I generally haven't been converting code to use that unless it's obvious
+> that we're in a context where it's safe to allocate memory and can deal with
+> allocation failures.
 > 
-> I notice there is a script which helps with this that is part of the
-> kernel source - scripts/decode_stacktrace.sh. I haven't tried this on
-> arm32 since I always use kallsyms - and I suspect that is rather
-> universally true as it avoids needing System.map files etc to decode
-> the oops. That said, if you're building a kernel for small systems,
-> you probably don't want the overhead of kallsyms.
-
-Yes, I read scripts/decode_stacktrace.sh, it requires the format "[<...>]".
-But if that's the only concern, maybe we can do the conversion from
-"pc: addr" and "lr: addr" to "[<addr>]" first in scripts/decode_stacktrace.sh
-
-I'm usually "objdump -d vmlinux > asm_file", then search "addr:" in asm_file.
-
-Honestly, I think format "[<...>]" is dump_backtrace()'s requirement, not __show_regs()'s.
-
-
+> I notice that in calc_map_type_and_dist() you're using xa_store() which can
+> fail, but you're not checking for that or returning errors properly :)
+> perhaps a fix for that could also switch to using printbuf in
+> heap-allocation mode.
 > 
-> So, there's an argument for keeping it - it's an API in that it
-> provides hints to scripting to identify which values need to be
-> converted to symbols. There's also the argument for getting rid of it,
-> which is that hardly anyone does that anymore.
+> > Also, cpu_show_meltdown() doesn't appear in this patch, so maybe
+> > that's relevant to some other patch but not this one?
 > 
-> The question is, which is the more important argument, and I don't
-> think there's a definite answer. So I'm inclined to leave this
-> as-is.
-
-OK
-
-> 
-
--- 
-Regards,
-  Zhen Lei
+> Whoops, was copying the commit message from another patch, yeah.n
