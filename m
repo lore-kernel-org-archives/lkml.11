@@ -2,77 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AB4C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1527C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245670AbiHIUQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 16:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S1343889AbiHIUQF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 16:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344982AbiHIUPu (ORCPT
+        with ESMTP id S1345188AbiHIUPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 16:15:50 -0400
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6201713B;
-        Tue,  9 Aug 2022 13:15:49 -0700 (PDT)
-Received: by mail-io1-f49.google.com with SMTP id x64so10540986iof.1;
-        Tue, 09 Aug 2022 13:15:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=P6nva6fF4oucGEQzdC/pymMNLM5179tf7HGPx3y8Hyc=;
-        b=1LtOBn4P668TrQ8n+SnGkT+4QwviE+xbSgDOvXiirm4Nh8d5kx85c9HDbFbM74AmFS
-         mm5msMZr1X0uOUHSADhzz5/kaG2ROM2OLBDG9QcvQ8I/6LWsS9oz2zer+yniRuFqmidt
-         OyWqjCdtJqyhEf6afyHr/2yJjJCL4O0SDfs49WLZyciT10RV1FUU4s8+YkkkYenPWcnn
-         N9+aRSCM2NPzAZXKX1+wKOY3UbMjnvUuZPyF7yBdk+5oJpsxHz3XHIw0fxW+4gLH6ivO
-         +OCxBNXxG0/3DoQ33Hf7Ow1ijQ6nVFd8tD+SF48FWioCmq2OBTfj0GaF7hbYJQZ/ralo
-         G0bA==
-X-Gm-Message-State: ACgBeo1b4T62uHUFQPYFn/udBUhBadsfzBfk2FAgnEReREDyk+FqKW+Q
-        Rm4jbZg8NLv4terc4Xz16fhSHRyP0Q==
-X-Google-Smtp-Source: AA6agR4NKtP/OF5xrXLLg3UNZO4muwOsD9ToaP+gwyexb1NzV6xUl19KqXN5MxSKBjLT4fP4zW+grQ==
-X-Received: by 2002:a05:6638:144a:b0:343:2464:d030 with SMTP id l10-20020a056638144a00b003432464d030mr3269144jad.89.1660076148592;
-        Tue, 09 Aug 2022 13:15:48 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id w76-20020a022a4f000000b00342d85cde45sm4762488jaw.120.2022.08.09.13.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 13:15:47 -0700 (PDT)
-Received: (nullmailer pid 2319487 invoked by uid 1000);
-        Tue, 09 Aug 2022 20:15:44 -0000
-Date:   Tue, 9 Aug 2022 14:15:44 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sameer Pujar <spujar@nvidia.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tiwai@suse.com, lgirdwood@gmail.com, broonie@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        perex@perex.cz, kuninori.morimoto.gx@renesas.com,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH v3 2/3] ASoC: dt-bindings: Add sample format conversion
-Message-ID: <20220809201544.GA2319453-robh@kernel.org>
-References: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
- <1659936452-2254-3-git-send-email-spujar@nvidia.com>
+        Tue, 9 Aug 2022 16:15:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7A126371
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:15:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660076129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZzTWuyHwis4b2KJ9R8kWXsQlD0tgnuiVwQ48okOh2B0=;
+        b=Hxb1IcnzyZnq84YVJcfM0JN++ux6BjP5iwTngr6bHHOxUWwNnQA7OutyHxGHvgt6PvoJi8
+        SsgJ8Nt92jDLeAUk0DSxajQ6AYd3IofoARoDoH4Tu7N327vfuocyX0RhIFDc/71RAsjmCh
+        E8CM5yiogkwbDoV5wAqE9Iu2Kq0PsyU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-617-We1pDNjLNLasyQ1PbkmpMg-1; Tue, 09 Aug 2022 16:15:26 -0400
+X-MC-Unique: We1pDNjLNLasyQ1PbkmpMg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BAF141C07552;
+        Tue,  9 Aug 2022 20:15:25 +0000 (UTC)
+Received: from [10.22.18.32] (unknown [10.22.18.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CFBE8C15BA1;
+        Tue,  9 Aug 2022 20:15:24 +0000 (UTC)
+Message-ID: <7bd2c5c9-edb4-c071-0d24-28c6744f826b@redhat.com>
+Date:   Tue, 9 Aug 2022 16:15:24 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1659936452-2254-3-git-send-email-spujar@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/2] cgroup/cpuset: Keep user set cpus affinity
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Will Deacon <will@kernel.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220801154124.2011987-1-longman@redhat.com>
+ <20220801154124.2011987-3-longman@redhat.com>
+ <YvK7qVkmzbA12Eut@slm.duckdns.org>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YvK7qVkmzbA12Eut@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 08 Aug 2022 10:57:31 +0530, Sameer Pujar wrote:
-> Presently "convert-channels" and "convert-rate" DT bindings are available
-> for channel and rate fixups respectively.
-> 
-> Similarly add "convert-sample-format" binding to fixup DAI sample format
-> as well. This is added to audio-graph-card based bindings.
-> 
-> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-> Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-> ---
->  Documentation/devicetree/bindings/sound/audio-graph-port.yaml |  4 ++++
->  Documentation/devicetree/bindings/sound/audio-graph.yaml      |  2 ++
->  Documentation/devicetree/bindings/sound/dai-params.yaml       | 10 ++++++++++
->  3 files changed, 16 insertions(+)
-> 
+On 8/9/22 15:55, Tejun Heo wrote:
+> (cc'ing Linus)
+>
+> Hello,
+>
+> On Mon, Aug 01, 2022 at 11:41:24AM -0400, Waiman Long wrote:
+>> It was found that any change to the current cpuset hierarchy may reset
+>> the cpumask of the tasks in the affected cpusets to the default cpuset
+>> value even if those tasks have cpus affinity explicitly set by the users
+>> before. That is especially easy to trigger under a cgroup v2 environment
+>> where writing "+cpuset" to the root cgroup's cgroup.subtree_control
+>> file will reset the cpus affinity of all the processes in the system.
+>>
+>> That is problematic in a nohz_full environment where the tasks running
+>> in the nohz_full CPUs usually have their cpus affinity explicitly set
+>> and will behave incorrectly if cpus affinity changes.
+>>
+>> Fix this problem by looking at user_cpus_ptr which will be set if
+>> cpus affinity have been explicitly set before and use it to restrcit
+>> the given cpumask unless there is no overlap. In that case, it will
+>> fallback to the given one.
+>>
+>> With that change in place, it was verified that tasks that have its
+>> cpus affinity explicitly set will not be affected by changes made to
+>> the v2 cgroup.subtree_control files.
+> The fact that the kernel clobbers user-specified cpus_allowed as cpu
+> availability changes always bothered me and it has been causing this sort of
+> problems w/ cpu hotplug and cpuset. We've been patching this up partially
+> here and there but I think it would be better if we just make the rules
+> really simple - ie. allow users to configure whatever cpus_allowed as long
+> as that's within cpu_possible_mask and override only the effective
+> cpus_allowed if the mask leaves no runnable CPUs, so that we can restore the
+> original configured behavior if and when some of the cpus become available
+> again.
+>
+> One obvious problem with changing the behavior is that it may affect /
+> confuse users expecting the current behavior however inconsistent it may be,
+> but given that we have partially changed how cpus_allowed interacts with
+> hotplug in the past and the current behavior can be inconsistent and
+> surprising, I don't think this is a bridge we can't cross. What do others
+> think?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+My patch will still subject the cpus_allowed list to the constraint 
+imposed by the current cpuset. It will keep as much of what the user 
+specified though. If we are worrying about backward compatibility, maybe 
+we can restrict that change in behavior to cgroup v2 only or we can add 
+a sysctl parameter to restore old behavior if the user choose to.
+
+Users are now gradually migrating over to cgroup v2 and they do 
+understand that there are some changes in behavior when using cgroup v2.
+
+Cheers,
+Longman
+
