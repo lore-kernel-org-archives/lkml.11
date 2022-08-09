@@ -2,77 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 602CEC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DC0C25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245603AbiHIR3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 13:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
+        id S245405AbiHIR36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 13:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245582AbiHIR3U (ORCPT
+        with ESMTP id S245702AbiHIR3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 13:29:20 -0400
-Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472392558E
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 10:29:17 -0700 (PDT)
-Received: by mail-vk1-xa2d.google.com with SMTP id w129so6198727vkg.10
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 10:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=X51BqTmyz62H+vqsKG64R+IOzVhf2VTJSfvImzqHNOU=;
-        b=oD9ZwFgnvCcKlSTZr6o3yp92Q2QKX6zkHMaNekBLIa6CxUvpM6grqwVhEGXyKhDjVg
-         9ZFgBhb1+OqFRgDWm54ZDDIFdfne2uu/TXn/VsAlC3NsFEfwULv0ciL0LfPBPlWq8JmL
-         sc9BgEKYUO0+x119ZGaTh+/7I5vv4ix/v+10Rv341iFLCKJc4TAB00qBZO49R3lbplF2
-         WAPZCYQi0qCl5YmbIu03wnk2TgXGThxyRD1mkIZptfKu7r1BUWwgVVi97N5RWyK18cgL
-         vdwaB9D0s59SqbZ1OwruQAL9c07i1c4nXOatjkb58naDajulOBYpB/4y4OQhs8JTeEDu
-         NgJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=X51BqTmyz62H+vqsKG64R+IOzVhf2VTJSfvImzqHNOU=;
-        b=hwHhsC9Pb3bREywnxV16wKVZcDeUzAi97E1cFE6g5wKruSNSnclfrq6wM1oBgxvzXH
-         ms414LWXL5Zl487ghskARZ+ZsSFhzPK6FfX7WjKQedtl7OHri4qxzzGrYvWPQpOVz0zD
-         991EM33bVewGtwlJvLMRWH5ExPuMKAn50g4ZGCg/YS7Yh7J8uIyxG34CAituWV8Z0Z78
-         /BIxgm/RVNabgRcCzYfJ3luecLx60vob02TWAW+CIT3ikufrm3/JNrk3jVpVycUIdr/e
-         ecNIlj0gHwb3lmwqG5vA8/MA86YOSndlTr4VWsm+5PYP78YgdsM1+Q7VWEwf+aT/8NNx
-         YIDQ==
-X-Gm-Message-State: ACgBeo1IcXcQY0fMkpAJtqqetllBX0XpRONHEXJDgztKtdvMWUsu8XC5
-        uL5ddbGuog3UEoDa/V/NFNL31x9P0QmLZtnxAN002Q==
-X-Google-Smtp-Source: AA6agR7NMFLsstQwzdrKMUje0FEdQ/a6KEXBcZictn3Xkq3vl7/nI4wY6OyKJziAnLk46yFHT1ibpMCA054EnVyZUgI=
-X-Received: by 2002:a1f:1bd1:0:b0:377:b693:bb39 with SMTP id
- b200-20020a1f1bd1000000b00377b693bb39mr10070581vkb.22.1660066156290; Tue, 09
- Aug 2022 10:29:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220805214734.1937451-1-eugenis@google.com> <875yj1x0k0.wl-maz@kernel.org>
- <CAFKCwrjVaOdrGktxVHLCDPyJSRjZ0B3FHTGsb3PXMULL=dw9rA@mail.gmail.com> <87v8r1uztz.wl-maz@kernel.org>
-In-Reply-To: <87v8r1uztz.wl-maz@kernel.org>
-From:   Evgenii Stepanov <eugenis@google.com>
-Date:   Tue, 9 Aug 2022 10:29:05 -0700
-Message-ID: <CAFKCwriq-Vh+fhxso=xqtKzkL95QkYOOkMR8XwTOJfeg1M-2qQ@mail.gmail.com>
-Subject: Re: [PATCH] mte: Follow arm64.nomte override in MMU setup.
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 9 Aug 2022 13:29:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C967C252B6;
+        Tue,  9 Aug 2022 10:29:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 47706CE171B;
+        Tue,  9 Aug 2022 17:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AD044C433B5;
+        Tue,  9 Aug 2022 17:29:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660066182;
+        bh=1s0kU8ZNmQOMeHYS5xzh4rY1xIVgQNQ7pjwwn99rFiU=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=The/Vfktse3a86iT9E/03CwodAA3AWwJa5M4n68m6ZjPTCCkZPhJqMQ0oWR1VfNH7
+         ULy8rwfuYsOthI7fe8UqLZeI7d9Cfxii7oo/dOetWOk9TdrsTzkdYmG2qyOsCAMr+t
+         T5iJkVLwL+wQ0u2/uwQulQ2ISPpdknNHcyGnQKJcWcs5a0fL5MdwiH9b6UF6V2jwa9
+         D9MovMQUPgqUTBRzqcbsSS0ZJ62Uy5ZeYfiDKie5hIMMvaALLGo3wS2GNoqXPI2CYX
+         LlK1y8MAqDv0XQ0qaQos7c1TiutQ2r7H9EbAzGUF7sUUnouYvaVGLkDwm8J0ZYxsrh
+         sI45UOGgQAEbw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 97D75C43142;
+        Tue,  9 Aug 2022 17:29:42 +0000 (UTC)
+Subject: Re: [GIT PULL] afs: Fix refcount handling
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <432490.1660052462@warthog.procyon.org.uk>
+References: <432490.1660052462@warthog.procyon.org.uk>
+X-PR-Tracked-List-Id: <linux-fsdevel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <432490.1660052462@warthog.procyon.org.uk>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/afs-fixes-20220802
+X-PR-Tracked-Commit-Id: 2757a4dc184997c66ef1de32636f73b9f21aac14
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4b22e2074195097c9d6bdc688288d12b7b236bae
+Message-Id: <166006618261.16033.9354503954549139819.pr-tracker-bot@kernel.org>
+Date:   Tue, 09 Aug 2022 17:29:42 +0000
+To:     David Howells <dhowells@redhat.com>
+Cc:     torvalds@linux-foundation.org, dhowells@redhat.com,
+        marc.dionne@auristor.com, linux-afs@lists.infradead.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 9:49 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> In which case what is the tag memory doing in the linear map?
-> Shouldn't it be marked as reserved, not mapped, and in general
-> completely ignored by the NS OS?
+The pull request you sent on Tue, 09 Aug 2022 14:41:02 +0100:
 
-That would be wasteful. The idea is to only reserve the parts of the
-tag memory that correspond to the TZ carveout and release the rest to
-the NS OS.
+> git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/afs-fixes-20220802
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4b22e2074195097c9d6bdc688288d12b7b236bae
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
