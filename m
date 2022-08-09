@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27244C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01282C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344142AbiHISH5 (ORCPT
+        id S1344345AbiHISIL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
+        Tue, 9 Aug 2022 14:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343758AbiHISHH (ORCPT
+        with ESMTP id S1344918AbiHISHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:07:07 -0400
+        Tue, 9 Aug 2022 14:07:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9C9A46D;
-        Tue,  9 Aug 2022 11:03:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC1E286FE;
+        Tue,  9 Aug 2022 11:03:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECD1161012;
-        Tue,  9 Aug 2022 18:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F64C433D7;
-        Tue,  9 Aug 2022 18:03:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 805846109E;
+        Tue,  9 Aug 2022 18:03:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE51C43470;
+        Tue,  9 Aug 2022 18:03:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068189;
-        bh=dGnVn5Z9grRssWnblV0hmoYJQANPk3JcoW+xhK13lyo=;
+        s=korg; t=1660068195;
+        bh=kstU9LTQm5O5mokQH2ycrKzFS0gB6EdhvNLItgTGQ0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fiMOiOQLaWrcOXeHbg8zKxiK4BmLh7xlX0P6Jd+OIZmj8GLPiP5MFrQTOEdZXvJZa
-         Im6KjGl2A7eoiiajleW00Er2E5cq0EcWXgPiLI8+2U4CpzO99mbmSwvEmGqipQuhxl
-         BPCGXrA7gdghqK1kISxRZJLgPS4t+M0SOM091d4U=
+        b=Pt+jwiebCZIpKQxiW72MtuKf/x72CKsb6NGffiuxPECGxuKxteXOkzPK79flBBkk4
+         QrG7GH4ynNrSGn75kvIzHaeUtQ/sO2v6wq3n2yv7Rz+CP7gchPLu67ELf7Gnf6g6jQ
+         0V1yCspXsdlb6rC4Vsbvot9AW4zzo3nLB0qcZ5s8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 03/15] ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-Date:   Tue,  9 Aug 2022 20:00:21 +0200
-Message-Id: <20220809175510.421778760@linuxfoundation.org>
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 05/15] bpf: Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()
+Date:   Tue,  9 Aug 2022 20:00:23 +0200
+Message-Id: <20220809175510.492285257@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
 References: <20220809175510.312431319@linuxfoundation.org>
@@ -50,75 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: John Fastabend <john.fastabend@gmail.com>
 
-commit f0341e67b3782603737f7788e71bd3530012a4f4 upstream.
+commit 294f2fc6da27620a506e6c050241655459ccd6bd upstream.
 
-Taking a recent change in the i8042 quirklist to this one: Clevo
-board_names are somewhat unique, and if not: The generic Board_-/Sys_Vendor
-string "Notebook" doesn't help much anyway. So identifying the devices just
-by the board_name helps keeping the list significantly shorter and might
-even hit more devices requiring the fix.
+Currently, for all op verification we call __red_deduce_bounds() and
+__red_bound_offset() but we only call __update_reg_bounds() in bitwise
+ops. However, we could benefit from calling __update_reg_bounds() in
+BPF_ADD, BPF_SUB, and BPF_MUL cases as well.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Fixes: c844d22fe0c0 ("ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU")
-Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+For example, a register with state 'R1_w=invP0' when we subtract from
+it,
+
+ w1 -= 2
+
+Before coerce we will now have an smin_value=S64_MIN, smax_value=U64_MAX
+and unsigned bounds umin_value=0, umax_value=U64_MAX. These will then
+be clamped to S32_MIN, U32_MAX values by coerce in the case of alu32 op
+as done in above example. However tnum will be a constant because the
+ALU op is done on a constant.
+
+Without update_reg_bounds() we have a scenario where tnum is a const
+but our unsigned bounds do not reflect this. By calling update_reg_bounds
+after coerce to 32bit we further refine the umin_value to U64_MAX in the
+alu64 case or U32_MAX in the alu32 case above.
+
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/158507151689.15666.566796274289413203.stgit@john-Precision-5820-Tower
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/video_detect.c |   34 ----------------------------------
- 1 file changed, 34 deletions(-)
+ kernel/bpf/verifier.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -387,23 +387,6 @@ static const struct dmi_system_id video_
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xRU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
- 		},
- 	},
-@@ -427,23 +410,6 @@ static const struct dmi_system_id video_
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xNU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5083,6 +5083,7 @@ static int adjust_scalar_min_max_vals(st
+ 		coerce_reg_to_size(dst_reg, 4);
+ 	}
+ 
++	__update_reg_bounds(dst_reg);
+ 	__reg_deduce_bounds(dst_reg);
+ 	__reg_bound_offset(dst_reg);
+ 	return 0;
 
 
