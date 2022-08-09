@@ -2,163 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F2AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7D3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbiHILmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
+        id S241189AbiHILph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 07:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbiHILmw (ORCPT
+        with ESMTP id S230508AbiHILpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:42:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C879B22B3F;
-        Tue,  9 Aug 2022 04:42:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660045371; x=1691581371;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k+q8/MfB6T1wOsTh6u+efttkxB0NTXmq/yeTF+WM02Y=;
-  b=BS8gHBrr8mSU/7/oaXgZFwM0jZ2QfqPh8VfkF7+2HX3k/hHTG0eUi14k
-   VSw9K+gK9JzK5jKOEGcQ8c+7wYpyqvOKWnYdeM/QHqo8ZyWijerft4+HB
-   BFVgxQhaZ+kLgM8gThn2i9yZuLBVJWM9NTc45bDsZZYPCwDglXHCOdXJk
-   XiSWgObzf3ozAcEE+uc/c9A4+279DjY41uw515jXqGwSflR8pSUtHq0vs
-   RtWN8HblbDebpEorFJq8e9fcAY05EwZTcpw2MoCHg34jKKGqKD8x5IxIk
-   3PJjC43I1aITMP114VfOVDe2zlnmjrcKCb6bpa8NLQl6nMfJ8ERbzdzqJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="316743304"
-X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="316743304"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:42:51 -0700
-X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="707796787"
-Received: from labukara-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.251.214.212])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:42:45 -0700
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id 867B1103886; Tue,  9 Aug 2022 14:45:44 +0300 (+03)
-Date:   Tue, 9 Aug 2022 14:45:44 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv7 14/14] x86/tdx: Add unaccepted memory support
-Message-ID: <20220809114544.q4f7cetqgv2gj5tx@box.shutemov.name>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-15-kirill.shutemov@linux.intel.com>
- <Yt//ZMrxtTwtKBqu@zn.tnic>
+        Tue, 9 Aug 2022 07:45:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E28E18B31
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 04:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660045532;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YrRdlwFzhyL1JgoDWLNI0P7/kC4GOv+tysqYh41vN90=;
+        b=ICp4GNofDMWn7SdwBngqYBVgP4mmy06XJ6zP7FS2Jas25LBJm2C6O7YUa7Lds2Yp6yIsCW
+        EGs0HOMWTgNIVqsczCO4RGGdAGUbfCvSRMNoqvjmpL0TRKAu5ozioHKVi9V1tHzKzdeet7
+        kzR+j5stiIPhxpb+IpoyIjpuXQ2PD/o=
+Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
+ [209.85.217.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-300-AlZ_RwlOP_-OB1JgLxca5w-1; Tue, 09 Aug 2022 07:45:31 -0400
+X-MC-Unique: AlZ_RwlOP_-OB1JgLxca5w-1
+Received: by mail-vs1-f72.google.com with SMTP id t62-20020a675f41000000b003880bf5661fso2203676vsb.19
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 04:45:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YrRdlwFzhyL1JgoDWLNI0P7/kC4GOv+tysqYh41vN90=;
+        b=OD3oNDV5VmlnRR7k2AJBqGAYlxrzmck5OT6DnOFRtGAoRsgLf5A/kPkGXptR8Z/7wT
+         ilC4Ia7OZcrdbFN0sL0Q7OpfHRXkaZof9FZalc0U6O+vPWxtWP4bp+UrRg/HrzgwtvsU
+         wxbG/hRaiqvNY/ceVK5xku0yamxl2apErdX6U/9Rf80F+z/9eZyOxi+aL5so/ZGOxVWc
+         t4lDfgkQzyrkJiP4N8kjyg5z7AOoAYxqd9hmTo+QaOoHOjoradBA6h7Ap3nub5eutGhi
+         OjPGu0jnYCax7nCfkj9KaedZ3YAYRC5iHFCMJ4Iu+MAYu3U5CFltP5jWSpnPIUz5XS9g
+         QP1g==
+X-Gm-Message-State: ACgBeo3PiU6xu3ypN1T3kcFsSkXX5WAKaT9zfQZWlNwqOAfaVOVo2Jl4
+        XN12G8pSYxXSUryGBgdvTD6clGfHU8X41RusVQYvpvqxejxTQdUFw3Knu1N41Ytr0zZOSnE8vwF
+        QSYpjBW7rSM/LrPVqKGtBWLzLrJwWEI7oBZgkv44q
+X-Received: by 2002:a05:6102:5cb:b0:388:9ab7:5f58 with SMTP id v11-20020a05610205cb00b003889ab75f58mr5724776vsf.68.1660045530353;
+        Tue, 09 Aug 2022 04:45:30 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7ATkZeriMmKJlv9Q/gYEYNsFbbd3PSLoYo/Er47sV5yGli/esQODsILES0uQaO3ilqkvc1/fcF5waK8hyF1xI=
+X-Received: by 2002:a05:6102:5cb:b0:388:9ab7:5f58 with SMTP id
+ v11-20020a05610205cb00b003889ab75f58mr5724765vsf.68.1660045530147; Tue, 09
+ Aug 2022 04:45:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yt//ZMrxtTwtKBqu@zn.tnic>
+References: <20220715125013.247085-1-mlombard@redhat.com> <20220808171452.d870753e1494b92ba2142116@linux-foundation.org>
+In-Reply-To: <20220808171452.d870753e1494b92ba2142116@linux-foundation.org>
+From:   Maurizio Lombardi <mlombard@redhat.com>
+Date:   Tue, 9 Aug 2022 13:45:19 +0200
+Message-ID: <CAFL455nMBPMD2KkdnsWrq6x_XjwdRCTsCe0Ohbm9Df7aTfiq_A@mail.gmail.com>
+Subject: Re: [PATCH V3] mm: prevent page_frag_alloc() from corrupting the memory
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?5oSa5qCR?= <chen45464546@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 04:51:16PM +0200, Borislav Petkov wrote:
-> On Tue, Jun 14, 2022 at 03:02:31PM +0300, Kirill A. Shutemov wrote:
-> > +static bool is_tdx_guest(void)
-> > +{
-> > +	static bool once;
-> > +	static bool is_tdx;
-> > +
-> > +	if (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))
-> > +		return false;
-> > +
-> > +	if (!once) {
-> > +		u32 eax, sig[3];
-> > +
-> > +		cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,
-> > +			    &sig[0], &sig[2],  &sig[1]);
-> > +		is_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));
-> > +		once = true;
-> > +	}
-> > +
-> > +	return is_tdx;
-> > +}
-> 
-> early_tdx_detect() already calls this CPUID function. It assigns
-> function pointers too.
-> 
-> So why can't you assign an accept_memory() function pointer there and
-> get rid of this sprinkled if (tdx) everywhere?
+=C3=BAt 9. 8. 2022 v 2:14 odes=C3=ADlatel Andrew Morton
+<akpm@linux-foundation.org> napsal:
+>
+> On Fri, 15 Jul 2022 14:50:13 +0200 Maurizio Lombardi <mlombard@redhat.com=
+> wrote:
+>
+> > A number of drivers call page_frag_alloc() with a
+> > fragment's size > PAGE_SIZE.
+> > In low memory conditions, __page_frag_cache_refill() may fail the order=
+ 3
+> > cache allocation and fall back to order 0;
+> > In this case, the cache will be smaller than the fragment, causing
+> > memory corruptions.
+> >
+> > Prevent this from happening by checking if the newly allocated cache
+> > is large enough for the fragment; if not, the allocation will fail
+> > and page_frag_alloc() will return NULL.
+>
+> Can we come up with a Fixes: for this?
 
-This code called from EFI stub which runs before decompressor code and
-therefore before early_tdx_detect().
+I think the bug has been introduced in kernel 3.19-rc1
+Fixes: ffde7328a36d16e626bae8468571858d71cd010b
 
-> > diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
-> > index 918a7606f53c..8518a75e5dd5 100644
-> > --- a/arch/x86/boot/compressed/tdx.c
-> > +++ b/arch/x86/boot/compressed/tdx.c
-> > @@ -3,12 +3,15 @@
-> >  #include "../cpuflags.h"
-> >  #include "../string.h"
-> >  #include "../io.h"
-> > +#include "align.h"
-> >  #include "error.h"
-> > +#include "pgtable_types.h"
-> >  
-> >  #include <vdso/limits.h>
-> >  #include <uapi/asm/vmx.h>
-> >  
-> >  #include <asm/shared/tdx.h>
-> > +#include <asm/page_types.h>
-> >  
-> >  /* Called from __tdx_hypercall() for unrecoverable failure */
-> >  void __tdx_hypercall_failed(void)
-> > @@ -75,3 +78,78 @@ void early_tdx_detect(void)
-> >  	pio_ops.f_outb = tdx_outb;
-> >  	pio_ops.f_outw = tdx_outw;
-> >  }
-> > +
-> > +static unsigned long try_accept_one(phys_addr_t start, unsigned long len,
-> > +				    enum pg_level level)
-> 
-> That's pretty much a copy of the same function in arch/x86/coco/tdx/tdx.c.
-> 
-> Yeah, you need a tdx-shared.c which you include in both places just like
-> it is done with sev-shared.c
+>
+> Should this fix be backported into -stable kernels?
 
-Okay, will look into this.
+Yes, IMO this should be backported to -stable
 
-> > +		accept_size = try_accept_one(start, len, PG_LEVEL_1G);
-> > +		if (!accept_size)
-> > +			accept_size = try_accept_one(start, len, PG_LEVEL_2M);
-> > +		if (!accept_size)
-> > +			accept_size = try_accept_one(start, len, PG_LEVEL_4K);
-> > +		if (!accept_size)
-> > +			error("Accepting memory failed\n");
-> > +		start += accept_size;
-> 
-> This series of calls to try_accept_one() appear in at least three
-> places. Please carve them out into a separate function can put it in
-> tdx-shared.c.
+Thanks,
+Maurizio
 
-Okay.
-
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
