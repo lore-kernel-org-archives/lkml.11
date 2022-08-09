@@ -2,266 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AFEC25B08
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8195DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbiHIWHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 18:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
+        id S230016AbiHIWNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 18:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbiHIWFm (ORCPT
+        with ESMTP id S230005AbiHIWMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 18:05:42 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F36513F73
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:05:34 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso127071wma.2
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:05:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=89E/CxlN8Tp3lczCV5jVp3NK0Ss9lUiOGh8dJwP7JXg=;
-        b=tQaWHRdToEGk9WyjVRDEXaOnmacVEHhEh9WTJBVy4a9+NSpbr3U00Bqsd3yAkmoj4V
-         irOjiq2E8FpsIhKj0MpKRSzda70bUfDcYjfnKWq6k4UIlpZ5jgBboSIPRdR5RVgQFen+
-         /iUjSrK6LSWDrbL/dYy562SG7MQYDt/k9+qUnOyOC6E3xvZ4DQZamws1IdA7FF8sOktK
-         TBjZlXQUnW4iefsiY8VMKEeHWk3pX5XttoYNvn6LO5w5u6sxWATq0vM7X78x0qPdt5+Z
-         9uiqfoN+R3LC6al9mZ+IbecJ5ooYK3Fa+9nciGy/4RjcrUIpLjccuzJtSX/5+EfiElAP
-         dHnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=89E/CxlN8Tp3lczCV5jVp3NK0Ss9lUiOGh8dJwP7JXg=;
-        b=ifTbBq15jmCb71vA+6sWqR161olfolkitDomAp6RHghjp5nPsTI2a5F8ezIZr9jDWc
-         0KB9XLsw0h4kwvVSETn3XO5AC31Jf7Hgxkad/IFNypsK5TGIXA0SpmdZMbr8ZElWZsBm
-         QZPD7fYlt0xFN/UfuejG5gHQLkHgkHbngyG/E/PJUIKxIQzUw1XqBOwKdAgON+LEupxf
-         tEYWuBFjhPc8sybNt805uqHiIc48ByvBykLTQ8XF9LLlDjXfS+X6Ev6MxyztddqvQ+Qp
-         WmFO83umT79y2z4q7l8GIfIJyGdBDj5QIkgssVlr2nER0uB15kuhM3BMaj7zPuNvdYAS
-         WjZw==
-X-Gm-Message-State: ACgBeo1jA0nY/bE5jnzatdDmkJsxCzKPZwnCv1/PMdQ+e1++aO7z0xBG
-        wrE3RIF9kIPGsdxCoC5uoSFfDw==
-X-Google-Smtp-Source: AA6agR5H3wiH8mgnBiSDgOR3YUyQt9nGqs0bbssfxeVDisk8h603TP07ShOGbwrr1Fh33JtOTXe7Lg==
-X-Received: by 2002:a05:600c:3d93:b0:3a3:3a93:fb16 with SMTP id bi19-20020a05600c3d9300b003a33a93fb16mr290789wmb.190.1660082733455;
-        Tue, 09 Aug 2022 15:05:33 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm293583wms.2.2022.08.09.15.05.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 15:05:32 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>
-Subject: [PATCH v2 26/26] thermal/drivers/intel: Use generic thermal_zone_get_trip() function
-Date:   Wed, 10 Aug 2022 00:04:36 +0200
-Message-Id: <20220809220436.711020-27-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220809220436.711020-1-daniel.lezcano@linaro.org>
-References: <20220809220436.711020-1-daniel.lezcano@linaro.org>
+        Tue, 9 Aug 2022 18:12:55 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43693275C7;
+        Tue,  9 Aug 2022 15:09:13 -0700 (PDT)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oLXPC-0007Lb-LF; Wed, 10 Aug 2022 00:08:54 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oLXPB-000OdW-V3; Wed, 10 Aug 2022 00:08:53 +0200
+Subject: Re: [PATCH v9 03/10] btf: Handle dynamic pointer parameter in kfuncs
+To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
+        corbet@lwn.net, dhowells@redhat.com, jarkko@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, paul@paul-moore.com,
+        jmorris@namei.org, serge@hallyn.com, shuah@kernel.org
+Cc:     bpf@vger.kernel.org, linux-doc@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Joanne Koong <joannelkoong@gmail.com>
+References: <20220809134603.1769279-1-roberto.sassu@huawei.com>
+ <20220809134603.1769279-4-roberto.sassu@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <8fe84489-be78-142e-90fe-a76c7d61100d@iogearbox.net>
+Date:   Wed, 10 Aug 2022 00:08:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20220809134603.1769279-4-roberto.sassu@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26622/Tue Aug  9 09:53:52 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The thermal framework gives the possibility to register the trip
-points with the thermal zone. When that is done, no get_trip_* ops are
-needed and they can be removed.
+On 8/9/22 3:45 PM, Roberto Sassu wrote:
+> Allow the bpf_dynptr_kern parameter to be specified in kfuncs. Also, ensure
+> that the dynamic pointer is valid and initialized.
+> 
+> Cc: Joanne Koong <joannelkoong@gmail.com>
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> ---
+>   include/linux/bpf_verifier.h |  3 +++
+>   kernel/bpf/btf.c             | 17 +++++++++++++++++
+>   kernel/bpf/verifier.c        |  4 ++--
+>   3 files changed, 22 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> index 2e3bad8640dc..55876fbdbae2 100644
+> --- a/include/linux/bpf_verifier.h
+> +++ b/include/linux/bpf_verifier.h
+> @@ -560,6 +560,9 @@ int check_kfunc_mem_size_reg(struct bpf_verifier_env *env, struct bpf_reg_state
+>   			     u32 regno);
+>   int check_mem_reg(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
+>   		   u32 regno, u32 mem_size);
+> +bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env,
+> +			      struct bpf_reg_state *reg,
+> +			      enum bpf_arg_type arg_type);
+>   
+>   /* this lives here instead of in bpf.h because it needs to dereference tgt_prog */
+>   static inline u64 bpf_trampoline_compute_key(const struct bpf_prog *tgt_prog,
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 67dfc728fbf8..17cca396c89f 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -6363,6 +6363,8 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+>   
+>   			if (is_kfunc) {
+>   				bool arg_mem_size = i + 1 < nargs && is_kfunc_arg_mem_size(btf, &args[i + 1], &regs[regno + 1]);
+> +				bool arg_dynptr = btf_type_is_struct(ref_t) &&
+> +						  !strcmp(ref_tname, "bpf_dynptr_kern");
 
-Convert ops content logic into generic trip points and register them with the
-thermal zone.
+For the strcmp(), could we add some BUILD_BUG_ON() if "bpf_dynptr_kern" ever
+gets renamed? I played a bit with the below compile-tested toy example. If we
+rename foo_bar into something else, we then get:
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
----
- drivers/thermal/intel/x86_pkg_temp_thermal.c | 120 ++++++++++---------
- 1 file changed, 66 insertions(+), 54 deletions(-)
+   [...]
+   CC      net/core/dev.o
+   In file included from <command-line>:
+   net/core/dev.c: In function ‘net_dev_init’:
+   net/core/dev.c:11376:25: error: invalid application of ‘sizeof’ to incomplete type ‘struct foo_bar’
+   11376 |  ({ BUILD_BUG_ON(sizeof(struct x) < 0); \
+         |                         ^~~~~~
+   [...]
 
-diff --git a/drivers/thermal/intel/x86_pkg_temp_thermal.c b/drivers/thermal/intel/x86_pkg_temp_thermal.c
-index 4d8edc61a78b..c28a98c82f97 100644
---- a/drivers/thermal/intel/x86_pkg_temp_thermal.c
-+++ b/drivers/thermal/intel/x86_pkg_temp_thermal.c
-@@ -53,6 +53,7 @@ struct zone_device {
- 	u32				msr_pkg_therm_high;
- 	struct delayed_work		work;
- 	struct thermal_zone_device	*tzone;
-+	struct thermal_trip		*trips;
- 	struct cpumask			cpumask;
- };
- 
-@@ -138,40 +139,6 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd, int *temp)
- 	return -EINVAL;
- }
- 
--static int sys_get_trip_temp(struct thermal_zone_device *tzd,
--			     int trip, int *temp)
--{
--	struct zone_device *zonedev = tzd->devdata;
--	unsigned long thres_reg_value;
--	u32 mask, shift, eax, edx;
--	int ret;
--
--	if (trip >= MAX_NUMBER_OF_TRIPS)
--		return -EINVAL;
--
--	if (trip) {
--		mask = THERM_MASK_THRESHOLD1;
--		shift = THERM_SHIFT_THRESHOLD1;
--	} else {
--		mask = THERM_MASK_THRESHOLD0;
--		shift = THERM_SHIFT_THRESHOLD0;
--	}
--
--	ret = rdmsr_on_cpu(zonedev->cpu, MSR_IA32_PACKAGE_THERM_INTERRUPT,
--			   &eax, &edx);
--	if (ret < 0)
--		return ret;
--
--	thres_reg_value = (eax & mask) >> shift;
--	if (thres_reg_value)
--		*temp = zonedev->tj_max - thres_reg_value * 1000;
--	else
--		*temp = THERMAL_TEMP_INVALID;
--	pr_debug("sys_get_trip_temp %d\n", *temp);
--
--	return 0;
--}
--
- static int
- sys_set_trip_temp(struct thermal_zone_device *tzd, int trip, int temp)
- {
-@@ -212,18 +179,9 @@ sys_set_trip_temp(struct thermal_zone_device *tzd, int trip, int temp)
- 			l, h);
- }
- 
--static int sys_get_trip_type(struct thermal_zone_device *thermal, int trip,
--			     enum thermal_trip_type *type)
--{
--	*type = THERMAL_TRIP_PASSIVE;
--	return 0;
--}
--
- /* Thermal zone callback registry */
- static struct thermal_zone_device_ops tzone_ops = {
- 	.get_temp = sys_get_curr_temp,
--	.get_trip_temp = sys_get_trip_temp,
--	.get_trip_type = sys_get_trip_type,
- 	.set_trip_temp = sys_set_trip_temp,
- };
- 
-@@ -328,6 +286,48 @@ static int pkg_thermal_notify(u64 msr_val)
- 	return 0;
- }
- 
-+static struct thermal_trip *pkg_temp_thermal_trips_init(int cpu, int tj_max, int num_trips)
-+{
-+	struct thermal_trip *trips;
-+	unsigned long thres_reg_value;
-+	u32 mask, shift, eax, edx;
-+	int ret, i;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 716df64fcfa5..a2ed271f7ded 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -11368,16 +11368,30 @@ static struct pernet_operations __net_initdata default_device_ops = {
+   *
+   */
+
++struct foo_bar {
++       int a;
++};
 +
-+	trips = kzalloc(sizeof(*trips) * num_trips, GFP_KERNEL);
-+	if (!trips)
-+		return ERR_PTR(-ENOMEM);
-+	
-+	for (i = 0; i < num_trips; i++) {
++#define stringify_struct(x)                    \
++       ({ BUILD_BUG_ON(sizeof(struct x) < 0);  \
++       __stringify(x); })
 +
-+		if (i) {
-+			mask = THERM_MASK_THRESHOLD1;
-+			shift = THERM_SHIFT_THRESHOLD1;
-+		} else {
-+			mask = THERM_MASK_THRESHOLD0;
-+			shift = THERM_SHIFT_THRESHOLD0;
-+		}
+  /*
+   *       This is called single threaded during boot, so no need
+   *       to take the rtnl semaphore.
+   */
+  static int __init net_dev_init(void)
+  {
++       const char *ref_tname = "abc";
+         int i, rc = -ENOMEM;
+
+         BUG_ON(!dev_boot_phase);
+
++       printk("%s\n", stringify_struct(foo_bar));
 +
-+		ret = rdmsr_on_cpu(cpu, MSR_IA32_PACKAGE_THERM_INTERRUPT,
-+				   &eax, &edx);
-+		if (ret < 0) {
-+			kfree(trips);
-+			return ERR_PTR(ret);
-+		}
++       if (!strcmp(ref_tname, stringify_struct(foo_bar)))
++               goto out;
 +
-+		thres_reg_value = (eax & mask) >> shift;
-+
-+		trips[i].temperature = thres_reg_value ?
-+			tj_max - thres_reg_value * 1000 : THERMAL_TEMP_INVALID;
-+
-+		trips[i].type = THERMAL_TRIP_PASSIVE;
-+		
-+		pr_debug("%s: cpu=%d, trip=%d, temp=%d\n",
-+			 __func__, cpu, i, trips[i].temperature);
-+	}
-+
-+	return trips;
-+}
-+
- static int pkg_temp_thermal_device_add(unsigned int cpu)
- {
- 	int id = topology_logical_die_id(cpu);
-@@ -353,24 +353,27 @@ static int pkg_temp_thermal_device_add(unsigned int cpu)
- 	if (!zonedev)
- 		return -ENOMEM;
- 
-+	zonedev->trips = pkg_temp_thermal_trips_init(cpu, tj_max, thres_count);
-+	if (IS_ERR(zonedev->trips)) {
-+		err = PTR_ERR(zonedev->trips);
-+		goto out_kfree_zonedev;
-+	}
-+	
- 	INIT_DELAYED_WORK(&zonedev->work, pkg_temp_thermal_threshold_work_fn);
- 	zonedev->cpu = cpu;
- 	zonedev->tj_max = tj_max;
--	zonedev->tzone = thermal_zone_device_register("x86_pkg_temp",
--			thres_count,
-+	zonedev->tzone = thermal_zone_device_register_with_trips("x86_pkg_temp",
-+			zonedev->trips, thres_count,
- 			(thres_count == MAX_NUMBER_OF_TRIPS) ? 0x03 : 0x01,
- 			zonedev, &tzone_ops, &pkg_temp_tz_params, 0, 0);
- 	if (IS_ERR(zonedev->tzone)) {
- 		err = PTR_ERR(zonedev->tzone);
--		kfree(zonedev);
--		return err;
-+		goto out_kfree_trips;
- 	}
- 	err = thermal_zone_device_enable(zonedev->tzone);
--	if (err) {
--		thermal_zone_device_unregister(zonedev->tzone);
--		kfree(zonedev);
--		return err;
--	}
-+	if (err)
-+		goto out_unregister_tz;
-+
- 	/* Store MSR value for package thermal interrupt, to restore at exit */
- 	rdmsr(MSR_IA32_PACKAGE_THERM_INTERRUPT, zonedev->msr_pkg_therm_low,
- 	      zonedev->msr_pkg_therm_high);
-@@ -379,7 +382,14 @@ static int pkg_temp_thermal_device_add(unsigned int cpu)
- 	raw_spin_lock_irq(&pkg_temp_lock);
- 	zones[id] = zonedev;
- 	raw_spin_unlock_irq(&pkg_temp_lock);
--	return 0;
-+
-+out_unregister_tz:	
-+	thermal_zone_device_unregister(zonedev->tzone);
-+out_kfree_trips:
-+	kfree(zonedev->trips);
-+out_kfree_zonedev:
-+	kfree(zonedev);
-+	return err;
- }
- 
- static int pkg_thermal_cpu_offline(unsigned int cpu)
-@@ -463,8 +473,10 @@ static int pkg_thermal_cpu_offline(unsigned int cpu)
- 	raw_spin_unlock_irq(&pkg_temp_lock);
- 
- 	/* Final cleanup if this is the last cpu */
--	if (lastcpu)
-+	if (lastcpu) {
-+		kfree(zonedev->trips);
- 		kfree(zonedev);
-+	}
- 	return 0;
- }
- 
--- 
-2.34.1
+         if (dev_proc_init())
+                 goto out;
 
