@@ -2,163 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F43AC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51584C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343897AbiHITkf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
+        id S242433AbiHITmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 15:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243048AbiHITkE (ORCPT
+        with ESMTP id S1344786AbiHITku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:40:04 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DBC255BF
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 12:40:02 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id c16so131442qkk.10
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 12:40:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WQADmAbbPY4UNq4TbQtJ0wmwYjKdHy+t7oPSx2knkGw=;
-        b=T3xk/rfIHpnSaArGMKToaLTdDcPztKs73hwbF/4oilTSRO/u+Y5EH66x921BEN+iwS
-         n8Efv/cl0XGLh75r3nPSGiSRcCWOIMa4+iO2L2boSNmbA+An9VwgOdQ57BecRqDId3cr
-         93aVbwUsrAk/jVP3NrBx8OlA8Som+xmHbXQmc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WQADmAbbPY4UNq4TbQtJ0wmwYjKdHy+t7oPSx2knkGw=;
-        b=d2C1jOFvKDs0+HRy2jvoF1MGaFFiib+mbZl/eQbdbDCy0EogTGaaw235YseOjhUfgs
-         EKh/YXvIz9DvTdDOIztLsXfSaNlUNTO1liaxNbTwsfU4n5cKFwFdYU7tN3vBxzRflE1w
-         SFdRFEEp2DjEsQTIy12Sp8WshDwzRgvyzotvHwKDAtynyDCMviVQPADoKT868U6VdYIl
-         0PBhpSv9cxsOUn2XLiUqBzDXt0jRMqgPMLFhV4m/Q2COzQY92UcMHr3ULoimzr4gYyBI
-         qSLDhj6E+kmhs/0j1YNhukx3PVWisSt+m0bK47RotYJZOI6qvvvSLh/uqzhJkQ7BweH7
-         ps1Q==
-X-Gm-Message-State: ACgBeo3ROlhky58u4jCd4qrH32A2xHUzoxPKSpOXpx+rXn7aelaLRD8P
-        fff2Nz/VMpypZ56uW7aP69bQnQ==
-X-Google-Smtp-Source: AA6agR7cXDV8AmvlDfc//mvJvsYopYmTCb0ttOe0pPue0GVYpv844ghBL+zy5oP8hZjjn1KCc1w4aQ==
-X-Received: by 2002:a05:620a:c4f:b0:6b8:ea30:2d4a with SMTP id u15-20020a05620a0c4f00b006b8ea302d4amr18690230qki.717.1660074001883;
-        Tue, 09 Aug 2022 12:40:01 -0700 (PDT)
-Received: from trappist.c.googlers.com.com (128.174.85.34.bc.googleusercontent.com. [34.85.174.128])
-        by smtp.gmail.com with ESMTPSA id w19-20020a05620a445300b006b9264191b5sm9562422qkp.32.2022.08.09.12.40.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 12:40:01 -0700 (PDT)
-From:   Sven van Ashbrook <svenva@chromium.org>
-To:     Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Hao Wu <hao.wu@rubrik.com>,
-        Yi Chou <yich@google.com>,
-        Andrey Pronin <apronin@chromium.org>,
-        Sven van Ashbrook <svenva@chromium.org>,
-        James Morris <james.morris@microsoft.com>
-Cc:     stable@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] tpm: fix potential race condition in suspend/resume
-Date:   Tue,  9 Aug 2022 19:39:18 +0000
-Message-Id: <20220809193921.544546-1-svenva@chromium.org>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+        Tue, 9 Aug 2022 15:40:50 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE26192A3;
+        Tue,  9 Aug 2022 12:40:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 61CBACE1940;
+        Tue,  9 Aug 2022 19:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BE5FC433C1;
+        Tue,  9 Aug 2022 19:40:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660074045;
+        bh=uYCj2fqjYbwtL2lFWjkg5SkjMyVCEb7wPisPHuzCDLc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=leDc97sQDo22G2jWJJBU6Cu/vePNJt2EGMn2FH/jo8ikBG9iMLcyCU8u9Iny2RiIF
+         w8rpXNwRwZjB1ZUiztfVEZX+B071eEU5kdGOXZdj55Zjod6arJ/CBVAk7jAp2l3K3M
+         fsQcbFfw3tsH5f6FkmMUvD4QqkIqJyUBFxnL1Jrz9JaxID26ZiCOvSckS+ubEe/Ur4
+         q2NVStg2K2PpSMMAr6G1i8ZOUZere4Up4SpEjmIfIPug5AfcEBwBqjSEQqbH7XT/6N
+         oVahUBLhttGXI0oC/MWRZUJrYR8vo0QM2eIBH9uCSv1DQ8ONljeLrf6sKtyQSc7KZH
+         MoB2YX4QrQIqQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 249284035A; Tue,  9 Aug 2022 16:40:43 -0300 (-03)
+Date:   Tue, 9 Aug 2022 16:40:43 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v4 00/17]  Compress the pmu_event tables
+Message-ID: <YvK4O9U6tjTJqqxX@kernel.org>
+References: <20220804221816.1802790-1-irogers@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220804221816.1802790-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Concurrent accesses to the tpm chip are prevented by allowing only a
-single thread at a time to obtain a tpm chip reference through
-tpm_try_get_ops(). However, the tpm's suspend function does not use
-this mechanism, so when the tpm api is called by a kthread which
-does not get frozen on suspend (such as the hw_random kthread)
-it's possible that the tpm is used when already in suspend, or
-in use while in the process of suspending.
+Em Thu, Aug 04, 2022 at 03:17:59PM -0700, Ian Rogers escreveu:
+> jevents.py creates a number of large arrays from the json events. The
+> arrays contain pointers to strings that need relocating. The
+> relocations have file size, run time and memory costs. These changes
+> refactor the pmu_events API so that the storage of the pmu_event
+> struct isn't exposed. The format is then changed to an offset within a
+> combined big string, with adjacent pmu_event struct variables being
+> next to each other in the string separated by \0 - meaning only the
+> first variable of the struct needs its offset recording.
+> 
+> Some related fixes are contained with the patches. The architecture
+> jevents.py creates tables for can now be set by the JEVENTS_ARCH make
+> variable, with a new 'all' that generates the events and metrics for
+> all architectures.
+> 
+> An example of the improvement to the file size on x86 is:
+> no jevents - the same 19,788,464bytes
+> x86 jevents - ~16.7% file size saving 23,744,288bytes vs 28,502,632bytes
+> all jevents - ~19.5% file size saving 24,469,056bytes vs 30,379,920bytes
+> default build options plus NO_LIBBFD=1.
 
-This is seen on certain ChromeOS platforms - low-probability warnings
-are generated during suspend. In this case, the tpm attempted to read data
-from a tpm chip on an already-suspended bus.
+Applied the first four patches, waiting for the review comments to be
+discussed.
 
-  i2c_designware i2c_designware.1: Transfer while suspended
+- Arnaldo
+ 
+> I originally suggested fixing this problem in:
+> https://lore.kernel.org/linux-perf-users/CAP-5=fVB8G4bdb9T=FncRTh9oBVKCS=+=eowAO+YSgAhab+Dtg@mail.gmail.com/
+> 
+> v4. Fixed an issue with the empty-pmu-events.c spotted by John Garry
+>     <john.garry@huawei.com>.
+> v3. Fix an ARM build issue with a missed weak symbol. Perform some
+>     pytype clean up.
+> v2. Split the substring folding optimization to its own patch and
+>     comment tweaks as suggested by Namhyung Kim
+>     <namhyung@kernel.org>. Recompute the file size savings with the
+>     latest json events and metrics.
+> 
+> Ian Rogers (17):
+>   perf jevents: Clean up pytype warnings
+>   perf jevents: Simplify generation of C-string
+>   perf jevents: Add JEVENTS_ARCH make option
+>   perf jevent: Add an 'all' architecture argument
+>   perf jevents: Remove the type/version variables
+>   perf jevents: Provide path to json file on error
+>   perf jevents: Sort json files entries
+>   perf pmu-events: Hide pmu_sys_event_tables
+>   perf pmu-events: Avoid passing pmu_events_map
+>   perf pmu-events: Hide pmu_events_map
+>   perf test: Use full metric resolution
+>   perf pmu-events: Move test events/metrics to json
+>   perf pmu-events: Don't assume pmu_event is an array
+>   perf pmu-events: Hide the pmu_events
+>   perf metrics: Copy entire pmu_event in find metric
+>   perf jevents: Compress the pmu_events_table
+>   perf jevents: Fold strings optimization
+> 
+>  tools/perf/arch/arm64/util/pmu.c              |   4 +-
+>  tools/perf/pmu-events/Build                   |   6 +-
+>  .../arch/test/test_soc/cpu/metrics.json       |  64 +++
+>  tools/perf/pmu-events/empty-pmu-events.c      | 204 +++++++-
+>  tools/perf/pmu-events/jevents.py              | 495 ++++++++++++++----
+>  tools/perf/pmu-events/pmu-events.h            |  40 +-
+>  tools/perf/tests/expand-cgroup.c              |  25 +-
+>  tools/perf/tests/parse-metric.c               |  77 +--
+>  tools/perf/tests/pmu-events.c                 | 466 +++++++----------
+>  tools/perf/util/metricgroup.c                 | 275 ++++++----
+>  tools/perf/util/metricgroup.h                 |   5 +-
+>  tools/perf/util/pmu.c                         | 139 ++---
+>  tools/perf/util/pmu.h                         |   8 +-
+>  tools/perf/util/s390-sample-raw.c             |  50 +-
+>  14 files changed, 1140 insertions(+), 718 deletions(-)
+>  create mode 100644 tools/perf/pmu-events/arch/test/test_soc/cpu/metrics.json
+> 
+> -- 
+> 2.37.1.559.g78731f0fdb-goog
 
-Fix:
-1. prevent concurrent execution of tpm accesses and suspend/
-   resume, by letting suspend/resume grab the tpm_mutex.
-2. before commencing a tpm access, check if the tpm chip is already
-   suspended. Fail with -EAGAIN if so.
-
-Tested by running 6000 suspend/resume cycles back-to-back on a
-ChromeOS "brya" device. The intermittent warnings reliably
-disappear after applying this patch. No system issues were observed.
-
-Cc: <stable@vger.kernel.org>
-Fixes: e891db1a18bf ("tpm: turn on TPM on suspend for TPM 1.x")
-Signed-off-by: Sven van Ashbrook <svenva@chromium.org>
----
- drivers/char/tpm/tpm-interface.c | 16 ++++++++++++++++
- include/linux/tpm.h              |  2 ++
- 2 files changed, 18 insertions(+)
-
-diff --git a/drivers/char/tpm/tpm-interface.c b/drivers/char/tpm/tpm-interface.c
-index 1621ce818705..16ca490fd483 100644
---- a/drivers/char/tpm/tpm-interface.c
-+++ b/drivers/char/tpm/tpm-interface.c
-@@ -82,6 +82,11 @@ static ssize_t tpm_try_transmit(struct tpm_chip *chip, void *buf, size_t bufsiz)
- 		return -E2BIG;
- 	}
- 
-+	if (chip->is_suspended) {
-+		dev_info(&chip->dev, "blocking transmit while suspended\n");
-+		return -EAGAIN;
-+	}
-+
- 	rc = chip->ops->send(chip, buf, count);
- 	if (rc < 0) {
- 		if (rc != -EPIPE)
-@@ -394,6 +399,8 @@ int tpm_pm_suspend(struct device *dev)
- 	if (!chip)
- 		return -ENODEV;
- 
-+	mutex_lock(&chip->tpm_mutex);
-+
- 	if (chip->flags & TPM_CHIP_FLAG_ALWAYS_POWERED)
- 		goto suspended;
- 
-@@ -411,6 +418,11 @@ int tpm_pm_suspend(struct device *dev)
- 	}
- 
- suspended:
-+	if (!rc)
-+		chip->is_suspended = true;
-+
-+	mutex_unlock(&chip->tpm_mutex);
-+
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(tpm_pm_suspend);
-@@ -426,6 +438,10 @@ int tpm_pm_resume(struct device *dev)
- 	if (chip == NULL)
- 		return -ENODEV;
- 
-+	mutex_lock(&chip->tpm_mutex);
-+	chip->is_suspended = false;
-+	mutex_unlock(&chip->tpm_mutex);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(tpm_pm_resume);
-diff --git a/include/linux/tpm.h b/include/linux/tpm.h
-index d7c67581929f..0fbc1a43ae80 100644
---- a/include/linux/tpm.h
-+++ b/include/linux/tpm.h
-@@ -131,6 +131,8 @@ struct tpm_chip {
- 	int dev_num;		/* /dev/tpm# */
- 	unsigned long is_open;	/* only one allowed */
- 
-+	bool is_suspended;
-+
- 	char hwrng_name[64];
- 	struct hwrng hwrng;
- 
 -- 
-2.37.1.559.g78731f0fdb-goog
 
+- Arnaldo
