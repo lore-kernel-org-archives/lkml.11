@@ -2,74 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8135AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 12:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEB5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 12:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242683AbiHIMlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 08:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
+        id S232373AbiHIMnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 08:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242481AbiHIMlb (ORCPT
+        with ESMTP id S239296AbiHIMnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 08:41:31 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E62CDEBC
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 05:41:28 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id s5-20020a17090a13c500b001f4da9ffe5fso17501597pjf.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 05:41:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WNr40UtTfHF/fzuU8JQrB0PNXLcXxn2MQ4y4InLcGjc=;
-        b=Xx6N+GU9iNYMwuT9/3lSx7jhoAsO+71/iNml5D96YGeHwBzYZ3j4ILPJ44KjqPbZe3
-         YpGuTWn01YdM7o2ebvIdXXnxeasvcrqV5g6NPHfGpE3zxMzdH75dxLbuIGh1RZpw8R6K
-         A33OK2AyhA1yEfQpBhmLaQvI4ASVr/4GmXQVw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WNr40UtTfHF/fzuU8JQrB0PNXLcXxn2MQ4y4InLcGjc=;
-        b=VZbdCBBbrw4gUkkmksiA0wsnTL24/gHpMliaeUQpNHHY0UfGhdyxLs2mekv+1CciJ6
-         Zg/7jL7tlFreIQyDzdihtZ/fzbJWSJGSfKYhn7kE9C0nqoiS3+f8xtjqvt4lEnOtYtWq
-         dfC5gcPKafm4jnRm7ZnKaKlfF+nNcPdM0SJix0eB/IE5+kV6MjF7W2OZ4U8usV+gzLBX
-         VRrd9fRt4i8zm2l7MRofaudzVtBLXXlXdlgGe7bmj+we2b7Ub4z4rpb0+iDUm5Avwcgu
-         RIzJm5/Azh5gEOPa6MzjXgGBdZfpCjb1+JlDf/TegHPz+vBGrv8j3PiHh7UyUnvJ7vI1
-         ksvA==
-X-Gm-Message-State: ACgBeo2ZvP7aimujMjQVPKAGj3pXSgdcIqACg4rMy5fzovD2y+IRj1Bv
-        4aPYMy0+ZEvpovgNlkF9Blydkg==
-X-Google-Smtp-Source: AA6agR4KP3+3TPwBOflqXePsVYMZv0/sRTeKgbWH6qJxglrD40OZS+CxcNTbdAS84lMcYYtGG4KzUw==
-X-Received: by 2002:a17:90b:4f49:b0:1f5:c7c:b565 with SMTP id pj9-20020a17090b4f4900b001f50c7cb565mr35356292pjb.32.1660048887790;
-        Tue, 09 Aug 2022 05:41:27 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:8d43:c739:457a:5504])
-        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b0016dbaf3ff2esm10719392plk.22.2022.08.09.05.41.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 05:41:27 -0700 (PDT)
-Date:   Tue, 9 Aug 2022 21:41:22 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Alexey Romanov <avromanov@sberdevices.ru>,
-        Minchan Kim <minchan@kernel.org>
-Cc:     akpm@linux-foundation.org, ngupta@vflare.org,
-        senozhatsky@chromium.org, linux-block@vger.kernel.org,
-        axboe@chromium.org, kernel@sberdevices.ru,
-        linux-kernel@vger.kernel.org, mnitenko@gmail.com,
-        Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Subject: Re: [PATCH v5] zram: remove double compression logic
-Message-ID: <YvJV8rU9bkqiy9iA@google.com>
-References: <20220505094443.11728-1-avromanov@sberdevices.ru>
+        Tue, 9 Aug 2022 08:43:09 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0454D18384
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 05:43:08 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2CMF6kxlzjXfQ;
+        Tue,  9 Aug 2022 20:39:53 +0800 (CST)
+Received: from huawei.com (10.67.174.96) by canpemm500005.china.huawei.com
+ (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
+ 2022 20:43:04 +0800
+From:   Zhang Jianhua <chris.zjh@huawei.com>
+To:     <tglx@linutronix.de>, <peterz@infradead.org>,
+        <frederic@kernel.org>, <tannerlove@google.com>,
+        <edumazet@google.com>, <bigeasy@linutronix.de>,
+        <chris.zjh@huawei.com>, <zouyipeng@huawei.com>,
+        <liaochang1@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] genirq: Change irq_can_set_affinity() return value type to bool
+Date:   Tue, 9 Aug 2022 20:40:09 +0800
+Message-ID: <20220809124009.543646-1-chris.zjh@huawei.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505094443.11728-1-avromanov@sberdevices.ru>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.96]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/05/05 12:44), Alexey Romanov wrote:
-> @@ -1975,7 +1954,6 @@ static int zram_add(void)
->  	if (ZRAM_LOGICAL_BLOCK_SIZE == PAGE_SIZE)
->  		blk_queue_max_write_zeroes_sectors(zram->disk->queue, UINT_MAX);
->  
-> -	blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, zram->disk->queue);
+The function irq_can_set_affinity() return from __irq_can_set_affinity()
+directly, whose return value type is bool, so make irq_can_set_affinity()
+return bool too.
 
-By the way, why did it remove QUEUE_FLAG_STABLE_WRITES bit?
+Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
+---
+ include/linux/interrupt.h | 2 +-
+ kernel/irq/manage.c       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index a92bce40b04b..29de49af6dea 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -308,7 +308,7 @@ extern cpumask_var_t irq_default_affinity;
+ extern int irq_set_affinity(unsigned int irq, const struct cpumask *cpumask);
+ extern int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask);
+ 
+-extern int irq_can_set_affinity(unsigned int irq);
++extern bool irq_can_set_affinity(unsigned int irq);
+ extern int irq_select_affinity(unsigned int irq);
+ 
+ extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index 40fe7806cc8c..dd9aeef68834 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -156,7 +156,7 @@ static bool __irq_can_set_affinity(struct irq_desc *desc)
+  *	@irq:		Interrupt to check
+  *
+  */
+-int irq_can_set_affinity(unsigned int irq)
++bool irq_can_set_affinity(unsigned int irq)
+ {
+ 	return __irq_can_set_affinity(irq_to_desc(irq));
+ }
+-- 
+2.31.0
+
