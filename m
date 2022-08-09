@@ -2,120 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9068EC25B07
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 15:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1903FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 15:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244874AbiHIPU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 11:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
+        id S243576AbiHIPVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 11:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244855AbiHIPUd (ORCPT
+        with ESMTP id S244096AbiHIPU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 11:20:33 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF37363DF
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 08:20:25 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so2227748wms.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 08:20:25 -0700 (PDT)
+        Tue, 9 Aug 2022 11:20:27 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CED7389C;
+        Tue,  9 Aug 2022 08:20:22 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id y13so22734265ejp.13;
+        Tue, 09 Aug 2022 08:20:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=Ls4lqjgx1p+SGOqqpZ5RhMqVskyV8lsav7dO9gMbm3A=;
-        b=VcMuiqgtWqmMKuBM8iolKvB5doGcT7vzUu5x4rt+07/AZNvNc6PIct6rPvHixoU1Ne
-         fasNlYL4YxPA6oe+m/i89Sj1U9AeaHZJZYmMr3UelQwPWTwj/hwAC1oxa+81tHfeOVn7
-         xkxwREDO/HQvtD8VEpNZ5y95w3NXdb7cx4yhbW3/tOpfK2WW5ZrBW45umeF62YJca7Ar
-         Euu1YKmvFZ4tQttgaNoo29JNRELNjLIzEmwrJvC9KKVUpYzGqBg/nahPZ9LUgMTX3Zlo
-         rNovmpH9UDh3RjeBfuU04disdHvgvB5Qx5GJYN/Qn3y165PJduqUZtcyezvgGAy59uFm
-         DsYQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jQq+vc9W06TACReKN0ej1GNxH6Z/P1l4L8dXBTGxx58=;
+        b=YFyGTEzokrq07wvnt615JIoeAIkmfy5rslQjqsafwKzG+QJLBU+72qzez243xVVytB
+         N1z42Kt37qCWJLYLd3sfwvEEGU1R0nPTsbUCEHOZ39f3SSJDcPEtChmkdHqpYSb7Qzf7
+         +Rd7YXzGB38laZ/OgtW179F+L82dhMowsgHS5hPhDQPRNeZcf5W6Eb60eY1j282E+t3B
+         IBPKQUnh4lKtzAL9t3YDwFfH+lZSikQPjQgBGUoLvSS0OqgWUUkDDwfJW+FGbwi8W9Ew
+         hk2+7SVv0cTPSYwKlXtpjpWm8xpnkgxDYeeHxSlShdCNImGG9LoPxFWLRe33eJGXscGN
+         +HDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=Ls4lqjgx1p+SGOqqpZ5RhMqVskyV8lsav7dO9gMbm3A=;
-        b=Kgvub6eTDlwo3TCvLX6VRKMjFKASx1I5C6uiJPBdp7ijaBxCgVK7annHyIYayHcOvj
-         yxYm2KY5QaGcGAN+5aUF7BgHvimvuMIU3zSOV91Nddk+IncU9fB0LbuxMojlPXtaqJMC
-         Xxj3VL56EtI+3C9wjr4U8PNJ08V9Ff1htDij5x8YS4umFklwf7c8ZLKTc6hOoJnqlm5f
-         x5dUzNquKCGpML+zlce/mK4h9vepzTLnGhDwuyBj/59bIr8vS3dBRLU6SbzjQWzvJFAO
-         50lYH6wdynJHtxR2hAF2y2HgY2LXV8hFNfmeCtgVdyJhQ8U/G81p7bPLHDid6Pt17D5V
-         4YtA==
-X-Gm-Message-State: ACgBeo3Gnc58BygwkwGovrBwz0YKBqipOWrEDCkqxDs+DjRmIpygyxqO
-        R9hszvTtrZX+dAGO65G/AI4gfw==
-X-Google-Smtp-Source: AA6agR6q1GkF0jJvDFraMZ4ng6K/jQqngRGNxCAShS8DUJA8TSuXEhbFRK+Z+O7p4fPUZJXHr4DBjg==
-X-Received: by 2002:a05:600c:3caa:b0:3a0:18e4:781b with SMTP id bg42-20020a05600c3caa00b003a018e4781bmr16424183wmb.199.1660058424094;
-        Tue, 09 Aug 2022 08:20:24 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:982:cbb0:a7b2:d90d:221:7fec])
-        by smtp.gmail.com with ESMTPSA id r3-20020a05600c424300b003a53de38c0dsm8279390wmm.14.2022.08.09.08.20.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jQq+vc9W06TACReKN0ej1GNxH6Z/P1l4L8dXBTGxx58=;
+        b=kPErTQMc3bXPcZzz452OWzZRq8yckF/JOtWKsxZ1iI5lekA4XhHWOChuxUFONrvZqz
+         1pZkdhyPDh1LHAwX1lYFwyzcCEiNcTjlKI2XvqveOLE3LJ/VJ5ErNQlSyIxdVYch85wB
+         bYRDCcioDiujavK19JgaM9NHoUcpq4QyINZCs/jOty06PFbp4QYp7U/T3BOEJ6atb0se
+         d3E7kFUjYC2cC5+pyTJ7XT/1/bn6rS+DTiptr7nRbl2zqmxzvGZUGh4+cYFXidDpvWzw
+         Ut27aRz2fzwfndVhmOY44LVqZO9gfOn929UdrCjGnFZ1DI+nGjVqLZ8t9fCW9ZiriQiW
+         DjFg==
+X-Gm-Message-State: ACgBeo3PktvlhPmjG5Z3542mGL5DrcRvPqHRyNp1XrxaJGgSH8qdM+NN
+        XLAmm5WjLZPsIQ+iizfm3Rk=
+X-Google-Smtp-Source: AA6agR6dxlvks48trcQz6Zz8fABO1KOAbvdZkvC7cafvq34AzsFD6CR/RYjhKENudvduK7UfkfTKPQ==
+X-Received: by 2002:a17:906:5a6a:b0:730:bc8a:57dd with SMTP id my42-20020a1709065a6a00b00730bc8a57ddmr16815474ejc.301.1660058420541;
+        Tue, 09 Aug 2022 08:20:20 -0700 (PDT)
+Received: from localhost.localdomain (host-79-27-108-198.retail.telecomitalia.it. [79.27.108.198])
+        by smtp.gmail.com with ESMTPSA id m21-20020a170906721500b0073093eaf53esm1222162ejk.131.2022.08.09.08.20.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 08:20:23 -0700 (PDT)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     broonie@kernel.org
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Da Xue <da@libre.computer>
-Subject: [PATCH] spi: meson-spicc: save pow2 datarate between messages
-Date:   Tue,  9 Aug 2022 17:20:19 +0200
-Message-Id: <20220809152019.461741-1-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 09 Aug 2022 08:20:19 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ira Weiny <ira.weiny@intel.com>
+Subject: [PATCH 3/3] hfs: Replace kmap() with kmap_local_page() in btree.c
+Date:   Tue,  9 Aug 2022 17:20:04 +0200
+Message-Id: <20220809152004.9223-4-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220809152004.9223-1-fmdefrancesco@gmail.com>
+References: <20220809152004.9223-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1960; h=from:subject; bh=aW4Zdb2GhTYOX+8LyYNg05IkphRj4KSUnH50R2AElMo=; b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBi8nsrlLBCQ+QvH7Kx2FKrKGQhp/Kr5WdZF01i7kEC vp4OO8WJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCYvJ7KwAKCRB33NvayMhJ0UwID/ 9qkNF3gbvLrcr2s0wBGyr39E3A/imA5qSI/K1sL6+DmYpLVqXRJVGfiB/sPnNq2hY1TyJ8mFLSlxJy sL2RIL8mdMSdMIigyhh4JBTPZjiuLlJl5Rz0YpMN69YPXEy0DerAAIPWw9ontBt1qfqX+DywN38l1d PSbDrME1W4SMyusp7acnrNmMAio6bLMlXKc0FYLt7l9O25aLbye62v+DfolVdwT9FjQGby/9YkHJyA Gey1L1b04LlE9Nf6njPdUppsUUV5sFQo+hk5tEWBN4EXI2Loe2qutrmFz3fpgcuv10L3ptS8vYKYT+ 2EK2ZFCrLMpQHuM3+wdbqVyRk/omnZBlXYPxDSC2lVnx8SQWGkUEU81zopR96O0iRbYkCt71cEbDPB QxjkAlkQVfxJWKrPTlfi0zC7TD6DvbjxgMLViBazFa0YPmPFCXapCaN4oC+2wlC9g6YS5Rd4g8CVSB xTjtZZQaw8XtgcOTj2cEoLLLFAE3NCB64VKDoynw8Uf9UJVkhaCdpix692MjXjWOLIi+0Ya3NRxVlz 4dR7V8puOxh7ADFMqVidX9V52euNsrig4eSwWcA4y5fO0KT48CR+s9an2D+GbTP/aEN5Zi2i1UQh2H jB6dVEE1/zBOMUfyQa9v8MeSIgUHl2NY30cXpb4LZLAOdqiLe5QQ3HkXUZeA==
-X-Developer-Key: i=narmstrong@baylibre.com; a=openpgp; fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the end of a message, the HW gets a reset in meson_spicc_unprepare_transfer(),
-this resets the SPICC_CONREG register and notably the value set by the
-Common Clock Framework.
+kmap() is being deprecated in favor of kmap_local_page().
 
-This saves the datarate dividor value between message to keep the last
-set value by the Common Clock Framework.
+Two main problems with kmap(): (1) It comes with an overhead as mapping
+space is restricted and protected by a global lock for synchronization and
+(2) it also requires global TLB invalidation when the kmap’s pool wraps
+and it might block when the mapping space is fully utilized until a slot
+becomes available.
 
-This didn't appear before commit 3e0cf4d3fc29 ("spi: meson-spicc: add a linear clock divider support")
-because we recalculated and wrote the rate for each xfer.
+With kmap_local_page() the mappings are per thread, CPU local, can take
+page faults, and can be called from any context (including interrupts).
+It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+the tasks can be preempted and, when they are scheduled to run again, the
+kernel virtual addresses are restored and still valid.
 
-Fixes: 3e0cf4d3fc29 ("spi: meson-spicc: add a linear clock divider support")
-Reported-by: Da Xue <da@libre.computer>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Since its use in btree.c is safe everywhere, it should be preferred.
+
+Therefore, replace kmap() with kmap_local_page() in btree.c. Where
+possible, use the suited standard helpers (memzero_page(), memcpy_page())
+instead of open coding kmap_local_page() plus memset() or memcpy().
+
+Tested in a QEMU/KVM x86_32 VM, 6GB RAM, booting a kernel with
+HIGHMEM64GB enabled.
+
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- drivers/spi/spi-meson-spicc.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ fs/hfs/btree.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/spi/spi-meson-spicc.c b/drivers/spi/spi-meson-spicc.c
-index 0bc7daa7afc8..e58686e28439 100644
---- a/drivers/spi/spi-meson-spicc.c
-+++ b/drivers/spi/spi-meson-spicc.c
-@@ -166,6 +166,7 @@ struct meson_spicc_device {
- 	unsigned long			tx_remain;
- 	unsigned long			rx_remain;
- 	unsigned long			xfer_remain;
-+	unsigned int			pow2_datarate;
- };
+diff --git a/fs/hfs/btree.c b/fs/hfs/btree.c
+index 56c6782436e9..2fa4b1f8cc7f 100644
+--- a/fs/hfs/btree.c
++++ b/fs/hfs/btree.c
+@@ -80,7 +80,8 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
+ 		goto free_inode;
  
- static void meson_spicc_oen_enable(struct meson_spicc_device *spicc)
-@@ -458,7 +459,8 @@ static int meson_spicc_prepare_message(struct spi_master *master,
- 	/* Select CS */
- 	conf |= FIELD_PREP(SPICC_CS_MASK, spi->chip_select);
+ 	/* Load the header */
+-	head = (struct hfs_btree_header_rec *)(kmap(page) + sizeof(struct hfs_bnode_desc));
++	head = (struct hfs_btree_header_rec *)(kmap_local_page(page) +
++					       sizeof(struct hfs_bnode_desc));
+ 	tree->root = be32_to_cpu(head->root);
+ 	tree->leaf_count = be32_to_cpu(head->leaf_count);
+ 	tree->leaf_head = be32_to_cpu(head->leaf_head);
+@@ -119,12 +120,12 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
+ 	tree->node_size_shift = ffs(size) - 1;
+ 	tree->pages_per_bnode = (tree->node_size + PAGE_SIZE - 1) >> PAGE_SHIFT;
  
--	/* Default Clock rate core/4 */
-+	/* Saved pow2 Clock rate */
-+	conf |= FIELD_PREP(SPICC_DATARATE_MASK, spicc->pow2_datarate);
+-	kunmap(page);
++	kunmap_local(head);
+ 	put_page(page);
+ 	return tree;
  
- 	/* Default 8bit word */
- 	conf |= FIELD_PREP(SPICC_BITLENGTH_MASK, 8 - 1);
-@@ -480,6 +482,10 @@ static int meson_spicc_unprepare_transfer(struct spi_master *master)
- 	/* Disable all IRQs */
- 	writel(0, spicc->base + SPICC_INTREG);
+ fail_page:
+-	kunmap(page);
++	kunmap_local(head);
+ 	put_page(page);
+ free_inode:
+ 	tree->inode->i_mapping->a_ops = &hfs_aops;
+@@ -170,7 +171,8 @@ void hfs_btree_write(struct hfs_btree *tree)
+ 		return;
+ 	/* Load the header */
+ 	page = node->page[0];
+-	head = (struct hfs_btree_header_rec *)(kmap(page) + sizeof(struct hfs_bnode_desc));
++	head = (struct hfs_btree_header_rec *)(kmap_local_page(page) +
++					       sizeof(struct hfs_bnode_desc));
  
-+	/* Save last pow2 datarate before HW reset */
-+	spicc->pow2_datarate = FIELD_GET(SPICC_DATARATE_MASK,
-+					 readl_relaxed(spicc->base + SPICC_CONREG));
-+
- 	device_reset_optional(&spicc->pdev->dev);
+ 	head->root = cpu_to_be32(tree->root);
+ 	head->leaf_count = cpu_to_be32(tree->leaf_count);
+@@ -181,7 +183,7 @@ void hfs_btree_write(struct hfs_btree *tree)
+ 	head->attributes = cpu_to_be32(tree->attributes);
+ 	head->depth = cpu_to_be16(tree->depth);
  
- 	return 0;
+-	kunmap(page);
++	kunmap_local(head);
+ 	set_page_dirty(page);
+ 	hfs_bnode_put(node);
+ }
+@@ -269,7 +271,7 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
+ 
+ 	off += node->page_offset;
+ 	pagep = node->page + (off >> PAGE_SHIFT);
+-	data = kmap(*pagep);
++	data = kmap_local_page(*pagep);
+ 	off &= ~PAGE_MASK;
+ 	idx = 0;
+ 
+@@ -282,7 +284,7 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
+ 						idx += i;
+ 						data[off] |= m;
+ 						set_page_dirty(*pagep);
+-						kunmap(*pagep);
++						kunmap_local(data);
+ 						tree->free_nodes--;
+ 						mark_inode_dirty(tree->inode);
+ 						hfs_bnode_put(node);
+@@ -291,14 +293,14 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
+ 				}
+ 			}
+ 			if (++off >= PAGE_SIZE) {
+-				kunmap(*pagep);
+-				data = kmap(*++pagep);
++				kunmap_local(data);
++				data = kmap_local_page(*++pagep);
+ 				off = 0;
+ 			}
+ 			idx += 8;
+ 			len--;
+ 		}
+-		kunmap(*pagep);
++		kunmap_local(data);
+ 		nidx = node->next;
+ 		if (!nidx) {
+ 			printk(KERN_DEBUG "create new bmap node...\n");
+@@ -314,7 +316,7 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
+ 		off = off16;
+ 		off += node->page_offset;
+ 		pagep = node->page + (off >> PAGE_SHIFT);
+-		data = kmap(*pagep);
++		data = kmap_local_page(*pagep);
+ 		off &= ~PAGE_MASK;
+ 	}
+ }
+@@ -361,20 +363,20 @@ void hfs_bmap_free(struct hfs_bnode *node)
+ 	}
+ 	off += node->page_offset + nidx / 8;
+ 	page = node->page[off >> PAGE_SHIFT];
+-	data = kmap(page);
++	data = kmap_local_page(page);
+ 	off &= ~PAGE_MASK;
+ 	m = 1 << (~nidx & 7);
+ 	byte = data[off];
+ 	if (!(byte & m)) {
+ 		pr_crit("trying to free free bnode %u(%d)\n",
+ 			node->this, node->type);
+-		kunmap(page);
++		kunmap_local(data);
+ 		hfs_bnode_put(node);
+ 		return;
+ 	}
+ 	data[off] = byte & ~m;
+ 	set_page_dirty(page);
+-	kunmap(page);
++	kunmap_local(data);
+ 	hfs_bnode_put(node);
+ 	tree->free_nodes++;
+ 	mark_inode_dirty(tree->inode);
 -- 
-2.25.1
+2.37.1
 
