@@ -2,217 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87756C25B0C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A535BC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344044AbiHISEf (ORCPT
+        id S1344515AbiHISEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
+        Tue, 9 Aug 2022 14:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344492AbiHISDc (ORCPT
+        with ESMTP id S1344499AbiHISDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:03:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0809C275CC;
-        Tue,  9 Aug 2022 11:01:58 -0700 (PDT)
+        Tue, 9 Aug 2022 14:03:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA89275D0;
+        Tue,  9 Aug 2022 11:02:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F739B81717;
-        Tue,  9 Aug 2022 18:01:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD88AC433B5;
-        Tue,  9 Aug 2022 18:01:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0C6A61028;
+        Tue,  9 Aug 2022 18:01:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D803AC433D6;
+        Tue,  9 Aug 2022 18:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068116;
-        bh=+FqkR+GNwO8WzU+AMoVFB/pDiBtIJK6YbTFImLEr4T4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kQ/NjrHVGMq7GtSOD9xxWfBaZ9dXZo4lYo/3UsuCsFBsFIXJkblBblogcN9G20L0Y
-         XWFMC+DRiFZYn0tIS9XkeIqwJ09HfhDv4wbKOQx/rUmN76QXEx/NUDVssU0OMHqu0O
-         EHvMYHkxMpR/6jNGrXjTOA6kqDPF/zXff0FdR5WQ=
+        s=korg; t=1660068119;
+        bh=3SEtrh6MNpXnvKk3vVEPj7E7RPsWRJCj7UxewlvKznA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dqmY4VjtsHshm4Euv5YV1OEJo8VFyErs53U6z1HKOKwvG4l3duI5Z3HATZ7Ozvl0p
+         RDKxkK6keoHlPtsjBBEm7x78wYWbO6PR3/kKRVMphkmEQRkLrduBdfwKVGIOfjET14
+         BGebXetERLyX90hLzwMYYH5faWcgLMp7yk9yNtKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.19 00/32] 4.19.255-rc1 review
-Date:   Tue,  9 Aug 2022 19:59:51 +0200
-Message-Id: <20220809175513.082573955@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 13/32] net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
+Date:   Tue,  9 Aug 2022 20:00:04 +0200
+Message-Id: <20220809175513.511637160@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
+In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
+References: <20220809175513.082573955@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.255-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.19.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.19.255-rc1
-X-KernelTest-Deadline: 2022-08-11T17:55+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.19.255 release.
-There are 32 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Liang He <windhl@126.com>
 
-Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-Anything received after that time might be too late.
+[ Upstream commit ebbbe23fdf6070e31509638df3321688358cc211 ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.255-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-and the diffstat can be found below.
+In bcm5421_init(), we should call of_node_put() for the reference
+returned by of_get_parent() which has increased the refcount.
 
-thanks,
+Fixes: 3c326fe9cb7a ("[PATCH] ppc64: Add new PHY to sungem")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220720131003.1287426-1-windhl@126.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/sungem_phy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-greg k-h
+diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
+index 63a8ff816e59..e556b00dfed2 100644
+--- a/drivers/net/sungem_phy.c
++++ b/drivers/net/sungem_phy.c
+@@ -453,6 +453,7 @@ static int bcm5421_init(struct mii_phy* phy)
+ 		int can_low_power = 1;
+ 		if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
+ 			can_low_power = 0;
++		of_node_put(np);
+ 		if (can_low_power) {
+ 			/* Enable automatic low-power */
+ 			sungem_phy_write(phy, 0x1c, 0x9002);
+-- 
+2.35.1
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.19.255-rc1
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation: Add LFENCE to RSB fill sequence
-
-Daniel Sneddon <daniel.sneddon@linux.intel.com>
-    x86/speculation: Add RSB VM Exit protections
-
-Ning Qiang <sohu0106@126.com>
-    macintosh/adb: fix oob read in do_adb_query() function
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Force backlight native for some TongFang devices
-
-Ming Lei <ming.lei@redhat.com>
-    scsi: core: Fix race between handling STS_RESOURCE and completion
-
-Wei Mingzhi <whistler@member.fsf.org>
-    mt7601u: add USB device ID for some versions of XiaoDu WiFi Dongle.
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    ARM: crypto: comment out gcc warning that breaks clang builds
-
-Leo Yan <leo.yan@linaro.org>
-    perf symbol: Correct address for bss symbols
-
-Florian Westphal <fw@strlen.de>
-    netfilter: nf_queue: do not allow packet truncation below transport header offset
-
-Duoming Zhou <duoming@zju.edu.cn>
-    sctp: fix sleep in atomic context bug in timer handlers
-
-Michal Maloszewski <michal.maloszewski@intel.com>
-    i40e: Fix interface init with MSI interrupts (no MSI-X)
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_comp_sack_nr.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_comp_sack_delay_ns.
-
-Xin Long <lucien.xin@gmail.com>
-    Documentation: fix sctp_wmem in ip-sysctl.rst
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_invalid_ratelimit.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_autocorking.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_min_rtt_wlen.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_min_tso_segs.
-
-Liang He <windhl@126.com>
-    net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    igmp: Fix data-races around sysctl_igmp_qrv.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    net: ping6: Fix memleak in ipv6_renew_options().
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_challenge_ack_limit.
-
-Liang He <windhl@126.com>
-    scsi: ufs: host: Hold reference returned by of_parse_phandle()
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_nometrics_save.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_frto.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_adv_win_scale.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_app_win.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_dsack.
-
-Harald Freudenberger <freude@linux.ibm.com>
-    s390/archrandom: prevent CPACF trng invocations in interrupt context
-
-ChenXiaoSong <chenxiaosong2@huawei.com>
-    ntfs: fix use-after-free in ntfs_ucsncmp()
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put
-
-
--------------
-
-Diffstat:
-
- Documentation/admin-guide/hw-vuln/spectre.rst |  8 ++++
- Documentation/networking/ip-sysctl.txt        |  9 +++-
- Makefile                                      |  4 +-
- arch/arm/lib/xor-neon.c                       |  3 +-
- arch/s390/include/asm/archrandom.h            |  9 ++--
- arch/x86/include/asm/cpufeatures.h            |  2 +
- arch/x86/include/asm/msr-index.h              |  4 ++
- arch/x86/include/asm/nospec-branch.h          | 19 ++++++++-
- arch/x86/kernel/cpu/bugs.c                    | 61 ++++++++++++++++++++++++++-
- arch/x86/kernel/cpu/common.c                  | 12 +++++-
- arch/x86/kvm/vmx.c                            |  6 +--
- drivers/acpi/video_detect.c                   | 55 +++++++++++++++---------
- drivers/macintosh/adb.c                       |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c   |  4 ++
- drivers/net/sungem_phy.c                      |  1 +
- drivers/net/wireless/mediatek/mt7601u/usb.c   |  1 +
- drivers/scsi/scsi_lib.c                       |  3 +-
- drivers/scsi/ufs/ufshcd-pltfrm.c              | 15 ++++++-
- fs/ntfs/attrib.c                              |  8 +++-
- include/net/bluetooth/l2cap.h                 |  1 +
- include/net/tcp.h                             |  2 +-
- net/bluetooth/l2cap_core.c                    | 61 +++++++++++++++++++++------
- net/ipv4/igmp.c                               | 24 ++++++-----
- net/ipv4/tcp.c                                |  2 +-
- net/ipv4/tcp_input.c                          | 20 +++++----
- net/ipv4/tcp_metrics.c                        |  2 +-
- net/ipv4/tcp_output.c                         |  2 +-
- net/ipv6/ping.c                               |  6 +++
- net/netfilter/nfnetlink_queue.c               |  7 ++-
- net/sctp/stream_sched.c                       |  2 +-
- tools/perf/util/symbol-elf.c                  | 45 ++++++++++++++++++--
- 31 files changed, 316 insertions(+), 84 deletions(-)
 
 
