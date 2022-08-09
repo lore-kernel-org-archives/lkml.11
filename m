@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A07D4C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B3FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344606AbiHISGQ (ORCPT
+        id S1343696AbiHISGV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42478 "EHLO
+        Tue, 9 Aug 2022 14:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344675AbiHISFa (ORCPT
+        with ESMTP id S1344730AbiHISFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:05:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AEC27B1A;
-        Tue,  9 Aug 2022 11:02:30 -0700 (PDT)
+        Tue, 9 Aug 2022 14:05:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F9FFCD;
+        Tue,  9 Aug 2022 11:02:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1608B8171A;
-        Tue,  9 Aug 2022 18:02:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50008C433D6;
-        Tue,  9 Aug 2022 18:02:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DD7D6102F;
+        Tue,  9 Aug 2022 18:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8988C43470;
+        Tue,  9 Aug 2022 18:02:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068147;
-        bh=p57W8xdgWJ4rBg4QKkF/0C1QRV+CcyrZojmXs1ej7Rs=;
+        s=korg; t=1660068153;
+        bh=0agPFwrtUITObKzifFD7D/Pb+hzEpwXxQLiarBqFdVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=baUyoisuFVB7MLPLu9/12yEZeao2kC7QYD5fQw4Q7OiwA6SKzvpzxtqoYKqKD09zp
-         eX7uJayWjACmEPLso3dfiT5F7riv69mCyIIV93BKkWk2RKYLw04O5hQJwIYsvgUtZz
-         2J2hIRe6azyX7mTTmvWKDdABSg+fS9h7+T1dSARE=
+        b=um8JbDteB14og0GGSyUu8PwPAY2MvRje3FUGSKIqVLgztaDD0gnZ4tou+4qZ6tgg7
+         kBRc1WWFNQHS18UylBFuyBVFUTw17cfV8FmLBk3hi38AyF8aDdsHwFJHkYCWQhoLLf
+         /EpShNvJsd+xawNaQSK1Tz1415JEwVj6CSadTNBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 18/32] Documentation: fix sctp_wmem in ip-sysctl.rst
-Date:   Tue,  9 Aug 2022 20:00:09 +0200
-Message-Id: <20220809175513.662269725@linuxfoundation.org>
+Subject: [PATCH 4.19 20/32] tcp: Fix a data-race around sysctl_tcp_comp_sack_nr.
+Date:   Tue,  9 Aug 2022 20:00:11 +0200
+Message-Id: <20220809175513.723352841@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
 References: <20220809175513.082573955@linuxfoundation.org>
@@ -51,47 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit aa709da0e032cee7c202047ecd75f437bb0126ed ]
+[ Upstream commit 79f55473bfc8ac51bd6572929a679eeb4da22251 ]
 
-Since commit 1033990ac5b2 ("sctp: implement memory accounting on tx path"),
-SCTP has supported memory accounting on tx path where 'sctp_wmem' is used
-by sk_wmem_schedule(). So we should fix the description for this option in
-ip-sysctl.rst accordingly.
+While reading sysctl_tcp_comp_sack_nr, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-v1->v2:
-  - Improve the description as Marcelo suggested.
-
-Fixes: 1033990ac5b2 ("sctp: implement memory accounting on tx path")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Fixes: 9c21d2fc41c0 ("tcp: add tcp_comp_sack_nr sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/networking/ip-sysctl.txt | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index e315e6052b9f..eb24b8137226 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -2170,7 +2170,14 @@ sctp_rmem - vector of 3 INTEGERs: min, default, max
- 	Default: 4K
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index b71866aba426..e1d065ea5a15 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5239,7 +5239,7 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
+ 	}
  
- sctp_wmem  - vector of 3 INTEGERs: min, default, max
--	Currently this tunable has no effect.
-+	Only the first value ("min") is used, "default" and "max" are
-+	ignored.
-+
-+	min: Minimum size of send buffer that can be used by SCTP sockets.
-+	It is guaranteed to each SCTP socket (but not association) even
-+	under moderate memory pressure.
-+
-+	Default: 4K
+ 	if (!tcp_is_sack(tp) ||
+-	    tp->compressed_ack >= sock_net(sk)->ipv4.sysctl_tcp_comp_sack_nr)
++	    tp->compressed_ack >= READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_comp_sack_nr))
+ 		goto send_now;
  
- addr_scope_policy - INTEGER
- 	Control IPv4 address scoping - draft-stewart-tsvwg-sctp-ipv4-00
+ 	if (tp->compressed_ack_rcv_nxt != tp->rcv_nxt) {
 -- 
 2.35.1
 
