@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E14C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F64FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345564AbiHISOU (ORCPT
+        id S1345573AbiHISOX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58306 "EHLO
+        Tue, 9 Aug 2022 14:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345401AbiHISK5 (ORCPT
+        with ESMTP id S1345677AbiHISLc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:10:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771C82A70E;
-        Tue,  9 Aug 2022 11:04:19 -0700 (PDT)
+        Tue, 9 Aug 2022 14:11:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAF42AE28;
+        Tue,  9 Aug 2022 11:04:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37DF06110F;
-        Tue,  9 Aug 2022 18:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4494FC433C1;
-        Tue,  9 Aug 2022 18:04:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28A2E61070;
+        Tue,  9 Aug 2022 18:04:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F1EC433B5;
+        Tue,  9 Aug 2022 18:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068258;
-        bh=jDWLxdfLb0UfgoWC21cxL2t9XM8NGIBroBhN1wxTcp4=;
+        s=korg; t=1660068283;
+        bh=Aj/qrZaVX0QhpzS2MUF/ANJF5hHr2wjbfHO7Xx3sWUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qOnzakVYKwONXl4VFhcEiugUeg0BwAyvgpo2gRXiJif49LtK5LkMED8HeqkQ0wdPZ
-         NGdrJT1BiGihbleWXa4HrQcStEiFyuAMIforvcinVA88x3IQG+p7zcpRpdicsw2dyf
-         nmERWi5/rHuk2pmCCPUdHebaHNTghk7AemFB2pdE=
+        b=Tip/NNZRmN0V3j1+9wmdH2YmLLMppS/Jtf9/rFyZ7K0YFIXOctJa6vYH6M4hMhucs
+         HSRhcvgNfD676AVhPYBf8u5gmFhhZXqP9FWFgP3Nej0vRM2ff/w56Lwlh2J6QtQpKJ
+         3OGdbpCrNUsUkJY0Gjk+V42Xa9yMrTmiXAlgKTOA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Will Deacon <will@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.10 10/23] crypto: arm64/poly1305 - fix a read out-of-bound
-Date:   Tue,  9 Aug 2022 20:00:28 +0200
-Message-Id: <20220809175513.242413601@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>
+Subject: [PATCH 5.10 23/23] x86/speculation: Add LFENCE to RSB fill sequence
+Date:   Tue,  9 Aug 2022 20:00:41 +0200
+Message-Id: <20220809175513.640042532@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
 References: <20220809175512.853274191@linuxfoundation.org>
@@ -51,125 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit 7ae19d422c7da84b5f13bc08b98bd737a08d3a53 upstream.
+commit ba6e31af2be96c4d0536f2152ed6f7b6c11bca47 upstream.
 
-A kasan error was reported during fuzzing:
+RSB fill sequence does not have any protection for miss-prediction of
+conditional branch at the end of the sequence. CPU can speculatively
+execute code immediately after the sequence, while RSB filling hasn't
+completed yet.
 
-BUG: KASAN: slab-out-of-bounds in neon_poly1305_blocks.constprop.0+0x1b4/0x250 [poly1305_neon]
-Read of size 4 at addr ffff0010e293f010 by task syz-executor.5/1646715
-CPU: 4 PID: 1646715 Comm: syz-executor.5 Kdump: loaded Not tainted 5.10.0.aarch64 #1
-Hardware name: Huawei TaiShan 2280 /BC11SPCD, BIOS 1.59 01/31/2019
-Call trace:
- dump_backtrace+0x0/0x394
- show_stack+0x34/0x4c arch/arm64/kernel/stacktrace.c:196
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x158/0x1e4 lib/dump_stack.c:118
- print_address_description.constprop.0+0x68/0x204 mm/kasan/report.c:387
- __kasan_report+0xe0/0x140 mm/kasan/report.c:547
- kasan_report+0x44/0xe0 mm/kasan/report.c:564
- check_memory_region_inline mm/kasan/generic.c:187 [inline]
- __asan_load4+0x94/0xd0 mm/kasan/generic.c:252
- neon_poly1305_blocks.constprop.0+0x1b4/0x250 [poly1305_neon]
- neon_poly1305_do_update+0x6c/0x15c [poly1305_neon]
- neon_poly1305_update+0x9c/0x1c4 [poly1305_neon]
- crypto_shash_update crypto/shash.c:131 [inline]
- shash_finup_unaligned+0x84/0x15c crypto/shash.c:179
- crypto_shash_finup+0x8c/0x140 crypto/shash.c:193
- shash_digest_unaligned+0xb8/0xe4 crypto/shash.c:201
- crypto_shash_digest+0xa4/0xfc crypto/shash.c:217
- crypto_shash_tfm_digest+0xb4/0x150 crypto/shash.c:229
- essiv_skcipher_setkey+0x164/0x200 [essiv]
- crypto_skcipher_setkey+0xb0/0x160 crypto/skcipher.c:612
- skcipher_setkey+0x3c/0x50 crypto/algif_skcipher.c:305
- alg_setkey+0x114/0x2a0 crypto/af_alg.c:220
- alg_setsockopt+0x19c/0x210 crypto/af_alg.c:253
- __sys_setsockopt+0x190/0x2e0 net/socket.c:2123
- __do_sys_setsockopt net/socket.c:2134 [inline]
- __se_sys_setsockopt net/socket.c:2131 [inline]
- __arm64_sys_setsockopt+0x78/0x94 net/socket.c:2131
- __invoke_syscall arch/arm64/kernel/syscall.c:36 [inline]
- invoke_syscall+0x64/0x100 arch/arm64/kernel/syscall.c:48
- el0_svc_common.constprop.0+0x220/0x230 arch/arm64/kernel/syscall.c:155
- do_el0_svc+0xb4/0xd4 arch/arm64/kernel/syscall.c:217
- el0_svc+0x24/0x3c arch/arm64/kernel/entry-common.c:353
- el0_sync_handler+0x160/0x164 arch/arm64/kernel/entry-common.c:369
- el0_sync+0x160/0x180 arch/arm64/kernel/entry.S:683
+  #define __FILL_RETURN_BUFFER(reg, nr, sp)       \
+          mov     $(nr/2), reg;                   \
+  771:                                            \
+          ANNOTATE_INTRA_FUNCTION_CALL;           \
+          call    772f;                           \
+  773:    /* speculation trap */                  \
+          UNWIND_HINT_EMPTY;                      \
+          pause;                                  \
+          lfence;                                 \
+          jmp     773b;                           \
+  772:                                            \
+          ANNOTATE_INTRA_FUNCTION_CALL;           \
+          call    774f;                           \
+  775:    /* speculation trap */                  \
+          UNWIND_HINT_EMPTY;                      \
+          pause;                                  \
+          lfence;                                 \
+          jmp     775b;                           \
+  774:                                            \
+          add     $(BITS_PER_LONG/8) * 2, sp;     \
+          dec     reg;                            \
+          jnz     771b;        <----- CPU can miss-predict here.
 
-This error can be reproduced by the following code compiled as ko on a
-system with kasan enabled:
+Before RSB is filled, RETs that come in program order after this macro
+can be executed speculatively, making them vulnerable to RSB-based
+attacks.
 
-#include <linux/module.h>
-#include <linux/crypto.h>
-#include <crypto/hash.h>
-#include <crypto/poly1305.h>
+Mitigate it by adding an LFENCE after the conditional branch to prevent
+speculation while RSB is being filled.
 
-char test_data[] = "\x00\x01\x02\x03\x04\x05\x06\x07"
-                   "\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
-                   "\x10\x11\x12\x13\x14\x15\x16\x17"
-                   "\x18\x19\x1a\x1b\x1c\x1d\x1e";
-
-int init(void)
-{
-        struct crypto_shash *tfm = NULL;
-        char *data = NULL, *out = NULL;
-
-        tfm = crypto_alloc_shash("poly1305", 0, 0);
-        data = kmalloc(POLY1305_KEY_SIZE - 1, GFP_KERNEL);
-        out = kmalloc(POLY1305_DIGEST_SIZE, GFP_KERNEL);
-        memcpy(data, test_data, POLY1305_KEY_SIZE - 1);
-        crypto_shash_tfm_digest(tfm, data, POLY1305_KEY_SIZE - 1, out);
-
-        kfree(data);
-        kfree(out);
-        return 0;
-}
-
-void deinit(void)
-{
-}
-
-module_init(init)
-module_exit(deinit)
-MODULE_LICENSE("GPL");
-
-The root cause of the bug sits in neon_poly1305_blocks. The logic
-neon_poly1305_blocks() performed is that if it was called with both s[]
-and r[] uninitialized, it will first try to initialize them with the
-data from the first "block" that it believed to be 32 bytes in length.
-First 16 bytes are used as the key and the next 16 bytes for s[]. This
-would lead to the aforementioned read out-of-bound. However, after
-calling poly1305_init_arch(), only 16 bytes were deducted from the input
-and s[] is initialized yet again with the following 16 bytes. The second
-initialization of s[] is certainly redundent which indicates that the
-first initialization should be for r[] only.
-
-This patch fixes the issue by calling poly1305_init_arm64() instead of
-poly1305_init_arch(). This is also the implementation for the same
-algorithm on arm platform.
-
-Fixes: f569ca164751 ("crypto: arm64/poly1305 - incorporate OpenSSL/CRYPTOGAMS NEON implementation")
-Cc: stable@vger.kernel.org
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Daniel Sneddon <daniel.sneddon@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/crypto/poly1305-glue.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/nospec-branch.h |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/crypto/poly1305-glue.c
-+++ b/arch/arm64/crypto/poly1305-glue.c
-@@ -52,7 +52,7 @@ static void neon_poly1305_blocks(struct
- {
- 	if (unlikely(!dctx->sset)) {
- 		if (!dctx->rset) {
--			poly1305_init_arch(dctx, src);
-+			poly1305_init_arm64(&dctx->h, src);
- 			src += POLY1305_BLOCK_SIZE;
- 			len -= POLY1305_BLOCK_SIZE;
- 			dctx->rset = 1;
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -60,7 +60,9 @@
+ 774:						\
+ 	add	$(BITS_PER_LONG/8) * 2, sp;	\
+ 	dec	reg;				\
+-	jnz	771b;
++	jnz	771b;				\
++	/* barrier for jnz misprediction */	\
++	lfence;
+ 
+ #ifdef __ASSEMBLY__
+ 
 
 
