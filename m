@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D52C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563C7C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344127AbiHISaB (ORCPT
+        id S1345140AbiHISaH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
+        Tue, 9 Aug 2022 14:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346878AbiHIS0n (ORCPT
+        with ESMTP id S1347209AbiHIS07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:26:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402AF26AC4;
-        Tue,  9 Aug 2022 11:09:33 -0700 (PDT)
+        Tue, 9 Aug 2022 14:26:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B624F29C9B;
+        Tue,  9 Aug 2022 11:09:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AEEAB819FE;
-        Tue,  9 Aug 2022 18:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 575F9C43142;
-        Tue,  9 Aug 2022 18:07:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82805B81912;
+        Tue,  9 Aug 2022 18:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C16E8C433C1;
+        Tue,  9 Aug 2022 18:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068473;
-        bh=2qF/kK6RRTDUlVEb+7Biig8eUepMNHqNOn3cahipYnI=;
+        s=korg; t=1660068479;
+        bh=UinAzkFxj+BLJyuf4XCMytJV/KED8ZQPD9DVBguyrlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wUakgvzWteBoXeIQP2NuIbFRh2Fz1yBENaPXUjiIWBOU3w3b0bBBM5lA2okNoACKI
-         jYUy5N2yPhCTtS9XgqBNoQwKcz3RmcHp9B80bJm5zoMQ5Qe/adpoh2/slGby4mtzrc
-         aBKLtK0VXBeuOLn7pC2eRqL6izSYtH+BlRowSCPI=
+        b=fBSYpoll6/Jd+vuDo7q2Oy8iMXBS7P6WVFaJcLp5Ua0JmugV9cUmoHT9fhzTo9cGw
+         4oYgJxr9dQF9kp7iAZtir286AI7dwvL5YMUEjQzQdMd5UPt3N01unxJmm5kuvctlB+
+         OuKPOEGAVzlefTFnvENRY6Q8wgm1zmyCkSOU8HeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.18 28/35] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
-Date:   Tue,  9 Aug 2022 20:00:57 +0200
-Message-Id: <20220809175516.096951692@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 5.19 02/21] tools/vm/slabinfo: Handle files in debugfs
+Date:   Tue,  9 Aug 2022 20:00:54 +0200
+Message-Id: <20220809175513.423515300@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
-References: <20220809175515.046484486@linuxfoundation.org>
+In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
+References: <20220809175513.345597655@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,64 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hilda Wu <hildawu@realtek.com>
+From: Stéphane Graber <stgraber@ubuntu.com>
 
-commit c379c96cc221767af9688a5d4758a78eea30883a upstream.
+commit 0c7e0d699ef1430d7f4cf12b4b1d097af58b5515 upstream.
 
-Add the support ID(0x04CA, 0x4007) to usb_device_id table for
-Realtek RTL8852C.
+Commit 64dd68497be76 relocated and renamed the alloc_calls and
+free_calls files from /sys/kernel/slab/NAME/*_calls over to
+/sys/kernel/debug/slab/NAME/*_calls but didn't update the slabinfo tool
+with the new location.
 
-The device info from /sys/kernel/debug/usb/devices as below.
+This change will now have slabinfo look at the new location (and filenames)
+with a fallback to the prior files.
 
-T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
-D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=04ca ProdID=4007 Rev= 0.00
-S:  Manufacturer=Realtek
-S:  Product=Bluetooth Radio
-S:  SerialNumber=00e04c000001
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-
-Signed-off-by: Hilda Wu <hildawu@realtek.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Fixes: 64dd68497be76 ("mm: slub: move sysfs slab alloc/free interfaces to debugfs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
+Tested-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ tools/vm/slabinfo.c |   26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -422,6 +422,10 @@ static const struct usb_device_id blackl
- 	{ USB_DEVICE(0x04ca, 0x4006), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
+--- a/tools/vm/slabinfo.c
++++ b/tools/vm/slabinfo.c
+@@ -233,6 +233,24 @@ static unsigned long read_slab_obj(struc
+ 	return l;
+ }
  
-+	/* Realtek 8852CE Bluetooth devices */
-+	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
++static unsigned long read_debug_slab_obj(struct slabinfo *s, const char *name)
++{
++	char x[128];
++	FILE *f;
++	size_t l;
 +
- 	/* Realtek Bluetooth devices */
- 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
- 	  .driver_info = BTUSB_REALTEK },
++	snprintf(x, 128, "/sys/kernel/debug/slab/%s/%s", s->name, name);
++	f = fopen(x, "r");
++	if (!f) {
++		buffer[0] = 0;
++		l = 0;
++	} else {
++		l = fread(buffer, 1, sizeof(buffer), f);
++		buffer[l] = 0;
++		fclose(f);
++	}
++	return l;
++}
+ 
+ /*
+  * Put a size string together
+@@ -409,14 +427,18 @@ static void show_tracking(struct slabinf
+ {
+ 	printf("\n%s: Kernel object allocation\n", s->name);
+ 	printf("-----------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "alloc_calls"))
++	if (read_debug_slab_obj(s, "alloc_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "alloc_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
+ 
+ 	printf("\n%s: Kernel object freeing\n", s->name);
+ 	printf("------------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "free_calls"))
++	if (read_debug_slab_obj(s, "free_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "free_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
 
 
