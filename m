@@ -2,100 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A689C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C00C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343694AbiHITMs (ORCPT
+        id S1345908AbiHITOA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        Tue, 9 Aug 2022 15:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345553AbiHITJU (ORCPT
+        with ESMTP id S1345769AbiHITNc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:09:20 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691DA2613C;
-        Tue,  9 Aug 2022 11:56:25 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id v14so3892345qkf.4;
-        Tue, 09 Aug 2022 11:56:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=1bJiCmKyDM21OGwmYhjUxQo6l6GkJp05rnDGs1pbS3c=;
-        b=WwJzjpfUuvbsJsSiSvPT3MXQKNdHgbPZrXqlLqug0wswodL7ttB4XGhZEXAjC/tPO0
-         G/j+yKqGNS/vkWDKQL7mFfWzK4PwSMLL2NesYOtsmPigLOMFuQl/8hMIHN1b1M7NFVoN
-         FsRrbqaCrVVZlEWoL+rqxxODga7+7zLvt7O0Or6Nc+VRhXoUO5/hjiDHCOO44EZw/MHp
-         uPIb5UvTiuw2lF5JljRrFysbUbIom1shV1fgkgCY3bJbY6dGjdExx3D7aC3nJvs7kL7W
-         xxqJf/4z0ZWeoPyYXtxoiLyR4Bn08MMZeJvhrn7PD+FGaSS+va0axS07LhSgN1y4LcE0
-         pTtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=1bJiCmKyDM21OGwmYhjUxQo6l6GkJp05rnDGs1pbS3c=;
-        b=DGX1QfWe+9SUdMaNKunatlt94e0fSLKg7YZtk/kGwENAL+1Cu44IXhqCwqFmOZkkE/
-         B7TWWu9v9VCNnKj4uE1ULLoUXebNmj6ZTliXnOfJiEkvZJmx/zzrR+eRVxEQWcR8M5bu
-         X0+L0KO00x+mQIGiU8EH2g+1AbeLgHwKO+5x5DdC0R/hnHLWmFshvUxwL9czY83kTT9L
-         Rhgo4T5+QmbFqCy2vjHXGDhHJT+MYH0HLsrSVGmWJppCSGkeictVoisXuU4WUN8ltLOf
-         PfmlmsHWWrItu5nA68UPJ8vTSIHRfJf873TQk1vAuhwyZMb6NnttAdFIA5bpQc3qmUce
-         ka3w==
-X-Gm-Message-State: ACgBeo13roo9XNGT+tmRNTWX9hMl43d4AajMD3QUSogL8BuMUnJTgbf2
-        LUZKqB6wjftE6a0AEYnj5vk=
-X-Google-Smtp-Source: AA6agR6PCqU7K4gJjjfiav2HV+PG5OmvDDOS/2Mxs/OFrTSwQ1zC8nPGWVCQt7FF+H1XRziODIwZvg==
-X-Received: by 2002:a05:620a:2904:b0:6b8:b1ef:2a59 with SMTP id m4-20020a05620a290400b006b8b1ef2a59mr18280702qkp.150.1660071384471;
-        Tue, 09 Aug 2022 11:56:24 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id bn42-20020a05620a2aea00b006b5e296452csm11372742qkb.54.2022.08.09.11.56.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 11:56:22 -0700 (PDT)
-Message-ID: <cd11472a-2b64-a0db-09f6-df729ab6e8f9@gmail.com>
-Date:   Tue, 9 Aug 2022 11:56:16 -0700
+        Tue, 9 Aug 2022 15:13:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284A22AE32;
+        Tue,  9 Aug 2022 12:04:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B43F9612F0;
+        Tue,  9 Aug 2022 19:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D851AC433D6;
+        Tue,  9 Aug 2022 19:04:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660071890;
+        bh=RB8OyKIO/zahJ9Uiq9plVG31G01V975xaNF+9AbDVIs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oFmiMkyM3i6Ne3bvqoOsnIybe8Ey7mGTCGphB9qdja5pnbIJn87u8X/rQkW8YYFZI
+         So4RZpHYH9ibY4cdM0KHD17ruP5wCdKZov8nUCmoLTX6KLb5/VLbJU239jy6ueWlQe
+         2WUH6WpNtqwNuhT1TpxXhtFCsfJKMo57L49LW0s0mtAQNqOsOgDhDqkPABzz9Ish10
+         g02uBhjp+OUIGo6c4iiE69DRmeVjeMW2qYDgeUPNJUH/Xfar8/N5J2wy99QS2MiOHZ
+         nVStcfPPAOhgyMewVkOU2++N0HPEDtL+47us8W1vrLE0RJs2xj4FZPmQCHwLAaACt0
+         xaBrPpga577VA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 39E7D4035A; Tue,  9 Aug 2022 16:04:46 -0300 (-03)
+Date:   Tue, 9 Aug 2022 16:04:46 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Andres Freund <andres@anarazel.de>
+Cc:     Roberto Sassu <roberto.sassu@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, quentin@isovalent.com,
+        ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, john.fastabend@gmail.com, kpsingh@kernel.org,
+        sdf@google.com, peterz@infradead.org, mingo@redhat.com,
+        terrelln@fb.com, nathan@kernel.org, ndesaulniers@google.com,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: [PATCH 4/4] build: Switch to new openssl API for test-libcrypto
+Message-ID: <YvKvzkuUG78q/mkA@kernel.org>
+References: <20220719170555.2576993-1-roberto.sassu@huawei.com>
+ <20220719170555.2576993-4-roberto.sassu@huawei.com>
+ <5f867295-10d2-0085-d1dc-051f56e7136a@iogearbox.net>
+ <YvFW/kBL6YA3Tlnc@kernel.org>
+ <YvJ6DbzBNsAgNZS4@kernel.org>
+ <YvJ7awkCVBYaZ2dd@kernel.org>
+ <20220809170034.hx7fyiosm3tfekwf@awork3.anarazel.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5.4 00/15] 5.4.210-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220809175510.312431319@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220809170034.hx7fyiosm3tfekwf@awork3.anarazel.de>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/9/22 11:00, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.210 release.
-> There are 15 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Em Tue, Aug 09, 2022 at 10:00:34AM -0700, Andres Freund escreveu:
+> Hi,
 > 
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
+> On 2022-08-09 12:21:15 -0300, Arnaldo Carvalho de Melo wrote:
+> > So I backtracked, the way it works needs further consideration with
+> > regard to the patchkit from Andres, that is already upstream, so it
+> > would be good for Roberto to take a look at what is in torvalds/master
+> > now and see if we have to removed that styled thing from Andres.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.210-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Why would it have to be removed - seems to be fairly independent, leaving the
+> line conflicts aside? Or do you just mean folding it into one-big-test? If so,
+> that'd make sense, although I'm not sure how ready the infrastructure
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels and build tested 
-with BMIPS_GENERIC:
+So below is the 3rd patch in Roberto's patchkit adapted, I removed the
+FEATURE_CHECK_LDFLAGS-disassembler-init-styled setting as we now
+automatically try with multiple sets of libraries, as with
+disassembler-four-args.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+- Arnaldo
+
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index 23648ea54e8d3d2c..0661a1cf98556ed3 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -297,9 +297,6 @@ FEATURE_CHECK_LDFLAGS-libpython := $(PYTHON_EMBED_LDOPTS)
+ 
+ FEATURE_CHECK_LDFLAGS-libaio = -lrt
+ 
+-FEATURE_CHECK_LDFLAGS-disassembler-four-args = -lbfd -lopcodes -ldl
+-FEATURE_CHECK_LDFLAGS-disassembler-init-styled = -lbfd -lopcodes -ldl
+-
+ CORE_CFLAGS += -fno-omit-frame-pointer
+ CORE_CFLAGS += -ggdb3
+ CORE_CFLAGS += -funwind-tables
+@@ -329,8 +326,8 @@ ifneq ($(TCMALLOC),)
+ endif
+ 
+ ifeq ($(FEATURES_DUMP),)
+-# We will display at the end of this Makefile.config, using $(call feature_display_entries)
+-# As we may retry some feature detection here, see the disassembler-four-args case, for instance
++# We will display at the end of this Makefile.config, using $(call feature_display_entries),
++# as we may retry some feature detection here.
+   FEATURE_DISPLAY_DEFERRED := 1
+ include $(srctree)/tools/build/Makefile.feature
+ else
+@@ -924,13 +921,9 @@ ifndef NO_LIBBFD
+ 
+     ifeq ($(feature-libbfd-liberty), 1)
+       EXTLIBS += -lbfd -lopcodes -liberty
+-      FEATURE_CHECK_LDFLAGS-disassembler-four-args += -liberty -ldl
+-      FEATURE_CHECK_LDFLAGS-disassembler-init-styled += -liberty -ldl
+     else
+       ifeq ($(feature-libbfd-liberty-z), 1)
+         EXTLIBS += -lbfd -lopcodes -liberty -lz
+-        FEATURE_CHECK_LDFLAGS-disassembler-four-args += -liberty -lz -ldl
+-        FEATURE_CHECK_LDFLAGS-disassembler-init-styled += -liberty -lz -ldl
+       endif
+     endif
+     $(call feature_check,disassembler-four-args)
+@@ -1356,7 +1349,7 @@ endif
+ 
+ # re-generate FEATURE-DUMP as we may have called feature_check, found out
+ # extra libraries to add to LDFLAGS of some other test and then redo those
+-# tests, see the block about libbfd, disassembler-four-args, for instance.
++# tests.
+ $(shell rm -f $(FEATURE_DUMP_FILENAME))
+ $(foreach feat,$(FEATURE_TESTS),$(shell echo "$(call feature_assign,$(feat))" >> $(FEATURE_DUMP_FILENAME)))
+ 
+ 
+> 
+> FWIW, if I would have to maintain these, I'd probably change FEATURE_TESTS,
+> FEATURE_DISPLAY into one-item-per-line to make conflicts less common and
+> easier to resolve.
+> 
+> 
+> > Andres, if you could take a look at Roberto's patchkit as well that
+> > would be great.
+> 
+> I briefly scanned it, and the only real comment I have mirror's Quentin's,
+> namely that it'd be nice to avoid displaying more tests that don't tell the
+> user much.
+> 
+> Greetings,
+> 
+> Andres Freund
+
 -- 
-Florian
+
+- Arnaldo
