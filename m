@@ -2,158 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8CAC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62FFC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241667AbiHIJDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
+        id S241840AbiHIJEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237465AbiHIJDt (ORCPT
+        with ESMTP id S241807AbiHIJEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:03:49 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6A622502;
-        Tue,  9 Aug 2022 02:03:48 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9B1575C00E9;
-        Tue,  9 Aug 2022 05:03:47 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 09 Aug 2022 05:03:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1660035827; x=1660122227; bh=nTV7sNCozL
-        xKqxT4iQ3xI1kz6XFl6DJT30vVE2/aW94=; b=ZQztSYA+XSczmHY9i4rO0RU2u8
-        HL8/5Mqjh/e0qbJohfy3yT4FVcAgDI3EGm8dcCgsBu/8dBmnW402lajy0iXTT66R
-        VkqhffbGPzupu29UcI14hbBO5Ya0znrMy1BjsZLyW4mQK5FN2wuinV1kd2COFk7K
-        rLIEnOc/Ta33zd5c019HrrWOQAAln2Od/gb3rlBJBEzsEVIZvGAVjpe4ADhE5fQB
-        nxqQ9FXtXrEoiwUDcStSBSIhjzVxzxDEJMW/PgOuIXG1ac8yc9nqxuGrUQfeBpAM
-        FUoNM+GDgAnYRYyLC74vcgKuAZOz7rjzRqRiE3NKr2vqnpT/XXWyFGM1IeFA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660035827; x=1660122227; bh=nTV7sNCozLxKqxT4iQ3xI1kz6XFl
-        6DJT30vVE2/aW94=; b=FvoYq8R2X+H9pk8BoFTydE1vUlhQ9BwyJJ6mUHDE+Ku5
-        /jNC/APVHWs3CLkf7YSJcs9aSB9emiENP/qaOjB3wlhmhaHWrpvAY2nKoOphGxzS
-        oOhU7q8JjOmywsdUd/lIbIrZYBvGQoISvXg0FDA0i0t9cfYFLLDLlUbmJrqo+qQd
-        gyxO500gLs6qenTrr3E5omTuBMwLAkUQFjJbVPmopkvS6VsFqXJVhOBBle95lRvM
-        SOMry2KylJrFUvTRa7zmOANWSLy2VVavKCEik0Sy2Fzt5x7i0FbTprJpxVYiTRFr
-        GTZvNKqlhbscJySoetmZo7YwEgWDw8xsqS9WqPLRwQ==
-X-ME-Sender: <xms:8yLyYvFOw__zApqLf05RfeBHqKKoU1oa7vwQj6vCsTVXxXlCl0xALA>
-    <xme:8yLyYsU-N2sIlhc3ZHe5ubvRtROCDzdoPHsPnrsuZIZoE9FeROy057u5hZhLzQNZ2
-    3qgLBX8Czwrso4121k>
-X-ME-Received: <xmr:8yLyYhIQ5_PEYUg2-SFWy7GYWPUPama611kG_-QjAD-a4ZHQvhBFUdts4vxUP2hHCE3XLg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegtddgudduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhuffvvefkjghfofggtgesthdtredtredtvdenucfhrhhomhepnfhukhgv
-    ucflohhnvghsuceolhhukhgvsehljhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnh
-    ephfeigedtveefjeeukeetfeektdeffeefteekfeffieeiteeigeehhfdutdeitdehnecu
-    ffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurf
-    grrhgrmhepmhgrihhlfhhrohhmpehluhhkvgeslhhjohhnvghsrdguvghv
-X-ME-Proxy: <xmx:8yLyYtFvTSNS1W7-IlL3xOfBsvgO3oS3Sdu_N8KTEUBrUcBRo5KCvA>
-    <xmx:8yLyYlUmXileyPlweukr86uqOGbTSj8lyjtMqxKZfch2DRxRYVBtog>
-    <xmx:8yLyYoNMycCy1dfZvpZ3vAysf8xYZHf5rLAG8fcKQHNBTlUsx7IDKw>
-    <xmx:8yLyYkdE-rh6ZO1fHj8Xzu58k7EpkSiv74wCjIwtTKaGIJvL_jNgBA>
-Feedback-ID: i5ec1447f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Aug 2022 05:03:44 -0400 (EDT)
-Date:   Tue, 09 Aug 2022 21:03:30 +1200
-From:   Luke Jones <luke@ljones.dev>
-Subject: Re: [PATCH v3 2/2] asus-wmi: Add support for ROG X13 tablet mode
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Message-Id: <UTBCGR.Y86SR52O1CXJ@ljones.dev>
-In-Reply-To: <e6370233-eae5-5668-3f07-d1a70eb92690@redhat.com>
-References: <20220809033048.1634583-1-luke@ljones.dev>
-        <20220809033048.1634583-3-luke@ljones.dev>
-        <CAHp75VeAMBM+itfAn8hRDykV9rRLGXzck8L2kBgpGkVRsPUm5g@mail.gmail.com>
-        <e6370233-eae5-5668-3f07-d1a70eb92690@redhat.com>
-X-Mailer: geary/40.0
+        Tue, 9 Aug 2022 05:04:12 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CD82253C
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 02:04:00 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M26VQ70NPzjXXC;
+        Tue,  9 Aug 2022 17:00:46 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 17:03:57 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 17:03:57 +0800
+Subject: Re: [PATCH] ARM: Remove the special printing format of pc and lr in
+ __show_regs()
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>
+References: <20220801032016.1524-1-thunder.leizhen@huawei.com>
+ <YvDaYakZnP5Z+2ia@shell.armlinux.org.uk>
+ <9f630d80-68c7-8816-f2f6-7e39c890c4d1@huawei.com>
+Message-ID: <1e5e5bfa-bfd5-3a0a-e4ca-a0c41bd39bd1@huawei.com>
+Date:   Tue, 9 Aug 2022 17:03:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+In-Reply-To: <9f630d80-68c7-8816-f2f6-7e39c890c4d1@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Tue, Aug 9 2022 at 10:46:11 +0200, Hans de Goede 
-<hdegoede@redhat.com> wrote:
-> Hi,
-> 
-> On 8/9/22 10:40, Andy Shevchenko wrote:
->>  On Tue, Aug 9, 2022 at 5:31 AM Luke D. Jones <luke@ljones.dev> 
->> wrote:
->>> 
->>>  Add quirk for ASUS ROG X13 Flow 2-in-1 to enable tablet mode with
->>>  lid flip (all screen rotations).
->> 
->>  ...
->> 
->>>          { KE_IGNORE, 0xC6, },  /* Ambient Light Sensor 
->>> notification */
->>>          { KE_KEY, 0xFA, { KEY_PROG2 } },           /* Lid flip 
->>> action */
->>>  +       { KE_KEY, 0xBD, { KEY_PROG2 } }, /* Lid flip action on ROG 
->>> xflow laptops */
->> 
->>  Shouldn't you keep it sorted by value?
-> 
-> Actually as I mentioned in my review of v1, we don't want this
-> addition at all, see:
-> 
-> https://lore.kernel.org/platform-driver-x86/d9d79f9b-f3ab-c07e-9e18-5760ff828487@redhat.com/
-> 
-
-My apologies, I will fix this.
 
 
-> Regards,
-> 
-> Hans
+On 2022/8/9 10:09, Leizhen (ThunderTown) wrote:
 > 
 > 
->> 
->>  ...
->> 
->>>   #define NOTIFY_KBD_FBM                 0x99
->>>   #define NOTIFY_KBD_TTP                 0xae
->>>   #define NOTIFY_LID_FLIP                        0xfa
->>>  +#define NOTIFY_LID_FLIP_ROG            0xbd
->> 
->>  Ditto.
->> 
->>  ...
->> 
->>>  +static void lid_flip_rog_tablet_mode_get_state(struct asus_wmi 
->>> *asus)
->>>  +{
->>>  +       int result;
->>>  +
->>>  +       result = asus_wmi_get_devstate_simple(asus, 
->>> ASUS_WMI_DEVID_LID_FLIP_ROG);
->>>  +       if (result >= 0) {
->> 
->>  You missed the second part of my comment. Please, read carefully 
->> _all_
->>  reviewer's comments.
->> 
->>>  +               input_report_switch(asus->inputdev, 
->>> SW_TABLET_MODE, result);
->>>  +               input_sync(asus->inputdev);
->>>  +       }
->>>  +}
->> 
->>  ...
->> 
->>  Overall, it's getting better!
->> 
+> On 2022/8/8 17:41, Russell King (Oracle) wrote:
+>> On Mon, Aug 01, 2022 at 11:20:16AM +0800, Zhen Lei wrote:
+>>> Currently, instruction pointers are printed in [<%08lx>] format to make
+>>> them more visible. However, it is not necessary in __show_regs() because
+>>> they have the prefix 'pc :' or 'lr :', and it is also inconsistent with
+>>> that of other registers, which causes misalignment.
+>>
+>> The formatting is not "to make them more visible" - it was to mark the
+>> addresses that we wanted the ksymoops utility to translate to kernel
+>> symbols before we had kallsyms in the kernel. If one disables kallsyms,
+>> then we still need a way to translate kernel addresses to symbols.
 > 
+> I searched the git log and found that the ksymoops utility is discarded.
+> 
+> See:
+> 073a9ecb3a73401662430bb955aedeac1de643d1
+> However, a commit in the pre-git era [1] had added the statement,
+> "ksymoops is useless on 2.6.  Please use the Oops in its original format".
+> 
+> That statement existed until commit 4eb9241127a0 ("Documentation:
+> admin-guide: update bug-hunting.rst") finally removed the stale
+> ksymoops information.
+> 
+> 4eb9241127a0b5ac3aaaf1b246728009527ebc86
+> - delete all references to ksymoops since it is no longer applicable;
+> 
+>>
+>> I notice there is a script which helps with this that is part of the
+>> kernel source - scripts/decode_stacktrace.sh. I haven't tried this on
+>> arm32 since I always use kallsyms - and I suspect that is rather
+>> universally true as it avoids needing System.map files etc to decode
+>> the oops. That said, if you're building a kernel for small systems,
+>> you probably don't want the overhead of kallsyms.
+
+Hi, Russell:
+
+I re-examined the code and found that 'pc' and 'lr' had extra printing
+in __show_regs(). Therefore, maybe v2 should be changed as follows, as
+is done in dump_backtrace_entry():
+
+diff --git a/arch/arm/kernel/process.c b/arch/arm/kernel/process.c
+index 96f3fbd51764292..2b0b49821cbf2f5 100644
+--- a/arch/arm/kernel/process.c
++++ b/arch/arm/kernel/process.c
+@@ -134,9 +134,15 @@ void __show_regs(struct pt_regs *regs)
+
+        show_regs_print_info(KERN_DEFAULT);
+
++#ifndef CONFIG_KALLSYMS
++       printk("PC is at [<%08lx>]\n", instruction_pointer(regs));
++       printk("LR is at [<%08lx>]\n", regs->ARM_lr);
++#else
+        printk("PC is at %pS\n", (void *)instruction_pointer(regs));
+        printk("LR is at %pS\n", (void *)regs->ARM_lr);
+-       printk("pc : [<%08lx>]    lr : [<%08lx>]    psr: %08lx\n",
++#endif
++
++       printk("pc : %08lx  lr : %08lx  psr: %08lx\n",
+               regs->ARM_pc, regs->ARM_lr, regs->ARM_cpsr);
+        printk("sp : %08lx  ip : %08lx  fp : %08lx\n",
+               regs->ARM_sp, regs->ARM_ip, regs->ARM_fp);
 
 
+So that there are no concerns that you mentioned.
+
+CONFIG_KALLSYMS=n:
+PC is at [<801993d4>]
+LR is at [<801993d4>]
+pc : 801993d4  lr : 801993d4  psr: 60000013
+sp : c49f9f28  ip : 00000001  fp : 00000001
+
+CONFIG_KALLSYMS=y:
+PC is at ktime_get+0x4c/0xe8
+LR is at ktime_get+0x4c/0xe8
+pc : 8019a4ac  lr : 8019a4ac  psr: 60000013
+sp : c49f9f28  ip : 00000001  fp : 00000001
+
+
+> 
+> Yes, I read scripts/decode_stacktrace.sh, it requires the format "[<...>]".
+> But if that's the only concern, maybe we can do the conversion from
+> "pc: addr" and "lr: addr" to "[<addr>]" first in scripts/decode_stacktrace.sh
+> 
+> I'm usually "objdump -d vmlinux > asm_file", then search "addr:" in asm_file.
+> 
+> Honestly, I think format "[<...>]" is dump_backtrace()'s requirement, not __show_regs()'s.
+> 
+> 
+>>
+>> So, there's an argument for keeping it - it's an API in that it
+>> provides hints to scripting to identify which values need to be
+>> converted to symbols. There's also the argument for getting rid of it,
+>> which is that hardly anyone does that anymore.
+>>
+>> The question is, which is the more important argument, and I don't
+>> think there's a definite answer. So I'm inclined to leave this
+>> as-is.
+> 
+> OK
+> 
+>>
+> 
+
+-- 
+Regards,
+  Zhen Lei
