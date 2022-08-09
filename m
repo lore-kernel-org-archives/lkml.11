@@ -2,273 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB81C25B06
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C5DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbiHII4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
+        id S238466AbiHII4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241438AbiHIIzw (ORCPT
+        with ESMTP id S241354AbiHII4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:55:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D8C22286;
-        Tue,  9 Aug 2022 01:55:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CE5AB810A7;
-        Tue,  9 Aug 2022 08:55:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1019C433C1;
-        Tue,  9 Aug 2022 08:55:43 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Min Zhou <zhoumin@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V9 2/4] LoongArch: Add sparse memory vmemmap support
-Date:   Tue,  9 Aug 2022 16:52:51 +0800
-Message-Id: <20220809085253.2916982-3-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220809085253.2916982-1-chenhuacai@loongson.cn>
-References: <20220809085253.2916982-1-chenhuacai@loongson.cn>
+        Tue, 9 Aug 2022 04:56:10 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7341B22528;
+        Tue,  9 Aug 2022 01:56:05 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id f14so8268618qkm.0;
+        Tue, 09 Aug 2022 01:56:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=75TNeFMMpab+IwYWg9NpTmY1Fu4fM7V/Fo0v6i5Keis=;
+        b=lS49Pz3UTnt0lCgaLlSuJxGNgkqjSHeUMWJpOaDeozdQwgNY9/02hcuZXbKdTUcByN
+         7d1GnrJY7mH55d/HaEGkuCC0ls0yn+t+lO7TF91UZcRLGmFX7l8RoBLY9I+Ud9zSrQqP
+         G2vnDev7yIinbO3EIKmL591jNZG06M+0dmiIco2wg/nyZlNJ5AZzDGOt9SEbaBprItci
+         9r2HiTZRXqa7DIwpiqhMkuIjGrH3E2BHB9TBWIeBd08G04aqvclkpEswCajScuBKX22o
+         YvuPDgedgsuyaUfQS1eOG7A/0K11lMBpRSTJC7vGtO49rFAPTsQH2I5Klau4znC4OkJJ
+         FS5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=75TNeFMMpab+IwYWg9NpTmY1Fu4fM7V/Fo0v6i5Keis=;
+        b=4NSz8PU6a/Pq7Lsw95NIDd0TCVaQe6TcsldwZOBjXIQcikzO5RpM3Fn7mQyo9xUK9j
+         R8oVlzDDgFJnLrqZdRZEjK/HrtvI80jtIw4lYSX1PS6W6+jq/GRFbKD7fcMx64jvMFNS
+         HbH1Yvr9sMIQZywXYwg9hOchdxxT3Tmxa+vcvRp2vAs3Mo3o40k7ntP5ilGVFfqzH+wb
+         5dF/t+4oAF0EvWco9vUByccM15w6BXbSRB7fRYfWDqCD14CKnh4KodM2JTb+4YiZ6+a5
+         nLfQQWV/WHzjfW4uSK9GuPX6MM79NJJzvNeueTeyhOaWbMeAbhNFIxBWVuC9OPi4v0yH
+         Ou4g==
+X-Gm-Message-State: ACgBeo1h9FLl5t6Hfd+KG2PxprS7aMgPnYBXSwkUNclvY+f0y7Fap7xi
+        FZR5vfmUCNB6JyCu8A/7J/cJlKBPHqp7DUaBhjA=
+X-Google-Smtp-Source: AA6agR5t1GC5ORK3nJwJ115jDEo07Q9g8lRIvEbVuHL73i8BQvWWcVFjlKulF2OPbmSHgyVvFiWFTx1BNLksMnlw2hw=
+X-Received: by 2002:a05:620a:288a:b0:6b8:fcfe:db02 with SMTP id
+ j10-20020a05620a288a00b006b8fcfedb02mr16861453qkp.504.1660035364351; Tue, 09
+ Aug 2022 01:56:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220809025054.1626339-1-luke@ljones.dev>
+In-Reply-To: <20220809025054.1626339-1-luke@ljones.dev>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 9 Aug 2022 10:55:28 +0200
+Message-ID: <CAHp75Vd2vO-V5P8QeLwoz+1RCaFuAg=q8LenKGZcdL920NRkrQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] asus-wmi: Add support for RGB keyboards
+To:     "Luke D. Jones" <luke@ljones.dev>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        =?UTF-8?B?QmFybmFiw6FzIFDFkWN6ZQ==?= <pobrn@protonmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On Tue, Aug 9, 2022 at 4:51 AM Luke D. Jones <luke@ljones.dev> wrote:
+>
+> This is a patch series to add RGB support for ASUS laptops.
+> The laptops with this RGB tend to be the TUF series of gamer laptops.
+>
+> The first step is initial bringup of support using the multicolor LED API.
+>
+> These types of keyboards implement a slightly more complex interface than
+> just RGB control however - they also have modes with can be static LED,
+> blinking, rainbow, color cycles, and more. They also have some custom
+> animations that can play depending on device state, such as suspended
+> playing a fancy colour cycle, or playing a "wave" animation.
+>
+> Two of the patches add support for these features.
+>
+> One patch adds documentation in:
+> Documentation/ABI/testing/sysfs-platform-asus-wmi
+> for some features that were added previously.
+>
+> The final patch adds support for a particular MUX switch found only
+> on a few ROG laptops. This patch is added to this series due to some
+> conflicts in merge caused by the RGB patch series.
+>
+> Some notes:
+>
+> - this patch series obsoletes the previous RGB patches by myself
+>
+> - it is not possible to add attribute groups to multicolor LED as
+>   they get overwritten by `led_multicolor_groups` in
+>   `led_classdev_multicolor_register_ext`.
+>
+> - the methods for RGB control do not provide a way to fetch exisiting
+>   state, so these methods are WO.
+>
+> - There is an existing `asus::kbd_backlight`, this provides a 4-step
+>   brightness to the RGB (off,low,med,high) individually to multicolor.
+>   I was unsure of the effect of adding a similar path so have used the
+>   `asus::multicolour::kbd_backlight` name to be clear about purpose.
+>   If the `asus::kbd_backlight` is off, then no RGB is shown at all.
 
-Add sparse memory vmemmap support for LoongArch. SPARSEMEM_VMEMMAP
-uses a virtually mapped memmap to optimise pfn_to_page and page_to_pfn
-operations. This is the most efficient option when sufficient kernel
-resources are available.
+It seems you send too many new versions of the series too fast.
 
-Signed-off-by: Min Zhou <zhoumin@loongson.cn>
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig                 |  1 +
- arch/loongarch/include/asm/pgtable.h   |  6 ++-
- arch/loongarch/include/asm/sparsemem.h |  6 +++
- arch/loongarch/mm/init.c               | 73 +++++++++++++++++++++++++-
- include/linux/mm.h                     |  2 +
- mm/sparse-vmemmap.c                    | 10 ++++
- 6 files changed, 96 insertions(+), 2 deletions(-)
+Submitting Patches [1] suggest one week gap between series. I would
+recommend reading that document in full and carefully to understand
+the Linux kernel process of proposing and submitting changes.
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index 1281128d9fce..cff781d92c81 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -418,6 +418,7 @@ config ARCH_FLATMEM_ENABLE
- 
- config ARCH_SPARSEMEM_ENABLE
- 	def_bool y
-+	select SPARSEMEM_VMEMMAP_ENABLE
- 	help
- 	  Say Y to support efficient handling of sparse physical memory,
- 	  for architectures which are either NUMA (Non-Uniform Memory Access)
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index 9c811c3f7572..adb5a3d2ed4f 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -65,6 +65,7 @@
- #include <linux/mmzone.h>
- #include <asm/fixmap.h>
- #include <asm/io.h>
-+#include <asm/sparsemem.h>
- 
- struct mm_struct;
- struct vm_area_struct;
-@@ -92,7 +93,10 @@ extern unsigned long zero_page_mask;
- #define VMALLOC_START	MODULES_END
- #define VMALLOC_END	\
- 	(vm_map_base +	\
--	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE)
-+	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE - VMEMMAP_SIZE)
-+
-+#define vmemmap		((struct page *)((VMALLOC_END + PMD_SIZE) & PMD_MASK))
-+#define VMEMMAP_END	((unsigned long)vmemmap + VMEMMAP_SIZE - 1)
- 
- #define pte_ERROR(e) \
- 	pr_err("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
-diff --git a/arch/loongarch/include/asm/sparsemem.h b/arch/loongarch/include/asm/sparsemem.h
-index 3d18cdf1b069..ee55cdf933c6 100644
---- a/arch/loongarch/include/asm/sparsemem.h
-+++ b/arch/loongarch/include/asm/sparsemem.h
-@@ -11,6 +11,12 @@
- #define SECTION_SIZE_BITS	29 /* 2^29 = Largest Huge Page Size */
- #define MAX_PHYSMEM_BITS	48
- 
-+#ifndef CONFIG_SPARSEMEM_VMEMMAP
-+#define VMEMMAP_SIZE	0
-+#else
-+#define VMEMMAP_SIZE	(sizeof(struct page) * (1UL << (cpu_pabits + 1 - PAGE_SHIFT)))
-+#endif
-+
- #endif /* CONFIG_SPARSEMEM */
- 
- #ifdef CONFIG_MEMORY_HOTPLUG
-diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
-index 7094a68c9b83..78f71f9bf295 100644
---- a/arch/loongarch/mm/init.c
-+++ b/arch/loongarch/mm/init.c
-@@ -22,7 +22,7 @@
- #include <linux/pfn.h>
- #include <linux/hardirq.h>
- #include <linux/gfp.h>
--#include <linux/initrd.h>
-+#include <linux/hugetlb.h>
- #include <linux/mmzone.h>
- 
- #include <asm/asm-offsets.h>
-@@ -157,6 +157,77 @@ void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
- #endif
- #endif
- 
-+#ifdef CONFIG_SPARSEMEM_VMEMMAP
-+static int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
-+						int node, struct vmem_altmap *altmap)
-+{
-+	unsigned long addr = start;
-+	unsigned long next;
-+	pgd_t *pgd;
-+	p4d_t *p4d;
-+	pud_t *pud;
-+	pmd_t *pmd;
-+
-+	for (addr = start; addr < end; addr = next) {
-+		next = pmd_addr_end(addr, end);
-+
-+		pgd = vmemmap_pgd_populate(addr, node);
-+		if (!pgd)
-+			return -ENOMEM;
-+		p4d = vmemmap_p4d_populate(pgd, addr, node);
-+		if (!p4d)
-+			return -ENOMEM;
-+		pud = vmemmap_pud_populate(p4d, addr, node);
-+		if (!pud)
-+			return -ENOMEM;
-+
-+		pmd = pmd_offset(pud, addr);
-+		if (pmd_none(*pmd)) {
-+			void *p = NULL;
-+
-+			p = vmemmap_alloc_block_buf(PMD_SIZE, node, NULL);
-+			if (p) {
-+				pmd_t entry;
-+
-+				entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
-+				pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
-+				set_pmd_at(&init_mm, addr, pmd, entry);
-+
-+				continue;
-+			}
-+		} else if (pmd_val(*pmd) & _PAGE_HUGE) {
-+			vmemmap_verify((pte_t *)pmd, node, addr, next);
-+			continue;
-+		}
-+		if (vmemmap_populate_basepages(addr, next, node, NULL))
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+#if CONFIG_PGTABLE_LEVELS == 2
-+int __meminit vmemmap_populate(unsigned long start, unsigned long end,
-+			int node, struct vmem_altmap *altmap)
-+{
-+	return vmemmap_populate_basepages(start, end, node, NULL);
-+}
-+#else
-+int __meminit vmemmap_populate(unsigned long start, unsigned long end,
-+			int node, struct vmem_altmap *altmap)
-+{
-+	return vmemmap_populate_hugepages(start, end, node, NULL);
-+}
-+#endif
-+
-+#ifdef CONFIG_MEMORY_HOTPLUG
-+void vmemmap_free(unsigned long start, unsigned long end,
-+			struct vmem_altmap *altmap)
-+{
-+}
-+#endif
-+#endif
-+
- /*
-  * Align swapper_pg_dir in to 64K, allows its address to be loaded
-  * with a single LUI instruction in the TLB handlers.  If we used
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 7898e29bcfb5..16bee6513f1a 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3207,6 +3207,8 @@ void *sparse_buffer_alloc(unsigned long size);
- struct page * __populate_section_memmap(unsigned long pfn,
- 		unsigned long nr_pages, int nid, struct vmem_altmap *altmap,
- 		struct dev_pagemap *pgmap);
-+void pmd_init(void *addr);
-+void pud_init(void *addr);
- pgd_t *vmemmap_pgd_populate(unsigned long addr, int node);
- p4d_t *vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node);
- pud_t *vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node);
-diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-index dbbd1a7e65f3..0abcb0a5f1b5 100644
---- a/mm/sparse-vmemmap.c
-+++ b/mm/sparse-vmemmap.c
-@@ -595,6 +595,10 @@ pmd_t * __meminit vmemmap_pmd_populate(pud_t *pud, unsigned long addr, int node)
- 	return pmd;
- }
- 
-+void __weak __meminit pmd_init(void *addr)
-+{
-+}
-+
- pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
- {
- 	pud_t *pud = pud_offset(p4d, addr);
-@@ -602,11 +606,16 @@ pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
- 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
- 		if (!p)
- 			return NULL;
-+		pmd_init(p);
- 		pud_populate(&init_mm, pud, p);
- 	}
- 	return pud;
- }
- 
-+void __weak __meminit pud_init(void *addr)
-+{
-+}
-+
- p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
- {
- 	p4d_t *p4d = p4d_offset(pgd, addr);
-@@ -614,6 +623,7 @@ p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
- 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
- 		if (!p)
- 			return NULL;
-+		pud_init(p);
- 		p4d_populate(&init_mm, p4d, p);
- 	}
- 	return p4d;
+[1]: https://www.kernel.org/doc/html/latest/process/submitting-patches.html#don-t-get-discouraged-or-impatient
+
 -- 
-2.31.1
-
+With Best Regards,
+Andy Shevchenko
