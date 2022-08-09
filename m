@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4ED8C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE58C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345757AbiHISPc (ORCPT
+        id S1345777AbiHISPj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        Tue, 9 Aug 2022 14:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346030AbiHISMN (ORCPT
+        with ESMTP id S1345249AbiHISMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:12:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D26E10;
-        Tue,  9 Aug 2022 11:05:13 -0700 (PDT)
+        Tue, 9 Aug 2022 14:12:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59A82C101;
+        Tue,  9 Aug 2022 11:05:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45B5EB817C1;
-        Tue,  9 Aug 2022 18:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97962C433D6;
-        Tue,  9 Aug 2022 18:05:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A02E7611D5;
+        Tue,  9 Aug 2022 18:05:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1757AC433D7;
+        Tue,  9 Aug 2022 18:05:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068306;
-        bh=BczoROFTk10AV+L3GqFxcAmhNea7BN0iCUC/7eVo740=;
+        s=korg; t=1660068322;
+        bh=aS6kC7/UR/+s4cEQ6IbqOtahiGkvu5P7CX0AzJ/IWIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WdOCGTgweTTp2F0lzT4jnZTtBkGS5vBIW3yDmcZeqQozHH4HlVPVV1CdszFH2t++Y
-         27az+3dztj56V5Kyz4ozlDrdHVib143ks08C2QsyfjhERJ1OWGv/Cwqy9WZDRSy21g
-         rLE05HqsqzfMxX5rtJegoHO1zYH2YWzAs9DBEB0Y=
+        b=HYCOMZKF6jcVsSdCIv4yQ5HkxeIe7fF/RPjOzhHbmAVsl9c0+UKmEkssRPi9otvp5
+         hEhONWw1+y5jgkRLcd8I6nVuB5EDONzrFar2tSwEEnkC91ElRUz2dBMfPDOoReX5RZ
+         8Fj9oPyZgmw1suX76XRtDK7FDD7qJ00PyUyZ/nWA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 07/30] ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-Date:   Tue,  9 Aug 2022 20:00:32 +0200
-Message-Id: <20220809175514.563058207@linuxfoundation.org>
+Subject: [PATCH 5.15 08/30] ACPI: APEI: Better fix to avoid spamming the console with old error logs
+Date:   Tue,  9 Aug 2022 20:00:33 +0200
+Message-Id: <20220809175514.612640481@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
 References: <20220809175514.276643253@linuxfoundation.org>
@@ -50,75 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Tony Luck <tony.luck@intel.com>
 
-commit f0341e67b3782603737f7788e71bd3530012a4f4 upstream.
+commit c3481b6b75b4797657838f44028fd28226ab48e0 upstream.
 
-Taking a recent change in the i8042 quirklist to this one: Clevo
-board_names are somewhat unique, and if not: The generic Board_-/Sys_Vendor
-string "Notebook" doesn't help much anyway. So identifying the devices just
-by the board_name helps keeping the list significantly shorter and might
-even hit more devices requiring the fix.
+The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
+table data") does not work as intended on systems where the BIOS has a
+fixed size block of memory for the BERT table, relying on s/w to quit
+when it finds a record with estatus->block_status == 0. On these systems
+all errors are suppressed because the check:
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Fixes: c844d22fe0c0 ("ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU")
+	if (region_len < ACPI_BERT_PRINT_MAX_LEN)
+
+always fails.
+
+New scheme skips individual CPER records that are too large, and also
+limits the total number of records that will be printed to 5.
+
+Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
 Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/video_detect.c |   34 ----------------------------------
- 1 file changed, 34 deletions(-)
+ drivers/acpi/apei/bert.c |   31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
---- a/drivers/acpi/video_detect.c
-+++ b/drivers/acpi/video_detect.c
-@@ -424,23 +424,6 @@ static const struct dmi_system_id video_
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xRU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xRU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
- 		},
- 	},
-@@ -464,23 +447,6 @@ static const struct dmi_system_id video_
- 	.callback = video_detect_force_native,
- 	.ident = "Clevo NL5xNU",
- 	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
--		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
--		},
--	},
--	{
--	.callback = video_detect_force_native,
--	.ident = "Clevo NL5xNU",
--	.matches = {
--		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
- 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
- 		},
- 	},
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,16 +29,26 @@
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++
++#define ACPI_BERT_PRINT_MAX_RECORDS 5
+ #define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
++/*
++ * Print "all" the error records in the BERT table, but avoid huge spam to
++ * the console if the BIOS included oversize records, or too many records.
++ * Skipping some records here does not lose anything because the full
++ * data is available to user tools in:
++ *	/sys/firmware/acpi/tables/data/BERT
++ */
+ static void __init bert_print_all(struct acpi_bert_region *region,
+ 				  unsigned int region_len)
+ {
+ 	struct acpi_hest_generic_status *estatus =
+ 		(struct acpi_hest_generic_status *)region;
+ 	int remain = region_len;
++	int printed = 0, skipped = 0;
+ 	u32 estatus_len;
+ 
+ 	while (remain >= sizeof(struct acpi_bert_region)) {
+@@ -46,24 +56,26 @@ static void __init bert_print_all(struct
+ 		if (remain < estatus_len) {
+ 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
+ 			       estatus_len);
+-			return;
++			break;
+ 		}
+ 
+ 		/* No more error records. */
+ 		if (!estatus->block_status)
+-			return;
++			break;
+ 
+ 		if (cper_estatus_check(estatus)) {
+ 			pr_err(FW_BUG "Invalid error record.\n");
+-			return;
++			break;
+ 		}
+ 
+-		pr_info_once("Error records from previous boot:\n");
+-		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++		if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
++		    printed < ACPI_BERT_PRINT_MAX_RECORDS) {
++			pr_info_once("Error records from previous boot:\n");
+ 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
+-		else
+-			pr_info_once("Max print length exceeded, table data is available at:\n"
+-				     "/sys/firmware/acpi/tables/data/BERT");
++			printed++;
++		} else {
++			skipped++;
++		}
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
+@@ -75,6 +87,9 @@ static void __init bert_print_all(struct
+ 		estatus = (void *)estatus + estatus_len;
+ 		remain -= estatus_len;
+ 	}
++
++	if (skipped)
++		pr_info(HW_ERR "Skipped %d error records\n", skipped);
+ }
+ 
+ static int __init setup_bert_disable(char *str)
 
 
