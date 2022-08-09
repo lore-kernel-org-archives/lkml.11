@@ -2,210 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51EEBC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 10:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6583AC25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 10:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242603AbiHIKkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 06:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        id S242618AbiHIKlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 06:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232471AbiHIKkK (ORCPT
+        with ESMTP id S242608AbiHIKlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 06:40:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBE41C130;
-        Tue,  9 Aug 2022 03:40:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB84E60EC4;
-        Tue,  9 Aug 2022 10:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 038C3C433D6;
-        Tue,  9 Aug 2022 10:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660041608;
-        bh=NS6k3uL1NjcupValfKgOqJ9BkGsUQFmuAaFk6pzVKTA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pQo9a4N76ZxxgI8CH7jy9Ll8eG9GdQTCIyJtClJL93ccSsOqeGMPlTEs8BYzEfaRZ
-         UEgfKbKx5UY4bqyj23p0/l8669UqvtIIuPiwxyYHCWwcJxnOOjrJ+YgNMv4i6UaxFJ
-         YmCAsM6FKuhW2zDPdbrUIkP6gC2AgWN59lGizjyHZW3I7p+w3Gbx72OYmcUMIFBHym
-         hLukE8fMXuio16QsnsZWEnLN/RNEj5ilbIEB7mf3hpKiVn56wnjqSlwbBYBgkn1LOf
-         AXA9OoWCndsHcph7zlCcdofh3WrhD5lpyWAPLTfpwXr+O7nmYohqNITrJHlMEdXsC0
-         NEcA7Ukn2IdLA==
-From:   Christian Brauner <brauner@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Seth Forshee <sforshee@kernel.org>
-Subject: [GIT PULL] setgid inheritance for v5.20/v6.0
-Date:   Tue,  9 Aug 2022 12:39:57 +0200
-Message-Id: <20220809103957.1851931-1-brauner@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 9 Aug 2022 06:41:07 -0400
+Received: from ns3.fnarfbargle.com (ns3.fnarfbargle.com [103.4.19.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2CCC17
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 03:41:05 -0700 (PDT)
+Received: from [10.8.0.1] (helo=srv.home)
+        by ns3.fnarfbargle.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lists2009@fnarfbargle.com>)
+        id 1oLMfV-0004O1-TL; Tue, 09 Aug 2022 20:41:01 +1000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=fnarfbargle.com; s=mail; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=VlWXTgNoMVGqiY4nt93ukeUGdeILiI3ZgrA18aVvkpY=; b=VNK89+aTAQReF+KVCHp3m4K3M9
+        Z+WvrnfafKKY3ewwqx5BGqW9KHqjhx5ywpad/J57f6ViA+LG2TTlFUnIIrmTq6Jlarga5DhoZ0XNS
+        aGTu4F4kiqOhrh1gqla8fLaZLRBPUAqOwELnVUdIqZCr5GTIfmTGrytVak43wPgxFMkE=;
+Message-ID: <bcebdeb9-4f6a-e931-46f5-b9be899db9a4@fnarfbargle.com>
+Date:   Tue, 9 Aug 2022 18:40:54 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Apple Thunderbolt Display chaining
+Content-Language: en-US
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org
+References: <d484d7e5-f1aa-1096-e6fb-bbf16ce28699@fnarfbargle.com>
+ <Yu0nWro4xXURbSX6@lahna>
+ <87c1a001-ef79-6390-dfe2-06d2850f6e84@fnarfbargle.com>
+ <Yu4Gmkous7asng6h@lahna>
+ <42e81a8e-e393-7a69-7339-a020ebb57935@fnarfbargle.com>
+ <YvDcudE5BRtZAtfM@lahna>
+ <a1db1454-63b6-7c39-bbf6-53e53bbd36e6@fnarfbargle.com>
+ <5474e599-057a-ec0f-b469-560644155907@fnarfbargle.com>
+ <YvEFtPF7SBIwNG/o@lahna>
+ <d234ea9b-9303-6088-0a9b-4de887a77bf4@fnarfbargle.com>
+ <YvI1lQh+C0SJiG73@lahna>
+From:   Brad Campbell <lists2009@fnarfbargle.com>
+In-Reply-To: <YvI1lQh+C0SJiG73@lahna>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Linus,
+G'day Mika,
 
-/* Summary */
-This contains the work to move setgid stripping out of individual filesystems
-and into the VFS itself. (I think you might've been Cced on this briefly a few
-weeks ago.)
 
-Creating files that have both the S_IXGRP and S_ISGID bit raised in directories
-that themselves have the S_ISGID bit set requires additional privileges to
-avoid security issues.
+On 9/8/22 18:23, Mika Westerberg wrote:
+> Hi,
+> 
+> On Mon, Aug 08, 2022 at 09:27:24PM +0800, Brad Campbell wrote:
+>> If I don't authorize the PCIe tunnels and just leave the DP enabled it
+>> works fine also.
+> 
+> But you say that it fails on boot when the driver discovers the tunnels,
+> right? So there is really nothing to authorize (they should be already
+> "authorized" by the boot firmware).
+> 
+> If I understand correctly this is how it reproduces (the simplest):
+> 
+>   1. Connect a single Apple TB1 display to the system
+>   2. Boot it up
+>   3. Wait a while and it hangs
+> 
+> If this is the case, then the driver certainly is not creating any
+> PCIe tunnels itself unless there is a bug somewhere.
+> 
+> An additional question, does it reproduce with either TB1 display
+> connected or just with specific TB1 display?
+> 
 
-When a filesystem creates a new inode it needs to take care that the caller is
-either in the group of the newly created inode or they have CAP_FSETID in their
-current user namespace and are privileged over the parent directory of the new
-inode. If any of these two conditions is true then the S_ISGID bit can be
-raised for an S_IXGRP file and if not it needs to be stripped.
+No, I've not been clear enough, I'm sorry. I've re-read what I've written below and
+I'm still not sure I'm clear enough.
 
-However, there are several key issues with the current implementation:
+The firmware never sets anything up. 
 
-* S_ISGID stripping logic is entangled with umask stripping.
+When I cold boot the machine (from power on), the thunderbolt displays and tunnels
+remain dark until linux initializes the thunderbolt driver the first time. 
+ 
+If I compile the thunderbolt driver into the kernel, or let the initramfs load it
+the displays come up, all PCIe tunnels are established and everything works.
 
-  For example, if the umask removes the S_IXGRP bit from the file about to be
-  created then the S_ISGID bit will be kept.
+When I reboot the machine (reset button or warm boot), the firmware continues to
+do nothing and all the tunnels remain in place. The machine dies when the thunderbolt 
+driver is loaded for a second time.
 
-  The inode_init_owner() helper is responsible for S_ISGID stripping and is
-  called before posix_acl_create(). So we can end up with two different
-  orderings:
+That might be a reset/warm boot with it compiled in or loaded from iniramfs.
+It may also be me loading it from the command line after booting with it as a
+module and blacklisted.
 
-  1. FS without POSIX ACL support
-     First strip umask then strip S_ISGID in inode_init_owner().
+The problem comes about when the thunderbolt module is loaded while the PCIe tunnels
+are already established.
 
-     In other words, if a filesystem doesn't support or enable POSIX ACLs then
-     umask stripping is done directly in the vfs before calling into the
-     filesystem:
+To reproduce in the easiest manner I compile the thunderbolt driver as a module and
+blacklist it. This prevents it from auto-loading.
 
-  2. FS with POSIX ACL support
-     First strip S_ISGID in inode_init_owner() then strip umask in
-     posix_acl_create().
+I cold boot the machine, let it boot completely then modprobe thunderbolt and authorize
+the tunnels. I then warm boot which lets the kernel detect and init the DP displays
+and detect/configure all the PCIe devices. The thunderbolt driver is not loaded.
 
-     In other words, if the filesystem does support POSIX ACLs then unmask
-     stripping may be done in the filesystem itself when calling
-     posix_acl_create().
+The machine comes up, all tunnels are established and all devices work.
 
-  Note that technically filesystems are free to impose their own ordering
-  between posix_acl_create() and inode_init_owner() meaning that there's
-  additional ordering issues that influence S_ISGID inheritance.
+If I then modprobe the thunderbolt driver, things break.
 
-  (Note that the commit message of commit 1639a49ccdce ("fs: move S_ISGID
-   stripping into the vfs_*() helpers") gets the ordering between
-   inode_init_owner() and posix_acl_create() the wrong way around. I realized
-   this too late.)
+This is the hack in my boot script :
 
-* Filesystems that don't rely on inode_init_owner() don't get S_ISGID
-  stripping logic.
+# Spark up thunderbolt
+if [ -z "`grep notb /proc/cmdline`" -a -z "`lsusb | grep '05ac:9227'`" ] ; then
+	modprobe thunderbolt
+	sleep 1
+	echo 1 > /sys/bus/thunderbolt/devices/0-3/authorized
+	echo 1 > /sys/bus/thunderbolt/devices/0-303/authorized
+	reboot
+fi
 
-  While that may be intentional (e.g. network filesystems might just
-  defer setgid stripping to a server) it is often just a security issue.
-
-  Note that mandating the use of inode_init_owner() was proposed as an
-  alternative solution but that wouldn't fix the ordering issues and there are
-  examples such as afs where the use of inode_init_owner() isn't possible. In
-  any case, we should also try the cleaner and generalized solution first
-  before resorting to this approach.
-
-* We still have S_ISGID inheritance bugs years after the initial round of
-  S_ISGID inheritance fixes:
-  e014f37db1a2 ("xfs: use setattr_copy to set vfs inode attributes")
-  01ea173e103e ("xfs: fix up non-directory creation in SGID directories")
-  fd84bfdddd16 ("ceph: fix up non-directory creation in SGID directories")
-
-All of us led us to conclude that the current state is too messy. While we
-won't be able to make it completely clean as posix_acl_create() is still a
-filesystem specific call we can improve the S_SIGD stripping situation quite a
-bit by hoisting it out of inode_init_owner() and into the respective vfs
-creation operations.
-
-The obvious advantage is that we don't need to rely on individual filesystems
-getting S_ISGID stripping right and instead can standardize the ordering
-between S_ISGID and umask stripping directly in the VFS.
-
-A few short implementation notes:
-* The stripping logic needs to happen in vfs_*() helpers for the sake of
-  stacking filesystems such as overlayfs that rely on these helpers taking care
-  of S_ISGID stripping.
-* Security hooks have never seen the mode as it is ultimately seen by the
-  filesystem because of the ordering issue we mentioned. Nothing is changed for
-  them. We simply continue to strip the umask before passing the mode down to
-  the security hooks.
-* The following filesystems use inode_init_owner() and thus relied on
-   S_ISGID stripping: spufs, 9p, bfs, btrfs, ext2, ext4, f2fs, hfsplus,
-   hugetlbfs, jfs, minix, nilfs2, ntfs3, ocfs2, omfs, overlayfs, ramfs,
-   reiserfs, sysv, ubifs, udf, ufs, xfs, zonefs, bpf, tmpfs. We've audited all
-   callchains as best as we could. More details can be found in the commit
-   message to 1639a49ccdce ("fs: move S_ISGID stripping into the vfs_*() helpers").
-
-Finally a note on __regression potential__. I want to be very clear and open
-that this carries a non-zero regression risk which is also why I defered the
-pull request for this until this week because I was out to get married last
-week and wouldn't have been around to deal with potential fallout:
-
-  The patch will have an effect on ext2 when the EXT2_MOUNT_GRPID mount option
-  is used, on ext4 when the EXT4_MOUNT_GRPID mount option is used, and on xfs
-  when the XFS_FEAT_GRPID mount option is used.
-
-  When any of these filesystems are mounted with their respective GRPID option
-  then newly created files inherit the parent directory's group
-  unconditionally. In these cases none of the filesystems call
-  inode_init_owner() and thus they did never strip the S_ISGID bit for newly
-  created files.
-
-  Moving this logic into the VFS means that they now get the S_ISGID bit
-  stripped. This is a potential user visible change. If this leads to
-  regressions we will either need to figure out a better way or we need to
-  revert. However, given the various setgid bugs that we found just in the last
-  two years this is a regression risk we should take.
-
-Associated with this change is a new set of fstests and LTP tests that are
-currently reviewed and waiting for this series to be upstreamed.
-
-/* Testing */
-All patches are based on v5.19-rc7 and have been sitting in linux-next. No
-build failures or warnings were observed and fstests and selftests have seen no
-regressions. The series has existed for at least two kernel releases and
-multiple eyes on it.
-
-/* Conflicts */
-At the time of creating this PR no merge conflicts were reported from
-linux-next and no merge conflicts showed up doing a test-merge with current
-mainline.
-
-The following changes since commit ff6992735ade75aae3e35d16b17da1008d753d28:
-
-  Linux 5.19-rc7 (2022-07-17 13:30:22 -0700)
-
-are available in the Git repository at:
-
-  git@gitolite.kernel.org:pub/scm/linux/kernel/git/brauner/linux tags/fs.setgid.v6.0
-
-for you to fetch changes up to 5fadbd992996e9dda7ebcb62f5352866057bd619:
-
-  ceph: rely on vfs for setgid stripping (2022-07-21 11:34:16 +0200)
-
-Please consider pulling these changes from the signed fs.setgid.v6.0 tag.
-
-Thanks!
-Christian
-
-----------------------------------------------------------------
-fs.setgid.v6.0
-
-----------------------------------------------------------------
-Yang Xu (4):
-      fs: add mode_strip_sgid() helper
-      fs: Add missing umask strip in vfs_tmpfile
-      fs: move S_ISGID stripping into the vfs_*() helpers
-      ceph: rely on vfs for setgid stripping
-
- fs/ceph/file.c     |  4 ---
- fs/inode.c         | 34 ++++++++++++++++++++---
- fs/namei.c         | 80 ++++++++++++++++++++++++++++++++++++++++++++++--------
- fs/ocfs2/namei.c   |  1 +
- include/linux/fs.h |  2 ++
- 5 files changed, 102 insertions(+), 19 deletions(-)
+Regards,
+Brad
