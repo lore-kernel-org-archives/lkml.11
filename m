@@ -2,441 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D98C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C412C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241262AbiHIJvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
+        id S241139AbiHIJwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241117AbiHIJve (ORCPT
+        with ESMTP id S241418AbiHIJvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:51:34 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A887205FF;
-        Tue,  9 Aug 2022 02:51:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1660038690; x=1691574690;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=boOuUkuvsMQj9qtjLZ7R73HsFE4j6vAV4uRtaTs6n0I=;
-  b=RJipSEg+MVoJfSV8UzEKwD2LewgpO6HlVBYX4zNojsBNuuwrmnRgTOqH
-   AKYS5tkJa4RJ+Q/Pfmw4JZPc6Yp9cv/4Riv6/xmm9mOwKqOjqz3Wiz0/z
-   I7qrjhGV9BYCD49NbjxadaWVpDLGdiN9af25vkaloQ7M9uJkKPowtvSuN
-   c=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Aug 2022 02:51:29 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 02:51:29 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+        Tue, 9 Aug 2022 05:51:54 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B85237D8
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 02:51:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660038713; x=1691574713;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=kt6cq13tn3IzGFwp71JWjb3cIJw/uUPieHkxbYEFa5Y=;
+  b=RncEPolnEpiOn83hdP+9Oa9Wn6GQLgKncIYoNzIZ6ns/AbtYHer4fVuS
+   BqTKtLtLzAGIOcnn5nb0xitcLKOQt09kW0eerSXU5xqhXqJXaV8w+kmLj
+   VurkLoy2EK8kSL4V5DZi8m0xmZzfOIvjV0MDHOeDN3rXCVfZjjgAUHWid
+   5vBPTf9umyQmbpJO9lH8IFoPSrlHxMPqrzdOHyIitDeXS16WcZvsS4HmV
+   mQ50LcwqnXIv75G5G4vPtZIXnTYXDH4CWIjiRnmOnD2qTfawmYK7lTIvz
+   pD5wvXj0UsVWFPJxUgvv14lucxUFjYuDzGvd56/QWn8E1ucgdMdg8ikRD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="271183401"
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="271183401"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 02:51:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="672829572"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga004.fm.intel.com with ESMTP; 09 Aug 2022 02:51:53 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 9 Aug 2022 02:51:52 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 9 Aug 2022 02:51:52 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Tue, 9 Aug 2022 02:51:52 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.46) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 9 Aug 2022 02:51:14 -0700
-Received: from [10.216.39.97] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 9 Aug 2022
- 02:51:08 -0700
-Message-ID: <290ea12a-e19f-cab2-af28-ff8c7aad5b60@quicinc.com>
-Date:   Tue, 9 Aug 2022 15:21:05 +0530
+ 15.1.2375.28; Tue, 9 Aug 2022 02:51:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AfiU9I9VA+R1IwB7s9fDfrKRVBxAlaR/qCkUCt+pCqBE8JPgDrmYD7uMDBuonRRuikxl/0nMPUzisbjc3vTS+NgyvoRK0PUI5v5u3e5xYtZj4k4QWsp2gulBqb6Y4nyGqgkyZWQYOIZCw/ycOd9r0Kd+yxd1jMzwc+BQVFxTJIGjx1lInW42LdpWOwMw+SvkKI5+6n91Xu81a5zsT3pwHa2dwOvSTm8PhlZSh4IlV1u2BP02UFXcobokbClHwY63LPs1uh5pNfiWMioPzNNb1xD//yk1yOJc/GJYWR9fA64v2/Z5J3M+Yp1k3aZoN/4vpO/1baVb8icPH6Ejt2RBbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YZuw1VauFFINJw5GAGRhEAL6OV+G/oy1MT3Bh+V3xpY=;
+ b=oM/ojxcH2q1gX5b09VLRe6b6a3/WBQHxYsTykXFlf7tzStOggEzcFf309hf+ePckQoUq9p05NIVZPkq5BTtsmCHMvhKDI2yQfkcfJSJwJxRXvQqLsdQei1P3Ky+GnbCmySP8P97YWp933fMn06XfUHCbjyULQWdlq6BJH84S+31sViLqGdTZOTllU3fmruZ57JHbjHs/2ExhQWT2xVI2av1E8S2w6Q2Yhqxm3rV+unpA2KOdAXhGjH+eByTwmSEF0OCvy6/3U2FeI9TQYqTU0yjg3o+dok0LMoHFM1pO2RbABhwRlmPdZcpyNRXJt5+y/ame2ZMOuFQl9HWFv4NPJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6059.namprd11.prod.outlook.com (2603:10b6:208:377::9)
+ by SJ0PR11MB4958.namprd11.prod.outlook.com (2603:10b6:a03:2ae::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 9 Aug
+ 2022 09:51:44 +0000
+Received: from MN0PR11MB6059.namprd11.prod.outlook.com
+ ([fe80::a968:40aa:6163:5c79]) by MN0PR11MB6059.namprd11.prod.outlook.com
+ ([fe80::a968:40aa:6163:5c79%6]) with mapi id 15.20.5504.014; Tue, 9 Aug 2022
+ 09:51:44 +0000
+Date:   Tue, 9 Aug 2022 05:51:39 -0400
+From:   Rodrigo Vivi <rodrigo.vivi@intel.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+CC:     David Airlie <airlied@linux.ie>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <intel-gfx@lists.freedesktop.org>
+Subject: Re: [Intel-gfx] [PATCH v2 15/39] drm/i915: intel_dp_link_training.c:
+ fix kernel-doc markup
+Message-ID: <YvIuKw8KY6xMi0Fj@intel.com>
+References: <cover.1657699522.git.mchehab@kernel.org>
+ <0fac471eb7f6d365e9a7544071114292e08aa5ad.1657699522.git.mchehab@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0fac471eb7f6d365e9a7544071114292e08aa5ad.1657699522.git.mchehab@kernel.org>
+X-ClientProxiedBy: BYAPR04CA0002.namprd04.prod.outlook.com
+ (2603:10b6:a03:40::15) To MN0PR11MB6059.namprd11.prod.outlook.com
+ (2603:10b6:208:377::9)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/8] dt-bindings: remoteproc: qcom: adsp: Make ADSP pil
- loader as generic
-Content-Language: en-US
-To:     Caleb Connolly <caleb.connolly@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
-References: <1659536480-5176-1-git-send-email-quic_srivasam@quicinc.com>
- <PLL_L3rk0As4iT923EpBfGe-uDR4XZZWQS3zFNrfS3m5TCPUtK0E58AEjofIncTglWcpEXVbYj2b1vWjEZgJBA==@protonmail.internalid>
- <1659536480-5176-2-git-send-email-quic_srivasam@quicinc.com>
- <a59add1a-7e33-a47b-a804-b98c132d78f2@linaro.org>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <a59add1a-7e33-a47b-a804-b98c132d78f2@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 927c4fc6-c943-40c3-72a4-08da79ecc43b
+X-MS-TrafficTypeDiagnostic: SJ0PR11MB4958:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: F4P3cuLI1EHZp76K5d9gTqiIGHgp75ez2GfpuSyAv9r9hNRaU8YMgTnbjt7djTyXDP+7PrM68qyCbOSM6jIXSYBS9F/ed3ljQbkeI7H3wfO+by1RqRLLLEq6hvBJQ8X0CubSlXdGWgT8obBk3KWadIdbV8M+E8Kl9ogEu+jfVguTWQbho8iKXPDVHNP6ny0Pa60PiKbWLacAWDLL9z3DEclMU6FZlFyKqS3gTVc3xsQjgnXSsn9M+F+QEGbgA4UQqTjybZC1WV8w+6nLfavfoW5SMbU/W+dd3QXYcbss6Z18q4Gf0ticSkvMBaeBE/M+d9kkuo6HthKHgRSJFDxTrpoVU1mG9TA2iv7/8/B8Z1uLWbPCoXrUoeXuCsGFUE26P5CHwai6hDvmQFlXfAJV+M6m/4XcZvtopDrBTMudWQLyByijUr5p4h8w6Ywg1Zxm6y1T21If75vFjkNEn4/uHY88XHLl30PXpmOSSmEsCoSKDrxSY8b41Ga/YZpjk1mTKlW0uemQt2H/mHN/7SNTrl+owoAIIHVjVzMNb+XeS3R7EcOXAZPRDLCebrqpAdmtrFUI+Xqphs2vLXkeF/+BVLxjbbOpZrpG02Cs/Nv4BWW11dlyYGv9F9sjtCnKEPYSig/bn/DksZ0NhlbLYBh9IOAsKPLxuffDX4SwrBhxFo/mAGAPM0JJfmHnXZf8+LilqGtOKmoqsWT5/SChV9iDXbIsW1qHgi4oWQz8FxV4NNbLu1k7KMMVIdS7EMMEp2foTmjZhdVoGVmJULMFy9BH7Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6059.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(396003)(136003)(376002)(366004)(346002)(36756003)(26005)(6512007)(6506007)(41300700001)(38100700002)(6666004)(966005)(6486002)(478600001)(83380400001)(86362001)(186003)(2616005)(82960400001)(8936002)(8676002)(2906002)(4326008)(66476007)(44832011)(66946007)(316002)(5660300002)(66556008)(6916009);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6g3y7KgYCU5+ibuFneTgwJHlHf8wJsTEO94kaxQqWr9uMR7cN/uMq/0c5Xkr?=
+ =?us-ascii?Q?Df0eEvo3DglG98pgMr/5R+RlzWFGAEs9rURBzqr0zBxNG3Yhk7I1sU8eukrV?=
+ =?us-ascii?Q?ad/VVzWh2bZKZSMDNH58aJVohK9kaOvQRxCFDqVJe/CtxkzETZ2C1rWniz51?=
+ =?us-ascii?Q?/BOwriwsv5fPePfZHYxFgI8Msz6SEqXGvo4liB8bsnwQw3jUzWtmIauRIw+t?=
+ =?us-ascii?Q?RccuiXYbMKyG3WnJC8xK607kn7tIfj96HWShicM1v2vNCZuef81S7ijDT7Aj?=
+ =?us-ascii?Q?mO/CeUoQwYSZQRmG/J+sZpHqNgMGGLsM1fAhpLirnqeafmr33dqB2e3Z0yTf?=
+ =?us-ascii?Q?tBIfx3KsBneCv4v6dbwBgiW2RMniW8lE8FgXaaXSmCMboXZbqNUJwWblw+aj?=
+ =?us-ascii?Q?xHIILKxojSr257tmgMRW1yRTYGG7LblixJFPAzhv4+pz+3Rlj6NdAAqtPRy/?=
+ =?us-ascii?Q?XZfN1AH3d1j1W22M/E9fJ3PGDNSjEFArsiC9vccwDAFNnONqMA7DOybLFvHb?=
+ =?us-ascii?Q?xjnU3I4Dl3Gzwt0oxUL3NFlsjYYE+iuJgexWp0VtvCtHyTORR+jzBLt0pUz4?=
+ =?us-ascii?Q?0lAhb49i4HbtICK/AzbdvLyvW4H00YurMW62Uosu9rW6EKd9N6iC6wWxElz0?=
+ =?us-ascii?Q?XPm7M/B9mNpnbRLuk3Bz/IpLc+4EWv4eYBycC6Qu6l6kzUIuLMlndb9TZK9F?=
+ =?us-ascii?Q?ySPJkgChi0p2gam26SJmreTNicHWmnHjPGvtPgZb1o/OVwkrcREepJYn4VMB?=
+ =?us-ascii?Q?54Pr7Ls86xcna0rw7C4tJ1nXII8Urzli0CW70QGVzovlJ2gFmClh9nlzDZOU?=
+ =?us-ascii?Q?Jnr9actryTDplV3sSIKoFpALR1R6Vk1oM7VH3YNTSWtuAjDrMLxC1CJkJJMd?=
+ =?us-ascii?Q?fMxRyXfjazCjJdX+Id510R4jal5sXKUX3ruH3UatMqZHwabPlVXkZ0sPQc/u?=
+ =?us-ascii?Q?GIPF8Vs4q9AdiumFCYS5VyKvllQLN33Uu1RtP9Zsuy2DXk0PhVQdRBp1wUaM?=
+ =?us-ascii?Q?D9F4Glp0mgXxLzAypTAgoyWEXKDdh70BaoxD9JT7e8Zo8YwMv/X/AEsMJFuJ?=
+ =?us-ascii?Q?j7Ya6gTOImKVCxfA6m9T1RGwkl9IEw5UPXvZ4S9eq5QN4oPOstB39WvPNOtZ?=
+ =?us-ascii?Q?dl4fw2RGYvsMCb4hcBi8XPxhZBa/pKDq2DF0qxf91/5kYRwEF7f8dfOHeTI6?=
+ =?us-ascii?Q?QmXHV8ACtaP1yWlQzpBMXJkGjElIBXi1HiuqUaHoZQSV1ik/cxIqq1qluwpz?=
+ =?us-ascii?Q?whRHyYjis9MGIBMYkctjMtMNABAmGUAzdLJnAoRsYn/IgnnIG6meWo43HCRp?=
+ =?us-ascii?Q?wyrb8xXfGRPCJJSMN1jsSdU42ocPf239HFLyugEodtrArhK32JXuNh0L3JXz?=
+ =?us-ascii?Q?JIngGkCp6qATzndlWxcWac3wURuUyhacu7ZXAPWZYc61+FsoP6X2xPVr7rKr?=
+ =?us-ascii?Q?8II3gJUWV5l597QtEYkqs1p8RUIUKvGwkzTw5G5CYrzlNEI70XmAkxozIvHo?=
+ =?us-ascii?Q?bP5Dw80GtioWHAfJmlneANum1cMwxlC9/QKeomXQidYgwqu/Q8IfE6LTwTrZ?=
+ =?us-ascii?Q?N1GZdUEZgoHo8OMvGlog0Zb95gx+bsDjMdP2Aie+NfWpIqyYwxCMB0PYgiSy?=
+ =?us-ascii?Q?bw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 927c4fc6-c943-40c3-72a4-08da79ecc43b
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6059.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 09:51:44.3286
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Lxk7t9k5L5TKtX4gxNyHvBNpwdjkNF/6Xqee/9TXXcCrO9g6NLaZ4ODOoLszLcNiEJY7Ui6S9Lv/5liloqekBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4958
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jul 13, 2022 at 09:12:03AM +0100, Mauro Carvalho Chehab wrote:
+> The return code table is not properly marked, causing warnings
+> and being badly parsed by Sphinx:
+> 
+>     Documentation/gpu/i915:130: ./drivers/gpu/drm/i915/display/intel_dp_link_training.c:183: WARNING: Block quote ends without a blank line; unexpected unindent.
+>     Documentation/gpu/i915:130: ./drivers/gpu/drm/i915/display/intel_dp_link_training.c:186: WARNING: Definition list ends without a blank line; unexpected unindent.
+> 
+> Use table markups to fix it.
 
-On 8/5/2022 1:17 AM, Caleb Connolly wrote:
-Thanks for Your TIme Celeb!!
->
-> Hi,
-> On 03/08/2022 15:21, Srinivasa Rao Mandadapu wrote:
->> Rename sdm845 adsp pil bindings to generic name, for using same binings
->> file for subsequent SoCs.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> ---
->>   .../bindings/remoteproc/qcom,lpass-adsp-pil.yaml   | 160 
->> +++++++++++++++++++++
->>   .../bindings/remoteproc/qcom,sdm845-adsp-pil.yaml  | 160 
->> ---------------------
->>   2 files changed, 160 insertions(+), 160 deletions(-)
->>   create mode 100644 
->> Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
->>   delete mode 100644 
->> Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-> This should be a rename, I think passing the -M flag to "git 
-> format-patch" detects it.
-Okay. Will do accordingly in next version of patches.
->>
->> diff --git 
->> a/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml 
->> b/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
->> new file mode 100644
->> index 0000000..9f11332
->> --- /dev/null
->> +++ 
->> b/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
->> @@ -0,0 +1,160 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/remoteproc/qcom,lpass-adsp-pil.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm LPASS ADSP Peripheral Image Loader
->> +
->> +maintainers:
->> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
->> +
->> +description:
->> +  This document defines the binding for a component that loads and 
->> boots firmware
->> +  on the Qualcomm Technology Inc. ADSP.
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,sdm845-adsp-pil
->> +
->> +  reg:
->> +    maxItems: 1
->> +    description:
->> +      The base address and size of the qdsp6ss register
->> +
->> +  interrupts:
->> +    items:
->> +      - description: Watchdog interrupt
->> +      - description: Fatal interrupt
->> +      - description: Ready interrupt
->> +      - description: Handover interrupt
->> +      - description: Stop acknowledge interrupt
->> +
->> +  interrupt-names:
->> +    items:
->> +      - const: wdog
->> +      - const: fatal
->> +      - const: ready
->> +      - const: handover
->> +      - const: stop-ack
->> +
->> +  clocks:
->> +    items:
->> +      - description: XO clock
->> +      - description: SWAY clock
->> +      - description: LPASS AHBS AON clock
->> +      - description: LPASS AHBM AON clock
->> +      - description: QDSP XO clock
->> +      - description: Q6SP6SS SLEEP clock
->> +      - description: Q6SP6SS CORE clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: xo
->> +      - const: sway_cbcr
->> +      - const: lpass_ahbs_aon_cbcr
->> +      - const: lpass_ahbm_aon_cbcr
->> +      - const: qdsp6ss_xo
->> +      - const: qdsp6ss_sleep
->> +      - const: qdsp6ss_core
->> +
->> +  power-domains:
->> +    items:
->> +      - description: CX power domain
->> +
->> +  resets:
->> +    items:
->> +      - description: PDC AUDIO SYNC RESET
->> +      - description: CC LPASS restart
->> +
->> +  reset-names:
->> +    items:
->> +      - const: pdc_sync
->> +      - const: cc_lpass
->> +
->> +  memory-region:
->> +    maxItems: 1
->> +    description: Reference to the reserved-memory for the Hexagon core
->> +
->> +  qcom,halt-regs:
->> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->> +    description:
->> +      Phandle reference to a syscon representing TCSR followed by the
->> +      three offsets within syscon for q6, modem and nc halt registers.
->> +
->> +  qcom,smem-states:
->> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->> +    description: States used by the AP to signal the Hexagon core
->> +    items:
->> +      - description: Stop the modem
->> +
->> +  qcom,smem-state-names:
->> +    $ref: /schemas/types.yaml#/definitions/string
->> +    description: The names of the state bits used for SMP2P output
->> +    items:
->> +      - const: stop
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - interrupt-names
->> +  - clocks
->> +  - clock-names
->> +  - power-domains
->> +  - resets
->> +  - reset-names
->> +  - qcom,halt-regs
->> +  - memory-region
->> +  - qcom,smem-states
->> +  - qcom,smem-state-names
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +    #include <dt-bindings/clock/qcom,rpmh.h>
->> +    #include <dt-bindings/clock/qcom,gcc-sdm845.h>
->> +    #include <dt-bindings/clock/qcom,lpass-sdm845.h>
->> +    #include <dt-bindings/power/qcom-rpmpd.h>
->> +    #include <dt-bindings/reset/qcom,sdm845-pdc.h>
->> +    #include <dt-bindings/reset/qcom,sdm845-aoss.h>
->> +    remoteproc@17300000 {
->> +        compatible = "qcom,sdm845-adsp-pil";
->> +        reg = <0x17300000 0x40c>;
->> +
->> +        interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
->> +                <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
->> +        interrupt-names = "wdog", "fatal", "ready",
->> +                "handover", "stop-ack";
->> +
->> +        clocks = <&rpmhcc RPMH_CXO_CLK>,
->> +                 <&gcc GCC_LPASS_SWAY_CLK>,
->> +                 <&lpasscc LPASS_Q6SS_AHBS_AON_CLK>,
->> +                 <&lpasscc LPASS_Q6SS_AHBM_AON_CLK>,
->> +                 <&lpasscc LPASS_QDSP6SS_XO_CLK>,
->> +                 <&lpasscc LPASS_QDSP6SS_SLEEP_CLK>,
->> +                 <&lpasscc LPASS_QDSP6SS_CORE_CLK>;
->> +        clock-names = "xo", "sway_cbcr",
->> +                "lpass_ahbs_aon_cbcr",
->> +                "lpass_ahbm_aon_cbcr", "qdsp6ss_xo",
->> +                "qdsp6ss_sleep", "qdsp6ss_core";
->> +
->> +        power-domains = <&rpmhpd SDM845_CX>;
->> +
->> +        resets = <&pdc_reset PDC_AUDIO_SYNC_RESET>,
->> +                 <&aoss_reset AOSS_CC_LPASS_RESTART>;
->> +        reset-names = "pdc_sync", "cc_lpass";
->> +
->> +        qcom,halt-regs = <&tcsr_mutex_regs 0x22000>;
->> +
->> +        memory-region = <&pil_adsp_mem>;
->> +
->> +        qcom,smem-states = <&adsp_smp2p_out 0>;
->> +        qcom,smem-state-names = "stop";
->> +    };
->> diff --git 
->> a/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml 
->> b/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
->> deleted file mode 100644
->> index 1535bbb..0000000
->> --- 
->> a/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
->> +++ /dev/null
->> @@ -1,160 +0,0 @@
->> -# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> -%YAML 1.2
->> ----
->> -$id: 
->> http://devicetree.org/schemas/remoteproc/qcom,sdm845-adsp-pil.yaml#
->> -$schema: http://devicetree.org/meta-schemas/core.yaml#
->> -
->> -title: Qualcomm SDM845 ADSP Peripheral Image Loader
->> -
->> -maintainers:
->> -  - Bjorn Andersson <bjorn.andersson@linaro.org>
->> -
->> -description:
->> -  This document defines the binding for a component that loads and 
->> boots firmware
->> -  on the Qualcomm Technology Inc. ADSP.
->> -
->> -properties:
->> -  compatible:
->> -    enum:
->> -      - qcom,sdm845-adsp-pil
->> -
->> -  reg:
->> -    maxItems: 1
->> -    description:
->> -      The base address and size of the qdsp6ss register
->> -
->> -  interrupts:
->> -    items:
->> -      - description: Watchdog interrupt
->> -      - description: Fatal interrupt
->> -      - description: Ready interrupt
->> -      - description: Handover interrupt
->> -      - description: Stop acknowledge interrupt
->> -
->> -  interrupt-names:
->> -    items:
->> -      - const: wdog
->> -      - const: fatal
->> -      - const: ready
->> -      - const: handover
->> -      - const: stop-ack
->> -
->> -  clocks:
->> -    items:
->> -      - description: XO clock
->> -      - description: SWAY clock
->> -      - description: LPASS AHBS AON clock
->> -      - description: LPASS AHBM AON clock
->> -      - description: QDSP XO clock
->> -      - description: Q6SP6SS SLEEP clock
->> -      - description: Q6SP6SS CORE clock
->> -
->> -  clock-names:
->> -    items:
->> -      - const: xo
->> -      - const: sway_cbcr
->> -      - const: lpass_ahbs_aon_cbcr
->> -      - const: lpass_ahbm_aon_cbcr
->> -      - const: qdsp6ss_xo
->> -      - const: qdsp6ss_sleep
->> -      - const: qdsp6ss_core
->> -
->> -  power-domains:
->> -    items:
->> -      - description: CX power domain
->> -
->> -  resets:
->> -    items:
->> -      - description: PDC AUDIO SYNC RESET
->> -      - description: CC LPASS restart
->> -
->> -  reset-names:
->> -    items:
->> -      - const: pdc_sync
->> -      - const: cc_lpass
->> -
->> -  memory-region:
->> -    maxItems: 1
->> -    description: Reference to the reserved-memory for the Hexagon core
->> -
->> -  qcom,halt-regs:
->> -    $ref: /schemas/types.yaml#/definitions/phandle-array
->> -    description:
->> -      Phandle reference to a syscon representing TCSR followed by the
->> -      three offsets within syscon for q6, modem and nc halt registers.
->> -
->> -  qcom,smem-states:
->> -    $ref: /schemas/types.yaml#/definitions/phandle-array
->> -    description: States used by the AP to signal the Hexagon core
->> -    items:
->> -      - description: Stop the modem
->> -
->> -  qcom,smem-state-names:
->> -    $ref: /schemas/types.yaml#/definitions/string
->> -    description: The names of the state bits used for SMP2P output
->> -    items:
->> -      - const: stop
->> -
->> -required:
->> -  - compatible
->> -  - reg
->> -  - interrupts
->> -  - interrupt-names
->> -  - clocks
->> -  - clock-names
->> -  - power-domains
->> -  - resets
->> -  - reset-names
->> -  - qcom,halt-regs
->> -  - memory-region
->> -  - qcom,smem-states
->> -  - qcom,smem-state-names
->> -
->> -additionalProperties: false
->> -
->> -examples:
->> -  - |
->> -    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> -    #include <dt-bindings/clock/qcom,rpmh.h>
->> -    #include <dt-bindings/clock/qcom,gcc-sdm845.h>
->> -    #include <dt-bindings/clock/qcom,lpass-sdm845.h>
->> -    #include <dt-bindings/power/qcom-rpmpd.h>
->> -    #include <dt-bindings/reset/qcom,sdm845-pdc.h>
->> -    #include <dt-bindings/reset/qcom,sdm845-aoss.h>
->> -    remoteproc@17300000 {
->> -        compatible = "qcom,sdm845-adsp-pil";
->> -        reg = <0x17300000 0x40c>;
->> -
->> -        interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
->> -                <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
->> -                <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
->> -                <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
->> -                <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
->> -        interrupt-names = "wdog", "fatal", "ready",
->> -                "handover", "stop-ack";
->> -
->> -        clocks = <&rpmhcc RPMH_CXO_CLK>,
->> -                 <&gcc GCC_LPASS_SWAY_CLK>,
->> -                 <&lpasscc LPASS_Q6SS_AHBS_AON_CLK>,
->> -                 <&lpasscc LPASS_Q6SS_AHBM_AON_CLK>,
->> -                 <&lpasscc LPASS_QDSP6SS_XO_CLK>,
->> -                 <&lpasscc LPASS_QDSP6SS_SLEEP_CLK>,
->> -                 <&lpasscc LPASS_QDSP6SS_CORE_CLK>;
->> -        clock-names = "xo", "sway_cbcr",
->> -                "lpass_ahbs_aon_cbcr",
->> -                "lpass_ahbm_aon_cbcr", "qdsp6ss_xo",
->> -                "qdsp6ss_sleep", "qdsp6ss_core";
->> -
->> -        power-domains = <&rpmhpd SDM845_CX>;
->> -
->> -        resets = <&pdc_reset PDC_AUDIO_SYNC_RESET>,
->> -                 <&aoss_reset AOSS_CC_LPASS_RESTART>;
->> -        reset-names = "pdc_sync", "cc_lpass";
->> -
->> -        qcom,halt-regs = <&tcsr_mutex_regs 0x22000>;
->> -
->> -        memory-region = <&pil_adsp_mem>;
->> -
->> -        qcom,smem-states = <&adsp_smp2p_out 0>;
->> -        qcom,smem-state-names = "stop";
->> -    };
->> -- 
->> 2.7.4
->>
->
+cool, I didn't know that
+
+Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+
+
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
+> 
+> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
+> 
+>  drivers/gpu/drm/i915/display/intel_dp_link_training.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.c b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+> index 9feaf1a589f3..23a269fcf6ca 100644
+> --- a/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+> +++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+> @@ -177,12 +177,14 @@ static int intel_dp_init_lttpr(struct intel_dp *intel_dp, const u8 dpcd[DP_RECEI
+>   * transparent mode link training mode.
+>   *
+>   * Returns:
+> + * ====  =====================================================================
+>   *   >0  if LTTPRs were detected and the non-transparent LT mode was set. The
+>   *       DPRX capabilities are read out.
+>   *    0  if no LTTPRs or more than 8 LTTPRs were detected or in case of a
+>   *       detection failure and the transparent LT mode was set. The DPRX
+>   *       capabilities are read out.
+>   *   <0  Reading out the DPRX capabilities failed.
+> + * ====  =====================================================================
+>   */
+>  int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp)
+>  {
+> -- 
+> 2.36.1
+> 
