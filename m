@@ -2,182 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A35C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2B6C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239366AbiHIHgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 03:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
+        id S239425AbiHIHim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 03:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239371AbiHIHgS (ORCPT
+        with ESMTP id S232748AbiHIHik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 03:36:18 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F13821261;
-        Tue,  9 Aug 2022 00:36:14 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.12.77.33])
-        by mail-app4 (Coremail) with SMTP id cS_KCgDnIfxVDvJiEs6IAg--.63921S4;
-        Tue, 09 Aug 2022 15:35:49 +0800 (CST)
-From:   Lin Ma <linma@zju.edu.cn>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Lin Ma <linma@zju.edu.cn>
-Subject: [PATCH v3] igb: Add lock to avoid data race
-Date:   Tue,  9 Aug 2022 15:35:42 +0800
-Message-Id: <20220809073542.3390-1-linma@zju.edu.cn>
-X-Mailer: git-send-email 2.36.1
+        Tue, 9 Aug 2022 03:38:40 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 386F31EED3
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 00:38:39 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-82-hpQrFnagMDiwY00xHxje_Q-1; Tue, 09 Aug 2022 08:38:36 +0100
+X-MC-Unique: hpQrFnagMDiwY00xHxje_Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Tue, 9 Aug 2022 08:38:35 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Tue, 9 Aug 2022 08:38:35 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'H. Peter Anvin'" <hpa@zytor.com>,
+        'Kanna Scarlet' <knscarlet@gnuweeb.org>,
+        Borislav Petkov <bp@alien8.de>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Ard Biesheuvel" <ardb@kernel.org>,
+        Bill Metzenthen <billm@melbpc.org.au>,
+        "Brijesh Singh" <brijesh.singh@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/1] x86: Change mov $0, %reg with xor %reg, %reg
+Thread-Topic: [PATCH 1/1] x86: Change mov $0, %reg with xor %reg, %reg
+Thread-Index: AQHYqC07pBmJLRD/dU+qGFItY3OGOq2gCd9AgAVHBYCAAOQGIA==
+Date:   Tue, 9 Aug 2022 07:38:35 +0000
+Message-ID: <88f681a6c18944588676f93be10ba1b2@AcuMS.aculab.com>
+References: <20220804152656.8840-1-knscarlet@gnuweeb.org>
+ <20220804152656.8840-2-knscarlet@gnuweeb.org> <Yuvrd2yWLnyxOVLU@zn.tnic>
+ <20220804180805.9077-1-knscarlet@gnuweeb.org>
+ <126271e264204581a42b079b51481740@AcuMS.aculab.com>
+ <b71d4c4a-10be-a1f5-a95c-90b36e57230a@zytor.com>
+In-Reply-To: <b71d4c4a-10be-a1f5-a95c-90b36e57230a@zytor.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cS_KCgDnIfxVDvJiEs6IAg--.63921S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxur4xCr13XF48ZrykuF17ZFb_yoWrtrWfpF
-        4DX342yr10qF1jq397Xa18Ary3Kw4rKryfK3W7uw4F93Z8JryvqrWrtryYvF9Y9395u3ZI
-        yryDuw4xZF1DAFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvl1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28I
-        cxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
-        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
-        DU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit c23d92b80e0b ("igb: Teardown SR-IOV before
-unregister_netdev()") places the unregister_netdev() call after the
-igb_disable_sriov() call to avoid functionality issue.
-
-However, it introduces several race conditions when detaching a device.
-For example, when .remove() is called, the below interleaving leads to
-use-after-free.
-
- (FREE from device detaching)      |   (USE from netdev core)
-igb_remove                         |  igb_ndo_get_vf_config
- igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
-  kfree(adapter->vf_data)          |
-  adapter->vfs_allocated_count = 0 |
-                                   |    memcpy(... adapter->vf_data[vf]
-
-Moreover, the igb_disable_sriov() also suffers from data race with the
-requests from VF driver.
-
- (FREE from device detaching)      |   (USE from requests)
-igb_remove                         |  igb_msix_other
- igb_disable_sriov                 |   igb_msg_task
-  kfree(adapter->vf_data)          |    vf < adapter->vfs_allocated_count
-  adapter->vfs_allocated_count = 0 |
-
-To this end, this commit first eliminates the data races from netdev
-core by using rtnl_lock (similar to commit 719479230893 ("dpaa2-eth: add
-MAC/PHY support through phylink")). And then adds a spinlock to
-eliminate races from driver requests. (similar to commit 1e53834ce541
-("ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero")
-
-
-Fixes: c23d92b80e0b ("igb: Teardown SR-IOV before unregister_netdev()")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
----
-V2 -> V3:  make the commit message much clear
-V1 -> V2:  fix typo in title idb -> igb
-V0 -> V1:  change title from "Add rtnl_lock" to "Add lock"
-           add additional spinlock as suggested by Jakub, according to
-           1e53834ce541 ("ixgbe: Add locking to prevent panic when setting
-           sriov_numvfs to zero")
-
- drivers/net/ethernet/intel/igb/igb.h      |  2 ++
- drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++++++++-
- 2 files changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-index 2d3daf022651..015b78144114 100644
---- a/drivers/net/ethernet/intel/igb/igb.h
-+++ b/drivers/net/ethernet/intel/igb/igb.h
-@@ -664,6 +664,8 @@ struct igb_adapter {
- 	struct igb_mac_addr *mac_table;
- 	struct vf_mac_filter vf_macs;
- 	struct vf_mac_filter *vf_mac_list;
-+	/* lock for VF resources */
-+	spinlock_t vfs_lock;
- };
- 
- /* flags controlling PTP/1588 function */
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index d8b836a85cc3..2796e81d2726 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3637,6 +3637,7 @@ static int igb_disable_sriov(struct pci_dev *pdev)
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct igb_adapter *adapter = netdev_priv(netdev);
- 	struct e1000_hw *hw = &adapter->hw;
-+	unsigned long flags;
- 
- 	/* reclaim resources allocated to VFs */
- 	if (adapter->vf_data) {
-@@ -3649,12 +3650,13 @@ static int igb_disable_sriov(struct pci_dev *pdev)
- 			pci_disable_sriov(pdev);
- 			msleep(500);
- 		}
--
-+		spin_lock_irqsave(&adapter->vfs_lock, flags);
- 		kfree(adapter->vf_mac_list);
- 		adapter->vf_mac_list = NULL;
- 		kfree(adapter->vf_data);
- 		adapter->vf_data = NULL;
- 		adapter->vfs_allocated_count = 0;
-+		spin_unlock_irqrestore(&adapter->vfs_lock, flags);
- 		wr32(E1000_IOVCTL, E1000_IOVCTL_REUSE_VFQ);
- 		wrfl();
- 		msleep(100);
-@@ -3814,7 +3816,9 @@ static void igb_remove(struct pci_dev *pdev)
- 	igb_release_hw_control(adapter);
- 
- #ifdef CONFIG_PCI_IOV
-+	rtnl_lock();
- 	igb_disable_sriov(pdev);
-+	rtnl_unlock();
- #endif
- 
- 	unregister_netdev(netdev);
-@@ -3974,6 +3978,9 @@ static int igb_sw_init(struct igb_adapter *adapter)
- 
- 	spin_lock_init(&adapter->nfc_lock);
- 	spin_lock_init(&adapter->stats64_lock);
-+
-+	/* init spinlock to avoid concurrency of VF resources */
-+	spin_lock_init(&adapter->vfs_lock);
- #ifdef CONFIG_PCI_IOV
- 	switch (hw->mac.type) {
- 	case e1000_82576:
-@@ -7958,8 +7965,10 @@ static void igb_rcv_msg_from_vf(struct igb_adapter *adapter, u32 vf)
- static void igb_msg_task(struct igb_adapter *adapter)
- {
- 	struct e1000_hw *hw = &adapter->hw;
-+	unsigned long flags;
- 	u32 vf;
- 
-+	spin_lock_irqsave(&adapter->vfs_lock, flags);
- 	for (vf = 0; vf < adapter->vfs_allocated_count; vf++) {
- 		/* process any reset requests */
- 		if (!igb_check_for_rst(hw, vf))
-@@ -7973,6 +7982,7 @@ static void igb_msg_task(struct igb_adapter *adapter)
- 		if (!igb_check_for_ack(hw, vf))
- 			igb_rcv_ack_from_vf(adapter, vf);
- 	}
-+	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
- }
- 
- /**
--- 
-2.36.1
+RnJvbTogSC4gUGV0ZXIgQW52aW4NCj4gU2VudDogMDggQXVndXN0IDIwMjIgMjA6MDANCj4gDQo+
+IE9uIEF1Z3VzdCA1LCAyMDIyIDI6MjY6MDIgQU0gUERULCBEYXZpZCBMYWlnaHQgPERhdmlkLkxh
+aWdodEBBQ1VMQUIuQ09NPg0KPiB3cm90ZToNCj4gPkZyb206IEthbm5hIFNjYXJsZXQNCj4gPj4g
+U2VudDogMDQgQXVndXN0IDIwMjIgMTk6MDgNCj4gPj4NCj4gPj4gT24gOC80LzIyIDEwOjUzIFBN
+LCBCb3Jpc2xhdiBQZXRrb3Ygd3JvdGU6DQo+ID4+ID4gQm9udXMgcG9pbnRzIGlmIHlvdSBmaW5k
+IG91dCB3aGF0IG90aGVyIGFkdmFudGFnZQ0KPiA+PiA+DQo+ID4+ID4gWE9SIHJlZyxyZWcNCj4g
+Pj4gPg0KPiA+PiA+IGhhcyB3aGVuIGl0IGNvbWVzIHRvIGNsZWFyaW5nIGludGVnZXIgcmVnaXN0
+ZXJzLg0KPiA+Pg0KPiA+PiBIZWxsbyBzaXIgQm9yaXNsYXYsDQo+ID4+DQo+ID4+IFRoYW5rIHlv
+dSBmb3IgeW91ciByZXNwb25zZS4gSSB0cmllZCB0byBmaW5kIG91dCBvdGhlciBhZHZhbnRhZ2Vz
+IG9mDQo+ID4+IHhvciByZWcscmVnIG9uIEdvb2dsZSBhbmQgZm91bmQgdGhpczoNCj4gPj4gaHR0
+cHM6Ly9zdGFja292ZXJmbG93LmNvbS9hLzMzNjY4Mjk1LzcyNzUxMTQNCj4gPj4NCj4gPj4gICAi
+eG9yIChiZWluZyBhIHJlY29nbml6ZWQgemVyb2luZyBpZGlvbSwgdW5saWtlIG1vdiByZWcsIDAp
+IGhhcyBzb21lDQo+ID4+ICAgb2J2aW91cyBhbmQgc29tZSBzdWJ0bGUgYWR2YW50YWdlczoNCj4g
+Pj4NCj4gPj4gICAxLiBzbWFsbGVyIGNvZGUtc2l6ZSB0aGFuIG1vdiByZWcsMC4gKEFsbCBDUFVz
+KQ0KPiA+PiAgIDIuIGF2b2lkcyBwYXJ0aWFsLXJlZ2lzdGVyIHBlbmFsdGllcyBmb3IgbGF0ZXIg
+Y29kZS4NCj4gPj4gICAgICAoSW50ZWwgUDYtZmFtaWx5IGFuZCBTbkItZmFtaWx5KS4NCj4gPj4g
+ICAzLiBkb2Vzbid0IHVzZSBhbiBleGVjdXRpb24gdW5pdCwgc2F2aW5nIHBvd2VyIGFuZCBmcmVl
+aW5nIHVwDQo+ID4+ICAgICAgZXhlY3V0aW9uIHJlc291cmNlcy4gKEludGVsIFNuQi1mYW1pbHkp
+DQo+ID4+ICAgNC4gc21hbGxlciB1b3AgKG5vIGltbWVkaWF0ZSBkYXRhKSBsZWF2ZXMgcm9vbSBp
+biB0aGUgdW9wIGNhY2hlLWxpbmUNCj4gPj4gICAgICBmb3IgbmVhcmJ5IGluc3RydWN0aW9ucyB0
+byBib3Jyb3cgaWYgbmVlZGVkLiAoSW50ZWwgU25CLWZhbWlseSkuDQo+ID4+ICAgNS4gZG9lc24n
+dCB1c2UgdXAgZW50cmllcyBpbiB0aGUgcGh5c2ljYWwgcmVnaXN0ZXIgZmlsZS4gKEludGVsDQo+
+ID4+ICAgICAgU25CLWZhbWlseSAoYW5kIFA0KSBhdCBsZWFzdCwgcG9zc2libHkgQU1EIGFzIHdl
+bGwgc2luY2UgdGhleSB1c2UNCj4gPj4gICAgICBhIHNpbWlsYXIgUFJGIGRlc2lnbiBpbnN0ZWFk
+IG9mIGtlZXBpbmcgcmVnaXN0ZXIgc3RhdGUgaW4gdGhlIFJPQg0KPiA+PiAgICAgIGxpa2UgSW50
+ZWwgUDYtZmFtaWx5IG1pY3JvYXJjaGl0ZWN0dXJlcy4pIg0KPiA+DQo+ID5Zb3UgbWlzc2VkIG9u
+ZSwgYW5kIGFuIGFkZGl0aW9uYWwgY2hhbmdlOg0KPiA+DQo+ID5Vc2UgInhvciAlcmF4LCVyYXgi
+IGluc3RlYWQgb2YgInhvciAlZWF4LCVlYXgiIHRvIHNhdmUNCj4gPnRoZSAncmVnJyBwcmVmaXgu
+DQo+ID4NCj4gPglEYXZpZA0KPiA+DQo+ID4tDQo+ID5SZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNp
+ZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsN
+Cj4gPlJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo+ID4NCj4gPg0KPiANCj4gWW91
+IG1lYW4gdGhlIG90aGVyIHdheSBhcm91bmQuLi4NCg0KTWF5YmUgOi0oDQpUaGUgMzJiaXQgdmVy
+c2lvbnMgYXJlIGJlc3QuDQpTb21laG93IHRoZSByZWdpc3RlciBuYW1pbmcgY29udmVudGlvbiBl
+bmRlZCB1cCBnZXR0aW5nIHNvcnQgb2YgJ2JhY2t3YXJkcycuDQoncmVnaXN0ZXInIGlzIGJpZ2dl
+ciB0aGFuICdleHRlbmRlZCcuDQpJJ3ZlICdvbmx5JyBiZWVuIHdyaXRpbmcgeDg2IGFzbSBzaW5j
+ZSAxOTgyIQ0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFt
+bGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3Ry
+YXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
