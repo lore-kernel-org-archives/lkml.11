@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3AAC25B07
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17AEFC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346201AbiHISU5 (ORCPT
+        id S1346127AbiHISUy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        Tue, 9 Aug 2022 14:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346866AbiHISRy (ORCPT
+        with ESMTP id S1345624AbiHISOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:17:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C1F2F005;
-        Tue,  9 Aug 2022 11:07:01 -0700 (PDT)
+        Tue, 9 Aug 2022 14:14:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957B52714E;
+        Tue,  9 Aug 2022 11:05:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 173F5B818BF;
-        Tue,  9 Aug 2022 18:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EE7C4347C;
-        Tue,  9 Aug 2022 18:06:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EAE561134;
+        Tue,  9 Aug 2022 18:05:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2813C433C1;
+        Tue,  9 Aug 2022 18:05:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068392;
-        bh=UinAzkFxj+BLJyuf4XCMytJV/KED8ZQPD9DVBguyrlg=;
+        s=korg; t=1660068339;
+        bh=Q9TQo1YpqN5c0AN7PcviO9s8yzNZpGDadJSGpTvGND8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+TlfBFrO3M5/WxNaTj5i3X6lr05/Xn0F+ZvpOQNX7OH3q/mz7zUwFYixuG+lPJbP
-         c1ktfFNgHDuME9C4YLvz18eda1UTU4tnILQQ6eevNE20Txkh8xtkQeu8fzvwTgl3M6
-         Zi3eq+FR0ehRDMd1uUtU6ZBZ8/OsfcWBZuT/JWxY=
+        b=zM9poVbz/y83I0H5UDcdvbAm1juA0Et0ijpLBu8yYf8LonLl8AZz38bWEx11oEplF
+         iW3zq4jQc7bxz77gkMA1xDomSjQiaZneM6X927mAleo8FEGCL5V1lLXTUL4zS6fS+B
+         660DDrbJFmElysFeug2fLQNYqD9WUxMdncr0p1m8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH 5.18 03/35] tools/vm/slabinfo: Handle files in debugfs
-Date:   Tue,  9 Aug 2022 20:00:32 +0200
-Message-Id: <20220809175515.184493506@linuxfoundation.org>
+        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Raghavendra Rao Ananta <rananta@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 14/30] selftests: KVM: Handle compiler optimizations in ucall
+Date:   Tue,  9 Aug 2022 20:00:39 +0200
+Message-Id: <20220809175514.818874838@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
-References: <20220809175515.046484486@linuxfoundation.org>
+In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
+References: <20220809175514.276643253@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,75 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stéphane Graber <stgraber@ubuntu.com>
+From: Raghavendra Rao Ananta <rananta@google.com>
 
-commit 0c7e0d699ef1430d7f4cf12b4b1d097af58b5515 upstream.
+[ Upstream commit 9e2f6498efbbc880d7caa7935839e682b64fe5a6 ]
 
-Commit 64dd68497be76 relocated and renamed the alloc_calls and
-free_calls files from /sys/kernel/slab/NAME/*_calls over to
-/sys/kernel/debug/slab/NAME/*_calls but didn't update the slabinfo tool
-with the new location.
+The selftests, when built with newer versions of clang, is found
+to have over optimized guests' ucall() function, and eliminating
+the stores for uc.cmd (perhaps due to no immediate readers). This
+resulted in the userspace side always reading a value of '0', and
+causing multiple test failures.
 
-This change will now have slabinfo look at the new location (and filenames)
-with a fallback to the prior files.
+As a result, prevent the compiler from optimizing the stores in
+ucall() with WRITE_ONCE().
 
-Fixes: 64dd68497be76 ("mm: slub: move sysfs slab alloc/free interfaces to debugfs")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
-Tested-by: Stéphane Graber <stgraber@ubuntu.com>
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Ricardo Koller <ricarkol@google.com>
+Suggested-by: Reiji Watanabe <reijiw@google.com>
+Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+Message-Id: <20220615185706.1099208-1-rananta@google.com>
+Reviewed-by: Andrew Jones <drjones@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/vm/slabinfo.c |   26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+ tools/testing/selftests/kvm/lib/aarch64/ucall.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/tools/vm/slabinfo.c
-+++ b/tools/vm/slabinfo.c
-@@ -233,6 +233,24 @@ static unsigned long read_slab_obj(struc
- 	return l;
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+index e0b0164e9af8..be1d9728c4ce 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+@@ -73,20 +73,19 @@ void ucall_uninit(struct kvm_vm *vm)
+ 
+ void ucall(uint64_t cmd, int nargs, ...)
+ {
+-	struct ucall uc = {
+-		.cmd = cmd,
+-	};
++	struct ucall uc = {};
+ 	va_list va;
+ 	int i;
+ 
++	WRITE_ONCE(uc.cmd, cmd);
+ 	nargs = nargs <= UCALL_MAX_ARGS ? nargs : UCALL_MAX_ARGS;
+ 
+ 	va_start(va, nargs);
+ 	for (i = 0; i < nargs; ++i)
+-		uc.args[i] = va_arg(va, uint64_t);
++		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
+ 	va_end(va);
+ 
+-	*ucall_exit_mmio_addr = (vm_vaddr_t)&uc;
++	WRITE_ONCE(*ucall_exit_mmio_addr, (vm_vaddr_t)&uc);
  }
  
-+static unsigned long read_debug_slab_obj(struct slabinfo *s, const char *name)
-+{
-+	char x[128];
-+	FILE *f;
-+	size_t l;
-+
-+	snprintf(x, 128, "/sys/kernel/debug/slab/%s/%s", s->name, name);
-+	f = fopen(x, "r");
-+	if (!f) {
-+		buffer[0] = 0;
-+		l = 0;
-+	} else {
-+		l = fread(buffer, 1, sizeof(buffer), f);
-+		buffer[l] = 0;
-+		fclose(f);
-+	}
-+	return l;
-+}
- 
- /*
-  * Put a size string together
-@@ -409,14 +427,18 @@ static void show_tracking(struct slabinf
- {
- 	printf("\n%s: Kernel object allocation\n", s->name);
- 	printf("-----------------------------------------------------------------------\n");
--	if (read_slab_obj(s, "alloc_calls"))
-+	if (read_debug_slab_obj(s, "alloc_traces"))
-+		printf("%s", buffer);
-+	else if (read_slab_obj(s, "alloc_calls"))
- 		printf("%s", buffer);
- 	else
- 		printf("No Data\n");
- 
- 	printf("\n%s: Kernel object freeing\n", s->name);
- 	printf("------------------------------------------------------------------------\n");
--	if (read_slab_obj(s, "free_calls"))
-+	if (read_debug_slab_obj(s, "free_traces"))
-+		printf("%s", buffer);
-+	else if (read_slab_obj(s, "free_calls"))
- 		printf("%s", buffer);
- 	else
- 		printf("No Data\n");
+ uint64_t get_ucall(struct kvm_vm *vm, uint32_t vcpu_id, struct ucall *uc)
+-- 
+2.35.1
+
 
 
