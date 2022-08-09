@@ -2,83 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D2AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A711C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343861AbiHIS5Y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        id S245570AbiHIS5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348666AbiHIS4r (ORCPT
+        with ESMTP id S1348017AbiHISzo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:56:47 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2251D33401
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:28:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=09pFjKjYwkYQqB1IyTImm6ka5abGU9alMVjAe/qx3Mc=; b=kbuZJX6j7rQ/VQMU2C18Ft2vYJ
-        5k35U8ek35VZUQ3hRRuf3mfGLsJFoDL21FzQadEQBplksFab9YcAbORm0YKvlzItrrHKWJJ3gdBTD
-        AAEQgCa6ztbDnQDqpmXHwaNSkUeQ29paTR+Zbn2rAjT8hfMiuaoaLaY9ipgFA9Y+qsPcDeg5rMlJr
-        kWh6i9udbqDYw2w0hslEaq89izo/XZKxdhqzWh8T3H9uzH/+t7HnYlH6SRg4Y7eAbCCQOFZVM+rYQ
-        ADyKzTB0PPIpFhf98AvnNH+OUrUzX3TOaqLqcy7WKKUkiuq1dLf7LA+Xi4THxKAe6yBLQjkoVnI2I
-        O9hjLDfg==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oLTyE-005XPO-Di; Tue, 09 Aug 2022 18:28:50 +0000
-Message-ID: <98fe1c6d-9528-05b5-c603-fb4ae028a19c@infradead.org>
-Date:   Tue, 9 Aug 2022 11:28:47 -0700
+        Tue, 9 Aug 2022 14:55:44 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780F126ADC
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:27:41 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a7so23717758ejp.2
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:27:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=IqVJxNw31cQs7x7vLdkBRYf56RsQMoz2IVQHanq9IpQ=;
+        b=Mz533wEeIainxieri2T6/kLUzCHS1auwXeNqVpxcKibNIUElVoN7j622ZmbeuctLhd
+         KBlwbRp7UoBAFyt0TTzfk3cDg+OeRcIEIG0mzz8D+bQ7jO9T8t+YG3zq/ICdBPoLblhS
+         ZDLr2rEu0YOmG869ckXDpRM0fDbJcMqjQwIh8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=IqVJxNw31cQs7x7vLdkBRYf56RsQMoz2IVQHanq9IpQ=;
+        b=T7KhxX8eBQL0iGJcpLP3Mk+/Iu+T/FdYO02ZkaBrN5lCAosAuSya3o9mXQC01xnLBW
+         2NoIlPj8bpmdxOxqRTyrTfs8H/0ybSCqihuIghcNyqwDprOV7d+GrX6U469lRknjE2xm
+         Nu91p1NFkXdOFankGhY9kQB4iEOlO0KjbOmGdJf54f7XYIg/HCWKURgw9cAABRYzumlA
+         JguBgiOYWDMk0tysUdnz99Vh5IypUg/2ajdR6U3hx7xVS5hlWQfzn43D5a9DNo7vvS+M
+         0j5qRo/QqTGs4We8khNTxC5F2Nvp7QBjDC9GI15J1weijSlVLJYI8IOE7ikGh0owfDJH
+         0ZCQ==
+X-Gm-Message-State: ACgBeo1fRCty4Nl9ucG9CQ02ox8ZMFJCLC10hIMAWCjde3mTR6j6mvqL
+        cj7BR5AeDayANKI4POtSfqLUntwwJm00SM8J
+X-Google-Smtp-Source: AA6agR6Ot4ZHT+/m28Ntuj4y7WNBvEq5MouJE5Ziq+ZZ1JzI81bFhp3Yt5lPs943f5jDwIbC31UTPQ==
+X-Received: by 2002:a17:907:7b95:b0:72f:9c64:4061 with SMTP id ne21-20020a1709077b9500b0072f9c644061mr17739117ejc.351.1660069659803;
+        Tue, 09 Aug 2022 11:27:39 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id o3-20020a170906768300b0072b2ef2757csm1358520ejm.180.2022.08.09.11.27.38
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 11:27:38 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id bv3so15218947wrb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:27:38 -0700 (PDT)
+X-Received: by 2002:a05:6000:1888:b0:222:ca41:dc26 with SMTP id
+ a8-20020a056000188800b00222ca41dc26mr6957079wri.442.1660069658303; Tue, 09
+ Aug 2022 11:27:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] Doc fix for dget_dlock
-Content-Language: en-US
-To:     Anup K Parikh <parikhanupk.foss@gmail.com>,
-        skhan@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org
-References: <Yu1HwVoTYOeaCh4v@autolfshost>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <Yu1HwVoTYOeaCh4v@autolfshost>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220808073232.8808-1-david@redhat.com>
+In-Reply-To: <20220808073232.8808-1-david@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 9 Aug 2022 11:27:22 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
+Message-ID: <CAHk-=wiEAH+ojSpAgx_Ep=NKPWHU8AdO3V56BXcCsU97oYJ1EA@mail.gmail.com>
+Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
+To:     David Hildenbrand <david@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+I'm still reading through this, but
 
-On 8/5/22 09:39, Anup K Parikh wrote:
-> Removes the warning for dget_dlock in include/linux/dcache.h and
-> enables generation of its API documentation
-> 
-> Signed-off-by: Anup K Parikh <parikhanupk.foss@gmail.com>
-> ---
->  include/linux/dcache.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/dcache.h b/include/linux/dcache.h
-> index f5bba5148..ce0b36f72 100644
-> --- a/include/linux/dcache.h
-> +++ b/include/linux/dcache.h
-> @@ -297,7 +297,7 @@ extern char *dentry_path(const struct dentry *, char *, int);
->  /* Allocation counts.. */
->  
->  /**
-> - *	dget, dget_dlock -	get a reference to a dentry
-> + *	dget_dlock -	get a reference to a dentry
->   *	@dentry: dentry to get a reference to
->   *
->   *	Given a dentry or %NULL pointer increment the reference count
+ STOP DOING THIS
 
-Someone was trying to document both dget() and get_dlock() with the same
-kernel-doc comment block.
-I suppose that you could duplicate the comments for dget() also.
+On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> +       VM_BUG_ON(!is_cow_mapping(vma->vm_flags));
 
-It would be nice to know the difference(s) in the functions as well.
+Using BUG_ON() for debugging is simply not ok.
 
-thanks.
--- 
-~Randy
+And saying "but it's just a VM_BUG_ON()" does not change *anything*.
+At least Fedora enables that unconditionally for normal people, it is
+not some kind of "only VM people do this".
+
+Really. BUG_ON() IS NOT FOR DEBUGGING.
+
+Stop it. Now.
+
+If you have a condition that must not happen, you either write that
+condition into the code, or - if you are convinced it cannot happen -
+you make it a WARN_ON_ONCE() so that people can report it to you.
+
+The BUG_ON() will just make the machine die.
+
+And for the facebooks and googles of the world, the WARN_ON() will be
+sufficient.
+
+               Linus
