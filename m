@@ -2,119 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416C7C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 528A9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234110AbiHIESo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 00:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
+        id S234319AbiHIEWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 00:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233685AbiHIESi (ORCPT
+        with ESMTP id S234227AbiHIEWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 00:18:38 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68A619C00
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 21:18:37 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id x25so11818759ljm.5
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 21:18:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ktjbOwbUIz6JZWGLIYlF9Qv19zLsmQ14nlnBHaQqtKY=;
-        b=fQbtoJUe4jFNbbbhRZa3Tv3NjHw8InWX5xP/yg0r7db2IBJyPK2LkV+4jCyhbDQxTw
-         rS0bRSG/hcpK0Ii5M7QHqSc7nbfDNrH8nq39KCCP42jnpx40OMM+sayFO5PvyZL97k8k
-         dJPX3sQtCrl/8Qx3b30gxzLIBFrnvQmGjPPpXLRAzFUHKw+plgD8zpAbIcjExJ3qS74q
-         5pNKgzTmMakgmVu14v4B5GKshfCaFDntqrRboBU4fdj8b4KF09hpLWQ15iTdEnNKwlNN
-         HQB0Ff1f5ldnZOq1TZ4UtvFSTmp5mgvhGd8oCI99ROxC6dFDMXGfpQQszUFs0uSzBXNK
-         nDdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ktjbOwbUIz6JZWGLIYlF9Qv19zLsmQ14nlnBHaQqtKY=;
-        b=h0W8cdc/gNJ02MjcGlrTMzyIeUPjvJas9/dvnsMjTKAfs9YGNm1gVbvqo7vF+gnZC2
-         +V//LwWwDnycGaPMoY82dPU8R8dQ4IovFz+h8lNSLqL0MJS7SLl0A8vKqt1wYmu4wbGf
-         bOyLgM6aIQMz0E4ohxN8QidchuACMWYtyLx/2v7ddre+1JwUV1IyTooZBvtet6bxpUQD
-         QyxCfhdKoUCV7VsWYdhFgeOQ3lbvawQveBtVTd6gjq1k8irn3jii4Lwvymc8LvFmRyQV
-         gREyhL1xu6Hd0Js0IlA2kp8SuHAgdP49Y7GDNq5sgG47aRgQDjUGPUVso+4z3j1miDr0
-         aYxg==
-X-Gm-Message-State: ACgBeo1pWhoSk0uGJ199OGUdVCgVJIQ9ABqj41ptMQmyV5N0lQ282kOb
-        oCceCAdLa088GW5eWQsA8oyPMg==
-X-Google-Smtp-Source: AA6agR7anU7Jd1Qacvlqh82YFYxyDO1oFmXIYlQYQsIHymSU5X0Uh7ffWNrP57hUs0cBE78V8Gi8pQ==
-X-Received: by 2002:a2e:bea8:0:b0:25f:e9ab:5a1b with SMTP id a40-20020a2ebea8000000b0025fe9ab5a1bmr1592141ljr.448.1660018716032;
-        Mon, 08 Aug 2022 21:18:36 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id t15-20020a2e9d0f000000b0025e2e70b41fsm1529430lji.71.2022.08.08.21.18.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 21:18:35 -0700 (PDT)
-Message-ID: <38c3977a-0196-1832-ff94-317064cbc439@linaro.org>
-Date:   Tue, 9 Aug 2022 07:18:34 +0300
+        Tue, 9 Aug 2022 00:22:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AF2919C28
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 21:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660018954;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nbxtDgEpugsMYP8pe4g6vMGnEjx571wiE5N0UwhDn8U=;
+        b=adAtaSzfrfn9r8+DWEHYO7S6BEIj8HBroJIzNOnEDmZe9fLMJ9Jvo9exhAFBxnoarjCWfU
+        s2H1+AvePGXY7ATj9Z+N6oksl36Ut9AgXDdgmDnej4x0yWktJ7PYRH/dbjvqjm17qSxy79
+        mnkkPt4q8RHBYsHvrwNuuXvisXr6gf8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-554-tMyXQnTuMU2mv8Fzc9Qg4Q-1; Tue, 09 Aug 2022 00:22:31 -0400
+X-MC-Unique: tMyXQnTuMU2mv8Fzc9Qg4Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E396E1824603;
+        Tue,  9 Aug 2022 04:22:30 +0000 (UTC)
+Received: from [10.64.54.20] (vpn2-54-20.bne.redhat.com [10.64.54.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1A439C15BA1;
+        Tue,  9 Aug 2022 04:22:27 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: tools/testing/selftests/kvm/rseq_test and glibc 2.35
+From:   Gavin Shan <gshan@redhat.com>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Florian Weimer <fweimer@redhat.com>,
+        Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <875yj2n2r0.fsf@oldenburg.str.redhat.com>
+ <465d3599-2433-7f6e-66fc-b4018ba258cf@redhat.com>
+ <1675511593.114778.1660006670558.JavaMail.zimbra@efficios.com>
+ <721274ac-6b56-3baf-a99a-ab746ecce014@redhat.com>
+Message-ID: <1d717aa9-02af-0a96-6a79-676d4530182c@redhat.com>
+Date:   Tue, 9 Aug 2022 16:23:04 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/3] dt-bindings: spi: stm32: Add st,dual-flash property
- in st,stm32-qspi.yaml
+In-Reply-To: <721274ac-6b56-3baf-a99a-ab746ecce014@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Patrice CHOTARD <patrice.chotard@foss.st.com>,
-        Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-spi@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        christophe.kerello@foss.st.com, devicetree@vger.kernel.org
-References: <20220808074051.44736-1-patrice.chotard@foss.st.com>
- <20220808074051.44736-2-patrice.chotard@foss.st.com>
- <9ad4b4a8-988e-f185-f80c-6f15f341ce8c@linaro.org>
- <79fd7e19-ceef-14fb-5a83-603740735f8f@foss.st.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <79fd7e19-ceef-14fb-5a83-603740735f8f@foss.st.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/08/2022 19:08, Patrice CHOTARD wrote:
-> Hi Krzystof
-> 
-> On 8/8/22 11:01, Krzysztof Kozlowski wrote:
->> On 08/08/2022 10:40, patrice.chotard@foss.st.com wrote:
->>> From: Patrice Chotard <patrice.chotard@foss.st.com>
+On 8/9/22 1:58 PM, Gavin Shan wrote:
+> On 8/9/22 10:57 AM, Mathieu Desnoyers wrote:
+>>> On 8/9/22 2:01 AM, Florian Weimer wrote:
+>>>> It has come to my attention that the KVM rseq test apparently needs to
+>>>> be ported to glibc 2.35.  The background is that on aarch64, rseq is the
+>>>> only way to get a practically useful sched_getcpu.  (There's no hidden
+>>>> per-task CPU state the vDSO could reveal as the CPU ID.)
+>>>>
 >>>
->>> Add new property st,dual-flash which allows to use the QSPI interface as a
->>> communication channel using up to 8 qspi line.
->>> This mode can only be used if cs-gpios property is defined.
+>>> Yes, kvm/selftests/rseq needs to support glibc 2.35. The question is
+>>> about glibc 2.34 or 2.35 because kvm/selftest/rseq fails on glibc 2.34
 >>>
->>> Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
->>> ---
->>>  Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml | 8 ++++++++
->>>  1 file changed, 8 insertions(+)
+>>> I would guess upstream-glibc-2.35 feature is enabled on downstream
+>>> glibc-2.34?
 >>>
->>> diff --git a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
->>> index 6ec6f556182f..5e4f9109799e 100644
->>> --- a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
->>> +++ b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
->>> @@ -46,6 +46,14 @@ properties:
->>>        - const: tx
->>>        - const: rx
->>>  
->>> +  st,dual-flash:
->>> +    type: boolean
->>> +    description:
->>> +      Allows to use 8 data lines in case cs-gpios property is defined.
+>>> # ./rseq_test
+>>> ==== Test Assertion Failure ====
+>>>     rseq_test.c:60: !r
+>>>     pid=112043 tid=112043 errno=22 - Invalid argument
+>>>        1    0x0000000000401973: main at rseq_test.c:226
+>>>        2    0x0000ffff84b6c79b: ?? ??:0
+>>>        3    0x0000ffff84b6c86b: ?? ??:0
+>>>        4    0x0000000000401b6f: _start at ??:?
+>>>     rseq failed, errno = 22 (Invalid argument)
+>>> # rpm -aq | grep glibc-2
+>>> glibc-2.34-39.el9.aarch64
+>>>
+>>>
+>>>> The main rseq tests have already been adjusted via:
+>>>>
+>>>> commit 233e667e1ae3e348686bd9dd0172e62a09d852e1
+>>>> Author: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>>>> Date:   Mon Jan 24 12:12:45 2022 -0500
+>>>>
+>>>>       selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
+>>>>       glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
+>>>>       data in the TCB, accessible at an offset from the thread pointer, rather
+>>>>       than through an actual Thread-Local Storage (TLS) variable, as the
+>>>>       Linux kernel selftests initially expected.
+>>>>       The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
+>>>>       actively coexist in a process, because the kernel supports only a single
+>>>>       rseq registration per thread.
+>>>>       Here is the scheme introduced to ensure selftests can work both with an
+>>>>       older glibc and with glibc-2.35+:
+>>>>       - librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
+>>>>       - librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
+>>>>         __rseq_flags) using dlsym() in a librseq library constructor. If those
+>>>>         are found, copy their values into rseq_offset, rseq_size, and
+>>>>         rseq_flags.
+>>>>       - Else, if those glibc symbols are not found, handle rseq registration
+>>>>         from librseq and use its own IE-model TLS to implement the rseq ABI
+>>>>         per-thread storage.
+>>>>       Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>>>>       Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>>>>       Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
+>>>>
+>>>> But I don't see a similar adjustment for
+>>>> tools/testing/selftests/kvm/rseq_test.c.  As an additional wrinkle,
+>>>> you'd have to start calling getcpu (glibc function or system call)
+>>>> because comparing rseq.cpu_id against sched_getcpu won't test anything
+>>>> anymore once glibc implements sched_getcpu using rseq.
+>>>>
+>>>> We noticed this because our downstream glibc version, while based on
+>>>> 2.34, enables rseq registration by default.  To facilitate coordination
+>>>> with rseq application usage, we also backported the __rseq_* ABI
+>>>> symbols, so the selftests could use that even in our downstream version.
+>>>> (We enable the glibc tunables downstream, but they are an optional
+>>>> glibc feature, so it's probably better in the long run to fix the kernel
+>>>> selftests rather than using the tunables as a workaround.)
+>>>>
+>>>
+>>> Thanks for the pointer. It makes sense. So it means rseq registration has
+>>> been done by glibc TLS? In this case, kvm/selftests/rseq is unable to
+>>> register again.
 >>
->> It's named dual-flash, but what if you want to use QSPI to connect for
->> example to FPGA?
+>> The registration is done by glibc initialization and thread startup code.
 >>
->> Also how is this related to parallel-memories property?
+>>>
+>>> I will come up something similiar for kvm/selftest/rseq.
+>>
+>> Make sure to chech the rseq selftests fixes recently pulled in the current merge window as well. One is relevant:
+>>
+>> https://github.com/torvalds/linux/commit/d1a997ba4c1bf65497d956aea90de42a6398f73a
+>>
+>> We may want to find a way to remove this duplicated rseq.c code eventually.
+>>
 > 
-> I called it "dual-flash" simply because it enable the dual flash feature of the QSPI block (bit CR_DFM : Dual Flash Mode)
-> which allows to use the 8 lines simultaneously of our dual QSPI block.
+> Thanks, Mathieu. The check for 'rseq-size' will be included either. I almost
+> have something working. I will post the fixes after some tests.
+> 
 
-And how is it related to existing parallel-memories property?
+Mathieu and Florian, the fixes have been posted. It would be nice for you
+to review if you have free cycles :)
 
-Best regards,
-Krzysztof
+https://lore.kernel.org/kvmarm/20220809060627.115847-1-gshan@redhat.com/T/#t
+
+Thanks,
+Gavin
+
