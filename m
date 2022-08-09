@@ -2,165 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4D4C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 05:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5EFC25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 05:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbiHIFf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 01:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
+        id S234847AbiHIFkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 01:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbiHIFfX (ORCPT
+        with ESMTP id S233673AbiHIFk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 01:35:23 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9125410549
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 22:35:21 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id o2so8242184lfb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 22:35:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=CLBtSz5zowSZP2ptgXBelVuwhiidhEQF9DkU5FwAQ2o=;
-        b=MIpIA6sm7TY729nBdnH4Wjr8uM1YUZ558QURpKR1u4L6EukE1jenbkTuOPMgrdlh7I
-         y64Rd1JDLgrBmydt+dOufa6MsrJ8A0KKSQKIz1ym3JS+Tm72PR+sAbNLdqeh81rVeiV6
-         0oIPXwJyLmtA0jIq5cDmoiQrlGiriLCxmIyTsP5W38yajddj+q316fl2NnVSUZsBCTsb
-         U7onCSrDA3qRVMG91zDQv2bixKEo96W4h94qKqJO+uNe2XsH79owEtjkBd6yaYRpSSNU
-         OStd7KBlAMSexeY3jL0xH4PDeBsLHx9OjWzTB9DW3mO2Rlzpe+wssVNThK9J93hgw/y9
-         qJwA==
+        Tue, 9 Aug 2022 01:40:29 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CE32195
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 22:40:28 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id f5-20020a056e020b4500b002df180f0997so8045575ilu.21
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 22:40:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=CLBtSz5zowSZP2ptgXBelVuwhiidhEQF9DkU5FwAQ2o=;
-        b=fTe1sqUtdkmkawGF0V8cfYNfSqoBGvBWi8cJeci+b8IqGdBuwcM3pvKK1vZSu0mg2B
-         hljwUNt3O4Cb5yk+onWRrh8AtqwswNOrz4IminRwPGKr/uB/IPKupyxf8FnH0G1dyGx3
-         XYgXCGC/oFNmVd4qS6ZMwwqRdBE1O51lJjj1DVtINtn7Vz7KycYHrhu84kUy+duY+iUe
-         cUF/tGbZ8Q897TTo+v0toOGlZ9VReFFgwZbfZtJ5Zje9LA1xE+ngOXjfA9ec/kOkMRxn
-         aSmnnt+6Znnd16d6dI8Aqm4Y7XSvqDm9lHSlt0ENMVTvikMgfo71MosYQpei+W0k/HcJ
-         eCYA==
-X-Gm-Message-State: ACgBeo050tNRKHbwfH+MI5am9MMbO7/eHyk0kp2MMlAB9y3i4OQnyNf3
-        g4uHZ34S3mQa93QonWMEk8Batw==
-X-Google-Smtp-Source: AA6agR5fYMdcvjSWJZrYBeyOmmE7yWtMoqDT5jX7CoahSz6MfG2ZP8zWFR9aonG3W/hDYJLVtWYDBw==
-X-Received: by 2002:a05:6512:2390:b0:48c:ef98:4103 with SMTP id c16-20020a056512239000b0048cef984103mr2172907lfv.265.1660023319961;
-        Mon, 08 Aug 2022 22:35:19 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id e15-20020a05651236cf00b0047255d211b2sm1633301lfs.225.2022.08.08.22.35.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 22:35:19 -0700 (PDT)
-Message-ID: <27f83048-ac75-97eb-c9f0-0829de30e1ad@linaro.org>
-Date:   Tue, 9 Aug 2022 08:35:18 +0300
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=ABAMHtybv8t+r8522rVxoNASvHh59EpYpnl9sqx+2lQ=;
+        b=FFy5DlWEBgJDEdW8r7sdejvX8AqV4TbHDpEhDN0Pd7N1mLastP53yYsAoAfg8ysmNr
+         2SVE2neKfHi4kZyBSHEzF8hP/bC+uBGBATT6nKbTFjwF4VTlf6GtFR23OKt/nI5glRz1
+         OKR5/lvRSPHGuHroUiqWVbaM5Tk2CxMnVSwOQONmtgwJXurhvd/CEOuhMcK4Zh547oV8
+         J9AaaGeF6lsa6/k0FiTKKf5oWdGpvhIosp+2gELSfJDl59S82/tzhwVdoCjEmVkH/lVF
+         d+7L+u7SMESSRYTs5fefk++Y8CIu0F+TMFaStoPDtfb0fNfXh2OSWfBiH2/IeYTm/Wy2
+         GGtA==
+X-Gm-Message-State: ACgBeo3Cp54g9kEK2Kf4nErElB1ZuUMwdKCsRxsyQD/dYT0ZIjErljXc
+        bvtHZxuDtuxSBz08+JSshcBBqEXhTl9d9YHtF9b/hexXRU/p
+X-Google-Smtp-Source: AA6agR5kbqmeoL+lIxIE43HizhcXuvyP5zF6CoEaWLqWbufIZ6GEjecndswPAdubX0Y13UuhrJ1l2Pfxl3cE9ZZZq01bEYF22cL/
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 2/2] ARM: msm8960: Add Samsung Galaxy Express support
-Content-Language: en-US
-To:     Rudraksha Gupta <guptarud@gmail.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, david@ixit.cz,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org
-References: <20220808234723.5184-2-guptarud@gmail.com>
- <20220809000300.6384-1-guptarud@gmail.com>
- <20220809000300.6384-2-guptarud@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220809000300.6384-2-guptarud@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6638:dcb:b0:342:b6d6:16b6 with SMTP id
+ m11-20020a0566380dcb00b00342b6d616b6mr8561261jaj.125.1660023628066; Mon, 08
+ Aug 2022 22:40:28 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 22:40:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ab752605e5c85e9a@google.com>
+Subject: [syzbot] WARNING in blk_mq_release
+From:   syzbot <syzbot+31c9594f6e43b9289b25@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/08/2022 03:03, Rudraksha Gupta wrote:
-> This adds a very basic device tree file for the Samsung Galaxy Express
-> SGH-I437. Currently, the following things work: UART, eMMC, SD Card, and
-> USB.
+Hello,
 
-Use subject prefix matching the subsystem.
+syzbot found the following issue on:
 
-> 
-> Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
-> ---
-> v2:
->  - Group the correct changes together
-> 
->  arch/arm/boot/dts/Makefile                    |   1 +
->  .../dts/qcom-msm8960-samsung-expressatt.dts   | 337 ++++++++++++++++++
->  2 files changed, 338 insertions(+)
->  create mode 100644 arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts
-> 
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index 05d8aef6e5d2..d55f196ad733 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -1049,6 +1049,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
->  	qcom-msm8660-surf.dtb \
->  	qcom-msm8916-samsung-serranove.dtb \
->  	qcom-msm8960-cdp.dtb \
-> +	qcom-msm8960-samsung-expressatt.dtb \
->  	qcom-msm8974-lge-nexus5-hammerhead.dtb \
->  	qcom-msm8974-sony-xperia-rhine-amami.dtb \
->  	qcom-msm8974-sony-xperia-rhine-honami.dtb \
-> diff --git a/arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts b/arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts
-> new file mode 100644
-> index 000000000000..cf557f0c9a59
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts
-> @@ -0,0 +1,337 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +#include <dt-bindings/input/input.h>
-> +#include "qcom-msm8960.dtsi"
-> +
-> +/ {
-> +	model = "Samsung Galaxy S3 SGH-I437";
-> +	compatible = "samsung,expressatt", "qcom,msm8960";
+HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1634c29e080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1b664fba5e66c4bf
+dashboard link: https://syzkaller.appspot.com/bug?extid=31c9594f6e43b9289b25
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=131893fe080000
 
-Undocumented compatible. Run checkpatch.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+31c9594f6e43b9289b25@syzkaller.appspotmail.com
 
-> +
-> +	aliases {
-> +		serial0 = &gsbi5_serial;
-> +	};
-> +
-> +	chosen {
-> +		stdout-path = "serial0:115200n8";
-> +
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges;
-
-These three properties are confusing. Why adding them?
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 3818 at block/blk-mq.c:3881 blk_mq_release+0x115/0x2d0
+Modules linked in:
+CPU: 1 PID: 3818 Comm: syz-executor.0 Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:blk_mq_release+0x115/0x2d0 block/blk-mq.c:3881
+Code: 89 ef 4c 89 e6 48 c7 c2 ff ff ff ff b9 08 00 00 00 e8 ef bd 50 00 48 85 c0 74 13 48 89 c3 e8 12 05 71 fd eb b0 e8 0b 05 71 fd <0f> 0b eb d1 e8 02 05 71 fd eb 05 e8 fb 04 71 fd 48 8b 44 24 10 4c
+RSP: 0018:ffffc90003affbc0 EFLAGS: 00010293
+RAX: ffffffff84171ba5 RBX: ffff888078c482a8 RCX: ffff8880743b8000
+RDX: 0000000000000000 RSI: ffffffff8a8d4160 RDI: ffffffff8ae9a7c0
+RBP: ffffc90003affc90 R08: dffffc0000000000 R09: fffffbfff1c07946
+R10: fffffbfff1c07946 R11: 1ffffffff1c07945 R12: ffffc90003affc20
+R13: ffff888020751718 R14: dffffc0000000000 R15: ffff888020751868
+FS:  00007f0eea256700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f101f96d058 CR3: 000000001df33000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ blk_release_queue+0x13d/0x210 block/blk-sysfs.c:780
+ kobject_cleanup+0x235/0x470 lib/kobject.c:673
+ __alloc_disk_node+0x359/0x540 block/genhd.c:1388
+ __blk_mq_alloc_disk+0x11b/0x1e0 block/blk-mq.c:3961
+ loop_add+0x325/0x9b0 drivers/block/loop.c:1978
+ loop_control_get_free drivers/block/loop.c:2139 [inline]
+ loop_control_ioctl+0x39a/0x770 drivers/block/loop.c:2154
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f0ee9089279
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0eea256168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f0ee919c050 RCX: 00007f0ee9089279
+RDX: 0000000000000000 RSI: 0000000000004c82 RDI: 0000000000000004
+RBP: 00007f0eea2561d0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007ffe6368d72f R14: 00007f0eea256300 R15: 0000000000022000
+ </TASK>
 
 
-> +	};
-> +
-> +	soc {
-> +		gsbi@16400000 {
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Override by alias.
-
-> +			status = "ok";
-
-okay, not ok. Status goes at the end of properties.
-
-
-> +			qcom,mode = <GSBI_PROT_I2C_UART>;
-> +			serial@16440000 {
-> +				status = "ok";
-
-Same comments.
-
-> +			};
-> +		};
-> +
-> +		amba {
-> +			/* eMMC */
-> +			sdcc1: mmc@12400000 {
-
-OK, I'll abandon the review. This file is really not matching anything
-in the upstream. Please start your work from a proper upstreamed, recent
-board.
-
-Best regards,
-Krzysztof
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
