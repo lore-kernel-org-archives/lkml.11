@@ -2,99 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE914C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04743C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343726AbiHIUqq (ORCPT
+        id S1343850AbiHIUrH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 16:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
+        Tue, 9 Aug 2022 16:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238239AbiHIUqo (ORCPT
+        with ESMTP id S1343783AbiHIUrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 16:46:44 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349CEB97
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:46:43 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id z25so18620188lfr.2
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:46:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=0Qy02k6+Ajv4Ag2mivoqOXtUuUF/P/EOzfJ1STVBz2M=;
-        b=CG4Dw1M9UdPqZpV8B0sI5Fkw+fAHw9yeykPb4+HjQ5x2t6jF4FoQ1T90PopQrzs3T7
-         BTLRToS9FGiKCaENH9YkBqYwuHt/P0qOdBwajxJreFpIUwgyaakUxHw2sm+eVOF3liYK
-         aYKET9RkISdjZA3h9TtIFRIhmNKbirx0ITCsk=
+        Tue, 9 Aug 2022 16:47:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCB78219B
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:47:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660078022;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eThzIo4r7cS8CRLu3srPmTyft7Cfglr0JGqBuCZ1C5o=;
+        b=TEa2AmQiyp6IJ2z4o90Od+usYRBq2R9EVikWUo6nwui9UTfTVretG5IvFpWTSl975UE0Ab
+        7ipz/aoln+q80EYDllj12/m0xQ8A+knb9K42NCLwhd7lD1w6BSciHT752ZyzqTighDWIGm
+        ioM81I+c64AZouzjIaOl0bNCetYG7Ck=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-125-qkbeXtMWNNiY-FWUWLfPiw-1; Tue, 09 Aug 2022 16:47:01 -0400
+X-MC-Unique: qkbeXtMWNNiY-FWUWLfPiw-1
+Received: by mail-qt1-f199.google.com with SMTP id h19-20020ac85493000000b00343408bd8e5so1570904qtq.4
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:47:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=0Qy02k6+Ajv4Ag2mivoqOXtUuUF/P/EOzfJ1STVBz2M=;
-        b=LeVLueN8/HeFRelGpII5m8PzzgWBQB7Lv5XIFPW63rGcsfcGropGsG574tbcfonYtQ
-         UJMTWp/8u8etuDkaVR5iaNrQdKMXXVjgouppdEvvD8gJ9U5IKMCX9BW/49OXNkKViyyW
-         NKdRHg+Fc4vMuK6fx+3R+JcqCsBeANntP52/2N6buqCo0EhjeZckjcot2g12pxVZFSKL
-         K/pj5hOwkP0sDGF88KJWkLHLUYfk7ENeib0BwdEmWQtRLv1k39ppOLaX9YbfG3by5DZq
-         8/SM6go9j8UFsgKBvZgJdEPvbztZVE3w/YTetd5KWyciJ8kRriuvu8c0L9I30cEvOZGJ
-         SV7g==
-X-Gm-Message-State: ACgBeo0KVKsZiJadmBxsJWEL9uaTy3ZNlMB5qFVagwHuPBwsg33ulk9S
-        qfvD+R5DZr2zefZK5/yNOJAYddvA86vAfiqd7VU=
-X-Google-Smtp-Source: AA6agR7JjWw9nZFJy1DSoLmZI7g1AylCWclwADW4JhW1kzmAZPZtZinOl6yiLEgwaoTu9N0vWN+JNw==
-X-Received: by 2002:a05:6512:108f:b0:48b:3a92:a2c6 with SMTP id j15-20020a056512108f00b0048b3a92a2c6mr7343225lfg.123.1660078001302;
-        Tue, 09 Aug 2022 13:46:41 -0700 (PDT)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
-        by smtp.gmail.com with ESMTPSA id q18-20020ac25292000000b0048ad80a6d07sm86674lfm.170.2022.08.09.13.46.40
-        for <linux-kernel@vger.kernel.org>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=eThzIo4r7cS8CRLu3srPmTyft7Cfglr0JGqBuCZ1C5o=;
+        b=0CmCQQfZGotxrJGis/MWl0L7OpoClAvsJba/L6Sa0/PQV61dgp9L6y2+PTJhOZ+Qxz
+         Bk3y28RF0xakEXOOyenxYM0Xdzz9EDDFNthHnZ4TZ5JwoyUR3sUiZ/E+WPrNcz1QGEJ1
+         StYm2IfAUVAYg37CcWxwpzFWMeJcJNjPRNfe7rXLsfGt5lypFSFWmjTKkXOfNEsZF5sd
+         ygLvSNFHsCsdTnaSng/iVGYtiXikuCt+CFdeEnIpkVEzEZQ/2lpRBCPotOFrvCHT35pr
+         zgLBZ1/hemSgz1X68VArTeUiiGbkUPHkNj3HBArCeCom+ntDZMErWCs1m8wgpCdEWw9p
+         c4/A==
+X-Gm-Message-State: ACgBeo2q+OoZnkCiFcfkSXVG0nN6/hHypcpnZwg6l901Sp40U9ov6xlZ
+        NOpV7Rde5XkB/xtbOimR7EQjU6I4OW+EgZcuVUFSMcmhJ59zmGergC/UiypMl3UWoZ1qKIucEkN
+        1kgEllHmwhMDe88EN9pX278Gd
+X-Received: by 2002:a05:622a:1389:b0:31e:e7c1:e81a with SMTP id o9-20020a05622a138900b0031ee7c1e81amr22035097qtk.463.1660078020575;
+        Tue, 09 Aug 2022 13:47:00 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7u98ZGT6GdlBvdVGVPh8IaL+Q+3KdrGphF59O/k26UF9RkV3rGxJz2PA5xvtnD/H1tO2/Y7A==
+X-Received: by 2002:a05:622a:1389:b0:31e:e7c1:e81a with SMTP id o9-20020a05622a138900b0031ee7c1e81amr22035074qtk.463.1660078020357;
+        Tue, 09 Aug 2022 13:47:00 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id o11-20020a05620a2a0b00b006b648d016f3sm12548608qkp.126.2022.08.09.13.46.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 13:46:40 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id x25so14169278ljm.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:46:40 -0700 (PDT)
-X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
- p11-20020a5d638b000000b002206e1a8794mr15548804wru.193.1660077527286; Tue, 09
- Aug 2022 13:38:47 -0700 (PDT)
+        Tue, 09 Aug 2022 13:46:59 -0700 (PDT)
+Message-ID: <d39ba2b8-94d0-3191-06dc-3a34aa28f8ae@redhat.com>
+Date:   Tue, 9 Aug 2022 22:46:54 +0200
 MIME-Version: 1.0
-References: <20220808073232.8808-1-david@redhat.com> <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
- <91e18a2f-c93d-00b8-7c1b-6d8493c3b2d5@redhat.com> <CAHk-=whg0ddey-LqFAPfZJDXHMjaHJNojAV3q17yvjc6W8QRvQ@mail.gmail.com>
- <c096cc82-60b4-9e75-06ad-156461292941@redhat.com> <CAHk-=wh1q7ZSWhDWOyqmVawqjq55sUVkn8ASjE_b2VOcE1vFaA@mail.gmail.com>
-In-Reply-To: <CAHk-=wh1q7ZSWhDWOyqmVawqjq55sUVkn8ASjE_b2VOcE1vFaA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 9 Aug 2022 13:38:30 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi_PfZ1_8pjMmRftiq1dshheTFnctEwRt8PZMGndCisdA@mail.gmail.com>
-Message-ID: <CAHk-=wi_PfZ1_8pjMmRftiq1dshheTFnctEwRt8PZMGndCisdA@mail.gmail.com>
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v2 4/5] KVM: irqfd: Rename resampler->notifier
+Content-Language: en-US
+To:     Dmytro Maluka <dmy@semihalf.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Rong L Liu <rong.l.liu@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        Dmitry Torokhov <dtor@google.com>
+References: <20220805193919.1470653-1-dmy@semihalf.com>
+ <20220805193919.1470653-5-dmy@semihalf.com>
+From:   Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <20220805193919.1470653-5-dmy@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 1:30 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+
+
+On 8/5/22 21:39, Dmytro Maluka wrote:
+> Since resampler irqfd is now using a mask notifier along with an ack
+> notifier, rename resampler->notifier to resampler->ack_notifier for
+> clarity.
 >
-> And here we are, 30 years later, and it still does that, but it leaves
-> the VM_MAYSHARE flag so that /proc/<pid>/maps can show that it's a
-> shared mapping.
+> Signed-off-by: Dmytro Maluka <dmy@semihalf.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-.. thinking about it, we end up still having some things that this helps.
+Eric
+> ---
+>  include/linux/kvm_irqfd.h |  2 +-
+>  virt/kvm/eventfd.c        | 16 ++++++++--------
+>  2 files changed, 9 insertions(+), 9 deletions(-)
+>
+> diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
+> index 01754a1abb9e..4df9e6bbd7db 100644
+> --- a/include/linux/kvm_irqfd.h
+> +++ b/include/linux/kvm_irqfd.h
+> @@ -37,7 +37,7 @@ struct kvm_kernel_irqfd_resampler {
+>  	 * RCU list modified under kvm->irqfds.resampler_lock
+>  	 */
+>  	struct list_head list;
+> -	struct kvm_irq_ack_notifier notifier;
+> +	struct kvm_irq_ack_notifier ack_notifier;
+>  	struct kvm_irq_mask_notifier mask_notifier;
+>  	bool masked;
+>  	bool pending;
+> diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+> index f98dcce3959c..72de942dbb9c 100644
+> --- a/virt/kvm/eventfd.c
+> +++ b/virt/kvm/eventfd.c
+> @@ -70,11 +70,11 @@ irqfd_resampler_ack(struct kvm_irq_ack_notifier *kian)
+>  	bool notify = true;
+>  
+>  	resampler = container_of(kian,
+> -			struct kvm_kernel_irqfd_resampler, notifier);
+> +			struct kvm_kernel_irqfd_resampler, ack_notifier);
+>  	kvm = resampler->kvm;
+>  
+>  	kvm_set_irq(kvm, KVM_IRQFD_RESAMPLE_IRQ_SOURCE_ID,
+> -		    resampler->notifier.gsi, 0, false);
+> +		    resampler->ack_notifier.gsi, 0, false);
+>  
+>  	spin_lock(&resampler->lock);
+>  	if (resampler->masked) {
+> @@ -137,11 +137,11 @@ irqfd_resampler_shutdown(struct kvm_kernel_irqfd *irqfd)
+>  
+>  	if (list_empty(&resampler->list)) {
+>  		list_del(&resampler->link);
+> -		kvm_unregister_irq_ack_notifier(kvm, &resampler->notifier);
+> +		kvm_unregister_irq_ack_notifier(kvm, &resampler->ack_notifier);
+>  		kvm_unregister_irq_mask_notifier(kvm, resampler->mask_notifier.irq,
+>  						 &resampler->mask_notifier);
+>  		kvm_set_irq(kvm, KVM_IRQFD_RESAMPLE_IRQ_SOURCE_ID,
+> -			    resampler->notifier.gsi, 0, false);
+> +			    resampler->ack_notifier.gsi, 0, false);
+>  		kfree(resampler);
+>  	}
+>  
+> @@ -390,7 +390,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
+>  
+>  		list_for_each_entry(resampler,
+>  				    &kvm->irqfds.resampler_list, link) {
+> -			if (resampler->notifier.gsi == irqfd->gsi) {
+> +			if (resampler->ack_notifier.gsi == irqfd->gsi) {
+>  				irqfd->resampler = resampler;
+>  				break;
+>  			}
+> @@ -407,8 +407,8 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
+>  
+>  			resampler->kvm = kvm;
+>  			INIT_LIST_HEAD(&resampler->list);
+> -			resampler->notifier.gsi = irqfd->gsi;
+> -			resampler->notifier.irq_acked = irqfd_resampler_ack;
+> +			resampler->ack_notifier.gsi = irqfd->gsi;
+> +			resampler->ack_notifier.irq_acked = irqfd_resampler_ack;
+>  			resampler->mask_notifier.func = irqfd_resampler_mask_notify;
+>  			spin_lock_init(&resampler->lock);
+>  			INIT_LIST_HEAD(&resampler->link);
+> @@ -417,7 +417,7 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
+>  			kvm_register_and_fire_irq_mask_notifier(kvm, irqfd->gsi,
+>  								&resampler->mask_notifier);
+>  			kvm_register_irq_ack_notifier(kvm,
+> -						      &resampler->notifier);
+> +						      &resampler->ack_notifier);
+>  			irqfd->resampler = resampler;
+>  		}
+>  
 
-For example, because we clear the VM_SHARED flags for read-only shared
-mappings, they don't end up going through mapping_{un}map_writable(),
-and don't update i_mmap_writable, and don't cause issues with
-mapping_deny_writable() or mapping_writably_mapped().
-
-So it ends up actually having random small semantic details due to
-those almost three decades of history.
-
-I'm sure there are other odd pieces like that.
-
-                  Linus
