@@ -2,188 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A48C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AF9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238652AbiHIJsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
+        id S239687AbiHIJuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229963AbiHIJsE (ORCPT
+        with ESMTP id S237382AbiHIJuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:48:04 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D9B1F63A;
-        Tue,  9 Aug 2022 02:48:01 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 8A1815FD05;
-        Tue,  9 Aug 2022 12:47:59 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660038479;
-        bh=1NkSog7fNwIuD5awyrROp78DqGLAA2ojxoXb1/HAoNk=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=hFDLqYrgj81gSOH5Urbg46yf1sLyfdAl9V/bmisWnmBKVIF4b1YmuFUt0gVGqYSQf
-         42GnCO8zJNeHd6h6UtfkdBIDNeY38CJvqV1Qegwbs59Pdq4q1VXqy+fg7Bk0vXulxz
-         juLR4kmdJ1Xf81UU+kwOUJlDS+kbIgYgE4u7Cu+ze6fXOsxrkBpZoW5+U0gUhde1rc
-         Hjc8yGiVmmTzkkHrKSq5UI0GCZcA3xtrrA3yqnqsSuIu+5f55A+weRfhHDUPCNPEUb
-         aC+EvHRee3fI3Cj2gAEP1KfaNPsRQqs5vq4lVJZAFLbl2Y6wGqPmm0M4L2lLhoTYaN
-         9Sc/qN+ZJDdgw==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue,  9 Aug 2022 12:47:58 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYpzqIoQnaRj7vNkq2cXUUGjAB/62h0pwAgARW1QA=
-Date:   Tue, 9 Aug 2022 09:47:54 +0000
-Message-ID: <20220809094754.akfed7hxcdvxoacj@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220803131132.19630-1-ddrokosov@sberdevices.ru>
- <20220803131132.19630-3-ddrokosov@sberdevices.ru>
- <20220806163204.3262c0e7@jic23-huawei>
-In-Reply-To: <20220806163204.3262c0e7@jic23-huawei>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6373418BF86F2844AEE00C8459CE3039@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Tue, 9 Aug 2022 05:50:02 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE09422B33;
+        Tue,  9 Aug 2022 02:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1660038600; x=1691574600;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=xWYW2Lx5IACZPNUh/Q9fUyIb0IGLSPm5Yvm9TlxCy8o=;
+  b=p5hXZbBtmh8yvWRYgLAfwa5iqGUNZM8HzlX7GhUDxHrvpWBFBAGFm4wL
+   ifMbMPytb504zzHfgJzDxkrTN31JGnLAAmfd0ejRTlr+qA1EreJEg6Qi+
+   VzVLIoRsdPPJR7/QdHouHBv3aGviSHPJNAlszkoCM2ju2Zy4GNpn6gzxC
+   o=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Aug 2022 02:50:00 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 02:50:00 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 9 Aug 2022 02:49:58 -0700
+Received: from [10.216.39.97] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 9 Aug 2022
+ 02:49:52 -0700
+Message-ID: <3358f337-1c8a-3fff-e9de-fde44a2d6db2@quicinc.com>
+Date:   Tue, 9 Aug 2022 15:19:49 +0530
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/09 07:32:00 #20083496
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 3/8] remoteproc: qcom: Add compatible name for SC7280 ADSP
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
+References: <1659536480-5176-1-git-send-email-quic_srivasam@quicinc.com>
+ <1659536480-5176-4-git-send-email-quic_srivasam@quicinc.com>
+ <6327ba5b-f3a9-7390-0456-67ba5ffde0b6@linaro.org>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <6327ba5b-f3a9-7390-0456-67ba5ffde0b6@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jonathan,
 
-On Sat, Aug 06, 2022 at 04:32:04PM +0100, Jonathan Cameron wrote:
-
-[...]
-
-> > +/**
-> > + * struct msa311_priv - MSA311 internal private state
-> > + * @regs: Underlying I2C bus adapter used to abstract slave
-> > + *        register accesses
-> > + * @fields: Abstract objects for each registers fields access
-> > + * @dev: Device handler associated with appropriate bus client
-> > + * @lock: Protects msa311 device state between setup and data access r=
-outines
-> > + *        (power transitions, samp_freq/scale tune, retrieving axes da=
-ta, etc)
-> > + * @new_data_trig: Optional NEW_DATA interrupt driven trigger used
-> > + *                 to notify external consumers a new sample is ready
-> > + * @vdd: Optional external voltage regulator for the device power supp=
-ly
-> > + */
-> > +struct msa311_priv {
-> > +	struct regmap *regs;
-> > +	struct regmap_field *fields[F_MAX_FIELDS];
-> > +
-> > +	struct device *dev;
-> > +	struct mutex lock; /* state guard */
->=20
-> Shouldn't need this comment given documentation above that provides
-> more information.
-
-Without this comment checkpatch.pl raises a warning about uncommented
-lock definition.
-I agree with you, above comment is redundant, but is it okay to ignore
-such warnings before sending the patch?
-
-I'm talking about below checkpatch condition:
-=3D=3D=3D=3D=3D
-# check for spinlock_t definitions without a comment.
-		if ($line =3D~ /^.\s*(struct\s+mutex|spinlock_t)\s+\S+;/ ||
-		    $line =3D~ /^.\s*(DEFINE_MUTEX)\s*\(/) {
-			my $which =3D $1;
-			if (!ctx_has_comment($first_line, $linenr)) {
-				CHK("UNCOMMENTED_DEFINITION",
-				    "$1 definition without comment\n" . $herecurr);
-			}
-		}
-=3D=3D=3D=3D=3D
-
->=20
-> > +
-> > +	struct iio_trigger *new_data_trig;
-> > +	struct regulator *vdd;
-> > +};
-> >
->=20
->=20
-> > +static irqreturn_t msa311_irq_thread(int irq, void *p)
-> > +{
-> > +	struct msa311_priv *msa311 =3D iio_priv(p);
-> > +	unsigned int new_data_int_enabled;
-> > +	struct device *dev =3D msa311->dev;
-> > +	int err;
-> > +
-> > +	mutex_lock(&msa311->lock);
->=20
-> > +
-> > +	/*
-> > +	 * We do not check NEW_DATA int status, because of based on
-> > +	 * specification it's cleared automatically after a fixed time.
-> > +	 * So just check that is enabled by driver logic.
->=20
-> That is going to be very problematic if we can have this and events comin=
-g
-> through the same interrupt pin.  Not harmful for now though given you are
-> only supporting NEW_DATA for now.  Just something to watch out for.
->=20
-
-Actually, I have run some experiments with NEW_DATA status bits. And
-looks like we can't determince actual status of NEW_DATA virtual
-interrupt when physical IRQ is raised. I will back to this problem when
-begin Motion Events feature implementation.
-
-[...]
-
-> > +	err =3D devm_pm_runtime_enable(dev);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	pm_runtime_get_noresume(dev);
-> > +	pm_runtime_set_autosuspend_delay(dev, MSA311_PWR_SLEEP_DELAY_MS);
-> > +	pm_runtime_use_autosuspend(dev);
-> > +
-> > +	err =3D msa311_chip_init(msa311);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	indio_dev->modes =3D 0; /* setup buffered mode later */
->=20
-> As per other branch, I led you astray here it seems.
->=20
-
-Sorry, I've made a mistake. Comment about INDIO_DIRECT_MODE was left
-by Andy here:
-
-https://lore.kernel.org/linux-iio/CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNSh=
-FRG3kP8b6w@mail.gmail.com/
-
-[...]
-
---=20
-Thank you,
-Dmitry=
+On 8/7/2022 2:27 AM, Dmitry Baryshkov wrote:
+Thanks for Your Time Dimtry!!!
+> On 03/08/2022 17:21, Srinivasa Rao Mandadapu wrote:
+>> Update adsp pil data and compatible name for loading ADSP
+>> binary on SC7280 based platforms.
+>>
+>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> ---
+>>   drivers/remoteproc/qcom_q6v5_adsp.c | 19 +++++++++++++++++++
+>>   1 file changed, 19 insertions(+)
+>>
+>> diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c 
+>> b/drivers/remoteproc/qcom_q6v5_adsp.c
+>> index 2f3b9f5..bb4494c 100644
+>> --- a/drivers/remoteproc/qcom_q6v5_adsp.c
+>> +++ b/drivers/remoteproc/qcom_q6v5_adsp.c
+>> @@ -697,6 +697,24 @@ static const struct adsp_pil_data 
+>> adsp_resource_init = {
+>>       },
+>>   };
+>>   +static const struct adsp_pil_data adsp_sc7280_resource_init = {
+>> +    .crash_reason_smem = 423,
+>> +    .firmware_name = "adsp.mbn",
+>> +    .load_state = "adsp",
+>> +    .ssr_name = "lpass",
+>> +    .sysmon_name = "adsp",
+>> +    .ssctl_id = 0x14,
+>> +    .is_wpss = false,
+>> +    .auto_boot = true,
+>> +    .clk_ids = (const char*[]) {
+>> +        "gcc_cfg_noc_lpass", NULL
+>
+> The clock is not mentioned in dt bindings.
+Will update in dt bindings and re post it.
+>
+>> +    },
+>> +    .num_clks = 1,
+>> +    .proxy_pd_names = (const char*[]) {
+>> +        NULL
+>> +    },
+>
+> Is the empty array necessary?
+Okay. Will remove it.
+>
+>> +};
+>> +
+>>   static const struct adsp_pil_data cdsp_resource_init = {
+>>       .crash_reason_smem = 601,
+>>       .firmware_name = "cdsp.mdt",
+>> @@ -737,6 +755,7 @@ static const struct of_device_id adsp_of_match[] = {
+>>       { .compatible = "qcom,qcs404-cdsp-pil", .data = 
+>> &cdsp_resource_init },
+>>       { .compatible = "qcom,sc7280-wpss-pil", .data = 
+>> &wpss_resource_init },
+>>       { .compatible = "qcom,sdm845-adsp-pil", .data = 
+>> &adsp_resource_init },
+>> +    { .compatible = "qcom,sc7280-adsp-pil", .data = 
+>> &adsp_sc7280_resource_init },
+>>       { },
+>>   };
+>>   MODULE_DEVICE_TABLE(of, adsp_of_match);
+>
+>
