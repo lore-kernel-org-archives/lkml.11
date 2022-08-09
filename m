@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B95DEC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94939C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345598AbiHISTB (ORCPT
+        id S1343788AbiHISTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
+        Tue, 9 Aug 2022 14:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346095AbiHISQF (ORCPT
+        with ESMTP id S1346120AbiHISQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:16:05 -0400
+        Tue, 9 Aug 2022 14:16:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EDD2CCB8;
-        Tue,  9 Aug 2022 11:05:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330B62CDD6;
+        Tue,  9 Aug 2022 11:06:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F207B817B7;
-        Tue,  9 Aug 2022 18:05:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB92BC433D6;
-        Tue,  9 Aug 2022 18:05:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9DEDB817C1;
+        Tue,  9 Aug 2022 18:05:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BE5BC43141;
+        Tue,  9 Aug 2022 18:05:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068342;
-        bh=GR876I8rEMy3+cSMMcgWtmkjJqJdaRQUGxBaXCHKijw=;
+        s=korg; t=1660068350;
+        bh=0s73BRoLaSOv0OzHQBdDMZTsDnFCgDoruPYp75fOpuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LVrRdVwMp7JoEEhKjygRzfFFTWBAswGOOqy4U+U6MfRKTuBKf3DrNvOJbTXIVncyN
-         mOya6fDmnMhwd51E8AqbbjrZv6dqu1ajWyLIKWx5AhRIHkmK0dskYBPdsolWcLL+Bj
-         4Nt8El5RWCTWxSTBawYTeQTG46dggK2IdvjS0m2Y=
+        b=Ech6WY5+8w2zkmQhfuxWQXT8MtF4sVx0ZbvCmpQbJisDJ6KTlaCHPb8dwDaWTXoEt
+         cMszq4DDg/7SC+f15rzhmt7sbJ3T04UjSIjn9luNaUiGg5jmnJI5g824CGTDuNZmG9
+         2q5noUTeLQ2zvjiAC+Ku5wsnPEKFSWjb0G0IOkUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 15/30] KVM: x86/svm: add __GFP_ACCOUNT to __sev_dbg_{en,de}crypt_user()
-Date:   Tue,  9 Aug 2022 20:00:40 +0200
-Message-Id: <20220809175514.852844143@linuxfoundation.org>
+        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.15 23/30] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
+Date:   Tue,  9 Aug 2022 20:00:48 +0200
+Message-Id: <20220809175515.155455810@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
 References: <20220809175514.276643253@linuxfoundation.org>
@@ -50,47 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingwei Zhang <mizhang@google.com>
+From: Hilda Wu <hildawu@realtek.com>
 
-[ Upstream commit ebdec859faa8cfbfef9f6c1f83d79dd6c8f4ab8c ]
+commit c379c96cc221767af9688a5d4758a78eea30883a upstream.
 
-Adding the accounting flag when allocating pages within the SEV function,
-since these memory pages should belong to individual VM.
+Add the support ID(0x04CA, 0x4007) to usb_device_id table for
+Realtek RTL8852C.
 
-No functional change intended.
+The device info from /sys/kernel/debug/usb/devices as below.
 
-Signed-off-by: Mingwei Zhang <mizhang@google.com>
-Message-Id: <20220623171858.2083637-1-mizhang@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=04ca ProdID=4007 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+
+Signed-off-by: Hilda Wu <hildawu@realtek.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/sev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/bluetooth/btusb.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 4a4dc105552e..86f3096f042f 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -832,7 +832,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -420,6 +420,10 @@ static const struct usb_device_id blackl
+ 	{ USB_DEVICE(0x04ca, 0x4006), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
  
- 	/* If source buffer is not aligned then use an intermediate buffer */
- 	if (!IS_ALIGNED((unsigned long)vaddr, 16)) {
--		src_tpage = alloc_page(GFP_KERNEL);
-+		src_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
- 		if (!src_tpage)
- 			return -ENOMEM;
- 
-@@ -853,7 +853,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
- 	if (!IS_ALIGNED((unsigned long)dst_vaddr, 16) || !IS_ALIGNED(size, 16)) {
- 		int dst_offset;
- 
--		dst_tpage = alloc_page(GFP_KERNEL);
-+		dst_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
- 		if (!dst_tpage) {
- 			ret = -ENOMEM;
- 			goto e_free;
--- 
-2.35.1
-
++	/* Realtek 8852CE Bluetooth devices */
++	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
++
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+ 	  .driver_info = BTUSB_REALTEK },
 
 
