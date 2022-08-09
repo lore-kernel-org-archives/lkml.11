@@ -2,96 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49592C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82738C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345422AbiHITHl (ORCPT
+        id S1345559AbiHITHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38584 "EHLO
+        Tue, 9 Aug 2022 15:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348116AbiHITGa (ORCPT
+        with ESMTP id S1348377AbiHITGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:06:30 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E97F248CE
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:48:45 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id i14so23794939ejg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=DhUIuH+fIv77WJzm8eKuRBv3nR/JhYDUtxzpNkXaI2E=;
-        b=OtCLH0do5IYLP3xRhX2XKN5rqVJR6zlV4hl/xmMCr0/f52r1aBM4edtcIvE8u9au8b
-         yJAqKhenGtQuoWeme1R2oSE2YmJgYsCOMRYZO36i3m2QVZp048cs2P0WpncxTtN/vTMB
-         nD81POpU1weccBApk3K2JDNk+T15xFvxrG/gc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=DhUIuH+fIv77WJzm8eKuRBv3nR/JhYDUtxzpNkXaI2E=;
-        b=gke62JGpLshnfqeAq20gzvQ4EXLC06itDFcqv2XWSw82aLoTQdmeX38hP7SDzRdfvd
-         kEKu+cRzlw8pOLAc9Yg4+sht9Dz+YeTRCJjazkuJlzcVM220iGd4RjZdwWrb0sQh8ABr
-         ipamKy4w9AaGYZas5hOe2kM1WZ0HEpXLv7Ungnk/Ck0gssRzOuvqI41U27OaBerVrTOW
-         rHjE0xJ2jazagukSTryPnxybXVCw4/I7gzMVvky3W2XpijZkEzpmR9c7Gp+BPTUlqx1B
-         MK2eUS3hxF/BtRGKDOrP/pzsTRew7e4CHH/7tjQjSbNirNyz3ZXfCUxel3Cp+WExKItF
-         sYCg==
-X-Gm-Message-State: ACgBeo3HCQ+PIfEsN1sLE3hMJTzHwvk9wSRBTR45szWLVHFs3pl+SVR0
-        yIzjW6PixPiyZPB55djvBjIRG3Dmf5tm7l9WH3Q=
-X-Google-Smtp-Source: AA6agR5mBEKICDZb87/T8P4LrUCxWJ1a52g8Jo4+So5yhGAjZQcUBgtyRyOscvkuC8O/7h9zC0qudQ==
-X-Received: by 2002:a17:907:168e:b0:731:4ba0:d5e9 with SMTP id hc14-20020a170907168e00b007314ba0d5e9mr9234883ejc.204.1660070923684;
-        Tue, 09 Aug 2022 11:48:43 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id d16-20020a50fe90000000b0043b986751a7sm6393044edt.41.2022.08.09.11.48.42
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 11:48:43 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so2455468wms.5
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:48:42 -0700 (PDT)
-X-Received: by 2002:a1c:f603:0:b0:3a5:23ca:3e7c with SMTP id
- w3-20020a1cf603000000b003a523ca3e7cmr12452214wmc.38.1660070921906; Tue, 09
- Aug 2022 11:48:41 -0700 (PDT)
+        Tue, 9 Aug 2022 15:06:48 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6684286E3
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:52:01 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id F0ABB68AA6; Tue,  9 Aug 2022 20:51:57 +0200 (CEST)
+Date:   Tue, 9 Aug 2022 20:51:57 +0200
+From:   "hch@lst.de" <hch@lst.de>
+To:     "Hellstrom, Thomas" <thomas.hellstrom@intel.com>
+Cc:     "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        "bob.beckett@collabora.com" <bob.beckett@collabora.com>,
+        "tvrtko.ursulin@linux.intel.com" <tvrtko.ursulin@linux.intel.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "airlied@linux.ie" <airlied@linux.ie>, "hch@lst.de" <hch@lst.de>,
+        "Ursulin, Tvrtko" <tvrtko.ursulin@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "kernel@collabora.com" <kernel@collabora.com>,
+        "Auld, Matthew" <matthew.auld@intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>
+Subject: Re: [PATCH v5] drm/i915: stop using swiotlb
+Message-ID: <20220809185157.GA15307@lst.de>
+References: <20220726153935.2272777-1-bob.beckett@collabora.com> <1160a7c31084ab2259088e4bfe88b41ad61c2bcc.camel@intel.com>
 MIME-Version: 1.0
-References: <20220808073232.8808-1-david@redhat.com>
-In-Reply-To: <20220808073232.8808-1-david@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 9 Aug 2022 11:48:25 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiKm3QjM1_XwWNW8P8drW6s0ZeANm7VKy_1c7WH6RSp3g@mail.gmail.com>
-Message-ID: <CAHk-=wiKm3QjM1_XwWNW8P8drW6s0ZeANm7VKy_1c7WH6RSp3g@mail.gmail.com>
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1160a7c31084ab2259088e4bfe88b41ad61c2bcc.camel@intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
->
-> For example, a write() via /proc/self/mem to a uffd-wp-protected range has
-> to fail instead of silently granting write access and bypassing the
-> userspace fault handler.
+On Mon, Aug 08, 2022 at 03:48:02PM +0000, Hellstrom, Thomas wrote:
+> This whole thing looks a bit strange to me since with SWIOTLB actually
+> used for i915, the driver should malfunction anyway as it doesn't do
+> any dma_sync_sg_for_cpu() or dma_sync_sg_for_device(),
 
-This, btw, just makes me go "uffd-wp is broken garbage" once more.
+Yeah, I can't actually see any syncs in i915.
 
-It also makes me go "if uffd-wp can disallow ptrace writes, then why
-doesn't regular write protect do it"?
+> and the driver
+> assumes all coherent dma. Is that SWIOTLB=force kernel option still
+> available?
 
-IOW, I don't think the patch is wrong (apart from the VM_BUG_ON's that
-absolutely must go away), but I get the strong feelign that we instead
-should try to get rid of FOLL_FORCE entirely.
+Yes, although it is (and always has been) lower case swiotlb for the
+option.
 
-If some other user action can stop FOLL_FORCE anyway, then why do we
-support it at all?
+> Also, correct me if I'm wrong, but the original driver segment size
+> appears to mean "the largest contiguous area that can be handled either
+> by the device or the dma mapping layer" rather than the total space
+> available for dma mappings? Not completely sure what
+> dma_max_mapping_size() is returning, though?
 
-             Linus
+dma_max_mapping_size is sort of both.  It is is the largest contigous
+size, but we really should not go above that to avoid starvation.
