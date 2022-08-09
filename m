@@ -2,126 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D8AAC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC45DC25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343523AbiHITWA (ORCPT
+        id S1344242AbiHIT3A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
+        Tue, 9 Aug 2022 15:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346493AbiHITU7 (ORCPT
+        with ESMTP id S1344056AbiHIT2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:20:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A3935FCF
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 12:20:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660072846;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H8h4Jng7BDnvUHW4yaisoTMe84LTGwEUPKezp1k3H30=;
-        b=J0kGOSKXC3bYfAiCQnGXAybxgW0RoKD4wECnKh1Y4qT7E7HY/yf8+uGohOAhCZYjNhVQ+g
-        HSs5D7esNxJIp4Bp++PIL9YVCz9qF4KgPu+N3u0ecqqA1dh/6HxnJ2hbPSFVyKqHEm3+3O
-        61LIAuLfsvkMkAreNxG1NOchDO2q1ws=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-iSq3nYQkMkCs56pZPxQf6A-1; Tue, 09 Aug 2022 15:20:45 -0400
-X-MC-Unique: iSq3nYQkMkCs56pZPxQf6A-1
-Received: by mail-wm1-f71.google.com with SMTP id v64-20020a1cac43000000b003a4bea31b4dso10287183wme.3
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 12:20:45 -0700 (PDT)
+        Tue, 9 Aug 2022 15:28:55 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A6518384;
+        Tue,  9 Aug 2022 12:28:52 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id f20so18294450lfc.10;
+        Tue, 09 Aug 2022 12:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=UpQrpm/ApIaRZ0s83gslfbMpGpJb7iuWgZQqWYQz1bo=;
+        b=j/wbu5CDa6aI24ATri9dmT+G9srGDf3ToFayz3PQkJXhsOEltEIJC1fGMPe9Gw2OKp
+         exOVVYl6h/VeZjg+V+IfnSNiYudOoIsc6For3s3xtD5h17kHDSmQdk3D4dXYKvnlvT/h
+         iU26xSi3AiOPDPBuzF1rBLDaFZ0leEjzKLx/XopJFBqvs/+wcmTGkekaRZ8rmq8dVb+7
+         XYnGAaAAV5a3UVf3Brzia4mhMAMYFdUSuc4sLOv/g/Fufz4BIZYvKgeMGwsM2chODmK4
+         hUIPWFiLVlpC+S/Az6Msw8U/VZ5QqPeTO3U+RjaolOaG7Ypz9jGirUeu8GNHw1p26OcU
+         2Bwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=H8h4Jng7BDnvUHW4yaisoTMe84LTGwEUPKezp1k3H30=;
-        b=10su4sryCDc/YFnAMQmL51pBejKgArueRfG5kY3t5vSJHjwICZ29pkFvTHPqaY2vi/
-         mMzeCf9kmz+tLQpYpSuuhVAvQ4dAapZMyovKKe2ugX+1dB16ZfYTlB67OcybKH1xxaov
-         z/dYIaTtzk4Mbd1xJdCa7OWas0VUhwy1Imhr7GfnoF2zB1Q4X9cU6lMGFwmfeiVCBtxj
-         nk5+Si/WB7GkgFMfNicor/KbwONgHYyGjQQD8GUkF9a+5QtKqGR/Z25mqAZ5B8F158hy
-         XbF1Q0RN8VMXkN5kG7zJG7lALTWvXOEVqB7ecw6npFvUWQWOfLr4zGx0w6TuepUr8ufW
-         mBzg==
-X-Gm-Message-State: ACgBeo1zzgtm4RwgrmVFyRPtfXAflfevbwDOOCizo0L3tvoJOPa3ZrUr
-        +z7KqAX3Cm0iF/N1Kt+Gjm41lnbPcbmPrLTGl0KWRrZ72k88a50LblkeaOn5J4x1s6DxhTNca0y
-        YC+Ldaa05Nr7we0d5aRbCqYV7
-X-Received: by 2002:a1c:ed05:0:b0:3a2:ebae:c5e7 with SMTP id l5-20020a1ced05000000b003a2ebaec5e7mr15509wmh.78.1660072844097;
-        Tue, 09 Aug 2022 12:20:44 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4LubkX0tuGA9aKXvqxL9u6Pg1ZLUrPaG3+BlBR8O2coLYRUWNXjx9DEti7PhyhEHYDH5631w==
-X-Received: by 2002:a1c:ed05:0:b0:3a2:ebae:c5e7 with SMTP id l5-20020a1ced05000000b003a2ebaec5e7mr15496wmh.78.1660072843868;
-        Tue, 09 Aug 2022 12:20:43 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:3700:aed2:a0f8:c270:7f30? (p200300cbc7053700aed2a0f8c2707f30.dip0.t-ipconnect.de. [2003:cb:c705:3700:aed2:a0f8:c270:7f30])
-        by smtp.gmail.com with ESMTPSA id q25-20020a1ce919000000b003a32251c3f0sm17052196wmc.33.2022.08.09.12.20.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 12:20:43 -0700 (PDT)
-Message-ID: <5593cbb7-eb29-82f0-490e-dd72ceafff9b@redhat.com>
-Date:   Tue, 9 Aug 2022 21:20:42 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=UpQrpm/ApIaRZ0s83gslfbMpGpJb7iuWgZQqWYQz1bo=;
+        b=MG8PCuatVECMoDB30A/++JxWP1PVMbhjtrwgUJGkskv14gz5J9QDjBI25PWrmgxpdq
+         kBYlzW1XOQpzOC0cOkHKayjxfmec6N2fNeDslu6rEvlOTIv4GuHS00bk/LvaHGZNwsPR
+         a8NZ/xPwj724GxvKRCzYJ40jmxufrlecSxONOHqXP57OxjpsG3Pd4j+/NtG6BP8abmFu
+         g/4Ttvz0Apqo3lAoYAO9kJaE3vDWHp92so2KcCZrAGZDt82Fq29BPj5pqKWEbsu5q5ii
+         PcSUA0xC9WukcpfSkvqs9Ap6xT7zIB5O5Lz3FpGlM3cbHQZM8gbh60JPLGzRsGYUzclq
+         C9Iw==
+X-Gm-Message-State: ACgBeo3aLDKQ4oDVd67ZiZFebMkZGwZ4HQKOKdejFXI3MVYtwBOUKde+
+        YLXp5GRjO64K9M630qvay1nAtnbqXzaHGQ==
+X-Google-Smtp-Source: AA6agR7WvusrH8G8KEzjm+A0NlFvp6eT0993uhqXFqv9uiEDstp67r6aTLJP4MiBT8975b71Vv8RXg==
+X-Received: by 2002:ac2:5324:0:b0:48b:9643:3838 with SMTP id f4-20020ac25324000000b0048b96433838mr6409291lfh.373.1660073330623;
+        Tue, 09 Aug 2022 12:28:50 -0700 (PDT)
+Received: from mobilestation (ip1.ibrae.ac.ru. [91.238.191.1])
+        by smtp.gmail.com with ESMTPSA id n24-20020a05651203f800b00489da512f5asm72305lfq.86.2022.08.09.12.28.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 12:28:48 -0700 (PDT)
+Date:   Tue, 9 Aug 2022 22:28:46 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        PCI <linux-pci@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 12/17] dt-bindings: PCI: dwc: Add Baikal-T1 PCIe Root
+ Port bindings
+Message-ID: <20220809192846.ozixf6kgs242dbvl@mobilestation>
+References: <20220728143427.13617-1-Sergey.Semin@baikalelectronics.ru>
+ <20220728143427.13617-13-Sergey.Semin@baikalelectronics.ru>
+ <20220801181311.GA1266390-robh@kernel.org>
+ <20220808160118.m5ka7o7gdhei2yzl@mobilestation>
+ <CAL_JsqJSYAsotjzvOUy_f7ZRfsSrfZyuEzq7eRwwKk12FBgxYg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>
-References: <20220808073232.8808-1-david@redhat.com>
- <CAHk-=wi81ujYGP0gmyy2kDke_ExL742Lo_hLepGjCa8mS81A7w@mail.gmail.com>
- <YvKsBUuwLNlHwhnE@nvidia.com>
- <CAHk-=wjh3wkhQWN8BHFUT6t52kfNMcRd+1JczD4Sgp_q11w8eA@mail.gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
-In-Reply-To: <CAHk-=wjh3wkhQWN8BHFUT6t52kfNMcRd+1JczD4Sgp_q11w8eA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqJSYAsotjzvOUy_f7ZRfsSrfZyuEzq7eRwwKk12FBgxYg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.08.22 21:07, Linus Torvalds wrote:
-> On Tue, Aug 9, 2022 at 11:48 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->>
->> It is because of all this madness with COW.
+On Tue, Aug 09, 2022 at 09:12:31AM -0600, Rob Herring wrote:
+> On Mon, Aug 8, 2022 at 10:01 AM Serge Semin <fancer.lancer@gmail.com> wrote:
+> >
+> > On Mon, Aug 01, 2022 at 12:13:11PM -0600, Rob Herring wrote:
+> > > On Thu, Jul 28, 2022 at 05:34:22PM +0300, Serge Semin wrote:
+> > > > Baikal-T1 SoC is equipped with DWC PCIe v4.60a Root Port controller, which
+> > > > link can be trained to work on up to Gen.3 speed over up to x4 lanes. The
+> > > > controller is supposed to be fed up with four clock sources: DBI
+> > > > peripheral clock, AXI application Tx/Rx clocks and external PHY/core
+> > > > reference clock generating the 100MHz signal. In addition to that the
+> > > > platform provide a way to reset each part of the controller:
+> > > > sticky/non-sticky bits, host controller core, PIPE interface, PCS/PHY and
+> > > > Hot/Power reset signal. The Root Port controller is equipped with multiple
+> > > > IRQ lines like MSI, system AER, PME, HP, Bandwidth change, Link
+> > > > equalization request and eDMA ones. The registers space is accessed over
+> > > > the DBI interface. There can be no more than four inbound or outbound iATU
+> > > > windows configured.
+> > > >
+> > > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > >
+> > > > ---
+> > > >
+> > > > Changelog v2:
+> > > > - Rename 'syscon' property to 'baikal,bt1-syscon'.
+> > > > - Fix the 'compatible' property definition to being more specific about
+> > > >   what strings are supposed to be used. Due to that we had to add the
+> > > >   select property to evaluate the schema against the Baikal-T1 PCIe DT
+> > > >   nodes only.
+> > > > ---
+> > > >  .../bindings/pci/baikal,bt1-pcie.yaml         | 154 ++++++++++++++++++
+> > > >  1 file changed, 154 insertions(+)
+> > > >  create mode 100644 Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml
+> > > >
+> > > > diff --git a/Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml b/Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml
+> > > > new file mode 100644
+> > > > index 000000000000..23bd1d0aa5c5
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml
+> > > > @@ -0,0 +1,154 @@
+> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > +%YAML 1.2
+> > > > +---
+> > > > +$id: http://devicetree.org/schemas/pci/baikal,bt1-pcie.yaml#
+> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > +
+> > > > +title: Baikal-T1 PCIe Root Port Controller
+> > > > +
+> > > > +maintainers:
+> > > > +  - Serge Semin <fancer.lancer@gmail.com>
+> > > > +
+> > > > +description:
+> > > > +  Embedded into Baikal-T1 SoC Root Complex controller. It's based on the
+> > > > +  DWC RC PCIe v4.60a IP-core, which is configured to have just a single Root
+> > > > +  Port function and is capable of establishing the link up to Gen.3 speed
+> > > > +  on x4 lanes. It doesn't have embedded clock and reset control module, so
+> > > > +  the proper interface initialization is supposed to be performed by software.
+> > > > +
+> > > > +select:
+> > > > +  properties:
+> > > > +    compatible:
+> > > > +      contains:
+> > > > +        const: baikal,bt1-pcie
+> > > > +
+> > > > +  required:
+> > > > +    - compatible
+> > > > +
+> > > > +allOf:
+> > > > +  - $ref: /schemas/pci/snps,dw-pcie.yaml#
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    items:
+> > > > +      - const: baikal,bt1-pcie
+> > > > +      - const: snps,dw-pcie-4.60a
+> > > > +      - const: snps,dw-pcie
+> > >
+> >
+> > > Again, these fallbacks simply aren't useful.
+> >
+> > Ok. I give up. You are the boss. I'll drop them =)
+> >
+> > >
+> > > > +
+> > > > +  reg:
+> > > > +    description:
+> > > > +      DBI, DBI2 and at least 4KB outbound iATU-capable region.
+> > >
+> >
+> > > 'iATU-capable region' means config space? That's not very clear.
+> >
+> > No 'iATU-capable region' means the region, which can be used as a
+> > source address for the iATU engine. In general it can be used for any
+> > accesses (IO, MEM, CFG). But the DW PCIe driver will indeed use it for
+> > the config-space accesses.
+> >
+> > IMO the 'config' reg space is kind of virtual. Due to the outbound
+> > iATU capability the driver could use any free outbound iATU region it
+> > found instead.
 > 
-> Yes, yes, but we have the proper long-term pinning now with
-> PG_anon_exclusive, and it actually gets the pinning right not just
-> over COW, but even over a fork - which that early write never did.
+> It is and in hindsight, we maybe should have described the whole
+> address space and let the OS alloc the config space out of it. But
+> then again, original OpenFirmware PCI binding reflects what the
+> firmware discovered AND how it is configured. So specifying where
+> config space is makes sense.
 > 
-> David, I thought all of that got properly merged? Is there something
-> still missing?
+> Bottom line is the binding defines putting the config space region in
+> 'reg', not an iATU region.
+> 
+> > > > +    maxItems: 3
+> > > > +
+> > > > +  reg-names:
+> > > > +    minItems: 3
+> > > > +    maxItems: 3
+> > > > +    items:
+> > > > +      enum: [ dbi, dbi2, config ]
+> > >
+> >
+> > > Define the order. Here, and the rest.
+> >
+> > Ok. I will, but please answer to my question, I asked you in the
+> > previous email thread:
+> >
+> > Serge Semin wrote:
+> > > Rob Herring wrote:
+> > > > ...
+> > > > Tell me why you need random order.
+> > >
+> > > Because I don't see a need in constraining the order. If we get to set
+> > > the order requirement, then why do we need to have the "*-names"
+> > > property at all?
+> 
+> Originally, it was for cases where you have a variable number of
+> entries and can't determine what each entry is. IOW, when you have
+> optional entries in the middle of required entries. But then everyone
+> *loves* -names even when not needed or useful such as 'phy-names =
+> "pcie"' (the phy subsys requiring names was part of the problem there,
+> but that's been fixed).
+> 
+> > > IMO having "reg" with max/minItems restriction plus generic
+> > > description and "reg-names" with possible values enumerated seems very
+> > > suitable pattern in this case. Don't you think?
+> 
+> No, I think this is just as concise and defines the order too:
+> 
+> reg-names:
+>   items:
+>     - const: dbi
+>     - const: dbi2
+>     - const: config
+> 
+> >
+> > In addition to that what about optional names? How would you suggest
+> > to handle such case without the non-ordered pattern?
+> 
 
-The only thing to get R/O longterm pins in MAP_PRIVATE correct that's
-missing is that we have to break COW when taking a R/O longterm pin when
-*not* finding an anon page inside a private mapping. Regarding anon
-pages I am not aware of issues (due to PG_anon_exclusive).
+> Sorry, I don't follow.
 
-If anybody here wants to stare at a webpage, the following commit
-explains the rough idea for MAP_PRIVATE:
+I meant exactly the case you've described as the main goal of the
+named properties. My worry was that by using the pattern:
 
-https://github.com/davidhildenbrand/linux/commit/cd7989fb76d2513c86f01e6f7a74415eee5d3150
+reg-names:
+  items:
+    - const: name
+    - const: another_name
+    - const: one_more_name
 
-Once we have that in place, we can mostly get rid of
-FOLL_FORCE|FOLL_WRITE for R/O longterm pins. There are some corner cases
-though that need some additional thought which i am still working on.
-FS-handled COW in MAP_SHARED mappings is just nasty (hello DAX).
+you get to fix the names order, which they were invented to get rid
+from. If you get to use that pattern the only optional names could be
+the names at the tail of the array, which isn't always applicable. In
+that case you'd have no choice but to use the pattern suggested by
+me.
 
-(the wrong use of FOLL_GET instead of FOLL_PIN for O_DIRECT and friends
-still persists, but that's a different thing to handle and it's only
-problematic with concurrent fork() IIRC)
+-Sergey
 
--- 
-Thanks,
-
-David / dhildenb
-
+> 
+> Rob
