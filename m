@@ -2,100 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A112C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3E5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbiHIHGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 03:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S235479AbiHIHGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 03:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235252AbiHIHGX (ORCPT
+        with ESMTP id S235428AbiHIHGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 03:06:23 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77CC23A
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 00:06:21 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id o2so8459901lfb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 00:06:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8URyh1XytjOI7H3D3HP16v8tQrsQXMwiBBMB3vPCabE=;
-        b=Llkhq2EqMUBxUz6cNUI2HzmcnwKGPVl5SLD7zrh7YC2+GWwTo/MWmOXX6gc6lOMpXw
-         pj7BqelB7IHZSX01F5HdYTBQ6g4CEuTYEH2R9vLp7MlgRjRii/I8ulXraP2D/2ncJT3N
-         zwKbpOmvtkev43CxOdoSnRUa5OFgjGIeAZtituu7LpSKcLkOJ2kqSacZQLuVAOFaKdXW
-         atjlibCT6sV1+gg2it+bBHGWqca7U0Dcqmrc6FoAPYSz5z0hveQiKmB14/t7f1QZ+HXE
-         kDCFWcZOHJJD1iOP/LIO/QMmwsHPu1ctnAgOajKRHfkFImlq6ai7hoCYwSfCjA4+gBlY
-         uPIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8URyh1XytjOI7H3D3HP16v8tQrsQXMwiBBMB3vPCabE=;
-        b=Kj3jVKU8EUL4ejFrcGdG1RKO6xFp6LiqiasKKMWnmiCFdRvJPWaPxzUqh7djdmUtzP
-         1p+LkRr2SR5cVEjSjBgVTn4RZy9if4QyKYj8/2/cjnmeABH/AMmiVGOCCIOpiWl2XdN3
-         R/3twQ387oCUbHKvxh46FnohsgAs0oeDFimR7q9jIeGjvwfg+lSCG51szVFFjEiiQ5eW
-         Q2JC6MNaOreTBO3PKvYpp1SxkjtntM2IBRCIjWXVwbvPz3xl8f9y0VS0dFJuWLu9Cs7N
-         L8ZsqdLrysTw3b3e8S7AX87ar0t1MUlB3nDErf3mIt2IMbwyFdlP5q9lsLcMZDRvJRhL
-         mcoQ==
-X-Gm-Message-State: ACgBeo149IVUGOfhVO8lU/MYTSrJ2oNQeOoFQfL1gXDJKQvdGkTbuDYj
-        54gsnokQzii/z0PIBTM3tyZvLA==
-X-Google-Smtp-Source: AA6agR6nMk3tWFZBtwubP21tAuJ4Hpg3EzkdiUF0KSno9uJ3cRGt+80ebQfnKS8YbQwcr6Nt9nd4WA==
-X-Received: by 2002:a05:6512:ba0:b0:48b:39c:8020 with SMTP id b32-20020a0565120ba000b0048b039c8020mr7220308lfv.686.1660028780056;
-        Tue, 09 Aug 2022 00:06:20 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id x4-20020a056512078400b0048a93325906sm1650890lfr.171.2022.08.09.00.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 00:06:19 -0700 (PDT)
-Message-ID: <be2b90b5-a0f5-0e67-e032-bdde12c56fad@linaro.org>
-Date:   Tue, 9 Aug 2022 10:06:18 +0300
+        Tue, 9 Aug 2022 03:06:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1741A6;
+        Tue,  9 Aug 2022 00:06:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2435861255;
+        Tue,  9 Aug 2022 07:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81D8EC433B5;
+        Tue,  9 Aug 2022 07:06:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660028800;
+        bh=d7u06MyJmpLesNkm5cSnlW0NGio88o7LILjpUBUSYps=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=N0lbVOO9KOtkL6YRGzqFszgtLdGFO/hetH6C6lTo148OgGYjO5ftMlnH1E+O8bcKD
+         c2FZWkAegaXHgNDcswFOTx/vpJRNswWsHco6QEfg+YTl9I3/TNn8uIrDpwP0hh9yBX
+         LzkAMbazEO0QVinK9ymd3ElmBcU72W9b7sFPiDmxk3qf2nuFVmkLVIyGWMKsI/fHTJ
+         l55O2xoEscah7ICukXZ7mSrhET8G6wP3xERdrCbINQo7h8/qgvdGu5qclKQJBxCQmM
+         la7rHiVnMPGJSJwpUUffCmzNReC9WacAAiXUxT8gTGjQI+4E1Leb75uOx1R1evhLsP
+         V+fgqJb+gPnfg==
+Received: by mail-oi1-f179.google.com with SMTP id w196so7829634oiw.10;
+        Tue, 09 Aug 2022 00:06:40 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2LdUO+XGAm03+E+9md/lbOV4sB0aTqzJ4GHYRozvNkV9XvAYnG
+        HGuvBw3jmotxvPU/Dr3G8bATHXcq+OVpExnqHv0=
+X-Google-Smtp-Source: AA6agR78NnJywvVZqMX25JDxFdB8ajyCDauOFlG+yJGN9fZTYYAPQrcwHC+hs6SVkQ5ZrWtX9VrI1QYm0nkp4mAtnNU=
+X-Received: by 2002:a05:6808:a10:b0:33a:d654:bf98 with SMTP id
+ n16-20020a0568080a1000b0033ad654bf98mr12273684oij.112.1660028799516; Tue, 09
+ Aug 2022 00:06:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 2/2] arm64: dts: exynos: Add SysMMU nodes for Exynos850
-Content-Language: en-US
-To:     Sam Protsenko <semen.protsenko@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220808201724.27831-1-semen.protsenko@linaro.org>
- <20220808201724.27831-3-semen.protsenko@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220808201724.27831-3-semen.protsenko@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <CAJF2gTQoSQq_S4UvAiXgMviT040Ls8+VkDszQSke1a0zbXZ82A@mail.gmail.com>
+ <mhng-7a274375-0d99-41c8-98a3-853d110f62e9@palmer-ri-x1c9>
+ <CAJF2gTTXO42_TsZudaQuB9Re0teu__EZ11JZ96nktMqsQkMYNA@mail.gmail.com>
+ <20220614110258.GA32157@anparri> <YrPei6q4rIAx6Ymf@boqun-archlinux>
+ <fd664673-c4cc-be8f-9824-5272c5c79b40@nvidia.com> <CAJF2gTSEBQd75VWyyMwKuSDsLFoiBqB0WJfYsiEHVQbJgAgBvA@mail.gmail.com>
+ <YsYivaDEksXPQPaH@boqun-archlinux> <CAJF2gTT=7+qYC-y1PapVx5yprmsr4mZGzRqz3hPq1i4SM-xqXg@mail.gmail.com>
+ <4179929a-5062-7bf6-4115-121582822504@nvidia.com>
+In-Reply-To: <4179929a-5062-7bf6-4115-121582822504@nvidia.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Tue, 9 Aug 2022 15:06:27 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTTJF4eOsFgbEN5HpKskjVtFNDha8Wmy=cYJxYZQ4UUjLg@mail.gmail.com>
+Message-ID: <CAJF2gTTJF4eOsFgbEN5HpKskjVtFNDha8Wmy=cYJxYZQ4UUjLg@mail.gmail.com>
+Subject: Re: [PATCH V4 5/5] riscv: atomic: Optimize LRSC-pairs atomic ops with
+ .aqrl annotation
+To:     Dan Lustig <dlustig@nvidia.com>
+Cc:     Boqun Feng <boqun.feng@gmail.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/08/2022 23:17, Sam Protsenko wrote:
-> Add all SysMMU nodes to Exynos850 SoC device tree.
-> 
-> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> ---
->  arch/arm64/boot/dts/exynos/exynos850.dtsi | 45 +++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/exynos/exynos850.dtsi b/arch/arm64/boot/dts/exynos/exynos850.dtsi
-> index 8e78b50416d8..4204a443ea4a 100644
-> --- a/arch/arm64/boot/dts/exynos/exynos850.dtsi
-> +++ b/arch/arm64/boot/dts/exynos/exynos850.dtsi
-> @@ -503,6 +503,51 @@ i2c_6: i2c@13890000 {
->  			status = "disabled";
->  		};
->  
-> +		sysmmu_aud: sysmmu@14850000 {
+On Thu, Jul 14, 2022 at 9:06 PM Dan Lustig <dlustig@nvidia.com> wrote:
+>
+> On 7/13/2022 7:47 PM, Guo Ren wrote:
+> > On Thu, Jul 7, 2022 at 8:04 AM Boqun Feng <boqun.feng@gmail.com> wrote:
+> >>
+> >> On Sat, Jun 25, 2022 at 01:29:50PM +0800, Guo Ren wrote:
+> >>> On Fri, Jun 24, 2022 at 1:09 AM Dan Lustig <dlustig@nvidia.com> wrote:
+> >>>>
+> >>>> On 6/22/2022 11:31 PM, Boqun Feng wrote:
+> >>>>> Hi,
+> >>>>>
+> >>>>> On Tue, Jun 14, 2022 at 01:03:47PM +0200, Andrea Parri wrote:
+> >>>>> [...]
+> >>>>>>> 5ce6c1f3535f ("riscv/atomic: Strengthen implementations with fences")
+> >>>>>>> is about fixup wrong spinlock/unlock implementation and not relate to
+> >>>>>>> this patch.
+> >>>>>>
+> >>>>>> No.  The commit in question is evidence of the fact that the changes
+> >>>>>> you are presenting here (as an optimization) were buggy/incorrect at
+> >>>>>> the time in which that commit was worked out.
+> >>>>>>
+> >>>>>>
+> >>>>>>> Actually, sc.w.aqrl is very strong and the same with:
+> >>>>>>> fence rw, rw
+> >>>>>>> sc.w
+> >>>>>>> fence rw,rw
+> >>>>>>>
+> >>>>>>> So "which do not give full-ordering with .aqrl" is not writen in
+> >>>>>>> RISC-V ISA and we could use sc.w/d.aqrl with LKMM.
+> >>>>>>>
+> >>>>>>>>
+> >>>>>>>>>> describes the issue more specifically, that's when we added these
+> >>>>>>>>>> fences.  There have certainly been complains that these fences are too
+> >>>>>>>>>> heavyweight for the HW to go fast, but IIUC it's the best option we have
+> >>>>>>>>> Yeah, it would reduce the performance on D1 and our next-generation
+> >>>>>>>>> processor has optimized fence performance a lot.
+> >>>>>>>>
+> >>>>>>>> Definately a bummer that the fences make the HW go slow, but I don't
+> >>>>>>>> really see any other way to go about this.  If you think these mappings
+> >>>>>>>> are valid for LKMM and RVWMO then we should figure this out, but trying
+> >>>>>>>> to drop fences to make HW go faster in ways that violate the memory
+> >>>>>>>> model is going to lead to insanity.
+> >>>>>>> Actually, this patch is okay with the ISA spec, and Dan also thought
+> >>>>>>> it was valid.
+> >>>>>>>
+> >>>>>>> ref: https://lore.kernel.org/lkml/41e01514-74ca-84f2-f5cc-2645c444fd8e@nvidia.com/raw
+> >>>>>>
+> >>>>>> "Thoughts" on this regard have _changed_.  Please compare that quote
+> >>>>>> with, e.g.
+> >>>>>>
+> >>>>>>   https://lore.kernel.org/linux-riscv/ddd5ca34-805b-60c4-bf2a-d6a9d95d89e7@nvidia.com/
+> >>>>>>
+> >>>>>> So here's a suggestion:
+> >>>>>>
+> >>>>>> Reviewers of your patches have asked:  How come that code we used to
+> >>>>>> consider as buggy is now considered "an optimization" (correct)?
+> >>>>>>
+> >>>>>> Denying the evidence or going around it is not making their job (and
+> >>>>>> this upstreaming) easier, so why don't you address it?  Take time to
+> >>>>>> review previous works and discussions in this area, understand them,
+> >>>>>> and integrate such knowledge in future submissions.
+> >>>>>>
+> >>>>>
+> >>>>> I agree with Andrea.
+> >>>>>
+> >>>>> And I actually took a look into this, and I think I find some
+> >>>>> explanation. There are two versions of RISV memory model here:
+> >>>>>
+> >>>>> Model 2017: released at Dec 1, 2017 as a draft
+> >>>>>
+> >>>>>       https://groups.google.com/a/groups.riscv.org/g/isa-dev/c/hKywNHBkAXM/m/QzUtxEWLBQAJ
+> >>>>>
+> >>>>> Model 2018: released at May 2, 2018
+> >>>>>
+> >>>>>       https://groups.google.com/a/groups.riscv.org/g/isa-dev/c/xW03vmfmPuA/m/bMPk3UCWAgAJ
+> >>>>>
+> >>>>> Noted that previous conversation about commit 5ce6c1f3535f happened at
+> >>>>> March 2018. So the timeline is roughly:
+> >>>>>
+> >>>>>       Model 2017 -> commit 5ce6c1f3535f -> Model 2018
+> >>>>>
+> >>>>> And in the email thread of Model 2018, the commit related to model
+> >>>>> changes also got mentioned:
+> >>>>>
+> >>>>>       https://github.com/riscv/riscv-isa-manual/commit/b875fe417948635ed68b9644ffdf718cb343a81a
+> >>>>>
+> >>>>> in that commit, we can see the changes related to sc.aqrl are:
+> >>>>>
+> >>>>>        to have occurred between the LR and a successful SC.  The LR/SC
+> >>>>>        sequence can be given acquire semantics by setting the {\em aq} bit on
+> >>>>>       -the SC instruction.  The LR/SC sequence can be given release semantics
+> >>>>>       -by setting the {\em rl} bit on the LR instruction.  Setting both {\em
+> >>>>>       -  aq} and {\em rl} bits on the LR instruction, and setting the {\em
+> >>>>>       -  aq} bit on the SC instruction makes the LR/SC sequence sequentially
+> >>>>>       -consistent with respect to other sequentially consistent atomic
+> >>>>>       -operations.
+> >>>>>       +the LR instruction.  The LR/SC sequence can be given release semantics
+> >>>>>       +by setting the {\em rl} bit on the SC instruction.  Setting the {\em
+> >>>>>       +  aq} bit on the LR instruction, and setting both the {\em aq} and the {\em
+> >>>>>       +  rl} bit on the SC instruction makes the LR/SC sequence sequentially
+> >>>>>       +consistent, meaning that it cannot be reordered with earlier or
+> >>>>>       +later memory operations from the same hart.
+> >>>>>
+> >>>>> note that Model 2018 explicitly says that "ld.aq+sc.aqrl" is ordered
+> >>>>> against "earlier or later memory operations from the same hart", and
+> >>>>> this statement was not in Model 2017.
+> >>>>>
+> >>>>> So my understanding of the story is that at some point between March and
+> >>>>> May 2018, RISV memory model folks decided to add this rule, which does
+> >>>>> look more consistent with other parts of the model and is useful.
+> >>>>>
+> >>>>> And this is why (and when) "ld.aq+sc.aqrl" can be used as a fully-ordered
+> >>>>> barrier ;-)
+> >>>>>
+> >>>>> Now if my understanding is correct, to move forward, it's better that 1)
+> >>>>> this patch gets resend with the above information (better rewording a
+> >>>>> bit), and 2) gets an Acked-by from Dan to confirm this is a correct
+> >>>>> history ;-)
+> >>>>
+> >>>> I'm a bit lost as to why digging into RISC-V mailing list history is
+> >>>> relevant here...what's relevant is what was ratified in the RVWMO
+> >>>> chapter of the RISC-V spec, and whether the code you're proposing
+> >>>> is the most optimized code that is correct wrt RVWMO.
+> >>>>
+> >>>> Is your claim that the code you're proposing to fix was based on a
+> >>>> pre-RVWMO RISC-V memory model definition, and you're updating it to
+> >>>> be more RVWMO-compliant?
+> >>> Could "lr + beq + sc.aqrl" provides a conditional RCsc here with
+> >>> current spec? I only found "lr.aq + sc.aqrl" despcriton which is
+> >>> un-conditional RCsc.
+> >>>
+> >>
+> >> /me put the temporary RISCV memory model hat on and pretend to be a
+> >> RISCV memory expert.
+> >>
+> >> I think the answer is yes, it's actually quite straightforwards given
+> >> that RISCV treats PPO (Preserved Program Order) as part of GMO (Global
+> >> Memory Order), considering the following (A and B are memory accesses):
+> >>
+> >>         A
+> >>         ..
+> >>         sc.aqrl // M
+> >>         ..
+> >>         B
+> >>
+> >> , A has a ->ppo ordering to M since "sc.aqrl" is a RELEASE, and M has
+> >> a ->ppo ordeing to B since "sc.aqrl" is an AQUIRE, so
+> >>
+> >>         A ->ppo M ->ppo B
+> > That also means M must fence.rl + sc + fence.aq. But in the release
+> > consistency model, "rl + aq" is not legal and has no guarantee at all.
+> >
+> > So sc.aqrl should be clarified in spec, but I only found "lr.aq +
+> > sc.aqrl" description, see the patch commit log.
+>
+> The spec doesn't try to enumerate every possible synchronization
+> instruction sequence.  That's why the RVWMO rules are in place.
+Okay, I just want to confirm "lr + sc.aqrl" is correct here.
 
-Order the nodes by unit address at least within each other.
 
-Best regards,
-Krzysztof
+>
+> > Could we treat sc.aqrl as a whole in ISA? Because in micro-arch, we
+> > must separate it into pieces for implementation.
+> >
+> > That is what the RVWMO should give out.
+>
+> What exactly would you like the spec to say about this?  RVWMO and the
+> RISC-V spec in general describe the required architecturally observable
+> behavior.  They're not implementation guides.
+>
+> Generally speaking, I would expect splitting an sc.aqrl into a
+> ".rl; sc; .aq" pattern to be OK.  That wouldn't introduce new observable
+> behaviors compared to treating the sc.aqrl as a single indivisible
+> operation, would it?
+Yes, I think the below modification is correct, and it could improve
+the performance in the fast path. Adding .aq annotation during the
+false loop won't cause side effects. right?
+                "0:     lr.d     %[p],  %[c]\n"
+                "       beq      %[p],  %[u], 1f\n"
+                "       add      %[rc], %[p], %[a]\n"
+-               "       sc.d.rl  %[rc], %[rc], %[c]\n"
++               "       sc.d.aqrl  %[rc], %[rc], %[c]\n"
+                "       bnez     %[rc], 0b\n"
+-               "       fence    rw, rw\n"
+
+>
+> Dan
+>
+> >> And since RISCV describes that PPO is part of GMO:
+> >>
+> >> """
+> >> The subset of program order that must be respected by the global memory
+> >> order is known as preserved program order.
+> >> """
+> >>
+> >> also in the herd model:
+> >>
+> >>         (* Main model axiom *)
+> >>         acyclic co | rfe | fr | ppo as Model
+> > If the herd7 model has defined that, I think it should be legal. Good catch.
+> >
+> >
+> >>
+> >> , therefore the ordering between A and B is GMO and GMO should be
+> >> respected by all harts.
+> >>
+> >> Regards,
+> >> Boqun
+> >>
+> >>>>
+> >>>> Dan
+> >>>>
+> >>>>> Regards,
+> >>>>> Boqun
+> >>>>>
+> >>>>>>   Andrea
+> >>>>>>
+> >>>>>>
+> >>>>> [...]
+> >>>
+> >>>
+> >>>
+> >>> --
+> >>> Best Regards
+> >>>  Guo Ren
+> >>>
+> >>> ML: https://lore.kernel.org/linux-csky/
+> >
+> >
+> >
+
+
+
+--
+Best Regards
+ Guo Ren
