@@ -2,244 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71593C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68AE9C282E7
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344351AbiHISM1 (ORCPT
+        id S1345255AbiHISMa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
+        Tue, 9 Aug 2022 14:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345630AbiHISLX (ORCPT
+        with ESMTP id S1345881AbiHISLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:23 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A322AC7D
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:04:39 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id d1so9180206qvs.0
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:04:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dubeyko-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=AGXlveyh5TLpsrDgf8RwaOkmL4JauFlDvuGk+n+yw40=;
-        b=Bw5aCbEXfvJbtihUxgvA3VyPTiPCtS3n8zgsMDd9uCfu7TNSH5TyVFJLlMCD1+yk8n
-         5e8mcqNs+ATfCB+Nt+MNMvjp6fMpNQMMr+o2g7R0ZsSozhdefGedt8eenTES6RvTlQTp
-         T7++BbXSFQ6spJ9M3g6qez9fv9k2/k4Qh6uDaUtpMQy4PDPOX/WdKMLiTHnryo+o0QYS
-         8oe+svkvRqorNF6hfoSX1xvAFvv4LBG0CvTbTfQnR6UlnIfO2nOwEo0jZ1k5vywST/zi
-         fRpdqir9BRi38kGfnfRyYxEIIWhEv8PbJ9oPfNnirAzmeer8CrR/5YYYRCyiuJTX/pWE
-         irIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=AGXlveyh5TLpsrDgf8RwaOkmL4JauFlDvuGk+n+yw40=;
-        b=kc54WXaYJ9kW4Bhw0X2gsWzj8eOHOvVe7Dg6HLruQCWbub/SO+HX8ch7F1AoQKAJlE
-         TBWR1iFB+fOW6wXynN99r15+CdbU/zqxuWFHsAGkI1lYfS2Srj+ikbffvXJJ7WGmbsV6
-         6VK5qYPytqKsWQtWnu3wR3J+EVFL1w3Xf7+DQA1ccy0vDMvcdnTpVVoY22Et+Zbl7HHU
-         ILsKr+8WmEuoxgxVfzorTG+n+Xc8o4YhA2Xp0fHhLJh0/qTj4RGfNmvPTtCbQEVU9t2m
-         s+qN/HmqbgyiPeDTQOmUSwKb1dkjKbW8jYBQ5NTTwUTxyIV+juAgMY9EvrIc52cTCxCe
-         WwCA==
-X-Gm-Message-State: ACgBeo0GJxFJkCb1lAkVjhV4ArDTLnGCMsrsT7NMSQpRbT9VCyu2BRuk
-        wLxBkx/4SpE1H9AhaZO03ZXUwA==
-X-Google-Smtp-Source: AA6agR6Hz1qYBNR87pLiH9uIpKO/emczZkshOWvGgEmkbFeSNzCHE2/R4I+N+SVf07F3M4mrQaf9og==
-X-Received: by 2002:ad4:5de6:0:b0:47b:2c2c:95a with SMTP id jn6-20020ad45de6000000b0047b2c2c095amr12755282qvb.8.1660068278154;
-        Tue, 09 Aug 2022 11:04:38 -0700 (PDT)
-Received: from smtpclient.apple ([2600:1700:42f0:6600:b19b:cbb5:a678:767c])
-        by smtp.gmail.com with ESMTPSA id u33-20020a05622a19a100b00342e86b3bdasm8905881qtc.12.2022.08.09.11.04.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Aug 2022 11:04:36 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Re: [PATCH 2/3] hfs: Replace kmap() with kmap_local_page() in bnode.c
-From:   Viacheslav Dubeyko <slava@dubeyko.com>
-In-Reply-To: <20220809152004.9223-3-fmdefrancesco@gmail.com>
-Date:   Tue, 9 Aug 2022 11:04:34 -0700
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ira Weiny <ira.weiny@intel.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <001D72B9-CB6A-4025-99CA-B3C02E1D5E0A@dubeyko.com>
-References: <20220809152004.9223-1-fmdefrancesco@gmail.com>
- <20220809152004.9223-3-fmdefrancesco@gmail.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
+        Tue, 9 Aug 2022 14:11:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49522B609;
+        Tue,  9 Aug 2022 11:05:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A77B61128;
+        Tue,  9 Aug 2022 18:05:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA8AC433B5;
+        Tue,  9 Aug 2022 18:05:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660068303;
+        bh=DDZ+YnD7DNmS5Yg69LH1PkdeXC1sjevfhN81pm28Ha4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=0nskoBS8+RNA545eAHn4u7JBaVupmGyWZCnOJo9ILR6vQ27K/H6/i7+NmzDIPZn4h
+         41NTqyki1k3Ywnjfv40Xvn14XRYWRfM5yyaFmwQ3QP2IVfWFDD31wyRyuZKEbCmphN
+         e4bcWu7pGwE4aflQfvUPDEZRniKYc6011aV/zj1g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.15 00/30] 5.15.60-rc1 review
+Date:   Tue,  9 Aug 2022 20:00:25 +0200
+Message-Id: <20220809175514.276643253@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.60-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.60-rc1
+X-KernelTest-Deadline: 2022-08-11T17:55+00:00
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is the start of the stable review cycle for the 5.15.60 release.
+There are 30 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
+
+Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+Anything received after that time might be too late.
+
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.60-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
+
+thanks,
+
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.60-rc1
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add LFENCE to RSB fill sequence
+
+Daniel Sneddon <daniel.sneddon@linux.intel.com>
+    x86/speculation: Add RSB VM Exit protections
+
+Ning Qiang <sohu0106@126.com>
+    macintosh/adb: fix oob read in do_adb_query() function
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3586
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3587
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x0CB8:0xC558
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
+
+Hilda Wu <hildawu@realtek.com>
+    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
+
+Aaron Ma <aaron.ma@canonical.com>
+    Bluetooth: btusb: Add support of IMC Networks PID 0x3568
+
+Ahmad Fatoum <a.fatoum@pengutronix.de>
+    dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding
+
+Hakan Jansson <hakan.jansson@infineon.com>
+    Bluetooth: hci_bcm: Add DT compatible for CYW55572
+
+Ahmad Fatoum <a.fatoum@pengutronix.de>
+    Bluetooth: hci_bcm: Add BCM4349B1 variant
+
+Naohiro Aota <naohiro.aota@wdc.com>
+    btrfs: zoned: fix critical section of relocation inode writeback
+
+Naohiro Aota <naohiro.aota@wdc.com>
+    btrfs: zoned: prevent allocation from previous data relocation BG
+
+Peter Collingbourne <pcc@google.com>
+    arm64: set UXN on swapper page tables
+
+Mingwei Zhang <mizhang@google.com>
+    KVM: x86/svm: add __GFP_ACCOUNT to __sev_dbg_{en,de}crypt_user()
+
+Raghavendra Rao Ananta <rananta@google.com>
+    selftests: KVM: Handle compiler optimizations in ucall
+
+Dmitry Klochkov <kdmitry556@gmail.com>
+    tools/kvm_stat: fix display of error when multiple processes are found
+
+Vitaly Kuznetsov <vkuznets@redhat.com>
+    KVM: selftests: Make hyperv_clock selftest more stable
+
+Paolo Bonzini <pbonzini@redhat.com>
+    KVM: x86: do not set st->preempted when going back to user space
+
+Paolo Bonzini <pbonzini@redhat.com>
+    KVM: x86: do not report a vCPU as preempted outside instruction boundaries
+
+GUO Zihua <guozihua@huawei.com>
+    crypto: arm64/poly1305 - fix a read out-of-bound
+
+Tony Luck <tony.luck@intel.com>
+    ACPI: APEI: Better fix to avoid spamming the console with old error logs
+
+Werner Sembach <wse@tuxedocomputers.com>
+    ACPI: video: Shortening quirk list by identifying Clevo by board_name only
+
+Werner Sembach <wse@tuxedocomputers.com>
+    ACPI: video: Force backlight native for some TongFang devices
+
+Stéphane Graber <stgraber@ubuntu.com>
+    tools/vm/slabinfo: Handle files in debugfs
+
+Jan Kara <jack@suse.cz>
+    block: fix default IO priority handling again
+
+Jakub Sitnicki <jakub@cloudflare.com>
+    selftests/bpf: Check dst_port only on the client socket
+
+Jakub Sitnicki <jakub@cloudflare.com>
+    selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads
+
+Ben Hutchings <ben@decadent.org.uk>
+    x86/speculation: Make all RETbleed mitigations 64-bit only
 
 
-> On Aug 9, 2022, at 8:20 AM, Fabio M. De Francesco =
-<fmdefrancesco@gmail.com> wrote:
->=20
-> kmap() is being deprecated in favor of kmap_local_page().
->=20
-> Two main problems with kmap(): (1) It comes with an overhead as =
-mapping
-> space is restricted and protected by a global lock for synchronization =
-and
-> (2) it also requires global TLB invalidation when the kmap=E2=80=99s =
-pool wraps
-> and it might block when the mapping space is fully utilized until a =
-slot
-> becomes available.
->=20
-> With kmap_local_page() the mappings are per thread, CPU local, can =
-take
-> page faults, and can be called from any context (including =
-interrupts).
-> It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
-> the tasks can be preempted and, when they are scheduled to run again, =
-the
-> kernel virtual addresses are restored and still valid.
->=20
-> Since its use in bnode.c is safe everywhere, it should be preferred.
->=20
-> Therefore, replace kmap() with kmap_local_page() in bnode.c. Where
-> possible, use the suited standard helpers (memzero_page(), =
-memcpy_page())
-> instead of open coding kmap_local_page() plus memset() or memcpy().
->=20
-> Tested in a QEMU/KVM x86_32 VM, 6GB RAM, booting a kernel with
-> HIGHMEM64GB enabled.
->=20
-> Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
+-------------
 
-Looks good.
+Diffstat:
 
-Reviewed-by: Viacheslav Dubeyko <slava@dubeyko.com>
+ Documentation/admin-guide/hw-vuln/spectre.rst      |  8 ++
+ .../bindings/net/broadcom-bluetooth.yaml           |  1 +
+ Makefile                                           |  4 +-
+ arch/arm64/crypto/poly1305-glue.c                  |  2 +-
+ arch/arm64/include/asm/kernel-pgtable.h            |  4 +-
+ arch/arm64/kernel/head.S                           |  2 +-
+ arch/x86/Kconfig                                   |  8 +-
+ arch/x86/include/asm/cpufeatures.h                 |  2 +
+ arch/x86/include/asm/kvm_host.h                    |  3 +
+ arch/x86/include/asm/msr-index.h                   |  4 +
+ arch/x86/include/asm/nospec-branch.h               | 21 +++++-
+ arch/x86/kernel/cpu/bugs.c                         | 86 ++++++++++++++++------
+ arch/x86/kernel/cpu/common.c                       | 12 ++-
+ arch/x86/kvm/svm/sev.c                             |  4 +-
+ arch/x86/kvm/svm/svm.c                             |  2 +
+ arch/x86/kvm/vmx/vmenter.S                         |  8 +-
+ arch/x86/kvm/vmx/vmx.c                             |  1 +
+ arch/x86/kvm/x86.c                                 | 48 +++++++++---
+ arch/x86/kvm/xen.h                                 |  6 +-
+ block/blk-ioc.c                                    |  1 +
+ block/ioprio.c                                     |  4 +-
+ drivers/acpi/apei/bert.c                           | 31 ++++++--
+ drivers/acpi/video_detect.c                        | 55 +++++++++-----
+ drivers/bluetooth/btbcm.c                          |  2 +
+ drivers/bluetooth/btusb.c                          | 15 ++++
+ drivers/bluetooth/hci_bcm.c                        |  2 +
+ drivers/macintosh/adb.c                            |  2 +-
+ fs/btrfs/block-group.h                             |  1 +
+ fs/btrfs/extent-tree.c                             | 20 ++++-
+ fs/btrfs/extent_io.c                               |  3 +-
+ fs/btrfs/inode.c                                   |  2 +
+ fs/btrfs/zoned.c                                   | 27 +++++++
+ fs/btrfs/zoned.h                                   |  5 ++
+ include/linux/ioprio.h                             |  2 +-
+ tools/arch/x86/include/asm/cpufeatures.h           |  1 +
+ tools/arch/x86/include/asm/msr-index.h             |  4 +
+ tools/include/uapi/linux/bpf.h                     |  3 +-
+ tools/kvm/kvm_stat/kvm_stat                        |  3 +-
+ .../testing/selftests/bpf/prog_tests/sock_fields.c | 58 ++++++++++-----
+ .../testing/selftests/bpf/progs/test_sock_fields.c | 45 +++++++++++
+ tools/testing/selftests/bpf/verifier/sock.c        | 81 +++++++++++++++++++-
+ tools/testing/selftests/kvm/lib/aarch64/ucall.c    |  9 +--
+ tools/testing/selftests/kvm/x86_64/hyperv_clock.c  | 10 ++-
+ tools/vm/slabinfo.c                                | 26 ++++++-
+ 44 files changed, 515 insertions(+), 123 deletions(-)
 
-Thanks,
-Slava.
-
-
-> fs/hfs/bnode.c | 32 ++++++++++++--------------------
-> 1 file changed, 12 insertions(+), 20 deletions(-)
->=20
-> diff --git a/fs/hfs/bnode.c b/fs/hfs/bnode.c
-> index c83fd0e8404d..2015e42e752a 100644
-> --- a/fs/hfs/bnode.c
-> +++ b/fs/hfs/bnode.c
-> @@ -21,7 +21,6 @@ void hfs_bnode_read(struct hfs_bnode *node, void =
-*buf, int off, int len)
-> 	int pagenum;
-> 	int bytes_read;
-> 	int bytes_to_read;
-> -	void *vaddr;
->=20
-> 	off +=3D node->page_offset;
-> 	pagenum =3D off >> PAGE_SHIFT;
-> @@ -33,9 +32,7 @@ void hfs_bnode_read(struct hfs_bnode *node, void =
-*buf, int off, int len)
-> 		page =3D node->page[pagenum];
-> 		bytes_to_read =3D min_t(int, len - bytes_read, PAGE_SIZE =
-- off);
->=20
-> -		vaddr =3D kmap_atomic(page);
-> -		memcpy(buf + bytes_read, vaddr + off, bytes_to_read);
-> -		kunmap_atomic(vaddr);
-> +		memcpy_from_page(buf + bytes_read, page, off, =
-bytes_to_read);
->=20
-> 		pagenum++;
-> 		off =3D 0; /* page offset only applies to the first page =
-*/
-> @@ -80,8 +77,7 @@ void hfs_bnode_write(struct hfs_bnode *node, void =
-*buf, int off, int len)
-> 	off +=3D node->page_offset;
-> 	page =3D node->page[0];
->=20
-> -	memcpy(kmap(page) + off, buf, len);
-> -	kunmap(page);
-> +	memcpy_to_page(page, off, buf, len);
-> 	set_page_dirty(page);
-> }
->=20
-> @@ -105,8 +101,7 @@ void hfs_bnode_clear(struct hfs_bnode *node, int =
-off, int len)
-> 	off +=3D node->page_offset;
-> 	page =3D node->page[0];
->=20
-> -	memset(kmap(page) + off, 0, len);
-> -	kunmap(page);
-> +	memzero_page(page, off, len);
-> 	set_page_dirty(page);
-> }
->=20
-> @@ -123,9 +118,7 @@ void hfs_bnode_copy(struct hfs_bnode *dst_node, =
-int dst,
-> 	src_page =3D src_node->page[0];
-> 	dst_page =3D dst_node->page[0];
->=20
-> -	memcpy(kmap(dst_page) + dst, kmap(src_page) + src, len);
-> -	kunmap(src_page);
-> -	kunmap(dst_page);
-> +	memcpy_page(dst_page, dst, src_page, src, len);
-> 	set_page_dirty(dst_page);
-> }
->=20
-> @@ -140,9 +133,9 @@ void hfs_bnode_move(struct hfs_bnode *node, int =
-dst, int src, int len)
-> 	src +=3D node->page_offset;
-> 	dst +=3D node->page_offset;
-> 	page =3D node->page[0];
-> -	ptr =3D kmap(page);
-> +	ptr =3D kmap_local_page(page);
-> 	memmove(ptr + dst, ptr + src, len);
-> -	kunmap(page);
-> +	kunmap_local(ptr);
-> 	set_page_dirty(page);
-> }
->=20
-> @@ -346,13 +339,14 @@ struct hfs_bnode *hfs_bnode_find(struct =
-hfs_btree *tree, u32 num)
-> 	if (!test_bit(HFS_BNODE_NEW, &node->flags))
-> 		return node;
->=20
-> -	desc =3D (struct hfs_bnode_desc *)(kmap(node->page[0]) + =
-node->page_offset);
-> +	desc =3D (struct hfs_bnode_desc =
-*)(kmap_local_page(node->page[0]) +
-> +					 node->page_offset);
-> 	node->prev =3D be32_to_cpu(desc->prev);
-> 	node->next =3D be32_to_cpu(desc->next);
-> 	node->num_recs =3D be16_to_cpu(desc->num_recs);
-> 	node->type =3D desc->type;
-> 	node->height =3D desc->height;
-> -	kunmap(node->page[0]);
-> +	kunmap_local(desc);
->=20
-> 	switch (node->type) {
-> 	case HFS_NODE_HEADER:
-> @@ -436,14 +430,12 @@ struct hfs_bnode *hfs_bnode_create(struct =
-hfs_btree *tree, u32 num)
-> 	}
->=20
-> 	pagep =3D node->page;
-> -	memset(kmap(*pagep) + node->page_offset, 0,
-> -	       min((int)PAGE_SIZE, (int)tree->node_size));
-> +	memzero_page(*pagep, node->page_offset,
-> +		     min((int)PAGE_SIZE, (int)tree->node_size));
-> 	set_page_dirty(*pagep);
-> -	kunmap(*pagep);
-> 	for (i =3D 1; i < tree->pages_per_bnode; i++) {
-> -		memset(kmap(*++pagep), 0, PAGE_SIZE);
-> +		memzero_page(*++pagep, 0, PAGE_SIZE);
-> 		set_page_dirty(*pagep);
-> -		kunmap(*pagep);
-> 	}
-> 	clear_bit(HFS_BNODE_NEW, &node->flags);
-> 	wake_up(&node->lock_wq);
-> --=20
-> 2.37.1
->=20
 
