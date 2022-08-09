@@ -2,146 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099F6C25B07
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F2AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242777AbiHILhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
+        id S238223AbiHILmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 07:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240472AbiHILhk (ORCPT
+        with ESMTP id S230508AbiHILmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:37:40 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07D9C59;
-        Tue,  9 Aug 2022 04:37:39 -0700 (PDT)
+        Tue, 9 Aug 2022 07:42:52 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C879B22B3F;
+        Tue,  9 Aug 2022 04:42:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660045059; x=1691581059;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kIiAO74hYt1dzWOtgOZtkirGU+z075hBgRLKvW2Haj4=;
-  b=L8CWcFh3ADeOklVQDoqlVrtKDUniqT/sPU5lhwBC42wLXa1WleY1SO+c
-   LsmmLl0V1yy5E9Gf+NH39Il2+Sq2R+77JVjBgzOV/+9IGvKpUI0y+Mpec
-   /3wTYULMWDP+sFDYHJXbVQdI0Ct95+EIhmBIdBEBn2y3s6qZQbqay/hEM
-   eoVuSpLoW+eDpXU2QnDxkUlRCnPgjTubqeyS7bsQgi9bRp420AIrOQqdo
-   F7w+Vg8/SKgQiEJSAPyOO40kmXnZ7yuW3+KDMMwC6l+IyO4ZEECP6FtAM
-   uHu533LuX4vjWjqb+T5Hj9nYp6cWXkbocjhoU1PGub6b0BoKzKOOntGkN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="377104079"
+  t=1660045371; x=1691581371;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=k+q8/MfB6T1wOsTh6u+efttkxB0NTXmq/yeTF+WM02Y=;
+  b=BS8gHBrr8mSU/7/oaXgZFwM0jZ2QfqPh8VfkF7+2HX3k/hHTG0eUi14k
+   VSw9K+gK9JzK5jKOEGcQ8c+7wYpyqvOKWnYdeM/QHqo8ZyWijerft4+HB
+   BFVgxQhaZ+kLgM8gThn2i9yZuLBVJWM9NTc45bDsZZYPCwDglXHCOdXJk
+   XiSWgObzf3ozAcEE+uc/c9A4+279DjY41uw515jXqGwSflR8pSUtHq0vs
+   RtWN8HblbDebpEorFJq8e9fcAY05EwZTcpw2MoCHg34jKKGqKD8x5IxIk
+   3PJjC43I1aITMP114VfOVDe2zlnmjrcKCb6bpa8NLQl6nMfJ8ERbzdzqJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="316743304"
 X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="377104079"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:37:39 -0700
+   d="scan'208";a="316743304"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:42:51 -0700
 X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="932449395"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.48.82])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:37:37 -0700
-Message-ID: <1ab5d302-afef-1f31-7e26-a0b7c522aadb@intel.com>
-Date:   Tue, 9 Aug 2022 14:37:32 +0300
+   d="scan'208";a="707796787"
+Received: from labukara-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.251.214.212])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:42:45 -0700
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 867B1103886; Tue,  9 Aug 2022 14:45:44 +0300 (+03)
+Date:   Tue, 9 Aug 2022 14:45:44 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv7 14/14] x86/tdx: Add unaccepted memory support
+Message-ID: <20220809114544.q4f7cetqgv2gj5tx@box.shutemov.name>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <20220614120231.48165-15-kirill.shutemov@linux.intel.com>
+ <Yt//ZMrxtTwtKBqu@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH 04/35] perf tools: Export
- perf_event__process_finished_round()
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20220711093218.10967-1-adrian.hunter@intel.com>
- <20220711093218.10967-5-adrian.hunter@intel.com>
- <CAP-5=fVbfiVJXAHcZV+3bqc-bV3XfbpxKVVtZtH+jJauzh9NQQ@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <CAP-5=fVbfiVJXAHcZV+3bqc-bV3XfbpxKVVtZtH+jJauzh9NQQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yt//ZMrxtTwtKBqu@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/07/22 20:04, Ian Rogers wrote:
-> On Mon, Jul 11, 2022 at 2:32 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->>
->> Export perf_event__process_finished_round() so it can be used elsewhere.
->>
->> This is needed in perf inject to obey finished-round ordering.
->>
->> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
->> ---
->>  tools/perf/util/session.c | 12 ++++--------
->>  tools/perf/util/session.h |  4 ++++
->>  2 files changed, 8 insertions(+), 8 deletions(-)
->>
->> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
->> index 37f833c3c81b..4c9513bc6d89 100644
->> --- a/tools/perf/util/session.c
->> +++ b/tools/perf/util/session.c
->> @@ -374,10 +374,6 @@ static int process_finished_round_stub(struct perf_tool *tool __maybe_unused,
->>         return 0;
->>  }
->>
->> -static int process_finished_round(struct perf_tool *tool,
->> -                                 union perf_event *event,
->> -                                 struct ordered_events *oe);
->> -
->>  static int skipn(int fd, off_t n)
->>  {
->>         char buf[4096];
->> @@ -534,7 +530,7 @@ void perf_tool__fill_defaults(struct perf_tool *tool)
->>                 tool->build_id = process_event_op2_stub;
->>         if (tool->finished_round == NULL) {
->>                 if (tool->ordered_events)
->> -                       tool->finished_round = process_finished_round;
->> +                       tool->finished_round = perf_event__process_finished_round;
->>                 else
->>                         tool->finished_round = process_finished_round_stub;
->>         }
->> @@ -1069,9 +1065,9 @@ static perf_event__swap_op perf_event__swap_ops[] = {
->>   *      Flush every events below timestamp 7
->>   *      etc...
->>   */
->> -static int process_finished_round(struct perf_tool *tool __maybe_unused,
->> -                                 union perf_event *event __maybe_unused,
->> -                                 struct ordered_events *oe)
->> +int perf_event__process_finished_round(struct perf_tool *tool __maybe_unused,
->> +                                      union perf_event *event __maybe_unused,
->> +                                      struct ordered_events *oe)
->>  {
->>         if (dump_trace)
->>                 fprintf(stdout, "\n");
->> diff --git a/tools/perf/util/session.h b/tools/perf/util/session.h
->> index 34500a3da735..be5871ea558f 100644
->> --- a/tools/perf/util/session.h
->> +++ b/tools/perf/util/session.h
->> @@ -155,4 +155,8 @@ int perf_session__deliver_synth_event(struct perf_session *session,
->>  int perf_event__process_id_index(struct perf_session *session,
->>                                  union perf_event *event);
->>
->> +int perf_event__process_finished_round(struct perf_tool *tool,
->> +                                      union perf_event *event,
->> +                                      struct ordered_events *oe);
->> +
+On Tue, Jul 26, 2022 at 04:51:16PM +0200, Borislav Petkov wrote:
+> On Tue, Jun 14, 2022 at 03:02:31PM +0300, Kirill A. Shutemov wrote:
+> > +static bool is_tdx_guest(void)
+> > +{
+> > +	static bool once;
+> > +	static bool is_tdx;
+> > +
+> > +	if (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))
+> > +		return false;
+> > +
+> > +	if (!once) {
+> > +		u32 eax, sig[3];
+> > +
+> > +		cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,
+> > +			    &sig[0], &sig[2],  &sig[1]);
+> > +		is_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));
+> > +		once = true;
+> > +	}
+> > +
+> > +	return is_tdx;
+> > +}
 > 
-> Sorry to be naive, why is this  perf_event__ and not perf_session__ ..
+> early_tdx_detect() already calls this CPUID function. It assigns
+> function pointers too.
+> 
+> So why can't you assign an accept_memory() function pointer there and
+> get rid of this sprinkled if (tdx) everywhere?
 
-No idea, but it is fairly consistent for tool callback functions.
+This code called from EFI stub which runs before decompressor code and
+therefore before early_tdx_detect().
 
-> well I guess it is at least passed an event even though it doesn't use
-> it. Would be nice if there were comments, but this change is just
-> shifting things around. Anyway..
+> > diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
+> > index 918a7606f53c..8518a75e5dd5 100644
+> > --- a/arch/x86/boot/compressed/tdx.c
+> > +++ b/arch/x86/boot/compressed/tdx.c
+> > @@ -3,12 +3,15 @@
+> >  #include "../cpuflags.h"
+> >  #include "../string.h"
+> >  #include "../io.h"
+> > +#include "align.h"
+> >  #include "error.h"
+> > +#include "pgtable_types.h"
+> >  
+> >  #include <vdso/limits.h>
+> >  #include <uapi/asm/vmx.h>
+> >  
+> >  #include <asm/shared/tdx.h>
+> > +#include <asm/page_types.h>
+> >  
+> >  /* Called from __tdx_hypercall() for unrecoverable failure */
+> >  void __tdx_hypercall_failed(void)
+> > @@ -75,3 +78,78 @@ void early_tdx_detect(void)
+> >  	pio_ops.f_outb = tdx_outb;
+> >  	pio_ops.f_outw = tdx_outw;
+> >  }
+> > +
+> > +static unsigned long try_accept_one(phys_addr_t start, unsigned long len,
+> > +				    enum pg_level level)
 > 
-> Acked-by: Ian Rogers <irogers@google.com>
+> That's pretty much a copy of the same function in arch/x86/coco/tdx/tdx.c.
 > 
-> Thanks,
-> Ian
-> 
->>  #endif /* __PERF_SESSION_H */
->> --
->> 2.25.1
->>
+> Yeah, you need a tdx-shared.c which you include in both places just like
+> it is done with sev-shared.c
 
+Okay, will look into this.
+
+> > +		accept_size = try_accept_one(start, len, PG_LEVEL_1G);
+> > +		if (!accept_size)
+> > +			accept_size = try_accept_one(start, len, PG_LEVEL_2M);
+> > +		if (!accept_size)
+> > +			accept_size = try_accept_one(start, len, PG_LEVEL_4K);
+> > +		if (!accept_size)
+> > +			error("Accepting memory failed\n");
+> > +		start += accept_size;
+> 
+> This series of calls to try_accept_one() appear in at least three
+> places. Please carve them out into a separate function can put it in
+> tdx-shared.c.
+
+Okay.
+
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
