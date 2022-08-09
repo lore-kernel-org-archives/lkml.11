@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F80C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5F3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245697AbiHISUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
+        id S1344474AbiHISUO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346576AbiHISRK (ORCPT
+        with ESMTP id S1346600AbiHISRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:17:10 -0400
+        Tue, 9 Aug 2022 14:17:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191E927FD2;
-        Tue,  9 Aug 2022 11:06:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C99A2E6A4;
+        Tue,  9 Aug 2022 11:06:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3512EB817C2;
-        Tue,  9 Aug 2022 18:06:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A981C433D7;
-        Tue,  9 Aug 2022 18:06:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB108B818A6;
+        Tue,  9 Aug 2022 18:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EC51C433D7;
+        Tue,  9 Aug 2022 18:06:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068373;
-        bh=Taysnb1prxfCv9T/91n/QGNd8Cyr03FyNjTTbZNsz2Q=;
+        s=korg; t=1660068378;
+        bh=IBCeAButYsRtNeRmHz0Nr8ebRIHdO/EQ3qn0BXhofwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eKCFs+93KJl+uiowDDnTTyoBW3QeO42ChJl9TEFiByIl8ERVLklMAMFSU4iRkURUD
-         77ekejkgZImv1bXUZ03alQnL7PrEJP6weM4/MJeWgwFq5E1Rxa3H1IPsPAllMVJ8OR
-         K/OoxhMgMpkjOP5JL41Ku+qwIOON5S3XodLokQd4=
+        b=RCKngP0r24UFgv1tarcS1wNrd2RBaB5wfCOdse7kgvx64+XswMMDrUulcFS+8IEEK
+         LzvF2Z5UpHRCk5GJ/yMX35JpYnX2y47thNzyS/javZ9NtRwlM9x22p6JK+msJ4Tw88
+         hS8AlTYA+c1tkmp2bYdnBYm1IZ3iSGv2Mk9+ZwK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.15 21/30] dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding
-Date:   Tue,  9 Aug 2022 20:00:46 +0200
-Message-Id: <20220809175515.081187045@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 10/35] KVM: selftests: Make hyperv_clock selftest more stable
+Date:   Tue,  9 Aug 2022 20:00:39 +0200
+Message-Id: <20220809175515.442327221@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
-References: <20220809175514.276643253@linuxfoundation.org>
+In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
+References: <20220809175515.046484486@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,32 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ahmad Fatoum <a.fatoum@pengutronix.de>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit 88b65887aa1b76cd8649a97824fb9904c1d79254 upstream.
+[ Upstream commit eae260be3a0111a28fe95923e117a55dddec0384 ]
 
-The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
-portion can be controlled over serial.
-Extend the binding with its DT compatible.
+hyperv_clock doesn't always give a stable test result, especially with
+AMD CPUs. The test compares Hyper-V MSR clocksource (acquired either
+with rdmsr() from within the guest or KVM_GET_MSRS from the host)
+against rdtsc(). To increase the accuracy, increase the measured delay
+(done with nop loop) by two orders of magnitude and take the mean rdtsc()
+value before and after rdmsr()/KVM_GET_MSRS.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220601144322.1968742-1-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml |    1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/kvm/x86_64/hyperv_clock.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-@@ -23,6 +23,7 @@ properties:
-       - brcm,bcm4345c5
-       - brcm,bcm43540-bt
-       - brcm,bcm4335a0
-+      - brcm,bcm4349-bt
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+index e0b2bb1339b1..3330fb183c68 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+@@ -44,7 +44,7 @@ static inline void nop_loop(void)
+ {
+ 	int i;
  
-   shutdown-gpios:
-     maxItems: 1
+-	for (i = 0; i < 1000000; i++)
++	for (i = 0; i < 100000000; i++)
+ 		asm volatile("nop");
+ }
+ 
+@@ -56,12 +56,14 @@ static inline void check_tsc_msr_rdtsc(void)
+ 	tsc_freq = rdmsr(HV_X64_MSR_TSC_FREQUENCY);
+ 	GUEST_ASSERT(tsc_freq > 0);
+ 
+-	/* First, check MSR-based clocksource */
++	/* For increased accuracy, take mean rdtsc() before and afrer rdmsr() */
+ 	r1 = rdtsc();
+ 	t1 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
++	r1 = (r1 + rdtsc()) / 2;
+ 	nop_loop();
+ 	r2 = rdtsc();
+ 	t2 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
++	r2 = (r2 + rdtsc()) / 2;
+ 
+ 	GUEST_ASSERT(r2 > r1 && t2 > t1);
+ 
+@@ -181,12 +183,14 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
+ 	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
+ 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
+ 
+-	/* First, check MSR-based clocksource */
++	/* For increased accuracy, take mean rdtsc() before and afrer ioctl */
+ 	r1 = rdtsc();
+ 	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	r1 = (r1 + rdtsc()) / 2;
+ 	nop_loop();
+ 	r2 = rdtsc();
+ 	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	r2 = (r2 + rdtsc()) / 2;
+ 
+ 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
+ 
+-- 
+2.35.1
+
 
 
