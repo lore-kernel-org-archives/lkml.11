@@ -2,89 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A187C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC204C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245561AbiHITPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        id S1344679AbiHITS1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 15:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345739AbiHITPA (ORCPT
+        with ESMTP id S1348561AbiHITRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:15:00 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AFC1CB1D
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 12:07:59 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id gk3so23840816ejb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 12:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=vMeWdqqUKrZihbEodx8DwkpktZOsjqJwuhJAUzg6EtM=;
-        b=fsrqe+6vo9uENLGFyCV6+pgoTqjKv1mEg1PRj6og2Ud/MBa8diFjRhLhNp/FTkemmU
-         vUWMlyD0tpPtsXxRgtuml1g7Ab5JSwvzh4+5oeiGYZVt4iAWoilXnit41pgP1cvRktE8
-         SjaI6/b5+Nxv18jobwJDWK6xFLulMWU2a18Qs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=vMeWdqqUKrZihbEodx8DwkpktZOsjqJwuhJAUzg6EtM=;
-        b=o98ieh23+KODBG1jCjxMby+ol2NKXPqTYsAAu6sqximtshl5AWIAEOBhS23RdVp4G8
-         bHmlSLoKiFT2dszKk8vBb5B15g1pTOtl6c/QsZTd+gmWuHQ6frcO4t5h725orJ2jDu2X
-         UbAI2/sisqG61x1sQVpULHW1I201aU0yDUG32W6nmbSYFT+cIyWneCbJZV69xgt0aMn9
-         PRgTZ0qa//o/DNTBo4zbDBC9/7gpoU3vH8cbgEhmBMcwGUicmbq41Ru++NEUzLlAXF7N
-         j2RRGpujx73M66uOdqlLnCaR6IDuVaduJFxIuD+yfLtltwYHUAFQxz+zNoDX5/4AAcbJ
-         HKnQ==
-X-Gm-Message-State: ACgBeo303Kr82r38Lpy8mZcpWqr0YE62+fLoDU4Ip4X4YegzrO03BGf/
-        D+iOj2ZTXCL4fFurSI0u/oDEi48xBx1cwO6Wzyk=
-X-Google-Smtp-Source: AA6agR4cKiL+LW0HbLLj7Xe3TmVdKWyTD3FVzZamxa6CqUPmCIpwhdMZcpevLdFZpLOf4MXxRIfN6A==
-X-Received: by 2002:a17:907:28d4:b0:730:9d69:6801 with SMTP id en20-20020a17090728d400b007309d696801mr17106853ejc.93.1660072077703;
-        Tue, 09 Aug 2022 12:07:57 -0700 (PDT)
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
-        by smtp.gmail.com with ESMTPSA id o9-20020a170906358900b007313a2575d2sm1421175ejb.104.2022.08.09.12.07.47
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 12:07:51 -0700 (PDT)
-Received: by mail-wm1-f51.google.com with SMTP id v5so6763871wmj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 12:07:47 -0700 (PDT)
-X-Received: by 2002:a05:600c:1d94:b0:3a4:ffd9:bb4a with SMTP id
- p20-20020a05600c1d9400b003a4ffd9bb4amr16389223wms.8.1660072067208; Tue, 09
- Aug 2022 12:07:47 -0700 (PDT)
+        Tue, 9 Aug 2022 15:17:03 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10082.outbound.protection.outlook.com [40.107.1.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78442C10B;
+        Tue,  9 Aug 2022 12:10:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CKmI9pwVWIpne97GLF3tYwA7ru/BPxptcJ+SKBc9ax0FZsybQqGyI0TdbnNO6VudFioViAqgk0AHgl+tcQQ5CM1MercY/2x6AL329/jlQorFmZLBUZbQF9TOg37ZrO6Taw8qLMLfCEYlK7yVVFRZTnsZObtQqCQ+37R2wzzB+ZTMwyR70Zzu1ZO8ThjBURYUFmUFZxsAm26mho9edXkeD7oNTfpRYDXEjg4mtlFZI2g4bomCNfnPtRiBe2FFXDwGSg6Gmy8NnXZHRvOH52UOfStBe1aAV/zX8uM7eJtUa4NouFGHqmqHIGgoiIUq86VdIVOwEpqjC33xZtPcVepbkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VvZUOVT/+f6VK9QSBpgOueBibD9UsD+iOGlOJ6a41hY=;
+ b=lre8F59AsE6HqYExt0MF6dSBFDDAJjPEf7x+sKCitrY6N9ibJm8jwdZ+yYEeWsr8qTz1q1eCYPmamCIrfDHpJ66EsmPsQOY0DIvWI8VII6U542wIt4uXUoEm3UZEs3Hna17vRCiWp/NhNQDVuoBOtew6/vIDlzQWgp6soO75n9YTF2OejKQxzxJ8MZm8vY5cA/uLJt0nkff+G9/P1+kL8y1Qq42NC/d5lhA0dFu0wt9YLYrNpv5EIz5ST9b8B8j11dPG4wUkMkYA5x1RLhevlJUyltme4Kmwx14rD/Vu+CsaQyPY8Rws/Uzffnea3EmmL3YHevNAwv6JXSm1uVI8Rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VvZUOVT/+f6VK9QSBpgOueBibD9UsD+iOGlOJ6a41hY=;
+ b=AZWOXOyhyBsQeH+JyzPy1c6GX6zwInoVTJfdemsC3e2PW+gy9PF4EjTlWiouqPmoyCdoKFxPCMNoPa+oNuYVyvLisV1xZD0o9xu24d3Smb5iPnXquD2/B3C7A1fIqAxGfu2DPONtIpp+IiPv08F5JO2jApMInt+QyFrD5btRlJk=
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
+ by AM0PR04MB5346.eurprd04.prod.outlook.com (2603:10a6:208:116::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.21; Tue, 9 Aug
+ 2022 19:10:34 +0000
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::747c:397f:a003:dbca]) by AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::747c:397f:a003:dbca%5]) with mapi id 15.20.5525.010; Tue, 9 Aug 2022
+ 19:10:33 +0000
+From:   Shenwei Wang <shenwei.wang@nxp.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "brgl@bgdev.pl" <brgl@bgdev.pl>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "imx@lists.linux.dev" <imx@lists.linux.dev>
+Subject: RE: [EXT] Re: [PATCH v2 1/3] dt-bindings: gpio: Add imx-scu gpio
+ driver bindings
+Thread-Topic: [EXT] Re: [PATCH v2 1/3] dt-bindings: gpio: Add imx-scu gpio
+ driver bindings
+Thread-Index: AQHYq/y3hjQZyrerhEOc0N3FD1GMnq2mu6cAgAAzTFA=
+Date:   Tue, 9 Aug 2022 19:10:33 +0000
+Message-ID: <AM9PR04MB827455A25D76A21D1CAB6D3489629@AM9PR04MB8274.eurprd04.prod.outlook.com>
+References: <20220809143105.17967-1-shenwei.wang@nxp.com>
+ <20220809143105.17967-2-shenwei.wang@nxp.com>
+ <5eb4d4a0-9895-dc0b-ba6a-ac435674892d@linaro.org>
+In-Reply-To: <5eb4d4a0-9895-dc0b-ba6a-ac435674892d@linaro.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a62006c0-f4df-4b4a-d77b-08da7a3ad56b
+x-ms-traffictypediagnostic: AM0PR04MB5346:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6MUpcGmV1CEyCCQoBFnhNK2BtD801DDa+PBlSnncquFO17G7JZw9u72Sc1IZbeR92wo3KhBTcZpRKtc3fqtEvIqHAdoMARkU5ugUjuJHn/o81hFlIKt7nLqy6VKCndVqdGTSDQW477JHiybU90guWCyLUXAMwsYXgUyPnebdvfWhHxeoFsbt0qKkC8vvgXqf3yRu/rvmHH8OsNfMxYKbbW/vzCEgqCJup3Df3a7MpXG90FETAj74UeFqfLwgUkUy/7FJ4DuNavRmMpBhOOPL5ZzLqya1EeCA+EoQVynFnuTA1d4h9eO42ThhjhCgoSnw4z1sskh1UkqCNsslUklVAAhFSq0pFATl5P1c1c9AGWNUF/asQ25QIxGu5+4kMX62BOylNEeidFXU1A+i+q0Z2bXQGtqwzvGh5y3scYMTqvULuICGUNMZUifCoAzv9pISRFcGxirlZG4YUQ9O/baxgTaZttXhufkIalNFt7G/NNSo9QepPEthGTFwj0un+EAIBej2TWUSqCP8x7YfpijDJcW/2xeGbXSrFfhkbyshT5rDX2bXdI6i6vuJvXK68amUX2YzeaT4R7mIz8HKWxD7QNHyNJTDUIueMqhV1uWzLwgOaQ3QLnvc61F1yviOzrEsoqgAz/+caBlSXc8aG7ckicHZCh9frx2S4kvw1VO6FuQEiYGEZ8PDAJMfSDSm5MEqctSnsp0HobxNqDjPHOF54xdan4uD2XYe18oELpMwxscAUSdYsr4IQt4ZZudUT4g4ZaN1A3OKqi8nuKc5Fef8TCwk4sehfSvZJ01lm80lboTwhuHI+l7dTVyQD9lOVXVsxDKHjKny8BaQVujRmWNNqg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(346002)(396003)(366004)(376002)(110136005)(6636002)(54906003)(478600001)(316002)(2906002)(71200400001)(41300700001)(55016003)(64756008)(66476007)(8676002)(4326008)(66946007)(66556008)(66446008)(44832011)(76116006)(5660300002)(52536014)(4744005)(8936002)(7416002)(38100700002)(122000001)(38070700005)(921005)(9686003)(33656002)(86362001)(186003)(53546011)(7696005)(26005)(55236004)(83380400001)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?P13Z1HT6VFc6CVGkGT96KcnDhD7qHcICWFoOOZVQRqcWUCqPo7CbrZjGqZcu?=
+ =?us-ascii?Q?1Bpyx7Kr9x34noSYqAFFkInItUFpf02PJLFX45Ir0+WPcjOJ/LoJB3oSHXfl?=
+ =?us-ascii?Q?G6ftn0llnrsvyFz/QGd3M3hv6a+p4nCuGKLBGHCbv8P4xAGQuAiw7/sF3IUE?=
+ =?us-ascii?Q?aRtSe6UA3VAodbsHZ9Qh4yaKNPOQuk1y5XlIf2mcFoR1uMXo8u/Y4nKIqsgr?=
+ =?us-ascii?Q?IzDmZ0fr0gMtGsKyQOsZxHMXKP9TAsCGWc5e+LKQy/MlNYCAmLV4IDMVgkW7?=
+ =?us-ascii?Q?Iw0KJYGVrKe8KNMkIenHGa0fDGB+7tgAQC2lN2d1UgqGgdHbHI0SyynXXQFH?=
+ =?us-ascii?Q?PyZVD8awaExBAiUHxNiht5SswFTYadYHTsumbs5UI4RiRkA+3QiCUsux/pHP?=
+ =?us-ascii?Q?1uV3CjfqzM0EiRMNDgRxppCmHU8xydted6+pux8qiI7OLOmTMohps17foG9q?=
+ =?us-ascii?Q?XsOQFv9hdRPyu4rAw2fDpg02FhJFylG1DFWYejsypRCmzON0+LE/Wj9ei7KE?=
+ =?us-ascii?Q?UK5RWI8gKxAt8eQViJR8vB8yE++0aHNAdJ4rNv+5TXLxQbkitvS7/1Wk6Fmh?=
+ =?us-ascii?Q?dW6HdqIk9dXuG0mqaE9T3aAHSYqlwCtbPkjsiUyIaQ9WPqb8UiejA83p3hJy?=
+ =?us-ascii?Q?jNi7tLUcPwifNYyc/JjtP/Oey9B0yC+R9SOtM0NVi0dvqyhHLdLe1U8jriL3?=
+ =?us-ascii?Q?oqXJ3g52L5JgbP5rq41SmZfPpV43li8JHpyBbzSsr/DV6HUsg1wK4hHSjQUG?=
+ =?us-ascii?Q?C4ualbCN28+7L8pTfyx/nw3l6sdVdHzx79S38/g0nPXNi70iJmsXxYYqF2GO?=
+ =?us-ascii?Q?/Ii1+LI+9osRnKifv7pZDFbsfSKEq7AwooN483IksQQ88GLsz/1vkxsQI4FW?=
+ =?us-ascii?Q?amBPxtGR9DU8cNq9zNX1lTdzZAbRXfFVRQGJSmGXy2wo8jlVNig9y5usA2SE?=
+ =?us-ascii?Q?berLS8K4BvTtD/Ch2wEawYHjIE7U7cRdX4OARIMzYrc9DUEaV8Mee2/ZRli5?=
+ =?us-ascii?Q?BkrMa0VPTBiMSBs4P9KQsIrQ7HXJA0xnz0jShgO9mm9Y7lBH2QeIe2AW5BvP?=
+ =?us-ascii?Q?bIpZOvgp/4K8gDQOqfHg6Cguv5D/w+cUZ7w5EEQi49DloLBajGvYGXVbp1DG?=
+ =?us-ascii?Q?s/QUci81VRniQWyvKkBeEQcu1yq04x+CIf3WZ/Hi63k7mXnw8zfq5UCnB1Bk?=
+ =?us-ascii?Q?0WF64fcm/X1VPLiV/3QaT5i9/dr7jXzxIPSOqEQT6S3thrOQrK0okMYKR8JA?=
+ =?us-ascii?Q?9QyB97Sj7NJq4P4KIDQDb6+1sPJCG9eYAY2+uLhm7Qu8JJ2gQzaNVl9teFn1?=
+ =?us-ascii?Q?vmRtUsL1V7CgfvexEsGJ3webXdMlrURRHPlpMAnbxiuA6K/ZeEMJzqdTa+k4?=
+ =?us-ascii?Q?ayz46j4hql5cDu+IlXDIRiVONdzMYl4mvoCigTefW3CcSGc++9lG8WQyxGov?=
+ =?us-ascii?Q?roTCyJO5o8dz0+7MikNpJYrzy+0QPkrDVHC4tHLmgANeCCYYnhSXkKpgQpKM?=
+ =?us-ascii?Q?kI5W5Bz9Sca7hwVtv1FPn5Hm3DmJQFPvIM/uqKeds4TR3JAOOuRk+ev192n+?=
+ =?us-ascii?Q?nsDGS5uNnCDLTb1ENbqvShXdaZAs2PWnl074j5Bs?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220808073232.8808-1-david@redhat.com> <CAHk-=wi81ujYGP0gmyy2kDke_ExL742Lo_hLepGjCa8mS81A7w@mail.gmail.com>
- <YvKsBUuwLNlHwhnE@nvidia.com>
-In-Reply-To: <YvKsBUuwLNlHwhnE@nvidia.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 9 Aug 2022 12:07:31 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjh3wkhQWN8BHFUT6t52kfNMcRd+1JczD4Sgp_q11w8eA@mail.gmail.com>
-Message-ID: <CAHk-=wjh3wkhQWN8BHFUT6t52kfNMcRd+1JczD4Sgp_q11w8eA@mail.gmail.com>
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, stable@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a62006c0-f4df-4b4a-d77b-08da7a3ad56b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2022 19:10:33.3027
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: C5EM+d3I4ilD+7+gdyfiTELfnoOfVRqoDmihTmJ1Bvo2tuAmBZ1UYp18i1MVb82XeP3uzPqiJx3VGqqABJm7lw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5346
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 11:48 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> It is because of all this madness with COW.
 
-Yes, yes, but we have the proper long-term pinning now with
-PG_anon_exclusive, and it actually gets the pinning right not just
-over COW, but even over a fork - which that early write never did.
 
-David, I thought all of that got properly merged? Is there something
-still missing?
+> -----Original Message-----
+> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Sent: Tuesday, August 9, 2022 11:05 AM
+> To: Shenwei Wang <shenwei.wang@nxp.com>; robh+dt@kernel.org;
+> krzysztof.kozlowski+dt@linaro.org; linus.walleij@linaro.org; brgl@bgdev.p=
+l;
+> shawnguo@kernel.org; s.hauer@pengutronix.de; kernel@pengutronix.de;
+> festevam@gmail.com; dl-linux-imx <linux-imx@nxp.com>
+> Cc: devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+> gpio@vger.kernel.org; linux-arm-kernel@lists.infradead.org; imx@lists.lin=
+ux.dev
+> Subject: [EXT] Re: [PATCH v2 1/3] dt-bindings: gpio: Add imx-scu gpio dri=
+ver
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - fsl,imx8-scu-gpio
+>=20
+> This should be rather a specific imx8 chip. See other imx8 SCU bindings.
+> Strictly speaking there is no "imx8" SoC and compatible should be derived=
+ from
+> SoC.
 
-                     Linus
+Make sense. Thank you very much for the comments.
+
+Regards
+Shenwei
+
+>=20
+>=20
+>=20
+> Best regards,
+> Krzysztof
