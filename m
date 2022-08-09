@@ -2,72 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6F8C25B06
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE63C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240615AbiHIIdN convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
+        id S240665AbiHIIdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240542AbiHIIdK (ORCPT
+        with ESMTP id S240542AbiHIIdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:33:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EC5201B2
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 01:33:10 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oLKfR-0006K1-7S; Tue, 09 Aug 2022 10:32:49 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oLKfM-002fas-63; Tue, 09 Aug 2022 10:32:46 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oLKfN-0001Qi-La; Tue, 09 Aug 2022 10:32:45 +0200
-Message-ID: <b18ef07670c09d4a58b70dc3671549a9b7d5b4e2.camel@pengutronix.de>
-Subject: Re: [PATCH 2/3] ASoC: apple: mca: Start new platform driver
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Martin =?UTF-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     asahi@lists.linux.dev, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 09 Aug 2022 10:32:45 +0200
-In-Reply-To: <20220808224153.3634-3-povik+lin@cutebit.org>
-References: <20220808224153.3634-1-povik+lin@cutebit.org>
-         <20220808224153.3634-3-povik+lin@cutebit.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Tue, 9 Aug 2022 04:33:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7885920BE2;
+        Tue,  9 Aug 2022 01:33:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1113160F80;
+        Tue,  9 Aug 2022 08:33:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFD04C433C1;
+        Tue,  9 Aug 2022 08:33:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660034022;
+        bh=8oLsa6JXahgVFpviTbXLMP2xROZxRe/dFE2nTOmoTp4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b3q966pjMDDXnBJEwIipYsrHFPefnVIDyfN7GuJO77cad+z+97UJLvZHi6TfqK3KN
+         DWjZQjYljRx1JhZ1Mx7hdeadLMRFXmZ6p5l4nId5NZqiUkobF8bdLWEGPmy+uDhn0c
+         Yv0Z44FO2g7TxetkB4RL5pJaZWDxo9h7ALxrdTtDN6MFvnIfgtlPqoaqWAHNOf5C6C
+         MPmSdDwCQ4/VUVHazUh7otAzgFApPFs2bbxgt9vGs7x7/HLWemI/4ruWbug3vaiBKN
+         gn/e79XiNTYJiO3YcRwQ9VjFomVGYxa23iu25frxu/u6MoudosoezMkAyMyHMeTDNO
+         zwFSI+D4xeHYA==
+Date:   Tue, 9 Aug 2022 09:33:37 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Peter Collingbourne <pcc@google.com>, stable@vger.kernel.org,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH][for-stable] arm64: set UXN on swapper page tables
+Message-ID: <20220809083336.GA776@willie-the-truck>
+References: <20220808125321.32598-1-will@kernel.org>
+ <YvEOa/l7zcukaqle@kroah.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvEOa/l7zcukaqle@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Martin,
+On Mon, Aug 08, 2022 at 03:23:55PM +0200, Greg KH wrote:
+> On Mon, Aug 08, 2022 at 01:53:21PM +0100, Will Deacon wrote:
+> > From: Peter Collingbourne <pcc@google.com>
+> > 
+> > [ This issue was fixed upstream by accident in c3cee924bd85 ("arm64:
+> >   head: cover entire kernel image in initial ID map") as part of a
+> >   large refactoring of the arm64 boot flow. This simple fix is therefore
+> >   preferred for -stable backporting ]
+> > 
+> > On a system that implements FEAT_EPAN, read/write access to the idmap
+> > is denied because UXN is not set on the swapper PTEs. As a result,
+> > idmap_kpti_install_ng_mappings panics the kernel when accessing
+> > __idmap_kpti_flag. Fix it by setting UXN on these PTEs.
+> > 
+> > Fixes: 18107f8a2df6 ("arm64: Support execute-only permissions with Enhanced PAN")
+> > Cc: <stable@vger.kernel.org> # 5.15
+> > Link: https://linux-review.googlesource.com/id/Ic452fa4b4f74753e54f71e61027e7222a0fae1b1
+> > Signed-off-by: Peter Collingbourne <pcc@google.com>
+> > Acked-by: Will Deacon <will@kernel.org>
+> > Cc: Ard Biesheuvel <ardb@kernel.org>
+> > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > Link: https://lore.kernel.org/r/20220719234909.1398992-1-pcc@google.com
+> > Signed-off-by: Will Deacon <will@kernel.org>
+> > ---
+> >  arch/arm64/include/asm/kernel-pgtable.h | 4 ++--
+> >  arch/arm64/kernel/head.S                | 2 +-
+> >  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> So this should be added to 5.15.y, 5.18.y, and 5.19.y?  Or some subset?
 
-On Di, 2022-08-09 at 00:41 +0200, Martin Povišer wrote:
-> +	mca->rstc = devm_reset_control_get_shared(&pdev->dev, NULL);
-> +	if (IS_ERR(mca->rstc)) {
-> +		dev_dbg(&pdev->dev, "couldn't obtain reset control: %pe\n", mca->rstc);
-> +		mca->rstc = NULL;
-> +	}
+Yes, all of them. Basically anything still being updated which is >= 5.15
+and <= 5.19.
 
-Please don't ignore errors, this could be -ENOMEM.
+Thanks,
 
-For optional resets, use devm_reset_control_get_optional_shared(),
-which returns NULL if there is no resets property in the device tree.
-
-regards
-Philipp
+Will
