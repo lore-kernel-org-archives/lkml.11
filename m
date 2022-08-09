@@ -2,111 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F1CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB435C25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245046AbiHIRx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 13:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S245092AbiHIRxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 13:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237014AbiHIRxZ (ORCPT
+        with ESMTP id S245145AbiHIRxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 13:53:25 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E111CFCD
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 10:53:24 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id D0EEA5C01D4;
-        Tue,  9 Aug 2022 13:53:21 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 09 Aug 2022 13:53:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1660067601; x=1660154001; bh=Vy
-        KeV2ElkwgyDFVxUOxhmBbB09fpy5zZsNUAj88DvPA=; b=aJUDTZ0VtJDQz7PStj
-        75K0dzSoUORG6XEpjvuRMT9WPyuAw1/DCqhwc+aA5BGVUyKFe9IMQMqnpJptgTC0
-        XcfWtJWcYAVBF8KrIybWFdpIVFIYBMmDn/6H7lb/bPSwfeJES2LELUuwD3Ax1b7o
-        QaOG7UF9r/0lFXixrTq+ImNPDfqXOTLJmMCvWrcec77SHD2/qbv4fuQVLyvChlKg
-        5i00/PDeE0WyjOEjRbM6oebAim/mIB82/zuTvrZJto8JqbTK35K7h0R9H28y+bNV
-        osbXtMM71YLFkXDWHsprEt4fgDFLIBuoXlLeduBUTkaqUkJa3eH6gSKTDwTHKRwV
-        pKBg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660067601; x=1660154001; bh=VyKeV2ElkwgyDFVxUOxhmBbB09fp
-        y5zZsNUAj88DvPA=; b=ln3MRuCimKBs39Z9VwRE34fRbuCEHS6eoIYR6rDyyWfv
-        u1Ya3MTlS4Dpq/q8rGR4YmGxu/VOAlqVtmDylo3jHKDJXq3AchN2i8nhTZRioCnB
-        3+24MJ/muj7eNox1KUaGCsYuJLd2vMiQyp/PxaW8Dm3k1+nCJAjLsKA2rVHfGiAH
-        qPjcFMozZN14jYvEHT3zkslOa9Vl4bbqo864Istb8xogQw7oEQ3uUXo1d4Gbkz8E
-        v2WWabPqdGEbvD3+aEQihwA/tsrcI6+RygzFDfqNijRaNxmheEFtA2jZ79v+FABK
-        XTZ1N5fruD42rbJGRPR9VZK+QjrjqmxobNAJMn8NZg==
-X-ME-Sender: <xms:EZ_yYkQC6TZfbEPtpfUnMpZUKb86nm-FSxmbZVaFLo1g6JFu83nbEQ>
-    <xme:EZ_yYhwr5Q8YpFUwvKjIi55gHUv4RU5gUnPyMlw8loIZkKQ1SoE0IDhDlcRzpJqVk
-    qHMh843tesQS93Y_kY>
-X-ME-Received: <xmr:EZ_yYh3bfqZHYFdrulTcXCddwc9FU6tqB9MqB_vDwmwJFA-vJEzJHpOzEViXmmfuHWtCnQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegtddguddvtdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpedfmfhi
-    rhhilhhlucetrdcuufhhuhhtvghmohhvfdcuoehkihhrihhllhesshhhuhhtvghmohhvrd
-    hnrghmvgeqnecuggftrfgrthhtvghrnhepkedvvdejffehteegtddvgfeijeeivdegjeei
-    teejheeiheevffeukeefheffvdevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomhepkhhirhhilhhlsehshhhuthgvmhhovhdrnhgrmhgv
-X-ME-Proxy: <xmx:EZ_yYoDFfkYeFxp5CdARqOIfmnupT4JvHd1T9V5PTOlc0QZTBoPo0A>
-    <xmx:EZ_yYtjbrjcEVWRPckKgpIyvpqq3N0vIA3-53IlLkgPJ4Ejziqw1RQ>
-    <xmx:EZ_yYkpH_krWhXfwYmUQ06sR3aXBb9DdoffW_ov06naPqGTVl9fBJA>
-    <xmx:EZ_yYtfvqQ7SeBgleog9_Tau1vYnrf_HNd_QOM0f--lwTg5rQhDBdA>
-Feedback-ID: ie3994620:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Aug 2022 13:53:21 -0400 (EDT)
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id 2A8AE103886; Tue,  9 Aug 2022 20:56:21 +0300 (+03)
-Date:   Tue, 9 Aug 2022 20:56:21 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Aaron Lu <aaron.lu@intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH 0/4] x86/mm/cpa: merge small mappings whenever
- possible
-Message-ID: <20220809175621.qq4ksi6zzqpon7e6@box>
-References: <20220808145649.2261258-1-aaron.lu@intel.com>
- <20220809100408.rm6ofiewtty6rvcl@box>
- <43c610f9-8671-519c-108f-9996e219c249@intel.com>
+        Tue, 9 Aug 2022 13:53:42 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A58325C57;
+        Tue,  9 Aug 2022 10:53:38 -0700 (PDT)
+Received: from [192.168.192.83] (unknown [50.126.114.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 3AE283FF07;
+        Tue,  9 Aug 2022 17:53:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1660067616;
+        bh=/Vhd8TdfzMQNLDQ5lUjG5jPSyEGcCPbhTBvMfdqlLas=;
+        h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type;
+        b=YUKo5SshosO+HK2y4gkXr19LHcaqArfmBeGhw4TIgw5OZnB2btsvrDULhYSsyqCIW
+         Y02YHZ4mRN6D01LYdTJfImawaOT7VxWtwVoMzQZKgc93Ifl7587esyX/jMUgNrfR/i
+         0dxWBviAqRiUzNwJvdCGvi4PprBW5F5YBpeBeSghrZEL/1EN7AZH4+SiIHSS/mWaAc
+         wKdJJh51SHzEo0eCVg7euBUnIWz/zAy+2SlipIqXWuHZ6s82gzv8+3w0038baCHmv4
+         6TmIbTrrGblbZXiEmNdtcN5d1cjo5v9X0z1cdXy6J29UUO13F8C5nNpJkAqxg2PpU5
+         +ZA5rgY6Zm3VA==
+Message-ID: <8009201e-be46-a237-c6b1-e133dbc84137@canonical.com>
+Date:   Tue, 9 Aug 2022 10:53:33 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <43c610f9-8671-519c-108f-9996e219c249@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From:   John Johansen <john.johansen@canonical.com>
+Subject: [GIT PULL] apparmor changes for v5.20
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKLM <linux-kernel@vger.kernel.org>,
+        "open list:SECURITY SUBSYSTEM" 
+        <linux-security-module@vger.kernel.org>
+Content-Language: en-US
+Organization: Canonical
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 10:58:18PM +0800, Aaron Lu wrote:
-> Hi Kirill,
-> 
-> Thanks a lot for the feedback.
-> 
-> On 8/9/2022 6:04 PM, Kirill A. Shutemov wrote:
-> > On Mon, Aug 08, 2022 at 10:56:45PM +0800, Aaron Lu wrote:
-> >> This is an early RFC. While all reviews are welcome, reviewing this code
-> >> now will be a waste of time for the x86 subsystem maintainers. I would,
-> >> however, appreciate a preliminary review from the folks on the to and cc
-> >> list. I'm posting it to the list in case anyone else is interested in
-> >> seeing this early version.
-> > 
-> > Last time[1] I tried to merge pages back in direct mapping it lead to
-> > substantial performance regression for some workloads. I cannot find the
-> > report right now, but I remember it was something graphics related.
-> >
-> 
-> Do you happen to remember the workload name? I can try running it.
+Hi Linus,
 
 
-No, sorry. As I said, I tried to find the report, but failed.
+This is mostly cleanups and bug fixes with the one bigger change
+being Mathew Wilcox's patch to use XArrays instead of the IDR
+from the "Linux 5.18-rc4" thread around the locking weirdness.
 
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+thanks
+- john
+
+
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+
+   Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+
+are available in the Git repository at:
+
+   git://git.kernel.org/pub/scm/linux/kernel/git/jj/linux-apparmor tags/apparmor-pr-2022-08-08
+
+for you to fetch changes up to c269fca7b37a08b7eec6f6b79a0abf1d0a245acb:
+
+   apparmor: Update MAINTAINERS file with new email address (2022-08-06 12:08:39 -0700)
+
+----------------------------------------------------------------
++ Features
+   - Convert secid mapping to XArrays instead of IDR
+   - Add a kernel label to use on kernel objects
+   - Extend policydb permission set by making use of the xbits
+   - Make export of raw binary profile to userspace optional
+   - Enable tuning of policy paranoid load for embedded systems
+   - Don't create raw_sha1 symlink if sha1 hashing is disabled
+   - Allow labels to carry debug flags
+
++ Cleanups
+   - Update MAINTAINERS file
+   - Use struct_size() helper in kmalloc()
+   - Move ptrace mediation to more logical task.{h,c}
+   - Resolve uninitialized symbol warnings
+   - Remove redundant ret variable
+   - Mark alloc_unconfined() as static
+   - Update help description of policy hash for introspection
+   - Remove some casts which are no-longer required
+
++ Bug Fixes
+   - Fix aa_label_asxprint return check
+   - Fix reference count leak in aa_pivotroot()
+   - Fix memleak in aa_simple_write_to_buffer()
+   - Fix kernel doc comments
+   - Fix absroot causing audited secids to begin with =
+   - Fix quiet_denied for file rules
+   - Fix failed mount permission check error message
+   - Disable showing the mode as part of a secid to secctx
+   - Fix setting unconfined mode on a loaded profile
+   - Fix overlapping attachment computation
+   - Fix undefined reference to `zlib_deflate_workspacesize'
+
+----------------------------------------------------------------
+David Gow (1):
+       apparmor: test: Remove some casts which are no-longer required
+
+Gustavo A. R. Silva (1):
+       apparmor: Use struct_size() helper in kmalloc()
+
+John Johansen (17):
+       apparmor: fix absroot causing audited secids to begin with =
+       apparmor: Update help description of policy hash for introspection
+       apparmor: make export of raw binary profile to userspace optional
+       apparmor: Enable tuning of policy paranoid load for embedded systems
+       apparmor: don't create raw_sha1 symlink if sha1 hashing is disabled
+       apparmor: Update MAINTAINERS file with the lastest information
+       apparmor: fix quiet_denied for file rules
+       apparmor: Fix failed mount permission check error message
+       apparmor: Fix undefined reference to `zlib_deflate_workspacesize'
+       apparmor: add a kernel label to use on kernel objects
+       apparmor: disable showing the mode as part of a secid to secctx
+       apparmor: fix setting unconfined mode on a loaded profile
+       apparmor: fix overlapping attachment computation
+       apparmor: allow label to carry debug flags
+       apparmor: extend policydb permission set by making use of the xbits
+       apparmor: move ptrace mediation to more logical task.{h,c}
+       apparmor: Update MAINTAINERS file with new email address
+
+Lukas Bulwahn (1):
+       apparmor: correct config reference to intended one
+
+Matthew Wilcox (1):
+       apparmor: Convert secid mapping to XArrays instead of IDR
+
+Mike Salvatore (1):
+       apparmor: resolve uninitialized symbol warnings in policy_unpack_test.c
+
+Minghao Chi (1):
+       security/apparmor: remove redundant ret variable
+
+Souptick Joarder (HPE) (1):
+       apparmor: Mark alloc_unconfined() as static
+
+Tom Rix (1):
+       apparmor: fix aa_label_asxprint return check
+
+Xin Xiong (1):
+       apparmor: fix reference count leak in aa_pivotroot()
+
+Xiu Jianfeng (1):
+       apparmor: Fix memleak in aa_simple_write_to_buffer()
+
+Yang Li (7):
+       apparmor: Fix kernel-doc
+       lsm: Fix kernel-doc
+       apparmor: Fix match_mnt_path_str() and match_mnt() kernel-doc comment
+       apparmor: Fix some kernel-doc comments
+       apparmor: Fix some kernel-doc comments
+       apparmor: Fix some kernel-doc comments
+       apparmor: Fix some kernel-doc comments
+
+  MAINTAINERS                               |   8 ++-
+  security/apparmor/Kconfig                 |  86 +++++++++++++++-------
+  security/apparmor/apparmorfs.c            | 103 +++++++++++++++------------
+  security/apparmor/audit.c                 |   2 +-
+  security/apparmor/domain.c                |   5 +-
+  security/apparmor/include/apparmor.h      |   1 +
+  security/apparmor/include/apparmorfs.h    |  14 ++++
+  security/apparmor/include/file.h          |   3 +
+  security/apparmor/include/ipc.h           |  18 -----
+  security/apparmor/include/label.h         |   2 +
+  security/apparmor/include/lib.h           |   5 ++
+  security/apparmor/include/path.h          |   4 +-
+  security/apparmor/include/policy.h        |   6 +-
+  security/apparmor/include/policy_ns.h     |   1 +
+  security/apparmor/include/policy_unpack.h |   2 +
+  security/apparmor/include/secid.h         |   5 +-
+  security/apparmor/include/task.h          |  18 +++++
+  security/apparmor/ipc.c                   | 110 ----------------------------
+  security/apparmor/label.c                 |  29 ++++----
+  security/apparmor/lib.c                   |  27 +++++--
+  security/apparmor/lsm.c                   |  38 +++++-----
+  security/apparmor/mount.c                 |  13 ++--
+  security/apparmor/net.c                   |   3 +-
+  security/apparmor/policy.c                |  35 +++++----
+  security/apparmor/policy_ns.c             |  53 ++++++++++----
+  security/apparmor/policy_unpack.c         |  53 +++++++++-----
+  security/apparmor/policy_unpack_test.c    |  28 ++++----
+  security/apparmor/procattr.c              |   2 +-
+  security/apparmor/secid.c                 |  56 ++++++---------
+  security/apparmor/task.c                  | 114 ++++++++++++++++++++++++++++++
+  30 files changed, 498 insertions(+), 346 deletions(-)
+
