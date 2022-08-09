@@ -2,81 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9302FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E29AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244957AbiHISXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
+        id S1343830AbiHISXr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346506AbiHISVL (ORCPT
+        with ESMTP id S1346614AbiHISVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:21:11 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E424430F7D
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=tEZH78s39cZZpL1c4UpqCCA5GDPB6GsTZ8qHdrf+Wqo=;
-        t=1660068480; x=1661278080; b=JHw8V9Q4vvO+nAPXJ+TfBtDOhPDUkqM8G5EMQcrfUb1abMD
-        svioDSrNIDfPBguFOEuILma7gx0WtyLVv9kYlITu9HzYq0g8huLvUA5T3iaJPjFlS1G06faoUtjbJ
-        f2YOY63WoD8QUK21xkglD9vEJhLiOdjKsofroJThGklmlIkMhvRp7XAGBKAqdFUavkcZSYdLep3ER
-        0aiM4Y9xs6yt62IVSmKI37j5XrqPI8zlmemXaBYVHvavQ9dWp2e77pSSOZ9WShAmVrUBKmso0owlE
-        6J8EF0KUdpJI7APOYGksKAYb9rUu40zT33EW9j1x5FmjEATkMq4Z9sYtERntvMCA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oLTds-003HVP-2D;
-        Tue, 09 Aug 2022 20:07:48 +0200
-Message-ID: <76b5db88b280cccb784209b26fe48799dcb41b13.camel@sipsolutions.net>
-Subject: Re: [PATCH v2] um: read multiple msg from virtio slave request fd
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc:     linux-um@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Tue, 09 Aug 2022 20:07:47 +0200
-In-Reply-To: <20220607112714.516408-1-benjamin.beichler@uni-rostock.de>
-References: <20220607112714.516408-1-benjamin.beichler@uni-rostock.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Tue, 9 Aug 2022 14:21:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8C230F4D;
+        Tue,  9 Aug 2022 11:08:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFB1DB81928;
+        Tue,  9 Aug 2022 18:07:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F18C43470;
+        Tue,  9 Aug 2022 18:07:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660068426;
+        bh=CWNgJ/mRgt3f1gIIywjLR7FYwNO5xLv+kG2ApKVF4O4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qtQJz8272wSdk0l7eojlrpTmCW/ZcSO18/LSzJcXtIT8IuHq2haaF6924zg1MQcJa
+         Dfkj9D5wA/H9MSnbY3MN6nA0j8AcwqvLcSksIZcwZG25lRdK9OXcrYieg86TywdOeR
+         H2SLK+kwKTvwmKs+J5ryreuC1qPrHqt7XZ+tY/zg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Aaron Ma <aaron.ma@canonical.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.18 27/35] Bluetooth: btusb: Add support of IMC Networks PID 0x3568
+Date:   Tue,  9 Aug 2022 20:00:56 +0200
+Message-Id: <20220809175516.054785926@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
+References: <20220809175515.046484486@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-07 at 11:27 +0000, Benjamin Beichler wrote:
-> If VHOST_USER_PROTOCOL_F_INBAND_NOTIFICATIONS is activated, the user mode
-> linux virtio irq handler only read one msg from the corresponding socket.
-> This creates issues, when the device emulation creates multiple call
-> requests (e.g. for multiple virtqueues), as the socket buffer tend to fil=
-l
-> up and the call requests are delayed.
->=20
-> This creates a deadlock situation, when the device simulation blocks,
-> because of sending a msg and the kernel side blocks because of
-> synchronously waiting for an acknowledge of kick request.
->=20
-> Actually inband notifications are meant to be used in combination with th=
-e
-> time travel protocol, but it is not required, therefore this corner case
-> needs to be handled.
->=20
-> Anyways, in general it seems to be more natural to consume always all
-> messages from a socket, instead of only a single one.
->=20
-> Fixes: 2cd097ba8c05 ("um: virtio: Implement VHOST_USER_PROTOCOL_F_SLAVE_R=
-EQ")
-> Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
->=20
+From: Aaron Ma <aaron.ma@canonical.com>
 
-Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+commit c69ecb0ea4c96b8b191cbaa0b420222a37867655 upstream.
+
+It is 13d3:3568 for MediaTek MT7922 USB Bluetooth chip.
+
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=480 MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=13d3 ProdID=3568 Rev=01.00
+S:  Manufacturer=MediaTek Inc.
+S:  Product=Wireless_Device
+S:  SerialNumber=...
+C:  #Ifs= 3 Cfg#= 1 Atr=e0 MxPwr=100mA
+I:  If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=125us
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:  If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 2 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
+E:  Ad=0a(O) Atr=03(Int.) MxPS=  64 Ivl=125us
+E:  Ad=8a(I) Atr=03(Int.) MxPS=  64 Ivl=125us
+
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/bluetooth/btusb.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -469,6 +469,9 @@ static const struct usb_device_id blackl
+ 	{ USB_DEVICE(0x0489, 0xe0d9), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x13d3, 0x3568), .driver_info = BTUSB_MEDIATEK |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
+ 
+ 	/* Additional Realtek 8723AE Bluetooth devices */
+ 	{ USB_DEVICE(0x0930, 0x021d), .driver_info = BTUSB_REALTEK },
 
 
-Sorry, should've sent that earlier.
-
-johannes
