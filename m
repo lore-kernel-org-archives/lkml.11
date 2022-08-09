@@ -2,119 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E93BC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3E6C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235840AbiHIGkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S238148AbiHIGl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiHIGkP (ORCPT
+        with ESMTP id S229886AbiHIGlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:40:15 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A94227
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 23:40:12 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M23Jr5dkKzlVj2;
-        Tue,  9 Aug 2022 14:37:16 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 14:40:08 +0800
-Received: from huawei.com (10.175.101.6) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
- 2022 14:40:07 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <anton@tuxera.com>
-CC:     <linux-ntfs-dev@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
-        <akpm@linux-foundation.org>
-Subject: [PATCH] ntfs: fix BUG_ON in ntfs_lookup_inode_by_name()
-Date:   Tue, 9 Aug 2022 14:47:30 +0800
-Message-ID: <20220809064730.2316892-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 9 Aug 2022 02:41:55 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3DC201AC;
+        Mon,  8 Aug 2022 23:41:54 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M23Q51vQhz4x1J;
+        Tue,  9 Aug 2022 16:41:49 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1660027309;
+        bh=t7xPe4mFK0bZ6Qo96hN1grLRamjl9/fDy4qsW9o1yao=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fEbx9fu5mU8mWYGSWVZ5+wtKaxv+E9YaCe1bRVLFHGRUXJhYWtWcwJrhk3CbrykJP
+         TEQrShx2I6T8+g0npT8t9qDKmdmeyQlJr154kSxgYCKK8JniNX95FS5949rUHF8FZY
+         2hPqrGWTw+HdjVFREU7egoRgdoJJLH5WaatNPs6ioJQLnhpG4yORiSs0f9XAnO4LFW
+         Y486lKak2wAa6j8U4FDCjtZx45VQ7e2fhbocCJyjeulvX1zGzHv7fpS3dJLX7/4M+u
+         H8nABk1lnFNM9OoKcoBbNl0pbBnHgni0OwlvrM91bPG0OZeE8zRNBNV3MIwsygOwg7
+         f8ENTCNn++M3g==
+Date:   Tue, 9 Aug 2022 16:41:47 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>
+Cc:     Ben Gardon <bgardon@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the kvm tree
+Message-ID: <20220809164147.131f87d0@canb.auug.org.au>
+In-Reply-To: <20220627181937.3be67263@canb.auug.org.au>
+References: <20220627181937.3be67263@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/I9PiRdCK0D2PIzWbH9QXuTA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reported BUG_ON as follows:
+--Sig_/I9PiRdCK0D2PIzWbH9QXuTA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-------------[ cut here ]------------
-kernel BUG at fs/ntfs/dir.c:86!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 3 PID: 758 Comm: a.out Not tainted 5.19.0-next-20220808 #5
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-RIP: 0010:ntfs_lookup_inode_by_name+0xd11/0x2d10
-Code: ff e9 b9 01 00 00 e8 1e fe d6 fe 48 8b 7d 98 49 8d 5d 07 e8 91 85 29 ff 48 c7 45 98 00 00 00 00 e9 5a fb ff ff e8 ff fd d6 fe <0f> 0b e8 f8 fd d6 fe 0f 0b e8 f1 fd d6 fe 48 8b b5 50 ff ff ff 4c
-RSP: 0018:ffff888079607978 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000008000 RCX: 0000000000000000
-RDX: ffff88807cf10000 RSI: ffffffff82a4a081 RDI: 0000000000000003
-RBP: ffff888079607a70 R08: 0000000000000001 R09: ffff88807a6d01d7
-R10: ffffed100f4da03a R11: 0000000000000000 R12: ffff88800f0fb110
-R13: ffff88800f0ee000 R14: ffff88800f0fb000 R15: 0000000000000001
-FS:  00007f33b63c7540(0000) GS:ffff888108580000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f33b635c090 CR3: 000000000f39e005 CR4: 0000000000770ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- <TASK>
- load_system_files+0x1f7f/0x3620
- ntfs_fill_super+0xa01/0x1be0
- mount_bdev+0x36a/0x440
- ntfs_mount+0x3a/0x50
- legacy_get_tree+0xfb/0x210
- vfs_get_tree+0x8f/0x2f0
- do_new_mount+0x30a/0x760
- path_mount+0x4de/0x1880
- __x64_sys_mount+0x2b3/0x340
- do_syscall_64+0x38/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f33b62ff9ea
-Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffd0c471aa8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f33b62ff9ea
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffd0c471be0
-RBP: 00007ffd0c471c60 R08: 00007ffd0c471ae0 R09: 00007ffd0c471c24
-R10: 0000000000000000 R11: 0000000000000202 R12: 000055bac5afc160
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
+Hi all,
 
-Fix this by adding sanity check on extended system files' directory inode
-to ensure that it is directory, just like ntfs_extend_init() when mounting
-ntfs3.
+On Mon, 27 Jun 2022 18:19:37 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> After merging the kvm tree, today's linux-next build (htmldocs) produced
+> this warning:
+>=20
+> Documentation/virt/kvm/api.rst:8210: WARNING: Title underline too short.
+>=20
+> 8.38 KVM_CAP_VM_DISABLE_NX_HUGE_PAGES
+> ---------------------------
+> Documentation/virt/kvm/api.rst:8217: WARNING: Unexpected indentation.
+>=20
+> Introduced by commit
+>=20
+>   084cc29f8bbb ("KVM: x86/MMU: Allow NX huge pages to be disabled on a pe=
+r-vm basis")
 
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/ntfs/super.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I am still seeing these warnings.  That commit is now in Linus' tree :-(
 
-diff --git a/fs/ntfs/super.c b/fs/ntfs/super.c
-index 5ae8de09b271..001f4e053c85 100644
---- a/fs/ntfs/super.c
-+++ b/fs/ntfs/super.c
-@@ -2092,7 +2092,8 @@ static bool load_system_files(ntfs_volume *vol)
- 	// TODO: Initialize security.
- 	/* Get the extended system files' directory inode. */
- 	vol->extend_ino = ntfs_iget(sb, FILE_Extend);
--	if (IS_ERR(vol->extend_ino) || is_bad_inode(vol->extend_ino)) {
-+	if (IS_ERR(vol->extend_ino) || is_bad_inode(vol->extend_ino) ||
-+	    !S_ISDIR(vol->extend_ino->i_mode)) {
- 		if (!IS_ERR(vol->extend_ino))
- 			iput(vol->extend_ino);
- 		ntfs_error(sb, "Failed to load $Extend.");
--- 
-2.31.1
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/I9PiRdCK0D2PIzWbH9QXuTA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLyAasACgkQAVBC80lX
+0GxzEAf8DP+uDFaAE+MwTdQRewbg4DOgLjJ6S87Udp7ChDA/l/VwhJcm8XSgZv84
+on5HcTl70X6U8/8+yeU9EIn6tDNXOhM4cn9gRe/WgLkZ0ziOQ+WhOl7cny1NIqNO
+MqmRU37tLuWwJLLprRjsL8T4ylnvonwpR0xPDo2WVksahg218nG6C2/IU5J0v1yn
+1e/703shgbXHfkxBzEo11BUWPU0ALlKaVrdq9Sj34kU9NPBddA4xmrLuRX42D2QT
+pj4bf4C5eRaMTVrbMOl8tZjSNtcReOuHCnWsmyTKvxANkCzZsg/QEvL0d8spq4Ug
+kYwBn0VucKHXqvbu/7zKjXRM4LLg4Q==
+=C1gV
+-----END PGP SIGNATURE-----
+
+--Sig_/I9PiRdCK0D2PIzWbH9QXuTA--
