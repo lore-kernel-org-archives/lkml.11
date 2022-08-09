@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86819C25B07
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA07DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343572AbiHISIS (ORCPT
+        id S1345028AbiHISIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
+        Tue, 9 Aug 2022 14:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344847AbiHISHd (ORCPT
+        with ESMTP id S1344950AbiHISHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:07:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9EF286FD;
-        Tue,  9 Aug 2022 11:03:15 -0700 (PDT)
+        Tue, 9 Aug 2022 14:07:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C84126127;
+        Tue,  9 Aug 2022 11:03:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4240B8171C;
-        Tue,  9 Aug 2022 18:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CC6C433B5;
-        Tue,  9 Aug 2022 18:03:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B09A6109E;
+        Tue,  9 Aug 2022 18:03:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6C6C43141;
+        Tue,  9 Aug 2022 18:03:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068192;
-        bh=aS6kC7/UR/+s4cEQ6IbqOtahiGkvu5P7CX0AzJ/IWIM=;
+        s=korg; t=1660068198;
+        bh=qZI/HCcpqu709ggT6c59DUUyye8IfMFVlk3MUijuPCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z1rJ4JUnnQU/tn7l9itxmDDqum3h0gn8/ZUB/ARX/biXW9W18qJeniXuKMTilLr7w
-         BpXlk6r3xQD5tBu7hZmE5D5NXkxcKUSRKModiam+Xuvfrb9lznl9VGRveJiRAE3bdh
-         wzz7eZkp7qOMHJB3MhuouNZ54ItfdHMjA4/wuqNw=
+        b=kk3Wztv/qItESayAuQi2o+6wBdSV7dV2c4hW3ndnL7S3ZnHKbvoGvOA4ISaRLEUIl
+         vAhcWLQojDHR3ytJT7X7oAqv7d1CJQKzs8NeZ0o+byvyKdY12P3WklfJPEOOS8nmba
+         teT6FTfARZ8zwIionmI/HwVrqEz86r0kukV7Er4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 04/15] ACPI: APEI: Better fix to avoid spamming the console with old error logs
-Date:   Tue,  9 Aug 2022 20:00:22 +0200
-Message-Id: <20220809175510.451207033@linuxfoundation.org>
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 06/15] selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads
+Date:   Tue,  9 Aug 2022 20:00:24 +0200
+Message-Id: <20220809175510.524294688@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
 References: <20220809175510.312431319@linuxfoundation.org>
@@ -49,105 +50,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Luck <tony.luck@intel.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-commit c3481b6b75b4797657838f44028fd28226ab48e0 upstream.
+commit 8f50f16ff39dd4e2d43d1548ca66925652f8aff7 upstream.
 
-The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
-table data") does not work as intended on systems where the BIOS has a
-fixed size block of memory for the BERT table, relying on s/w to quit
-when it finds a record with estatus->block_status == 0. On these systems
-all errors are suppressed because the check:
+Add coverage to the verifier tests and tests for reading bpf_sock fields to
+ensure that 32-bit, 16-bit, and 8-bit loads from dst_port field are allowed
+only at intended offsets and produce expected values.
 
-	if (region_len < ACPI_BERT_PRINT_MAX_LEN)
+While 16-bit and 8-bit access to dst_port field is straight-forward, 32-bit
+wide loads need be allowed and produce a zero-padded 16-bit value for
+backward compatibility.
 
-always fails.
-
-New scheme skips individual CPER records that are too large, and also
-limits the total number of records that will be printed to 5.
-
-Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
-Cc: All applicable <stable@vger.kernel.org>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Link: https://lore.kernel.org/r/20220130115518.213259-3-jakub@cloudflare.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+[OP: backport to 5.4: cherry-pick verifier changes only]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/apei/bert.c |   31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ tools/include/uapi/linux/bpf.h              |    3 -
+ tools/testing/selftests/bpf/verifier/sock.c |   81 ++++++++++++++++++++++++++--
+ 2 files changed, 80 insertions(+), 4 deletions(-)
 
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -29,16 +29,26 @@
- 
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+
-+#define ACPI_BERT_PRINT_MAX_RECORDS 5
- #define ACPI_BERT_PRINT_MAX_LEN 1024
- 
- static int bert_disable;
- 
-+/*
-+ * Print "all" the error records in the BERT table, but avoid huge spam to
-+ * the console if the BIOS included oversize records, or too many records.
-+ * Skipping some records here does not lose anything because the full
-+ * data is available to user tools in:
-+ *	/sys/firmware/acpi/tables/data/BERT
-+ */
- static void __init bert_print_all(struct acpi_bert_region *region,
- 				  unsigned int region_len)
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3068,7 +3068,8 @@ struct bpf_sock {
+ 	__u32 src_ip4;
+ 	__u32 src_ip6[4];
+ 	__u32 src_port;		/* host byte order */
+-	__u32 dst_port;		/* network byte order */
++	__be16 dst_port;	/* network byte order */
++	__u16 :16;		/* zero padding */
+ 	__u32 dst_ip4;
+ 	__u32 dst_ip6[4];
+ 	__u32 state;
+--- a/tools/testing/selftests/bpf/verifier/sock.c
++++ b/tools/testing/selftests/bpf/verifier/sock.c
+@@ -121,7 +121,25 @@
+ 	.result = ACCEPT,
+ },
  {
- 	struct acpi_hest_generic_status *estatus =
- 		(struct acpi_hest_generic_status *)region;
- 	int remain = region_len;
-+	int printed = 0, skipped = 0;
- 	u32 estatus_len;
- 
- 	while (remain >= sizeof(struct acpi_bert_region)) {
-@@ -46,24 +56,26 @@ static void __init bert_print_all(struct
- 		if (remain < estatus_len) {
- 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
- 			       estatus_len);
--			return;
-+			break;
- 		}
- 
- 		/* No more error records. */
- 		if (!estatus->block_status)
--			return;
-+			break;
- 
- 		if (cper_estatus_check(estatus)) {
- 			pr_err(FW_BUG "Invalid error record.\n");
--			return;
-+			break;
- 		}
- 
--		pr_info_once("Error records from previous boot:\n");
--		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+		if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
-+		    printed < ACPI_BERT_PRINT_MAX_RECORDS) {
-+			pr_info_once("Error records from previous boot:\n");
- 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
--		else
--			pr_info_once("Max print length exceeded, table data is available at:\n"
--				     "/sys/firmware/acpi/tables/data/BERT");
-+			printed++;
-+		} else {
-+			skipped++;
-+		}
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
-@@ -75,6 +87,9 @@ static void __init bert_print_all(struct
- 		estatus = (void *)estatus + estatus_len;
- 		remain -= estatus_len;
- 	}
-+
-+	if (skipped)
-+		pr_info(HW_ERR "Skipped %d error records\n", skipped);
- }
- 
- static int __init setup_bert_disable(char *str)
+-	"sk_fullsock(skb->sk): sk->dst_port [narrow load]",
++	"sk_fullsock(skb->sk): sk->dst_port [word load] (backward compatibility)",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, offsetof(struct __sk_buff, sk)),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_EMIT_CALL(BPF_FUNC_sk_fullsock),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_0, offsetof(struct bpf_sock, dst_port)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++	.result = ACCEPT,
++},
++{
++	"sk_fullsock(skb->sk): sk->dst_port [half load]",
+ 	.insns = {
+ 	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, offsetof(struct __sk_buff, sk)),
+ 	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 2),
+@@ -139,7 +157,64 @@
+ 	.result = ACCEPT,
+ },
+ {
+-	"sk_fullsock(skb->sk): sk->dst_port [load 2nd byte]",
++	"sk_fullsock(skb->sk): sk->dst_port [half load] (invalid)",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, offsetof(struct __sk_buff, sk)),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_EMIT_CALL(BPF_FUNC_sk_fullsock),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_0, offsetof(struct bpf_sock, dst_port) + 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++	.result = REJECT,
++	.errstr = "invalid sock access",
++},
++{
++	"sk_fullsock(skb->sk): sk->dst_port [byte load]",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, offsetof(struct __sk_buff, sk)),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_EMIT_CALL(BPF_FUNC_sk_fullsock),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_LDX_MEM(BPF_B, BPF_REG_2, BPF_REG_0, offsetof(struct bpf_sock, dst_port)),
++	BPF_LDX_MEM(BPF_B, BPF_REG_2, BPF_REG_0, offsetof(struct bpf_sock, dst_port) + 1),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++	.result = ACCEPT,
++},
++{
++	"sk_fullsock(skb->sk): sk->dst_port [byte load] (invalid)",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, offsetof(struct __sk_buff, sk)),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_EMIT_CALL(BPF_FUNC_sk_fullsock),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_0, offsetof(struct bpf_sock, dst_port) + 2),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++	.result = REJECT,
++	.errstr = "invalid sock access",
++},
++{
++	"sk_fullsock(skb->sk): past sk->dst_port [half load] (invalid)",
+ 	.insns = {
+ 	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, offsetof(struct __sk_buff, sk)),
+ 	BPF_JMP_IMM(BPF_JNE, BPF_REG_1, 0, 2),
+@@ -149,7 +224,7 @@
+ 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 2),
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+-	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_0, offsetof(struct bpf_sock, dst_port) + 1),
++	BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_0, offsetofend(struct bpf_sock, dst_port)),
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
 
 
