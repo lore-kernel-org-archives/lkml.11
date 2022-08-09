@@ -2,136 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDE2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 15:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C73C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 15:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241223AbiHIPVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 11:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        id S244910AbiHIPVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 11:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244935AbiHIPVP (ORCPT
+        with ESMTP id S244866AbiHIPVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 11:21:15 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331D9201B0;
-        Tue,  9 Aug 2022 08:21:11 -0700 (PDT)
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 279FKsRH030769;
-        Wed, 10 Aug 2022 00:20:55 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 279FKsRH030769
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1660058456;
-        bh=ehY71FsW601x63CPvQxCDEV9npZMmiq6LrR++w99gUA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tLGudliSNeG9Nc0FoTKiVDAu8sncXeUiRS06KvvArcDOwbr7L5QMJCexOQjQMcLbK
-         ZarPoq8eETKY2ZpKN0kt/IAgTzzytLPwj91kMDINFTpVuUd6d7xusTksGMSsZEa4QA
-         +nUdKV0btTPlkMPthPd6l3sMIttoA77FODvlZre9XopAsJY7u/Dpx9bUttvvxIbTEM
-         EZavvf8BADbYdDY2M53RmjeSsrE4Fagu8hW+d10KfrkRBaLx+sDrUVWv6J8fuMeDTu
-         OuzSu2USI7XWy6wrInEhnqT5q0OTfyRkAmMHluJf6fBsmBDpwFMSRufTHp+BBiVobu
-         4rzbwvNdl8gjA==
-X-Nifty-SrcIP: [209.85.221.46]
-Received: by mail-wr1-f46.google.com with SMTP id q30so14656810wra.11;
-        Tue, 09 Aug 2022 08:20:55 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3rhEiykvngggdzBVhY8m7/xnEhp/8A/klI9MzwkbGtUoJwTUM7
-        sfGg1z2xgkpsnOuazc59y1BBTbpN+djifHsuABE=
-X-Google-Smtp-Source: AA6agR45uaVj3oXaxHlj5+fMWTKPWeF0jBcj5Tb6P2TOZfXqs2wTkF3S5mzwUFGqv5PmDLDsxkjjWUPTy93NqkrARws=
-X-Received: by 2002:a05:6000:168f:b0:220:748e:82c0 with SMTP id
- y15-20020a056000168f00b00220748e82c0mr14432497wrd.477.1660058453881; Tue, 09
- Aug 2022 08:20:53 -0700 (PDT)
+        Tue, 9 Aug 2022 11:21:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22145DF8;
+        Tue,  9 Aug 2022 08:21:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB54EB812A1;
+        Tue,  9 Aug 2022 15:21:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47BEBC433D6;
+        Tue,  9 Aug 2022 15:21:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660058478;
+        bh=QdIXELd2CkFV47UtpgDg60Cn8MPrEGSNTDM5L4nMVaM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bib2QomNTOnSYhOqg3FOlmGw1OXqMNx1c5eY1Gvi550ot2tfMkDVSIRdRWg98sgf0
+         aHq+y2TsJWEcUG5bdPXeOQmPV300/tV9V30a7ZOQhM69TBjWJYijy0YgxalDcvOeH0
+         VidjCldHTnS29NrNPnWe1nMAAyxu6Z1y5p9UpUO+IyFyIW2p0wGf2XhZqITcgct9gn
+         DTj4HFH6E3wlaWOeWdcry3zuQTJ46iApGKbdTmMSX55iMFOGPb0/PCCD0bWu/MC/6+
+         6ON/faUBPr5VMLBSrqZrO1Em/dIW9+gAHSKZhmN/A3Yw8v/4cR7UtaI1InA0ww2Zic
+         rIH+c6+o7FJ8w==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id A5D8E4035A; Tue,  9 Aug 2022 12:21:15 -0300 (-03)
+Date:   Tue, 9 Aug 2022 12:21:15 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Roberto Sassu <roberto.sassu@huawei.com>,
+        Andres Freund <andres@anarazel.de>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     quentin@isovalent.com, ast@kernel.org, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, peterz@infradead.org,
+        mingo@redhat.com, terrelln@fb.com, nathan@kernel.org,
+        ndesaulniers@google.com, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>
+Subject: Re: [PATCH 4/4] build: Switch to new openssl API for test-libcrypto
+Message-ID: <YvJ7awkCVBYaZ2dd@kernel.org>
+References: <20220719170555.2576993-1-roberto.sassu@huawei.com>
+ <20220719170555.2576993-4-roberto.sassu@huawei.com>
+ <5f867295-10d2-0085-d1dc-051f56e7136a@iogearbox.net>
+ <YvFW/kBL6YA3Tlnc@kernel.org>
+ <YvJ6DbzBNsAgNZS4@kernel.org>
 MIME-Version: 1.0
-References: <20220513113930.10488-1-masahiroy@kernel.org> <CAK7LNAQvneCi11myLpkikuXh=i5PLtTaLe0nGpDZXgv_Q1L0Ow@mail.gmail.com>
- <2c496d24174e63b27ec047f383df6700@matoro.tk> <CAK7LNASWKhj0tZK6jA1PsYje+idTjzdbYa9avyGeakVScj843A@mail.gmail.com>
- <38a9853e59db8946999316ce3a6b4621@matoro.tk> <CAK7LNATa1fdwQsuC3LOkzhr1SaR6ipJqe1b0fAC1pk3LX9wDhA@mail.gmail.com>
- <d4f30a7313f1ff43d0c919fc556f08fe@matoro.tk>
-In-Reply-To: <d4f30a7313f1ff43d0c919fc556f08fe@matoro.tk>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 10 Aug 2022 00:20:13 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASGewXa8bHy1SZNzTi+V5aoHdV6OysY0z76SQNs92iB9Q@mail.gmail.com>
-Message-ID: <CAK7LNASGewXa8bHy1SZNzTi+V5aoHdV6OysY0z76SQNs92iB9Q@mail.gmail.com>
-Subject: Re: [PATCH v6 00/10] kbuild: yet another series of cleanups (modpost,
- LTO, MODULE_REL_CRCS, export.h)
-To:     matoro <matoro_mailinglist_kernel@matoro.tk>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvJ6DbzBNsAgNZS4@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 3:42 AM matoro
-<matoro_mailinglist_kernel@matoro.tk> wrote:
->
-> That patch doesn't apply to the v5.19 stable tag, so I just manually
-> edited and it worked perfect!  Thank you!!
->
-> Sorry I didn't mention that warning - I did see it, but it still showed
-> up even on the old kernel, so I thought it was irrelevant.  Much
-> appreciated!
->
-> -------- Original Message --------
-> Subject: Re: [PATCH v6 00/10] kbuild: yet another series of cleanups
-> (modpost, LTO, MODULE_REL_CRCS, export.h)
-> Date: 2022-08-08 13:36
->  From: Masahiro Yamada <masahiroy@kernel.org>
-> To: matoro <matoro_mailinglist_kernel@matoro.tk>
->
-> On Mon, Aug 8, 2022 at 10:27 PM matoro
-> <matoro_mailinglist_kernel@matoro.tk> wrote:
-> >
-> > I have real hardware for all these arches in my collection.  I use it
-> > for testing the latest kernel and toolchains on as many of the
-> > less-popular arches as possible, exactly to find issues like this one
-> > :)
-> >
-> > Specifically we support all of these in Gentoo.  To double-check this
-> > wasn't a config issue, I asked another user who also runs sparc to try
-> > building 5.19 with his config (not copying mine), and he observed the
-> > same problem.  You can reach us in #gentoo-sparc on Libera.
-> >
-> > As for testing, I make all this hardware available on an as-needed
-> > basis.  So if you can't or don't want to fiddle with qemu, just let me
-> > know (email or IRC, same username on Libera), and I will get you direct
-> > access to my hardware.  Thanks!!
->
->
-> I found the root cause.
->
-> When I build the sparc kernel, I see a warning
->
-> WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation
-> failed, symbol will not be versioned.
->
->
-> Then, modpost missed to write out the entry.
->
-> With the following patch, you will be able to load the module.
->
-> I will send a patch with a proper commit log tomorrow. I need some sleep
-> now.
+Em Tue, Aug 09, 2022 at 12:15:25PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Mon, Aug 08, 2022 at 03:33:34PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > Em Mon, Aug 08, 2022 at 06:14:48PM +0200, Daniel Borkmann escreveu:
+> > > Hi Arnaldo,
+> > > 
+> > > On 7/19/22 7:05 PM, Roberto Sassu wrote:
+> > > > Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
+> > > > error when it encounters the deprecated function MD5_Init() and the others.
+> > > > The error would be interpreted as missing libcrypto, while in reality it is
+> > > > not.
+> > > > 
+> > > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> > > 
+> > > Given rest of the tooling fixes from Andres Freund went via perf tree and the
+> > > below is perf related as well, I presume you'll pick this up, too?
+> > 
+> > Sure.
+> >  
+> > >   [0] https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/log/?h=perf/core
+> 
+> So I fixed up the first one, minor fuzzes, the second I had to fix
+> conflicts with the patchset from Andres, ended up as below, will test
+> build it then in my container kit.
 
+So I backtracked, the way it works needs further consideration with
+regard to the patchkit from Andres, that is already upstream, so it
+would be good for Roberto to take a look at what is in torvalds/master
+now and see if we have to removed that styled thing from Andres.
 
+Andres, if you could take a look at Roberto's patchkit as well that
+would be great.
 
-I posted a patch:
-
-
-https://patchwork.kernel.org/project/linux-kbuild/patch/20220809141117.641543-1-masahiroy@kernel.org/
-
-
-If you want me to record your full name in Reported/Tested-by,
-please let me know.
-
-
-
-
+- Arnaldo
+ 
+> commit bea955a0256e20cc18e87087e42f2a903b9a8b84
+> Author: Roberto Sassu <roberto.sassu@huawei.com>
+> Date:   Tue Jul 19 19:05:53 2022 +0200
+> 
+>     bpftool: Complete libbfd feature detection
+>     
+>     Commit 6e8ccb4f624a7 ("tools/bpf: properly account for libbfd variations")
+>     sets the linking flags depending on which flavor of the libbfd feature was
+>     detected.
+>     
+>     However, the flavors except libbfd cannot be detected, as they are not in
+>     the feature list.
+>     
+>     Complete the list of features to detect by adding libbfd-liberty and
+>     libbfd-liberty-z.
+>     
+>     Committer notes:
+>     
+>     Adjust conflict with with:
+>     
+>       1e1613f64cc8a09d ("tools bpftool: Don't display disassembler-four-args feature test")
+>       600b7b26c07a070d ("tools bpftool: Fix compilation error with new binutils")
+>     
+>     Fixes: 6e8ccb4f624a73c5 ("tools/bpf: properly account for libbfd variations")
+>     Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+>     Cc: Alexei Starovoitov <ast@kernel.org>
+>     Cc: Andres Freund <andres@anarazel.de>
+>     Cc: Andrii Nakryiko <andrii@kernel.org>
+>     Cc: bpf@vger.kernel.org
+>     Cc: Daniel Borkmann <daniel@iogearbox.net>
+>     Cc: Ingo Molnar <mingo@redhat.com>
+>     Cc: John Fastabend <john.fastabend@gmail.com>
+>     Cc: KP Singh <kpsingh@kernel.org>
+>     Cc: llvm@lists.linux.dev
+>     Cc: Martin KaFai Lau <martin.lau@linux.dev>
+>     Cc: Nathan Chancellor <nathan@kernel.org>
+>     Cc: Nick Desaulniers <ndesaulniers@google.com>
+>     Cc: Nick Terrell <terrelln@fb.com>
+>     Cc: Peter Zijlstra <peterz@infradead.org>
+>     Cc: Quentin Monnet <quentin@isovalent.com>
+>     Cc: Song Liu <song@kernel.org>
+>     Cc: Stanislav Fomichev <sdf@google.com>
+>     Link: https://lore.kernel.org/r/20220719170555.2576993-2-roberto.sassu@huawei.com
+>     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> 
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index 04d733e98bffbc08..9cc132277150c534 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -93,9 +93,11 @@ INSTALL ?= install
+>  RM ?= rm -f
+>  
+>  FEATURE_USER = .bpftool
+> -FEATURE_TESTS = libbfd disassembler-four-args disassembler-init-styled libcap \
+> +FEATURE_TESTS = libbfd libbfd-liberty libbfd-liberty-z
+> +	disassembler-four-args disassembler-init-styled libcap \
+>  	clang-bpf-co-re
+> -FEATURE_DISPLAY = libbfd libcap clang-bpf-co-re
+> +FEATURE_DISPLAY = libbfd libbfd-liberty libbfd-liberty-z
+> +	libcap clang-bpf-co-re
+>  
+>  check_feat := 1
+>  NON_CHECK_FEAT_TARGETS := clean uninstall doc doc-clean doc-install doc-uninstall
 
 -- 
-Best Regards
-Masahiro Yamada
+
+- Arnaldo
