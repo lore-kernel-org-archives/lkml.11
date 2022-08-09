@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC9AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7A2C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343648AbiHISJg (ORCPT
+        id S1345199AbiHISJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50840 "EHLO
+        Tue, 9 Aug 2022 14:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344972AbiHISI7 (ORCPT
+        with ESMTP id S1345098AbiHISJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:08:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E37A2981B;
-        Tue,  9 Aug 2022 11:03:43 -0700 (PDT)
+        Tue, 9 Aug 2022 14:09:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8EB29C84;
+        Tue,  9 Aug 2022 11:03:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E48476106F;
-        Tue,  9 Aug 2022 18:03:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E179C433B5;
-        Tue,  9 Aug 2022 18:03:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD1BFB816A0;
+        Tue,  9 Aug 2022 18:03:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E6E2C433C1;
+        Tue,  9 Aug 2022 18:03:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068222;
-        bh=x6psJ7LnYWkeLisaH69Ll7JK/AHmEfENqgj0YKrNKPY=;
+        s=korg; t=1660068225;
+        bh=6Iq+Z0pM/bwhCLt1zkLUMRSwsXngpQToOfQLO9hCOX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DblCSFGMjMA54tHgEqET+L42H7q035O+ei8bAAc+ZNEgy1nl/3cvwZINLIzJuZJMl
-         xGkhKA2c+Ib/9hbdlURsKxm+NWV9uZ314QnOo8BsG8v33bv8oPhQyfwnjBUi/RtHT4
-         X1e5pES8Nic5J3kfne/BC+u1iXdj5KeNYFzHGyCI=
+        b=OU5rZvbVZNrZNMEdDEP4gGaWoXOJOXBtbFZA23Z0nfnWWa8ytuBBopJUsgTruC+4w
+         EVvlNovBPvWVWupsnxBaUyz97O11bkk/yBp6cpPdfgSXi01IdmFHI9Y2jNlXBJznHc
+         Y9VSQ7Oaa3mMueGhjAlp5bXmpKXSO9MF76vLst4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 01/23] x86/speculation: Make all RETbleed mitigations 64-bit only
-Date:   Tue,  9 Aug 2022 20:00:19 +0200
-Message-Id: <20220809175512.910488320@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Fedor Pchelkin <pchelkin@ispras.ru>
+Subject: [PATCH 5.10 02/23] ath9k_htc: fix NULL pointer dereference at ath9k_htc_rxep()
+Date:   Tue,  9 Aug 2022 20:00:20 +0200
+Message-Id: <20220809175512.952214630@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
 References: <20220809175512.853274191@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,66 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-commit b648ab487f31bc4c38941bc770ea97fe394304bb upstream.
+commit b0ec7e55fce65f125bd1d7f02e2dc4de62abee34 upstream.
 
-The mitigations for RETBleed are currently ineffective on x86_32 since
-entry_32.S does not use the required macros.  However, for an x86_32
-target, the kconfig symbols for them are still enabled by default and
-/sys/devices/system/cpu/vulnerabilities/retbleed will wrongly report
-that mitigations are in place.
+syzbot is reporting lockdep warning followed by kernel panic at
+ath9k_htc_rxep() [1], for ath9k_htc_rxep() depends on ath9k_rx_init()
+being already completed.
 
-Make all of these symbols depend on X86_64, and only enable RETHUNK by
-default on X86_64.
+Since ath9k_htc_rxep() is set by ath9k_htc_connect_svc(WMI_BEACON_SVC)
+ from ath9k_init_htc_services(), it is possible that ath9k_htc_rxep() is
+called via timer interrupt before ath9k_rx_init() from ath9k_init_device()
+is called.
 
-Fixes: f43b9876e857 ("x86/retbleed: Add fine grained Kconfig knobs")
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/YtwSR3NNsWp1ohfV@decadent.org.uk
-[bwh: Backported to 5.10/5.15/5.18: adjust context]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Since we can't call ath9k_init_device() before ath9k_init_htc_services(),
+let's hold ath9k_htc_rxep() no-op until ath9k_rx_init() completes.
+
+Link: https://syzkaller.appspot.com/bug?extid=4d2d56175b934b9a7bf9 [1]
+Reported-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/Kconfig |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc.h          |    1 +
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c |    8 ++++++++
+ 2 files changed, 9 insertions(+)
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2447,7 +2447,7 @@ config RETPOLINE
- config RETHUNK
- 	bool "Enable return-thunks"
- 	depends on RETPOLINE && CC_HAS_RETURN_THUNK
--	default y
-+	default y if X86_64
- 	help
- 	  Compile the kernel with the return-thunks compiler option to guard
- 	  against kernel-to-user data leaks by avoiding return speculation.
-@@ -2456,21 +2456,21 @@ config RETHUNK
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -281,6 +281,7 @@ struct ath9k_htc_rxbuf {
+ struct ath9k_htc_rx {
+ 	struct list_head rxbuf;
+ 	spinlock_t rxbuflock;
++	bool initialized;
+ };
  
- config CPU_UNRET_ENTRY
- 	bool "Enable UNRET on kernel entry"
--	depends on CPU_SUP_AMD && RETHUNK
-+	depends on CPU_SUP_AMD && RETHUNK && X86_64
- 	default y
- 	help
- 	  Compile the kernel with support for the retbleed=unret mitigation.
+ #define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1133,6 +1133,10 @@ void ath9k_htc_rxep(void *drv_priv, stru
+ 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
+ 	unsigned long flags;
  
- config CPU_IBPB_ENTRY
- 	bool "Enable IBPB on kernel entry"
--	depends on CPU_SUP_AMD
-+	depends on CPU_SUP_AMD && X86_64
- 	default y
- 	help
- 	  Compile the kernel with support for the retbleed=ibpb mitigation.
++	/* Check if ath9k_rx_init() completed. */
++	if (!data_race(priv->rx.initialized))
++		goto err;
++
+ 	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+ 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
+ 		if (!tmp_buf->in_process) {
+@@ -1188,6 +1192,10 @@ int ath9k_rx_init(struct ath9k_htc_priv
+ 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
+ 	}
  
- config CPU_IBRS_ENTRY
- 	bool "Enable IBRS on kernel entry"
--	depends on CPU_SUP_INTEL
-+	depends on CPU_SUP_INTEL && X86_64
- 	default y
- 	help
- 	  Compile the kernel with support for the spectre_v2=ibrs mitigation.
++	/* Allow ath9k_htc_rxep() to operate. */
++	smp_wmb();
++	priv->rx.initialized = true;
++
+ 	return 0;
+ 
+ err:
 
 
