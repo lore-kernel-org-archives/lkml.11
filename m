@@ -2,93 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C21D0C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E93BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238212AbiHIGgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S235840AbiHIGkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238223AbiHIGfp (ORCPT
+        with ESMTP id S229886AbiHIGkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:35:45 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46793205C9;
-        Mon,  8 Aug 2022 23:35:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1660026940; x=1691562940;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=tHNjrs/Nox170KVCda3JFlk4KElNI6gzk6xT3JZobA0=;
-  b=DjG+g80yyd4k1O5ivDLErE0jpuolK62SmxA3iRRcKRvAd+T3mvqDCCLb
-   Wqw6Wy5AirA1UsgJe7wUQ9arlYKHIUI/CufnDYUaCy7OFAM9QHsFYKEp4
-   SOR19Sz9P8af8f3y4i5wWEj7LOrqAkOkaVY8+9/mQ1nUOYdXLQTyxquKY
-   0=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Aug 2022 23:35:38 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 23:35:38 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 8 Aug 2022 23:35:37 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 8 Aug 2022 23:35:34 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>
-Subject: [PATCH V4 2/3] arm64: dts: qcom: sc7280: Update lpassaudio clock controller for resets
-Date:   Tue, 9 Aug 2022 12:05:08 +0530
-Message-ID: <1660026909-7365-3-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1660026909-7365-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1660026909-7365-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 9 Aug 2022 02:40:15 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A94227
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 23:40:12 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M23Jr5dkKzlVj2;
+        Tue,  9 Aug 2022 14:37:16 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 14:40:08 +0800
+Received: from huawei.com (10.175.101.6) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
+ 2022 14:40:07 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <anton@tuxera.com>
+CC:     <linux-ntfs-dev@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
+        <akpm@linux-foundation.org>
+Subject: [PATCH] ntfs: fix BUG_ON in ntfs_lookup_inode_by_name()
+Date:   Tue, 9 Aug 2022 14:47:30 +0800
+Message-ID: <20220809064730.2316892-1-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taniya Das <quic_tdas@quicinc.com>
+Syzkaller reported BUG_ON as follows:
 
-The lpass audio supports TX/RX/WSA block resets.
+------------[ cut here ]------------
+kernel BUG at fs/ntfs/dir.c:86!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 3 PID: 758 Comm: a.out Not tainted 5.19.0-next-20220808 #5
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+RIP: 0010:ntfs_lookup_inode_by_name+0xd11/0x2d10
+Code: ff e9 b9 01 00 00 e8 1e fe d6 fe 48 8b 7d 98 49 8d 5d 07 e8 91 85 29 ff 48 c7 45 98 00 00 00 00 e9 5a fb ff ff e8 ff fd d6 fe <0f> 0b e8 f8 fd d6 fe 0f 0b e8 f1 fd d6 fe 48 8b b5 50 ff ff ff 4c
+RSP: 0018:ffff888079607978 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000008000 RCX: 0000000000000000
+RDX: ffff88807cf10000 RSI: ffffffff82a4a081 RDI: 0000000000000003
+RBP: ffff888079607a70 R08: 0000000000000001 R09: ffff88807a6d01d7
+R10: ffffed100f4da03a R11: 0000000000000000 R12: ffff88800f0fb110
+R13: ffff88800f0ee000 R14: ffff88800f0fb000 R15: 0000000000000001
+FS:  00007f33b63c7540(0000) GS:ffff888108580000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f33b635c090 CR3: 000000000f39e005 CR4: 0000000000770ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ <TASK>
+ load_system_files+0x1f7f/0x3620
+ ntfs_fill_super+0xa01/0x1be0
+ mount_bdev+0x36a/0x440
+ ntfs_mount+0x3a/0x50
+ legacy_get_tree+0xfb/0x210
+ vfs_get_tree+0x8f/0x2f0
+ do_new_mount+0x30a/0x760
+ path_mount+0x4de/0x1880
+ __x64_sys_mount+0x2b3/0x340
+ do_syscall_64+0x38/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f33b62ff9ea
+Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffd0c471aa8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f33b62ff9ea
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffd0c471be0
+RBP: 00007ffd0c471c60 R08: 00007ffd0c471ae0 R09: 00007ffd0c471c24
+R10: 0000000000000000 R11: 0000000000000202 R12: 000055bac5afc160
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
 
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Fix this by adding sanity check on extended system files' directory inode
+to ensure that it is directory, just like ntfs_extend_init() when mounting
+ntfs3.
+
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
 ---
-Changes since v3:
- - Move the lpasscore node update to separate patch.
+ fs/ntfs/super.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Changes since v2:
- - Remove the status="disabled" from lpasscc node.
-
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 71735bb..634f15e 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2184,6 +2184,7 @@
- 			power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
- 			#clock-cells = <1>;
- 			#power-domain-cells = <1>;
-+			#reset-cells = <1>;
- 		};
- 
- 		lpass_aon: clock-controller@3380000 {
+diff --git a/fs/ntfs/super.c b/fs/ntfs/super.c
+index 5ae8de09b271..001f4e053c85 100644
+--- a/fs/ntfs/super.c
++++ b/fs/ntfs/super.c
+@@ -2092,7 +2092,8 @@ static bool load_system_files(ntfs_volume *vol)
+ 	// TODO: Initialize security.
+ 	/* Get the extended system files' directory inode. */
+ 	vol->extend_ino = ntfs_iget(sb, FILE_Extend);
+-	if (IS_ERR(vol->extend_ino) || is_bad_inode(vol->extend_ino)) {
++	if (IS_ERR(vol->extend_ino) || is_bad_inode(vol->extend_ino) ||
++	    !S_ISDIR(vol->extend_ino->i_mode)) {
+ 		if (!IS_ERR(vol->extend_ino))
+ 			iput(vol->extend_ino);
+ 		ntfs_error(sb, "Failed to load $Extend.");
 -- 
-2.7.4
+2.31.1
 
