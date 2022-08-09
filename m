@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E72C25B0C
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE9CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343851AbiHISUi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
+        id S245493AbiHISUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346788AbiHISRp (ORCPT
+        with ESMTP id S1346881AbiHISR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:17:45 -0400
+        Tue, 9 Aug 2022 14:17:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C762ED65;
-        Tue,  9 Aug 2022 11:06:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA62E2F016;
+        Tue,  9 Aug 2022 11:07:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E1DCB818E2;
-        Tue,  9 Aug 2022 18:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B991EC433B5;
-        Tue,  9 Aug 2022 18:06:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4140B81890;
+        Tue,  9 Aug 2022 18:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 399FDC433B5;
+        Tue,  9 Aug 2022 18:06:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068387;
-        bh=sZkq70RwvIjDXbL2WLFX6bnGB7uLboQX0UZurcdhliU=;
+        s=korg; t=1660068395;
+        bh=u4lI2lMYiinJQmQwYUWckHKjbNmaK8/9yZABUkeTu6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TdTJqjQ/x4y1KkujQNpMugEJKuBBXoTkprOzSRmfkeJmr0Bid/xoLeMj8Gia/zKeK
-         VM4xLd/PjKLscdwGGGc4xWZphK3munHC0qGb0feyIh4ezOlfDiMrEBnu0PVZWqCzXT
-         44IBr+fWmoSDtLlbbpXPtq+lj/CgywUBDx6RYvT8=
+        b=cOAt6xZQJKQa3reEws0BTxxFSg8JgvWa+yaeUtdvVe3+Y7x4cjEaBmMICEy5SKfBt
+         IcDtMNGlNZG7BH8K6MInRnhjb3qoYC016Q3GVML3oCzQBGq8B6UE1ynfUXxWO43DL7
+         ttcNhogWhAV8FGErlf1BRqAz/96Q6WvEUFRG2FYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 13/35] KVM: x86: disable preemption while updating apicv inhibition
-Date:   Tue,  9 Aug 2022 20:00:42 +0200
-Message-Id: <20220809175515.542696207@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.18 04/35] ACPI: video: Force backlight native for some TongFang devices
+Date:   Tue,  9 Aug 2022 20:00:33 +0200
+Message-Id: <20220809175515.223731007@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -50,53 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-[ Upstream commit 66c768d30e64e1280520f34dbef83419f55f3459 ]
+commit c752089f7cf5b5800c6ace4cdd1a8351ee78a598 upstream.
 
-Currently nothing prevents preemption in kvm_vcpu_update_apicv.
+The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
+Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
+NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
+They have a working native and video interface. However the default
+detection mechanism first registers the video interface before
+unregistering it again and switching to the native interface during boot.
+This results in a dangling SBIOS request for backlight change for some
+reason, causing the backlight to switch to ~2% once per boot on the first
+power cord connect or disconnect event. Setting the native interface
+explicitly circumvents this buggy behaviour by avoiding the unregistering
+process.
 
-On SVM, If the preemption happens after we update the
-vcpu->arch.apicv_active, the preemption itself will
-'update' the inhibition since the AVIC will be first disabled
-on vCPU unload and then enabled, when the current task
-is loaded again.
-
-Then we will try to update it again, which will lead to a warning
-in __avic_vcpu_load, that the AVIC is already enabled.
-
-Fix this by disabling preemption in this code.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220606180829.102503-6-mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: All applicable <stable@vger.kernel.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/acpi/video_detect.c |   51 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 91d887fd10ab..65b0ec28bd52 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9784,6 +9784,7 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- 		return;
- 
- 	down_read(&vcpu->kvm->arch.apicv_update_lock);
-+	preempt_disable();
- 
- 	activate = kvm_apicv_activated(vcpu->kvm);
- 	if (vcpu->arch.apicv_active == activate)
-@@ -9803,6 +9804,7 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- 		kvm_make_request(KVM_REQ_EVENT, vcpu);
- 
- out:
-+	preempt_enable();
- 	up_read(&vcpu->kvm->arch.apicv_update_lock);
- }
- EXPORT_SYMBOL_GPL(kvm_vcpu_update_apicv);
--- 
-2.35.1
-
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -490,7 +490,56 @@ static const struct dmi_system_id video_
+ 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
+ 		},
+ 	},
+-
++	/*
++	 * The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
++	 * Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
++	 * NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2. See the description
++	 * above.
++	 */
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5PU1G",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5PU1G"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF4NU1F",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF4NU1F"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF4NU1F",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "PULSE1401"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5NU1G",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5NU1G"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5NU1G",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "PULSE1501"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5LUXG",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5LUXG"),
++		},
++	},
+ 	/*
+ 	 * Desktops which falsely report a backlight and which our heuristics
+ 	 * for this do not catch.
 
 
