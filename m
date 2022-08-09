@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C03C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926D8C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343551AbiHISU0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48250 "EHLO
+        id S245422AbiHISUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346728AbiHISRa (ORCPT
+        with ESMTP id S1346741AbiHISRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:17:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7955727FE2;
-        Tue,  9 Aug 2022 11:06:50 -0700 (PDT)
+        Tue, 9 Aug 2022 14:17:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57282ED4F;
+        Tue,  9 Aug 2022 11:06:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ED7661001;
-        Tue,  9 Aug 2022 18:06:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C584C43470;
-        Tue,  9 Aug 2022 18:06:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A62FCB8188F;
+        Tue,  9 Aug 2022 18:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC6BC433C1;
+        Tue,  9 Aug 2022 18:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068409;
-        bh=lhDlPIwIg8u55QCmC20qTz4SHPQXU5/TWaQnXw4U9yk=;
+        s=korg; t=1660068384;
+        bh=mqbC7bVhIM0dnxYNVzszPMiYzv0AKKldGP1tDyqt/kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=08eoEfF3BjtrNX6wskkugQjCB75MinXeXe0DgdWOu+zh97LNKAxd7ptcx+tCjSDhE
-         Z/1u3KY9TKG1FJ5YG16hROgf7T1AkwH0s2/ziOJ1XW2qSmp6eMqTSPdX2lNFBIDrp1
-         DTgEHE/Q7wRF1PjaqzhyOdqFKIaX8FJI372ItqKQ=
+        b=G04DlaKk5aKiV38CAoLzgjFBvDH4mTSob9yKXD1cc9HydSy5J9AOjakGjSj/keXSI
+         lWnrdQC9cGGsgQO5wuQPjg1yEErfHRkw7owo0RfNRjFJroqrrESHLlNGqK6Y+iwIvb
+         NtyeE89nIK9NM7dM3IY6wr6sB44ramnX2nGKrZrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Seth Forshee <sforshee@digitalocean.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 09/35] KVM: x86: do not set st->preempted when going back to user space
-Date:   Tue,  9 Aug 2022 20:00:38 +0200
-Message-Id: <20220809175515.412581840@linuxfoundation.org>
+Subject: [PATCH 5.18 12/35] entry/kvm: Exit to user mode when TIF_NOTIFY_SIGNAL is set
+Date:   Tue,  9 Aug 2022 20:00:41 +0200
+Message-Id: <20220809175515.512110504@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -50,79 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Seth Forshee <sforshee@digitalocean.com>
 
-[ Upstream commit 54aa83c90198e68eee8b0850c749bc70efb548da ]
+[ Upstream commit 3e684903a8574ffc9475fdf13c4780a7adb506ad ]
 
-Similar to the Xen path, only change the vCPU's reported state if the vCPU
-was actually preempted.  The reason for KVM's behavior is that for example
-optimistic spinning might not be a good idea if the guest is doing repeated
-exits to userspace; however, it is confusing and unlikely to make a difference,
-because well-tuned guests will hardly ever exit KVM_RUN in the first place.
+A livepatch transition may stall indefinitely when a kvm vCPU is heavily
+loaded. To the host, the vCPU task is a user thread which is spending a
+very long time in the ioctl(KVM_RUN) syscall. During livepatch
+transition, set_notify_signal() will be called on such tasks to
+interrupt the syscall so that the task can be transitioned. This
+interrupts guest execution, but when xfer_to_guest_mode_work() sees that
+TIF_NOTIFY_SIGNAL is set but not TIF_SIGPENDING it concludes that an
+exit to user mode is unnecessary, and guest execution is resumed without
+transitioning the task for the livepatch.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
+This handling of TIF_NOTIFY_SIGNAL is incorrect, as set_notify_signal()
+is expected to break tasks out of interruptible kernel loops and cause
+them to return to userspace. Change xfer_to_guest_mode_work() to handle
+TIF_NOTIFY_SIGNAL the same as TIF_SIGPENDING, signaling to the vCPU run
+loop that an exit to userpsace is needed. Any pending task_work will be
+run when get_signal() is called from exit_to_user_mode_loop(), so there
+is no longer any need to run task work from xfer_to_guest_mode_work().
+
+Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Message-Id: <20220504180840.2907296-1-sforshee@digitalocean.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 26 ++++++++++++++------------
- arch/x86/kvm/xen.h |  6 ++++--
- 2 files changed, 18 insertions(+), 14 deletions(-)
+ kernel/entry/kvm.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index df74ec51c7f3..91d887fd10ab 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4651,19 +4651,21 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
- {
- 	int idx;
+diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
+index 9d09f489b60e..2e0f75bcb7fd 100644
+--- a/kernel/entry/kvm.c
++++ b/kernel/entry/kvm.c
+@@ -9,12 +9,6 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
+ 		int ret;
  
--	if (vcpu->preempted && !vcpu->arch.guest_state_protected)
--		vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
-+	if (vcpu->preempted) {
-+		if (!vcpu->arch.guest_state_protected)
-+			vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
- 
--	/*
--	 * Take the srcu lock as memslots will be accessed to check the gfn
--	 * cache generation against the memslots generation.
--	 */
--	idx = srcu_read_lock(&vcpu->kvm->srcu);
--	if (kvm_xen_msr_enabled(vcpu->kvm))
--		kvm_xen_runstate_set_preempted(vcpu);
--	else
--		kvm_steal_time_set_preempted(vcpu);
--	srcu_read_unlock(&vcpu->kvm->srcu, idx);
-+		/*
-+		 * Take the srcu lock as memslots will be accessed to check the gfn
-+		 * cache generation against the memslots generation.
-+		 */
-+		idx = srcu_read_lock(&vcpu->kvm->srcu);
-+		if (kvm_xen_msr_enabled(vcpu->kvm))
-+			kvm_xen_runstate_set_preempted(vcpu);
-+		else
-+			kvm_steal_time_set_preempted(vcpu);
-+		srcu_read_unlock(&vcpu->kvm->srcu, idx);
-+	}
- 
- 	static_call(kvm_x86_vcpu_put)(vcpu);
- 	vcpu->arch.last_host_tsc = rdtsc();
-diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
-index adbcc9ed59db..fda1413f8af9 100644
---- a/arch/x86/kvm/xen.h
-+++ b/arch/x86/kvm/xen.h
-@@ -103,8 +103,10 @@ static inline void kvm_xen_runstate_set_preempted(struct kvm_vcpu *vcpu)
- 	 * behalf of the vCPU. Only if the VMM does actually block
- 	 * does it need to enter RUNSTATE_blocked.
- 	 */
--	if (vcpu->preempted)
--		kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
-+	if (WARN_ON_ONCE(!vcpu->preempted))
-+		return;
-+
-+	kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
- }
- 
- /* 32-bit compatibility definitions, also used natively in 32-bit build */
+ 		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
+-			clear_notify_signal();
+-			if (task_work_pending(current))
+-				task_work_run();
+-		}
+-
+-		if (ti_work & _TIF_SIGPENDING) {
+ 			kvm_handle_signal_exit(vcpu);
+ 			return -EINTR;
+ 		}
 -- 
 2.35.1
 
