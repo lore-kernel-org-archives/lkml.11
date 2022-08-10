@@ -2,181 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71EDC25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E946FC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiHJNZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        id S232641AbiHJN0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232673AbiHJNZh (ORCPT
+        with ESMTP id S232660AbiHJN0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:25:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDF592E68D
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:25:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660137935;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k7c0qAQ5W21TXh6W0fKJeJBpzWI2+8i+EKNMQTdJqw4=;
-        b=ZvPgpIuilkQJNeMvu6sBeB08JK7PELOEylKHGhvpGHQDqPf1fn9mAAdxmNpXCz6lDpmwkI
-        vKNWjqolko74fmxdbOCRI5dSgFBcIqCxBQ9+kDWWkyZmvGOvI0KuicyEjvK63T+4SLxsl0
-        QpYgMA/s+2cblVMD4o2FxdDJHcysm2Q=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-458-k7fXLazxNpSYLQuksj390w-1; Wed, 10 Aug 2022 09:25:34 -0400
-X-MC-Unique: k7fXLazxNpSYLQuksj390w-1
-Received: by mail-qv1-f69.google.com with SMTP id ea7-20020ad458a7000000b00476b8d9bfdcso7766074qvb.18
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:25:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=k7c0qAQ5W21TXh6W0fKJeJBpzWI2+8i+EKNMQTdJqw4=;
-        b=LEW3d3Bikhh2174WIfxwHc+JjPI94T4Op/LfctFrVoc8CwCFhowahaR5eDbG25owor
-         mGCVfI2oSIGJy+hifvFmCJrFnBbnxCsCfT8zZAxg2RsIyFYkIRmaIZYtHkb0B1yDymXi
-         SVgdFgujbzX5rK8hP8iqV8jhwnT0pwLS7ODl73ayZZGE5WNpLWLhaNIg7UE6zRpUvaHc
-         WAbDcyohiJLViFOf9mTfjgfomUlgOx5q2pN7ITY0pAU63oS0g5gNi0W1MO0PEBc5LiaY
-         u4L/NUcVtFqZb1MokKmJP9qbW/zaWp4NViBqZ5uEhdsEA+A+99eLvuB+oLKBsNEfiDkz
-         F07g==
-X-Gm-Message-State: ACgBeo2cUqzZgqlzQDbpYQNdFBb3k8vyVGoGlsWaYKy6yVH2xIDaw2wV
-        AFEnxfCl6WXl9FUtNZFGUItEVfVn7DmefWuetcYSIYxFJCJ4JNB9FkPOtSxynxM7BSY9HtjMuLg
-        Fo1mEWCbaTlObqowDk7fUcAgC
-X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id v6-20020ac85786000000b003433051170dmr5914747qta.429.1660137934059;
-        Wed, 10 Aug 2022 06:25:34 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR47cu1ZKgu0YuBv7LikcDcvOPm4YCAsy8rs6byqvqDVrznU7I7iTFwhg569XGZ+0gomkkwzWA==
-X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id v6-20020ac85786000000b003433051170dmr5914712qta.429.1660137933780;
-        Wed, 10 Aug 2022 06:25:33 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id t26-20020a37ea1a000000b006b58fce19dasm13172726qkj.20.2022.08.10.06.25.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 06:25:33 -0700 (PDT)
-Message-ID: <866df4004138ba18c6503266b61661a2ed8536c6.camel@redhat.com>
-Subject: Re: [PATCH v3 00/13] SMM emulation and interrupt shadow fixes
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Thomas Lamprecht <t.lamprecht@proxmox.com>, kvm@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sean Christopherson <seanjc@google.com>, x86@kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Date:   Wed, 10 Aug 2022 16:25:29 +0300
-In-Reply-To: <96e0749a-6036-c728-d224-b812caadcd1b@proxmox.com>
-References: <20220803155011.43721-1-mlevitsk@redhat.com>
-         <96e0749a-6036-c728-d224-b812caadcd1b@proxmox.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        Wed, 10 Aug 2022 09:26:25 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2071.outbound.protection.outlook.com [40.107.212.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD2C32BB6
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:26:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GgBvRe6IuRahQxsmnysKdyU/QtjkZnbwjqKIuvcCi+/5awJYcYqC3JzxIdd1IrXykWGk6JDTKnUoHJMs4pCy1E1MNPJLeVLq/Pjm1OCiGIucN0r70pkH6lfBwia3A5Nv+XNSoYL7B8BdU6prIQLbRMDIjHBCbCegwjln9x03wijkz520Ru2Y7ccur4vd+oF8QNtfxY3jCEtxT3HwghAjoYrkRVg1rzV6MQKcFt5X5EsgBRtSkyvyoA/j7G+SQF9cS1K0dnif3NrOVR22umglwMll+tb/D1WYOn3RWCkdAHQsaU0+Tfbn/hE0QYQvS6NX61/+s3b1DDxtd42Xwsavvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2FteUpw9UPC6QnEzgQZquD1FS608rwf9T42I5hnTZs0=;
+ b=dz6UA5rs/LIXoq9RiCKQxzhgGBMNui3fRKIiRLt8iqUcc+gi0LK/LEP069VAGFKk2o8AjGrI9kZP7eESgBBFbLhnq9uqnvD7hR2cgZmci0DxUr/XX8k3H/SDlheP6URdQitRDjzLwULdfXIuthQeILfNjQkqzg+8UYLHtf+KTU3J2A3DaD53mMpaD2egGPzXIiwMJrv+9FKNVM2ecWieaj1oZ7PhiGH8L8rMzpKja2NRn7dG2ALWRcCRvt0VptwtYY7hp2R44tasJJ8QL0du/X3TyH3+I/APV7RXPIxCJpbuvbs3VS2tgI7xmaAnuzZ/iD/0L5x2cLhNK/nGx/v3Lw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2FteUpw9UPC6QnEzgQZquD1FS608rwf9T42I5hnTZs0=;
+ b=UmWshlz7Qg89T2espCj+REgBhEe1IY5dkTrLOA5anaJKFIiyvblBNjqA1gHp7ZnXIgv+i21LgJBODcR7+6Ape6xDgVQDKC3LeYHurvq7b1F1jUx+KAZSW0/FfHOuJQ7mIf1Ddj8wA4Oq78d32yMlhTArg8/SVvdp7XyE5vaBoyc=
+Received: from BN0PR04CA0208.namprd04.prod.outlook.com (2603:10b6:408:e9::33)
+ by SN7PR12MB6887.namprd12.prod.outlook.com (2603:10b6:806:261::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Wed, 10 Aug
+ 2022 13:26:21 +0000
+Received: from BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e9:cafe::65) by BN0PR04CA0208.outlook.office365.com
+ (2603:10b6:408:e9::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
+ Transport; Wed, 10 Aug 2022 13:26:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT057.mail.protection.outlook.com (10.13.177.49) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5525.11 via Frontend Transport; Wed, 10 Aug 2022 13:26:21 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 10 Aug
+ 2022 08:26:20 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 10 Aug
+ 2022 08:26:20 -0500
+Received: from amd-System-Product-Name.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28
+ via Frontend Transport; Wed, 10 Aug 2022 08:26:10 -0500
+From:   Venkata Prasad Potturu <venkataprasad.potturu@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <vsujithkumar.reddy@amd.com>, <Vijendar.Mukunda@amd.com>,
+        <Basavaraj.Hiregoudar@amd.com>, <Sunil-kumar.Dommati@amd.com>,
+        <ssabakar@amd.com>, Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        "Venkata Prasad Potturu" <venkataprasad.potturu@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
+        "Nathan Chancellor" <nathan@kernel.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [RESEND v4 1/2] ASoC: amd: acp: Initialize list to store acp_stream during pcm_open
+Date:   Wed, 10 Aug 2022 18:59:12 +0530
+Message-ID: <20220810132913.1181247-2-venkataprasad.potturu@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220810132913.1181247-1-venkataprasad.potturu@amd.com>
+References: <20220810132913.1181247-1-venkataprasad.potturu@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 43973845-9ebc-4151-f21d-08da7ad3ea4b
+X-MS-TrafficTypeDiagnostic: SN7PR12MB6887:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PP3YdD5acFM5zdA/frzvMR4H8C0iJ0IOMXAeKbhWmg0TaIVbAppInfuc0tTPPwhftg/2olT5xM4nWUizpxfPadk9ob1eMIIP8LPs2O5wiZYB90PeJc/2UhTRmseiSevO8CvKOYe++Rg+wG50EK1kKx7Ei7IVJbIpOAygqy1H6Lme79BQBK8Y7MyA0VD+riZg3XXgNq/+glpi3DlTjJgIUaxzLLWB1k0cu/PthZFAgs9HMlynkhMtJOvXuVRTBd479UJSKBVTTNw8J+d2vx8XhhK1g1f5apE4CT8MvuMueuk8V+dMZy47gjd/1844z4JDsv24kPcphRcqkKNAyJFiPztUe4sHP4IrTR8imftCCmgtFzoST8oZPesD+LLQNS6Rw4n+0h+plueazHEIWGOYG7P3iIPwbFmgEg1/offajn5ys1EiR/y226Dh53ZL/8JwSuym8+XAiCz+OuMjKOTlJmx4cewvj2rHpg1syAwgNTXlRC07IMyTSsFKEfRyM9/pR1IKe21d0XvTA22kvdaAIg+x2oUlUC8FjahyTkA+5yebGUtYdp2DLm+IMMTc5+HGK9ihajlY9+fzFdg0RZMq7qAhIbcuaRViSQeBCLbuWUz39r+xkesi/WMPWRGiNefFcgc9w/HOXx7TBYgGD335oHYt11Ezaxbjxf+qNxitxg24Nnwl95DAKxi9OFnYfCmbM3lh8HfVakvyzsWcxEzv1n/re551mo47baAzKzFRxP7/yKpXYTNERva7VQxpmby/gMQ+oOB72JCa9SHB52G3VYDyebG+JiWkfw4clnqsO6rJQMZsOLPxE/qDfOwQ20aEQ/q85dhe1zWyoQBeUG9meA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(346002)(376002)(136003)(36840700001)(40470700004)(46966006)(70586007)(5660300002)(70206006)(40480700001)(40460700003)(82310400005)(4326008)(8676002)(2906002)(316002)(36860700001)(2616005)(41300700001)(8936002)(47076005)(86362001)(36756003)(336012)(81166007)(478600001)(82740400003)(26005)(110136005)(186003)(426003)(356005)(54906003)(83380400001)(1076003)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2022 13:26:21.3255
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43973845-9ebc-4151-f21d-08da7ad3ea4b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6887
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-10 at 14:00 +0200, Thomas Lamprecht wrote:
-> On 03/08/2022 17:49, Maxim Levitsky wrote:
-> > This patch series is a result of long debug work to find out why
-> > sometimes guests with win11 secure boot
-> > were failing during boot.
-> > 
-> > During writing a unit test I found another bug, turns out
-> > that on rsm emulation, if the rsm instruction was done in real
-> > or 32 bit mode, KVM would truncate the restored RIP to 32 bit.
-> > 
-> > I also refactored the way we write SMRAM so it is easier
-> > now to understand what is going on.
-> > 
-> > The main bug in this series which I fixed is that we
-> > allowed #SMI to happen during the STI interrupt shadow,
-> > and we did nothing to both reset it on #SMI handler
-> > entry and restore it on RSM.
-> > 
-> > V3: addressed most of the review feedback from Sean (thanks!)
-> > 
-> > Best regards,
-> >         Maxim Levitsky
-> > 
-> > Maxim Levitsky (13):
-> >   bug: introduce ASSERT_STRUCT_OFFSET
-> >   KVM: x86: emulator: em_sysexit should update ctxt->mode
-> >   KVM: x86: emulator: introduce emulator_recalc_and_set_mode
-> >   KVM: x86: emulator: update the emulation mode after rsm
-> >   KVM: x86: emulator: update the emulation mode after CR0 write
-> >   KVM: x86: emulator/smm: number of GPRs in the SMRAM image depends on
-> >     the image format
-> >   KVM: x86: emulator/smm: add structs for KVM's smram layout
-> >   KVM: x86: emulator/smm: use smram structs in the common code
-> >   KVM: x86: emulator/smm: use smram struct for 32 bit smram load/restore
-> >   KVM: x86: emulator/smm: use smram struct for 64 bit smram load/restore
-> >   KVM: x86: SVM: use smram structs
-> >   KVM: x86: SVM: don't save SVM state to SMRAM when VM is not long mode
-> >     capable
-> >   KVM: x86: emulator/smm: preserve interrupt shadow in SMRAM
-> > 
-> >  arch/x86/include/asm/kvm_host.h |  11 +-
-> >  arch/x86/kvm/emulate.c          | 305 +++++++++++++++++---------------
-> >  arch/x86/kvm/kvm_emulate.h      | 223 ++++++++++++++++++++++-
-> >  arch/x86/kvm/svm/svm.c          |  30 ++--
-> >  arch/x86/kvm/vmx/vmcs12.h       |   5 +-
-> >  arch/x86/kvm/vmx/vmx.c          |   4 +-
-> >  arch/x86/kvm/x86.c              | 175 +++++++++---------
-> >  include/linux/build_bug.h       |   9 +
-> >  8 files changed, 497 insertions(+), 265 deletions(-)
-> > 
-> 
-> FWIW, we tested the v2 on 5.19 and backported it to 5.15 with minimal adaption
-> required (mostly unrelated context change) and now also updated that backport
-> to the v3 of this patch series.
-> 
-> Our reproducer got fixed with either, but v3 now also avoids triggering logs like:
-> 
->  Jul 29 04:59:18 mits4 QEMU[2775]: kvm: Could not update PFLASH: Stale file handle
->  Jul 29 04:59:18 mits4 QEMU[2775]: kvm: Could not update PFLASH: Stale file handle
->  Jul 29 07:15:46 mits4 kernel: kvm: vcpu 1: requested 191999 ns lapic timer period limited to 200000 ns
->  Jul 29 11:06:31 mits4 kernel: kvm: vcpu 1: requested 105786 ns lapic timer period limited to 200000 ns
-> 
-> which happened earlier (not sure how deep that correlates with the v2 vs. v3, but
-> it stuck out, so mentioning for sake of completeness).
+From: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-This is likely just a coincidence because V3 should not contain any functional changes vs v2.
-(If I remember correctly)
+We are currently allocating acp_stream during pcm_open and saving
+it in static array corresponds to array index calculated based on
+cpu dai->driver id. This approach will fail if we have single dai
+linked to multiple pcm device as we will have same dai->driver id
+or array index for multiple pcm open. Initialize new linked list
+stream_list to store opened pcm stream info dynamically.
 
-> 
-> For the backport to 5.15 we skipped "KVM: x86: emulator/smm: number of GPRs in
-> the SMRAM image depends on the image format", as that constant was there yet and
-> the actual values stayed the same for our case FWICT and adapted to slight context
-> changes for the others.
-> 
-> So, the approach seems to fix our issue and we are already rolling out a kernel
-> to users for testing and got positive feedback there too.
-> 
-> With above in mind:
-> 
-> Tested-by: Thomas Lamprecht <t.lamprecht@proxmox.com>
+Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+Signed-off-by: Venkata Prasad Potturu <venkataprasad.potturu@amd.com>
+Reviewed-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+---
+ sound/soc/amd/acp/acp-platform.c | 40 +++++++++++++++-----------------
+ sound/soc/amd/acp/amd.h          |  4 +++-
+ 2 files changed, 22 insertions(+), 22 deletions(-)
 
-Thank you very much for testing!
-
-> 
-> It would be also great to see this backported to still supported upstream stable kernels
-> from 5.15 onwards, as there the TDP MMU got by default enabled, and that is at least
-> increasing the chance of our reproducer to trigger dramatically.
-
-Best regards,
-	Maxim Levitsky
-
-> 
-> thx & cheers
-> Thomas
-> 
-
+diff --git a/sound/soc/amd/acp/acp-platform.c b/sound/soc/amd/acp/acp-platform.c
+index f561d39b33e2..beee53aedeaf 100644
+--- a/sound/soc/amd/acp/acp-platform.c
++++ b/sound/soc/amd/acp/acp-platform.c
+@@ -94,7 +94,7 @@ static irqreturn_t i2s_irq_handler(int irq, void *data)
+ 	struct acp_resource *rsrc = adata->rsrc;
+ 	struct acp_stream *stream;
+ 	u16 i2s_flag = 0;
+-	u32 ext_intr_stat, ext_intr_stat1, i;
++	u32 ext_intr_stat, ext_intr_stat1;
+ 
+ 	if (!adata)
+ 		return IRQ_NONE;
+@@ -104,14 +104,13 @@ static irqreturn_t i2s_irq_handler(int irq, void *data)
+ 
+ 	ext_intr_stat = readl(ACP_EXTERNAL_INTR_STAT(adata, rsrc->irqp_used));
+ 
+-	for (i = 0; i < ACP_MAX_STREAM; i++) {
+-		stream = adata->stream[i];
++	spin_lock(&adata->acp_lock);
++	list_for_each_entry(stream, &adata->stream_list, list) {
+ 		if (stream && (ext_intr_stat & stream->irq_bit)) {
+ 			writel(stream->irq_bit,
+ 			       ACP_EXTERNAL_INTR_STAT(adata, rsrc->irqp_used));
+ 			snd_pcm_period_elapsed(stream->substream);
+ 			i2s_flag = 1;
+-			break;
+ 		}
+ 		if (adata->rsrc->no_of_ctrls == 2) {
+ 			if (stream && (ext_intr_stat1 & stream->irq_bit)) {
+@@ -119,10 +118,10 @@ static irqreturn_t i2s_irq_handler(int irq, void *data)
+ 				       (rsrc->irqp_used - 1)));
+ 				snd_pcm_period_elapsed(stream->substream);
+ 				i2s_flag = 1;
+-				break;
+ 			}
+ 		}
+ 	}
++	spin_unlock(&adata->acp_lock);
+ 	if (i2s_flag)
+ 		return IRQ_HANDLED;
+ 
+@@ -146,9 +145,8 @@ static void config_pte_for_stream(struct acp_dev_data *adata, struct acp_stream
+ 	writel(0x01, adata->acp_base + ACPAXI2AXI_ATU_CTRL);
+ }
+ 
+-static void config_acp_dma(struct acp_dev_data *adata, int cpu_id, int size)
++static void config_acp_dma(struct acp_dev_data *adata, struct acp_stream *stream, int size)
+ {
+-	struct acp_stream *stream = adata->stream[cpu_id];
+ 	struct snd_pcm_substream *substream = stream->substream;
+ 	struct acp_resource *rsrc = adata->rsrc;
+ 	dma_addr_t addr = substream->dma_buffer.addr;
+@@ -174,13 +172,10 @@ static void config_acp_dma(struct acp_dev_data *adata, int cpu_id, int size)
+ 
+ static int acp_dma_open(struct snd_soc_component *component, struct snd_pcm_substream *substream)
+ {
+-	struct snd_soc_pcm_runtime *soc_runtime = asoc_substream_to_rtd(substream);
+-	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(soc_runtime, 0);
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct device *dev = component->dev;
+ 	struct acp_dev_data *adata = dev_get_drvdata(dev);
+ 	struct acp_stream *stream;
+-	int stream_id = cpu_dai->driver->id * 2 + substream->stream;
+ 	int ret;
+ 
+ 	stream = kzalloc(sizeof(*stream), GFP_KERNEL);
+@@ -188,7 +183,10 @@ static int acp_dma_open(struct snd_soc_component *component, struct snd_pcm_subs
+ 		return -ENOMEM;
+ 
+ 	stream->substream = substream;
+-	adata->stream[stream_id] = stream;
++
++	spin_lock_irq(&adata->acp_lock);
++	list_add_tail(&stream->list, &adata->stream_list);
++	spin_unlock_irq(&adata->acp_lock);
+ 
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+ 		runtime->hw = acp_pcm_hardware_playback;
+@@ -212,16 +210,13 @@ static int acp_dma_hw_params(struct snd_soc_component *component,
+ 			     struct snd_pcm_substream *substream,
+ 			     struct snd_pcm_hw_params *params)
+ {
+-	struct snd_soc_pcm_runtime *soc_runtime = asoc_substream_to_rtd(substream);
+ 	struct acp_dev_data *adata = snd_soc_component_get_drvdata(component);
+-	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(soc_runtime, 0);
+ 	struct acp_stream *stream = substream->runtime->private_data;
+-	int stream_id = cpu_dai->driver->id * 2 + substream->stream;
+ 	u64 size = params_buffer_bytes(params);
+ 
+ 	/* Configure ACP DMA block with params */
+ 	config_pte_for_stream(adata, stream);
+-	config_acp_dma(adata, stream_id, size);
++	config_acp_dma(adata, stream, size);
+ 
+ 	return 0;
+ }
+@@ -261,16 +256,15 @@ static int acp_dma_new(struct snd_soc_component *component,
+ static int acp_dma_close(struct snd_soc_component *component,
+ 			 struct snd_pcm_substream *substream)
+ {
+-	struct snd_soc_pcm_runtime *soc_runtime = asoc_substream_to_rtd(substream);
+-	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(soc_runtime, 0);
+ 	struct device *dev = component->dev;
+ 	struct acp_dev_data *adata = dev_get_drvdata(dev);
+-	struct acp_stream *stream;
+-	int stream_id = cpu_dai->driver->id * 2 + substream->stream;
++	struct acp_stream *stream = substream->runtime->private_data;
+ 
+-	stream = adata->stream[stream_id];
++	/* Remove entry from list */
++	spin_lock_irq(&adata->acp_lock);
++	list_del(&stream->list);
++	spin_unlock_irq(&adata->acp_lock);
+ 	kfree(stream);
+-	adata->stream[stream_id] = NULL;
+ 
+ 	return 0;
+ }
+@@ -305,6 +299,10 @@ int acp_platform_register(struct device *dev)
+ 		dev_err(dev, "Fail to register acp i2s component\n");
+ 		return status;
+ 	}
++
++	INIT_LIST_HEAD(&adata->stream_list);
++	spin_lock_init(&adata->acp_lock);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_NS_GPL(acp_platform_register, SND_SOC_ACP_COMMON);
+diff --git a/sound/soc/amd/acp/amd.h b/sound/soc/amd/acp/amd.h
+index 60a7c95f134f..be8bb8247c4e 100644
+--- a/sound/soc/amd/acp/amd.h
++++ b/sound/soc/amd/acp/amd.h
+@@ -91,6 +91,7 @@ struct acp_chip_info {
+ };
+ 
+ struct acp_stream {
++	struct list_head list;
+ 	struct snd_pcm_substream *substream;
+ 	int irq_bit;
+ 	int dai_id;
+@@ -123,7 +124,8 @@ struct acp_dev_data {
+ 	struct snd_soc_dai_driver *dai_driver;
+ 	int num_dai;
+ 
+-	struct acp_stream *stream[ACP_MAX_STREAM];
++	struct list_head stream_list;
++	spinlock_t acp_lock;
+ 
+ 	struct snd_soc_acpi_mach *machines;
+ 	struct platform_device *mach_dev;
+-- 
+2.25.1
 
