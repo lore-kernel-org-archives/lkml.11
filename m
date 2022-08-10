@@ -2,183 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1152CC25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED34C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231208AbiHJGMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 02:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47910 "EHLO
+        id S231252AbiHJGNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 02:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiHJGMw (ORCPT
+        with ESMTP id S229490AbiHJGNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 02:12:52 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2085.outbound.protection.outlook.com [40.107.237.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619435FAE6;
-        Tue,  9 Aug 2022 23:12:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Am+WuLMlkpkHPHI349RiloiccSQLracDGdRd5qkk3xybXwp1y1BYNom9uY3t6w0YxTqkSWlHydsTBV85HecQSghnhwprLmB427chqhuk0+WsPYuhDBt5iHvdEWxwKLshJU95Jl2h8uehJnLHM4eJoBOHIg0ukB4fVLvA9e05c7fORXQFtSeXRvhcnPMjbxSwLkPCdXuBiikaPJbeX2DK7C2LoM97SfXG+EQfNOSdvdSuXT+7tL/zITUE05DyVihSINIYSAzrqaoWueWkECkvTg81sRmHYRADjX4+sWOEPGhhSrR0tTbxpBsrFZZH3d66TP9EA8/+51SwzDUsPtq8QQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vDfO3WPFkiNKPqZQzuJ9ScPBmlBLXrSu6DjmAz7O8/g=;
- b=nFg0GO5Fpbh/Sqv9VHEFlU2GZk2yzboNdpaBdlcROMoH9/07tYVxpAAAcgY7Pw0Pu2LBOv2kNf+ovU2khKzo6axS/m0kF6sX5I/I619e6ZycU/ek/B8xXyp7gQ2xvnzfSXj68Ii635Q2172NwKIN4nUud8T+d9hlRRO1tnC1GlVdBel4trAhF8hvu/Ebhu2Gcj8gj3amPkNq51RVP7iT8IvPaUTPuE5Z+TBw1rfs9oB5NfvEWJuLUhUocLjEQ/QUjfgb1gSzOL+QuzlsmGI9EmGSjthXKs5jqlhGPr0+S8umHZSm3fMmwKJBgpdpinhz9R/LZtkaIX1U3pZYH3RPlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vDfO3WPFkiNKPqZQzuJ9ScPBmlBLXrSu6DjmAz7O8/g=;
- b=4edWGwtug0kVfW9jROicsne9+gYWFxBzp9vWYOjYU5WyAUXT9pxHAM8UVGix5nUuVcma7giPRh61jBiXra+0/7pH5ee8CJol4UG4GwXrMy6S/0+3FQ00occ/LSZP8dV9Xq1LWM/wNikuIOedman4kYgBTHK7SAQYdD/Mp554Bl4=
-Received: from MW4P221CA0015.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::20)
- by DM6PR12MB2794.namprd12.prod.outlook.com (2603:10b6:5:48::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Wed, 10 Aug
- 2022 06:12:47 +0000
-Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8b:cafe::e8) by MW4P221CA0015.outlook.office365.com
- (2603:10b6:303:8b::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20 via Frontend
- Transport; Wed, 10 Aug 2022 06:12:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5525.11 via Frontend Transport; Wed, 10 Aug 2022 06:12:47 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 10 Aug
- 2022 01:12:41 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <santosh.shukla@amd.com>,
-        <mlevitsk@redhat.com>
-Subject: [PATCHv3 0/8] Virtual NMI feature 
-Date:   Wed, 10 Aug 2022 11:42:18 +0530
-Message-ID: <20220810061226.1286-1-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 10 Aug 2022 02:13:22 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EFB60695
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 23:13:21 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id w6-20020a6bf006000000b006845b59a08bso5968708ioc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 23:13:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=E+Mvi8z+W8TnkH/xD+yD2aHEkFWueZO6v0An11czXsI=;
+        b=prwXjOKqwFu11HroVEkgDVRAxJctgJ4JQao6SzAusxE0BF4GmMtcoV3ECkGf/PTgMg
+         RB9HwzhbeC6wMCZ+BxcGKZHuDwgeE1xbahqkyCxy0NI+a0ZpIL4+gcPM9VrN69jpYihd
+         p+El/9/+IOLnrYVxAZhiRKo5/4vUF+OWtb9u/cWqWwjavD+Twy3gr9JGAYPYS9MD64t1
+         bD/KF4XWKHROyUcW/Z9Oq5gVgkt8XT3m8Q82GPl9wkNgR+87eQDrMVp+ElsxO0wFo9va
+         EuWYOioxuTiFZXsqWFmWhr2QRIatnKSMWQ7H6as0WP2LfevggF2iNekGLCpngBRFSZbm
+         RBUg==
+X-Gm-Message-State: ACgBeo0eKv9AdZzSIeDtHwgir3X6wfi3Dewv87rDddWhC9c3BavmWj4s
+        hmW+8t8WyYeYYifv7CxyRzRhAtLhdjn+6XJAV6Ae5qmXHZ+6
+X-Google-Smtp-Source: AA6agR7Qa+ODpr/kS0RkfSrK24swAnoVqccHrbP4x+0+SNQ+P5YRFwiz7EA5wSJ4FFi4sVsVYlu+uEtW39hM2GQQAqHPvtwTV1k7
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 068eb151-9824-4d84-f6a8-08da7a9758d7
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2794:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8whgBMgwM6lEELcKlUiBtYOlPxrBMuEf3JLGIbelFisTna++XDsNbG4+LaZlnGyc+/RijCjPh3KaIIt+EuxBLDDqzDGfF0HDO6zlGMVcOwJKdR7yFPuI3RV5bD6PR4PzMB3OtbW8zQuZSzzLibTlOY64XhQb9d4S6Y8C73rODB6AKU8zRMZyMIZ1B4MoifW3J6NAuOHDyHPwJZAijdg408kTcPCSr6xgcwLwYuanvL/mP4QQ06Gf53NjSTmXz0cJSf7LRAHmSC6drDQOXpPLagzwzd8R+E2FTjUebRemTV4q6MjHbcA6bj16e7SPqHuC5AbevP7W52LUTY4fmL+Zxb20kIaSFjK37ck8qsxoTvv7NrRT64VDfqSZk33KtjeX2tae96pbKgEiRRalsmJC+RVsfnU+mRp3xST4anG7o0K3L9XXvVH357Cbp9/t8NR97Zlav+14+SWHE5+oEyTxPJS0VEqhfuJBh0XgzrpwL0E/IfV1dAXT1AXyWDzX/ZoOdjO166IzFWiBYObWvHd5sIQvC/7ULeI+Tp4vW0HRNx8b1wFBAHnbr4pimNW4DogmNmL+d7LsxoZ1HJBa6UkIblx2qqEVQZYmzFWu8IajMXSK2mpmQpuCXIc9olWwYq96Qox6oClfNDqY9/3yMp0gRMBrJl0PzGdNMWyMBZB6lEnIanx8RTp+/a47iR+65KiskSoQUKStpjvW+xQAg3/xNGRMG7AVKg70JdOSnkEth7IwXkYuICEpgP/EBjCjo4+Htc9GEiCudehNqWHqRiMRZNNN8+z+CuTfNCeXhu4bxz7HDfoKco8PxSqjXThKyZVISL9iBhPtCPIKmMNn1sjdHs+iBNKLTkXtYVfBxCBQj5Rt4uwHcYs9tENdoFp9vJxf/VvFYHxT0YnOsgCXWQbuMqNu79EjEvdC15V6kByOz5M=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(136003)(346002)(376002)(36840700001)(40470700004)(46966006)(82740400003)(6666004)(40460700003)(7696005)(1076003)(186003)(83380400001)(426003)(47076005)(2906002)(16526019)(41300700001)(478600001)(36756003)(966005)(44832011)(8936002)(54906003)(82310400005)(86362001)(81166007)(5660300002)(6916009)(316002)(36860700001)(336012)(4743002)(26005)(40480700001)(2616005)(4326008)(356005)(70206006)(8676002)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2022 06:12:47.1795
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 068eb151-9824-4d84-f6a8-08da7a9758d7
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2794
+X-Received: by 2002:a92:c543:0:b0:2df:bf0d:1512 with SMTP id
+ a3-20020a92c543000000b002dfbf0d1512mr8660026ilj.240.1660112001243; Tue, 09
+ Aug 2022 23:13:21 -0700 (PDT)
+Date:   Tue, 09 Aug 2022 23:13:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001f242e05e5dcf211@google.com>
+Subject: [syzbot] KMSAN: uninit-value in stack_trace_consume_entry
+From:   syzbot <syzbot+227ae323c9d4c04c300a@syzkaller.appspotmail.com>
+To:     glider@google.com, jpoimboe@redhat.com, jslaby@suse.cz,
+        kamalesh@linux.vnet.ibm.com, linux-kernel@vger.kernel.org,
+        mbenes@suse.cz, mingo@kernel.org, peterz@infradead.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change History:
-v3 (rebased on eb555cb5b794f):
-03 - added clear/set_vnmi_mask API for SMM case
-04 - added vnmi_pending check so to detect the pending VNMI scenario
-05 - removed WARN_ON
-06 - handle one of nested case where L1 using vnmi and L2 doesn't
-07 - Emulate the VMEXIT(#INVALID) case for nested case
-08 - No change.
+Hello,
 
-v2:
-https://lore.kernel.org/lkml/20220709134230.2397-7-santosh.shukla@amd.com/T/#m4bf8a131748688fed00ab0fefdcac209a169e202
-01, 02 - added maxim reviwed-by.
-03 - Added get_vnmi_vmcb API to return vmcb for l1 and l2.
-04 - Moved vnmi check after is_guest_mode() in func svm_nmi_blocked().
-05 - Added WARN_ON check for vnmi pending.
-06 - Save the V_NMI_PENDING/MASK state in vmcb12 on vmexit.
-07 - No change.
+syzbot found the following issue on:
 
-v1:
-https://lore.kernel.org/all/20220602142620.3196-1-santosh.shukla@amd.com/
+HEAD commit:    a58741ac26cc kmsan: don't compile memmove
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=13325fe3e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=abbc202e1724cf37
+dashboard link: https://syzkaller.appspot.com/bug?extid=227ae323c9d4c04c300a
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e2bc23e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14915203e00000
 
-Description:
-Currently, NMI is delivered to the guest using the Event Injection
-mechanism [1]. The Event Injection mechanism does not block the delivery
-of subsequent NMIs. So the Hypervisor needs to track the NMI delivery
-and its completion(by intercepting IRET) before sending a new NMI.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+227ae323c9d4c04c300a@syzkaller.appspotmail.com
 
-Virtual NMI (VNMI) allows the hypervisor to inject the NMI into the guest
-w/o using Event Injection mechanism meaning not required to track the
-guest NMI and intercepting the IRET. To achieve that,
-VNMI feature provides virtualized NMI and NMI_MASK capability bits in
-VMCB intr_control -
-V_NMI(11) - Indicates whether a virtual NMI is pending in the guest.
-V_NMI_MASK(12) - Indicates whether virtual NMI is masked in the guest.
-V_NMI_ENABLE(26) - Enables the NMI virtualization feature for the guest.
+=====================================================
+BUG: KMSAN: uninit-value in stack_trace_consume_entry+0x171/0x310 kernel/stacktrace.c:89
+CPU: 1 PID: 10926 Comm: syz-executor854 Not tainted 5.6.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ stack_trace_consume_entry+0x171/0x310 kernel/stacktrace.c:89
+ arch_stack_walk+0x317/0x3e0 arch/x86/kernel/stacktrace.c:27
+ stack_trace_save+0x117/0x1a0 kernel/stacktrace.c:123
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ sock_write_iter+0x4f6/0x6d0 net/socket.c:1005
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write+0x92/0xb0 fs/read_write.c:620
+ __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x443dd9
+Code: e8 2c e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 8b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fffb6d37698 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443dd9
+RDX: 0000000000000018 RSI: 0000000020000280 RDI: 0000000000000003
+RBP: 00007fffb6d376b0 R08: 0000000101bbbbbb R09: 0000000101bbbbbb
+R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000404c80 R14: 0000000000000000 R15: 0000000000000000
 
-When Hypervisor wants to inject NMI, it will set V_NMI bit, Processor will
-clear the V_NMI bit and Set the V_NMI_MASK which means the Guest is
-handling NMI, After the guest handled the NMI, The processor will clear
-the V_NMI_MASK on the successful completion of IRET instruction
-Or if VMEXIT occurs while delivering the virtual NMI.
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ __msan_chain_origin+0x50/0x90 mm/kmsan/kmsan_instr.c:165
+ stack_trace_consume_entry+0x27a/0x310 kernel/stacktrace.c:90
+ arch_stack_walk+0x317/0x3e0 arch/x86/kernel/stacktrace.c:27
+ stack_trace_save+0x117/0x1a0 kernel/stacktrace.c:123
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ sock_write_iter+0x4f6/0x6d0 net/socket.c:1005
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write+0x92/0xb0 fs/read_write.c:620
+ __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-If NMI virtualization enabled and NMI_INTERCEPT bit is unset
-then HW will exit with #INVALID exit reason.
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ __msan_chain_origin+0x50/0x90 mm/kmsan/kmsan_instr.c:165
+ stack_trace_save+0x193/0x1a0 kernel/stacktrace.c:117
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ sock_write_iter+0x4f6/0x6d0 net/socket.c:1005
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write+0x92/0xb0 fs/read_write.c:620
+ __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-To enable the VNMI capability, Hypervisor need to program
-V_NMI_ENABLE bit 1.
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
+ slab_alloc_node mm/slub.c:2793 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4401
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1081 [inline]
+ alloc_skb_with_frags+0x18c/0xa70 net/core/skbuff.c:5764
+ sock_alloc_send_pskb+0xada/0xc60 net/core/sock.c:2245
+ packet_alloc_skb net/packet/af_packet.c:2816 [inline]
+ packet_snd net/packet/af_packet.c:2911 [inline]
+ packet_sendmsg+0x66a0/0x93b0 net/packet/af_packet.c:2993
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ sock_write_iter+0x6bc/0x6d0 net/socket.c:1004
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write+0x92/0xb0 fs/read_write.c:620
+ __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
 
-The presence of this feature is indicated via the CPUID function
-0x8000000A_EDX[25].
 
-Testing -
-* Used qemu's `inject_nmi` for testing.
-* tested with and w/o AVIC case.
-* tested with kvm-unit-test
-* tested with vGIF enable and disable.
-* tested nested env:
-  - L1+L2 using vnmi
-  - L1 using vnmi and L2 not 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-
-Thanks,
-Santosh
-[1] https://www.amd.com/system/files/TechDocs/40332.pdf - APM Vol2,
-ch-15.20 - "Event Injection".
-
-Santosh Shukla (8):
-  x86/cpu: Add CPUID feature bit for VNMI
-  KVM: SVM: Add VNMI bit definition
-  KVM: SVM: Add VNMI support in get/set_nmi_mask
-  KVM: SVM: Report NMI not allowed when Guest busy handling VNMI
-  KVM: SVM: Add VNMI support in inject_nmi
-  KVM: nSVM: implement nested VNMI
-  KVM: nSVM: emulate VMEXIT_INVALID case for nested VNMI
-  KVM: SVM: Enable VNMI feature
-
- arch/x86/include/asm/cpufeatures.h |  1 +
- arch/x86/include/asm/svm.h         |  7 +++
- arch/x86/kvm/svm/nested.c          | 32 ++++++++++++++
- arch/x86/kvm/svm/svm.c             | 44 ++++++++++++++++++-
- arch/x86/kvm/svm/svm.h             | 68 ++++++++++++++++++++++++++++++
- 5 files changed, 151 insertions(+), 1 deletion(-)
-
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
