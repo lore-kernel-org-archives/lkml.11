@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 508D5C25B0D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7598DC282E7
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 05:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiHJFII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 01:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
+        id S231193AbiHJFIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 01:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbiHJFHp (ORCPT
+        with ESMTP id S229498AbiHJFHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 01:07:45 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B809782FBC;
-        Tue,  9 Aug 2022 22:07:43 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id j8so25670567ejx.9;
-        Tue, 09 Aug 2022 22:07:43 -0700 (PDT)
+        Wed, 10 Aug 2022 01:07:48 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1631E83F01;
+        Tue,  9 Aug 2022 22:07:47 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id m4so25710475ejr.3;
+        Tue, 09 Aug 2022 22:07:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc;
-        bh=WsXcmjBQTbbS4kpYY9SBHjgMTL8/jvQNRCwa0TQb/Dw=;
-        b=Mv1ccTu9Pt7/8Od4hcaLuLZygPfFa1idQh4Iwor2NDR/berSoqrpXJla+nyBiiGbr3
-         h3UKWCuKMcyIMtS989oOv41ozNXbnk/WtywEAN7OcoerrgnnR1KtA//X8kaDTpzAhekZ
-         Bwj+qhKRj2694wPxYZussIJtV2Q4LxbutLacyKcUD8j9T4GJWPjqvTCp0jjDoJGA/L6T
-         FvMZmq4T7WUv/dwkaF5zWQmKwkafAwCyrzU0+7Aok6GAv03naIFweHysXUuondhs+tFi
-         ko08cm0RQP+mEek+uFcwOIZrPZRMCjtbxMSVHeoKONP17wKwbx5AkYB+xGtHEQzXCLtX
-         +7Zg==
+        bh=bCpmS8+/1egQCooQQ3as3vVr8d5Z062qoLdPw2AMxfk=;
+        b=Ws0xIKbmOrSvv/GU3aU4TtHDjsGwi+4skIXyJw1BB+aefIIdDylvwl0J33PfZddEEa
+         cY7EIfT1zmqNkz600Slda0hXQmBlzKpV4vuYYKTfHpTlxAVm2JJM7+JSNeNeXMcY53WA
+         gKyAZsDBJy0O27RxhqyDKd9oEf/UCClgw/3dTvFesuPv/n/lcO4ZbhOzG1+RXc0vcpNM
+         qQHVWNT1KDJ3++qnF0AJ9TX5xfO+TZYYoC/jjoAtfF+qxRAYpCpk3EjU+kh8/fiVPXI4
+         KQW6MG4hh2wIcyiNYXkP7F8p5wSaXuNYH83KuLRYE0Po0OlLVusocwqAmLD5EHKP/xAZ
+         ji2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc;
-        bh=WsXcmjBQTbbS4kpYY9SBHjgMTL8/jvQNRCwa0TQb/Dw=;
-        b=3oK0z/bcGu78Z8poMflhLHo6peSRHgkQaZl0FaxT0Oo6RTKCx2kWoGiD4S7xezCNgJ
-         OuYP+H5okurk1yg1k4dwCinVWvgQR65Jg45Tm69rnjIOatHCbcU6oJx0A2ziMKC/qkMT
-         SDgexubbvQTBH6mSd3mnJ84SOqOGldoyK/vNPLj7yKMH4lAgZMK28igT+JzYEzru94Ij
-         wyPKbS0qBjI1T/Iu5ewm5E7V915LzeDjNcLqgIOsX91i3sJRGQjLTY9N5wDgMo2lm6H8
-         N86dzyodgmp+a1uK2dCUJKkHfY2w7qDlXSJ1Mq7ksqWoGvT6NCIsSUSxW73DNJXtDDrj
-         8+og==
-X-Gm-Message-State: ACgBeo0gpHl/ODuP+zC6m6o6vYVTHc270+8mn+BfG7xcURC/cL+7gbzZ
-        75sLuVxdk7V9fGMs1pCvAuU=
-X-Google-Smtp-Source: AA6agR7yLzaBfBvPVm44Z2rLdVtw/TzNrHXYRUe4nMa+MCuJoOnDFeBpiEiZup/g1QpSARwuyVKKVw==
-X-Received: by 2002:a17:907:1c24:b0:731:59f9:1b3f with SMTP id nc36-20020a1709071c2400b0073159f91b3fmr9018203ejc.595.1660108062166;
-        Tue, 09 Aug 2022 22:07:42 -0700 (PDT)
+        bh=bCpmS8+/1egQCooQQ3as3vVr8d5Z062qoLdPw2AMxfk=;
+        b=TD/MecD7GF5J2y6eRdbDTZWEtb4/a67m8+TZXAvh0YBZ0G1mpBEQRYjg9sKy0Oq6ut
+         9JHFr+2c62InpG79UiVk59hMDGi6mOhHm4f8yACmQyijKZaUo9pj6TTp0F6Xtk0HlPIz
+         QeINU7xQklq/grAaGpZOtDoiQ6zMcuEgV+3cvOPQv+kTIZR5gexHU471XhkeqEbYxGpJ
+         wASSxJZa57FPt8FO/87d6BJKpuYQhv8YsWxA9mA5oj/U/njuqPtL/Xun6iEb1kx1wf0T
+         8Jn1ujtxja89BYX/zwZRGzu07WoJv0BEK+iucUHeJ7KDhwMp7YL9F9Q8y0M8UEINNTt8
+         RuCw==
+X-Gm-Message-State: ACgBeo3E2Sw70QhhEL2pnZsz13BYDYJxgvhTSsvcDfje20R4l3/v34fs
+        P9rfmXrXZzetXk+2IaBGcKc=
+X-Google-Smtp-Source: AA6agR7A6pJB4+cJg9xZ39GJFciYKDsagwONe95BcFa0P2gL4hJaNt7U60kSZRtiOudoecQhFipbpA==
+X-Received: by 2002:a17:907:6da8:b0:730:8ed5:2df8 with SMTP id sb40-20020a1709076da800b007308ed52df8mr19323388ejc.75.1660108065630;
+        Tue, 09 Aug 2022 22:07:45 -0700 (PDT)
 Received: from felia.fritz.box (200116b826504800504e9aff21bf95aa.dip.versatel-1u1.de. [2001:16b8:2650:4800:504e:9aff:21bf:95aa])
-        by smtp.gmail.com with ESMTPSA id ew12-20020a056402538c00b0043bbbaa323dsm7009781edb.0.2022.08.09.22.07.41
+        by smtp.gmail.com with ESMTPSA id ew12-20020a056402538c00b0043bbbaa323dsm7009781edb.0.2022.08.09.22.07.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 22:07:41 -0700 (PDT)
+        Tue, 09 Aug 2022 22:07:45 -0700 (PDT)
 From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
 To:     Juergen Gross <jgross@suse.com>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
@@ -60,9 +60,9 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         "H . Peter Anvin" <hpa@zytor.com>, kernel-janitors@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH 1/4] xen: x86: set the config XEN_512GB after config change
-Date:   Wed, 10 Aug 2022 07:07:09 +0200
-Message-Id: <20220810050712.9539-2-lukas.bulwahn@gmail.com>
+Subject: [PATCH 3/4] xen: move XEN_BALLOON_MEMORY_HOTPLUG to generic config
+Date:   Wed, 10 Aug 2022 07:07:11 +0200
+Message-Id: <20220810050712.9539-4-lukas.bulwahn@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220810050712.9539-1-lukas.bulwahn@gmail.com>
 References: <20220810050712.9539-1-lukas.bulwahn@gmail.com>
@@ -70,30 +70,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c70727a5bc18 ("xen: allow more than 512 GB of RAM for 64 bit
-pv-domains") from July 2015 replaces the config XEN_MAX_DOMAIN_MEMORY with
-a new config XEN_512GB, but misses to adjust arch/x86/configs/xen.config.
+While reviewing arch/x86/configs/xen.config, I noticed the following
+note in this file:
 
-Adjust this config fragment now.
+  '# depends on MEMORY_HOTPLUG, arm64 doesn't enable this yet,
+  '# move to generic config if it ever does.
+  CONFIG_XEN_BALLOON_MEMORY_HOTPLUG=y
+
+Commit 6c6685055a28 ("kconfig: add xenconfig defconfig helper") in June
+2015 adds this note. Fortunately, commit 4ab215061554 ("arm64: Add memory
+hotplug support") from December 2018 adds the memory hotplug in arm64, so
+the precondition of this note above is now met.
+
+Move setting the config XEN_BALLOON_MEMORY_HOTPLUG into the generic
+xen.config now.
 
 Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- arch/x86/configs/xen.config | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/configs/xen.config | 3 ---
+ kernel/configs/xen.config   | 1 +
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/arch/x86/configs/xen.config b/arch/x86/configs/xen.config
-index d9fc7139fd46..8a6c88f48e75 100644
+index 8a6c88f48e75..024817bc4f0e 100644
 --- a/arch/x86/configs/xen.config
 +++ b/arch/x86/configs/xen.config
-@@ -14,7 +14,7 @@ CONFIG_CPU_FREQ=y
- 
- # x86 xen specific config options
- CONFIG_XEN_PVH=y
--CONFIG_XEN_MAX_DOMAIN_MEMORY=500
-+CONFIG_XEN_512GB=y
- CONFIG_XEN_SAVE_RESTORE=y
- # CONFIG_XEN_DEBUG_FS is not set
- CONFIG_XEN_MCE_LOG=y
+@@ -23,6 +23,3 @@ CONFIG_XEN_ACPI_PROCESSOR=m
+ CONFIG_XEN_PCIDEV_BACKEND=m
+ # x86 specific frontend drivers
+ CONFIG_XEN_PCIDEV_FRONTEND=m
+-# depends on MEMORY_HOTPLUG, arm64 doesn't enable this yet,
+-# move to generic config if it ever does.
+-CONFIG_XEN_BALLOON_MEMORY_HOTPLUG=y
+diff --git a/kernel/configs/xen.config b/kernel/configs/xen.config
+index 436f806aa1ed..ea84d5b3122d 100644
+--- a/kernel/configs/xen.config
++++ b/kernel/configs/xen.config
+@@ -34,6 +34,7 @@ CONFIG_INPUT_XEN_KBDDEV_FRONTEND=m
+ CONFIG_XEN_SCSI_FRONTEND=m
+ # others
+ CONFIG_XEN_BALLOON=y
++CONFIG_XEN_BALLOON_MEMORY_HOTPLUG=y
+ CONFIG_XEN_DEV_EVTCHN=m
+ CONFIG_XEN_BLKDEV_FRONTEND=m
+ CONFIG_XEN_NETDEV_FRONTEND=m
 -- 
 2.17.1
 
