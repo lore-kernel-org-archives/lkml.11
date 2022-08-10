@@ -2,248 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A993BC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2027FC25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233142AbiHJRDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 13:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
+        id S233188AbiHJRFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 13:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233118AbiHJRDH (ORCPT
+        with ESMTP id S229522AbiHJRFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 13:03:07 -0400
-Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE44422DA
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1660150986; x=1691686986;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8Pq8CBGLyirGLAmHoB0J+qoIbqc9DpPo2RXP+p6Tvf4=;
-  b=YC35f005qpYTC0j1M0GtDmCHpSDDHzULXP8yKg0Or2eZryYPTQj4Es1z
-   QlThS8Ba7SdlvjAZi+zHobI4gyPUj52C2jfrDmgdC6+wwcxQoRMviJj+z
-   z7fLRpnCETyL/1nkdDbwE2Ale0GyXB/QMD1Mue6ZRIj4IZiRg/nnwAF4q
-   C2ByFG6EiK3uEx7TFLSPTs04o1iMen+ge/b1WDqvkhiZ14g1nDusmJ2VY
-   KsbXFM0HRF9LJQ8vRuaSdrhzIQwqu/qlr9z9dtW0lIi1wuXdPJUk5SwO3
-   jUcYszCf4Y7Mku+cX8Dnr0unNOFM5CMFFC/IEhBbGTILVewBnCPGb0p37
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,227,1654531200"; 
-   d="scan'208";a="208362736"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 11 Aug 2022 01:03:04 +0800
-IronPort-SDR: Yrij7WGQG7TbnZaPyuAwSC+FctH6QxHf68F9JagEfawXx5tTnx3nfpAFg4URuEakAaoTbgx1RI
- T5ll3q6vI+JCc0AG6uczmJSryMt+eyoW5Q7KD9/l4i3exUYK2XFDa2HSVOqqnZ6WO9C/dXSw+v
- bcD9KbahAlH5K1RBkeZcOUMJoTOjxWbs0pvCR+EQ+PvEOKU4sgzx0qaqKnYP2TYseHiiPRvxBu
- 2hNPUPFDpziZzSM06OYdmeOdMHRX89DHex/BROMcHmgWODVVbVWxJfjVTiWWbb7dPwSHqBBoXN
- nKFtfu7WfGKRkYYSDCNVE/BE
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 10 Aug 2022 09:18:40 -0700
-IronPort-SDR: dqvBzSxrHL7ulSx9Iwei/H5NS8aoIXyGH+L8+gmciQI8Zu0X16x4k99I27kaFOlnJyANztw/2n
- TrKHE0Ra1nW5DJfEUy0vBJ/MNiI2iQQJhYgn1Bc0dHdFTsgqHinDpJzKlqM6HoqGF4TSO1dvPE
- rngxbWgcDzPJi2i0LyMJfRH56TfhAy+6lov8X+nkcQNjKSS5sXRl+V1oMeq1oxfXau29McBIw5
- ZNQM+avzzcBCXXYTKVmgErUSTAezd8iJQQtY5sM05rAKC3TkRw5c5f5oCiMF8VEX7dUScEFHVp
- 9W4=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 10 Aug 2022 10:03:05 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4M2x8S1wKpz1Rwnl
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:03:04 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1660150983; x=1662742984; bh=8Pq8CBGLyirGLAmHoB0J+qoIbqc9DpPo2RX
-        P+p6Tvf4=; b=ULHl3HZV8U0XDjLXIZz+O5/ZAmZ2BhIdyCiHrCEZreJls3CFdSX
-        TZ7/vfz0FwVd3gYG2PfbsIW9TEuOdAqjEIwn7oUs7Z+xisLM5FqIAYPs9yVFgDPm
-        Z6XZI5u5jW1Zk32sZfMAzfQxRH3hH4Q5PzO70OI/GCLSaOG9Dcn/3IYa3OFNWnjk
-        WGVYbvsZZyDaGHDpJ9mv0tlkpVonuF+sH8uGHJ3mNyg0bgaUcYC8+tfdPGJORLI7
-        vUkbtaMYVVvqAPu49BcS2SPbtoGZK3LYVUjPin0DSlxIlYs31IteLM59kM+1qccI
-        vppjwWhCW3AddEM1gWmY0kuYivE+1apbpaw==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id W8hImcKaa4rp for <linux-kernel@vger.kernel.org>;
-        Wed, 10 Aug 2022 10:03:03 -0700 (PDT)
-Received: from [10.111.68.99] (c02drav6md6t.sdcorp.global.sandisk.com [10.111.68.99])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4M2x8P5ybyz1RtVk;
-        Wed, 10 Aug 2022 10:03:01 -0700 (PDT)
-Message-ID: <d7343e70-cbfa-4163-a78e-963fbf3bb38c@opensource.wdc.com>
-Date:   Wed, 10 Aug 2022 10:03:01 -0700
+        Wed, 10 Aug 2022 13:05:22 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B46E20F5A;
+        Wed, 10 Aug 2022 10:05:21 -0700 (PDT)
+Received: from localhost (modemcable141.102-20-96.mc.videotron.ca [96.20.102.141])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: krisman)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 227CD66019C1;
+        Wed, 10 Aug 2022 18:05:19 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660151120;
+        bh=4xdK5anslBOIhnkqGW81pncrZ4JdPy+zW5SIE/JLnRY=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=h3/E9F9xuu0PQBdbIIIowMiztInzpGA0Sr0/+ERtIQ9Vaj8xol3qxBdNobdQ5OFOQ
+         lAbYHUygoM5LQQ5pucfxCdpxQTPn06tCWpoSfjKHlvwjjlSxcMj8Ew2NicpOm1AvJ3
+         roEcd73rt3wd9yGwbKMRSMKfTRLj6KFgYIfZ2F4vNor+cpy8eB6hytQGEFPfzNo5Md
+         msk+2xH6Fdmd57XrQPJRtVBSL67QF0eySoRR2reLPDjb1MJQU/w+xrfqcTVAbkf3vT
+         XqEyOLcJ5t7UXVh9WHIGLYw/NAFIeHfZKTVCtl5iayQ/V09KExOQ4SdIqXZDjGHMtJ
+         +LprGiO7NYsdA==
+From:   Gabriel Krisman Bertazi <krisman@collabora.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:PROC FILESYSTEM" <linux-fsdevel@vger.kernel.org>,
+        "open list:ABI/API" <linux-api@vger.kernel.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
+        <linux-perf-users@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, kernel@collabora.com
+Subject: Re: [PATCH 0/5] Add process_memwatch syscall
+References: <20220726161854.276359-1-usama.anjum@collabora.com>
+        <95ed1a81-ff8e-2c48-8838-4b3995af51b7@redhat.com>
+Date:   Wed, 10 Aug 2022 13:05:13 -0400
+In-Reply-To: <95ed1a81-ff8e-2c48-8838-4b3995af51b7@redhat.com> (David
+        Hildenbrand's message of "Wed, 10 Aug 2022 11:03:11 +0200")
+Message-ID: <87pmh8ghbq.fsf@collabora.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH v9 03/13] block: allow blk-zoned devices to have
- non-power-of-2 zone size
-Content-Language: en-US
-To:     Pankaj Raghav <p.raghav@samsung.com>, Johannes.Thumshirn@wdc.com,
-        snitzer@kernel.org, axboe@kernel.dk, agk@redhat.com, hch@lst.de
-Cc:     dm-devel@redhat.com, matias.bjorling@wdc.com, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, pankydev8@gmail.com,
-        jaegeuk@kernel.org, hare@suse.de, linux-block@vger.kernel.org,
-        linux-nvme@lists.infradead.org, bvanassche@acm.org,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20220803094801.177490-1-p.raghav@samsung.com>
- <CGME20220803094805eucas1p1c68ba40d319331c2c34059f966ba2d83@eucas1p1.samsung.com>
- <20220803094801.177490-4-p.raghav@samsung.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220803094801.177490-4-p.raghav@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/08/03 2:47, Pankaj Raghav wrote:
-> Checking if a given sector is aligned to a zone is a common
-> operation that is performed for zoned devices. Add
-> bdev_is_zone_start helper to check for this instead of opencoding it
-> everywhere.
-> 
-> Convert the calculations on zone size to be generic instead of relying on
-> power-of-2(po2) based arithmetic in the block layer using the helpers
-> wherever possible.
-> 
-> The only hot path affected by this change for zoned devices with po2
-> zone size is in blk_check_zone_append() but bdev_is_zone_start() helper is
-> used to optimize the calculation for po2 zone sizes.
-> 
-> Finally, allow zoned devices with non po2 zone sizes provided that their
-> zone capacity and zone size are equal. The main motivation to allow zoned
-> devices with non po2 zone size is to remove the unmapped LBA between
-> zone capcity and zone size for devices that cannot have a po2 zone
-> capacity.
-> 
-> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-> Reviewed-by: Hannes Reinecke <hare@suse.de>
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-> ---
->  block/blk-core.c       |  2 +-
->  block/blk-zoned.c      | 24 ++++++++++++++++++------
->  include/linux/blkdev.h | 30 ++++++++++++++++++++++++++++++
->  3 files changed, 49 insertions(+), 7 deletions(-)
-> 
-> diff --git a/block/blk-core.c b/block/blk-core.c
-> index a0d1104c5590..1cb519220ffb 100644
-> --- a/block/blk-core.c
-> +++ b/block/blk-core.c
-> @@ -563,7 +563,7 @@ static inline blk_status_t blk_check_zone_append(struct request_queue *q,
->  		return BLK_STS_NOTSUPP;
->  
->  	/* The bio sector must point to the start of a sequential zone */
-> -	if (bio->bi_iter.bi_sector & (bdev_zone_sectors(bio->bi_bdev) - 1) ||
-> +	if (!bdev_is_zone_start(bio->bi_bdev, bio->bi_iter.bi_sector) ||
->  	    !bio_zone_is_seq(bio))
->  		return BLK_STS_IOERR;
->  
-> diff --git a/block/blk-zoned.c b/block/blk-zoned.c
-> index dce9c95b4bcd..665b822d13f9 100644
-> --- a/block/blk-zoned.c
-> +++ b/block/blk-zoned.c
-> @@ -285,10 +285,10 @@ int blkdev_zone_mgmt(struct block_device *bdev, enum req_op op,
->  		return -EINVAL;
->  
->  	/* Check alignment (handle eventual smaller last zone) */
-> -	if (sector & (zone_sectors - 1))
-> +	if (!bdev_is_zone_start(bdev, sector))
->  		return -EINVAL;
->  
-> -	if ((nr_sectors & (zone_sectors - 1)) && end_sector != capacity)
-> +	if (!bdev_is_zone_start(bdev, nr_sectors) && end_sector != capacity)
->  		return -EINVAL;
->  
->  	/*
-> @@ -486,14 +486,26 @@ static int blk_revalidate_zone_cb(struct blk_zone *zone, unsigned int idx,
->  	 * smaller last zone.
->  	 */
->  	if (zone->start == 0) {
-> -		if (zone->len == 0 || !is_power_of_2(zone->len)) {
-> -			pr_warn("%s: Invalid zoned device with non power of two zone size (%llu)\n",
-> -				disk->disk_name, zone->len);
-> +		if (zone->len == 0) {
-> +			pr_warn("%s: Invalid zero zone size", disk->disk_name);
-> +			return -ENODEV;
-> +		}
-> +
-> +		/*
-> +		 * Non power-of-2 zone size support was added to remove the
-> +		 * gap between zone capacity and zone size. Though it is technically
-> +		 * possible to have gaps in a non power-of-2 device, Linux requires
-> +		 * the zone size to be equal to zone capacity for non power-of-2
-> +		 * zoned devices.
-> +		 */
-> +		if (!is_power_of_2(zone->len) && zone->capacity < zone->len) {
-> +			pr_err("%s: Invalid zone capacity: %lld with non power-of-2 zone size: %lld",
-> +			       disk->disk_name, zone->capacity, zone->len);
->  			return -ENODEV;
->  		}
->  
->  		args->zone_sectors = zone->len;
-> -		args->nr_zones = (capacity + zone->len - 1) >> ilog2(zone->len);
-> +		args->nr_zones = div64_u64(capacity + zone->len - 1, zone->len);
->  	} else if (zone->start + args->zone_sectors < capacity) {
->  		if (zone->len != args->zone_sectors) {
->  			pr_warn("%s: Invalid zoned device with non constant zone size\n",
-> diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-> index 22f97427b60b..5aa15172299d 100644
-> --- a/include/linux/blkdev.h
-> +++ b/include/linux/blkdev.h
-> @@ -709,6 +709,30 @@ static inline unsigned int disk_zone_no(struct gendisk *disk, sector_t sector)
->  	return div64_u64(sector, zone_sectors);
->  }
->  
-> +static inline sector_t bdev_offset_from_zone_start(struct block_device *bdev,
-> +						   sector_t sec)
-> +{
-> +	sector_t zone_sectors = bdev_zone_sectors(bdev);
-> +	u64 remainder = 0;
-> +
-> +	if (!bdev_is_zoned(bdev))
-> +		return 0;
-> +
-> +	if (is_power_of_2(zone_sectors))
-> +		return sec & (zone_sectors - 1);
-> +
-> +	div64_u64_rem(sec, zone_sectors, &remainder);
-> +	return remainder;
-> +}
-> +
-> +static inline bool bdev_is_zone_start(struct block_device *bdev, sector_t sec)
-> +{
-> +	if (!bdev_is_zoned(bdev))
-> +		return false;
-> +
-> +	return bdev_offset_from_zone_start(bdev, sec) == 0;
-> +}
-> +
->  static inline bool disk_zone_is_seq(struct gendisk *disk, sector_t sector)
->  {
->  	if (!blk_queue_is_zoned(disk->queue))
-> @@ -753,6 +777,12 @@ static inline unsigned int disk_zone_no(struct gendisk *disk, sector_t sector)
->  {
->  	return 0;
->  }
-> +
-> +static inline bool bdev_is_zone_start(struct block_device *bdev, sector_t sec)
-> +{
-> +	return false;
-> +}
+David Hildenbrand <david@redhat.com> writes:
 
-Is this one really necessary ? Any caller of this would also depend on
-CONFIG_BLK_DEV_ZONED and not compiled if not enabled. So there should be no
-callers of this for the !CONFIG_BLK_DEV_ZONED case.
+> On 26.07.22 18:18, Muhammad Usama Anjum wrote:
+>> Hello,
+>
+> Hi,
+>
+>> 
+>> This patch series implements a new syscall, process_memwatch. Currently,
+>> only the support to watch soft-dirty PTE bit is added. This syscall is
+>> generic to watch the memory of the process. There is enough room to add
+>> more operations like this to watch memory in the future.
+>> 
+>> Soft-dirty PTE bit of the memory pages can be viewed by using pagemap
+>> procfs file. The soft-dirty PTE bit for the memory in a process can be
+>> cleared by writing to the clear_refs file. This series adds features that
+>> weren't possible through the Proc FS interface.
+>> - There is no atomic get soft-dirty PTE bit status and clear operation
+>>   possible.
+>
+> Such an interface might be easy to add, no?
+>
+>> - The soft-dirty PTE bit of only a part of memory cannot be cleared.
+>
+> Same.
+>
+> So I'm curious why we need a new syscall for that.
 
-> +
->  static inline unsigned int bdev_max_open_zones(struct block_device *bdev)
->  {
->  	return 0;
+Hi David,
 
+Yes, sure. Though it has to be through an ioctl since we need both input
+and output semantics at the same call to keep the atomic semantics.
+
+I answered Peter Enderborg about our concerns when turning this into an
+ioctl.  But they are possible to overcome.
+
+>> project. The Proc FS interface is enough for that as I think the process
+>> is frozen. We have the use case where we need to track the soft-dirty
+>> PTE bit for running processes. We need this tracking and clear mechanism
+>> of a region of memory while the process is running to emulate the
+>> getWriteWatch() syscall of Windows. This syscall is used by games to keep
+>> track of dirty pages and keep processing only the dirty pages. This
+>> syscall can be used by the CRIU project and other applications which
+>> require soft-dirty PTE bit information.
+>> 
+>> As in the current kernel there is no way to clear a part of memory (instead
+>> of clearing the Soft-Dirty bits for the entire processi) and get+clear
+>> operation cannot be performed atomically, there are other methods to mimic
+>> this information entirely in userspace with poor performance:
+>> - The mprotect syscall and SIGSEGV handler for bookkeeping
+>> - The userfaultfd syscall with the handler for bookkeeping
+>
+> You write "poor performance". Did you actually implement a prototype
+> using userfaultfd-wp? Can you share numbers for comparison?
+
+Yes, we did.  I think Usama can share some numbers.
+
+The problem with userfaultfd, as far as I understand, is that it will
+require a second userspace process to be called in order to handle the
+annotation that a page was touched, before remapping the page to make it
+accessible to the originating process, every time a page is touched.
+This context switch is prohibitively expensive to our use case, where
+Windows applications might invoke it quite often.  Soft-dirty bit
+instead, allows the page tracking to be done entirely in kernelspace.
+
+If I understand correctly, userfaultfd is usefull for VM/container
+migration, where the cost of the context switch is not a real concern,
+since there are much bigger costs from the migration itself.
+
+Maybe we're missing some feature about userfaultfd that would allow us
+to avoid the cost, but from our observations we didn't find a way to
+overcome it.
+
+>>         long process_memwatch(int pidfd, unsigned long start, int len,
+>>                               unsigned int flags, void *vec, int vec_len);
+>> 
+>> This syscall can be used by the CRIU project and other applications which
+>> require soft-dirty PTE bit information. The following operations are
+>> supported in this syscall:
+>> - Get the pages that are soft-dirty.
+>> - Clear the pages which are soft-dirty.
+>> - The optional flag to ignore the VM_SOFTDIRTY and only track per page
+>> soft-dirty PTE bit
+>
+> Huh, why? VM_SOFTDIRTY is an internal implementation detail and should
+> remain such.
+> VM_SOFTDIRTY translates to "all pages in this VMA are soft-dirty".
+
+That is something very specific about our use case, and we should
+explain it a bit better.  The problem is that VM_SOFTDIRTY modifications
+introduce the overhead of the mm write lock acquisition, which is very
+visible in our benchmarks of Windows games running over Wine.
+
+Since the main reason for VM_SOFTDIRTY to exist, as far as we understand
+it, is to track vma remapping, and this is a use case we don't need to
+worry about when implementing windows semantics, we'd like to be able to
+avoid this extra overhead, optionally, iff userspace knows it can be
+done safely.
+
+VM_SOFTDIRTY is indeed an internal interface.  Which is why we are
+proposing to expose the feature in terms of tracking VMA reuse.
+
+Thanks,
 
 -- 
-Damien Le Moal
-Western Digital Research
+Gabriel Krisman Bertazi
