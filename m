@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01711C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 04:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2214CC28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 04:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbiHJEF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 00:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S231171AbiHJEGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 00:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbiHJEFP (ORCPT
+        with ESMTP id S230456AbiHJEFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 00:05:15 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA5B625F
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 21:05:12 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10e615a36b0so16481972fac.1
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 21:05:12 -0700 (PDT)
+        Wed, 10 Aug 2022 00:05:20 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360EE1EEEB
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 21:05:14 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id f3-20020a9d0383000000b00636d99775a2so6178141otf.2
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 21:05:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=cH3gEx8fSSVvttzCeah2rBVrmjrn0CZnJ9l69q/KYmY=;
-        b=NGQOnE3UkKSNmdlloSP6/pskV7F60rjNepp4GAstvay9+NQ7eYpEi6HgRaf1dbOEW5
-         sRM6H78LrFfMKuPQQ+kx67Wfu/ZPeoRcnsjjESolzEdPGGMCiYspMtHEWtWwHRJgZq0b
-         CRSWEKuKc6OtJOEFslLDbl1caYV5rwSRjIwYXCc7nOZCbOALE43rAV3RtZFgBgo4pY5H
-         3p+uT5hht5KlPtCw14hqylZKyAbBVVAEWn1htr8XdOs0ebwYe9Szu89rDOGjHmr6bXpJ
-         4CP/2x5ob1XGTWykZRg4oG1z56IOCO/uL16cvv4xzIaick+Hb9Jh1j3Eve2ApeKeLFGQ
-         +eFA==
+        bh=otMbQ+fUxY1KqKVlgDpCNz3GS8mo4JE64ISTgGLY7Bw=;
+        b=oPeYvsLzthrz/wujDz0x/KTlTkoB+UZmMOVZZjqZIzw2t7p1M+oZodLqLyVDF+VWIf
+         ShCQapeXpthbW5woDkAX/t3LC7d0BYxdmKqGRnjJ/kirHgAJvSPjQzUdL9wYBMXmM0lU
+         e9qtqsJq7q1Yf0LAMlLRdwQeGbsB6PhCHBpYd/YnbIzx0/JZzo4Ngw6flLPerrHB2slx
+         l8XSb+KPrM/zk1Tz1TH7ObJSqiEmmVBN+kPlYWOqgeWZm5aagYKpQRn2ufTrwecc/nN3
+         B4Rouk2kAS1ttVijfZIGlf9o7QFzV3E+oOE8C3InauGXSiGSQnv2BjQpZCwpAhTRc7h8
+         C7yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=cH3gEx8fSSVvttzCeah2rBVrmjrn0CZnJ9l69q/KYmY=;
-        b=Cu+uCfrIDwyOs/n9NaT/PaC2hwp7err3qqS79ONuvP+RdzpHCEM9vrKju7lNUsM7L0
-         rQmEq6ZU3y66cwcyU8aCWErtOPxUfsHMpux76aaPbM4wFNhIanPAON393Gasqnf+cR6O
-         zYvsP9ybARt3nvgfeLzQo159IrR9qg1guFe6zW+L1icQp1ZoEoPlREwk2CmTHFzY/yMT
-         X/wmky6mUrVHBZVeowsJXQaSJPJ0DWeYZAziO/LQ5bUtvhQIQnZvLXK4QcshLvvU2mnB
-         2CgNLpfHapRNRLOY3akQn+wQGvbtk4rxRVyt49mFFU+Xb0DDBUaJUfuVYFvXG0C5sLLX
-         kp+Q==
-X-Gm-Message-State: ACgBeo2SC7mRoheM1zXkIiS31eKYrqheM9yOhNTS0UFV2Y0jxQ2hZCcN
-        CBxcTDfxZm7EUR+uCZBCtPyv7w==
-X-Google-Smtp-Source: AA6agR6o2ARcIuuuo86XC0au9dC67ExmDYqSy3iCxd08Q8BeQdcm35NOsnIDmRNUKCYcLUn4xlkntg==
-X-Received: by 2002:a05:6870:310e:b0:113:a9bf:57e7 with SMTP id v14-20020a056870310e00b00113a9bf57e7mr668647oaa.219.1660104311205;
-        Tue, 09 Aug 2022 21:05:11 -0700 (PDT)
+        bh=otMbQ+fUxY1KqKVlgDpCNz3GS8mo4JE64ISTgGLY7Bw=;
+        b=Or438i9I2HKcgVw9SO1hM0L+1AVqIwHBNImyQ9J5OUY8PF0sDbsSiVM7YZgDHB2og3
+         mVkzhfiVLvFa/Ci4Sza5hoHUWyBq6MVxDuAyf9bBf/uJ5JFeWhJgRAg71NZ1PHLdOaVt
+         +UhMQUA2AlXED4FUAdxGieNh2ygtOJny3g5xRTt+YcCNzrEhc/qhiIP9zOJF7jPz5f5c
+         z0R1Tz55e4ETOSoWXeSn6g2C1YX6OSvDc0C9p1dzcwAZBsVyVhlr8Rjs1aLuNF00tJgJ
+         u3RYgMNrBfkXxweyYlW0+GnRs0UZlAXD1Qb+cgPQixgVxKlL/o+/ALfLY0x4QNDP2X/S
+         RuHg==
+X-Gm-Message-State: ACgBeo1enff3hchTAaxTBy25C9M8WZq9wa91Cv5ux5DlnzcMkDbhSYv7
+        mbYD0Dlx2ezqS0CVbTPP5qaLBw==
+X-Google-Smtp-Source: AA6agR5PSzQ8RoK4TmRdA43VijbvZZNJhXAslG52xfwT/rylQBDFDrhutFH1LFS21v1AOHoPPevuug==
+X-Received: by 2002:a05:6830:638d:b0:636:a941:d467 with SMTP id ch13-20020a056830638d00b00636a941d467mr8679172otb.5.1660104313495;
+        Tue, 09 Aug 2022 21:05:13 -0700 (PDT)
 Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id q6-20020a056830440600b00616dfd2c859sm449027otv.59.2022.08.09.21.05.10
+        by smtp.gmail.com with ESMTPSA id q6-20020a056830440600b00616dfd2c859sm449027otv.59.2022.08.09.21.05.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 21:05:10 -0700 (PDT)
+        Tue, 09 Aug 2022 21:05:12 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
         Vinod Koul <vkoul@kernel.org>
@@ -55,9 +55,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] phy: qcom: edp: Perform lane configuration
-Date:   Tue,  9 Aug 2022 21:07:43 -0700
-Message-Id: <20220810040745.3582985-4-bjorn.andersson@linaro.org>
+Subject: [PATCH 5/5] phy: qcom: edp: Add SC8280XP eDP and DP PHYs
+Date:   Tue,  9 Aug 2022 21:07:45 -0700
+Message-Id: <20220810040745.3582985-6-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220810040745.3582985-1-bjorn.andersson@linaro.org>
 References: <20220810040745.3582985-1-bjorn.andersson@linaro.org>
@@ -67,70 +67,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TRANSCIEVER_BIAS_EN, HIGHZ_DRVR_EN and PHY_CFG_1 registers are used
-for lane configuration, with the currently hard coded configuration
-being a mix of 2 and 4 lane (effectively 2-lane).
-
-Properly implement lane configuration for 1, 2 and 4 lanes.
+The Qualcomm SC8280XP platform has a number of eDP and DP PHY instances,
+add support for these.
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/phy/qualcomm/phy-qcom-edp.c | 32 ++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-edp.c | 74 +++++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
 diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
-index 41aa28291cea..32614fb838b5 100644
+index 301ac422d2fe..de696108cf6e 100644
 --- a/drivers/phy/qualcomm/phy-qcom-edp.c
 +++ b/drivers/phy/qualcomm/phy-qcom-edp.c
-@@ -315,9 +315,11 @@ static int qcom_edp_set_vco_div(const struct qcom_edp *edp)
- static int qcom_edp_phy_power_on(struct phy *phy)
- {
- 	const struct qcom_edp *edp = phy_get_drvdata(phy);
-+	u32 bias0_en, drvr0_en, bias1_en, drvr1_en;
- 	int timeout;
- 	int ret;
- 	u32 val;
-+	u8 cfg1;
+@@ -100,6 +100,78 @@ struct qcom_edp {
+ 	struct regulator_bulk_data supplies[2];
+ };
  
- 	writel(DP_PHY_PD_CTL_PWRDN | DP_PHY_PD_CTL_AUX_PWRDN |
- 	       DP_PHY_PD_CTL_LANE_0_1_PWRDN | DP_PHY_PD_CTL_LANE_2_3_PWRDN |
-@@ -398,11 +400,31 @@ static int qcom_edp_phy_power_on(struct phy *phy)
- 	writel(0x1f, edp->tx0 + TXn_TX_DRV_LVL);
- 	writel(0x1f, edp->tx1 + TXn_TX_DRV_LVL);
- 
--	writel(0x4, edp->tx0 + TXn_HIGHZ_DRVR_EN);
--	writel(0x3, edp->tx0 + TXn_TRANSCEIVER_BIAS_EN);
--	writel(0x4, edp->tx1 + TXn_HIGHZ_DRVR_EN);
--	writel(0x0, edp->tx1 + TXn_TRANSCEIVER_BIAS_EN);
--	writel(0x3, edp->edp + DP_PHY_CFG_1);
-+	if (edp->dp_opts.lanes == 1) {
-+		bias0_en = 0x01;
-+		bias1_en = 0x00;
-+		drvr0_en = 0x06;
-+		drvr1_en = 0x07;
-+		cfg1 = 0x1;
-+	} else if (edp->dp_opts.lanes == 2) {
-+		bias0_en = 0x03;
-+		bias1_en = 0x00;
-+		drvr0_en = 0x04;
-+		drvr1_en = 0x07;
-+		cfg1 = 0x3;
-+	} else {
-+		bias0_en = 0x03;
-+		bias1_en = 0x03;
-+		drvr0_en = 0x04;
-+		drvr1_en = 0x04;
-+		cfg1 = 0xf;
-+	}
++static const u8 dp_swing_hbr_rbr[4][4] = {
++	{ 0x08, 0x0f, 0x16, 0x1f },
++	{ 0x11, 0x1e, 0x1f, 0xff },
++	{ 0x16, 0x1f, 0xff, 0xff },
++	{ 0x1f, 0xff, 0xff, 0xff }
++};
 +
-+	writel(drvr0_en, edp->tx0 + TXn_HIGHZ_DRVR_EN);
-+	writel(bias0_en, edp->tx0 + TXn_TRANSCEIVER_BIAS_EN);
-+	writel(drvr1_en, edp->tx1 + TXn_HIGHZ_DRVR_EN);
-+	writel(bias1_en, edp->tx1 + TXn_TRANSCEIVER_BIAS_EN);
-+	writel(cfg1, edp->edp + DP_PHY_CFG_1);
- 
- 	writel(0x18, edp->edp + DP_PHY_CFG);
- 	usleep_range(100, 1000);
++static const u8 dp_pre_emp_hbr_rbr[4][4] = {
++	{ 0x00, 0x0d, 0x14, 0x1a },
++	{ 0x00, 0x0e, 0x15, 0xff },
++	{ 0x00, 0x0e, 0xff, 0xff },
++	{ 0x03, 0xff, 0xff, 0xff }
++};
++
++static const u8 dp_swing_hbr2_hbr3[4][4] = {
++	{ 0x02, 0x12, 0x16, 0x1a },
++	{ 0x09, 0x19, 0x1f, 0xff },
++	{ 0x10, 0x1f, 0xff, 0xff },
++	{ 0x1f, 0xff, 0xff, 0xff }
++};
++
++static const u8 dp_pre_emp_hbr2_hbr3[4][4] = {
++	{ 0x00, 0x0c, 0x15, 0x1b },
++	{ 0x02, 0x0e, 0x16, 0xff },
++	{ 0x02, 0x11, 0xff, 0xff },
++	{ 0x04, 0xff, 0xff, 0xff }
++};
++
++static const struct qcom_edp_cfg dp_phy_cfg = {
++	.is_dp = true,
++	.swing_hbr_rbr = &dp_swing_hbr_rbr,
++	.swing_hbr3_hbr2 = &dp_swing_hbr2_hbr3,
++	.pre_emphasis_hbr_rbr = &dp_pre_emp_hbr_rbr,
++	.pre_emphasis_hbr3_hbr2 = &dp_pre_emp_hbr2_hbr3,
++};
++
++static const u8 edp_swing_hbr_rbr[4][4] = {
++	{ 0x07, 0x0f, 0x16, 0x1f },
++	{ 0x0d, 0x16, 0x1e, 0xff },
++	{ 0x11, 0x1b, 0xff, 0xff },
++	{ 0x16, 0xff, 0xff, 0xff }
++};
++
++static const u8 edp_pre_emp_hbr_rbr[4][4] = {
++	{ 0x05, 0x12, 0x17, 0x1d },
++	{ 0x05, 0x11, 0x18, 0xff },
++	{ 0x06, 0x11, 0xff, 0xff },
++	{ 0x00, 0xff, 0xff, 0xff }
++};
++
++static const u8 edp_swing_hbr2_hbr3[4][4] = {
++	{ 0x0b, 0x11, 0x17, 0x1c },
++	{ 0x10, 0x19, 0x1f, 0xff },
++	{ 0x19, 0x1f, 0xff, 0xff },
++	{ 0x1f, 0xff, 0xff, 0xff }
++};
++
++static const u8 edp_pre_emp_hbr2_hbr3[4][4] = {
++	{ 0x08, 0x11, 0x17, 0x1b },
++	{ 0x00, 0x0c, 0x13, 0xff },
++	{ 0x05, 0x10, 0xff, 0xff },
++	{ 0x00, 0xff, 0xff, 0xff }
++};
++
++static const struct qcom_edp_cfg edp_phy_cfg = {
++	.is_dp = false,
++	.swing_hbr_rbr = &edp_swing_hbr_rbr,
++	.swing_hbr3_hbr2 = &edp_swing_hbr2_hbr3,
++	.pre_emphasis_hbr_rbr = &edp_pre_emp_hbr_rbr,
++	.pre_emphasis_hbr3_hbr2 = &edp_pre_emp_hbr2_hbr3,
++};
++
+ static int qcom_edp_phy_init(struct phy *phy)
+ {
+ 	struct qcom_edp *edp = phy_get_drvdata(phy);
+@@ -767,6 +839,8 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
+ static const struct of_device_id qcom_edp_phy_match_table[] = {
+ 	{ .compatible = "qcom,sc7280-edp-phy" },
+ 	{ .compatible = "qcom,sc8180x-edp-phy" },
++	{ .compatible = "qcom,sc8280xp-dp-phy", .data = &dp_phy_cfg },
++	{ .compatible = "qcom,sc8280xp-edp-phy", .data = &edp_phy_cfg },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_edp_phy_match_table);
 -- 
 2.35.1
 
