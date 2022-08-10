@@ -2,171 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5142C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5B6C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbiHJIZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        id S231348AbiHJI04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231461AbiHJIZW (ORCPT
+        with ESMTP id S231750AbiHJI0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:25:22 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D21A11822
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:25:21 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id z20so16171776edb.9
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:25:21 -0700 (PDT)
+        Wed, 10 Aug 2022 04:26:41 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9680E61DA3
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:26:34 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id l22so16894583wrz.7
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nbqAsyz9z6bB6QA6vWSugiDElg43hTOGFFgfozHm3AQ=;
-        b=qwjPN5kJN+YqUEgcEd5RNxjvkJufZEP1pmxUrSsk9g0CQb2zCisfSy4qWjPVl6ZxPn
-         46SiZDV3JoVt1zHLPxRWFIgr/doPX5EGgwFX4J7/nf2LkVn7ilanCp72hmN7aZbLCXWh
-         XJBtM2S0Pf1stUCMZQ+utGYN1yov7EMdiWe32dlMRKuV25zrH6ueFOvz6V98QbOsjPWT
-         ETWrbBj0/px4ddZNr1p+SJgym/JahUr+nVRv+eVsjtMiTcQZTaoB6IVDGVZbO2cUb7zo
-         yRHJkTX5grd4g1ryDa5M/1u5ywtEcwxBB1xiRyAO1CPyjTeiK6Rm4yS8QOVDG06ZfM/9
-         gP7A==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=C4O+deHMw21i9ROh6aMeCmFYtLZ7zT5HJpdxL44+uwI=;
+        b=skHNKGe/EdlNIN/2JhTRvDNdaIJYAJYZium+/LxZVQO0MKzpOUYuSxH2xdjSGwF4DV
+         HUDoXC+raOXmQ/g1GVIjK2DfK8UF2H943OZhcV9iFmez0onZLNqDA0Sde4Wp0hNaVopL
+         phO5973aD84d2BDmNjRhrnxVP1fu1ggxab57oJpdb2s5jstkKpSJVIvyz4NT8OVfez5g
+         487I6AzTst2+OPjLwmslFsT87SiCwRj6yDbktUDlor/YGTnzAG9nvDjX4mbDesYOLbqQ
+         TY+6NylwgPvvbBFY8wYhm8xOcPeGCx0AAjjvG5pvcxMVuLBH80cS7VIt4ybHZ24ChwjN
+         NCGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nbqAsyz9z6bB6QA6vWSugiDElg43hTOGFFgfozHm3AQ=;
-        b=Op93G+wfOK/Sz4JL8Ml28YDAXAis+HWNbHt6R7wi5x/nkGe29e1eC1uVSPvc3lvBR2
-         yg/5DFcHcAUu2qhFlyq8+WysB8pkbKZnANDTUfP/Ev0IX8CIEQpZPKZZM1yduGVf7jTK
-         tk4FiWxU2zb6CGJX+F8IqfNEitvI+BOHU3OvUzz9eFXtMCmXkNjnLuVsx4mjHqCc0kim
-         /XiEcOBcB5dVJAymUrzrH2QI7wwl18149TbIEmPUzJwVvYQ+Tu8/YhAuDZpFi1fKZyYX
-         c3rCgKEqBJJZvjZ3diGVFEChAdcPpDewV4wwNbZwPTHqLaNTwKTgT7PtWCoES+JYO+vu
-         1A1Q==
-X-Gm-Message-State: ACgBeo1WJpF6TjzcLoM3DDyJvm+PTeOfMdriBoyIpifyyLDy1bIWKoMG
-        J2+9fcx2d5QHrW0kQTO9yqbXDvLnjtV3bbzx3Hc56Q==
-X-Google-Smtp-Source: AA6agR5PFq+2RmZqmuJGsirwLqVekGzCqhnVl5AAzlCaTRPW3O/gngZbz2svEcUJu7W/0M23IurHskzsV1MmdYog28o=
-X-Received: by 2002:aa7:da93:0:b0:43d:1d9d:1e5 with SMTP id
- q19-20020aa7da93000000b0043d1d9d01e5mr25868835eds.55.1660119919628; Wed, 10
- Aug 2022 01:25:19 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=C4O+deHMw21i9ROh6aMeCmFYtLZ7zT5HJpdxL44+uwI=;
+        b=pQR2Wfp4O44CM5vzNzJZzHP8sL2/9Vm/wnPwsoZOWdbrhQTP/LEuy0gsj+v5mIzeHH
+         yO8cGY7y30yT86iWtGgKILosSU/fLWW07Gu+GKh8KK1ruFUN7j1E7HEPu9iqIGddwYme
+         vRmyIPH0OB/FdvVQxXUA1k6y3SDyAG82xYC3TNQIJAHNRBXcs23cxxi1gy8brdty+bdQ
+         CZglaD18ElS2tDwgUEDK9+mlTuC/lLZoFbAg5/z3DDYkfONFA1im6FUcJXtQ0macpuu+
+         GTUSlI0xrdBAQmvGNozsodKGOvClWv8iHiHUibf6ACaw2jatJBdUHsn0sSY9fPin4yTg
+         dUyw==
+X-Gm-Message-State: ACgBeo1pJ4ipXF3vta+sbHNSyKN7Qle5Y/kKizkt7bBPIIXseTGKu5bo
+        BwiirrBkPkWyzx+eyIfstZ04AA==
+X-Google-Smtp-Source: AA6agR4fgxq/68/WWQn+yFOTbhC53pUpIBXclTppON1LvC+cb77XJAaWf6/2h68rIy+rMscuIaf75g==
+X-Received: by 2002:a05:6000:1ac8:b0:220:8168:126b with SMTP id i8-20020a0560001ac800b002208168126bmr16394237wry.288.1660119992494;
+        Wed, 10 Aug 2022 01:26:32 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id e26-20020a05600c4b9a00b003a500b612fcsm1533910wmp.12.2022.08.10.01.26.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 01:26:31 -0700 (PDT)
+Message-ID: <1514c4c3-32c6-4127-0fd0-9a244445ff9c@linaro.org>
+Date:   Wed, 10 Aug 2022 10:26:29 +0200
 MIME-Version: 1.0
-References: <20220809175512.853274191@linuxfoundation.org>
-In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 10 Aug 2022 13:55:08 +0530
-Message-ID: <CA+G9fYvLSEb8Or+vM+vSmopny7AAWsudzMTjeka-WdsLYSeEVw@mail.gmail.com>
-Subject: Re: [PATCH 5.10 00/23] 5.10.136-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 00/33] New thermal OF code
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     daniel.lezcano@linexp.org, abailon@baylibre.com,
+        anarsoul@gmail.com, baolin.wang7@gmail.com,
+        bjorn.andersson@linaro.org, broonie@kernel.org,
+        damien.lemoal@opensource.wdc.com, digetx@gmail.com,
+        f.fainelli@gmail.com, glaroque@baylibre.com,
+        hayashi.kunihiko@socionext.com, heiko@sntech.de, j-keerthy@ti.com,
+        jonathanh@nvidia.com, khilman@baylibre.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        lukasz.luba@arm.com, matthias.bgg@gmail.com,
+        mcoquelin.stm32@gmail.com, mhiramat@kernel.org,
+        miquel.raynal@bootlin.com, niklas.soderlund@ragnatech.se,
+        rafael@kernel.org, rui.zhang@intel.com, shawnguo@kernel.org,
+        talel@amazon.com, thierry.reding@gmail.com, tiny.windzz@gmail.com,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20220804224349.1926752-1-daniel.lezcano@linexp.org>
+ <20220808094216.928018-1-michael@walle.cc>
+ <27c03303-9ee5-d9df-b7f2-016491fce9e5@linaro.org>
+ <5adfe0882926d8f16c158d453069b37b@walle.cc>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <5adfe0882926d8f16c158d453069b37b@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 9 Aug 2022 at 23:34, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.10.136 release.
-> There are 23 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.136-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hi Michael,
 
-Results from Linaro's test farm.
-No regressions on arm64, arm, x86_64, and i386.
+On 10/08/2022 10:01, Michael Walle wrote:
+> Hi Daniel, >
+> Am 2022-08-09 10:23, schrieb Daniel Lezcano:
+>>> On my second board
+>>> (arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt-6g-2gs.dts). I get 
+>>> the
+>>> following error:
+>>>
+>>> [    6.292819] thermal_sys: Unable to find thermal zones description
+>>> [    6.298872] thermal_sys: Failed to find thermal zone for hwmon id=0
+>>> [    6.305375] lan966x-hwmon e2010180.hwmon: error -EINVAL: failed to 
+>>> register hwmon device
+>>> [    6.313508] lan966x-hwmon: probe of e2010180.hwmon failed with 
+>>> error -22
+>>>
+>>> Again, is there seems to be something missing in the device tree. For 
+>>> this
+>>> board a device tree change should be easily doable, as it is still in
+>>> development.
+>>
+>> Logically with the fixes I've send these errors should have gone. Just
+>> a pr_info should appear "... not attached to any thermal zone".
+>>
+>> If I'm correct, without or with the changes (new thermal OF code +
+>> fixes), the hwmon message is the same and the hwmon thermal zone is
+>> not created. So no regression hopefully.
+>>
+>> Is it possible to check that?
+> 
+> Yes, I'm no more seeing any error messages and the device
+> is probed successfully. Both on the kswitch board as well as on
+> the sl28 board.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Great! thanks for testing
 
-## Build
-* kernel: 5.10.136-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.10.y
-* git commit: cf6f87a93412e15617900d8213013eb3a6ca08ed
-* git describe: v5.10.135-24-gcf6f87a93412
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10.135-24-gcf6f87a93412
+   -- Daniel
 
-## No test Regressions (compared to v5.10.133-168-g4fd9cb57a3f5)
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
-## No metric Regressions (compared to v5.10.133-168-g4fd9cb57a3f5)
-
-## No test Fixes (compared to v5.10.133-168-g4fd9cb57a3f5)
-
-## No metric Fixes (compared to v5.10.133-168-g4fd9cb57a3f5)
-
-## Test result summary
-total: 112413, pass: 99753, fail: 530, skip: 11427, xfail: 703
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 301 total, 301 passed, 0 failed
-* arm64: 62 total, 60 passed, 2 failed
-* i386: 52 total, 50 passed, 2 failed
-* mips: 45 total, 45 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 51 total, 51 passed, 0 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 21 total, 21 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 55 total, 53 passed, 2 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
