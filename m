@@ -2,146 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E186AC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61270C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbiHJPUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 11:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
+        id S233099AbiHJPUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 11:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233118AbiHJPUI (ORCPT
+        with ESMTP id S233152AbiHJPUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 11:20:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA00E792E3
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:19:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660144796;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FficIWOFeLjuHiM92gf0Vr7lpmb8nVxpiEgSclxrqmQ=;
-        b=fEbtuvdfJDYLDCJOH8l65Ck4VTA8Izz2zVwoOfwUAneBnF/XFiREGWIPXV3UxdAB+mtwFZ
-        pc5z9AmovQk7HAjZ8pKugX0Dew12N5DgNFA7LMm+NHfrFG+7GuOVUvl8GtXvFSzPiQW+Pp
-        U8GJmeGSf07ZO5K/4HxztE5sTzOZe1U=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-220-O-Er6coPOAmJpW6NEz_uWA-1; Wed, 10 Aug 2022 11:19:54 -0400
-X-MC-Unique: O-Er6coPOAmJpW6NEz_uWA-1
-Received: by mail-io1-f72.google.com with SMTP id v14-20020a6b5b0e000000b0067bc967a6c0so8110771ioh.5
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:19:54 -0700 (PDT)
+        Wed, 10 Aug 2022 11:20:39 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B606415FE8
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:20:38 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id i2-20020a17090a650200b001f4f79056a6so1324627pjj.9
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:20:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=pTM3VLICBKkRJLIraoN2yuH4ndpvQ9iDrH4IB8fss5I=;
+        b=lCGx5tQ+dKIhHpZkyE+MZbxrlQvpioxRjZ7bmh7+2m+A0y8AOoy+W0jF7eMd1jtOxG
+         EPwXD8JyVuI39oh8FkykSP6/0ABy9z9fM6g8JewNekobOp8MC3aLOcho/pZhpuDjrn6w
+         ptsFU/fy+YOt5n7VbGx7o0YHKZNcIvBFj2RjaOklj8awdiEYiygkBJFs0tZ7Z0cp9Fz3
+         R65Ki0oRTXX7HsmlSUJ29CAOwgwzGNKzEu8s1F+Who4sHJH2OVf1+1WW5ndUY/TKUf5s
+         CPkGIOeV/O5QjBIkAOtA6zHVYnwqmAztNVVTLaYwDFjI00pJ+celv8dtE4aMadvd3r2t
+         NAsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=FficIWOFeLjuHiM92gf0Vr7lpmb8nVxpiEgSclxrqmQ=;
-        b=zguGVtjLAOInwtWpOW9pDEdzqQh4f0x6l1aSCOKtfC8QIH2QXUsba/2ex8qA/Aoqfn
-         Cim9jlAaocBe3Nfgbzvkmni3hVO8hQmztbDG88EDcW57XdfTAX+qUsbAbOYJJJMqrnX1
-         wdUfZ0wkxxt5yjeMzbzUcaZ+p0xlYV/T6NLVmwec+MdVoc4qcdQLFRebksDr7V8+mntt
-         hoaqD/vV527Aqbvf0e6lv8SS1QyjFLJRxamwCbKw+RIEwLX6TxswlIvk44bfy4UZgtCP
-         xVRperdf7Z15jGNpcZMsE5zTIbF7rdd43exbxIz+Cu/RHf6/JdFlnrK/EuRIHPjdZwoy
-         HyCg==
-X-Gm-Message-State: ACgBeo3AK/u5VZGCJNIqTAwSia6Q6pWyBI26+R4mbcoc5M6VUlcHj4eP
-        YWm2mvz5p5iNl33v6L6JO5LRcMpJlLPH/8a1voS9hvBVuuQEsPrckGYfCSs9Sr+wtE2Ei9cPWe/
-        O/aIj8wxKGpLP7xQ8kY9yHyvl
-X-Received: by 2002:a92:b742:0:b0:2de:14d8:e801 with SMTP id c2-20020a92b742000000b002de14d8e801mr13434705ilm.105.1660144793994;
-        Wed, 10 Aug 2022 08:19:53 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7WuT8iDHEqyGrGAlUMRx9BNUhHDxYjZWfu4PnuArLauU6rsVNMbUKyZQ96Lx+d1VEnx9IHog==
-X-Received: by 2002:a92:b742:0:b0:2de:14d8:e801 with SMTP id c2-20020a92b742000000b002de14d8e801mr13434687ilm.105.1660144793701;
-        Wed, 10 Aug 2022 08:19:53 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id k8-20020a056e02156800b002dc100ab6fdsm2271969ilu.35.2022.08.10.08.19.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 08:19:53 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 11:19:51 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Minchan Kim <minchan@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-Subject: Re: [PATCH v3 5/7] mm: Remember young/dirty bit for page migrations
-Message-ID: <YvPMl1tca42yKr2y@xz-m1.local>
-References: <20220809220100.20033-1-peterx@redhat.com>
- <20220809220100.20033-6-peterx@redhat.com>
- <8735e4fw52.fsf@yhuang6-desk2.ccr.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8735e4fw52.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=pTM3VLICBKkRJLIraoN2yuH4ndpvQ9iDrH4IB8fss5I=;
+        b=zwUGGrCJt0/HwpPcLtMRbdygYdu1WVEAnqPjWTHxN0hOnf9smKRurVCRQCDnNfdIwl
+         L2/cwv8KVpkTQ+yb5zzsLcEhYt2HI9byOGE+ubI/3wt9fxZj59FVJYugoB+n7meYKXwQ
+         l/5t0lMR2Gl9RSiCaZGuSXzDuZ0W5PSBfJ4YLIYSfiaGPqqjPkQO5I8JmlARWo+9C7wo
+         foRLjmPBmXZaSLjn0UDnGDw5LVK1EBdcWnmydMC9Gn8ufPrMCQtEiWY0pKvqx3LdzPCs
+         sqE7DlHJZuVhobFuZPMswHUgLgI0SyMw3BYP+aB2fd6wQXSEgVU5EfXmIFUO1q3CywEJ
+         9x5A==
+X-Gm-Message-State: ACgBeo280XpuBMC9CDMfu+3c7mBzrothNnfSma43WTfk+r4t2zh6dW0Q
+        utjjC3uNfhuc3TITVdh52Bi2t0bIfrA=
+X-Google-Smtp-Source: AA6agR5u7bmiuslS/TLDZgTUSpRz4B0WdpLYWlxKyrIDhaQ9QjML9QMkKIBFIKhsAyG6j9iqiUlyAhJl8fk=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:b185:1827:5b23:bbe2])
+ (user=pgonda job=sendgmr) by 2002:a17:902:ccd0:b0:16c:5d4f:99f3 with SMTP id
+ z16-20020a170902ccd000b0016c5d4f99f3mr27993747ple.139.1660144838210; Wed, 10
+ Aug 2022 08:20:38 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 08:20:23 -0700
+In-Reply-To: <20220810152033.946942-1-pgonda@google.com>
+Message-Id: <20220810152033.946942-2-pgonda@google.com>
+Mime-Version: 1.0
+References: <20220810152033.946942-1-pgonda@google.com>
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [V3 01/11] KVM: selftests: move vm_phy_pages_alloc() earlier in file
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, marcorr@google.com,
+        seanjc@google.com, michael.roth@amd.com, thomas.lendacky@amd.com,
+        joro@8bytes.org, mizhang@google.com, pbonzini@redhat.com,
+        andrew.jones@linux.dev, vannapurve@google.com,
+        Peter Gonda <pgonda@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 02:30:33PM +0800, Huang, Ying wrote:
-> Peter Xu <peterx@redhat.com> writes:
-> 
-> > When page migration happens, we always ignore the young/dirty bit settings
-> > in the old pgtable, and marking the page as old in the new page table using
-> > either pte_mkold() or pmd_mkold(), and keeping the pte clean.
-> >
-> > That's fine from functional-wise, but that's not friendly to page reclaim
-> > because the moving page can be actively accessed within the procedure.  Not
-> > to mention hardware setting the young bit can bring quite some overhead on
-> > some systems, e.g. x86_64 needs a few hundreds nanoseconds to set the bit.
-> > The same slowdown problem to dirty bits when the memory is first written
-> > after page migration happened.
-> >
-> > Actually we can easily remember the A/D bit configuration and recover the
-> > information after the page is migrated.  To achieve it, define a new set of
-> > bits in the migration swap offset field to cache the A/D bits for old pte.
-> > Then when removing/recovering the migration entry, we can recover the A/D
-> > bits even if the page changed.
-> >
-> > One thing to mention is that here we used max_swapfile_size() to detect how
-> > many swp offset bits we have, and we'll only enable this feature if we know
-> > the swp offset can be big enough to store both the PFN value and the young
->                                                                        ~~~~~
-> Nitpick: A/D
+From: Michael Roth <michael.roth@amd.com>
 
-Fixed.
+Subsequent patches will break some of this code out into file-local
+helper functions, which will be used by functions like vm_vaddr_alloc(),
+which currently are defined earlier in the file, so a forward
+declaration would be needed.
 
-> 
-> > bit.  Otherwise the A/D bits are dropped like before.
-> >
-> > Signed-off-by: Peter Xu <peterx@redhat.com>
-> > ---
-> >  include/linux/swapops.h | 99 +++++++++++++++++++++++++++++++++++++++++
-> >  mm/huge_memory.c        | 18 +++++++-
-> >  mm/migrate.c            |  6 ++-
-> >  mm/migrate_device.c     |  4 ++
-> >  mm/rmap.c               |  5 ++-
-> >  5 files changed, 128 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-> > index e1accbcd1136..0e9579b90659 100644
-> > --- a/include/linux/swapops.h
-> > +++ b/include/linux/swapops.h
-> > @@ -8,6 +8,10 @@
-> >  
-> >  #ifdef CONFIG_MMU
-> >  
-> > +#ifdef CONFIG_SWAP
-> > +#include <linux/swapfile.h>
-> > +#endif	/* CONFIG_SWAP */
-> 
-> I don't think we need the comment here.  The #ifdef is too near.  But
-> this isn't a big deal.
+Instead, move it earlier in the file, just above vm_vaddr_alloc() and
+and friends, which are the main users.
 
-I'd slightly prefer keeping it (especially Nadav used to complain on
-missing comments on ifdefs in previous versions..) since any ifdef can grow
-by adding code into it. Then it'll be hard to justify how to define "near"
-or not, so hard to define who should be adding that if I'm not the one.
+Reviewed-by: Mingwei Zhang <mizhang@google.com>
+Reviewed-by: Andrew Jones <andrew.jones@linux.dev>
+Signed-off-by: Michael Roth <michael.roth@amd.com>
+Signed-off-by: Peter Gonda <pgonda@google.com>
+---
+ tools/testing/selftests/kvm/lib/kvm_util.c | 145 ++++++++++-----------
+ 1 file changed, 72 insertions(+), 73 deletions(-)
 
-Thanks,
-
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 9889fe0d8919..cb3a5f8a53b7 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1089,6 +1089,78 @@ struct kvm_vcpu *__vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id)
+ 	return vcpu;
+ }
+ 
++/*
++ * Physical Contiguous Page Allocator
++ *
++ * Input Args:
++ *   vm - Virtual Machine
++ *   num - number of pages
++ *   paddr_min - Physical address minimum
++ *   memslot - Memory region to allocate page from
++ *
++ * Output Args: None
++ *
++ * Return:
++ *   Starting physical address
++ *
++ * Within the VM specified by vm, locates a range of available physical
++ * pages at or above paddr_min. If found, the pages are marked as in use
++ * and their base address is returned. A TEST_ASSERT failure occurs if
++ * not enough pages are available at or above paddr_min.
++ */
++vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
++			      vm_paddr_t paddr_min, uint32_t memslot)
++{
++	struct userspace_mem_region *region;
++	sparsebit_idx_t pg, base;
++
++	TEST_ASSERT(num > 0, "Must allocate at least one page");
++
++	TEST_ASSERT((paddr_min % vm->page_size) == 0,
++		"Min physical address not divisible by page size.\n paddr_min: 0x%lx page_size: 0x%x",
++		paddr_min, vm->page_size);
++
++	region = memslot2region(vm, memslot);
++	base = pg = paddr_min >> vm->page_shift;
++
++	do {
++		for (; pg < base + num; ++pg) {
++			if (!sparsebit_is_set(region->unused_phy_pages, pg)) {
++				base = pg = sparsebit_next_set(region->unused_phy_pages, pg);
++				break;
++			}
++		}
++	} while (pg && pg != base + num);
++
++	if (pg == 0) {
++		fprintf(stderr,
++			"No guest physical page available, paddr_min: 0x%lx page_size: 0x%x memslot: %u\n",
++			paddr_min, vm->page_size, memslot);
++		fputs("---- vm dump ----\n", stderr);
++		vm_dump(stderr, vm, 2);
++		abort();
++	}
++
++	for (pg = base; pg < base + num; ++pg)
++		sparsebit_clear(region->unused_phy_pages, pg);
++
++	return base * vm->page_size;
++}
++
++vm_paddr_t vm_phy_page_alloc(struct kvm_vm *vm, vm_paddr_t paddr_min,
++			     uint32_t memslot)
++{
++	return vm_phy_pages_alloc(vm, 1, paddr_min, memslot);
++}
++
++/* Arbitrary minimum physical address used for virtual translation tables. */
++#define KVM_GUEST_PAGE_TABLE_MIN_PADDR 0x180000
++
++vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm)
++{
++	return vm_phy_page_alloc(vm, KVM_GUEST_PAGE_TABLE_MIN_PADDR, 0);
++}
++
+ /*
+  * VM Virtual Address Unused Gap
+  *
+@@ -1735,79 +1807,6 @@ const char *exit_reason_str(unsigned int exit_reason)
+ 	return "Unknown";
+ }
+ 
+-/*
+- * Physical Contiguous Page Allocator
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   num - number of pages
+- *   paddr_min - Physical address minimum
+- *   memslot - Memory region to allocate page from
+- *
+- * Output Args: None
+- *
+- * Return:
+- *   Starting physical address
+- *
+- * Within the VM specified by vm, locates a range of available physical
+- * pages at or above paddr_min. If found, the pages are marked as in use
+- * and their base address is returned. A TEST_ASSERT failure occurs if
+- * not enough pages are available at or above paddr_min.
+- */
+-vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
+-			      vm_paddr_t paddr_min, uint32_t memslot)
+-{
+-	struct userspace_mem_region *region;
+-	sparsebit_idx_t pg, base;
+-
+-	TEST_ASSERT(num > 0, "Must allocate at least one page");
+-
+-	TEST_ASSERT((paddr_min % vm->page_size) == 0, "Min physical address "
+-		"not divisible by page size.\n"
+-		"  paddr_min: 0x%lx page_size: 0x%x",
+-		paddr_min, vm->page_size);
+-
+-	region = memslot2region(vm, memslot);
+-	base = pg = paddr_min >> vm->page_shift;
+-
+-	do {
+-		for (; pg < base + num; ++pg) {
+-			if (!sparsebit_is_set(region->unused_phy_pages, pg)) {
+-				base = pg = sparsebit_next_set(region->unused_phy_pages, pg);
+-				break;
+-			}
+-		}
+-	} while (pg && pg != base + num);
+-
+-	if (pg == 0) {
+-		fprintf(stderr, "No guest physical page available, "
+-			"paddr_min: 0x%lx page_size: 0x%x memslot: %u\n",
+-			paddr_min, vm->page_size, memslot);
+-		fputs("---- vm dump ----\n", stderr);
+-		vm_dump(stderr, vm, 2);
+-		abort();
+-	}
+-
+-	for (pg = base; pg < base + num; ++pg)
+-		sparsebit_clear(region->unused_phy_pages, pg);
+-
+-	return base * vm->page_size;
+-}
+-
+-vm_paddr_t vm_phy_page_alloc(struct kvm_vm *vm, vm_paddr_t paddr_min,
+-			     uint32_t memslot)
+-{
+-	return vm_phy_pages_alloc(vm, 1, paddr_min, memslot);
+-}
+-
+-/* Arbitrary minimum physical address used for virtual translation tables. */
+-#define KVM_GUEST_PAGE_TABLE_MIN_PADDR 0x180000
+-
+-vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm)
+-{
+-	return vm_phy_page_alloc(vm, KVM_GUEST_PAGE_TABLE_MIN_PADDR, 0);
+-}
+-
+ /*
+  * Address Guest Virtual to Host Virtual
+  *
 -- 
-Peter Xu
+2.37.1.559.g78731f0fdb-goog
 
