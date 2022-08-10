@@ -2,99 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37512C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A895C25B07
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbiHJOcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 10:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
+        id S232564AbiHJOcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232554AbiHJOcH (ORCPT
+        with ESMTP id S230378AbiHJOcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 10:32:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EAC2B18D;
-        Wed, 10 Aug 2022 07:32:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1975C61527;
-        Wed, 10 Aug 2022 14:32:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1488CC433C1;
-        Wed, 10 Aug 2022 14:32:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660141924;
-        bh=XP7o0LqW4ri+tvBAJ6DfVBQ+7ISFbLgZEwquRdB528k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mOOqLTx3irxJuXHiFn1x/As+urVyIjJLwJ0kZh7MRjVEOzk1HOrbpCJKqM23T08z/
-         BDVdaEdyq839+KXhhP90/qtIzq1iuFTIVvg07ZVWfcxY05UEaM1zn2bIKyCkQEZZAu
-         axdKHUl4J2Fqx5QAIugZiKPwRedE9UtOKFZJqBGC/V4mvgCU7t2mZdaza21GXzX3zd
-         3SuvUZK+BP59iZ/+aZ0PHppRLHVTFUVqr1URngKnStUvNylmaa/Hu9TgZs8eZA1pvS
-         bENV5m0pSKcrZe4JnxqKSGFplvqaklXdfOOHwlVbOnNcg3u6ow3f2QHZNnBY9CxipE
-         4WNKredHSqT2w==
-Date:   Wed, 10 Aug 2022 15:31:59 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Da Xue <da@libre.computer>
-Subject: Re: [PATCH] spi: meson-spicc: save pow2 datarate between messages
-Message-ID: <YvPBX7zJ72RXnrpk@sirena.org.uk>
-References: <20220809152019.461741-1-narmstrong@baylibre.com>
- <YvJ84qkuXdvVgXRm@sirena.org.uk>
- <39c2f53b-8f53-ceb1-ae0c-81e5e53d01aa@baylibre.com>
- <YvOmnDJA+ov49chC@sirena.org.uk>
- <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
+        Wed, 10 Aug 2022 10:32:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E13EB1EAE3;
+        Wed, 10 Aug 2022 07:32:29 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6B89423A;
+        Wed, 10 Aug 2022 07:32:30 -0700 (PDT)
+Received: from [10.57.13.63] (unknown [10.57.13.63])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A81703F67D;
+        Wed, 10 Aug 2022 07:32:27 -0700 (PDT)
+Message-ID: <64ba1dfb-a475-e667-b59d-57e5d1e5ff1f@arm.com>
+Date:   Wed, 10 Aug 2022 15:32:26 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="WEqUYi41ANWCpin/"
-Content-Disposition: inline
-In-Reply-To: <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
-X-Cookie: First pull up, then pull down.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 1/1] ACPI: CPPC: Disable FIE if registers in PCC
+ regions
+Content-Language: en-US
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     rafael@kernel.org, lenb@kernel.org, viresh.kumar@linaro.org,
+        robert.moore@intel.com, devel@acpica.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, vschneid@redhat.com,
+        Ionela Voinescu <ionela.voinescu@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+References: <20220728221043.4161903-1-jeremy.linton@arm.com>
+ <20220728221043.4161903-2-jeremy.linton@arm.com>
+ <3a5e7abd-9361-11ba-978d-8e8bae00ea31@arm.com>
+ <6f565c2d-e7cb-f5a2-0b38-995c9cd2deec@arm.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <6f565c2d-e7cb-f5a2-0b38-995c9cd2deec@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---WEqUYi41ANWCpin/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Wed, Aug 10, 2022 at 04:01:33PM +0200, Neil Armstrong wrote:
-> On 10/08/2022 14:37, Mark Brown wrote:
+On 8/10/22 15:08, Jeremy Linton wrote:
+> Hi,
+> 
+> On 8/10/22 07:29, Lukasz Luba wrote:
+>> Hi Jeremy,
+>>
+>> +CC Valentin since he might be interested in this finding
+>> +CC Ionela, Dietmar
+>>
+>> I have a few comments for this patch.
+>>
+>>
+>> On 7/28/22 23:10, Jeremy Linton wrote:
+>>> PCC regions utilize a mailbox to set/retrieve register values used by
+>>> the CPPC code. This is fine as long as the operations are
+>>> infrequent. With the FIE code enabled though the overhead can range
+>>> from 2-11% of system CPU overhead (ex: as measured by top) on Arm
+>>> based machines.
+>>>
+>>> So, before enabling FIE assure none of the registers used by
+>>> cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
+>>> enable a module parameter which can also disable it at boot or module
+>>> reload.
+>>>
+>>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+>>> ---
+>>>   drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
+>>>   drivers/cpufreq/cppc_cpufreq.c | 19 ++++++++++++----
+>>>   include/acpi/cppc_acpi.h       |  5 +++++
+>>>   3 files changed, 61 insertions(+), 4 deletions(-)
+>>
+>>
+>> 1. You assume that all platforms would have this big overhead when
+>>     they have the PCC regions for this purpose.
+>>     Do we know which version of HW mailbox have been implemented
+>>     and used that have this 2-11% overhead in a platform?
+>>     Do also more recent MHU have such issues, so we could block
+>>     them by default (like in your code)?
+> 
+> Well, the mailbox nature of PCC pretty much assures its "slow", relative 
+> the alternative of providing an actual register.  If a platform provides 
+> direct access to say MHU registers, then of course they won't actually 
+> be in a PCC region and the FIE will remain on.
+> 
+> 
+>>
+>> 2. I would prefer to simply change the default Kconfig value to 'n' for
+>>     the ACPI_CPPC_CPUFREQ_FIE, instead of creating a runtime
+>>     check code which disables it.
+>>     We have probably introduce this overhead for older platforms with
+>>     this commit:
+> 
+> The problem here is that these ACPI kernels are being shipped as single 
+> images in distro's which expect them to run on a wide range of platforms 
+> (including x86/amd in this case), and preform optimally on all of them.
+> 
+> So the 'n' option basically is saying that the latest FIE code doesn't 
+> provide a befit anywhere?
 
-> > Sure, but that doesn't really address the concern - is this something
-> > that the clk driver programmed or is this the driver forgetting to
-> > restore a register that it programmed itself?  The commit message sounds
-> > like the former which is a much bigger problem.
+How we define the 'benefit' here - it's a better task utilization.
+How much better it would be vs. previous approach with old-style FIE?
 
-> It's what is programmed by the Clock Framework yes, it was designed as-is
-> so the Clock Framework takes the most accurate clock path but the reset case
-> wasn't taken in account.
+TBH, I haven't found any test results from the development of the patch
+set. Maybe someone could point me to the test results which bring
+this benefit of better utilization.
 
-This seems like a bad idea, we shouldn't have two different drivers
-managing the same register without explicit and visible coordination
-with each other, this is at best asking for trouble as you've found
-here.  I've not looked in detail but I think if you want to use the
-clock framework here then this driver should register a clock provider
-for the clock hardware in the IP block.
+In the RFC I could find that statement [1]:
 
-How does this work with runtime PM, what happens if the clock driver
-decides to change something while the device is powered down?
+"This is tested with some hacks, as I didn't have access to the right
+hardware, on the ARM64 hikey board to check the overall functionality
+and that works fine."
 
---WEqUYi41ANWCpin/
-Content-Type: application/pgp-signature; name="signature.asc"
+There should be a rule that such code is tested on a real server with
+many CPUs under some stress-test.
 
------BEGIN PGP SIGNATURE-----
+Ionela do you have some test results where this new FIE feature
+introduces some better & meaningful accuracy improvement to the
+tasks utilization?
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLzwV8ACgkQJNaLcl1U
-h9CRwgf+K7WOMvAJpCDDJzGeEDnvO60A4KqWEROJNwU9pzFD/oES6Slzi83SHzvp
-lHZWpvuJRnofLap5EVCebAtxNtqVJzX00q+MB25XxtFgLICY+MHghQ6g9+/C3BkV
-NuexPyuLn6Q5EAXthFBx/ZKKkg2wDxBtygX5uHpMuFggSpduJ+X5Gm8fu8idcG6o
-m+tr8K+ChscFOhMkLy/6yMdXjU8sMt46egyYYhasKbKFT7oSjlMb383OBIp4WVFw
-vusuEWjSoy0xK2LmHEOD23/jxjkB2Lr7mtFe5QPkE/L9hGG4pvdU4hqaVAlSQrpZ
-aJ/9Oaoi0ApclyH8g3naLiygsa7Amw==
-=e05v
------END PGP SIGNATURE-----
+With this overhead measured on a real server platform I think
+it's not worth to keep it 'y' in default.
 
---WEqUYi41ANWCpin/--
+The design is heavy, as stated in the commit message:
+"    On an invocation of cppc_scale_freq_tick(), we schedule an irq work
+     (since we reach here from hard-irq context), which then schedules a
+     normal work item and cppc_scale_freq_workfn() updates the per_cpu
+     arch_freq_scale variable based on the counter updates since the last
+     tick.
+"
+
+As you said Jeremy, this mailbox would always be with overhead. IMO
+untill we cannot be sure we have some powerful new HW mailbox, this
+feature should be disabled.
+
+[1] 
+https://lore.kernel.org/lkml/cover.1594289009.git.viresh.kumar@linaro.org/
