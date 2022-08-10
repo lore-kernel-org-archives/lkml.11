@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF51C282E7
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727B0C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbiHJDsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 23:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S230402AbiHJDsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 23:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230373AbiHJDrv (ORCPT
+        with ESMTP id S230396AbiHJDrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 23:47:51 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587BC8048F
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:47:42 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-10dc1b16c12so16415792fac.6
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 20:47:42 -0700 (PDT)
+        Tue, 9 Aug 2022 23:47:55 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C6D80501
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:47:44 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-10ea9ef5838so16422360fac.3
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 20:47:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=OrvhzzFeEQ614iYpJi4RpAo3OO9GtQhsYPoeao237mM=;
-        b=o2KWV7fzDUx5XIhnKNSex0s3xUanf9/PrjC9cgwIFruevVqDb+fSg3/J69STGtLDed
-         KXvhBTwD/6SF3YJq1YugVdjrUC9vbFyBWEMuAXIaLjrcUUL43XTgKlU1lmquBciQyNyu
-         sCG5QboEU2v1XYLtbS5zlTFoX5xRT6lxW51+KDYulxkSBVYSilnPeNLTxg0IILpRNKZa
-         cj1wN5lGcJEuhZEiYJdA5WQXarIm+OLlkidR2POyAiA/cFDVx/k3AOc38Eb79ZK8ArmT
-         wXdR8FyJz5lfLiXB9RBrDz2qU1x9d21rtKRH1n4jdQ/1ISwYaDZi4H0JQ2MLe5yMIGba
-         RoEA==
+        bh=uebmoneVYa9z0k/kynCu9/yCmrGe0dGNvEMVLmT1Zfk=;
+        b=G3KpBWShMzBghOxqZeYhWej84Du0/RWKqUTbuNdk04/toga1JbTPeCJGeyMxIIceeZ
+         ZOclunNeeFP94y86JAAe2/ordFnT4pXKQSepNjubsf2qrYyv+brT324b9n9fE1xSvIhL
+         ODjNGVGX9n+i6nuphZ55kG8tUC0yv27uG+x/3hyPI2O7L51gUr8Fur6CclsrMQ8dhFjl
+         QFzmFsNxAO9ONgc5EJsyLtaugjY4ALiCCqTEE+harD4BtjMh9y9YHZ4qwa6Lacvxt6mb
+         cdeLq9UXayp4spdSc9wnRumr54zVxWWxxh8Nw8YbR4RZfGtuBCxL1RlPW4dzNIdJ9LsB
+         dMMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=OrvhzzFeEQ614iYpJi4RpAo3OO9GtQhsYPoeao237mM=;
-        b=m9WCQM9PqiLqbr/+V1MXGARZr/7KZj3CmEa63wZ53+TMn0UghABF1EaJm9Vh9R/MCJ
-         XNrsqgPfgzyVLX9PSmqQ1PWETsISmAy8NIw782E6TLUyg4Y8Xhe9P1UQmX0aXqtrtYgL
-         KOyz/04cH/AMFQSkkMYVBoN5BW039GnboGtjjmNFlw383OpGzNTDWqhVYE/QPrHtC2YQ
-         jNnwLa7tc3kGIGd2JtkS+HrLmknhKsOPaJEzbj3v9GB+mwxM08R12+z6b65TAWMYULSB
-         Im8WchhQHtuLTz0TlEOHtthiNCvI+m8B71bnYugNtI4rZ03ofcNHVl+1SJut7LDlv1Tg
-         d/nQ==
-X-Gm-Message-State: ACgBeo0FHyYkhqtPK5kKTNahG264amgdmDyfG7Z0xRnuiUgFY3W5hKwC
-        zbYzS1MF5W2b4NXnSjZtO3PtcA==
-X-Google-Smtp-Source: AA6agR7WaHss0bZgv6umP1AclSIS8GBXrfsMmBcv6nMDeJlOSHhHYvmtqDPFDzr0yr+ojvwvUFrrHw==
-X-Received: by 2002:a05:6870:d208:b0:10f:72d:4ee0 with SMTP id g8-20020a056870d20800b0010f072d4ee0mr670869oac.227.1660103261661;
-        Tue, 09 Aug 2022 20:47:41 -0700 (PDT)
+        bh=uebmoneVYa9z0k/kynCu9/yCmrGe0dGNvEMVLmT1Zfk=;
+        b=3SM/noiETxDyG/v0defmTh8pYDfYPmb0lYIqgEoZMQ0xWoKkoGRavUzMePisMm2PQp
+         z1HSVkk3I1iANGkQS5yueOxJiIguWnZm2R4mliOfIte4Z5smTGzYWU7vQKtQ0o41D9Mz
+         xe1KYLzky4jR5BdUYay8F6itsMsydU0PtPmlD1lLLlMu0z9reE3v/p0jXINy5CGWL48X
+         DegS+Y0qMgpaeINuc3RHX45UlztVsAPLRodifc4ZH1ahWA5R5m+vjAX0WzuY0XHjU4qT
+         Rcp4XC8Y7Q6gFixRPm9mypL/Tbuc1xmQzbgu6lG7wTLZJUxckC/FMj5ta8Dpk5lLa8kr
+         4ztw==
+X-Gm-Message-State: ACgBeo2GyfHc1waGInigLhDiBA5nL0HwODbcIaceJZOu+uhFz1ax9gzZ
+        NUCSZ+DdHhixAFJzDrwFXqbt+A==
+X-Google-Smtp-Source: AA6agR7SI0AvmwIlMO2J6EANOOTDmTDJ52FbWWKdY/n6F04P8Zi6DLT1LKtfBQIHjML93P3JUBeHKA==
+X-Received: by 2002:a05:6871:b10:b0:10e:d8aa:53fd with SMTP id fq16-20020a0568710b1000b0010ed8aa53fdmr695371oab.122.1660103263971;
+        Tue, 09 Aug 2022 20:47:43 -0700 (PDT)
 Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id n2-20020a4ae742000000b00444f26822e5sm454337oov.10.2022.08.09.20.47.40
+        by smtp.gmail.com with ESMTPSA id n2-20020a4ae742000000b00444f26822e5sm454337oov.10.2022.08.09.20.47.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 20:47:41 -0700 (PDT)
+        Tue, 09 Aug 2022 20:47:43 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Rob Clark <robdclark@gmail.com>,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
@@ -62,9 +62,9 @@ Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
         linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 5/7] drm/msm/dp: Implement hpd_notify()
-Date:   Tue,  9 Aug 2022 20:50:11 -0700
-Message-Id: <20220810035013.3582848-6-bjorn.andersson@linaro.org>
+Subject: [PATCH 7/7] drm/msm/dp: HPD handling relates to next_bridge
+Date:   Tue,  9 Aug 2022 20:50:13 -0700
+Message-Id: <20220810035013.3582848-8-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220810035013.3582848-1-bjorn.andersson@linaro.org>
 References: <20220810035013.3582848-1-bjorn.andersson@linaro.org>
@@ -74,112 +74,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DisplayPort controller's hot-plug mechanism is based on pinmuxing a
-physical signal no a GPIO pin into the controller. This is not always
-possible, either because there aren't dedicated GPIOs available or
-because the hot-plug signal is a virtual notification, in cases such as
-USB Type-C.
+The DisplayPort controller's internal HPD interrupt handling is used for
+cases where the HPD signal is connected to a GPIO which is pinmuxed into
+the DisplayPort controller.
 
-For these cases, by implementing the hpd_notify() callback for the
-DisplayPort controller's drm_bridge, a downstream drm_bridge
-(next_bridge) can be used to track and signal the connection status
-changes.
+Most of the logic for enabling and disabling the HPD-related interrupts
+is conditioned on the presence of an EDP panel, but more generically
+designs that has a downstream drm_bridge (next_bridge) could use this to
+handle the HPD interrupts, instead of the internal mechanism.
 
-This makes it possible to use downstream drm_bridges such as
-display-connector or any virtual mechanism, as long as they are
-implemented as a drm_bridge.
+So replace the current is_edp-based guards with a check for the presence
+of next_bridge.
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 23 +++++++++++++++++++++++
- drivers/gpu/drm/msm/dp/dp_display.h |  1 +
- drivers/gpu/drm/msm/dp/dp_drm.c     |  3 +++
- drivers/gpu/drm/msm/dp/dp_drm.h     |  2 ++
- 4 files changed, 29 insertions(+)
+ drivers/gpu/drm/msm/dp/dp_display.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 699f28f2251e..568295381246 100644
+index bb4db9acaa4f..3e93918aa276 100644
 --- a/drivers/gpu/drm/msm/dp/dp_display.c
 +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1303,6 +1303,7 @@ static int dp_display_probe(struct platform_device *pdev)
- 	if (!desc)
- 		return -EINVAL;
+@@ -610,7 +610,7 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
+ 	}
  
-+	dp->dp_display.dev = &pdev->dev;
- 	dp->pdev = pdev;
- 	dp->name = "drm_dp";
- 	dp->id = desc->id;
-@@ -1765,3 +1766,25 @@ void dp_bridge_mode_set(struct drm_bridge *drm_bridge,
- 	dp_display->dp_mode.h_active_low =
- 		!!(dp_display->dp_mode.drm_mode.flags & DRM_MODE_FLAG_NHSYNC);
- }
-+
-+void dp_bridge_hpd_notify(struct drm_bridge *bridge,
-+			  enum drm_connector_status status)
-+{
-+	struct msm_dp_bridge *dp_bridge = to_dp_bridge(bridge);
-+	struct msm_dp *dp_display = dp_bridge->dp_display;
-+	struct dp_display_private *dp = container_of(dp_display, struct dp_display_private, dp_display);
-+
-+	/* Without next_bridge interrupts are handled by the DP core directly */
-+	if (!dp_display->next_bridge)
-+		return;
-+
-+	if (!dp->core_initialized) {
-+		drm_dbg_dp(dp->drm_dev, "not initialized\n");
-+		return;
-+	}
-+
-+	if (!dp_display->is_connected && status == connector_status_connected)
-+		dp_add_event(dp, EV_HPD_PLUG_INT, 0, 0);
-+	else if (dp_display->is_connected && status == connector_status_disconnected)
-+		dp_add_event(dp, EV_HPD_UNPLUG_INT, 0, 0);
-+}
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.h b/drivers/gpu/drm/msm/dp/dp_display.h
-index dcedf021f7fe..d7bc537ead31 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.h
-+++ b/drivers/gpu/drm/msm/dp/dp_display.h
-@@ -11,6 +11,7 @@
- #include "disp/msm_disp_snapshot.h"
+ 	/* enable HDP irq_hpd/replug interrupt */
+-	if (!dp->dp_display.is_edp)
++	if (!dp->dp_display.next_bridge)
+ 		dp_catalog_hpd_config_intr(dp->catalog,
+ 					   DP_DP_IRQ_HPD_INT_MASK | DP_DP_HPD_REPLUG_INT_MASK,
+ 					   true);
+@@ -653,7 +653,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 			dp->dp_display.connector_type, state);
  
- struct msm_dp {
-+	struct device *dev;
- 	struct drm_device *drm_dev;
- 	struct device *codec_dev;
- 	struct drm_bridge *bridge;
-diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
-index 6df25f7662e7..875b23910bef 100644
---- a/drivers/gpu/drm/msm/dp/dp_drm.c
-+++ b/drivers/gpu/drm/msm/dp/dp_drm.c
-@@ -68,6 +68,7 @@ static const struct drm_bridge_funcs dp_bridge_ops = {
- 	.mode_valid   = dp_bridge_mode_valid,
- 	.get_modes    = dp_bridge_get_modes,
- 	.detect       = dp_bridge_detect,
-+	.hpd_notify   = dp_bridge_hpd_notify,
- };
+ 	/* disable irq_hpd/replug interrupts */
+-	if (!dp->dp_display.is_edp)
++	if (!dp->dp_display.next_bridge)
+ 		dp_catalog_hpd_config_intr(dp->catalog,
+ 					   DP_DP_IRQ_HPD_INT_MASK | DP_DP_HPD_REPLUG_INT_MASK,
+ 					   false);
+@@ -682,7 +682,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	}
  
- struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *dev,
-@@ -138,6 +139,8 @@ struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display, struct dr
- 	if (IS_ERR(connector))
- 		return connector;
+ 	/* disable HPD plug interrupts */
+-	if (!dp->dp_display.is_edp)
++	if (!dp->dp_display.next_bridge)
+ 		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
  
-+	connector->fwnode = fwnode_handle_get(dev_fwnode(dp_display->dev));
-+
- 	drm_connector_attach_encoder(connector, encoder);
+ 	/*
+@@ -701,7 +701,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	dp_display_handle_plugged_change(&dp->dp_display, false);
  
- 	return connector;
-diff --git a/drivers/gpu/drm/msm/dp/dp_drm.h b/drivers/gpu/drm/msm/dp/dp_drm.h
-index 82035dbb0578..79e6b2cf2d25 100644
---- a/drivers/gpu/drm/msm/dp/dp_drm.h
-+++ b/drivers/gpu/drm/msm/dp/dp_drm.h
-@@ -32,5 +32,7 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
- void dp_bridge_mode_set(struct drm_bridge *drm_bridge,
- 			const struct drm_display_mode *mode,
- 			const struct drm_display_mode *adjusted_mode);
-+void dp_bridge_hpd_notify(struct drm_bridge *bridge,
-+			  enum drm_connector_status status);
+ 	/* enable HDP plug interrupt to prepare for next plugin */
+-	if (!dp->dp_display.is_edp)
++	if (!dp->dp_display.next_bridge)
+ 		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
  
- #endif /* _DP_DRM_H_ */
+ 	drm_dbg_dp(dp->drm_dev, "After, type=%d hpd_state=%d\n",
+@@ -1086,8 +1086,8 @@ static void dp_display_config_hpd(struct dp_display_private *dp)
+ 	dp_display_host_init(dp);
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
+-	/* Enable plug and unplug interrupts only for external DisplayPort */
+-	if (!dp->dp_display.is_edp)
++	/* Enable plug and unplug interrupts only if not handled by next_bridge */
++	if (!dp->dp_display.next_bridge)
+ 		dp_catalog_hpd_config_intr(dp->catalog,
+ 				DP_DP_HPD_PLUG_INT_MASK |
+ 				DP_DP_HPD_UNPLUG_INT_MASK,
+@@ -1380,8 +1380,7 @@ static int dp_pm_resume(struct device *dev)
+ 
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
+-
+-	if (!dp->dp_display.is_edp)
++	if (!dp->dp_display.next_bridge)
+ 		dp_catalog_hpd_config_intr(dp->catalog,
+ 				DP_DP_HPD_PLUG_INT_MASK |
+ 				DP_DP_HPD_UNPLUG_INT_MASK,
 -- 
 2.35.1
 
