@@ -2,88 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F12C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC72C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbiHJNlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
+        id S232840AbiHJNlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232869AbiHJNkz (ORCPT
+        with ESMTP id S232691AbiHJNlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:40:55 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93673326C6
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:40:54 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id pm17so14772418pjb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:40:54 -0700 (PDT)
+        Wed, 10 Aug 2022 09:41:04 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF1946D92
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:41:03 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id q30so17763120wra.11
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=IyZuXwvWxfkgzhF4RsrPMJZKJwH00vPO7yyEdw3/HlU=;
-        b=ntBoPYazYax6r+0qruxmbOuxL4Quz3/W4JD/frVfAWX5FLJeldi7Kf67t1zu8kWyhg
-         D1CTRuLF1AdfTtu4+q/ViZUx2EYsycML1zowouHBWwdm2kFD1y/ETa5c7BK/n7AeWCGh
-         25VjN9PyZmAcPKMNrNToRhoPCM3LpSsMBGYH//dodvco7MUS6ROxfJC/1wJcQo90oXc1
-         i8lacWkOrJt5rJQx+/59O5XTOh5sdT0vU/Zjd1+1bkwhIaheXTK37lr37tBOUCe4g2MA
-         so9+IdGuE44IwtigMXYJ+K4nfMpFOS/Bj14zNu2k5sqrLeQPGv1y84Xs+7EDCT4Eg4Ya
-         9OKw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=rGP5GeklV5sYvo4vtTgYCA65Zl+6s2ik7WEi4stFPCE=;
+        b=aQKijK28zoGuV84XdC62Cvvh84niNxkPtr5NhXGjEHyRQrunxHYA8+BuunqRjXq6g1
+         xENmksC4VVje463bqODvDsthkPaBsiPcAdd8X+ThAPal8WINm1zsKbqdSu7ryff2d3EL
+         7cgH5bXvKYAXHSJNSEAnLTUo8qrX4tMz6umKkAnY5gJJRm7o+IvC6MnW3mvhLMnXZP26
+         JBHOE/DFOI4IZWYgriP5aCMWWdIfKLWvCD+eLa8La1tPv4g2LCZY4xkM0qgZiVR1dP5t
+         YTzjZxNjm6Ih/h/Xe2NYbS8G9ZiFnrC1N3jKFstwbOUsNLUobE7LFU1ITRqzGyUrti7L
+         vvxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=IyZuXwvWxfkgzhF4RsrPMJZKJwH00vPO7yyEdw3/HlU=;
-        b=XQszOhyn2u1TmDYUDtodBawpqOg3YIhaOuGAUrr/fE3gRbDY8MY/09iftk0HqtOx1V
-         /rPkesbrlrFKsHg+xMLokDdQeO/kkg/bvOtYoOhXSKil7iHCkhus2xgWJSuKfAQihO6M
-         NoezuG40w67U/u8baAsVOccmD1v/lXNhWt+11b6wvJ1vaOU/xzkKuPawIFU3kTd2TAkB
-         o3cvXLdd53Gjr7Cenp0xftjXUI0oYVruFKR4ZRQqmiGEI7iy4PHDB9qzz4Lmz18YDm8j
-         Qz9n5VRCiCVodn2p1kNwz6kr3yE2eBYubI31QIm7uDppQn9sBs79hTA7vH9Zq7eSIGcV
-         WdMQ==
-X-Gm-Message-State: ACgBeo326uXfV/HOrQa47yk0jVMIpssbr7/KLBbHeZo7pAtAmdwbxNFR
-        Bx3/LAdqf1IjpPCBEkV+lKc=
-X-Google-Smtp-Source: AA6agR50lS+v70l8L54U1MD/Aa7s1ADUymKDg/apa/H8HaUHjIpyM0gFNZxxl2s+u6o4hQctVzKLUw==
-X-Received: by 2002:a17:90b:38c9:b0:1f7:28bb:aa16 with SMTP id nn9-20020a17090b38c900b001f728bbaa16mr3798436pjb.201.1660138854073;
-        Wed, 10 Aug 2022 06:40:54 -0700 (PDT)
-Received: from pipi-desktop.testerjoe ([101.88.11.237])
-        by smtp.gmail.com with ESMTPSA id f23-20020aa79697000000b0052d4487ae7fsm1969999pfk.27.2022.08.10.06.40.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 06:40:53 -0700 (PDT)
-From:   Linjun Bao <meljbao@gmail.com>
-Cc:     Linjun Bao <meljbao@gmail.com>, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] nvme: align "fake" nqn with spec 1.3
-Date:   Wed, 10 Aug 2022 21:39:54 +0800
-Message-Id: <20220810133953.5411-1-meljbao@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=rGP5GeklV5sYvo4vtTgYCA65Zl+6s2ik7WEi4stFPCE=;
+        b=VDAG937hImUrPzQ83SE23r7ZOfILMT4Dfnv2xMPkDZGMb3PImO9B2XBgKN6qQlx97U
+         3GvNMvb8Pin4+FQ9KXr6hTTAtfxLT3Q1d1MeejX8Qbww0tS9Y1SZdIuxuQwZiC84TllM
+         svw7jjL/z0C2R86HAYrq6QS4vGfprlEthjmW2trvL/xfM6BNMtbUwk52rAg9GRIB0O7P
+         ch5ivemLo+3vouY6/GA3ym9K3AeJEAiFAIoLvVNPEQfR2ay3M19zudb+61zF3qLt4UkV
+         WtmyincvZBQ4XFPZyPPncqUqieXYtsANRYTvzzMOeVVvg2YhZlbxv8MGX+4lK3l3ObYe
+         J/2w==
+X-Gm-Message-State: ACgBeo0VuHIPGFRTFfXKbQcY7iSZvtGG9v6zbLLbSsmAebZ9jrtPIz1R
+        yY1AJBg2oy9I2C4BPfDRru5WYA==
+X-Google-Smtp-Source: AA6agR7hqSLgdUcHVnV1a1G0PITSckyf7Kh30N3n6ZluCQ/1E0gsyeH1nQ2QNX+thQ2W5THNKIYLfw==
+X-Received: by 2002:a5d:47c1:0:b0:221:7670:687d with SMTP id o1-20020a5d47c1000000b002217670687dmr14268120wrc.496.1660138861673;
+        Wed, 10 Aug 2022 06:41:01 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id a3-20020adfe5c3000000b0021edb2d07bbsm15809382wrn.33.2022.08.10.06.41.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 06:41:00 -0700 (PDT)
+Message-ID: <200c59ca-dcfc-9ad8-aa1e-977708398c3b@linaro.org>
+Date:   Wed, 10 Aug 2022 15:40:59 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] thermal/core: Add missing EXPORT_SYMBOL_GPL
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220810100731.749317-1-daniel.lezcano@linaro.org>
+ <CAJZ5v0iv4oMsZyUg7-YY6cD2jsYyLdi7sDeE0GEm814kCEAvmQ@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <CAJZ5v0iv4oMsZyUg7-YY6cD2jsYyLdi7sDeE0GEm814kCEAvmQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace '.' with '-' to align "fake" nqn format with nvme spec 1.3 or newer.
+On 10/08/2022 13:58, Rafael J. Wysocki wrote:
+> On Wed, Aug 10, 2022 at 12:07 PM Daniel Lezcano
+> <daniel.lezcano@linaro.org> wrote:
+>>
+>> The function thermal_zone_device_register_with_trips() is not exported
+>> for modules.
+>>
+>> Add the missing EXPORT_SYMBOL_GPL().
+>>
+>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> 
+> A Fixes tag missing?
 
-Signed-off-by: Linjun Bao <meljbao@gmail.com>
----
- drivers/nvme/host/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+He he :) Indeed ...
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index d2ea6ca37c41..d6fb91bbcf9e 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -2504,7 +2504,7 @@ static void nvme_init_subnqn(struct nvme_subsystem *subsys, struct nvme_ctrl *ct
- 
- 	/* Generate a "fake" NQN per Figure 254 in NVMe 1.3 + ECN 001 */
- 	off = snprintf(subsys->subnqn, NVMF_NQN_SIZE,
--			"nqn.2014.08.org.nvmexpress:%04x%04x",
-+			"nqn.2014-08.org.nvmexpress:%04x%04x",
- 			le16_to_cpu(id->vid), le16_to_cpu(id->ssvid));
- 	memcpy(subsys->subnqn + off, id->sn, sizeof(id->sn));
- 	off += sizeof(id->sn);
+
 -- 
-2.25.1
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
