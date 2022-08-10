@@ -2,128 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E896BC25B0C
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1798BC48BE4
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232313AbiHJM6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 08:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
+        id S232468AbiHJM6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 08:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231951AbiHJM6E (ORCPT
+        with ESMTP id S232378AbiHJM6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 08:58:04 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E596069D;
-        Wed, 10 Aug 2022 05:57:50 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27ACpEYF004082;
-        Wed, 10 Aug 2022 12:57:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=aHPFCuMfOvKa7ujqveKRD4hNSt25Mom63wEEA/CUQ4g=;
- b=aVtFPzSUvURdYQE3qwVRwY+IbopJ47k6VLaK5xigswDbjGEuLg5NXKoVw2xe/jxy9a0p
- W4sy9KJO2x9F2Rm3lg/egVY0UVY+EDXbZqzHH4nT7H3Gh8S5DM6xbG//9ntnl1LAXRiX
- VK/GxEPxBfeH+b5HiQmaDMe6YdxMvkNd9aarDdh3U+KF0p7hhkPsos37f3BDpyu8RT+3
- V2dU9MCPEUTIHR5YGDeyrej/w+eYriKbH4CW21qfhU3lA0GeUQ3E9sTlPl6mwxgmCKB3
- jcwUMnPHn6DwEHGzh3YA8BG0CQ0d4CCSd52+F7Q6lRytfZjKhWLw8h5bxDWWt/YRzkVL jA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hv3fg1wys-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 12:57:49 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27ACpuwY006109;
-        Wed, 10 Aug 2022 12:57:48 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hv3fg1wxx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 12:57:48 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27ACqWR1026056;
-        Wed, 10 Aug 2022 12:57:46 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma01fra.de.ibm.com with ESMTP id 3huww0rup5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 12:57:46 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27ACrwUB32375256
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Aug 2022 12:53:58 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DEE284C044;
-        Wed, 10 Aug 2022 12:56:28 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3A03D4C040;
-        Wed, 10 Aug 2022 12:56:28 +0000 (GMT)
-Received: from p-imbrenda.bredband2.com (unknown [9.145.0.105])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 10 Aug 2022 12:56:28 +0000 (GMT)
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-Subject: [PATCH v13 3/6] KVM: s390: pv: add KVM_CAP_S390_PROTECTED_ASYNC_DISABLE
-Date:   Wed, 10 Aug 2022 14:56:22 +0200
-Message-Id: <20220810125625.45295-4-imbrenda@linux.ibm.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810125625.45295-1-imbrenda@linux.ibm.com>
-References: <20220810125625.45295-1-imbrenda@linux.ibm.com>
+        Wed, 10 Aug 2022 08:58:07 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D6160525;
+        Wed, 10 Aug 2022 05:57:59 -0700 (PDT)
+Received: from mercury (dyndsl-095-033-155-153.ewe-ip-backbone.de [95.33.155.153])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 968926601C2A;
+        Wed, 10 Aug 2022 13:57:57 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660136277;
+        bh=AXUViYjkfsjlWnyiLgWqWN9MZttYpnjGIynZu5rUAaw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jDXgdsOidzYTu2oNC1erHn44vbS2vts5ReWdZHenahU9BENWCkA4038OA+Nwkkb+4
+         /kUOsqVguBjz/1jC3F/3t7A+gXlSVVaUyNWk07nXB7dJANymSbUxRqRYy/NimPHiiS
+         8TexTLunA86QqT9HLoeMK639uFUaEd+QyFrVsOa8lUvBsCK6Y53MhOqGIF8FJ/oDvL
+         0jPcOgPamgd6afMYuUC20rxuBlJHdk02soJI8TezMQTsf0BgCoubktSvLhHNq9SOpi
+         tgbaI3K6qgahfLujBtUwX+9h/7FcziktKvhn7YNwpMiqeyYQmJGwfD5r9CrDeT5NAS
+         42j7pvI156W/A==
+Received: by mercury (Postfix, from userid 1000)
+        id E7D8A1060840; Wed, 10 Aug 2022 14:57:55 +0200 (CEST)
+Date:   Wed, 10 Aug 2022 14:57:55 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Pavel Machek <pavel@ucw.cz>,
+        Tim Harvey <tharvey@gateworks.com>, Lee Jones <lee@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Andrew Davis <afd@ti.com>,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v2 5/5] dt-bindings: Drop Dan Murphy and Ricardo
+ Rivera-Matos
+Message-ID: <20220810125755.l6ou6imgbeuj37ir@mercury.elektranox.org>
+References: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
+ <20220809162752.10186-6-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: jtB85gxWRuBdPzEV7PjJfYPVbCrb6qc2
-X-Proofpoint-GUID: pDOYcNVWbsdfQBBjth4wXnSjCJg-mXCJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-10_07,2022-08-10_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
- impostorscore=0 phishscore=0 mlxlogscore=705 bulkscore=0 clxscore=1015
- lowpriorityscore=0 suspectscore=0 spamscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208100038
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qodvu6jzbg5jdb43"
+Content-Disposition: inline
+In-Reply-To: <20220809162752.10186-6-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add KVM_CAP_S390_PROTECTED_ASYNC_DISABLE to signal that the
-KVM_PV_ASYNC_DISABLE and KVM_PV_ASYNC_DISABLE_PREPARE commands for the
-KVM_S390_PV_COMMAND ioctl are available.
 
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
----
- arch/s390/kvm/kvm-s390.c | 3 +++
- include/uapi/linux/kvm.h | 1 +
- 2 files changed, 4 insertions(+)
+--qodvu6jzbg5jdb43
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index 96ec6ecb6b74..4a20a6be6601 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -618,6 +618,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_S390_BPB:
- 		r = test_facility(82);
- 		break;
-+	case KVM_CAP_S390_PROTECTED_ASYNC_DISABLE:
-+		r = async_destroy && is_prot_virt_host();
-+		break;
- 	case KVM_CAP_S390_PROTECTED:
- 		r = is_prot_virt_host();
- 		break;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 02602c5c1975..9afe0084b2c5 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1177,6 +1177,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_VM_DISABLE_NX_HUGE_PAGES 220
- #define KVM_CAP_S390_ZPCI_OP 221
- #define KVM_CAP_S390_CPU_TOPOLOGY 222
-+#define KVM_CAP_S390_PROTECTED_ASYNC_DISABLE 225
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
--- 
-2.37.1
+Hi,
 
+On Tue, Aug 09, 2022 at 07:27:52PM +0300, Krzysztof Kozlowski wrote:
+> Emails to Dan Murphy and Ricardo Rivera-Matos bounce ("550 Invalid
+> recipient").  Andrew Davis agreed to take over the bindings.
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>=20
+> ---
+>=20
+> Changes since v1:
+> 1. Add Andrew Davis instead.
+> 2. Not adding accumulated ack due to change above.
+> ---
+=2E..
+>  Documentation/devicetree/bindings/power/supply/bq2515x.yaml    | 3 +--
+>  Documentation/devicetree/bindings/power/supply/bq256xx.yaml    | 2 +-
+>  Documentation/devicetree/bindings/power/supply/bq25980.yaml    | 3 +--
+
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+
+-- Sebastian
+
+> [...]
+> diff --git a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml =
+b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
+> index 27db38577822..1a1b240034ef 100644
+> --- a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
+> @@ -8,8 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: TI bq2515x 500-mA Linear charger family
+> =20
+>  maintainers:
+> -  - Dan Murphy <dmurphy@ti.com>
+> -  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
+> +  - Andrew Davis <afd@ti.com>
+> =20
+>  description: |
+>    The BQ2515x family is a highly integrated battery charge management IC=
+ that
+> diff --git a/Documentation/devicetree/bindings/power/supply/bq256xx.yaml =
+b/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
+> index 91abe5733c41..82f382a7ffb3 100644
+> --- a/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
+> @@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: TI bq256xx Switch Mode Buck Charger
+> =20
+>  maintainers:
+> -  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
+> +  - Andrew Davis <afd@ti.com>
+> =20
+>  description: |
+>    The bq256xx devices are a family of highly-integrated battery charge
+> diff --git a/Documentation/devicetree/bindings/power/supply/bq25980.yaml =
+b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
+> index 4883527ab5c7..b687b8bcd705 100644
+> --- a/Documentation/devicetree/bindings/power/supply/bq25980.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
+> @@ -8,8 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: TI BQ25980 Flash Charger
+> =20
+>  maintainers:
+> -  - Dan Murphy <dmurphy@ti.com>
+> -  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
+> +  - Andrew Davis <afd@ti.com>
+> =20
+>  description: |
+>    The BQ25980, BQ25975, and BQ25960 are a series of flash chargers inten=
+ded
+> [...]
+
+--qodvu6jzbg5jdb43
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmLzq1MACgkQ2O7X88g7
++prR3RAAguNXBrOMU277Ao4ijuGi+QU6SzrNjySRdOiRVoG9Jn3Zo3D6969KokAP
+JfuYQLSClNfcDgaNVQPpXT5TG377q5ZerWaqfEFCXAy+cp0RIZWXdpDhb+2A5gCU
+gISuq5p61V0AQM6xyU+E9q+q9ZzQ8Qjjo2ckVFCqfcxe3pX4YUUXYu39ieKJqX7G
+juQsf03XgmKXT9PfPpBvMpPe7PqYlFzZqkuvfpNILNtksDBasHS2Tm998RXq3OTe
+hTlItrD65Mb4EEkhtuhj4Xkm6VbW6PXMAJiTCWraJsBZV+aZMdPWeoC5RsnhEDjM
+XcwnQGGy7VZYotwFMBYv1AtxiP6YNim1aYyReT/LA/+HBcIBGmD8Q0v3tgO9ruou
+Gx3DlkUgoo+q1cOLP0dzb+BWxSEx1VlNwONhIv/5bciur7BLTgVPt/1Vt2qLle0V
+1oEq90rdpUTv2poZn3cTd7+Qt99Eld3cVZ/JUFxrXywZkDuKMXB0Krnbg+sOeLfn
+dCWCe7fKeqgEIL71rna2j5BwCGFazcU3JeB2WdncDLqpFQaeb/0OPB8zw6RnC+oM
+PA+3qhtyhYYbcRMP7enDBV4skvpNTlJMD+tYQdzFWkcotVCvXho+7mI/Us+KZwBC
++CQWd+WnX+l91INLir3KpF7b3yR5BZeo5MYQND5yD7ZKylUXcRo=
+=yGj8
+-----END PGP SIGNATURE-----
+
+--qodvu6jzbg5jdb43--
