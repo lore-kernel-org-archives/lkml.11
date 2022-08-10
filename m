@@ -2,103 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6E4C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B916CC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232553AbiHJNUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        id S232573AbiHJNUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232233AbiHJNUV (ORCPT
+        with ESMTP id S232508AbiHJNU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:20:21 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13E4E7A;
-        Wed, 10 Aug 2022 06:20:19 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id q1-20020a05600c040100b003a52db97fffso973238wmb.4;
-        Wed, 10 Aug 2022 06:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=HE2ABaeXgOXIHdiQidoO9aBme8JkrqivUwZbhXXLjvQ=;
-        b=LQKSbPlqHBgBgBNlm1HPvnhADexuMqqahkzd4xmk68phuJOWJOGYQqZm8Pd1afZL8u
-         0XbtYHXUBv2ZBfQCv+QvLRV8uUJJVKNOp+IHEMK/kfF7/zLvUiMXbClS7PLLGlfXC6hu
-         ZPJtbsQUKlvWzCUkCCPXSq10kz87MK7hQQBAxV4asKfxiTbK3uTJPwYV/a+6TH7h3UY0
-         Lv/UeKeoJXbcEAtzcYabpSZ0PgIsB/fdSHQVdL6KhHWLwqu9R3z2rTmGfks06B8lWt0E
-         KDEz2HX1rW5ptU85sNtvO50KcR8Xcb0ieuq2uoSlpBcFbob3qcMKUv5A40macfWuHhbe
-         jn6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=HE2ABaeXgOXIHdiQidoO9aBme8JkrqivUwZbhXXLjvQ=;
-        b=TQagWwZ1bFFmZPyK0RiYRp19ZCZzm8+MpnHxNO4B5JnJvpj4df4cChPUKBaXqCldAR
-         ndbSBe/gBZAnMhp23/OGrJ6XMuTwW1nzC2UsQw1vT7C5qj41Lq0iQ8lX22F88N3bunoH
-         YK5SwjkOQEafYtLi7V3KI9IwMojZtCIbOBS8ATB4WHjC6KT8tAGNIj+I3KxD+DlhC25O
-         E9ZoDAOsboSQ3/4gtI4x7a6pwWNOXym3kgLzWLMBnrICFuwzGEneQdH8Ew5itYYeLrgj
-         tpqqyxih0c4ru7BDUOmqNHmb/d4XzqQe/HW9U5ET03BGlRqsbCO2132QnMXaiBGapevi
-         tETw==
-X-Gm-Message-State: ACgBeo3ku3OfKKVOKswyfO4B5YTXTPIG8S/om0IyH2XXespL9zd/le8A
-        ft0rVm/ra/Li/HiUPOZ20HY=
-X-Google-Smtp-Source: AA6agR58d9vqvn5BwpudfR4cQ2xe5c2i7Zkrc4O0dp6mpLn3ujXlRdSfaG8pik/baWg5fyU5XPZ1fw==
-X-Received: by 2002:a1c:7508:0:b0:3a5:923:3994 with SMTP id o8-20020a1c7508000000b003a509233994mr2407751wmc.173.1660137618342;
-        Wed, 10 Aug 2022 06:20:18 -0700 (PDT)
-Received: from debian ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id l27-20020a05600c1d1b00b003a319b67f64sm8916827wms.0.2022.08.10.06.20.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 06:20:17 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 14:20:07 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.4 00/15] 5.4.210-rc1 review
-Message-ID: <YvOwh8Rz3t9FXehZ@debian>
-References: <20220809175510.312431319@linuxfoundation.org>
+        Wed, 10 Aug 2022 09:20:26 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31E3E62
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:20:24 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1660137620tvqpxd73
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 10 Aug 2022 21:20:19 +0800 (CST)
+X-QQ-SSF: 01000000002000B0D000B00A0000000
+X-QQ-FEAT: uGhnJwy6xZK3/a4RZGPHChyYxZyQ91n+aQkD5cRY+ai5ylW5xYcDUzJOD4ag6
+        UT+isujEYjcMdxFWz61a6UcvPhdLs3ds0tSLae7msJWbfm1NAk2XQpurmB8hHcsSZneUl07
+        elWLQWUOKyeIdLwGt+3bSiLUzb3DfS/nOphfpqdekAapLR3IBRBrSDnO8gmDzZpgP01b5bl
+        jik0taODm1e+3rAfeQj0rVkK4L0e/HjqZntXd/y3wGOldU6aPVbukNPuQdrGXhlD57XsObg
+        aJ03JRsCH5jnLytcPSr4cFaYdLzgb5gNg7w1hQkmqDATgCjJWIkglhRI6gjybOvd2wiQcJa
+        jVKx7hkbjAk3RXmOpA7+eoWuu0QaJQf9+gUwH2z9gXQNtOXLteIJd3dMWQWWw==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] drivers/mtd: fix repeated words in comments
+Date:   Wed, 10 Aug 2022 21:20:09 +0800
+Message-Id: <20220810132009.59842-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+ Delete the redundant word 'in'.
 
-On Tue, Aug 09, 2022 at 08:00:18PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.210 release.
-> There are 15 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/mtd/mtdconcat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Build test (gcc version 11.3.1 20220807):
-mips: 65 configs -> no failure
-arm: 106 configs -> no failure
-arm64: 2 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-powerpc allmodconfig -> no failure
-riscv allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
+diff --git a/drivers/mtd/mtdconcat.c b/drivers/mtd/mtdconcat.c
+index f685a581df48..193428de6a4b 100644
+--- a/drivers/mtd/mtdconcat.c
++++ b/drivers/mtd/mtdconcat.c
+@@ -836,7 +836,7 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
+ 
+ 		/*
+ 		 * walk the map of the new device once more and fill in
+-		 * in erase region info:
++		 * erase region info:
+ 		 */
+ 		curr_erasesize = subdev[0]->erasesize;
+ 		begin = position = 0;
+-- 
+2.36.1
 
-
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
-
-[1]. https://openqa.qa.codethink.co.uk/tests/1622
-
-
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-
---
-Regards
-Sudip
