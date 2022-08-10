@@ -2,110 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1DAC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9B1C25B06
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231334AbiHJJyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58804 "EHLO
+        id S231436AbiHJJzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiHJJyX (ORCPT
+        with ESMTP id S229476AbiHJJz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:54:23 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F5A6D555;
-        Wed, 10 Aug 2022 02:54:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660125207; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=UblMjqw8qmPYogTQo3ltSXOQI+8glvR4lqIxjVk9CzooC8iZYsOgp40duR8QENbGEW40NR0sowLV5c0W9DYuSO+pu3d7pwwHdzxFPTfI89v9AYHUrDFUdMnRC8CcwgDbx23R9fYrba6Elf/JRCjHWWJZM4wRVr3GyuSe7vf6NqE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660125207; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=jFHeqsb5u9GbFqhnxEh8/I0ZWgirYI4r/VF0zXwQCKg=; 
-        b=Y45gDrz/+voF4praet59up2VOlOoGeXzgZ1/SGYannQc77KA7wAOT5YxVU+Rd9OvlifALZMlkuJjFg8WR0bqDqJw9HKYbHPHa8Jq4VO3YAOkhCwawCAQvJ0A01xNcB8NreI18yUGdfHhTve7Q1N9nOy33LKNCXRf3okVMO1i1Mw=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660125207;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=jFHeqsb5u9GbFqhnxEh8/I0ZWgirYI4r/VF0zXwQCKg=;
-        b=EO6t/NXZcel9fZsbNJY0cIuSsZPbL5sJaTI4e5p6BpXc38Zv6a95Dr850rfR4QLl
-        9ychbWnlk/OBS3tjW9tHDqWJ2XafJTl25LMDMwBDzx4L53TP5wB1et80vPJ9Av8GJmN
-        bMXBvyywSJwtqzwGd+4jdvk449o11kXMCIzcUrtg=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1660125195772428.3384944175755; Wed, 10 Aug 2022 15:23:15 +0530 (IST)
-Date:   Wed, 10 Aug 2022 15:23:15 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Piyush Thange" <pthange19@gmail.com>
-Cc:     "davem" <davem@davemloft.net>, "edumazet" <edumazet@google.com>,
-        "kuba" <kuba@kernel.org>, "pabeni" <pabeni@redhat.com>,
-        "shuah" <shuah@kernel.org>,
-        "vladimir.oltean" <vladimir.oltean@nxp.com>,
-        "idosch" <idosch@nvidia.com>, "petrm" <petrm@nvidia.com>,
-        "troglobit" <troglobit@gmail.com>, "amcohen" <amcohen@nvidia.com>,
-        "tobias" <tobias@waldekranz.com>,
-        "po-hsu.lin" <po-hsu.lin@canonical.com>,
-        "netdev" <netdev@vger.kernel.org>,
-        "linux-kselftest" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <182872c2de1.4461d55242061.8862004854197621952@siddh.me>
-In-Reply-To: <20220810093508.33790-1-pthange19@gmail.com>
-References: <20220810093508.33790-1-pthange19@gmail.com>
-Subject: Re: [PATCH] selftests:net:forwarding: Included install command
+        Wed, 10 Aug 2022 05:55:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE1E726572
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:55:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660125325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m5UKomJJr5XDUN8t2Kmb7khiadiUQsrzaj90s+j66gQ=;
+        b=XauGWYwm2YHllDCVya8h3dh2VCxcMp2eXLrGwCCuukmjOLrdAx5dk/CMcpX/u+Lxbe24xF
+        6/yzLXImuFsBVkN5tVXkNKcIczY4r9o46GIbAr0lLA4DDNQc4p7aNcS4wjx+f70N3f13Je
+        hmRhx8eqHVUmTxMEGhGKI3mOSI+l6LM=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-590-h4KSAQ4KMza2PtjPF8QVuw-1; Wed, 10 Aug 2022 05:55:23 -0400
+X-MC-Unique: h4KSAQ4KMza2PtjPF8QVuw-1
+Received: by mail-wm1-f72.google.com with SMTP id 131-20020a1c0289000000b003a52a0c70b0so5427928wmc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:55:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=m5UKomJJr5XDUN8t2Kmb7khiadiUQsrzaj90s+j66gQ=;
+        b=qDnu6JdpR04JZS/IXEVnyAGAJGGxOkJTHzAeAuE80xY2SC+lhJkIm/9jBZVswexR6U
+         LG0vpnGr9dDV12v+vrX1MLsdWNEA3NbcNQFQjRA18HSkkk0pBvmK6z424gyQ7xLVK/Qc
+         N86gnn+MieSrE/M5eupnceadY4mErxhLI2KDkkxBBbz+tY5JNIx2k9l5D68czDEf1ssR
+         c1HQuZkEvdWJsZ02px5vb8guOt645lUUGcgs1YGdXq6otzww+LTuPBHGb7RcfqOaOmSq
+         ZnOP4IxmlpIbvRcCoabm9cA1JE7IgC1wLjh9+dmT0j43G8JwZOjZlDdweThkmzTXuqEm
+         zB8A==
+X-Gm-Message-State: ACgBeo1IyjMUq2V/8hm509zlqVGvJ0ErSTiJg2IL0XHhGlICW94ZRgZF
+        ozMJlo1syzx+XLNCRy/8n1uP3FV8OYn0xuKPlTrBFsOx3Tupdaa/m7+f/owOC5dEQ2KA+zZdwio
+        FEPThsXnsLSYaea8B2rgMAWfM
+X-Received: by 2002:a5d:64e4:0:b0:222:d4da:c2e1 with SMTP id g4-20020a5d64e4000000b00222d4dac2e1mr7468940wri.15.1660125322327;
+        Wed, 10 Aug 2022 02:55:22 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR57ng+8LAmFqiWIYkxzU0qIaLTw96OSbpCj25JDzNCtyJxE1FXqxz6BaUC8mUFwvCSeHhucCg==
+X-Received: by 2002:a5d:64e4:0:b0:222:d4da:c2e1 with SMTP id g4-20020a5d64e4000000b00222d4dac2e1mr7468880wri.15.1660125322007;
+        Wed, 10 Aug 2022 02:55:22 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1600:a3ce:b459:ef57:7b93? (p200300cbc7071600a3ceb459ef577b93.dip0.t-ipconnect.de. [2003:cb:c707:1600:a3ce:b459:ef57:7b93])
+        by smtp.gmail.com with ESMTPSA id l3-20020a05600c4f0300b003a4bb3f9bc6sm1837127wmq.41.2022.08.10.02.55.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 02:55:21 -0700 (PDT)
+Message-ID: <64ab9678-c72d-b6d9-8532-346cc9c06814@redhat.com>
+Date:   Wed, 10 Aug 2022 11:55:19 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v7 05/14] mm/memfd: Introduce MFD_INACCESSIBLE flag
+Content-Language: en-US
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-6-chao.p.peng@linux.intel.com>
+ <203c752f-9439-b5ae-056c-27b2631dcb81@redhat.com>
+ <20220810093741.GE862421@chaop.bj.intel.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220810093741.GE862421@chaop.bj.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 15:05:08 +0530  Piyush Thange <pthange19@gmail.com>  wrote:
-> If the execution is skipped due to "jq not installed" message then
-> the installation methods on different OS's have been provided with
-> this message.
+On 10.08.22 11:37, Chao Peng wrote:
+> On Fri, Aug 05, 2022 at 03:28:50PM +0200, David Hildenbrand wrote:
+>> On 06.07.22 10:20, Chao Peng wrote:
+>>> Introduce a new memfd_create() flag indicating the content of the
+>>> created memfd is inaccessible from userspace through ordinary MMU
+>>> access (e.g., read/write/mmap). However, the file content can be
+>>> accessed via a different mechanism (e.g. KVM MMU) indirectly.
+>>>
+>>> It provides semantics required for KVM guest private memory support
+>>> that a file descriptor with this flag set is going to be used as the
+>>> source of guest memory in confidential computing environments such
+>>> as Intel TDX/AMD SEV but may not be accessible from host userspace.
+>>>
+>>> The flag can not coexist with MFD_ALLOW_SEALING, future sealing is
+>>> also impossible for a memfd created with this flag.
+>>
+>> It's kind of weird to have it that way. Why should the user have to
+>> care? It's the notifier requirement to have that, no?
+>>
+>> Why can't we handle that when register a notifier? If anything is
+>> already mapped, fail registering the notifier if the notifier has these
+>> demands. If registering succeeds, block it internally.
+>>
+>> Or what am I missing? We might not need the memfile set flag semantics
+>> eventually and would not have to expose such a flag to user space.
 > 
-> Signed-off-by: Piyush Thange <pthange19@gmail.com>
-> ---
->  tools/testing/selftests/net/forwarding/lib.sh | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-> index 37ae49d47853..c4121856fe06 100755
-> --- a/tools/testing/selftests/net/forwarding/lib.sh
-> +++ b/tools/testing/selftests/net/forwarding/lib.sh
-> @@ -152,6 +152,14 @@ require_command()
-> 
->  	if [[ ! -x "$(command -v "$cmd")" ]]; then
->  		echo "SKIP: $cmd not installed"
-> +		if [[ $cmd == "jq" ]]; then
-> +			echo " Install on Debian based systems"
-> +			echo "	sudo apt -y install jq"
-> +			echo " Install on RHEL based systems"
-> +			echo "	sudo yum -y install jq"
-> +			echo " Install on Fedora based systems"
-> +			echo "	sudo dnf -y install jq"
-> +		fi
->  		exit $ksft_skip
->  	fi
->  }
-> --
-> 2.37.1
+> This makes sense if doable. The major concern was: is there a reliable
+> way to detect this (already mapped) at the time of memslot registering.
 
-This is very specific to `jq` command. What's special with `jq` and not
-others? If methods have to be shown, they should be shown for all the
-programs which are not installed.
+If too complicated, we could simplify to "was this ever mapped" and fail
+for now. Hooking into shmem_mmap() might be sufficient for that to get
+notified about the first mmap.
 
-Further, this limits the information to specific package managers and
-systems in the userspace. Tomorrow a new system may come, which will
-cause this list to grow, not to mention other existing package managers.
-The kernel also doesn't have a role in it, so we should try to be generic
-as much as possible.
+As an alternative, mapping_mapped() or similar *might* do what we want.
 
+
+
+-- 
 Thanks,
-Siddh
+
+David / dhildenb
+
