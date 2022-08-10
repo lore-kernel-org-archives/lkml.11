@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7268C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37512C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232513AbiHJOcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 10:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        id S231650AbiHJOcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiHJObc (ORCPT
+        with ESMTP id S232554AbiHJOcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 10:31:32 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F835248F9
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:31:31 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id t15so8359695ilm.7
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:31:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=ns6JDd8CewO25+DVvrCONnPh03MSrjykonj1NN4uWq0=;
-        b=QqW8l22YCkzKw4GiMQhdY8fTQbzaxtcSs8JxhgwNoFi2zXeRFAD8VRsY9u+hCAH68W
-         EJE4wzgtTikkQ0rwBV9xDTt8nWB8aUOJh/tLQLCkGcDF2m3eJG/Z1c0LoOgWbMLBWe4t
-         TTNamrbhNtfLUiHA9wTFndmUXcWW0yTsRWnJ4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=ns6JDd8CewO25+DVvrCONnPh03MSrjykonj1NN4uWq0=;
-        b=aMJFu7BRtQOv7moGpVZrWfW8zINdUDeuZdGdN5az/3Ntl9Nd9YIc7Ovwbepr0QRbF/
-         Vdiwg26iHT/pEmJnOMjAH3VNSJ5UQ8p87q9G3q3JfM47NoD81ZhognxYTOWtNlyksezc
-         IauRukkZR3QSK7nOoZKmjAWHO4euiO9LwVadWHsodWfOB7adZeWvTrXcasUMts9fyMUD
-         Uty+U8KVtojYXsdVpjxTSbDKbvyiuZPf47jtDe3lJz+Oacc90Gc2pGQ6UMXXN/ntUQV4
-         K/c0lqbtDGweW9B18qqfzVK4zWTSWTkm0k95XNFH202VwJuY48AikTjq9xaYrTZDeaWA
-         SrWg==
-X-Gm-Message-State: ACgBeo2N240cV7M0KnCSJrA7KOaIqvDgaFeUNOdsuLrySCojgnaMaRvJ
-        nkHruKOrie5QYjYIkWOLxdUKZw==
-X-Google-Smtp-Source: AA6agR4ghNnRaWdrhVSZW42u+mwllcSQXG502scOPUUZK9LyRQtgtVK6DJqVsuZDfH1hxpgGS/uj7A==
-X-Received: by 2002:a05:6e02:1aa3:b0:2df:922d:8b3b with SMTP id l3-20020a056e021aa300b002df922d8b3bmr10785127ilv.166.1660141890910;
-        Wed, 10 Aug 2022 07:31:30 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id v4-20020a92ab04000000b002dd0ff02527sm2210488ilh.55.2022.08.10.07.31.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 07:31:30 -0700 (PDT)
-Subject: Re: [PATCH 5.18 00/35] 5.18.17-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220809175515.046484486@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <5c88a8d6-73b5-df3d-48cc-4a112779ff56@linuxfoundation.org>
-Date:   Wed, 10 Aug 2022 08:31:29 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 10 Aug 2022 10:32:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EAC2B18D;
+        Wed, 10 Aug 2022 07:32:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1975C61527;
+        Wed, 10 Aug 2022 14:32:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1488CC433C1;
+        Wed, 10 Aug 2022 14:32:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660141924;
+        bh=XP7o0LqW4ri+tvBAJ6DfVBQ+7ISFbLgZEwquRdB528k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mOOqLTx3irxJuXHiFn1x/As+urVyIjJLwJ0kZh7MRjVEOzk1HOrbpCJKqM23T08z/
+         BDVdaEdyq839+KXhhP90/qtIzq1iuFTIVvg07ZVWfcxY05UEaM1zn2bIKyCkQEZZAu
+         axdKHUl4J2Fqx5QAIugZiKPwRedE9UtOKFZJqBGC/V4mvgCU7t2mZdaza21GXzX3zd
+         3SuvUZK+BP59iZ/+aZ0PHppRLHVTFUVqr1URngKnStUvNylmaa/Hu9TgZs8eZA1pvS
+         bENV5m0pSKcrZe4JnxqKSGFplvqaklXdfOOHwlVbOnNcg3u6ow3f2QHZNnBY9CxipE
+         4WNKredHSqT2w==
+Date:   Wed, 10 Aug 2022 15:31:59 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Da Xue <da@libre.computer>
+Subject: Re: [PATCH] spi: meson-spicc: save pow2 datarate between messages
+Message-ID: <YvPBX7zJ72RXnrpk@sirena.org.uk>
+References: <20220809152019.461741-1-narmstrong@baylibre.com>
+ <YvJ84qkuXdvVgXRm@sirena.org.uk>
+ <39c2f53b-8f53-ceb1-ae0c-81e5e53d01aa@baylibre.com>
+ <YvOmnDJA+ov49chC@sirena.org.uk>
+ <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="WEqUYi41ANWCpin/"
+Content-Disposition: inline
+In-Reply-To: <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
+X-Cookie: First pull up, then pull down.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/9/22 12:00 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.17 release.
-> There are 35 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.17-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
 
-Compiled and booted on my test system. No dmesg regressions.
+--WEqUYi41ANWCpin/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+On Wed, Aug 10, 2022 at 04:01:33PM +0200, Neil Armstrong wrote:
+> On 10/08/2022 14:37, Mark Brown wrote:
 
-thanks,
--- Shuah
+> > Sure, but that doesn't really address the concern - is this something
+> > that the clk driver programmed or is this the driver forgetting to
+> > restore a register that it programmed itself?  The commit message sounds
+> > like the former which is a much bigger problem.
+
+> It's what is programmed by the Clock Framework yes, it was designed as-is
+> so the Clock Framework takes the most accurate clock path but the reset case
+> wasn't taken in account.
+
+This seems like a bad idea, we shouldn't have two different drivers
+managing the same register without explicit and visible coordination
+with each other, this is at best asking for trouble as you've found
+here.  I've not looked in detail but I think if you want to use the
+clock framework here then this driver should register a clock provider
+for the clock hardware in the IP block.
+
+How does this work with runtime PM, what happens if the clock driver
+decides to change something while the device is powered down?
+
+--WEqUYi41ANWCpin/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLzwV8ACgkQJNaLcl1U
+h9CRwgf+K7WOMvAJpCDDJzGeEDnvO60A4KqWEROJNwU9pzFD/oES6Slzi83SHzvp
+lHZWpvuJRnofLap5EVCebAtxNtqVJzX00q+MB25XxtFgLICY+MHghQ6g9+/C3BkV
+NuexPyuLn6Q5EAXthFBx/ZKKkg2wDxBtygX5uHpMuFggSpduJ+X5Gm8fu8idcG6o
+m+tr8K+ChscFOhMkLy/6yMdXjU8sMt46egyYYhasKbKFT7oSjlMb383OBIp4WVFw
+vusuEWjSoy0xK2LmHEOD23/jxjkB2Lr7mtFe5QPkE/L9hGG4pvdU4hqaVAlSQrpZ
+aJ/9Oaoi0ApclyH8g3naLiygsa7Amw==
+=e05v
+-----END PGP SIGNATURE-----
+
+--WEqUYi41ANWCpin/--
