@@ -2,146 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9C4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 11:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51736C25B06
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 11:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbiHJLMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 07:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
+        id S230136AbiHJLOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 07:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiHJLLd (ORCPT
+        with ESMTP id S229447AbiHJLOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 07:11:33 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F35E31DDF
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 04:11:30 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id by6so7336370ljb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 04:11:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=Ch7MLzjtjxDAnl8q0BHET3tRA6bodCqHcVbiwE3Oe4g=;
-        b=KiNK2omd8DLq4fRawlv2UlQGC3ixt2SOv3WoamhbOn4/WJIHBztUaYvcdEcoEXaeWV
-         n3qT5h4eX4/7LFps12YmPYQ0TjGoRatvvtXHp9STxIeeb526zUYTI0ILSYwEL49rB1zK
-         4nLLLR+SvRw6OTAIL1Ocw6OHB9fmfsD2dG8PIpnjXmOUKRGmgz83XR6g9snA9M7VcLOS
-         jECd8j9D3LrusZc2qHwL1B/d9cDKh3RgSdyRmV3y6f+uoMC+EIqxFAWYD0wckIXH8B3I
-         VNO1+2CuFnXqSsXlUCayvwEqU0IXCvVWHZomrQGBc8k3ihJEHi9G700l32EWd7H1xPtX
-         /Gxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=Ch7MLzjtjxDAnl8q0BHET3tRA6bodCqHcVbiwE3Oe4g=;
-        b=FxvzXU7yfDZo/u4vPNCLlbN5CV3EIvc9j8c5ygvlkv0nnofnTvBKvafvMeNroX6dIf
-         dw8oMlKa5kqMFAtIMZHunMwGv0uk9qY/1NYPFWwFgwOl1y7xTqVu6/Y+DXSPHQHR7uQv
-         CgeE+xfKaAnRw/RcRmTkEfw8UWbS1HdQFPAo/ErMuwWEcQ7lxhChbeDtIRhiN0UdAKTr
-         4sRQsn2R785IoN50rs++G8FOM3J/Z8G+paqRIM/GY6/rjzZjdn2WiLuXvNGh5AOwYuKn
-         Ck2NBMbZgDax1qiXjOaHl8Alfte7EIwf3YCfLPnIfypAUbYLLd/v67yoe3JuGUixQUU4
-         J/BA==
-X-Gm-Message-State: ACgBeo2yQwbJ4NRBLjsUBsZ/mAlSCwCBEoGrijMpzZPsp6VfDuGaExgr
-        BQcNycT5ORSg1+yyORT2QpB6Poeiq6wPQP8G
-X-Google-Smtp-Source: AA6agR4Yhps3ifFoUzNeZ4v4pfsf5foycFIjE22kBxaGVNAFDbW82io8VHx2WQvR01APu6a1u0hMIA==
-X-Received: by 2002:a05:651c:1503:b0:24c:81df:e1f2 with SMTP id e3-20020a05651c150300b0024c81dfe1f2mr8137090ljf.182.1660129889284;
-        Wed, 10 Aug 2022 04:11:29 -0700 (PDT)
-Received: from localhost.localdomain ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id p20-20020ac24ed4000000b0048a7c86f4e7sm298221lfr.291.2022.08.10.04.11.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 04:11:28 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] ARM: dts: aspeed: align SPI node name with dtschema
-Date:   Wed, 10 Aug 2022 14:11:26 +0300
-Message-Id: <20220810111126.281214-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 10 Aug 2022 07:14:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71D4326C5;
+        Wed, 10 Aug 2022 04:14:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 394E16126D;
+        Wed, 10 Aug 2022 11:14:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23DE2C433C1;
+        Wed, 10 Aug 2022 11:14:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660130072;
+        bh=fyh9Bh9bmCgOy+/VP4kXHpr57H4RuMtY6Hs0NyHqLSw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pJNPNe+7uX12c2FU6lGS5y3G33+MvpzrxwZqNjL11mn0aeHEDBf+6sPsrgvQ1DGS+
+         GbkykfAsDj5ZxL6iyya3G/AiNTKjHTvQsbhSgNAZC5UGHJP6kJghHRTvhpRmuTFm4k
+         4BbRnp+abhEitVbVF14lbhEbRHdlBNUVNIhHXr4LP+VgL8OKi9vsSWi3TqSZ4134E1
+         FzQvE5MTCDxakTKDhajC0ZX971gR3Y7Kjl6sz4mHVSbL7s7ui2lmirSpZPAffeOv5m
+         jib+/Hx6EAXjxeMc9ICm0gVpIMU37KqSRhl1ca/7HCYNVHv+LWpTRrm6OecSK+pD+w
+         oJ8WP9q4UphyA==
+Date:   Wed, 10 Aug 2022 12:14:26 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] mfd: fsl-imx25: Fix an error handling path in
+ mx25_tsadc_setup_irq()
+Message-ID: <YvOTEtEK5Urn+rvz@google.com>
+References: <d404e04828fc06bcfddf81f9f3e9b4babbe35415.1659269156.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <d404e04828fc06bcfddf81f9f3e9b4babbe35415.1659269156.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic and DT schema expects certain pattern.
+On Sun, 31 Jul 2022, Christophe JAILLET wrote:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts | 2 +-
- arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts      | 2 +-
- arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts        | 2 +-
- arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts    | 2 +-
- arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+> If devm_of_platform_populate() fails, some resources need to be
+> released.
+> 
+> Introduce a mx25_tsadc_unset_irq() function that undoes
+> mx25_tsadc_setup_irq() and call it both from the new error handling path
+> of the probe and in the remove function.
+> 
+> Fixes: a55196eff6d6 ("mfd: fsl-imx25: Use devm_of_platform_populate()")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> mx25_tsadc_setup_irq() and mx25_tsadc_unset_irq() are not symetrical.
+> One tests for "(irq <= 0)" while the other one tests for "(irq)".
+> 
+> If <0 the probe will fails, so that is fine.
+> If ==0, according to doc platform_get_irq() can't return 0, so that should
+> be fine as well.
+> 
+> 
+> That said, I think that the "if (irq)" in mx25_tsadc_unset_irq() can be
+> removed.
+> ---
+>  drivers/mfd/fsl-imx25-tsadc.c | 32 ++++++++++++++++++++++++--------
+>  1 file changed, 24 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts
-index 9c6271a17ae8..5cd060029ea9 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts
-@@ -77,7 +77,7 @@ aliases {
- 		i2c55 = &imux55;
- 	};
- 
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		num-chipselects = <2>;
- 		cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>,
- 			   <&gpio0 ASPEED_GPIO(X, 1) GPIO_ACTIVE_HIGH>;
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-index 27b43fe099f1..4b520d7ce3e1 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-@@ -44,7 +44,7 @@ chosen {
- 		stdout-path = &uart5;
- 	};
- 
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		num-chipselects = <1>;
- 		cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>;
- 	};
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts
-index af58a73bbc49..6b319f34a9b9 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts
-@@ -207,7 +207,7 @@ aliases {
- 		i2c143 = &imux143;
- 	};
- 
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		num-chipselects = <3>;
- 		cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>,
- 			   <0>,	/* device reg=<1> does not exist */
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts
-index a901c8be49b9..ed305948386f 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts
-@@ -67,7 +67,7 @@ ast-adc-hwmon {
- 	 * full-duplex SPI transactions are not supported by ASPEED SPI
- 	 * Controllers.
- 	 */
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		status = "okay";
- 		compatible = "spi-gpio";
- 		#address-cells = <1>;
-diff --git a/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi b/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi
-index 051de5bec345..31590d3186a2 100644
---- a/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi
-+++ b/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi
-@@ -25,7 +25,7 @@ memory@80000000 {
- 	 * full-duplex SPI transactions are not supported by ASPEED SPI
- 	 * Controllers.
- 	 */
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		status = "okay";
- 		compatible = "spi-gpio";
- 		#address-cells = <1>;
+Applied, thanks.
+
 -- 
-2.34.1
-
+Lee Jones [李琼斯]
