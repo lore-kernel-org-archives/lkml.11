@@ -2,142 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D992AC25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFBAC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233320AbiHJQGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
+        id S233335AbiHJQJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233381AbiHJQFk (ORCPT
+        with ESMTP id S232852AbiHJQJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:05:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3058578BF0
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:05:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2B04B81D6A
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F0F9C43142;
-        Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.96)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1oLoDF-000V08-2c;
-        Wed, 10 Aug 2022 12:05:41 -0400
-Message-ID: <20220810160541.646408756@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Wed, 10 Aug 2022 12:04:59 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [for-linus][PATCH 4/4] rtla: Consolidate and show all necessary libraries that failed for
- building
-References: <20220810160455.872730397@goodmis.org>
+        Wed, 10 Aug 2022 12:09:47 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A294A7B1C8
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:09:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=t4MwVAfwkCB4EmT15HXtvuXRXMl6148oIcwvT5rWzH0=; b=kPMJXR6bwoyVWhfo3Q7xsHuiDo
+        cu8JJgUYOjq7g3kEB5WIsh9x6nbEmYe6xEiLqmEL/GcqqRT1KRBcbdOcD0IQPc5DO2tLg0tFutO+n
+        8jox7enRkWZGz1Xnf4MdfmCJVKzOq4mRpK+VYzdXJtVVQ2H5CJunExT5O4E0myfZ+CxWP/zb3jxwf
+        fL8YjQ0IgMU+fDDCUbm8haoViYTGXvq78yp/5MjQ83XkXd+yz1/IUPk57t1LVhRD+3Rg2jNOETaC9
+        Ua4TR8OXpDgLDsK0RXLQ6P9pLjXNifHs7hjH82RRbDD5IkjPI/38kLQtkqWzOwtuL6KxX+LEQ+h8d
+        +RocqkeA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oLoH3-00Gzln-Lb; Wed, 10 Aug 2022 16:09:37 +0000
+Date:   Wed, 10 Aug 2022 17:09:37 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Zdenek Kabelac <zkabelac@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        intel-gfx@lists.freedesktop.org, chris@chris-wilson.co.uk,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: i915: crash with 5.19-rc2
+Message-ID: <YvPYQeMjfyruTeGe@casper.infradead.org>
+References: <584ae788-05e3-5824-8c85-cbb833677850@redhat.com>
+ <f0dd80b2-97e1-c320-8517-7ebdb027f58a@redhat.com>
+ <4a204620-7639-c844-455-10e55b372bcf@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4a204620-7639-c844-455-10e55b372bcf@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On Wed, Aug 10, 2022 at 08:55:32AM -0700, Hugh Dickins wrote:
+> This is not a bug in zram or i915, but what Matthew fixes in
+> https://lore.kernel.org/lkml/20220730042518.1264767-1-willy@infradead.org/
 
-When building rtla tools, if the necessary libraries are not installed
-(libtraceevent and libtracefs), show the ones that are missing in one
-consolidated output, and also show how to install them (at least for
-Fedora).
+Thanks for tracking that down, Hugh.  Nice to know it's a crash rather
+than a data corruption.  The fix is in Andrew's tree, so I think it's
+already destined for upstream soon.
 
-Link: https://lore.kernel.org/all/CAHk-=wh+e1qcCnEYJ3JRDVLNCYbJ=0u+Ts5bOYZnY3mX_k-hFA@mail.gmail.com/
-Link: https://lkml.kernel.org/r/20220810113918.5d19ce59@gandalf.local.home
+Andrew, I have two fixes that I don't see in your tree:
 
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- tools/tracing/rtla/Makefile | 62 +++++++++++++++++++++----------------
- 1 file changed, 36 insertions(+), 26 deletions(-)
+https://lore.kernel.org/linux-mm/20220808193430.3378317-2-willy@infradead.org/T/#u
+https://lore.kernel.org/linux-mm/20220808193430.3378317-4-willy@infradead.org/T/#u
 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index f392708c7a1e..22e28b76f800 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -61,40 +61,50 @@ endif
- LIBTRACEEVENT_MIN_VERSION = 1.5
- LIBTRACEFS_MIN_VERSION = 1.3
- 
-+.PHONY:	all warnings show_warnings
-+all:	warnings rtla
-+
- TEST_LIBTRACEEVENT = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEEVENT_MIN_VERSION) libtraceevent > /dev/null 2>&1 || echo n")
- ifeq ("$(TEST_LIBTRACEEVENT)", "n")
--.PHONY: warning_traceevent
--warning_traceevent:
--	@echo "********************************************"
--	@echo "** NOTICE: libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher not found"
--	@echo "**"
--	@echo "** Consider installing the latest libtraceevent from your"
--	@echo "** distribution, e.g., 'dnf install libtraceevent' on Fedora,"
--	@echo "** or from source:"
--	@echo "**"
--	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ "
--	@echo "**"
--	@echo "********************************************"
-+WARNINGS = show_warnings
-+MISSING_LIBS += echo "**   libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher";
-+MISSING_PACKAGES += "libtraceevent-devel"
-+MISSING_SOURCE += echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ ";
- endif
- 
- TEST_LIBTRACEFS = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEFS_MIN_VERSION) libtracefs > /dev/null 2>&1 || echo n")
- ifeq ("$(TEST_LIBTRACEFS)", "n")
--.PHONY: warning_tracefs
--warning_tracefs:
--	@echo "********************************************"
--	@echo "** NOTICE: libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher not found"
--	@echo "**"
--	@echo "** Consider installing the latest libtracefs from your"
--	@echo "** distribution, e.g., 'dnf install libtracefs' on Fedora,"
--	@echo "** or from source:"
--	@echo "**"
--	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ "
--	@echo "**"
--	@echo "********************************************"
-+WARNINGS = show_warnings
-+MISSING_LIBS += echo "**   libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher";
-+MISSING_PACKAGES += "libtracefs-devel"
-+MISSING_SOURCE += echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ ";
- endif
- 
--.PHONY:	all
--all:	rtla
-+define show_dependencies
-+	@echo "********************************************";				\
-+	echo "** NOTICE: Failed build dependencies";					\
-+	echo "**";									\
-+	echo "** Required Libraries:";							\
-+	$(MISSING_LIBS)									\
-+	echo "**";									\
-+	echo "** Consider installing the latest libtracefs from your";			\
-+	echo "** distribution, e.g., 'dnf install $(MISSING_PACKAGES)' on Fedora,";	\
-+	echo "** or from source:";							\
-+	echo "**";									\
-+	$(MISSING_SOURCE)								\
-+	echo "**";									\
-+	echo "********************************************"
-+endef
-+
-+show_warnings:
-+	$(call show_dependencies);
-+
-+ifneq ("$(WARNINGS)", "")
-+ERROR_OUT = $(error Please add the necessary dependencies)
-+
-+warnings: $(WARNINGS)
-+	$(ERROR_OUT)
-+endif
- 
- rtla: $(OBJ)
- 	$(CC) -o rtla $(LDFLAGS) $(OBJ) $(LIBS)
--- 
-2.35.1
+The first is of minor importance, the second I believe Hugh has hit in
+his testing.
+
