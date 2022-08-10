@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A92C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 22:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9FCC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 22:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232746AbiHJWHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 18:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40882 "EHLO
+        id S233300AbiHJWHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 18:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231434AbiHJWHN (ORCPT
+        with ESMTP id S232926AbiHJWHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 10 Aug 2022 18:07:13 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2713A81B2F
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF5184EC6
         for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 15:07:11 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C32482224D;
-        Thu, 11 Aug 2022 00:07:08 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D92F82224F;
+        Thu, 11 Aug 2022 00:07:09 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1660169228;
+        t=1660169230;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F5Gy8fj7/+fRJ03Ev0pNp8xZJdQLteKJDf4fVJZWgbk=;
-        b=Y/BFcaE082PrrjtwKehAHz/WA1soCrpkV2LWVjJUJFgWge2TjIcu28AjrXeEVbKQ/KWRvk
-        pwdT64rgi6AdNGsBmU50ESNQsufmiQdiJV14WLNR2F0SgU9/cb3Sfh+O2ZcJzgdbUldo6W
-        YJVhrbLai/M9vGn4bWwdh8Q9UDEtcz0=
+        bh=rCNyjvmL2t4xDROC5RIKvX+bOmZBVEh/OEx8VEUlcCg=;
+        b=CggvKbqCKkt3vjgFSVDirO7LI3piTJ7r0rkYFWIONKsCaGrEdhMZowOkj52N3KlYvNGKr+
+        JzarcodUcgH4bH2id5Q6iAsjj1p+simLbqWM3WG/KD+S6L66tk1kJlQbtkKqbxKsGV43Ay
+        BJ75UV+6JM5J/wTcW/OQnYakQKHnEsQ=
 From:   Michael Walle <michael@walle.cc>
 To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Pratyush Yadav <pratyush@kernel.org>
@@ -40,9 +40,9 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
         Michael Walle <michael@walle.cc>,
         Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
-Subject: [PATCH v2 2/7] mtd: spi-nor: sysfs: hide manufacturer if it is not set
-Date:   Thu, 11 Aug 2022 00:06:49 +0200
-Message-Id: <20220810220654.1297699-3-michael@walle.cc>
+Subject: [PATCH v2 4/7] mtd: spi-nor: move function declaration out of sfdp.h
+Date:   Thu, 11 Aug 2022 00:06:51 +0200
+Message-Id: <20220810220654.1297699-5-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220810220654.1297699-1-michael@walle.cc>
 References: <20220810220654.1297699-1-michael@walle.cc>
@@ -52,43 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The manufacturer may be optional when pure SFDP flashes are supported.
-Hide the sysfs property if no manufacturer is set.
+sfdp.h should only contain constants related to the JEDEC SFDP
+specification(s).
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 Reviewed-by: Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
 ---
- Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor | 3 +++
- drivers/mtd/spi-nor/sysfs.c                             | 2 ++
- 2 files changed, 5 insertions(+)
+ drivers/mtd/spi-nor/core.h | 2 ++
+ drivers/mtd/spi-nor/sfdp.h | 2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor b/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor
-index e9ef69aef20b..c800621eff95 100644
---- a/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor
-+++ b/Documentation/ABI/testing/sysfs-bus-spi-devices-spi-nor
-@@ -15,6 +15,9 @@ KernelVersion:	5.14
- Contact:	linux-mtd@lists.infradead.org
- Description:	(RO) Manufacturer of the SPI NOR flash.
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 85b0cf254e97..68aaccaa12d8 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -701,6 +701,8 @@ int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
+ int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
+ 				     const u8 *buf, size_t len);
  
-+		The attribute is not present if the flash device isn't
-+		known to the kernel and is only probed by its SFDP
-+		tables.
++int spi_nor_parse_sfdp(struct spi_nor *nor);
++
+ static inline struct spi_nor *mtd_to_spi_nor(struct mtd_info *mtd)
+ {
+ 	return container_of(mtd, struct spi_nor, mtd);
+diff --git a/drivers/mtd/spi-nor/sfdp.h b/drivers/mtd/spi-nor/sfdp.h
+index bbf80d2990ab..c1969f0a2f46 100644
+--- a/drivers/mtd/spi-nor/sfdp.h
++++ b/drivers/mtd/spi-nor/sfdp.h
+@@ -107,6 +107,4 @@ struct sfdp_parameter_header {
+ 	u8		id_msb;
+ };
  
- What:		/sys/bus/spi/devices/.../spi-nor/partname
- Date:		April 2021
-diff --git a/drivers/mtd/spi-nor/sysfs.c b/drivers/mtd/spi-nor/sysfs.c
-index 4c3b351aef24..20563c1926f4 100644
---- a/drivers/mtd/spi-nor/sysfs.c
-+++ b/drivers/mtd/spi-nor/sysfs.c
-@@ -74,6 +74,8 @@ static umode_t spi_nor_sysfs_is_visible(struct kobject *kobj,
- 	struct spi_mem *spimem = spi_get_drvdata(spi);
- 	struct spi_nor *nor = spi_mem_get_drvdata(spimem);
- 
-+	if (attr == &dev_attr_manufacturer.attr && !nor->manufacturer)
-+		return 0;
- 	if (attr == &dev_attr_jedec_id.attr && !nor->info->id_len)
- 		return 0;
- 
+-int spi_nor_parse_sfdp(struct spi_nor *nor);
+-
+ #endif /* __LINUX_MTD_SFDP_H */
 -- 
 2.30.2
 
