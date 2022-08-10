@@ -2,130 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F57C25B0C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 772CEC25B0E
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiHJQEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
+        id S233322AbiHJQEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233222AbiHJQDt (ORCPT
+        with ESMTP id S233310AbiHJQD5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:03:49 -0400
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10C6717C;
-        Wed, 10 Aug 2022 09:03:47 -0700 (PDT)
-Received: by mail-il1-f180.google.com with SMTP id x2so2390803ilp.10;
-        Wed, 10 Aug 2022 09:03:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=IrtUFJXfmfdQKeaT5ZVd35+tzRi7zWIlb+Wsybvtzfw=;
-        b=fn+NgPYvpGMKGvWn9AH2CClpLqWAjiHwa2xgbuFOJJZWDO6tNkmAKxqUaevcrn4r1T
-         cWOWDFHioJOhuEwgVV1qw/W4TBcntibjMdhW9Irnc24GGPQOx9OrJTZz8XKXinu45rmE
-         jh48CaEL4LARoctezmsFIJCT32iAL7LYicdjpj1oJbZQIyRYwJfeRxyfWopcsJIHdPTm
-         YCtfGjx9BuILxq3yHuJmEG0TveVUG6yJgfLdjWl0HoU6qt1fIRIIT6WPllfKZ4IJ8a3D
-         RtttFGH4R+Hah8yWXk6w6l0LcGioOL0/Y27W3EQrpOZF2/DHjDD3KjG3IKg/x8Wd+ury
-         tRhg==
-X-Gm-Message-State: ACgBeo0lXBH12HaixuZuOrA1xhqMVkqX76759u0uL3JtlH8T7Q0fVaWk
-        0BPNKvnEhLWO5qAlEFEATg==
-X-Google-Smtp-Source: AA6agR5L6UDKesXHoDGK9TS6LftDSNWSGOXJ/sv+fkC0JxoXQwGpeO5paASudn/YE/O29MWZ9eM0Eg==
-X-Received: by 2002:a05:6e02:198b:b0:2e0:d13c:b508 with SMTP id g11-20020a056e02198b00b002e0d13cb508mr8053060ilf.315.1660147426681;
-        Wed, 10 Aug 2022 09:03:46 -0700 (PDT)
-Received: from xps15.herring.priv ([64.188.179.248])
-        by smtp.googlemail.com with ESMTPSA id a27-20020a02735b000000b00341a215d3cesm7617629jae.63.2022.08.10.09.03.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 09:03:46 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        Wed, 10 Aug 2022 12:03:57 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8493E6580A;
+        Wed, 10 Aug 2022 09:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=ATWjZwDzLd1FXTxu36i7ECb5X4VhABeeCLXPqvahL08=;
+        t=1660147436; x=1661357036; b=ppqE0xXY3EffjWZqBNoU7T+g3g2T3n+8KYzJUWL1sNQ95fZ
+        PyDvuRaDFLmTKwfE9SaObb5OKip1oJdYKUOB0p5uvavnXLAyuZFrvc8NQW60zAQnqPJzkpXJwzLOV
+        OVqgRL22ZSmKoZ1uHX8ic6OjZb33gsBtpKlPq9wXV3wcfgYF9RUhm1i0Nk4mh7EQGKAHQXSTGpnHT
+        65Pr/DOSpR0kldRuztn1lpGQRCK1sSWLAlFQ6czIuH/3Lom2ILKGRxRyQGrqGJ/7cVg1NU+FocXZ6
+        KiB0/zdNbGTF0zMJi+P1PtT+mjkjmZ3YhLNtRkrgsYMWwokh+cixq/7/zZrGKzWg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oLoBH-004F4D-0T;
+        Wed, 10 Aug 2022 18:03:39 +0200
+Message-ID: <bfc5f964d8dadd6378f2da5b3b6ef4bc9fb847c2.camel@sipsolutions.net>
+Subject: Re: [PATCH v5 1/5] sysfs: Add attribute info for
+ /sys/devices/.../coredump_disabled
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Manish Mandlik <mmandlik@google.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        marcel@holtmann.org, luiz.dentz@gmail.com
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-bluetooth@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        Won Chung <wonchung@google.com>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: arm,versatile-sysreg: Convert to DT schema format
-Date:   Wed, 10 Aug 2022 10:03:41 -0600
-Message-Id: <20220810160341.51995-3-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220810160341.51995-1-robh@kernel.org>
-References: <20220810160341.51995-1-robh@kernel.org>
+Date:   Wed, 10 Aug 2022 18:03:37 +0200
+In-Reply-To: <20220810085753.v5.1.I5622b2a92dca4d2703a0f747e24f3ef19303e6df@changeid>
+References: <20220810085753.v5.1.I5622b2a92dca4d2703a0f747e24f3ef19303e6df@changeid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the arm,versatile-sysreg binding to DT schema format.
+On Wed, 2022-08-10 at 09:00 -0700, Manish Mandlik wrote:
+> This patch adds the specification for /sys/devices/.../coredump_disabled
+> attribute which allows the userspace to enable/disable devcoredump for a
+> particular device and drivers can use it to enable/disable functionality
+> accordingly. It is available when the CONFIG_DEV_COREDUMP is enabled and
+> driver has implemented the .coredump() callback.
+>=20
 
-The original binding was missing 'simple-mfd' and a 'panel' sub node which
-the only user (versatile-ab.dts) of this binding has.
+It would be nice to say _why_? What problem does this solve? You could
+just create the dump and discard it, instead, for example?
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../bindings/arm/arm,versatile-sysreg.yaml    | 35 +++++++++++++++++++
- .../bindings/arm/versatile-sysreg.txt         | 10 ------
- 2 files changed, 35 insertions(+), 10 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/arm,versatile-sysreg.yaml
- delete mode 100644 Documentation/devicetree/bindings/arm/versatile-sysreg.txt
-
-diff --git a/Documentation/devicetree/bindings/arm/arm,versatile-sysreg.yaml b/Documentation/devicetree/bindings/arm/arm,versatile-sysreg.yaml
-new file mode 100644
-index 000000000000..491eef1e1b10
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/arm,versatile-sysreg.yaml
-@@ -0,0 +1,35 @@
-+# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/arm,versatile-sysreg.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Arm Versatile system registers
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description:
-+  This is a system control registers block, providing multiple low level
-+  platform functions like board detection and identification, software
-+  interrupt generation, MMC and NOR Flash control, etc.
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: arm,versatile-sysreg
-+      - const: syscon
-+      - const: simple-mfd
-+
-+  reg:
-+    maxItems: 1
-+
-+  panel:
-+    type: object
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+...
-diff --git a/Documentation/devicetree/bindings/arm/versatile-sysreg.txt b/Documentation/devicetree/bindings/arm/versatile-sysreg.txt
-deleted file mode 100644
-index a4f15262d717..000000000000
---- a/Documentation/devicetree/bindings/arm/versatile-sysreg.txt
-+++ /dev/null
-@@ -1,10 +0,0 @@
--ARM Versatile system registers
----------------------------------------
--
--This is a system control registers block, providing multiple low level
--platform functions like board detection and identification, software
--interrupt generation, MMC and NOR Flash control etc.
--
--Required node properties:
--- compatible value : = "arm,versatile-sysreg", "syscon"
--- reg : physical base address and the size of the registers window
--- 
-2.34.1
-
+johannes
