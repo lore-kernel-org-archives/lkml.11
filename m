@@ -2,208 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A26FC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A088C28B2B
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233553AbiHJRTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 13:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S233565AbiHJRTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 13:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233557AbiHJRTL (ORCPT
+        with ESMTP id S233554AbiHJRTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 13:19:11 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 615B166108;
-        Wed, 10 Aug 2022 10:19:10 -0700 (PDT)
-Received: from pwmachine.numericable.fr (85-170-37-153.rev.numericable.fr [85.170.37.153])
-        by linux.microsoft.com (Postfix) with ESMTPSA id AD3B5210C8B3;
-        Wed, 10 Aug 2022 10:19:06 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AD3B5210C8B3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1660151950;
-        bh=I9tivlRZmScwBqrzns7/IP6T5HhyGbJqTY+zREu0RMY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RFll4N5NoZv1YGWF+Um4IKPdaf6s8oYssU0udmYz7UjNpEuq73LDcNdlvGxZncL1E
-         sawqjXjcZ+PHk2XH/ynJzhKeoiqgZut2x+YtoPJTTRlvvlPjWBB9FPxCcedg1soDrD
-         4949XW8tsSdTK48Mpo0WSU0zrlT0f6OeHxIHJqew=
-From:   Francis Laniel <flaniel@linux.microsoft.com>
-To:     bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Francis Laniel <flaniel@linux.microsoft.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Hengqi Chen <hengqi.chen@gmail.com>
-Subject: [PATCH] for test purpose only: Add toy to play with BPF ring buffer.
-Date:   Wed, 10 Aug 2022 19:16:55 +0200
-Message-Id: <20220810171702.74932-5-flaniel@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220810171702.74932-1-flaniel@linux.microsoft.com>
-References: <20220810171702.74932-1-flaniel@linux.microsoft.com>
+        Wed, 10 Aug 2022 13:19:08 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E6979689;
+        Wed, 10 Aug 2022 10:19:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660151948; x=1691687948;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Ef+DHYdbzGOT9VmbF4AU1qjTEw0foAtWlyqWOp7YlpI=;
+  b=Fh1IaWYrnTETd5FN1iwhwH9dfZZ9NZr+puUhW0FaNVcqNXrILzp6esu3
+   KxE15H6SrCJXj0yLsSB/kRgp0s0zlVvPtKOGi780Uul1zF/dKv2Bm8xM9
+   cw/bV59e7rQL3FrHsOfX2QVhC2kAKekdVrQpfdpDh+d+RMJ0qlqno3NHR
+   vxUhrBDA9N+aL0ie4B5HLICb8SfL7/DELSSjO0x20V+jVYkOI11SvhD0T
+   rCrfDmQrM7oRFQCQqb0on3CkXx56LDJkRbbXcvw13AWoAtcWZT7OOIYEb
+   XnV4FgyDIdxinv40i1/9skC5KZ4FDI4q8zB4bdoq22AVd/3OFHtc5EutI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="288713713"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="288713713"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 10:19:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="781304563"
+Received: from lkp-server02.sh.intel.com (HELO 5d6b42aa80b8) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 10 Aug 2022 10:18:57 -0700
+Received: from kbuild by 5d6b42aa80b8 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oLpM8-0000WU-30;
+        Wed, 10 Aug 2022 17:18:56 +0000
+Date:   Thu, 11 Aug 2022 01:18:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Will McVicker <willmcvicker@google.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     kbuild-all@lists.01.org, kernel-team@android.com,
+        Vidya Sagar <vidyas@nvidia.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] PCI: dwc: add support for 64-bit MSI target
+ address
+Message-ID: <202208110116.R0hD7l2c-lkp@intel.com>
+References: <20220809180051.1063653-3-willmcvicker@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220809180051.1063653-3-willmcvicker@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch should be applied on iovisor/bcc.
+Hi Will,
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
----
- libbpf-tools/Makefile  |  1 +
- libbpf-tools/toy.bpf.c | 32 ++++++++++++++++++++
- libbpf-tools/toy.c     | 67 ++++++++++++++++++++++++++++++++++++++++++
- libbpf-tools/toy.h     |  4 +++
- 4 files changed, 104 insertions(+)
- create mode 100644 libbpf-tools/toy.bpf.c
- create mode 100644 libbpf-tools/toy.c
- create mode 100644 libbpf-tools/toy.h
+Thank you for the patch! Yet something to improve:
 
-diff --git a/libbpf-tools/Makefile b/libbpf-tools/Makefile
-index c3bbac27..904e7712 100644
---- a/libbpf-tools/Makefile
-+++ b/libbpf-tools/Makefile
-@@ -62,6 +62,7 @@ APPS = \
- 	tcplife \
- 	tcprtt \
- 	tcpsynbl \
-+	toy \
- 	vfsstat \
- 	#
+[auto build test ERROR on helgaas-pci/next]
+[also build test ERROR on linus/master next-20220810]
+[cannot apply to v5.19]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-diff --git a/libbpf-tools/toy.bpf.c b/libbpf-tools/toy.bpf.c
-new file mode 100644
-index 00000000..b6b8f92b
---- /dev/null
-+++ b/libbpf-tools/toy.bpf.c
-@@ -0,0 +1,32 @@
-+#include <linux/types.h>
-+#include <bpf/bpf_helpers.h>
-+#include <linux/bpf.h>
-+#include "toy.h"
-+
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_RINGBUF);
-+	__uint(max_entries, 4096);
-+	__uint(map_flags, 1U << 13);
-+} buffer SEC(".maps");
-+
-+static __u32 count = 0;
-+
-+SEC("tracepoint/syscalls/sys_enter_execve")
-+int sys_enter_execve(void) {
-+	count++;
-+	struct event *event = bpf_ringbuf_reserve(&buffer, sizeof(struct event), 0);
-+	if (!event) {
-+		return 1;
-+	}
-+
-+	event->count = count;
-+	bpf_ringbuf_submit(event, 0);
-+
-+	bpf_printk("addr: %p; count: %u\n", event, count);
-+	bpf_printk("available: %lu; cons pos: %lu; prod pos: %lu\n", bpf_ringbuf_query(&buffer, 0),  bpf_ringbuf_query(&buffer, BPF_RB_CONS_POS), bpf_ringbuf_query(&buffer, BPF_RB_PROD_POS));
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-\ No newline at end of file
-diff --git a/libbpf-tools/toy.c b/libbpf-tools/toy.c
-new file mode 100644
-index 00000000..7e4f7fdf
---- /dev/null
-+++ b/libbpf-tools/toy.c
-@@ -0,0 +1,67 @@
-+#include <bpf/libbpf.h>
-+#include <stdio.h>
-+#include <unistd.h>
-+#include "toy.h"
-+#include "toy.skel.h"
-+#include "btf_helpers.h"
-+
-+
-+static int buf_process_sample(void *ctx, void *data, size_t len) {
-+	struct event *evt = (struct event *)data;
-+	printf("%d\n", evt->count);
-+
-+	return 0;
-+}
-+
-+int main(void) {
-+	LIBBPF_OPTS(bpf_object_open_opts, open_opts);
-+	int buffer_map_fd = -1;
-+	struct toy_bpf *obj;
-+	int err;
-+
-+	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
-+
-+	err = ensure_core_btf(&open_opts);
-+	if (err) {
-+		fprintf(stderr, "failed to fetch necessary BTF for CO-RE: %s\n", strerror(-err));
-+		return 1;
-+	}
-+
-+	obj = toy_bpf__open_opts(&open_opts);
-+	if (!obj) {
-+		fprintf(stderr, "failed to open BPF object\n");
-+		return 1;
-+	}
-+
-+	err = toy_bpf__load(obj);
-+	if (err) {
-+		fprintf(stderr, "failed to load BPF object: %d\n", err);
-+		return 1;
-+	}
-+
-+	struct ring_buffer *ring_buffer;
-+
-+	buffer_map_fd = bpf_object__find_map_fd_by_name(obj->obj, "buffer");
-+	ring_buffer = ring_buffer__new(buffer_map_fd, buf_process_sample, NULL, NULL);
-+
-+	if(!ring_buffer) {
-+		fprintf(stderr, "failed to create ring buffer\n");
-+		return 1;
-+	}
-+
-+	err = toy_bpf__attach(obj);
-+	if (err) {
-+		fprintf(stderr, "failed to attach BPF programs\n");
-+		return 1;
-+	}
-+
-+	puts("Press any key to begin consuming!");
-+	getchar();
-+
-+	while(1) {
-+		ring_buffer__consume(ring_buffer);
-+		sleep(1);
-+	}
-+
-+	return 0;
-+}
-diff --git a/libbpf-tools/toy.h b/libbpf-tools/toy.h
-new file mode 100644
-index 00000000..36998170
---- /dev/null
-+++ b/libbpf-tools/toy.h
-@@ -0,0 +1,4 @@
-+struct event {
-+	__u32 count;
-+	char filler[4096 / 8 - sizeof(__u32)];
-+};
-\ No newline at end of file
---
-2.25.1
+url:    https://github.com/intel-lab-lkp/linux/commits/Will-McVicker/PCI-dwc-Add-support-for-64-bit-MSI-target-addresses/20220810-020421
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
+config: sparc-buildonly-randconfig-r004-20220810 (https://download.01.org/0day-ci/archive/20220811/202208110116.R0hD7l2c-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7a41faa4e02a0a8945f79e7af86d10e371b2fc12
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Will-McVicker/PCI-dwc-Add-support-for-64-bit-MSI-target-addresses/20220810-020421
+        git checkout 7a41faa4e02a0a8945f79e7af86d10e371b2fc12
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/pci/controller/dwc/pcie-designware.c:85:5: error: redefinition of 'dw_pcie_msi_capabilities'
+      85 | u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from drivers/pci/controller/dwc/pcie-designware.c:20:
+   drivers/pci/controller/dwc/pcie-designware.h:467:19: note: previous definition of 'dw_pcie_msi_capabilities' with type 'u16(struct dw_pcie *)' {aka 'short unsigned int(struct dw_pcie *)'}
+     467 | static inline u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
+         |                   ^~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/dw_pcie_msi_capabilities +85 drivers/pci/controller/dwc/pcie-designware.c
+
+    84	
+  > 85	u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
+    86	{
+    87		u8 offset;
+    88	
+    89		offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
+    90		return dw_pcie_readw_dbi(pci, offset + PCI_MSI_FLAGS);
+    91	}
+    92	EXPORT_SYMBOL_GPL(dw_pcie_msi_capabilities);
+    93	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
