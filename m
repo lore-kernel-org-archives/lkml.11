@@ -2,145 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E23C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A85C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232943AbiHJTPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 15:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
+        id S232973AbiHJTQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 15:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231360AbiHJTP2 (ORCPT
+        with ESMTP id S232796AbiHJTQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 15:15:28 -0400
+        Wed, 10 Aug 2022 15:16:16 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DE522409A
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:15:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2AD14286FA
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:16:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660158926;
+        s=mimecast20190719; t=1660158975;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+U+fB0noEhNX/XcyVg7aDRgXu5FXK+yrGNnVmRva2E0=;
-        b=EvmNAyTNvJqAkVoeikl72oDkxHKNWiQJ3n9v03VLWkTmjx8Usd/a3Nq6jrLRU1Lb1aoYss
-        PbTtL0rva2NZwSAiDn9IUAqREVJahxG4PYAPAlDAzrYHqf2ic4GcNo1n6ZSFKP2jAEllow
-        9K6rrkNYzv32Elmjewm9Q64BiN/udrU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Yuk7N/xiq0HIW33fh8ipQmpkKHx9Ov4tG2OqBXiygDw=;
+        b=G7p2L5HkJUK9+iaQXO7a4Rjzu9BWXdZhhA+MxG2801TnW8LV/RYVf8iD/iPZfr5uuQXEoF
+        YZgltLIq4J27q9XYsTXpfPUD9F3w45gePYlvXqwBtDVzHySWmx0Ap7FQ6PJklYlSLVpdYE
+        3pyhHgiQSteSQ9b4grWg2EnYlezI2WU=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-204-9zlhryASPQOmcMoKimaAkA-1; Wed, 10 Aug 2022 15:15:23 -0400
-X-MC-Unique: 9zlhryASPQOmcMoKimaAkA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E230D2999B52;
-        Wed, 10 Aug 2022 19:15:22 +0000 (UTC)
-Received: from x2.localnet (unknown [10.22.33.101])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 09A6340474E3;
-        Wed, 10 Aug 2022 19:15:21 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Richard Guy Briggs <rgb@redhat.com>, Jan Kara <jack@suse.cz>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: Re: [PATCH v4 4/4] fanotify,audit: deliver fan_info as a hex-encoded string
-Date:   Wed, 10 Aug 2022 15:15:21 -0400
-Message-ID: <5623945.DvuYhMxLoT@x2>
-Organization: Red Hat
-In-Reply-To: <2d8159cec4392029dabfc39b55ac5fbd0faa9fbd.1659996830.git.rgb@redhat.com>
-References: <cover.1659996830.git.rgb@redhat.com> <2d8159cec4392029dabfc39b55ac5fbd0faa9fbd.1659996830.git.rgb@redhat.com>
+ us-mta-660-rOYcSoUgN_OwsqE88w8g9w-1; Wed, 10 Aug 2022 15:16:14 -0400
+X-MC-Unique: rOYcSoUgN_OwsqE88w8g9w-1
+Received: by mail-ed1-f72.google.com with SMTP id i5-20020a05640242c500b0043e50334109so9782936edc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:16:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Yuk7N/xiq0HIW33fh8ipQmpkKHx9Ov4tG2OqBXiygDw=;
+        b=py7ce0TmQjK2p5CUvzume/hnEqk9jc2jPRCJhvKV4WGqVUZIIoOUqzXXFSNyKSwV3O
+         k2cVYiuzQCt8xLRfYIglWptuyLQpew+bk96qfcP4BWFTHeztRG+GmQiaJy39twGEG4qx
+         qfHoxikDABejeWM5Wc3FXL/oblv18eUdkAGF3ILet6igLuf39hRQXBZk1NtWAn7X917V
+         RiD9KS/d/UpCLBjfRkvbjSXZyZYb1IQV/8P8DAoAAH5pAucNjgSS1fFZAqYnziNBzIYA
+         WCp2hoM3x7SAZAn7MgF1CDgux3xkI8jl7OkrBgnCDU7h3RZyKMMQaVq+9aI7RN56Xj7x
+         EJTQ==
+X-Gm-Message-State: ACgBeo0ubTuDGDWgg+l9btullvtuQDFYKIdcTd72jp9qfXIeuViEqdcB
+        smAAtrSCxDKMmao50MHAWdYZTtJ+F1Nj8IzULK/bno6FG9DjXt9MAb56vH4LyHi1U8JrDcnGGJg
+        xI1jK/MjL1F9fMBa/3Isf7Lcj
+X-Received: by 2002:a17:907:2d12:b0:731:6a4e:ceb0 with SMTP id gs18-20020a1709072d1200b007316a4eceb0mr10079037ejc.115.1660158972001;
+        Wed, 10 Aug 2022 12:16:12 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6+FYQetpU3q/Q5uOyO8nSkvyFk5TvPqTUmApwtAkGzu9ywUxx5N/JvC3UE+anDgXpNN9zzBg==
+X-Received: by 2002:a17:907:2d12:b0:731:6a4e:ceb0 with SMTP id gs18-20020a1709072d1200b007316a4eceb0mr10079033ejc.115.1660158971826;
+        Wed, 10 Aug 2022 12:16:11 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id n6-20020aa7c786000000b0043a554818afsm8082123eds.42.2022.08.10.12.16.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 12:16:10 -0700 (PDT)
+Message-ID: <eb0a073d-f045-a5d7-2d3d-54abe1ae478c@redhat.com>
+Date:   Wed, 10 Aug 2022 21:16:10 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH 2/3] KVM: x86: Generate set of VMX feature MSRs using
+ first/last definitions
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Like Xu <like.xu.linux@gmail.com>
+References: <20220805172945.35412-1-seanjc@google.com>
+ <20220805172945.35412-3-seanjc@google.com>
+ <29150d3f-36fb-516d-55d0-a9aebe23cdcf@redhat.com>
+ <YvPDYVPgrLCRlYuH@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YvPDYVPgrLCRlYuH@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hell Richard,
-
-On Tuesday, August 9, 2022 1:22:55 PM EDT Richard Guy Briggs wrote:
-> Currently the only type of fanotify info that is defined is an audit
-> rule number, but convert it to hex encoding to future-proof the field.
+On 8/10/22 16:40, Sean Christopherson wrote:
+>> I'd rather move all the code to a new function kvm_init_feature_msr_list()
+>> instead, and call it from kvm_arch_hardware_setup().
 > 
-> Sample record:
->   type=FANOTIFY msg=audit(1659730979.839:284): resp=1 fan_type=0
-> fan_info=3F
+> Would it make sense to also split out kvm_init_emulated_msr_list()?  Hmm, and
+> rename this to kvm_init_virtualized_msr_list()?  I can't tell if that would be
+> helpful or confusing.
 
-I compiled a new kernel and run old user space on this. The above event is 
-exactly what I see in my audit logs. Why the fan_info=3F? I really would have 
-expected 0. What if the actual rule number was 63? I think this will work 
-better to leave everything 0 with old user space.
+I thought of feature MSRs because it's a different ioctl altogether, but 
+this is not an objection; whatever seems less confusing to you.
 
--Steve
- 
-> Suggested-by: Paul Moore <paul@paul-moore.com>
-> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> ---
->  kernel/auditsc.c | 28 +++++++++++++++++++++-------
->  1 file changed, 21 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-> index f000fec52360..0f747015c577 100644
-> --- a/kernel/auditsc.c
-> +++ b/kernel/auditsc.c
-> @@ -2908,22 +2908,36 @@ void __audit_fanotify(u32 response, size_t len,
-> char *buf)
-> 
->  	if (!(len && buf)) {
->  		audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
-> -			  "resp=%u fan_type=0 fan_info=?", response);
-> +			  "resp=%u fan_type=0 fan_info=3F", response); /* "?" 
-*/
->  		return;
->  	}
->  	while (c >= sizeof(struct fanotify_response_info_header)) {
-> +		struct audit_context *ctx = audit_context();
-> +		struct audit_buffer *ab;
-> +
->  		friar = (struct fanotify_response_info_audit_rule *)buf;
->  		switch (friar->hdr.type) {
->  		case FAN_RESPONSE_INFO_AUDIT_RULE:
->  			if (friar->hdr.len < sizeof(*friar)) {
-> -				audit_log(audit_context(), GFP_KERNEL, 
-AUDIT_FANOTIFY,
-> -					  "resp=%u fan_type=%u 
-fan_info=(incomplete)",
-> -					  response, friar->hdr.type);
-> +				ab = audit_log_start(ctx, GFP_KERNEL, 
-AUDIT_FANOTIFY);
-> +				if (ab) {
-> +					audit_log_format(ab, "resp=%u fan_type=%u 
-fan_info=",
-> +							 response, friar-
->hdr.type);
-> +#define INCOMPLETE "(incomplete)"
-> +					audit_log_n_hex(ab, INCOMPLETE, 
-sizeof(INCOMPLETE));
-> +					audit_log_end(ab);
-> +				}
->  				return;
->  			}
-> -			audit_log(audit_context(), GFP_KERNEL, AUDIT_FANOTIFY,
-> -				  "resp=%u fan_type=%u fan_info=%u",
-> -				  response, friar->hdr.type, friar->audit_rule);
-> +			ab = audit_log_start(ctx, GFP_KERNEL, AUDIT_FANOTIFY);
-> +			if (ab) {
-> +				audit_log_format(ab, "resp=%u fan_type=%u 
-fan_info=",
-> +						 response, friar->hdr.type);
-> +				audit_log_n_hex(ab, (char *)&friar->audit_rule,
-> +						sizeof(friar->audit_rule));
-> +				audit_log_end(ab);
-> +
-> +			}
->  		}
->  		c -= friar->hdr.len;
->  		ib += friar->hdr.len;
-
-
-
+Paolo
 
