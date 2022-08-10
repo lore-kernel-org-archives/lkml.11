@@ -2,156 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AC5C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD41C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231787AbiHJIrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
+        id S231789AbiHJIuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiHJIrp (ORCPT
+        with ESMTP id S231441AbiHJIuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:47:45 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55E66C743
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:47:43 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id z18-20020a63d012000000b0041b3478e9a9so5537836pgf.17
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:47:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
-        bh=IkO2qbmRcFc6UxfvSrEn8JNuo3OleMYGP7m+9m5YUGE=;
-        b=GRzr0X8Bvqmio2LDXmGRaknTkzJlz6XYPdUWa3HK+1BbpqjUTnoRv59n9Z8kmIe9eE
-         k4B7qwLn6g9b335FI1FmJ+y5nY4jWh0smsFLZmnN85oQd6c0NHziYC2zSVFvisEPcwo9
-         hJcKKfKbZk3azdWtI/Hc0FD/u9yIpTUj+6D+8g5WRalUtXpjHa2VYFY1MPlk/a0cX9Pd
-         /vB1Q/24aJIeFqn2hDcPipxpph02wVS892JseyWiRtsZO5s/TonCf7vXFjTgKKzyL/VR
-         +QqmiB/lJIziPqkT8mV9YpGNDQs4hNggQ10nYi0NdPevOA405NCFybuUCGZhDnH2DiNi
-         O7Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc;
-        bh=IkO2qbmRcFc6UxfvSrEn8JNuo3OleMYGP7m+9m5YUGE=;
-        b=hI+SdSc8n2/CWJVmQyMSDFRnYxi+2mXfWXqASYNQhlz1pBWFYHv5Bv0q1mm6Ltl7/V
-         CKyy8So6yorbNPIyoZm7ijB8g7dtEP1b99ZLdI+1OQ5nNcH1WvBK7nHMH4t1SOpNfi83
-         0ZRyi+CHxVVrhnI34o+woWoZzcsr8qlkOmyezFk6ku1UOEeyuBKa964/SX6Kfs7FJvqd
-         8o77xFskxv26GbspTFbydkUnlDITij+yGRF+OVulR5p5dKmA9o5MaEuCB90MHlYR/6QK
-         VDgREax2xUDdLQHQrDoVwFHmDwpaku2lvvXt6vZLwaWxvdZIOgZDR9BoTLcvk+bMCJ63
-         NezQ==
-X-Gm-Message-State: ACgBeo2dct8mSKXk4JcoGkXml31fkTevj8OCp8iaX5IDi4swLg4YDlWT
-        T/uiUJiKiz10mx+Za36K5FzV0M2udH54
-X-Google-Smtp-Source: AA6agR5HfTknbxKKBNTihyGsEeT4IzJR7ci36ymQ75F6+56l8RT3V41NgytngbB2802N/PnwLcTHdOtXFTJP
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:17:babf:73ba:88f:89e])
- (user=apusaka job=sendgmr) by 2002:a62:38d8:0:b0:52d:1496:6775 with SMTP id
- f207-20020a6238d8000000b0052d14966775mr26377140pfa.15.1660121263438; Wed, 10
- Aug 2022 01:47:43 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 16:47:36 +0800
-Message-Id: <20220810164627.1.Id730b98f188a504d9835b96ddcbc83d49a70bb36@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH] Bluetooth: Honor name resolve evt regardless of discov state
-From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Ying Hsu <yinghsu@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 10 Aug 2022 04:50:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2CC6CD33;
+        Wed, 10 Aug 2022 01:50:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A930A60F2A;
+        Wed, 10 Aug 2022 08:50:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8509FC433D6;
+        Wed, 10 Aug 2022 08:49:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660121400;
+        bh=kxqLGEuO/b/nofV0WGOHjVv9TvRvs28sordeYCxzinA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kR4V+yVrH8230+GXuqgWdLtUx+jJLnAPabOYHNGL9PCcA5MEskCIzaSeTreI6TcAm
+         MrnSCmGHWN5wdX9BH+/GwWdfwHCh2vIXRDPOhnoeY3bQWKKKSTYmD6M1H5sDXBZFG+
+         XKRzYlRxcPgnPF4biG5WRauki32odvi9Yt/b3FAo=
+Date:   Wed, 10 Aug 2022 07:03:37 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daniil Lunev <dlunev@chromium.org>
+Cc:     Bart Van Assche <bvanassche@acm.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: Re: [PATCH v6] ufs: core: print UFSHCD capabilities in controller's
+ sysfs node
+Message-ID: <YvM8KQGAbFz9HlV8@kroah.com>
+References: <20220803074955.v6.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
+ <YuoRuP2pxgSQ6c9E@kroah.com>
+ <CAONX=-f8kHWCEEyqUdpn5wsyMZKa4eJSSCLvPDn3R5mQF9FSMA@mail.gmail.com>
+ <CAONX=-eL02see4m6wK74cX2D6rUXJXtZYSRiNhPQVDsS8kU27g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAONX=-eL02see4m6wK74cX2D6rUXJXtZYSRiNhPQVDsS8kU27g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
 
-Currently, we don't update the name resolving cache when receiving
-a name resolve event if the discovery phase is not in the resolving
-stage.
+A: http://en.wikipedia.org/wiki/Top_post
+Q: Were do I find info about this thing called top-posting?
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
-However, if the user connect to a device while we are still resolving
-remote name for another device, discovery will be stopped, and because
-we are no longer in the discovery resolving phase, the corresponding
-remote name event will be ignored, and thus the device being resolved
-will stuck in NAME_PENDING state.
-
-If discovery is then restarted and then stopped, this will cause us to
-try cancelling the name resolve of the same device again, which is
-incorrect and might upset the controller.
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Ying Hsu <yinghsu@chromium.org>
-
----
-The following steps are performed:
-    (1) Prepare 2 classic peer devices that needs RNR. Put device A
-        closer to DUT and device B (much) farther from DUT.
-    (2) Remove all cache and previous connection from DUT
-    (3) Put both peers into pairing mode, then start scanning on DUT
-    (4) After ~8 sec, turn off peer B.
-    *This is done so DUT can discover peer B (discovery time is 10s),
-    but it hasn't started RNR. Peer is turned off to buy us the max
-    time in the RNR phase (5s).
-    (5) Immediately as device A is shown on UI, click to connect.
-    *We thus know that the DUT is in the RNR phase and trying to
-    resolve the name of peer B when we initiate connection to peer A.
-    (6) Forget peer A.
-    (7) Restart scan and stop scan.
-    *Before the CL, stop scan is broken because we will try to cancel
-    a nonexistent RNR
-    (8) Restart scan again. Observe DUT can scan normally.
+A: No.
+Q: Should I include quotations after my reply?
 
 
- net/bluetooth/hci_event.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+http://daringfireball.net/2007/07/on_top
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 395c6479456f..95e145e278c9 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2453,6 +2453,16 @@ static void hci_check_pending_name(struct hci_dev *hdev, struct hci_conn *conn,
- 	    !test_and_set_bit(HCI_CONN_MGMT_CONNECTED, &conn->flags))
- 		mgmt_device_connected(hdev, conn, name, name_len);
- 
-+	e = hci_inquiry_cache_lookup_resolve(hdev, bdaddr, NAME_PENDING);
-+
-+	if (e) {
-+		list_del(&e->list);
-+
-+		e->name_state = name ? NAME_KNOWN : NAME_NOT_KNOWN;
-+		mgmt_remote_name(hdev, bdaddr, ACL_LINK, 0x00, e->data.rssi,
-+				 name, name_len);
-+	}
-+
- 	if (discov->state == DISCOVERY_STOPPED)
- 		return;
- 
-@@ -2462,7 +2472,6 @@ static void hci_check_pending_name(struct hci_dev *hdev, struct hci_conn *conn,
- 	if (discov->state != DISCOVERY_RESOLVING)
- 		return;
- 
--	e = hci_inquiry_cache_lookup_resolve(hdev, bdaddr, NAME_PENDING);
- 	/* If the device was not found in a list of found devices names of which
- 	 * are pending. there is no need to continue resolving a next name as it
- 	 * will be done upon receiving another Remote Name Request Complete
-@@ -2470,12 +2479,6 @@ static void hci_check_pending_name(struct hci_dev *hdev, struct hci_conn *conn,
- 	if (!e)
- 		return;
- 
--	list_del(&e->list);
--
--	e->name_state = name ? NAME_KNOWN : NAME_NOT_KNOWN;
--	mgmt_remote_name(hdev, bdaddr, ACL_LINK, 0x00, e->data.rssi,
--			 name, name_len);
--
- 	if (hci_resolve_next_name(hdev))
- 		return;
- 
--- 
-2.37.1.595.g718a3a8f04-goog
+On Wed, Aug 10, 2022 at 07:16:34AM +1000, Daniil Lunev wrote:
+> Hello,
+> 
+> Are there any more amendments you would want me to make or is it good to go?
 
+I have no context here at all, sorry, nor do I have any idea what you
+are expecting from us :(
+
+Also, it's the middle of the merge window, we can't do anything right
+now.  Resend your patch series after -rc1 is out and we can review it
+then.
+
+thanks,
+
+greg k-h
