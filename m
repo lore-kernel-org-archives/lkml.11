@@ -2,96 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34AEBC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B098C25B0D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232789AbiHJNeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42612 "EHLO
+        id S232281AbiHJNfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232864AbiHJNdw (ORCPT
+        with ESMTP id S232495AbiHJNff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:33:52 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10C15C37D
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:33:49 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1660138426tqj5j1xu
-Received: from localhost.localdomain ( [182.148.14.53])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 10 Aug 2022 21:33:45 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: +ynUkgUhZJmuCGP1dVsvZHXlmfLiTwguN9yV5v8DbcWO9ohSM1HVPABikZtJ9
-        T2ULm2o36HD7DPNHi8AC2NhvpHzampE6jvX4R2yCnt5NDC5eAZ1VpbHOIdjGk/VtPTz6E9l
-        cF5Prv3oSjaLEuh1O5H8YQrYM2JsUtIwIKg2GVWZoom+JPy30MkghpoUY2pMyrou2+cKLFf
-        OFvQVg/CTc59eBf3j3IhB/bVyC4phWdU33Pyq02B3FwbrcPYXCCqXFSVy95vFpnCDm78U5p
-        iG/nE44g1VI9AKLNDAM2gPXV1gOgAAkrOyNR4Fe6rG19R8yRPBDCZL6G0f+nAvgLb808U9X
-        q3e/plo1DLVITFQHj4lGBQKWE6TA88+xEHREaYkTjlF/PvW+EsyZWSa+9Gh2LYQ8Ddz2Zwu
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     miquel.raynal@bootlin.com, vigneshr@ti.com
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] mtd/ubi: fix repeated words in comments
-Date:   Wed, 10 Aug 2022 21:33:37 +0800
-Message-Id: <20220810133337.2172-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 10 Aug 2022 09:35:35 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053A0422F4
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:35:33 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id l22so17788378wrz.7
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:35:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
+         :references:from:to:cc;
+        bh=J1VWGzexY5E6UsX9vQ6bQ6ebcpD459VexpuSjd0X1xk=;
+        b=vheOj5OqXAuJQuxThF4rG1C5oUbDBkg0eqaP81N1/zP/d2jZa9v1ALY9/A2MUhuEw9
+         smJunFTKU1AjT2aJIV80QHIj44qIjzbF8BiwJdd9175ExWaVpB2pQMQgB8P3sVxRoyyx
+         F2QHG8UKw3o9mEzmLhxDu40YuNFpnUMlTgd0wTwAuKQS5VftwnWN2itTX5Hlyztm1Da2
+         QDtIIhHm6SWFzmnEw+ab+XdPgrEo8qti39g1Uqje0M0IihYpePyJCqAgHrVQYLqT4iAa
+         iAQvZ6Mnj4DjnEcBRkd5Qjs2LZ9DlwccP2qwZLY04iUhgjojRWRH+4UYOf8Qm2Z1eUuG
+         g6hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
+         :references:x-gm-message-state:from:to:cc;
+        bh=J1VWGzexY5E6UsX9vQ6bQ6ebcpD459VexpuSjd0X1xk=;
+        b=tuDQpZBPkOzsLT8QC7j5xz9EV6GnjqZEnUcUGIbmrPWGuOY7PyjypieFOL0LaZjZ2H
+         VSlldEUpS9ZwTSP/tJQ4kNYZ9MMSxrRiYJecBUMwHpQuowboGZvkjJrpHQiFzbonE+oy
+         C4olM29l560lwnvBXriSnCbWjAwTLQtXYj17tWtv11V8IBLwqLkVmeFpnlJPBxkmKqbc
+         4ZkOX2owwgCLcdSuPy0uLNEZmEp0AZHUsIWSTVFZ4VaPgOJHw0PQzvU0eRhUAgJPm0j8
+         q2ED5pPiKJI6DZ69omQf65K9cAMFXFFeOllg3tQGr2VRbRRau0lK8DEEi861tuGUORzB
+         irbg==
+X-Gm-Message-State: ACgBeo30mpWuNhiPo9FLaPCkYD6Vd6TcOSJwffTtcdGztUqWTxm/Diif
+        /65nC+zB6wZvJcxF65Qr9FxKug==
+X-Google-Smtp-Source: AA6agR7NHyGKRqIxWGpE5gY+PnqJiMudQi/uUaPx51qSYupKoqvqy+xNZdCloeF+K4jcJJQZh2S9sA==
+X-Received: by 2002:a5d:5a1a:0:b0:21f:a9b:62c6 with SMTP id bq26-20020a5d5a1a000000b0021f0a9b62c6mr16898673wrb.20.1660138531570;
+        Wed, 10 Aug 2022 06:35:31 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id bd26-20020a05600c1f1a00b003a2ed2a40e4sm89768wmb.17.2022.08.10.06.35.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 06:35:30 -0700 (PDT)
+References: <20220805085716.5635-1-yu.tu@amlogic.com>
+ <20220805085716.5635-3-yu.tu@amlogic.com>
+ <19654574-bdc0-9fa5-6465-fc88b20e20c5@linaro.org>
+ <c223a85a-b76e-0e82-9a8c-6b60588dc03a@amlogic.com>
+User-agent: mu4e 1.8.7; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH V3 2/6] arm64: dts: meson: add S4 Soc PLL clock
+ controller in DT
+Date:   Wed, 10 Aug 2022 15:32:08 +0200
+In-reply-to: <c223a85a-b76e-0e82-9a8c-6b60588dc03a@amlogic.com>
+Message-ID: <1jmtccz0f4.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'the'.
- Delete the redundant word 'and'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/mtd/ubi/cdev.c | 2 +-
- drivers/mtd/ubi/eba.c  | 2 +-
- drivers/mtd/ubi/io.c   | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+On Fri 05 Aug 2022 at 17:39, Yu Tu <yu.tu@amlogic.com> wrote:
 
-diff --git a/drivers/mtd/ubi/cdev.c b/drivers/mtd/ubi/cdev.c
-index cc9a28cf9d82..1d3bbcfb4bb5 100644
---- a/drivers/mtd/ubi/cdev.c
-+++ b/drivers/mtd/ubi/cdev.c
-@@ -672,7 +672,7 @@ static int verify_rsvol_req(const struct ubi_device *ubi,
-  * @req: volumes re-name request
-  *
-  * This is a helper function for the volume re-name IOCTL which validates the
-- * the request, opens the volume and calls corresponding volumes management
-+ * request, opens the volume and calls corresponding volumes management
-  * function. Returns zero in case of success and a negative error code in case
-  * of failure.
-  */
-diff --git a/drivers/mtd/ubi/eba.c b/drivers/mtd/ubi/eba.c
-index ccc5979642b7..09c408c45a62 100644
---- a/drivers/mtd/ubi/eba.c
-+++ b/drivers/mtd/ubi/eba.c
-@@ -377,7 +377,7 @@ static int leb_write_lock(struct ubi_device *ubi, int vol_id, int lnum)
-  *
-  * This function locks a logical eraseblock for writing if there is no
-  * contention and does nothing if there is contention. Returns %0 in case of
-- * success, %1 in case of contention, and and a negative error code in case of
-+ * success, %1 in case of contention, and a negative error code in case of
-  * failure.
-  */
- static int leb_write_trylock(struct ubi_device *ubi, int vol_id, int lnum)
-diff --git a/drivers/mtd/ubi/io.c b/drivers/mtd/ubi/io.c
-index 8a7306cc1947..01b644861253 100644
---- a/drivers/mtd/ubi/io.c
-+++ b/drivers/mtd/ubi/io.c
-@@ -1147,7 +1147,7 @@ static int self_check_ec_hdr(const struct ubi_device *ubi, int pnum,
-  * @ubi: UBI device description object
-  * @pnum: the physical eraseblock number to check
-  *
-- * This function returns zero if the erase counter header is all right and and
-+ * This function returns zero if the erase counter header is all right and
-  * a negative error code if not or if an error occurred.
-  */
- static int self_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum)
--- 
-2.36.1
+> Hi Krzysztof,
+>     Thank you for your reply.
+>
+> On 2022/8/5 17:16, Krzysztof Kozlowski wrote:
+>> [ EXTERNAL EMAIL ]
+>> On 05/08/2022 10:57, Yu Tu wrote:
+>>> Added information about the S4 SOC PLL Clock controller in DT.
+>>>
+>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>>> ---
+>>>   arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 8 ++++++++
+>>>   1 file changed, 8 insertions(+)
+>>>
+>>> diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+>>> index ff213618a598..a816b1f7694b 100644
+>>> --- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+>>> +++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+>>> @@ -92,6 +92,14 @@ apb4: apb4@fe000000 {
+>>>   			#size-cells = <2>;
+>>>   			ranges = <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
+>>>   +			clkc_pll: pll-clock-controller@8000 {
+>> Node names should be generic - clock-controller.
+>> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
+>> 
+> I will change to clkc_pll: clock-controller@8000, in next version.
+
+Same comment applies to the binding doc.
+
+Also it would be nice to split this in two series.
+Bindings and drivers in one, arm64 dt in the other. These changes goes
+in through different trees.
+
+>> Best regards,
+>> Krzysztof
+>> .
 
