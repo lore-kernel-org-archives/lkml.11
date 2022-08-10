@@ -2,114 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA95FC25B06
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDB6C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231510AbiHJHwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 03:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        id S231529AbiHJHwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 03:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbiHJHwH (ORCPT
+        with ESMTP id S231512AbiHJHwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 03:52:07 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A0D73935;
-        Wed, 10 Aug 2022 00:52:07 -0700 (PDT)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27A7no6r025439;
-        Wed, 10 Aug 2022 07:51:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=mXiw2l7Tdc0UgcxNFM2/Pn4qIDfrMrHGobWSFy/DNDM=;
- b=Npvgpd3v8VC/36g0drWt6DH2vOAEVnnHEpDgWhwvpkCBfTvIe3R5TKtc6pvBE4QgCISn
- Qec3TvDaTYTuvSSfvkCDJ6w87yoXAMUKEUDBnaMoqTh67OhE3wO23/bCmD+bb/LnaUQK
- OmaOGaTRF2tWd9eGAq7kOS6on7YRWpBeqN9fAbsuKRxoTAKS3zOV0YZnukvnFJJDFQc9
- dENY3GPsrZdAfp/Q4YqgEgvCpYFs4lzvX8ROYcMDVsQpucEQgS7uvOFNlcKamOHF3/2q
- QzOlVaoDfkqgRQoXNyDDMffAI+KwRTkU2ZBnAdZYd1Ywibaadf80Se9y/bAUk5gHYZMj gA== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3huwqgsm0r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 07:51:25 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27A7kPkO007268
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 07:46:25 GMT
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 10 Aug 2022 00:46:24 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 10 Aug 2022 00:46:19 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v3 0/8] Update ADSP pil loader for SC7280 platform
-Date:   Wed, 10 Aug 2022 13:15:50 +0530
-Message-ID: <1660117558-21829-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 10 Aug 2022 03:52:10 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8912F74341
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 00:52:09 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id y13so26158233ejp.13
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 00:52:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=XVSnkMwhvdCAXSk0pnxudE8JlTnO8bAUtjVsNUeiSVM=;
+        b=lqD2J2w7ql2U9DSaPmtI+q9+2IieXSsyZaE8hMpCS5L4qtH8XNJTKmFFz3vNrEg2F2
+         iT1mye2RdOc/OnBXu7c4j31KTg/uZ1cMZIJq0eIpznKw0/mO1R0GqZX3BISoMxZganGm
+         R10hJdwagRVs+GoryDoLebVTwSJbRnFECucYX4wFM7nFjT35y+4aUktEkW/UqfCJJsYO
+         Ii/diHJ35elEpai0Z9godoYitWjZpEP4wCSbto026aXcbvfEhEETOdlCEHgv1ElOpmRu
+         3siFlfsh+H3je262C3Kmcz2ktGK2FaR2qgLfMy7wP8649coZ5pPqjwoNTxGdxWaXq0HF
+         /e0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=XVSnkMwhvdCAXSk0pnxudE8JlTnO8bAUtjVsNUeiSVM=;
+        b=l+mOGuwTYXdMBmAEmfBLSXLrenydTcl2y49p5j2qKuARLPo0bMCkvYN2YMaL7knIZw
+         26KzoRdvtROM2dXsa6+i0XUM8MngV+tsGhmzT+bc1gcSVdF0mJWwM35ywYkp2SzIoOeO
+         zJ5ndmISgIEl7wgxAA7G33zaTQBCssKBB+/eDVTvtU0t1MKhqqmFxuyYs/dhQsXYD4WB
+         8amWf4dKVXTByqGm3mkiwvcgYWkVXB5eDBmRMDkFefagaDFval3d5GarYcthFJvCA5cf
+         zDGu8C+Xtz3AH+SB2u3YI5eCRpzf1aPPr0Bs67FriH6c91alZJ1HPe7RdlcYYl5ZuiO0
+         UfFg==
+X-Gm-Message-State: ACgBeo0ILKiVDpC84GOIX+wcR4aGSSBs+bblPAxp8qYAJIRvut+VcAiy
+        u7ZL5dm50zpKMxrZkpBONhWHPnLyIjFVS7wgwJR9RKMRFcFkhA==
+X-Google-Smtp-Source: AA6agR5lF83OUgtGOqZ4wYoHWdo8ZvYE0AxJjNzeXk/fXVsk0StAuquZINiLHEedp6/mxH1jhW4/3Kr//SzVhN1E5ho=
+X-Received: by 2002:a17:907:86ac:b0:731:5180:8aa0 with SMTP id
+ qa44-20020a17090786ac00b0073151808aa0mr10285234ejc.366.1660117927843; Wed, 10
+ Aug 2022 00:52:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: cu1wbHRlW-oTzEWb5Iv5bsKyp5xIBWyY
-X-Proofpoint-ORIG-GUID: cu1wbHRlW-oTzEWb5Iv5bsKyp5xIBWyY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-10_03,2022-08-09_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0 bulkscore=0
- mlxlogscore=980 mlxscore=0 phishscore=0 impostorscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208100022
+References: <20220809175513.345597655@linuxfoundation.org>
+In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 10 Aug 2022 13:21:56 +0530
+Message-ID: <CA+G9fYsE4qzpAjayZdLQe5Jnh90zfXQpgQof1dKu9QGbTpU_ZQ@mail.gmail.com>
+Subject: Re: [PATCH 5.19 00/21] 5.19.1-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update ADSP pil loader driver for SC7280 platforms.
+On Tue, 9 Aug 2022 at 23:38, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.19.1 release.
+> There are 21 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.1-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Changes since V2:
-	-- Generated patch with -M flag.
-	-- Add Clock property in dt bindings.
-	-- Add qcom,adsp-memory-regions property.
-	-- Add is_adsp_sb_needed flag instead of is_wpss.
-	-- Initialize is_adsp_sb_needed flag.
-	-- Remove empty proxy pds array.
-	-- Replace platform_bus_type with adsp->dev->bus.
-	-- Use API of_parse_phandle_with_args() instead of 
-	    of_parse_phandle_with_fixed_args().
-	-- Replace adsp->is_wpss with adsp->is_adsp.
-	-- Update error handling in adsp_start().
-Changes since V1:
-	-- Change reg property maxItems to minItems and update description.
-	-- Fix typo errors.
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Srinivasa Rao Mandadapu (8):
-  dt-bindings: remoteproc: qcom: adsp: Make ADSP pil loader as generic
-  dt-bindings: remoteproc: qcom: adsp: Add required bindings for SC7280
-  remoteproc: qcom: Add flag in adsp private data structure
-  remoteproc: qcom: Add compatible name for SC7280 ADSP
-  remoteproc: qcom: Replace hard coded values with macros
-  remoteproc: qcom: Add efuse evb selection control
-  remoteproc: qcom: Add support for memory sandbox
-  remoteproc: qcom: Update QDSP6 out-of-reset timeout value
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
- ...m845-adsp-pil.yaml => qcom,lpass-adsp-pil.yaml} |  19 ++-
- drivers/remoteproc/qcom_q6v5_adsp.c                | 150 ++++++++++++++++++++-
- 2 files changed, 158 insertions(+), 11 deletions(-)
- rename Documentation/devicetree/bindings/remoteproc/{qcom,sdm845-adsp-pil.yaml => qcom,lpass-adsp-pil.yaml} (90%)
+## Build
+* kernel: 5.19.1-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.19.y
+* git commit: 8054ca35012635b5d3f63311bd312e7149d80b38
+* git describe: v5.19-22-g8054ca350126
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.19.y/build/v5.19-22-g8054ca350126/
+
+## No test regressions (compared to v5.19.0)
+
+## No metric regressions (compared to v5.19.0)
+
+## No test fixes (compared to v5.19.0)
+
+## No metric fixes (compared to v5.19.0)
+
+## Test result summary
+total: 134782, pass: 120620, fail: 1758, skip: 12404, xfail: 0
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 301 total, 301 passed, 0 failed
+* arm64: 62 total, 60 passed, 2 failed
+* i386: 52 total, 50 passed, 2 failed
+* mips: 45 total, 45 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 18 total, 18 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 55 total, 53 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
 
 -- 
-2.7.4
-
+Linaro LKFT
+https://lkft.linaro.org
