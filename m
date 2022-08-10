@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2C9C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60022C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbiHJQRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
+        id S229816AbiHJQTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233385AbiHJQRP (ORCPT
+        with ESMTP id S230359AbiHJQS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:17:15 -0400
-Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE30967163
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:17:14 -0700 (PDT)
-Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
-        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id D97111FA5;
-        Wed, 10 Aug 2022 16:15:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1660148140;
-        bh=TS+7ykxS+/RbIUIrMkBZtw+JsrC7IJjJ/ehW21gIdRc=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=Sni8K2LkW8vrm0wv1vYyOcqiGezy0wbf8/S+RUDwWLMacS8KaZWVYYPzdixnrgOlA
-         4t+etfNF7yD93OTw9nvuGnWKrirZ6H4zXaKfWEm5aDEvs0yFwSIacyP2cyY9BfVpnO
-         KL2hweUpBdBDtiv6EBkfeUiPNkVp7djmfQbXPk/s=
-Received: from [172.30.8.65] (172.30.8.65) by
- vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 10 Aug 2022 19:17:12 +0300
-Message-ID: <8a3b479b-dedc-2a73-32fa-5c0440048b7d@paragon-software.com>
-Date:   Wed, 10 Aug 2022 19:17:11 +0300
+        Wed, 10 Aug 2022 12:18:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA7A7C773;
+        Wed, 10 Aug 2022 09:18:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93A43B81D67;
+        Wed, 10 Aug 2022 16:18:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FF3C433D6;
+        Wed, 10 Aug 2022 16:18:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660148335;
+        bh=WOQyPg8F0GVppRHtF6EF9IpQjF8KSCRpyTeSvQhMwxg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S89LvgN8qVLeqDRD2w8AhD8yUAPYdHlfhL6whMkMxakEohbZ+Un4+LjsfKKaIaUe7
+         EJsJZeZPXTn3F6xD/lHbj5AEBAPRflPFS0IdDB/1GtTyuKpu6AG9Blr/jff7Dbl+ZC
+         G1adPQFCuYz404oBBoeY4IjfH5FrDXs9fnje8W/WQ8dLSYq3Oykw/u6P686Omusjzl
+         KZYjpx612gkx65/8XkAzwHWLoeJ/KLAZapG4/G7VFgkV9wdCkZ1hAXN3rF34y6D/rG
+         Eo3ONAbz+SMT+pkve212jW7LMzFgPVgtBEub//Gg0L3+sJQUFVQn2oMIX44rB/uapM
+         MjeFMq3Bc9cuw==
+Date:   Wed, 10 Aug 2022 17:18:48 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Christophe Branchereau <cbranchereau@gmail.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH] spi/panel: dt-bindings: drop 3-wire from common
+ properties
+Message-ID: <YvPaaOgCUABREOcX@sirena.org.uk>
+References: <20220810131311.428645-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] fs/ntfs3: Remove unused function wnd_bits
-Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-CC:     <ntfs3@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220721031841.24571-1-jiapeng.chong@linux.alibaba.com>
-From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-In-Reply-To: <20220721031841.24571-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.30.8.65]
-X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
- vdlg-exch-02.paragon-software.com (172.30.1.105)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="C7paN41YzbGadmb4"
+Content-Disposition: inline
+In-Reply-To: <20220810131311.428645-1-krzysztof.kozlowski@linaro.org>
+X-Cookie: First pull up, then pull down.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--C7paN41YzbGadmb4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 7/21/22 06:18, Jiapeng Chong wrote:
-> Since the function wnd_bits is defined but not called in any file, it is
-> a useless function, and we delete it in view of the brevity of the code.
-> 
-> Remove some warnings found by running scripts/kernel-doc, which is
-> caused by using 'make W=1'.
-> 
-> fs/ntfs3/bitmap.c:54:19: warning: unused function 'wnd_bits' [-Wunused-function].
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->   fs/ntfs3/bitmap.c | 5 -----
->   1 file changed, 5 deletions(-)
-> 
-> diff --git a/fs/ntfs3/bitmap.c b/fs/ntfs3/bitmap.c
-> index e3b5680fd516..177c5bc53373 100644
-> --- a/fs/ntfs3/bitmap.c
-> +++ b/fs/ntfs3/bitmap.c
-> @@ -51,11 +51,6 @@ void ntfs3_exit_bitmap(void)
->   	kmem_cache_destroy(ntfs_enode_cachep);
->   }
->   
-> -static inline u32 wnd_bits(const struct wnd_bitmap *wnd, size_t i)
-> -{
-> -	return i + 1 == wnd->nwnd ? wnd->bits_last : wnd->sb->s_blocksize * 8;
-> -}
-> -
->   /*
->    * wnd_scan
->    *
+On Wed, Aug 10, 2022 at 04:13:11PM +0300, Krzysztof Kozlowski wrote:
+> The spi-3wire property is device specific and should be accepted only if
+> device really needs them.  Drop it from common spi-peripheral-props.yaml
+> schema, mention in few panel drivers which use it and include instead in
+> the SPI controller bindings.  The controller bindings will provide
+> spi-3wire type validation and one place for description.  Each device
+> schema must list the property if it is applicable.
 
-Applied, thanks!
+What's the plan for getting this merged?  I can just apply it at -rc1 if
+that works for people?
+
+--C7paN41YzbGadmb4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLz2mgACgkQJNaLcl1U
+h9ChMQf9H6LPOdfGbu1FptjroVm8hHLsgruU3wnuUkhB1F1WtZkMEbcb9zAEutl7
+JxSo0Fu8wBzvndSpzXzOyZlQsukueeOcTXd9lFZI3NQmKRSD7DAgl9UzMeXnETdx
+aarr1MxJYaTONXaMvQxrCLMLuaqNZ7eQ4XexnuXrv52Lh6LYp52/IAijKwfH19oz
+E79hMp+bVng67iZRNwn+0HuZgbR83ZCyDqFJpP9li7m756PseyEU2nf1F3cYP0D6
+Y8hVZ02benHf+kIxA0nQR4FjM2OV1tuzvDobJikC3V3OLg8VVGoM4aZEbM6rEiaP
+gTGuMwxcZU0NSsmxTd30vnu3YkgzCg==
+=keHt
+-----END PGP SIGNATURE-----
+
+--C7paN41YzbGadmb4--
