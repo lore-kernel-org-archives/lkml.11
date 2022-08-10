@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0285FC32793
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E471C49EC0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231223AbiHJGBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 02:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S231314AbiHJGBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 02:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231175AbiHJGA5 (ORCPT
+        with ESMTP id S231204AbiHJGBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 02:00:57 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD57D6543
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 23:00:56 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id m11-20020a5b040b000000b0066fcc60d1a0so11399548ybp.19
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 23:00:56 -0700 (PDT)
+        Wed, 10 Aug 2022 02:01:06 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847E315FE8
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 23:01:05 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31f58599ad3so119784027b3.20
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 23:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
          :date:from:to:cc;
-        bh=YZpb5QMLSiLGJVomN8fbI7EvU2NAh/GQGzK/ScajhVo=;
-        b=kdufMKJarzPJUSUXa9Lkyppvpmugt3JrF1lgKjodq0AS8PmSnyNnsq5cSojkvWFydP
-         4SlosfOvXqDnb9Otj4vuNf4C9sjbZeyEg/pJMTXQe026M/y9/1hjbxROqrTHxBCE1754
-         oBloAVDejrDfhsaIqrAL6utmIa3sceIQqZEseSzOdVx/5c7Xg+AOdDBJ+nkSyNuwTOPd
-         qotXnqs5f2mFDey1C4raGc6DlxYepToi5rZGMEx5ZpcTB4d54i3ScEmzcurJy+/1YfTe
-         CH/n1d3h37wT/JtauKwkMlnMGxKOuLKCxLdzeVmnrYXONHl60Vld8ABImyxhgBPBLYqj
-         frqw==
+        bh=fFDScMpOoLwobJ0B+gx6h8x63gnncNppR9XtZLm6ulE=;
+        b=oKH1GriWJVrABfs62WEip/+gg6Dy4kEs7RfdBPtZv1dDVp8IM8ot+pJYb0FYC/j+dW
+         Jmct5LS3sgXZwdmnm2b/XxlhH1LoIyQ0qPOCXNhwwxH+wse2QMfHhqHGs/zhkg4RSn4D
+         g1/uaVkRiojaOGGVwYog0xljtT9cpl4VQHiuhxaZrs5KGEF9koqVuHd1InJ75qg7O6Yo
+         UzvrcZg7E0hHEIPRlyq+1T8XU9GcavBPIWNzQ8biwtu3oLc/cA4w7xVUya1qG9ZCvGlY
+         c3HHAhKT9W4/Jp/npKG8Ei+2a9D86hwmHHvF5aX70NJY8d3uWZXJnFQQeGMksKOP8dTI
+         m+RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=YZpb5QMLSiLGJVomN8fbI7EvU2NAh/GQGzK/ScajhVo=;
-        b=mPtVHu/z+X2I4vOAXBmoJ1GMAAXJeUweWsrWxplMModTFgRgkIIsmqsXh6gMclbco9
-         yX8ApakcG9ciCKdBXOxa2FXhgHl+d1HEmHMd9nKXOclfC/oFIy1UkMXcGfm7zzqvIW6f
-         K4cy9K79sNUKQAWKFK1d/mA3S1OcKhSiUQSvGC07aerSrf9rMAyOKmTGVd8AqZ62yFSS
-         HA/AJBhzj64tdqdlmV+zI8iEqeuJGZqwpLZWYu469dZ8py3zVBkvKRVUD86wwf+5/KkL
-         zjUdDl6eO1fVY2C9oGMixkcG/wZ8+uh1vV2ua1FcCmEK5N9SdtFRJtVbEgX/Uf4cXMXL
-         4W5g==
-X-Gm-Message-State: ACgBeo0nefQNkROqhtoF4Z+n4QW2bvZfCxdVB0akQiuSeoJyKv2snaIp
-        was37ttgcaKUHPcGnHv/1ueEakz/D9+Nv0M=
-X-Google-Smtp-Source: AA6agR7ZTfYG48/VyeszVgW+xw1hG2i1zXLZfrMjpmwx4bEiOBYzEVkJ83eHKaSOJD8LIzkwYIYdbUt4DUfVhhY=
+        bh=fFDScMpOoLwobJ0B+gx6h8x63gnncNppR9XtZLm6ulE=;
+        b=lsa84hdBDPQc6NCQ+NEOKNaPVHj1dzpcm185tRb2VXx3cOYmfuOEs5sgD1EcuZe4S6
+         pA8OW+wHj/PorWF3T+vpCmagwRGiTPfUio4T+YOV5cQhyzr+ccu/baF9V/yqhltTV/OA
+         VdjgT7/nb230lTxDL2FpEcjZ5a20WGfn/mLt8ye/HU9IstaM4U8mfw7nnwQaTLjhHfPk
+         EM2Zqo1MEg4Acf2NqbtH8t5r9a9tfi+Y/L/1iU91FBSoV5DxM7EE2QZ/Gmm1frvMUU4Z
+         KfKsbEJ6FfjuLAYy9Ve1vnB/FJr6cquFaW2yPvW+Uf6rqXBiZCEoEnyTkexn+XjO/i+z
+         lOPA==
+X-Gm-Message-State: ACgBeo2JGcBiIuJgoKPBVecftugUid+S08Wt+1GFjJyeKy5R4SMbfwxf
+        3HBr3np2ZIUyCm1yAaSRp/n66+SkLUZg420=
+X-Google-Smtp-Source: AA6agR7Ig43NfwU15CHf57OeGOFh7gsI84hi8fC26IKcScIBv/6FfxWUkEv3BAnHx8V4jzQ/X/BwXiqy9EgrIBc=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f21:76ca:766f:e0ab])
- (user=saravanak job=sendgmr) by 2002:a0d:cc8b:0:b0:328:3005:37a0 with SMTP id
- o133-20020a0dcc8b000000b00328300537a0mr27540603ywd.470.1660111255729; Tue, 09
- Aug 2022 23:00:55 -0700 (PDT)
-Date:   Tue,  9 Aug 2022 23:00:32 -0700
+ (user=saravanak job=sendgmr) by 2002:a25:fc0f:0:b0:67b:b846:4db2 with SMTP id
+ v15-20020a25fc0f000000b0067bb8464db2mr15311111ybd.566.1660111265238; Tue, 09
+ Aug 2022 23:01:05 -0700 (PDT)
+Date:   Tue,  9 Aug 2022 23:00:35 -0700
 In-Reply-To: <20220810060040.321697-1-saravanak@google.com>
-Message-Id: <20220810060040.321697-4-saravanak@google.com>
+Message-Id: <20220810060040.321697-7-saravanak@google.com>
 Mime-Version: 1.0
 References: <20220810060040.321697-1-saravanak@google.com>
 X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
-Subject: [PATCH v1 3/9] soc: renesas: Move away from using OF_POPULATED for fw_devlink
+Subject: [PATCH v1 6/9] driver core: fw_devlink: Allow marking a fwnode link
+ as being part of a cycle
 From:   Saravana Kannan <saravanak@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -84,33 +85,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OF_POPULATED flag was set to let fw_devlink know that the device
-tree node will not have a struct device created for it. This information
-is used by fw_devlink to avoid deferring the probe of consumers of this
-device tree node.
-
-Let's use fwnode_dev_initialized() instead because it achieves the same
-effect without using OF specific flags. This allows more generic code to
-be written in driver core.
+To improve detection and handling of dependency cycles, we need to be
+able to mark fwnode links as being part of cycles. fwnode links marked
+as being part of a cycle should not block their consumers from probing.
 
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/soc/renesas/rcar-sysc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/core.c    | 41 +++++++++++++++++++++++++++++++++++------
+ include/linux/fwnode.h | 11 ++++++++++-
+ 2 files changed, 45 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/soc/renesas/rcar-sysc.c b/drivers/soc/renesas/rcar-sysc.c
-index b0a80de34c98..03246ed4a79e 100644
---- a/drivers/soc/renesas/rcar-sysc.c
-+++ b/drivers/soc/renesas/rcar-sysc.c
-@@ -437,7 +437,7 @@ static int __init rcar_sysc_pd_init(void)
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index afa660d14172..0ec2c4d5ffaa 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -125,6 +125,19 @@ static void __fwnode_link_del(struct fwnode_link *link)
+ 	kfree(link);
+ }
  
- 	error = of_genpd_add_provider_onecell(np, &domains->onecell_data);
- 	if (!error)
--		of_node_set_flag(np, OF_POPULATED);
-+		fwnode_dev_initialized(&np->fwnode, true);
++/**
++ * __fwnode_link_cycle - Mark a fwnode link as being part of a cycle.
++ * @link: the fwnode_link to be marked
++ *
++ * The fwnode_link_lock needs to be held when this function is called.
++ */
++static void __fwnode_link_cycle(struct fwnode_link *link)
++{
++	pr_debug("%pfwf: Relaxing link with %pfwf\n",
++		 link->consumer, link->supplier);
++	link->flags |= FWLINK_FLAG_CYCLE;
++}
++
+ /**
+  * fwnode_links_purge_suppliers - Delete all supplier links of fwnode_handle.
+  * @fwnode: fwnode whose supplier links need to be deleted
+@@ -1040,6 +1053,23 @@ static bool dev_is_best_effort(struct device *dev)
+ 		(dev->fwnode && (dev->fwnode->flags & FWNODE_FLAG_BEST_EFFORT));
+ }
  
- out_put:
- 	of_node_put(np);
++static struct fwnode_handle *fwnode_links_check_suppliers(
++						struct fwnode_handle *fwnode)
++{
++	struct fwnode_link *link;
++
++	if (!fwnode || fw_devlink_is_permissive())
++		return NULL;
++
++	list_for_each_entry(link, &fwnode->suppliers, c_hook) {
++		if (link->flags & FWLINK_FLAG_CYCLE)
++			continue;
++		return link->supplier;
++	}
++
++	return NULL;
++}
++
+ /**
+  * device_links_check_suppliers - Check presence of supplier drivers.
+  * @dev: Consumer device.
+@@ -1067,11 +1097,8 @@ int device_links_check_suppliers(struct device *dev)
+ 	 * probe.
+ 	 */
+ 	mutex_lock(&fwnode_link_lock);
+-	if (dev->fwnode && !list_empty(&dev->fwnode->suppliers) &&
+-	    !fw_devlink_is_permissive()) {
+-		sup_fw = list_first_entry(&dev->fwnode->suppliers,
+-					  struct fwnode_link,
+-					  c_hook)->supplier;
++	sup_fw = fwnode_links_check_suppliers(dev->fwnode);
++	if (sup_fw) {
+ 		if (!dev_is_best_effort(dev)) {
+ 			fwnode_ret = -EPROBE_DEFER;
+ 			dev_err_probe(dev, -EPROBE_DEFER,
+@@ -1260,7 +1287,9 @@ static ssize_t waiting_for_supplier_show(struct device *dev,
+ 	bool val;
+ 
+ 	device_lock(dev);
+-	val = !list_empty(&dev->fwnode->suppliers);
++	mutex_lock(&fwnode_link_lock);
++	val = !!fwnode_links_check_suppliers(dev->fwnode);
++	mutex_unlock(&fwnode_link_lock);
+ 	device_unlock(dev);
+ 	return sysfs_emit(buf, "%u\n", val);
+ }
+diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+index 89b9bdfca925..fdf2ee0285b7 100644
+--- a/include/linux/fwnode.h
++++ b/include/linux/fwnode.h
+@@ -18,7 +18,7 @@ struct fwnode_operations;
+ struct device;
+ 
+ /*
+- * fwnode link flags
++ * fwnode flags
+  *
+  * LINKS_ADDED:	The fwnode has already be parsed to add fwnode links.
+  * NOT_DEVICE:	The fwnode will never be populated as a struct device.
+@@ -36,6 +36,7 @@ struct device;
+ #define FWNODE_FLAG_INITIALIZED			BIT(2)
+ #define FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD	BIT(3)
+ #define FWNODE_FLAG_BEST_EFFORT			BIT(4)
++#define FWNODE_FLAG_VISITED			BIT(5)
+ 
+ struct fwnode_handle {
+ 	struct fwnode_handle *secondary;
+@@ -46,11 +47,19 @@ struct fwnode_handle {
+ 	u8 flags;
+ };
+ 
++/*
++ * fwnode link flags
++ *
++ * CYCLE:	The fwnode link is part of a cycle. Don't defer probe.
++ */
++#define FWLINK_FLAG_CYCLE			BIT(0)
++
+ struct fwnode_link {
+ 	struct fwnode_handle *supplier;
+ 	struct list_head s_hook;
+ 	struct fwnode_handle *consumer;
+ 	struct list_head c_hook;
++	u8 flags;
+ };
+ 
+ /**
 -- 
 2.37.1.559.g78731f0fdb-goog
 
