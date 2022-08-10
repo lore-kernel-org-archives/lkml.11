@@ -2,100 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB399C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C500CC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231917AbiHJJRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        id S232006AbiHJJS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbiHJJRT (ORCPT
+        with ESMTP id S231288AbiHJJSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:17:19 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E117BAE20E
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:17:17 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id s23so305463wmj.4
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc;
-        bh=tExeQAZyt5MFlaiu4qlfM352z/P0dnZTmeOuugjeqaU=;
-        b=mgNyV9c+vdnPv+XFID7oQ0i2tPTJMIASQe9+elnHQ6x1HhRPuzzR4tt/827/Mlgl9h
-         3WEzGcqtz/0wKqGez5AkDFx8/VnRMR+qHrG+u8sP7WO8PQKoY5uGONaGPfQnhbeh8woZ
-         y1QesoLSVqVOWolv9IoNEL/G9oddJH7ADFI8+RJdvOyeNXxrOXha2P85dhdHR0vvPgJP
-         IfkGiEe2PcEC/0/SHfYlO4x15wha4yrxivTJHBVXPueUr6gS567dw4FnXc7jE0rrjJzS
-         AQEv1VeD6RCNPg9p6qrqrUx770AgVy9PwY4iHBs4ulcSAD/XA3BO0VelMiSyHrPGLemr
-         yaXg==
+        Wed, 10 Aug 2022 05:18:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 290F7AE208
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:18:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660123102;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0uiFPFiP6Hf6PNS9QuyB3HMvVy2bvN3qOXGUpbbFgOo=;
+        b=WMsr9Hq7aRv4rTzzKsUA/D5fNnE4iJqf2r5hxrdV6cFvSQ4hmPxySg8r73xTSSXe8VwtSd
+        OLpHBmNu7IKdfgrFQNRSpT5tj9bTuN39fz+WRU47Du2Yk6f5rdAbGxR7U26zhoQQR49YzD
+        hNUXSphrAnlezoZ4A/fIN1/L4xH/eGA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-AU-FBpNSPA-kZKxCp87uKw-1; Wed, 10 Aug 2022 05:18:18 -0400
+X-MC-Unique: AU-FBpNSPA-kZKxCp87uKw-1
+Received: by mail-wm1-f71.google.com with SMTP id x17-20020a05600c21d100b003a32dda6577so365001wmj.7
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:18:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:organization:from:references
          :cc:to:content-language:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc;
-        bh=tExeQAZyt5MFlaiu4qlfM352z/P0dnZTmeOuugjeqaU=;
-        b=yM2KW7lSkBikSSsH0B1iUMDTfIt8NfAxdbUW1/BwpsYDabbI6GHkYdUlp9ChfNEPjt
-         V3fk/tEM+nn09Y25P07gSjdYRM06qWb8bEuoL8ArgmUFs7p/1eTrcDWUhyt0fGEdTkzg
-         jXYM8gQoigKTpgIIBxTMhjgmmF38E0rEfmSc3C/UzkOx3Z0Bn5IoLYyTdOAkii77nt2z
-         X4hWXlGnvjcilwQMGKciNgQJ/lPEjsUCIwyx9GKRUNhMLVeeS8VqdGzceJVrF9QHp5W/
-         1E0ST8E/fauynbuTroz0WHXOCjb7xnZW7kt+9SjuPkskvPqoRawqial2h33ZDDPKpxoD
-         X/XA==
-X-Gm-Message-State: ACgBeo2kPRsZFV/EfCqXhJbglnT+bKHYQcWedYwvYrzfjpDAHdF4Psj6
-        H+kGc8prOJeaXWWlI+Rgh7MsLw==
-X-Google-Smtp-Source: AA6agR4t2lBqQNfP4gn3TT6t2Sq965NrqmDFsjDSN0d3zdGdmbD8xjT+TyQYUQ1prRTqyg8x3B0FWQ==
-X-Received: by 2002:a1c:4b09:0:b0:3a2:ff2a:e543 with SMTP id y9-20020a1c4b09000000b003a2ff2ae543mr1673853wma.93.1660123036335;
-        Wed, 10 Aug 2022 02:17:16 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:cb4c:4cd5:c6b6:8b12? ([2a01:e0a:982:cbb0:cb4c:4cd5:c6b6:8b12])
-        by smtp.gmail.com with ESMTPSA id 5-20020a05600c028500b003a3278d5cafsm1697658wmk.28.2022.08.10.02.17.15
+        bh=0uiFPFiP6Hf6PNS9QuyB3HMvVy2bvN3qOXGUpbbFgOo=;
+        b=u4cys1tm9H6vwcMkn6YE/CqSEY+tldnIT4PKrQHDuN/9q4IvaRpiIDJyrYdFHih4/S
+         TyvxqPwtmJQ+i7pLvckw44GlHUkzy/TvOw+BmtopmB0ZM7091mRI7LThYRjipAQOY+bW
+         4aLMMLNrZcVersmoYV6iSg0tP4foWRvgD6lJLZLGHysyCq3MrWED5wJDFcfB8pI8kI6T
+         x0liTQqz8K3abhGb6YrcHIebgujxszoH1ODONS0iAJOu2PkynnS51iCo1zjHnqU07w5x
+         EzSiLHUTLcEmlOB6dhoX+ZXy2qnuUDipn2D/pY+4WJvZ9zXyP6K8EGZTXhTleynoKN+a
+         A9Nw==
+X-Gm-Message-State: ACgBeo2ZWA7zyVpHkF7kJxMRM70oviLTGV6oaXnnQzSjXIdAbMnfF4XT
+        vND3RPClTzIzSB0AAA0hm6ie0oBjxW/tpbaP6oaOD7qhHfTndC2U7Fp05H2ExWgzgvRCp91l2Jo
+        BUS3lonaaytRGrHosHksyk+7J
+X-Received: by 2002:a5d:61d0:0:b0:220:839f:dc95 with SMTP id q16-20020a5d61d0000000b00220839fdc95mr16183065wrv.241.1660123097766;
+        Wed, 10 Aug 2022 02:18:17 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4w5nqH68Aak/Fd8pzrx9X+dRdxqFW9Ts+JdPHPB8s/CPVnYHbTHvx8DKBRDt9uCEvZ7YPAmQ==
+X-Received: by 2002:a5d:61d0:0:b0:220:839f:dc95 with SMTP id q16-20020a5d61d0000000b00220839fdc95mr16183044wrv.241.1660123097498;
+        Wed, 10 Aug 2022 02:18:17 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1600:a3ce:b459:ef57:7b93? (p200300cbc7071600a3ceb459ef577b93.dip0.t-ipconnect.de. [2003:cb:c707:1600:a3ce:b459:ef57:7b93])
+        by smtp.gmail.com with ESMTPSA id o36-20020a05600c512400b003a5317f07b4sm1727479wms.37.2022.08.10.02.18.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 02:17:15 -0700 (PDT)
-Message-ID: <39c2f53b-8f53-ceb1-ae0c-81e5e53d01aa@baylibre.com>
-Date:   Wed, 10 Aug 2022 11:17:14 +0200
+        Wed, 10 Aug 2022 02:18:17 -0700 (PDT)
+Message-ID: <b314c287-5fc2-9f61-53f6-33282a2bed92@redhat.com>
+Date:   Wed, 10 Aug 2022 11:18:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH] spi: meson-spicc: save pow2 datarate between messages
+Subject: Re: [PATCH v2] mm/gup: fix FOLL_FORCE COW security issue and remove
+ FOLL_COW
 Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Da Xue <da@libre.computer>
-References: <20220809152019.461741-1-narmstrong@baylibre.com>
- <YvJ84qkuXdvVgXRm@sirena.org.uk>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <YvJ84qkuXdvVgXRm@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220809205640.70916-1-david@redhat.com>
+ <afab7f23d10145b590aef44b3242db64@AcuMS.aculab.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <afab7f23d10145b590aef44b3242db64@AcuMS.aculab.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/08/2022 17:27, Mark Brown wrote:
-> On Tue, Aug 09, 2022 at 05:20:19PM +0200, Neil Armstrong wrote:
->> At the end of a message, the HW gets a reset in meson_spicc_unprepare_transfer(),
->> this resets the SPICC_CONREG register and notably the value set by the
->> Common Clock Framework.
+On 10.08.22 11:12, David Laight wrote:
+> From: David Hildenbrand
+>> Sent: 09 August 2022 21:57
+> ...
 > 
->> This saves the datarate dividor value between message to keep the last
->> set value by the Common Clock Framework.
-> 
-> When you say the value set by the clock framework does that mean that
-> the clock driver is adjusting hardware inside the SPI controller IP
-> block which is then getting reset by the SPI driver without the SPI
-> driver knowing about it?  That seems like a bad idea as you're finding
-> here.
+> These two functions seem to contain a lot of the same tests.
 
-The SPI driver is explicitely triggering a reset at the end of each message
-to get back to a clean HW state, but it does reset the content of the "legacy"
-registers containing the power of 2 divider value, the new registers configuring
-the new clock divider path (only on newer SoCs) doesn't get cleared.
+Yes, but after Linus and I discussed to not even reuse is_cow_mapping()
+but instead to spell it out, I refrained from factoring common checks
+out here to harm readability.
+
+[...]
 
 > 
->> This didn't appear before commit 3e0cf4d3fc29 ("spi: meson-spicc: add a linear clock divider support")
->> because we recalculated and wrote the rate for each xfer.
-> 
-> Note that the rate might change per transfer.
+> Perhaps only the initial call (common success path?) should
+> be inlined?
+> With the flags and vma tests being moved to an inline helper.
 
-It's taken in account, this case is when the rate doesn't change.
+Do we really care enough to hurt readability? I mean, most things here
+are simple bit checks, not expensive function calls.
+
+inline is only a hint to the compiler after all. Please correct me if
+I'm wrong.
+
+
+Now, I don't have any strong opinion, but I do want to make progress for
+this because -stable trees still need fixing and I'll be posting the
+reproducer on Monday.
+
+
+Thanks
+
+-- 
+Thanks,
+
+David / dhildenb
+
