@@ -2,81 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA98FC25B0C
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D62C25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbiHJBW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 21:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
+        id S229777AbiHJBZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 21:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiHJBW6 (ORCPT
+        with ESMTP id S229460AbiHJBYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 21:22:58 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB55C95F;
-        Tue,  9 Aug 2022 18:22:57 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M2XBx4V4JzXdQw;
-        Wed, 10 Aug 2022 09:18:49 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
- 2022 09:22:54 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        Ye Bin <yebin10@huawei.com>
-Subject: [PATCH RFC] jbd2: detect old record when do journal scan
-Date:   Wed, 10 Aug 2022 09:34:42 +0800
-Message-ID: <20220810013442.3474533-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 9 Aug 2022 21:24:37 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3EE60686
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 18:24:36 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id v3so16188901wrp.0
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 18:24:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=mXbQNg6xL4amK0e8t2R+lhFBx4wz53d/3c+qVrE8XHQ=;
+        b=op7XGQ/C392xu2zrnE49ze1FL2X/BB3TSORunubDIWKmitp1TLcY6O90TfdNYXvIW/
+         I7nWo69gvFaL3WiOO7zePx5tpo2DJNfPXcdSNBZYKedmn0vrrNrh7n7zFL+Def1g2U7/
+         fMUlVyAIFFHQR74Wfsfp6J21m1Y35D2MyCLOOIKEKnJToIz3tp/+fi7Ap/jiLfKkvDaz
+         mAp9Zz851/7pQPHSJXlCxdQq8uKfxguAT27V+Hze0qDBI896Jia8hJShF/FbA/RBLlhK
+         elLfNrOA702fCyHYKMBhdUEr85bN/XPjGgenSxWZCDEhg3PzcxR2Hf0b5J+V7D6IagQd
+         wqkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=mXbQNg6xL4amK0e8t2R+lhFBx4wz53d/3c+qVrE8XHQ=;
+        b=TRQmdvGMtoFG6AH6xtt0lX+hw8N+w/6hb4P+EmJogjjOT/N8m/Kql/psRX+y+BnjJs
+         Ee+zjmDPnZXDhtwYTrmghJNXA2ToehncK+hPontIWSUGOf9Us3Kuj0KyNk2ub0xSVW3Y
+         MJ0FPSwpXP8zxEYK+kgxryKC+dTkxl5rzQLAU7HnqZDILb1HEDu8FjhAyfPc/LVnWHID
+         fSwXZZQTPiqEvvHltC72/bn5zfPrvMIEIL0ggZ27PzJogAzK2xausOIwKd5KsktbW1hR
+         j4vks7D5hYyepPrLoiYtEab1CfAamH8vXMZ1b/Ql559wjgp1JPpcFijmEhV+K7HNpEqw
+         cRQg==
+X-Gm-Message-State: ACgBeo34wmtefwmVO6q61cCX5orMRLnXEcB4GPKqY64l/3aw7Z44kZEv
+        fxUdF5JuyQbxcDjjaFvgRhdTTXkuzcDlxT7wuHWwIQ==
+X-Google-Smtp-Source: AA6agR7YwzWUpfkACpeYV8uYguM7R+gPEIWJxB4Le3ZfVGmWnbsjVoQBJaXHBRBWgEBkMKC/Ubjqi4/VywGWwd8ntvM=
+X-Received: by 2002:a05:6000:1869:b0:220:639b:8337 with SMTP id
+ d9-20020a056000186900b00220639b8337mr16291929wri.572.1660094674949; Tue, 09
+ Aug 2022 18:24:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+References: <20220805214734.1937451-1-eugenis@google.com> <875yj1x0k0.wl-maz@kernel.org>
+ <CAFKCwrjVaOdrGktxVHLCDPyJSRjZ0B3FHTGsb3PXMULL=dw9rA@mail.gmail.com>
+ <87v8r1uztz.wl-maz@kernel.org> <CAFKCwriq-Vh+fhxso=xqtKzkL95QkYOOkMR8XwTOJfeg1M-2qQ@mail.gmail.com>
+In-Reply-To: <CAFKCwriq-Vh+fhxso=xqtKzkL95QkYOOkMR8XwTOJfeg1M-2qQ@mail.gmail.com>
+From:   Peter Collingbourne <pcc@google.com>
+Date:   Tue, 9 Aug 2022 18:24:23 -0700
+Message-ID: <CAMn1gO5Va0eVFqzoOLLLJ+C+x-5=cc4qXDTw0e9J7v0RpYWusA@mail.gmail.com>
+Subject: Re: [PATCH] mte: Follow arm64.nomte override in MMU setup.
+To:     Evgenii Stepanov <eugenis@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As https://github.com/tytso/e2fsprogs/issues/120 describe tune2fs do not update
-j_tail_sequence when do journal recovery. This maybe recover old journal record,
-then will lead to file system corruption.
-To avoid file system corruption in this case, if detect current transaction's
-commit time earlier than previous transaction's commit time when do journal
-scan, just return error.
+On Tue, Aug 9, 2022 at 10:29 AM Evgenii Stepanov <eugenis@google.com> wrote:
+>
+> On Tue, Aug 9, 2022 at 9:49 AM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > In which case what is the tag memory doing in the linear map?
+> > Shouldn't it be marked as reserved, not mapped, and in general
+> > completely ignored by the NS OS?
+>
+> That would be wasteful. The idea is to only reserve the parts of the
+> tag memory that correspond to the TZ carveout and release the rest to
+> the NS OS.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/jbd2/recovery.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+More generally, one can imagine a system where *any* tagged memory
+transaction can result in an SError because the MTE implementation was
+not configured by an earlier bootloader phase, e.g. because the
+bootloader was configured to disable MTE at runtime. On such systems,
+the kernel must refrain from causing tagged memory transactions to be
+issued via the linear map, and that's exactly what this patch does.
 
-diff --git a/fs/jbd2/recovery.c b/fs/jbd2/recovery.c
-index f548479615c6..f3def21a96a5 100644
---- a/fs/jbd2/recovery.c
-+++ b/fs/jbd2/recovery.c
-@@ -812,8 +812,17 @@ static int do_one_pass(journal_t *journal,
- 					break;
- 				}
- 			}
--			if (pass == PASS_SCAN)
-+			if (pass == PASS_SCAN) {
-+				if (commit_time < last_trans_commit_time) {
-+					pr_err("JBD2: old journal record found "
-+					       "in transaction %u\n",
-+					       next_commit_ID);
-+					err = -EFSBADCRC;
-+					brelse(bh);
-+					goto failed;
-+				}
- 				last_trans_commit_time = commit_time;
-+			}
- 			brelse(bh);
- 			next_commit_ID++;
- 			continue;
--- 
-2.31.1
-
+Peter
