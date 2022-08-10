@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841B6C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DE5C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233110AbiHJQFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
+        id S233308AbiHJQF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233375AbiHJQFj (ORCPT
+        with ESMTP id S233374AbiHJQFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 10 Aug 2022 12:05:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA7273315
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1901357228
         for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:05:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDBEB611B3
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA42061181
         for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D058C43140;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12022C433D7;
         Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oLoDF-000Uza-21;
+        id 1oLoDF-000UyT-0n;
         Wed, 10 Aug 2022 12:05:41 -0400
-Message-ID: <20220810160541.453059716@goodmis.org>
+Message-ID: <20220810160541.076474430@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Wed, 10 Aug 2022 12:04:58 -0400
+Date:   Wed, 10 Aug 2022 12:04:56 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Ben Hutchings <benh@debian.org>
-Subject: [for-linus][PATCH 3/4] tools/rtla: Build with EXTRA_{C,LD}FLAGS
+        Alexandre Vicenzi <alexandre.vicenzi@suse.com>
+Subject: [for-linus][PATCH 1/4] rtla: Fix tracer name
 References: <20220810160455.872730397@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -41,35 +41,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <benh@debian.org>
+From: Alexandre Vicenzi <alexandre.vicenzi@suse.com>
 
-To allow for distributions and other builders to apply hardening
-policy and other customisation, append EXTRA_CFLAGS and EXTRA_LDFLAGS
-to the corresponding variables.
+The correct tracer name is timerlat and not timelat.
 
-Link: https://lore.kernel.org/linux-trace-devel/YtLBshz0nMQ7530H@decadent.org.uk
+Link: https://lore.kernel.org/linux-trace-devel/20220808180343.22262-1-alexandre.vicenzi@suse.com
 
-Signed-off-by: Ben Hutchings <benh@debian.org>
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Alexandre Vicenzi <alexandre.vicenzi@suse.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- tools/tracing/rtla/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/tools/rtla/rtla-timerlat-hist.rst | 2 +-
+ tools/tracing/rtla/src/timerlat_hist.c          | 2 +-
+ tools/tracing/rtla/src/timerlat_top.c           | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index b8fe10d941ce..f392708c7a1e 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -30,8 +30,8 @@ WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_A
+diff --git a/Documentation/tools/rtla/rtla-timerlat-hist.rst b/Documentation/tools/rtla/rtla-timerlat-hist.rst
+index e12eae1f3301..6bf7f0ca4556 100644
+--- a/Documentation/tools/rtla/rtla-timerlat-hist.rst
++++ b/Documentation/tools/rtla/rtla-timerlat-hist.rst
+@@ -33,7 +33,7 @@ EXAMPLE
+ =======
+ In the example below, **rtla timerlat hist** is set to run for *10* minutes,
+ in the cpus *0-4*, *skipping zero* only lines. Moreover, **rtla timerlat
+-hist** will change the priority of the *timelat* threads to run under
++hist** will change the priority of the *timerlat* threads to run under
+ *SCHED_DEADLINE* priority, with a *10us* runtime every *1ms* period. The
+ *1ms* period is also passed to the *timerlat* tracer::
  
- TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index f3ec628f5e51..4b48af8a8309 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -892,7 +892,7 @@ int timerlat_hist_main(int argc, char *argv[])
+ 	return_value = 0;
  
--CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS)
--LDFLAGS	:=	-ggdb
-+CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS) $(EXTRA_CFLAGS)
-+LDFLAGS	:=	-ggdb $(EXTRA_LDFLAGS)
- LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
+ 	if (trace_is_off(&tool->trace, &record->trace)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla timerlat hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
+diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
+index 35452a1d45e9..334271935222 100644
+--- a/tools/tracing/rtla/src/timerlat_top.c
++++ b/tools/tracing/rtla/src/timerlat_top.c
+@@ -687,7 +687,7 @@ int timerlat_top_main(int argc, char *argv[])
+ 	return_value = 0;
  
- SRC	:=	$(wildcard src/*.c)
+ 	if (trace_is_off(&top->trace, &record->trace)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla timerlat hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
 -- 
 2.35.1
