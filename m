@@ -2,89 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0338DC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 513E9C25B0C
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232948AbiHJOCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 10:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S232927AbiHJOEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiHJOB7 (ORCPT
+        with ESMTP id S232929AbiHJOEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 10:01:59 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377FA6CD3B;
-        Wed, 10 Aug 2022 07:01:57 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id dc19so27822921ejb.12;
-        Wed, 10 Aug 2022 07:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=bP8LP7Iq6Ef009AhSK4u5faUfPJtfq7x6vlBRz0vKas=;
-        b=TijWU1YImPghIYNgR8/CWyY/PZWAzeKl22HkIoJ4ne6EKKppFPm9MvHm56JvjZCBRN
-         1az2JaXpNqj3Vl2eodZwwVO0u9zbgandZSudKc9Ldgpy+y1ZpYYZNiYWLkNadL2lvH/v
-         MXR4Jgit8tdtFv12d62/MAXe7jYUhg6RJSaPtonzzVqcGG+HgvpND7H+qEb9gN2HG2vU
-         7Z8hOYLAiWGJebd3qcf7hME752+46DshpXmQ+hL9SiwRJGdC7OFmZEX8CBX98pPpGxSc
-         zI1DIhxIgRUXJKvOHl37SkGFx+94HMM6D13SU+xuji/rEH94Zigb+fIjDI3MkeiXMy7I
-         bdbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=bP8LP7Iq6Ef009AhSK4u5faUfPJtfq7x6vlBRz0vKas=;
-        b=YH/DbZVh9SsshUVeMct9EqcchZtNddoL+nJWS6ANt3ttZeMerDGrjs9oZU3r/qkoOk
-         cpUVaJlEOBsQ/qOA3AOwGarb+Zq+7b35qkL3OweJzT34GgPjzsuEohnFOvjmpXhS5M9e
-         6qDE3UmLgDA28lfOJsfxygLfSzawwrsSL22GQ33kUTZhDimCAG7JV1j0U2Jzqr9bGBqQ
-         Qfj+JRMl7VMaw6j4mHKJAHVu6Ha7/Y2H2OTZXEEWeABA2WE5mG4l/bfpeiI4se4Pq7Bw
-         lOaOQQO6a8IV1/jG7X9bACwT+zMqTRQDw8vZPxpyXhWgSng8fRoo8ghzhIX+1WnhyOMp
-         SunQ==
-X-Gm-Message-State: ACgBeo3DFsAOre8PgBO7h5YhY5Lmd37a6U69I5yRYrHl8ww6+ouiA/jQ
-        8FxrV+k9/qw00ohFK5XhVfA=
-X-Google-Smtp-Source: AA6agR461AETEjbmlAgbthQrphmCvR+8xaY7mBCUtzkT615M5qJ16zQCwVz6+7I9POz9RPFNPcpPWg==
-X-Received: by 2002:a17:907:28d6:b0:731:100c:8999 with SMTP id en22-20020a17090728d600b00731100c8999mr15647407ejc.210.1660140115247;
-        Wed, 10 Aug 2022 07:01:55 -0700 (PDT)
-Received: from xws.localdomain ([37.120.217.162])
-        by smtp.gmail.com with ESMTPSA id kz22-20020a17090777d600b0072b2ffc662esm2344013ejc.156.2022.08.10.07.01.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 07:01:54 -0700 (PDT)
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: [PATCH] platform/surface: aggregator_registry: Add support for Surface Laptop Go 2
-Date:   Wed, 10 Aug 2022 16:01:33 +0200
-Message-Id: <20220810140133.99087-1-luzmaximilian@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Wed, 10 Aug 2022 10:04:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884976CF40;
+        Wed, 10 Aug 2022 07:03:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0896A614A0;
+        Wed, 10 Aug 2022 14:03:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 321EAC433D6;
+        Wed, 10 Aug 2022 14:03:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660140237;
+        bh=1KTmBlLq0NKoIz0vQ5b4km7Q5MbjLcHiFJFmjGSEGhI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=af6tEYp02TKzXQwpYwpfpCoBYRFgDQyE5JLEUs9Ny2kjXAL6FxMeAr270X0mH3Zix
+         Fd1ntoCocpigVQsEj6O2H7GACEJabLXRmZqgIZg+CpoHmX0zztiV73WDRgEP3F2SAZ
+         QGuwqsQEFW5o4gfrxXQNo5Hf0zZgr1pBm/U+iPE8Na0tAyjXW3qNzR/xD/8h1a9UYg
+         YV/+jvGG2eMLuqMQeT0v8j79wiRs6Rg6FifI4+D1TCSNVU6INmqacfawdAsT0NioDu
+         I2+v1dcnU6iUPfk5WQL6XUOHqX21YMmda/jf/4iJtKZUm82mApIUxyGHT/+lCAmQot
+         QOFM8d3LmK+1g==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 18EF34035A; Wed, 10 Aug 2022 11:03:53 -0300 (-03)
+Date:   Wed, 10 Aug 2022 11:03:53 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Sandipan Das <sandipan.das@amd.com>,
+        Claire Jensen <cjense@google.com>, Alyssa Ross <hi@alyssa.is>,
+        Like Xu <likexu@tencent.com>,
+        James Clark <james.clark@arm.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Claire Jensen <clairej735@gmail.com>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v4 2/3] perf stat: Add JSON output option
+Message-ID: <YvO6yY9Cxm2km9Qq@kernel.org>
+References: <20220525053814.3265216-1-irogers@google.com>
+ <20220525053814.3265216-3-irogers@google.com>
+ <CAM9d7cgA4fr3G7wjpaTKyEPF1JuAsQO-Ucoe9Ahd56KMz5RNBw@mail.gmail.com>
+ <CAP-5=fXcskdtN_dz5jcVywq8S1=pC5TdEN25LcEXzd0Gyk+o+w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fXcskdtN_dz5jcVywq8S1=pC5TdEN25LcEXzd0Gyk+o+w@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Surface Laptop Go 2 seems to have the same SAM client devices as the
-Surface Laptop Go 1, so re-use its node group.
+Em Tue, May 31, 2022 at 04:13:59PM -0700, Ian Rogers escreveu:
+> On Tue, May 31, 2022 at 3:46 PM Namhyung Kim <namhyung@kernel.org> wrote:
+> >
+> > Hi Ian,
+> >
+> > On Tue, May 24, 2022 at 10:38 PM Ian Rogers <irogers@google.com> wrote:
+> > >
+> > > From: Claire Jensen <cjense@google.com>
+> > >
+> > > CSV output is tricky to format and column layout changes are susceptible
+> > > to breaking parsers. New JSON-formatted output has variable names to
+> > > identify fields that are consistent and informative, making
+> > > the output parseable.
+> > >
+> > > CSV output example:
+> > >
+> > > 1.20,msec,task-clock:u,1204272,100.00,0.697,CPUs utilized
+> > > 0,,context-switches:u,1204272,100.00,0.000,/sec
+> > > 0,,cpu-migrations:u,1204272,100.00,0.000,/sec
+> > > 70,,page-faults:u,1204272,100.00,58.126,K/sec
+> > >
+> > > JSON output example:
+> > >
+> > > {"counter-value" : "3805.723968", "unit" : "msec", "event" :
+> > > "cpu-clock", "event-runtime" : 3805731510100.00, "pcnt-running"
+> > > : 100.00, "metric-value" : 4.007571, "metric-unit" : "CPUs utilized"}
+> > > {"counter-value" : "6166.000000", "unit" : "", "event" :
+> > > "context-switches", "event-runtime" : 3805723045100.00, "pcnt-running"
+> > > : 100.00, "metric-value" : 1.620191, "metric-unit" : "K/sec"}
+> > > {"counter-value" : "466.000000", "unit" : "", "event" :
+> > > "cpu-migrations", "event-runtime" : 3805727613100.00, "pcnt-running"
+> > > : 100.00, "metric-value" : 122.447136, "metric-unit" : "/sec"}
+> > > {"counter-value" : "208.000000", "unit" : "", "event" :
+> > > "page-faults", "event-runtime" : 3805726799100.00, "pcnt-running"
+> > > : 100.00, "metric-value" : 54.654516, "metric-unit" : "/sec"}
+> > >
+> > > Also added documentation for JSON option.
+> > > There is some tidy up of CSV code including a potential memory over run
+> > > in the os.nfields set up. To facilitate this an AGGR_MAX value is added.
+> > >
+> > > Signed-off-by: Claire Jensen <cjense@google.com>
+> >
+> > Your sign-off as well?
+> 
+> Doh:
+> Signed-off-by: Ian Rogers <irogers@google.com>
 
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
----
- drivers/platform/surface/surface_aggregator_registry.c | 3 +++
- 1 file changed, 3 insertions(+)
+Added it (b4 did it really) and also added the fixup below.
 
-diff --git a/drivers/platform/surface/surface_aggregator_registry.c b/drivers/platform/surface/surface_aggregator_registry.c
-index ce2bd88feeaa..08019c6ccc9c 100644
---- a/drivers/platform/surface/surface_aggregator_registry.c
-+++ b/drivers/platform/surface/surface_aggregator_registry.c
-@@ -556,6 +556,9 @@ static const struct acpi_device_id ssam_platform_hub_match[] = {
- 	/* Surface Laptop Go 1 */
- 	{ "MSHW0118", (unsigned long)ssam_node_group_slg1 },
- 
-+	/* Surface Laptop Go 2 */
-+	{ "MSHW0290", (unsigned long)ssam_node_group_slg1 },
-+
- 	/* Surface Laptop Studio */
- 	{ "MSHW0123", (unsigned long)ssam_node_group_sls },
- 
--- 
-2.37.1
+- Arnaldo
 
+diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
+index 33e0ee9633291fd5..b82844cb0ce77845 100644
+--- a/tools/perf/util/stat-display.c
++++ b/tools/perf/util/stat-display.c
+@@ -35,7 +35,7 @@ static void print_running(struct perf_stat_config *config,
+ 		enabled_percent = 100 * run / ena;
+ 	if (config->json_output)
+ 		fprintf(config->output,
+-			"\"event-runtime\" : %lu, \"pcnt-running\" : %.2f, ",
++			"\"event-runtime\" : %" PRIu64 ", \"pcnt-running\" : %.2f, ",
+ 			run, enabled_percent);
+ 	else if (config->csv_output)
+ 		fprintf(config->output,
