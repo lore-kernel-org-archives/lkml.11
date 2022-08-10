@@ -2,89 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4FFC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 18:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B394C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 18:53:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232001AbiHJSwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 14:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
+        id S232386AbiHJSxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 14:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbiHJSwt (ORCPT
+        with ESMTP id S232487AbiHJSxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 14:52:49 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C86B85F86
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 11:52:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660157567; x=1691693567;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tkXMe3GHo5MJttImaZr8gkb6ZnuFVfU29Zg3JdEHw0U=;
-  b=dyki3Vu7E2pBGbFrTuAFrA0wovyfP+E8R6uwYeRLYKK1uiJtQC42jmp8
-   xnySraRQOHnJUIV4VIbOK/Ex1FSeUKRhHGRI27N5Q+/yiRFJKhBfwXDtk
-   EIKtB/uBnTYYLmHBm7wqgJRG8RKe8QMWZLgdDTgIV2UVLdxfw5XpxkSF8
-   w+qdLVYORmbmAaaMT1sCmyKkatLbquJtXCKJIMG0Bi4sllqBmL21VvGX9
-   cwKPri7yce94pVLkJQC6fjety00cLoVhRMl1iM9ueUfKd/CqHSdN87YW0
-   BBbfdRXu45JQ0/RbDhvA2esGmyp44Fi4DsDJ1uQliYnA0HwHtMWIRPkJW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="352902559"
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="352902559"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 11:52:46 -0700
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="781333117"
-Received: from snedunga-mobl2.amr.corp.intel.com (HELO [10.212.234.47]) ([10.212.234.47])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 11:52:46 -0700
-Message-ID: <d4bcb22e-224c-d256-cb93-3ff6ed89a7d0@intel.com>
-Date:   Wed, 10 Aug 2022 11:52:48 -0700
+        Wed, 10 Aug 2022 14:53:21 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2125386C05;
+        Wed, 10 Aug 2022 11:53:21 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 944246601C70;
+        Wed, 10 Aug 2022 19:53:16 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660157599;
+        bh=xbCaL2ScXB+T0FyoL/VdM0qhBj61RQMv/0Mh8aht9Y0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=byieT9EU43F/eRBpe3bi/nsXqvGsphP+xnN+9uCcJQiiqE+2eL+6OggtflfgiZV5H
+         2tbgBedC4VmW8VqMPGH+MSJmFXxmN5L0KjGxSmnjKSb9TYnT6q+8+bdtF2Dueo+auX
+         67XZQj1miiDmUza/2oi5U1NkSKSVPEVKs1DgEoiMZjakSsK7ADM0J790qkaQ8pphu7
+         M1BkTB2bL3dJox2DaLhHDMTu8D3c4zfRYO6jQNX4dYPdDaIr7OfFFbIsXhbVC8CrhI
+         DDaWDFnqfaqxGjPW9cdp+mVCoxjC3Q4VxEfkM8NccRtG0HVYtdCNsAeJQgHxfz0CIU
+         fpCGA/irmwkpA==
+Message-ID: <0863cafa-c252-e194-3d23-ef640941e36e@collabora.com>
+Date:   Wed, 10 Aug 2022 21:53:13 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] x86/apic: Don't disable x2APIC if locked
+ Thunderbird/91.12.0
+Subject: Re: [Linaro-mm-sig] [PATCH v2 3/5] dma-buf: Move all dma-bufs to
+ dynamic locking specification
 Content-Language: en-US
-To:     Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "Shutemov, Kirill" <kirill.shutemov@intel.com>
-Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-References: <20220809234000.783284-1-daniel.sneddon@linux.intel.com>
- <d6ffb489-7024-ff74-bd2f-d1e06573bb82@intel.com>
- <238ea612-5a25-9323-b31f-0a14493db2f7@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <238ea612-5a25-9323-b31f-0a14493db2f7@linux.intel.com>
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kernel@collabora.com, virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Clark <robdclark@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= <thomas_os@shipmail.org>
+References: <20220725151839.31622-1-dmitry.osipenko@collabora.com>
+ <20220725151839.31622-4-dmitry.osipenko@collabora.com>
+ <6c8bded9-1809-608f-749a-5ee28b852d32@gmail.com>
+ <562fbacf-3673-ff3c-23a1-124284b4456c@collabora.com>
+ <87724722-b9f3-a016-c25c-4b0415f2c37f@amd.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <87724722-b9f3-a016-c25c-4b0415f2c37f@amd.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/10/22 11:30, Daniel Sneddon wrote:
->> If it's going to be on one server CPU that's coming out in ten years,
->> then we can hold off.
-> SPR will certainly be sooner than 10 years, and with distros running on LTS
-> kernels, it is probably worth backporting.  Since this isn't a bug fix (not a sw
-> bug anyway), is this something I can just CC stable or is there a better way to
-> say "Yes, this is a new feature, BUT, you really want it anyway"?
+On 8/10/22 21:25, Christian König wrote:
+> Am 10.08.22 um 19:49 schrieb Dmitry Osipenko:
+>> On 8/10/22 14:30, Christian König wrote:
+>>> Am 25.07.22 um 17:18 schrieb Dmitry Osipenko:
+>>>> This patch moves the non-dynamic dma-buf users over to the dynamic
+>>>> locking specification. The strict locking convention prevents deadlock
+>>>> situation for dma-buf importers and exporters.
+>>>>
+>>>> Previously the "unlocked" versions of the dma-buf API functions weren't
+>>>> taking the reservation lock and this patch makes them to take the lock.
+>>>>
+>>>> Intel and AMD GPU drivers already were mapping imported dma-bufs under
+>>>> the held lock, hence the "locked" variant of the functions are added
+>>>> for them and the drivers are updated to use the "locked" versions.
+>>> In general "Yes, please", but that won't be that easy.
+>>>
+>>> You not only need to change amdgpu and i915, but all drivers
+>>> implementing the map_dma_buf(), unmap_dma_buf() callbacks.
+>>>
+>>> Auditing all that code is a huge bunch of work.
+>> Hm, neither of drivers take the resv lock in map_dma_buf/unmap_dma_buf.
+>> It's easy to audit them all and I did it. So either I'm missing
+>> something or it doesn't take much time to check them all. Am I really
+>> missing something?
+> 
+> Ok, so this is only changing map/unmap now?
 
-It it going to be *forced* on those SPR system?  In other words, is it a
-little BIOS switch that users can flip?  Is there any non-kernel
-workaround if a user hits this, or is the entire burden of this going to
-be foisted on the kernel?
+It also vmap/vunmap and attach/detach: In the previous patch I added the
+_unlocked postfix to the func names and in this patch I made them all to
+actually take the lock.
 
-The worst case scenario would be if a user has managed to compile a
-CONFIG_X86_X2APIC=n kernel and is happily running along until they get a
-microcode update, reboot and can't boot any more.
+> In this case please separate this from the documentation change.
 
-A less-bad, but still nasty situation would be someone who is booting
-with nox2apic, who also suddenly loses the ability to boot until they
-figure out why their kernel is #GP'ing and oopsing early in boot and
-remove nox2apic.
+I'll factor out the doc in the v3.
 
-I think we need a bit more information on how this thing will get
-deployed before we really know if it needs to be in stable kernels or
-not.  For instance, if Intel really views this as an always-on security
-mitigation, that's a different story than if this is, say, a performance
-tweak.
+> I would also drop the _locked postfix from the function name, just
+> having _unlocked on all functions which are supposed to be called with
+> the lock held should be sufficient.
+
+Noted for the v3.
+
+> Thanks for looking into this,
+> Christian.
+
+Thank you for the review.
+
+-- 
+Best regards,
+Dmitry
