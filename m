@@ -2,109 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BCEC25B07
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE3FC19F2A
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 04:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbiHJEHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 00:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
+        id S231128AbiHJEH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 00:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231192AbiHJEHB (ORCPT
+        with ESMTP id S231220AbiHJEHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 00:07:01 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6F380F53
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 21:06:39 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id 66so13959954vse.4
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 21:06:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=qZm1fXghi6IF6e55IsqmlhKKwI7Wy4DqK9Waf6yQfN4=;
-        b=MmIWB4RRpjdnR6kMlp6sNc8gWwxl2vsFSpKPuHg0Qy84HCHNtgsoeLFA2cR6JH/cMn
-         nfSGlpH+8ny8oIru9QhKwYUpTilYDSV2AO1+qJmXUrgMSCjAEAvLD1UI71I2CCDoZ4P8
-         k+MB1H1UywZsz8afKbok7yD0xUV5uOwTW/X4S0Zm0Dv3WcOd6IYghA53gFdVxozGoqzi
-         85CLZ0eBdy6yVwlAV19jT14a2iL5VaqxRyJLPr5OkHP8yEiQGG8pExYhnj0vvWzg4lP8
-         vlar8cAwjTTa/WoVTt6iwkRRkhkM7PxJDpKW9l/+ENXFw0PfX5zvP8BeKv9Xn4cCXBff
-         UXmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=qZm1fXghi6IF6e55IsqmlhKKwI7Wy4DqK9Waf6yQfN4=;
-        b=KYehJwISUY5SLm9mIpbUhDJ5w1M+OLpGOEKl/ScZOs7Xc+bfFFxto1Ic6wUaJpFDYG
-         XXc/Jww5FLd4yP/i4tbw22BB5YzDSL1pHKdokJobyPZK8kJxAcC8hsLbL/riGBnpwtxY
-         pL3ax5thZLV2mVwOp20xCQX8Pc53R00yPXVlOuhkdtWsS6HG1AoEbnmKmKxJOzqm8kfz
-         HFpzauBp5PsUP/uhQ8KQ41fO3KvTuxtL7gzNhzULFTLGq8bVQqmWGmsylhDitTfG8WsT
-         zrTeLUJOx+ZMppH9X6l9yieKV+xyA9J6Dn3XWj1f/Qg8e5F1eemBW9lnSajvqwVe/2KP
-         euGA==
-X-Gm-Message-State: ACgBeo14eE3noM270xhH+fu0DtQAKJSgRrbkX6hhgw1OqLdMeMr+A8Zf
-        Ynt0RbT3/YUHJZv7NwSipTBROr9LorIE9iy7rV5F5Q==
-X-Google-Smtp-Source: AA6agR7l31iYYX+0wz5ghid7W2fHSEC0jzZ6Cx3x+wJwm2DkdzIuVubF3tFEg7fRyssYs8FOxM0R/kGcduo8bZal5c4=
-X-Received: by 2002:a67:d21b:0:b0:388:4e12:eff9 with SMTP id
- y27-20020a67d21b000000b003884e12eff9mr10881883vsi.35.1660104398135; Tue, 09
- Aug 2022 21:06:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1660068429.git.sander@svanheule.net> <30d8882efedea697da20c27563050008d1569b9e.1660068429.git.sander@svanheule.net>
-In-Reply-To: <30d8882efedea697da20c27563050008d1569b9e.1660068429.git.sander@svanheule.net>
-From:   David Gow <davidgow@google.com>
-Date:   Wed, 10 Aug 2022 12:06:27 +0800
-Message-ID: <CABVgOSmcKHH2zcCbT-jzekFP8RFov4V0AFBsGjU9kXSy9pJ9HQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/5] lib/test_cpumask: drop cpu_possible_mask full test
-To:     Sander Vanheule <sander@svanheule.net>
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 10 Aug 2022 00:07:14 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10E4C74DF5;
+        Tue,  9 Aug 2022 21:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=oPlghozXfHqS+pVztD
+        9oUcgPWH9ApTg6zFBiMO/W9Ug=; b=Le20Q/qfcmT6qEKRlxq/vgt14WFpX2DSjV
+        fWhh4+NUoKDtMa8y3UuC0xEpENjiZTJOWeqQsYBPql8EPx5cBBbCc3ddMSE16Skg
+        feJs7sYBXbbJa8i6YKqF61SWXWS76ebGYcH+ObVs7WZHlfNY6uBiz+mmlbxO7kRX
+        bFdw81QVU=
+Received: from user-virtual-machine.localdomain (unknown [39.79.223.215])
+        by smtp3 (Coremail) with SMTP id G9xpCgCXsoxeLvNipShNUw--.49160S4;
+        Wed, 10 Aug 2022 12:06:10 +0800 (CST)
+From:   Jialiang Wang <wangjialiang0806@163.com>
+To:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, wangjialiang0806@163.com,
+        niejianglei2021@163.com
+Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] nfp: fix use-after-free in area_cache_get()
+Date:   Wed, 10 Aug 2022 12:04:45 +0800
+Message-Id: <20220810040445.46015-1-wangjialiang0806@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: G9xpCgCXsoxeLvNipShNUw--.49160S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxuF43JFW3tF17WrWrCryfJFb_yoWrJw1kpF
+        yUJ3yrCrW8WrsrWw4DJFW8Z3sY939xta43u3WrAw4F9a4a9r47JF1xKr45Xr1UKFW8tFyf
+        uryYvr9xJFs8Zw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UG1v-UUUUU=
+X-Originating-IP: [39.79.223.215]
+X-CM-SenderInfo: pzdqwy5ldoxtdqjqmiqw6rljoofrz/1tbivxNZzlWB00EtvAAAss
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 2:09 AM Sander Vanheule <sander@svanheule.net> wrot=
-e:
->
-> cpu_possible_mask is not necessarily completely filled.  That means
-> running a check on cpumask_full() doesn't make sense, so drop the test.
->
-> Fixes: c41e8866c28c ("lib/test: introduce cpumask KUnit test suite")
-> Link: https://lore.kernel.org/lkml/346cb279-8e75-24b0-7d12-9803f2b41c73@r=
-iseup.net/
-> Reported-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
-> Signed-off-by: Sander Vanheule <sander@svanheule.net>
-> Cc: David Gow <davidgow@google.com>
-> ---
+area_cache_get() is used to distribute cache->area and set cache->id,
+ and if cache->id is not 0 and cache->area->kref refcount is 0, it will
+ release the cache->area by nfp_cpp_area_release(). area_cache_get()
+ set cache->id before cpp->op->area_init() and nfp_cpp_area_acquire().
 
-Looks good to me. It'd maybe be worth noting _why_  cpu_possible_mask
-is not always filled (i.e., that the number of available CPUs might
-not match the maximum number of CPUs the kernel is built to support),
-but it's probably not worth doing a new version of the patch series
-just for that.
+But if area_init() or nfp_cpp_area_acquire() fails, the cache->id is
+ is already set but the refcount is not increased as expected. At this
+ time, calling the nfp_cpp_area_release() will cause use-after-free.
 
-Reviewed-by: David Gow <davidgow@google.com>
+To avoid the use-after-free, set cache->id after area_init() and
+ nfp_cpp_area_acquire() complete successfully.
 
-Cheers,
--- David
+Note: This vulnerability is triggerable by providing emulated device
+ equipped with specified configuration.
 
+ BUG: KASAN: use-after-free in nfp6000_area_init (/home/user/Kernel/v5.19
+/x86_64/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
+  Write of size 4 at addr ffff888005b7f4a0 by task swapper/0/1
 
->  lib/test_cpumask.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/lib/test_cpumask.c b/lib/test_cpumask.c
-> index a31a1622f1f6..4ebf9f5805f3 100644
-> --- a/lib/test_cpumask.c
-> +++ b/lib/test_cpumask.c
-> @@ -54,7 +54,6 @@ static cpumask_t mask_all;
->  static void test_cpumask_weight(struct kunit *test)
->  {
->         KUNIT_EXPECT_TRUE(test, cpumask_empty(&mask_empty));
-> -       KUNIT_EXPECT_TRUE(test, cpumask_full(cpu_possible_mask));
->         KUNIT_EXPECT_TRUE(test, cpumask_full(&mask_all));
->
->         KUNIT_EXPECT_EQ(test, 0, cpumask_weight(&mask_empty));
-> --
-> 2.37.1
->
+ Call Trace:
+  <TASK>
+ nfp6000_area_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
+ area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:884)
+
+ Allocated by task 1:
+ nfp_cpp_area_alloc_with_name (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:303)
+ nfp_cpp_area_cache_add (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:802)
+ nfp6000_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp6000_pcie.c:1230)
+ nfp_cpp_from_operations (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:1215)
+ nfp_pci_probe (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfp_main.c:744)
+
+ Freed by task 1:
+ kfree (/home/user/Kernel/v5.19/x86_64/src/mm/slub.c:4562)
+ area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:873)
+ nfp_cpp_read (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp_cppcore.c:924 /home/user/Kernel/v5.19/x86_64
+/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:973)
+ nfp_cpp_readl (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp_cpplib.c:48)
+
+Signed-off-by: Jialiang Wang <wangjialiang0806@163.com>
+---
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+index 34c0d2ddf9ef..a83b8ee49062 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+@@ -873,10 +873,6 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 		cache->addr = 0;
+ 	}
+ 
+-	/* Adjust the start address to be cache size aligned */
+-	cache->id = id;
+-	cache->addr = addr & ~(u64)(cache->size - 1);
+-
+ 	/* Re-init to the new ID and address */
+ 	if (cpp->op->area_init) {
+ 		err = cpp->op->area_init(cache->area,
+@@ -894,6 +890,10 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 		return NULL;
+ 	}
+ 
++	/* Adjust the start address to be cache size aligned */
++	cache->id = id;
++	cache->addr = addr & ~(u64)(cache->size - 1);
++
+ exit:
+ 	/* Adjust offset */
+ 	*offset = addr - cache->addr;
+-- 
+2.17.1
+
