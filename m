@@ -2,105 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0046FC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBCBC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbiHJPiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 11:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
+        id S231517AbiHJPiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 11:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiHJPiE (ORCPT
+        with ESMTP id S231707AbiHJPiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 11:38:04 -0400
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 1388C28E02;
-        Wed, 10 Aug 2022 08:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=dwLcVSKssd
-        J7Q7x71NIOI0DB3SuG4iOBFHZ/ZegSBCM=; b=Sh0mUqCpfjv4X2jqzgwnx+9cjK
-        HJc+bMuzYf3WfJxDn/pF+FYJWgQIo8ijm5L0Ke4kz6RQ8zU/25OW4CJGw+zIXUuQ
-        9stvW10V7lCcpJ+R27zxxIIo6Xa7SYi8PGEbCeEcGsYZusCY0iwXCeaL7ujTxHuo
-        JIsfnCVDr5M9BL/WY=
-Received: from localhost.localdomain (unknown [202.120.224.54])
-        by app1 (Coremail) with SMTP id XAUFCgDX3oKa0PNigiMfAw--.39779S4;
-        Wed, 10 Aug 2022 23:37:29 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        =?UTF-8?q?=E2=80=9CDavid=20S=20=2E=20Miller=20?= 
-        <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] net/sunrpc: fix potential memory leaks in rpc_sysfs_xprt_state_change()
-Date:   Wed, 10 Aug 2022 23:29:13 +0800
-Message-Id: <20220810152909.25149-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 10 Aug 2022 11:38:07 -0400
+Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237B528E02;
+        Wed, 10 Aug 2022 08:38:06 -0700 (PDT)
+Received: by mail-il1-f169.google.com with SMTP id s16so8478450ilp.3;
+        Wed, 10 Aug 2022 08:38:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=d703OGIAWaJFqE2Rp42TVQVb31FLKdiwbLrmUlLlcDE=;
+        b=L5i95qjc+Nm9zcx0eoQ8Za5h+H8IF/L2ssP9GwAMs8WNO1+LsrBr0IfbK6PZOYCc/H
+         tM2SBhEk6t8ODqzobklRqrBYKFh3o5u08aymsTW1/Ol+XBhTazlTJP/dYAFuVA2tESGu
+         cXXY8KGZv543UmtrI3fWIJoFnk05br1v8Zr66ut2vRgJIJUNEQW1VGzV9BHIgaQ1hPIT
+         dDgJe8U0PEs9slu4IrlVtocp5mIPfTea39kejQuzQxL3ix7ImzTIGMFWkUYt5eY4ud5P
+         GEUB5vO724bGpuYT+3eIlZQvV5nN5QY1tRswnEzMboxbshshg7RdCHU/a+mWw9Cg8kf1
+         6uzg==
+X-Gm-Message-State: ACgBeo3o/V0wVaI/LvXck0iIrEc046AyWt+7R+L5EQ5d/Rdu6LHdgRGa
+        WKnwwcrIB7S1gZLj+txpmvs18t1Qfw==
+X-Google-Smtp-Source: AA6agR7D2VESWtQ+d0hSJfH8s2E2QhlG9jzS2sKVav6VMuiuI2rzKmJsWkaPbCLm1IMZS1BYGQfocA==
+X-Received: by 2002:a92:d950:0:b0:2df:afdb:3908 with SMTP id l16-20020a92d950000000b002dfafdb3908mr9158360ilq.319.1660145885264;
+        Wed, 10 Aug 2022 08:38:05 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id n12-20020a056638110c00b003433846796esm1317158jal.5.2022.08.10.08.38.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 08:38:04 -0700 (PDT)
+Received: (nullmailer pid 6576 invoked by uid 1000);
+        Wed, 10 Aug 2022 15:38:02 -0000
+Date:   Wed, 10 Aug 2022 09:38:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Cc:     Hans Verkuil <hverkuil@xs4all.nl>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] dt-bindings: media: platform: visconti: Add
+ Toshiba Visconti Video Input Interface bindings
+Message-ID: <20220810153802.GA585-robh@kernel.org>
+References: <20220810132822.32534-1-yuji2.ishikawa@toshiba.co.jp>
+ <20220810132822.32534-2-yuji2.ishikawa@toshiba.co.jp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XAUFCgDX3oKa0PNigiMfAw--.39779S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Gw1DWFy3XFy3AFW8JrykuFg_yoW8JrW8pF
-        W3G347uFykKrW7Xa17Ca10ga45ZFZ8GF15JrZ5C3W3Awn8Xa45Gr109ay29F1xCrWFk34S
-        qF4vgF4rZFWDCa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Cr0_Gr
-        1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6ryrMxAIw28IcxkI7VAKI4
-        8JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xv
-        wVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjx
-        v20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20E
-        Y4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5ku4UUUUU
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAg4OEFKp2quTOAAAsz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810132822.32534-2-yuji2.ishikawa@toshiba.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The issue happens on some error handling paths. When the function
-fails to grab the object `xprt`, it simply returns 0, forgetting to
-decrease the reference count of another object `xps`, which is
-increased by rpc_sysfs_xprt_kobj_get_xprt_switch(), causing refcount
-leaks. Also, the function forgets to check whether `xps` is valid
-before using it, which may result in NULL-dereferencing issues.
+On Wed, Aug 10, 2022 at 10:28:19PM +0900, Yuji Ishikawa wrote:
+> Adds the Device Tree binding documentation that allows to describe
+> the Video Input Interface found in Toshiba Visconti SoCs.
+> 
+> Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+> Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+> ---
+> Chengelog v2:
+> - no change
+> 
+> Changelog v3:
+> - no change
+> ---
+>  .../bindings/media/toshiba,visconti-viif.yaml | 103 ++++++++++++++++++
+>  1 file changed, 103 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+> new file mode 100644
+> index 000000000..848ea5019
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+> @@ -0,0 +1,103 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/toshiba,visconti-viif.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Toshiba Visconti5 SoC Video Input Interface Device Tree Bindings
+> +
+> +maintainers:
+> +  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+> +
+> +description: |
 
-Fix it by adding proper error handling code when either `xprt` or
-`xps` is NULL.
+Don't need '|' if no formatting.
 
-Fixes: 5b7eb78486cd ("SUNRPC: take a xprt offline using sysfs")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
----
- net/sunrpc/sysfs.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+> +  Toshiba Visconti5 SoC Video Input Interface (VIIF) receives MIPI CSI2 video stream,
+> +  processes the stream with embedded image signal processor (L1ISP, L2ISP), then stores pictures to main memory.
 
-diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
-index a3a2f8aeb80e..d1a15c6d3fd9 100644
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -291,8 +291,10 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
- 	int offline = 0, online = 0, remove = 0;
- 	struct rpc_xprt_switch *xps = rpc_sysfs_xprt_kobj_get_xprt_switch(kobj);
- 
--	if (!xprt)
--		return 0;
-+	if (!xprt || !xps) {
-+		count = 0;
-+		goto out_put;
-+	}
- 
- 	if (!strncmp(buf, "offline", 7))
- 		offline = 1;
--- 
-2.25.1
+Wrap lines at 80 char.
 
+> +
+> +properties:
+> +  compatible:
+> +    const: toshiba,visconti-viif
+> +
+> +  reg:
+> +    items:
+> +      - description: registers for capture control
+> +      - description: registers for CSI2 receiver control
+> +
+> +  interrupts:
+> +    items:
+> +      - description: Sync Interrupt
+> +      - description: Status (Error) Interrupt
+> +      - description: CSI2 Receiver Interrupt
+> +      - description: L1ISP Interrupt
+> +
+> +  index:
+> +    enum: [0, 1]
+
+No, we don't do indices in DT. Why do you need this?
+
+> +
+> +  port:
+> +    $ref: /schemas/graph.yaml#/$defs/port-base
+> +    unevaluatedProperties: false
+> +    description: Input port node, single endpoint describing the CSI-2 transmitter.
+> +
+> +    properties:
+> +      endpoint:
+> +        $ref: video-interfaces.yaml#
+> +        unevaluatedProperties: false
+> +
+> +        properties:
+> +          data-lanes:
+> +            description: VIIF supports 2 or 4 data lines
+> +            items:
+> +              minItems: 1
+> +              maxItems: 4
+> +              items:
+> +                - const: 1
+> +                - const: 2
+> +                - const: 3
+> +                - const: 4
+
+blank line
+
+> +          clock-lanes:
+> +            description: VIIF supports 1 clock line
+> +            const: 0
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - port
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+> +        viif0: viif@1c000000 {
+
+Drop unused labels.
+
+> +            compatible = "toshiba,visconti-viif";
+> +            reg = <0 0x1c000000 0 0x6000>,
+> +                  <0 0x1c008000 0 0x400>;
+> +            interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
+> +            index = <0>;
+> +            status = "disabled";
+
+Why is your example disabled? Don't put 'status' in examples.
+
+> +
+> +            port {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +
+> +                csi_in0: endpoint {
+> +                    remote-endpoint = <&imx219_out0>;
+> +                    bus-type = <4>;
+> +                    data-lanes = <1 2>;
+> +                    clock-lanes = <0>;
+> +                    clock-noncontinuous;
+> +                    link-frequencies = /bits/ 64 <456000000>;
+> +                };
+> +            };
+> +        };
+> +    };
+> +
+> -- 
+> 2.17.1
+> 
+> 
+> 
