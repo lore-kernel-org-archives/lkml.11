@@ -2,96 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF82C19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA44C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbiHJQeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34384 "EHLO
+        id S232864AbiHJQhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiHJQeC (ORCPT
+        with ESMTP id S230006AbiHJQhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:34:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AD182773;
-        Wed, 10 Aug 2022 09:34:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3265B81D4B;
-        Wed, 10 Aug 2022 16:34:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F52C433C1;
-        Wed, 10 Aug 2022 16:33:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660149239;
-        bh=TRHMkHy9TA2+R7Xo/cWt/GmZaVkYtJda3sygZr6n63E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZSqQDDuiRdorik9Pb/NCrx0oD2vlusIm0ixMcVKD77THj9qllEU6gMdB/rlZFKxQQ
-         1Y84PCd6G6/7azkAfGdqfXgZzJND6/e58nAYqDyze40HJN1++ciHIcfRGJyQBAYuRW
-         6C1oabpSKxGzXSH5QSw6SARyENrzNOAaYPdknnBcv+QKEN++KIEGoP0RR770PAqTO5
-         9d8jAGGh68yTeeux7Cm/nL71Im6g4uuE5CmShu8fZ2SYjddUgdjId4DQte/DzZ1qnz
-         pnZtzkHZEmCzy0Z54lVQP6EydD/q1GdGE4oq9kx+/kr8okcbgl4QiLKtvM3Rfl9NEL
-         MFbx0aVJuS5Tg==
-Date:   Wed, 10 Aug 2022 17:33:53 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        linux-hyperv@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH v1 5/5][RFT] ACPI: Drop parent field from struct
- acpi_device
-Message-ID: <YvPd8ewNOKdwMmR4@sirena.org.uk>
-References: <12036348.O9o76ZdvQC@kreacher>
- <2196460.iZASKD2KPV@kreacher>
+        Wed, 10 Aug 2022 12:37:09 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C776DFB0
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:37:09 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id s16-20020a5eaa10000000b006826060b7e4so8305809ioe.3
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:37:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=HftqFYxeFfAF1kajnG2GvwJLO2W0mn6ihIoeRrq/ih0=;
+        b=V0bP1DGav4JAA7s53rYOrnt0s6yhTk2YJ7WqjjRVZtknSQ7BTif3iDPdrXKe9rQ0HK
+         gYskF0hqGX7pnbmC0rDy/X6dlhIljTEAtjPwgeItOlOQ0jNONxDLGINorfhAs7Oh3CiL
+         FoE3+D/EOv7mscGy0IqTdRZwasM+il6P6gjOgfomlEDp0YSn9I99TOn5JUvBEAe2AIzf
+         DHFRIfRxR8d7m6iakxsR65YFL4J/7C5CltXqwqgw0HqLy3LVQ8LlxDIapf1cz2XG9X0x
+         kU/sqqi/N3MFW3mrSLXLunFXdO3XzANRIY+sv5dvKNqufTcmWZ01KlWEtDyWDAyiNsjd
+         uM3g==
+X-Gm-Message-State: ACgBeo3RkEgzRAt6AEvjskGS6AAAla9i30LstoFizwSeax3LnS3r0Aut
+        V7Zb78esv+EBrUWxltc7k3oMqlY9gAzK2yymMkocBvCSYzED
+X-Google-Smtp-Source: AA6agR7VyFKsr9L0OoqYUhypsy3NSMzF1ZozSTqCPrgmt1L3V/tpLVBekRYGzCb45aCGVCI9GkbtJPOBlc8syxSrEINfoHzg1kd/
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Da0Ami2fDuAHDI9p"
-Content-Disposition: inline
-In-Reply-To: <2196460.iZASKD2KPV@kreacher>
-X-Cookie: First pull up, then pull down.
+X-Received: by 2002:a05:6e02:1a63:b0:2df:3655:a661 with SMTP id
+ w3-20020a056e021a6300b002df3655a661mr13739480ilv.187.1660149428404; Wed, 10
+ Aug 2022 09:37:08 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 09:37:08 -0700
+In-Reply-To: <20220810111831.2626-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f44a2905e5e5a89e@google.com>
+Subject: Re: [syzbot] INFO: trying to register non-static key in gsmld_write
+From:   syzbot <syzbot+cf155def4e717db68a12@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
---Da0Ami2fDuAHDI9p
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-On Wed, Aug 10, 2022 at 06:23:05PM +0200, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
->=20
-> The parent field in struct acpi_device is, in fact, redundant,
-> because the dev.parent field in it effectively points to the same
-> object and it is used by the driver core.
+Reported-and-tested-by: syzbot+cf155def4e717db68a12@syzkaller.appspotmail.com
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Tested on:
 
---Da0Ami2fDuAHDI9p
-Content-Type: application/pgp-signature; name="signature.asc"
+commit:         ca688bff Add linux-next specific files for 20220808
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=10fd0705080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=cf155def4e717db68a12
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=168d3fe1080000
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLz3fAACgkQJNaLcl1U
-h9B8rQf/XtDVCaLNgxkwWhsW926hQ9+EvneuFPFiVGjVW+lbegON2gRrPeUWs8sS
-sC4GBIsaf1GiG5D6xQGh5Iq36TE60sjclNLk2WTG6eHppigATRVgiTwiwOnVDn4h
-IBqOYP3xauYkNpiX1QK91vc5Lh90Lh+W/B81A1RqbDaJIlNrihrFgezUZQ9Klwlm
-9lsOupKTe9TeDOdtv8xgq8fuHk9K+K28SmkPEDEg49UVhCUbx05BuPDoyOtmn+RP
-/+hKik8ajLZUd2qUg0VmM0dRNX3GnQiGQC5dAmLnF63o9XIWcu4x3XYQPHEAwy5L
-Aj0k8+2YrOgVHxyNIrsVmg01YaZIWg==
-=2BJY
------END PGP SIGNATURE-----
-
---Da0Ami2fDuAHDI9p--
+Note: testing is done by a robot and is best-effort only.
