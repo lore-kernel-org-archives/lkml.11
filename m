@@ -2,160 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2698EC25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 23:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CF7C25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 23:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbiHJXPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 19:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38628 "EHLO
+        id S233641AbiHJXRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 19:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233660AbiHJXPD (ORCPT
+        with ESMTP id S233625AbiHJXRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 19:15:03 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A837C18B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:15:02 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id nn4-20020a17090b38c400b001f4f88bcc0eso2433554pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:15:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=GOce7Y6jdCY/zfkNNeO74zrYEvTJd53x8wkrPeEDjgU=;
-        b=ESsqWe3q8UeR7CxcjqoZATYdaP+BDRWBc4eIg8oOW2jltJ7lFVgCYASg5Xgtje53VN
-         DvVALBqdXWfXdNFYD0+7+VaPzxJjbBABh1JHvq5HYO7yAHAQusqnUlLTjasjKPmsuRvJ
-         eCighSfmzf/OPh4tmTfsixyppIzhMX0fQ0pBKDH2irzUdCzWS4c28SF2roUkSibwCrPy
-         lUUryf/wH04POtNjy54uxDvYDHR0KB3Ph190dCSMdLJ8GZ6AY13VTU0k/qLkZTjlX6Zt
-         1Xvm78AUqy1IqRVJkVMWn5pYC3MixJwdOyy2+mAhEfHZwyeOcFERDQMvru1vqi3cVq6e
-         me4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=GOce7Y6jdCY/zfkNNeO74zrYEvTJd53x8wkrPeEDjgU=;
-        b=pij+lYnOgpFmvOTJHNbNHG+KEJv5sAE3QmXFy5EM7DvnwrD0bQ5ztQkzTIWMM5h4tl
-         Gy6zElt49hMTl/unM1fHDnLvXxYEsqy9ah4+CUz4Ojn5Hdp6uCmTzP8noYU6Eb1wetRf
-         jC1Z0eZHk7CENbr61z+ZIXYxgTwUqyO1/Kjb3250cMkHyKZxXraBylfaoa3VYb2G+UgR
-         fVMK5/BNZbINUzv1MPuNbTtCwor933HYUtWckBo2IkJLQOJmKHHZmezaNFAhA2y2Fhkr
-         k7LC1vjnPAhQuLpKQz50Y5FA4sA7xK6Ce3YzUT+Cq8wXYGloXVpulvd4Nn2MaPHpJgeF
-         jm4A==
-X-Gm-Message-State: ACgBeo0zKLpBXDyY+3CtrTCEFZGpeNqCBVkX52Johvy4ntBFreg9R5QG
-        J1Yu+iBEcGY+YJhwjFuYPQds14REH2/OmrqV0LQ=
-X-Google-Smtp-Source: AA6agR6OHCmnn8tCZdB3wLnDYiSz4MjJQaPKAnZVBxL4jkwALTzbKb5l7EwTPFYBGXhMb4ufXWIlKKqjMss8REmZi3g=
-X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
- (user=willmcvicker job=sendgmr) by 2002:a17:902:b484:b0:170:a2d8:80f6 with
- SMTP id y4-20020a170902b48400b00170a2d880f6mr16898465plr.97.1660173302008;
- Wed, 10 Aug 2022 16:15:02 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 23:14:44 +0000
-In-Reply-To: <20220810231445.2242126-1-willmcvicker@google.com>
-Message-Id: <20220810231445.2242126-3-willmcvicker@google.com>
-Mime-Version: 1.0
-References: <20220810231445.2242126-1-willmcvicker@google.com>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
-Subject: [PATCH v3 2/2] PCI: dwc: add support for 64-bit MSI target address
-From:   Will McVicker <willmcvicker@google.com>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Will McVicker <willmcvicker@google.com>
-Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 10 Aug 2022 19:17:02 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAD07A512;
+        Wed, 10 Aug 2022 16:17:00 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id DD1675C0178;
+        Wed, 10 Aug 2022 19:16:58 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 10 Aug 2022 19:16:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1660173418; x=1660259818; bh=dP
+        xSBr5Vd3gl0nFWhvgR0cMB3HmS0oxvmaY/XsKKQ90=; b=O/RXo4qmnVv6QywIu4
+        1rp8Z+eX5U/8B1ZMWcmEB+PQz6T2qzAmkRLXsWZStW5qBO4V24UXSsX5mimcmF/+
+        k8ZO3QfnmZ6GywInV0KtExUdhQ8y3BV3zyi0MxPeEYytdIVcS48LaYPwftTAQmZD
+        LJyGjnCgz+y/FmXKSdrLpxU86jDJWH8Ht9LjBMYNQa5LjfK5ooYeWMy731UPcKr7
+        txHPjHvup83j3Yg1SKW/oEWywobfPNMcQ41iWl9fnC7pW34NrknhybxFj7XPrFzv
+        42APQ51nKQcGZj42ubnRiQwf0rYoma6rtDLqxK7cSPLalc5t7QPuviLpZBvFjvLP
+        loMA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1660173418; x=1660259818; bh=dPxSBr5Vd3gl0
+        nFWhvgR0cMB3HmS0oxvmaY/XsKKQ90=; b=5Ku8YsM5pT0DHdOVERVaKMvQ1qcQ3
+        jezsRQduqOv48mEJbeyxwdtgWfSnvr1NMwrjXV6l4AjzyvlLQtOEi7H19RT9JoU1
+        AZBH4WSybsB/5oFP0lse3Wwmdo+Uj1CXwa5yAUxR49o/zRgsbX7WmhXYMQdbMiKS
+        Lw8XZp8wx/95owB6w2lELnRUBcdRb2fF+eErln25jmIMhekrtXxP+jrMF+emGUhK
+        EjWTOfJUZBhrvWd6Gd0bPUgXgERGngEZVSeMU4OcUkBaw2cYU40GTLyvEQMhnobf
+        8s3GIyLXoGuBNIIIsPhYYGzuVikuI4IelxgocPp0XLQST1QYwc75ql5Jg==
+X-ME-Sender: <xms:ajz0YhoS8tFJrBmlmMLWTIPTUhnr7-MHZXQMJEw54Acoyvxu9-KRCQ>
+    <xme:ajz0YjotQ2Qvz-wl7Hz1ocorREvTSNuoUR8M2AkwTBkfQiXBcXT4cr7bv8IwPAAGW
+    R-JDy-2wSDM4XF9pw>
+X-ME-Received: <xmr:ajz0YuO1FADUnwxbUmRGDpmsZhDPnxzPZ7h43HPAKCeQSo97TBwJdj3MJyHAO-ssZmhySSd4DPw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegfedgvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdljedtmdenucfjughrpefhvf
+    evufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpeffrghnihgvlhcuighuuceo
+    ugiguhesugiguhhuuhdrgiihiieqnecuggftrfgrthhtvghrnhephfejheejleejtdelie
+    efudejvdeutdetueevkeehudeuheelteethfeukedtieefnecuffhomhgrihhnpehiphhv
+    gedrshhpohhrthenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:ajz0Ys7PYnCxyDMAZ6MYXrqv9DRK6vb5FaiQ0pEL0OgqELs_d3ubmw>
+    <xmx:ajz0Yg5T8RIya38yV0j-qE78ewQj0XpBD7KmQEYSeJqds3Awwi6T_A>
+    <xmx:ajz0YkiNLRc8QkfjBG3Q3NzYDZCfav_9viiOYrMjFVjWxSwGlT3O0Q>
+    <xmx:ajz0YqSXaEqqLajNIVEnzPM8LU9hkZzvDoEWdUz9bg6XhJxikkbdeA>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 10 Aug 2022 19:16:57 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, memxor@gmail.com
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v3 1/3] selftests/bpf: Add existing connection bpf_*_ct_lookup() test
+Date:   Wed, 10 Aug 2022 17:16:42 -0600
+Message-Id: <d82d4a001572e2f29cc0537563c3ef74b1351480.1660173222.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <cover.1660173222.git.dxu@dxuuu.xyz>
+References: <cover.1660173222.git.dxu@dxuuu.xyz>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since not all devices require a 32-bit MSI address, add support to the
-PCIe host driver to allow setting the DMA mask to 64-bits. This allows
-kernels to disable ZONE_DMA32 and bounce buffering (swiotlb) without
-risking not being able to get a 32-bit address during DMA allocation.
-Basically, in the slim chance that there are no 32-bit allocations
-available, the current PCIe host driver will fail to allocate the
-msi_msg page due to a DMA address overflow (seen in [1]). With this
-patch, the PCIe driver can advertise 64-bit support via it's MSI
-capabilities to hint to the PCIe host driver to set the DMA mask to
-64-bits.
+Add a test where we do a conntrack lookup on an existing connection.
+This is nice because it's a more realistic test than artifically
+creating a ct entry and looking it up afterwards.
 
-[1] https://lore.kernel.org/all/Yo0soniFborDl7+C@google.com/
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Will McVicker <willmcvicker@google.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 ---
- drivers/pci/controller/dwc/pcie-designware-host.c | 14 ++++++++++++--
- drivers/pci/controller/dwc/pcie-designware.c      |  9 +++++++++
- drivers/pci/controller/dwc/pcie-designware.h      |  1 +
- 3 files changed, 22 insertions(+), 2 deletions(-)
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c | 59 +++++++++++++++++++
+ .../testing/selftests/bpf/progs/test_bpf_nf.c | 18 ++++++
+ 2 files changed, 77 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 39f3b37d4033..18cf96f911dc 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -330,6 +330,8 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
- 	u64 *msi_vaddr;
- 	int ret;
- 	u32 ctrl, num_ctrls;
-+	bool msi_64b = false;
-+	u16 msi_capabilities;
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+index 7a74a1579076..317978cac029 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+@@ -24,10 +24,34 @@ enum {
+ 	TEST_TC_BPF,
+ };
  
- 	for (ctrl = 0; ctrl < MAX_MSI_CTRLS; ctrl++)
- 		pp->irq_mask[ctrl] = ~0;
-@@ -367,9 +369,17 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
- 						    dw_chained_msi_isr, pp);
- 	}
- 
--	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
-+	msi_capabilities = dw_pcie_msi_capabilities(pci);
-+	if (msi_capabilities & PCI_MSI_FLAGS_ENABLE)
-+		msi_64b = msi_capabilities & PCI_MSI_FLAGS_64BIT ? true : false;
++#define TIMEOUT_MS 3000
 +
-+	dev_dbg(dev, "Setting MSI DMA mask to %s-bit.\n",
-+		msi_64b ? "64" : "32");
-+	ret = dma_set_mask_and_coherent(dev, msi_64b ?
-+					DMA_BIT_MASK(64) : DMA_BIT_MASK(32));
- 	if (ret)
--		dev_warn(dev, "Failed to set DMA mask to 32-bit. Devices with only 32-bit MSI support may not work properly\n");
-+		dev_warn(dev, "Failed to set DMA mask to %s-bit.\n",
-+			 msi_64b ? "64" : "32");
- 
- 	msi_vaddr = dmam_alloc_coherent(dev, sizeof(u64), &pp->msi_data,
- 					GFP_KERNEL);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index c6725c519a47..8ed402307d7f 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -82,6 +82,15 @@ u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap)
- }
- EXPORT_SYMBOL_GPL(dw_pcie_find_capability);
- 
-+u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
++static int connect_to_server(int srv_fd)
 +{
-+	u8 offset;
++	int fd = -1;
 +
-+	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
-+	return dw_pcie_readw_dbi(pci, offset + PCI_MSI_FLAGS);
++	fd = socket(AF_INET, SOCK_STREAM, 0);
++	if (!ASSERT_GE(fd, 0, "socket"))
++		goto out;
++
++	if (CHECK_FAIL(connect_fd_to_fd(fd, srv_fd, TIMEOUT_MS))) {
++		close(fd);
++		fd = -1;
++	}
++out:
++	return fd;
 +}
-+EXPORT_SYMBOL_GPL(dw_pcie_msi_capabilities);
 +
- static u16 dw_pcie_find_next_ext_capability(struct dw_pcie *pci, u16 start,
- 					    u8 cap)
+ static void test_bpf_nf_ct(int mode)
  {
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index a871ae7eb59e..45fcdfc8c035 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -332,6 +332,7 @@ void dw_pcie_version_detect(struct dw_pcie *pci);
++	const char *iptables = "iptables -t raw %s PREROUTING -j CT";
++	int srv_fd = -1, client_fd = -1, srv_client_fd = -1;
++	struct sockaddr_in peer_addr = {};
+ 	struct test_bpf_nf *skel;
+ 	int prog_fd, err;
++	socklen_t len;
++	u16 srv_port;
++	char cmd[64];
+ 	LIBBPF_OPTS(bpf_test_run_opts, topts,
+ 		.data_in = &pkt_v4,
+ 		.data_size_in = sizeof(pkt_v4),
+@@ -38,6 +62,32 @@ static void test_bpf_nf_ct(int mode)
+ 	if (!ASSERT_OK_PTR(skel, "test_bpf_nf__open_and_load"))
+ 		return;
  
- u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap);
- u16 dw_pcie_find_ext_capability(struct dw_pcie *pci, u8 cap);
-+u16 dw_pcie_msi_capabilities(struct dw_pcie *pci);
++	/* Enable connection tracking */
++	snprintf(cmd, sizeof(cmd), iptables, "-A");
++	if (!ASSERT_OK(system(cmd), "iptables"))
++		goto end;
++
++	srv_port = (mode == TEST_XDP) ? 5005 : 5006;
++	srv_fd = start_server(AF_INET, SOCK_STREAM, "127.0.0.1", srv_port, TIMEOUT_MS);
++	if (!ASSERT_GE(srv_fd, 0, "start_server"))
++		goto end;
++
++	client_fd = connect_to_server(srv_fd);
++	if (!ASSERT_GE(client_fd, 0, "connect_to_server"))
++		goto end;
++
++	len = sizeof(peer_addr);
++	srv_client_fd = accept(srv_fd, (struct sockaddr *)&peer_addr, &len);
++	if (!ASSERT_GE(srv_client_fd, 0, "accept"))
++		goto end;
++	if (!ASSERT_EQ(len, sizeof(struct sockaddr_in), "sockaddr len"))
++		goto end;
++
++	skel->bss->saddr = peer_addr.sin_addr.s_addr;
++	skel->bss->sport = peer_addr.sin_port;
++	skel->bss->daddr = peer_addr.sin_addr.s_addr;
++	skel->bss->dport = htons(srv_port);
++
+ 	if (mode == TEST_XDP)
+ 		prog_fd = bpf_program__fd(skel->progs.nf_xdp_ct_test);
+ 	else
+@@ -63,7 +113,16 @@ static void test_bpf_nf_ct(int mode)
+ 	ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
+ 	/* expected status is IPS_SEEN_REPLY */
+ 	ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
++	ASSERT_EQ(skel->data->test_exist_lookup, 0, "Test existing connection lookup");
+ end:
++	if (srv_client_fd != -1)
++		close(srv_client_fd);
++	if (client_fd != -1)
++		close(client_fd);
++	if (srv_fd != -1)
++		close(srv_fd);
++	snprintf(cmd, sizeof(cmd), iptables, "-D");
++	system(cmd);
+ 	test_bpf_nf__destroy(skel);
+ }
  
- int dw_pcie_read(void __iomem *addr, int size, u32 *val);
- int dw_pcie_write(void __iomem *addr, int size, u32 val);
+diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+index 196cd8dfe42a..84e0fd479794 100644
+--- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
++++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+@@ -23,6 +23,11 @@ int test_insert_entry = -EAFNOSUPPORT;
+ int test_succ_lookup = -ENOENT;
+ u32 test_delta_timeout = 0;
+ u32 test_status = 0;
++__be32 saddr = 0;
++__be16 sport = 0;
++__be32 daddr = 0;
++__be16 dport = 0;
++int test_exist_lookup = -ENOENT;
+ 
+ struct nf_conn;
+ 
+@@ -160,6 +165,19 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
+ 		}
+ 		test_alloc_entry = 0;
+ 	}
++
++	bpf_tuple.ipv4.saddr = saddr;
++	bpf_tuple.ipv4.daddr = daddr;
++	bpf_tuple.ipv4.sport = sport;
++	bpf_tuple.ipv4.dport = dport;
++	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
++		       sizeof(opts_def));
++	if (ct) {
++		test_exist_lookup = 0;
++		bpf_ct_release(ct);
++	} else {
++		test_exist_lookup = opts_def.error;
++	}
+ }
+ 
+ SEC("xdp")
 -- 
-2.37.1.559.g78731f0fdb-goog
+2.37.1
 
