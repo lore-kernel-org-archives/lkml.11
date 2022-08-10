@@ -2,146 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D360FC25B06
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F5EC25B06
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232086AbiHJJ1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
+        id S232098AbiHJJ3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232058AbiHJJ13 (ORCPT
+        with ESMTP id S232097AbiHJJ3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:27:29 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D146B648;
-        Wed, 10 Aug 2022 02:27:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660123648; x=1691659648;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=tUwaauJkG9H9jpzDjix3eFFhcAHzm8fbdGUPBBoncrI=;
-  b=MM/P6jH6MliPsW0XXGQm0jiy++NWrykY/WTFdl9Jc01IEBqiretP+fpQ
-   hGaRBEoOnUMsSrlpa429LIp4kagMjmbHkXqdNP0P84rpcs/wph62NHWD9
-   bktQIKk8sgWerQVShl45PjvqXGSr/oqob9WglaqCXg4c98TufQXDLATBo
-   x9C0jCWj+ez5wC/+mTvfm5XWwbwwlY5nrbjPIW2DeB6iTBzaz3rWjEV6c
-   7jig7dUo/O+dreymwVjaqrLVay40KDxh9ROFzZ1p0xycaL7hcD8dFjyz1
-   5v/vxjgMEMc3AL7I6FurcDlLHgdgSe2Y/D2lJfcOQAO6uTX8/xx/6KS+j
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="355042407"
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="355042407"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:27:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="664820289"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Aug 2022 02:27:17 -0700
-Date:   Wed, 10 Aug 2022 17:22:32 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 03/14] mm: Introduce memfile_notifier
-Message-ID: <20220810092232.GC862421@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-4-chao.p.peng@linux.intel.com>
- <13394075-fca0-6f2b-92a2-f1291fcec9a3@redhat.com>
+        Wed, 10 Aug 2022 05:29:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3C316B662
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:29:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660123744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cYlVavV3CJNDmR/k23+nnTOqqc22cvfzjUUlVxgKawU=;
+        b=VST4oFlF9bHb71OO0hPH1Ey8qI6kOu4nkyggi7JQnAzrhvaRYQuVtAUM0+vdFpY9hRoTGj
+        2ss7KSg7vMUh2T8fSLKfSPVdsbqZ7eKkGUg0OtRcgK9aj4UBSsuG9K+YnltK7Jw1McIQrY
+        jbfpUKdxCXxWT4v/4XmN2Jrl/YaWpzE=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-436-NYWbvh1iP-SbbKYv7jw6Tg-1; Wed, 10 Aug 2022 05:29:03 -0400
+X-MC-Unique: NYWbvh1iP-SbbKYv7jw6Tg-1
+Received: by mail-wr1-f72.google.com with SMTP id m2-20020adfc582000000b0021e28acded7so2187843wrg.13
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:29:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=cYlVavV3CJNDmR/k23+nnTOqqc22cvfzjUUlVxgKawU=;
+        b=q6fqyDSXFfH4WY1SB90CuGgeZHiW29GDuhtO7pdVsdjtjEYhWDrcTfO+00lbh4nVRL
+         syXFfQ9JmksA79qplFSdUkUScZnFLg6vn9SzEIhcVQMU2kBAN/Ev6fy7DWWFu+REaYAw
+         OEzlgCi5cUZhqU/9JuCLnLyCvTOG0m3eed7oLnHMBlomSbfd68ydZVsN7AdYoEZN6STv
+         +Pgj9AdNl8X/KncZwjOFstxFPGj20D8aczKZEmKYmHMum7edpF3M6HLaFiIDBjwmCNkN
+         AoZY10Rzam83F7XkLKzWOM5Ij4eiXNMNH6d1vC7amaMAS0BKhfWZTdbwmr3gNOiR0Xky
+         XaAw==
+X-Gm-Message-State: ACgBeo0l7m2hjT6UidAbSMpA9OH4VVmHb0aXCzwg3j8vHzT+GMXBiXG+
+        jbcvjv6eJBtD26cKBFVzUrbpQ1PKv82dxsSGBOOEtNwljl/f1KXQ1TBZfPpyHlLSPJSqYirNj1t
+        bPoA1XsGGpefnjHyamYg6Re5e
+X-Received: by 2002:a05:600c:5125:b0:3a4:f57b:d34c with SMTP id o37-20020a05600c512500b003a4f57bd34cmr1796438wms.193.1660123742438;
+        Wed, 10 Aug 2022 02:29:02 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5Ow3GCEx+75VtQ8c5nEXiLi3RCfkdiTsOt80b5J4UMof9inMEunF/B0LrI+KlpZGPls9w9Ow==
+X-Received: by 2002:a05:600c:5125:b0:3a4:f57b:d34c with SMTP id o37-20020a05600c512500b003a4f57bd34cmr1796424wms.193.1660123742178;
+        Wed, 10 Aug 2022 02:29:02 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1600:a3ce:b459:ef57:7b93? (p200300cbc7071600a3ceb459ef577b93.dip0.t-ipconnect.de. [2003:cb:c707:1600:a3ce:b459:ef57:7b93])
+        by smtp.gmail.com with ESMTPSA id u13-20020a5d514d000000b0021d7ad6b9fdsm15792376wrt.57.2022.08.10.02.29.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 02:29:01 -0700 (PDT)
+Message-ID: <40b78cfd-c43a-8624-cd1e-8680a081a10d@redhat.com>
+Date:   Wed, 10 Aug 2022 11:29:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13394075-fca0-6f2b-92a2-f1291fcec9a3@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/2] mm/hugetlb: fix hugetlb not supporting
+ write-notify
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Feiner <pfeiner@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        stable@vger.kernel.org
+References: <20220805110329.80540-1-david@redhat.com>
+ <20220805110329.80540-2-david@redhat.com> <Yu1eCsMqa641zj5C@xz-m1.local>
+ <Yu1gHnpKRZBhSTZB@monkey> <c2a3b903-099c-4b79-6923-8b288d404c51@redhat.com>
+ <Yu1ie559zt8VvDc1@monkey> <73050e64-e40f-0c94-be96-316d1e8d5f3b@redhat.com>
+ <Yu2CI4wGLHCjMSWm@monkey> <Yu2kK6s8m8NLDjuV@xz-m1.local>
+ <36bcc1f5-40e9-2d2b-3e94-18994bf62ca4@redhat.com>
+ <YvFjww9AX/BuHdSn@xz-m1.local>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YvFjww9AX/BuHdSn@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 03:22:58PM +0200, David Hildenbrand wrote:
-> On 06.07.22 10:20, Chao Peng wrote:
-> > This patch introduces memfile_notifier facility so existing memory file
-> > subsystems (e.g. tmpfs/hugetlbfs) can provide memory pages to allow a
-> > third kernel component to make use of memory bookmarked in the memory
-> > file and gets notified when the pages in the memory file become
-> > invalidated.
+On 08.08.22 21:28, Peter Xu wrote:
+> On Mon, Aug 08, 2022 at 06:36:58PM +0200, David Hildenbrand wrote:
+>> Well, because the write-fault handler as is cannot deal with
+>> write-faults in shared mappings. It cannot possibly work or ever have
+>> worked.
 > 
-> Stupid question, but why is this called "memfile_notifier" and not
-> "memfd_notifier". We're only dealing with memfd's after all ... which
-> are anonymous files essentially. Or what am I missing? Are there any
-> other plans for fs than plain memfd support that I am not aware of?
-
-There were some discussions on this in v3.
-  https://lkml.org/lkml/2021/12/28/484
-Sean commented it's OK to abstract it from memfd but he also wants the
-kAPI (name) should not bind to memfd to make room for future non-memfd
-usages.
-
+> Trivially - maybe drop the word "require" in "Hugetlb does not
+> require/support writenotify"?
 > 
-> > 
-> > It will be used for KVM to use a file descriptor as the guest memory
-> > backing store and KVM will use this memfile_notifier interface to
-> > interact with memory file subsystems. In the future there might be other
-> > consumers (e.g. VFIO with encrypted device memory).
-> > 
-> > It consists below components:
-> >  - memfile_backing_store: Each supported memory file subsystem can be
-> >    implemented as a memory backing store which bookmarks memory and
-> >    provides callbacks for other kernel systems (memfile_notifier
-> >    consumers) to interact with.
-> >  - memfile_notifier: memfile_notifier consumers defines callbacks and
-> >    associate them to a file using memfile_register_notifier().
-> >  - memfile_node: A memfile_node is associated with the file (inode) from
-> >    the backing store and includes feature flags and a list of registered
-> >    memfile_notifier for notifying.
-> > 
-> > In KVM usages, userspace is in charge of guest memory lifecycle: it first
-> > allocates pages in memory backing store and then passes the fd to KVM and
-> > lets KVM register memory slot to memory backing store via
-> > memfile_register_notifier.
-> 
-> Can we add documentation/description in any form how the different
-> functions exposed in linux/memfile_notifier.h are supposed to be used?
 
-Yeah, code comments can be added.
+Sure, can do.
 
-> 
-> Staring at memfile_node_set_flags() and memfile_notifier_invalidate()
-> it's not immediately clear to me who's supposed to call that and under
-> which conditions.
+-- 
+Thanks,
 
-I will also amend the commit message.
+David / dhildenb
 
-Chao
-> 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
