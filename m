@@ -2,211 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75C5C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF95C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232046AbiHJJYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S232048AbiHJJ0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232037AbiHJJXs (ORCPT
+        with ESMTP id S230429AbiHJJ0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:23:48 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795816B17B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:23:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660123427; x=1691659427;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rgieq/Wsgk3jqwiwYP1VAy49GFLpvxdyT4P/eM4dz9o=;
-  b=Y7gz7eOKoWMr1OjJS8aF7QtXBQj+jYdirl/tQs+Ay/YNyum75n2f7tFC
-   U45Z4PqpF7ExDjNNsFaHMpwGCyLZzCN66mFfW1T2KD3WHrr3sJEk7qtFF
-   eLAhrStbC8wmzHla9/XtoVyMOzTK1sU2HUz09jNsoYePJ8L/5L+iDRhy4
-   gGD70+bcv3oyNleri54L97T+SDDaGUh8LiCEj5eeRy+FJha8vxstaWi/L
-   vEwzbzUsRWZbNUavhpwLKqbEx+fq5GQr/DkgKvh5wUDrS9hTnSGJiLgEJ
-   lD1x4gjvQ+FDXxS0F7UB0mVZHUXtyisxlPzn1bfTqCkbYBV04bs3r8Z2p
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="291828825"
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="291828825"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:23:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="932821049"
-Received: from lkp-server02.sh.intel.com (HELO 5d6b42aa80b8) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Aug 2022 02:23:45 -0700
-Received: from kbuild by 5d6b42aa80b8 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oLhwG-00006h-1W;
-        Wed, 10 Aug 2022 09:23:44 +0000
-Date:   Wed, 10 Aug 2022 17:22:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jude Shih <shenshih@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:linux-5.15.y 8765/9027]
- drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:632:6: warning:
- no previous prototype for 'dmub_aux_setconfig_callback'
-Message-ID: <202208101710.k7almVm5-lkp@intel.com>
+        Wed, 10 Aug 2022 05:26:00 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A28357263
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:25:59 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M2kxf0ynfzlVyq;
+        Wed, 10 Aug 2022 17:23:02 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 10 Aug 2022 17:25:55 +0800
+Received: from huawei.com (7.220.126.23) by dggpemm500014.china.huawei.com
+ (7.185.36.153) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
+ 2022 17:25:54 +0800
+From:   zhangsong <zhangsong34@huawei.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>
+CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
+        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>,
+        zhangsong <zhangsong34@huawei.com>
+Subject: [PATCH v3] sched/fair: Introduce priority load balance to reduce interference from IDLE tasks
+Date:   Wed, 10 Aug 2022 17:25:46 +0800
+Message-ID: <20220810092546.3901325-1-zhangsong34@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [7.220.126.23]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-head:   9c5eacc2ad1f605c31c69d9e2436823ada99f1dc
-commit: 734d5ce02cb069cccedc993d8f1dc0ea41cfa3dd [8765/9027] drm/amd/display: Support for DMUB HPD interrupt handling
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220810/202208101710.k7almVm5-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=734d5ce02cb069cccedc993d8f1dc0ea41cfa3dd
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.15.y
-        git checkout 734d5ce02cb069cccedc993d8f1dc0ea41cfa3dd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/
+For co-location with NORMAL and IDLE tasks, when CFS trigger load balance,
+it is reasonable to prefer migrating NORMAL(Latency Sensitive) tasks from
+the busy src CPU to dst CPU, and migrating IDLE tasks lastly.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Consider the situation that CPU A has several normal tasks and hundreds
+of idle tasks while CPU B is idle, and CPU B needs to pull some tasks
+from CPU A, but the cfs_tasks in CPU A are not in order of priority,
+and the max number of pulling tasks depends on env->loop_max, which value
+is sysctl_sched_nr_migrate, i.e. 32. We now cannot guarantee that CPU B
+can pull a certain number of normal tasks instead of idle tasks from the
+waiting queue of CPU A. So it is necessary to divide cfs_tasks into two
+different lists and ensure that tasks in none-idle list can be migrated
+firstly.
 
-All warnings (new ones prefixed by >>):
+This is very important for reducing interference from IDLE tasks.
+So the CFS load balance can be optimized to below:
 
->> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:632:6: warning: no previous prototype for 'dmub_aux_setconfig_callback' [-Wmissing-prototypes]
-     632 | void dmub_aux_setconfig_callback(struct amdgpu_device *adev, struct dmub_notification *notify)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:648:6: warning: no previous prototype for 'dmub_hpd_callback' [-Wmissing-prototypes]
-     648 | void dmub_hpd_callback(struct amdgpu_device *adev, struct dmub_notification *notify)
-         |      ^~~~~~~~~~~~~~~~~
->> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:702:6: warning: no previous prototype for 'register_dmub_notify_callback' [-Wmissing-prototypes]
-     702 | bool register_dmub_notify_callback(struct amdgpu_device *adev, enum dmub_notification_type type,
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/os_types.h:37,
-                    from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services_types.h:29,
-                    from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:29:
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c: In function 'dm_dmub_outbox1_low_irq':
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:763:51: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'unsigned int' [-Wformat=]
-     763 |                                         DRM_ERROR("DM: notify type %d larger than the array size %ld !", notify.type,
-         |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/drm/drm_print.h:498:19: note: in definition of macro 'DRM_ERROR'
-     498 |         __drm_err(fmt, ##__VA_ARGS__)
-         |                   ^~~
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:763:100: note: format string is defined here
-     763 |                                         DRM_ERROR("DM: notify type %d larger than the array size %ld !", notify.type,
-         |                                                                                                  ~~^
-         |                                                                                                    |
-         |                                                                                                    long int
-         |                                                                                                  %d
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c: In function 'dm_update_mst_vcpi_slots_for_dsc':
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:7014:19: warning: variable 'clock' set but not used [-Wunused-but-set-variable]
-    7014 |         int i, j, clock;
-         |                   ^~~~~
---
->> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:633: warning: expecting prototype for dmub_aux_setconfig_reply_callback(). Prototype was for dmub_aux_setconfig_callback() instead
+1.`cfs_tasks` list of CPU rq is owned by NORMAL tasks.
+2.`cfs_idle_tasks` list of CPU rq which is owned by IDLE tasks.
+3.Prefer to migrate NORMAL tasks of cfs_tasks to dst CPU.
+4.Lastly migrate IDLE tasks of cfs_idle_tasks to dst CPU.
 
+This was tested with the following reproduction:
+- small number of NORMAL tasks colocated with a large number of IDLE tasks
 
-vim +/dmub_aux_setconfig_callback +632 drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c
+With this patch, NORMAL tasks latency can be reduced
+about 5~10% compared with current.
 
-   622	
-   623	/**
-   624	 * dmub_aux_setconfig_reply_callback - Callback for AUX or SET_CONFIG command.
-   625	 * @adev: amdgpu_device pointer
-   626	 * @notify: dmub notification structure
-   627	 *
-   628	 * Dmub AUX or SET_CONFIG command completion processing callback
-   629	 * Copies dmub notification to DM which is to be read by AUX command.
-   630	 * issuing thread and also signals the event to wake up the thread.
-   631	 */
- > 632	void dmub_aux_setconfig_callback(struct amdgpu_device *adev, struct dmub_notification *notify)
- > 633	{
-   634		if (adev->dm.dmub_notify)
-   635			memcpy(adev->dm.dmub_notify, notify, sizeof(struct dmub_notification));
-   636		if (notify->type == DMUB_NOTIFICATION_AUX_REPLY)
-   637			complete(&adev->dm.dmub_aux_transfer_done);
-   638	}
-   639	
-   640	/**
-   641	 * dmub_hpd_callback - DMUB HPD interrupt processing callback.
-   642	 * @adev: amdgpu_device pointer
-   643	 * @notify: dmub notification structure
-   644	 *
-   645	 * Dmub Hpd interrupt processing callback. Gets displayindex through the
-   646	 * ink index and calls helper to do the processing.
-   647	 */
- > 648	void dmub_hpd_callback(struct amdgpu_device *adev, struct dmub_notification *notify)
-   649	{
-   650		struct amdgpu_dm_connector *aconnector;
-   651		struct drm_connector *connector;
-   652		struct drm_connector_list_iter iter;
-   653		struct dc_link *link;
-   654		uint8_t link_index = 0;
-   655		struct drm_device *dev = adev->dm.ddev;
-   656	
-   657		if (adev == NULL)
-   658			return;
-   659	
-   660		if (notify == NULL) {
-   661			DRM_ERROR("DMUB HPD callback notification was NULL");
-   662			return;
-   663		}
-   664	
-   665		if (notify->link_index > adev->dm.dc->link_count) {
-   666			DRM_ERROR("DMUB HPD index (%u)is abnormal", notify->link_index);
-   667			return;
-   668		}
-   669	
-   670		drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
-   671	
-   672		link_index = notify->link_index;
-   673	
-   674		link = adev->dm.dc->links[link_index];
-   675	
-   676		drm_connector_list_iter_begin(dev, &iter);
-   677		drm_for_each_connector_iter(connector, &iter) {
-   678			aconnector = to_amdgpu_dm_connector(connector);
-   679			if (link && aconnector->dc_link == link) {
-   680				DRM_INFO("DMUB HPD callback: link_index=%u\n", link_index);
-   681				handle_hpd_irq_helper(aconnector);
-   682				break;
-   683			}
-   684		}
-   685		drm_connector_list_iter_end(&iter);
-   686		drm_modeset_unlock(&dev->mode_config.connection_mutex);
-   687	
-   688	}
-   689	
-   690	/**
-   691	 * register_dmub_notify_callback - Sets callback for DMUB notify
-   692	 * @adev: amdgpu_device pointer
-   693	 * @type: Type of dmub notification
-   694	 * @callback: Dmub interrupt callback function
-   695	 * @dmub_int_thread_offload: offload indicator
-   696	 *
-   697	 * API to register a dmub callback handler for a dmub notification
-   698	 * Also sets indicator whether callback processing to be offloaded.
-   699	 * to dmub interrupt handling thread
-   700	 * Return: true if successfully registered, false if there is existing registration
-   701	 */
- > 702	bool register_dmub_notify_callback(struct amdgpu_device *adev, enum dmub_notification_type type,
-   703	dmub_notify_interrupt_callback_t callback, bool dmub_int_thread_offload)
-   704	{
-   705		if (callback != NULL && type < ARRAY_SIZE(adev->dm.dmub_thread_offload)) {
-   706			adev->dm.dmub_callback[type] = callback;
-   707			adev->dm.dmub_thread_offload[type] = dmub_int_thread_offload;
-   708		} else
-   709			return false;
-   710	
-   711		return true;
-   712	}
-   713	
+Signed-off-by: zhangsong <zhangsong34@huawei.com>
+---
+V2->V3:
+- rename variable loop(int) to has_detach_cfs_idle(bool)
+  and make it more readable
+- add more description for priority load balance
+---
+ kernel/sched/core.c  |  1 +
+ kernel/sched/fair.c  | 47 ++++++++++++++++++++++++++++++++++++++++----
+ kernel/sched/sched.h |  1 +
+ 3 files changed, 45 insertions(+), 4 deletions(-)
 
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index ee28253c9ac0..7325c6e552d8 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -9733,6 +9733,7 @@ void __init sched_init(void)
+ 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
+ 
+ 		INIT_LIST_HEAD(&rq->cfs_tasks);
++		INIT_LIST_HEAD(&rq->cfs_idle_tasks);
+ 
+ 		rq_attach_root(rq, &def_root_domain);
+ #ifdef CONFIG_NO_HZ_COMMON
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 914096c5b1ae..189c2b3131ec 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3034,6 +3034,21 @@ static inline void update_scan_period(struct task_struct *p, int new_cpu)
+ 
+ #endif /* CONFIG_NUMA_BALANCING */
+ 
++#ifdef CONFIG_SMP
++static void
++adjust_rq_cfs_tasks(void (*list_op)(struct list_head *, struct list_head *),
++	struct rq *rq,
++	struct sched_entity *se)
++{
++	struct cfs_rq *cfs_rq = cfs_rq_of(se);
++
++	if (task_has_idle_policy(task_of(se)) || tg_is_idle(cfs_rq->tg))
++		(*list_op)(&se->group_node, &rq->cfs_idle_tasks);
++	else
++		(*list_op)(&se->group_node, &rq->cfs_tasks);
++}
++#endif
++
+ static void
+ account_entity_enqueue(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ {
+@@ -3043,7 +3058,7 @@ account_entity_enqueue(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ 		struct rq *rq = rq_of(cfs_rq);
+ 
+ 		account_numa_enqueue(rq, task_of(se));
+-		list_add(&se->group_node, &rq->cfs_tasks);
++		adjust_rq_cfs_tasks(list_add, rq, se);
+ 	}
+ #endif
+ 	cfs_rq->nr_running++;
+@@ -7465,7 +7480,7 @@ done: __maybe_unused;
+ 	 * the list, so our cfs_tasks list becomes MRU
+ 	 * one.
+ 	 */
+-	list_move(&p->se.group_node, &rq->cfs_tasks);
++	adjust_rq_cfs_tasks(list_move, rq, &p->se);
+ #endif
+ 
+ 	if (hrtick_enabled_fair(rq))
+@@ -7788,6 +7803,9 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
+ 	if (unlikely(task_has_idle_policy(p)))
+ 		return 0;
+ 
++	if (tg_is_idle(cfs_rq_of(&p->se)->tg))
++		return 0;
++
+ 	/* SMT siblings share cache */
+ 	if (env->sd->flags & SD_SHARE_CPUCAPACITY)
+ 		return 0;
+@@ -7800,6 +7818,11 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
+ 			 &p->se == cfs_rq_of(&p->se)->last))
+ 		return 1;
+ 
++	/* Preempt sched idle cpu do not consider migration cost */
++	if (cpus_share_cache(env->src_cpu, env->dst_cpu) &&
++	    sched_idle_cpu(env->dst_cpu))
++		return 0;
++
+ 	if (sysctl_sched_migration_cost == -1)
+ 		return 1;
+ 
+@@ -7990,11 +8013,14 @@ static void detach_task(struct task_struct *p, struct lb_env *env)
+ static struct task_struct *detach_one_task(struct lb_env *env)
+ {
+ 	struct task_struct *p;
++	struct list_head *tasks = &env->src_rq->cfs_tasks;
++	bool has_detach_cfs_idle = false;
+ 
+ 	lockdep_assert_rq_held(env->src_rq);
+ 
++again:
+ 	list_for_each_entry_reverse(p,
+-			&env->src_rq->cfs_tasks, se.group_node) {
++			tasks, se.group_node) {
+ 		if (!can_migrate_task(p, env))
+ 			continue;
+ 
+@@ -8009,6 +8035,11 @@ static struct task_struct *detach_one_task(struct lb_env *env)
+ 		schedstat_inc(env->sd->lb_gained[env->idle]);
+ 		return p;
+ 	}
++	if (!has_detach_cfs_idle) {
++		has_detach_cfs_idle = true;
++		tasks = &env->src_rq->cfs_idle_tasks;
++		goto again;
++	}
+ 	return NULL;
+ }
+ 
+@@ -8026,6 +8057,7 @@ static int detach_tasks(struct lb_env *env)
+ 	unsigned long util, load;
+ 	struct task_struct *p;
+ 	int detached = 0;
++	bool has_detach_cfs_idle = false;
+ 
+ 	lockdep_assert_rq_held(env->src_rq);
+ 
+@@ -8041,6 +8073,7 @@ static int detach_tasks(struct lb_env *env)
+ 	if (env->imbalance <= 0)
+ 		return 0;
+ 
++again:
+ 	while (!list_empty(tasks)) {
+ 		/*
+ 		 * We don't want to steal all, otherwise we may be treated likewise,
+@@ -8142,6 +8175,12 @@ static int detach_tasks(struct lb_env *env)
+ 		list_move(&p->se.group_node, tasks);
+ 	}
+ 
++	if (env->imbalance > 0 && !has_detach_cfs_idle) {
++		has_detach_cfs_idle = true;
++		tasks = &env->src_rq->cfs_idle_tasks;
++		goto again;
++	}
++
+ 	/*
+ 	 * Right now, this is one of only two places we collect this stat
+ 	 * so we can safely collect detach_one_task() stats here rather
+@@ -11643,7 +11682,7 @@ static void set_next_task_fair(struct rq *rq, struct task_struct *p, bool first)
+ 		 * Move the next running task to the front of the list, so our
+ 		 * cfs_tasks list becomes MRU one.
+ 		 */
+-		list_move(&se->group_node, &rq->cfs_tasks);
++		adjust_rq_cfs_tasks(list_move, rq, se);
+ 	}
+ #endif
+ 
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index e26688d387ae..accb4eea9769 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1068,6 +1068,7 @@ struct rq {
+ 	int			online;
+ 
+ 	struct list_head cfs_tasks;
++	struct list_head cfs_idle_tasks;
+ 
+ 	struct sched_avg	avg_rt;
+ 	struct sched_avg	avg_dl;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.27.0
+
