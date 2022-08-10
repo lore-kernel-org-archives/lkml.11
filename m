@@ -2,122 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628F3C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9BDC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231187AbiHJKb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 06:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
+        id S231387AbiHJKlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 06:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiHJKb4 (ORCPT
+        with ESMTP id S229446AbiHJKlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 06:31:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FBF753AD
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 03:31:54 -0700 (PDT)
+        Wed, 10 Aug 2022 06:41:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC396B665;
+        Wed, 10 Aug 2022 03:41:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8800DB81B57
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A9CC433D7;
-        Wed, 10 Aug 2022 10:31:49 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     loongarch@lists.linux.dev, Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-kernel@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH] LoongArch: Fix the !CONFIG_SMP build for irqchip drivers
-Date:   Wed, 10 Aug 2022 18:31:56 +0800
-Message-Id: <20220810103156.1214996-1-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9A2A61199;
+        Wed, 10 Aug 2022 10:41:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7143C433C1;
+        Wed, 10 Aug 2022 10:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660128075;
+        bh=CJ+veYLE2yi0irO1SQ0dJ19o4C5fKkXVLX0IMO8dpuI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dBkxsAB8whfxkXG9rTnqrm6ZGXaJHZlv9QVSo4n5v7M9t4NMAI/JJrhYOiSMzfVBI
+         dwvbTf/RhcxkBHkZ0O2+UzCP+2pEOJDeo6O0+c6/mCu9tucgX1mztxq4HpQnOlRWfV
+         /2oFFEMiv8xOnzKB635KgaDMVwOUT5FaMMZ76ViU=
+Date:   Wed, 10 Aug 2022 12:41:12 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Szuying Chen <chensiying21@gmail.com>
+Cc:     mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
+        michael.jamet@intel.com, YehezkelShB@gmail.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yd_Tseng@asmedia.com.tw, Chloe_Chen@asmedia.com.tw,
+        Richard_Hsu@asmedia.com.tw
+Subject: Re: [PATCH] thunderbolt: thunderbolt: add vendor's NVM formats
+Message-ID: <YvOLSH2gLz8vJS//@kroah.com>
+References: <20220810101743.11214-1-chensiying21@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810101743.11214-1-chensiying21@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1, Guard get_ipi_irq() in CONFIG_SMP;
-2, Define cpu_logical_map() for the EIOINTC driver;
-3, Make eiointc_set_irq_affinity() return early for !CONFIG_SMP.
+On Wed, Aug 10, 2022 at 06:17:43PM +0800, Szuying Chen wrote:
+> The patch add tb_nvm_quirks() contain an array that has functions
+> pointers to tb_nvm_vendor_apply().
+> And tb_nvm_vendor_apply() that recognize supported vendor works in one
+> of the following cases:
+> Case NvmUpgradeSuppport: enable nvm's attribute by setting
+> no_nvm_upgrade flag to create nvm_authenticate file node.
+> Case NvmAdd:add active/non-active NVM devices.
+> Case NvmWrite:update firmware to non-ative NVM device.
+> 
+> Signed-off-by: Szuying Chen <chensiying21@gmail.com>
+> ---
+>  drivers/thunderbolt/nvm.c    | 59 ++++++++++++++----------------------
+>  drivers/thunderbolt/switch.c | 19 +++++++-----
+>  drivers/thunderbolt/tb.h     | 18 +++++++----
+>  3 files changed, 46 insertions(+), 50 deletions(-)
 
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/smp.h       | 8 ++++++++
- arch/loongarch/kernel/irq.c            | 2 ++
- drivers/irqchip/irq-loongson-eiointc.c | 5 +++++
- 3 files changed, 15 insertions(+)
+This patch does not apply to any tree that I work with.  Please make it
+against Linus's latest tree right now, or linux-next to be safe.
 
-diff --git a/arch/loongarch/include/asm/smp.h b/arch/loongarch/include/asm/smp.h
-index 71189b28bfb2..9ee5a309df5b 100644
---- a/arch/loongarch/include/asm/smp.h
-+++ b/arch/loongarch/include/asm/smp.h
-@@ -12,6 +12,8 @@
- #include <linux/threads.h>
- #include <linux/cpumask.h>
- 
-+#ifdef CONFIG_SMP
-+
- extern int smp_num_siblings;
- extern int num_processors;
- extern int disabled_cpus;
-@@ -112,4 +114,10 @@ static inline void __cpu_die(unsigned int cpu)
- extern void play_dead(void);
- #endif
- 
-+#else /* !CONFIG_SMP */
-+
-+#define cpu_logical_map(cpu)  0
-+
-+#endif
-+
- #endif /* __ASM_SMP_H */
-diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
-index 1ba19c76563e..d83623bc59fa 100644
---- a/arch/loongarch/kernel/irq.c
-+++ b/arch/loongarch/kernel/irq.c
-@@ -87,6 +87,7 @@ static void __init init_vec_parent_group(void)
- 	acpi_table_parse(ACPI_SIG_MCFG, early_pci_mcfg_parse);
- }
- 
-+#ifdef CONFIG_SMP
- static int __init get_ipi_irq(void)
- {
- 	struct irq_domain *d = irq_find_matching_fwnode(cpuintc_handle, DOMAIN_BUS_ANY);
-@@ -96,6 +97,7 @@ static int __init get_ipi_irq(void)
- 
- 	return -EINVAL;
- }
-+#endif
- 
- void __init init_IRQ(void)
- {
-diff --git a/drivers/irqchip/irq-loongson-eiointc.c b/drivers/irqchip/irq-loongson-eiointc.c
-index 80d8ca6f2d46..17f94f3c11af 100644
---- a/drivers/irqchip/irq-loongson-eiointc.c
-+++ b/drivers/irqchip/irq-loongson-eiointc.c
-@@ -18,6 +18,8 @@
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- 
-+#include <asm/smp.h>
-+
- #define EIOINTC_REG_NODEMAP	0x14a0
- #define EIOINTC_REG_IPMAP	0x14c0
- #define EIOINTC_REG_ENABLE	0x1600
-@@ -96,6 +98,9 @@ static int eiointc_set_irq_affinity(struct irq_data *d, const struct cpumask *af
- 	struct cpumask intersect_affinity;
- 	struct eiointc_priv *priv = d->domain->host_data;
- 
-+	if (!IS_ENABLED(CONFIG_SMP))
-+		return -EPERM;
-+
- 	raw_spin_lock_irqsave(&affinity_lock, flags);
- 
- 	cpumask_and(&intersect_affinity, affinity, cpu_online_mask);
--- 
-2.31.1
+thanks,
 
+greg k-h
