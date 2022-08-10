@@ -2,171 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDB6C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2175C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbiHJHwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 03:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        id S231520AbiHJHw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 03:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231512AbiHJHwK (ORCPT
+        with ESMTP id S231536AbiHJHwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 03:52:10 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8912F74341
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 00:52:09 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id y13so26158233ejp.13
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 00:52:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=XVSnkMwhvdCAXSk0pnxudE8JlTnO8bAUtjVsNUeiSVM=;
-        b=lqD2J2w7ql2U9DSaPmtI+q9+2IieXSsyZaE8hMpCS5L4qtH8XNJTKmFFz3vNrEg2F2
-         iT1mye2RdOc/OnBXu7c4j31KTg/uZ1cMZIJq0eIpznKw0/mO1R0GqZX3BISoMxZganGm
-         R10hJdwagRVs+GoryDoLebVTwSJbRnFECucYX4wFM7nFjT35y+4aUktEkW/UqfCJJsYO
-         Ii/diHJ35elEpai0Z9godoYitWjZpEP4wCSbto026aXcbvfEhEETOdlCEHgv1ElOpmRu
-         3siFlfsh+H3je262C3Kmcz2ktGK2FaR2qgLfMy7wP8649coZ5pPqjwoNTxGdxWaXq0HF
-         /e0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=XVSnkMwhvdCAXSk0pnxudE8JlTnO8bAUtjVsNUeiSVM=;
-        b=l+mOGuwTYXdMBmAEmfBLSXLrenydTcl2y49p5j2qKuARLPo0bMCkvYN2YMaL7knIZw
-         26KzoRdvtROM2dXsa6+i0XUM8MngV+tsGhmzT+bc1gcSVdF0mJWwM35ywYkp2SzIoOeO
-         zJ5ndmISgIEl7wgxAA7G33zaTQBCssKBB+/eDVTvtU0t1MKhqqmFxuyYs/dhQsXYD4WB
-         8amWf4dKVXTByqGm3mkiwvcgYWkVXB5eDBmRMDkFefagaDFval3d5GarYcthFJvCA5cf
-         zDGu8C+Xtz3AH+SB2u3YI5eCRpzf1aPPr0Bs67FriH6c91alZJ1HPe7RdlcYYl5ZuiO0
-         UfFg==
-X-Gm-Message-State: ACgBeo0ILKiVDpC84GOIX+wcR4aGSSBs+bblPAxp8qYAJIRvut+VcAiy
-        u7ZL5dm50zpKMxrZkpBONhWHPnLyIjFVS7wgwJR9RKMRFcFkhA==
-X-Google-Smtp-Source: AA6agR5lF83OUgtGOqZ4wYoHWdo8ZvYE0AxJjNzeXk/fXVsk0StAuquZINiLHEedp6/mxH1jhW4/3Kr//SzVhN1E5ho=
-X-Received: by 2002:a17:907:86ac:b0:731:5180:8aa0 with SMTP id
- qa44-20020a17090786ac00b0073151808aa0mr10285234ejc.366.1660117927843; Wed, 10
- Aug 2022 00:52:07 -0700 (PDT)
+        Wed, 10 Aug 2022 03:52:23 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E04B7644E;
+        Wed, 10 Aug 2022 00:52:17 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27A7olSo026180;
+        Wed, 10 Aug 2022 07:51:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=vWhQZqGRBkYSNRYjuN2l4W9cDAXE3v1d1zqQPcld/Yg=;
+ b=HCXfW7XGvMhanr6FFQfW/Cnu5U4UXv9QAlJse3Gh0tuFaXdmjvkJHXjUulu9hzuWxrGM
+ byJ3P6aOoLbltVmOpF8Pn5SWPQj+BAOAncvD2DdznfbEHL2C+LBAOuYme3W7tJePuBuJ
+ GKl14XQNe5vgbyC4X+qjvZHRosrbC/YMcP8Q4a5arJIZuyWs54m4twWYXyfHhtZ/kUgL
+ E8czOK11I3++d/JdH0hpWO3fEQ1jLZ7mbUfOkiaWcmHo9RFpxhMajZIP1TblSYD9FlCA
+ nfC6Oy04fM0PODnXJDecIg3Yu2uzfyvdioV39moJsOvt2plKbPuQ+weOEgXp0EQIn/e4 Ng== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3huwqqhktp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 10 Aug 2022 07:51:36 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27A7kZS9007576
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 10 Aug 2022 07:46:35 GMT
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 10 Aug 2022 00:46:35 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 10 Aug 2022 00:46:30 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v3 2/8] dt-bindings: remoteproc: qcom: adsp: Add required bindings for SC7280
+Date:   Wed, 10 Aug 2022 13:15:52 +0530
+Message-ID: <1660117558-21829-3-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1660117558-21829-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1660117558-21829-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-References: <20220809175513.345597655@linuxfoundation.org>
-In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 10 Aug 2022 13:21:56 +0530
-Message-ID: <CA+G9fYsE4qzpAjayZdLQe5Jnh90zfXQpgQof1dKu9QGbTpU_ZQ@mail.gmail.com>
-Subject: Re: [PATCH 5.19 00/21] 5.19.1-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: dg7DDzfdiAj7zw6mNmBU_BCKpyafln6t
+X-Proofpoint-ORIG-GUID: dg7DDzfdiAj7zw6mNmBU_BCKpyafln6t
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-10_03,2022-08-09_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 adultscore=0 lowpriorityscore=0 mlxlogscore=999
+ impostorscore=0 mlxscore=0 bulkscore=0 phishscore=0 clxscore=1015
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208100022
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 9 Aug 2022 at 23:38, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.19.1 release.
-> There are 21 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.1-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Add compatible name, clocks and update max reg items for SC7280
+based platforms.
+Add adsp-memory-regions property, required for memory sandboxing.
 
-Results from Linaro's test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+Changes since V2:
+	-- Add clock property.
+	-- Add qcom,adsp-memory-regions property.
+Changes since V1:
+	-- Change reg property maxItems to minItems and update description.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+ .../bindings/remoteproc/qcom,lpass-adsp-pil.yaml          | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-## Build
-* kernel: 5.19.1-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.19.y
-* git commit: 8054ca35012635b5d3f63311bd312e7149d80b38
-* git describe: v5.19-22-g8054ca350126
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.19.y/build/v5.19-22-g8054ca350126/
-
-## No test regressions (compared to v5.19.0)
-
-## No metric regressions (compared to v5.19.0)
-
-## No test fixes (compared to v5.19.0)
-
-## No metric fixes (compared to v5.19.0)
-
-## Test result summary
-total: 134782, pass: 120620, fail: 1758, skip: 12404, xfail: 0
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 301 total, 301 passed, 0 failed
-* arm64: 62 total, 60 passed, 2 failed
-* i386: 52 total, 50 passed, 2 failed
-* mips: 45 total, 45 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 60 total, 54 passed, 6 failed
-* riscv: 27 total, 22 passed, 5 failed
-* s390: 18 total, 18 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 55 total, 53 passed, 2 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
+index 9f11332..45bc732 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
+@@ -17,11 +17,13 @@ properties:
+   compatible:
+     enum:
+       - qcom,sdm845-adsp-pil
++      - qcom,sc7280-adsp-pil
+ 
+   reg:
+-    maxItems: 1
+-    description:
+-      The base address and size of the qdsp6ss register
++    minItems: 1
++    items:
++      - description: qdsp6ss register
++      - description: efuse q6ss register
+ 
+   interrupts:
+     items:
+@@ -48,6 +50,7 @@ properties:
+       - description: QDSP XO clock
+       - description: Q6SP6SS SLEEP clock
+       - description: Q6SP6SS CORE clock
++      - description: GCC CFG NOC clock
+ 
+   clock-names:
+     items:
+@@ -58,6 +61,7 @@ properties:
+       - const: qdsp6ss_xo
+       - const: qdsp6ss_sleep
+       - const: qdsp6ss_core
++      - const: gcc_cfg_noc
+ 
+   power-domains:
+     items:
+@@ -77,6 +81,11 @@ properties:
+     maxItems: 1
+     description: Reference to the reserved-memory for the Hexagon core
+ 
++  qcom,adsp-memory-regions:
++    minItems: 1
++    items:
++      - description: List of memory regions accessed by ADSP firmware.
++
+   qcom,halt-regs:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+     description:
 -- 
-Linaro LKFT
-https://lkft.linaro.org
+2.7.4
+
