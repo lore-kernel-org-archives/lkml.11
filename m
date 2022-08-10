@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1338C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 253ECC25B06
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231968AbiHJJIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34684 "EHLO
+        id S231976AbiHJJMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231954AbiHJJIT (ORCPT
+        with ESMTP id S231804AbiHJJMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:08:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706EF76479
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:08:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6C960F9B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:08:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A596C433D7;
-        Wed, 10 Aug 2022 09:08:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660122497;
-        bh=fnXaYwu3upLYBGaCBhQVJsI6d8huckYTIO7QAKu6jbw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YzqWJvJljaFP+0uMFd6W7GvVRh+qxWz5GANjJX6mGnttSqImwNuSFc3PgYyc8x7i1
-         x9ZurvdkivxUh1CGzMHoxlATklGYYuFeK9uvrlzNjjn4jarVnppp2Js/TAezDVrqBF
-         M0jeIrimVCAwmF/tfqu/8hXguXVl2CRgc9X+EtmimwVhWgpAsjGrTuBGneOdtmiqlL
-         ljD+kBpAqL2Bih/bQkrk9Ur38XgBBT0rPJ1Dse10CT2u3MHaEjG7HRat0e0H9hDO96
-         z+5pghP0Iu2HjlXgnZM3opdGcm4oLPAqK1Mlzp3L0TdPSf8lrJBGkfnucqEsLQzq/K
-         7SoqgfXU7UQ8g==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=valley-girl.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1oLhhH-0025nz-07;
-        Wed, 10 Aug 2022 10:08:15 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org
-Cc:     oliver.upton@linux.dev, suzuki.poulose@arm.com,
-        james.morse@arm.com, alexandru.elisei@arm.com
-Subject: Re: [PATCH v3] KVM: arm64: fix compile error because of shift overflow
-Date:   Wed, 10 Aug 2022 10:08:10 +0100
-Message-Id: <166012247956.2742754.12984698031789785989.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220810013435.1525363-1-yangyingliang@huawei.com>
-References: <20220810013435.1525363-1-yangyingliang@huawei.com>
+        Wed, 10 Aug 2022 05:12:23 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D84286C2B
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:12:22 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e020be600b002dcc7977592so10157217ilu.17
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:12:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=oZmlmPgFuLzTVeJwCUtsQn3jK92/Zbe9geTOC8F9kDE=;
+        b=7sHw/qdwTonweOa+ettd5H6TPvBenoNDME8L8xmIMOQrqwVpSzKEn0kjpXjd+uqVto
+         fKJiND2kG8sF6CkGscXRkjfhENRcm5kPCTQHGo4MwhQtaEy/dJmwsH0rAxsnIMkadtlz
+         K6wesmFn43uy4Hr0rzFuEKMrqmeXUfY865r1qmxIb5ugn1zmhzKGpY4Z61pRjkYFo1ec
+         0ff6/vSuzPN5zS5HcNQD3uw6fCOzcI1l5ngd8My9i+GgJlpO9bUySaVoKqACEr06aZ2y
+         DMn4gwFz4VikuiASBOfwke8xCsNyl12f8Ea8ChzP9HUXcjH1G6LSgkfnhTiR0Lg0Xe0O
+         RRNg==
+X-Gm-Message-State: ACgBeo0sPdL/hJ4h81PS5yBp4BUgflvQM2FU2MfCdNrfU2PzsAYMDRWj
+        QHX2/2TLnD/j63vaboh2jskqNKB5DK6uqnp7JicshlJdjlJM
+X-Google-Smtp-Source: AA6agR5LGbZgJoKzBnPq44ScUexr0uehLu94E1e9uLvjC/b/BzoDxSbE4LKZtOlIcspat0kvmw6sWwbM7izBt45glwnwSIEVt8aR
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org, yangyingliang@huawei.com, linux-kernel@vger.kernel.org, oliver.upton@linux.dev, suzuki.poulose@arm.com, james.morse@arm.com, alexandru.elisei@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+X-Received: by 2002:a02:6347:0:b0:342:8ad4:ef54 with SMTP id
+ j68-20020a026347000000b003428ad4ef54mr12189351jac.162.1660122741600; Wed, 10
+ Aug 2022 02:12:21 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 02:12:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004bffef05e5df7207@google.com>
+Subject: [syzbot] linux-next boot error: WARNING in copy_process
+From:   syzbot <syzbot+0f36653d0d34001e0b43@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, bigeasy@linutronix.de,
+        bpf@vger.kernel.org, brauner@kernel.org, david@redhat.com,
+        ebiederm@xmission.com, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org, luto@kernel.org, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 09:34:35 +0800, Yang Yingliang wrote:
-> Using GENMASK() to generate the masks of device type and device id, it makes
-> code unambiguous, also it can fix the following fix compile error because of
-> shift overflow when using low verison gcc(mine version is 7.5):
-> 
-> In function ‘kvm_vm_ioctl_set_device_addr.isra.38’,
->     inlined from ‘kvm_arch_vm_ioctl’ at arch/arm64/kvm/arm.c:1454:10:
-> ././include/linux/compiler_types.h:354:38: error: call to ‘__compiletime_assert_599’ \
-> declared with attribute error: FIELD_GET: mask is not constant
->   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+Hello,
 
-Applied to fixes, thanks!
+syzbot found the following issue on:
 
-[1/1] KVM: arm64: fix compile error because of shift overflow
-      commit: ae3b1da95413614f96ffa23d200929c6f809c807
+HEAD commit:    bc6c6584ffb2 Add linux-next specific files for 20220810
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=109b7021080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5784be4315a4403b
+dashboard link: https://syzkaller.appspot.com/bug?extid=0f36653d0d34001e0b43
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Cheers,
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+0f36653d0d34001e0b43@syzkaller.appspotmail.com
 
-	M.
--- 
-Marc Zyngier <maz@kernel.org>
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(!p->softirqs_enabled)
+WARNING: CPU: 0 PID: 1047 at kernel/fork.c:2115 copy_process+0x36c9/0x7120 kernel/fork.c:2115
+Modules linked in:
+CPU: 0 PID: 1047 Comm: kworker/u4:5 Not tainted 5.19.0-next-20220810-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events_unbound call_usermodehelper_exec_work
+RIP: 0010:copy_process+0x36c9/0x7120 kernel/fork.c:2115
+Code: 0c 31 ff 89 de e8 a7 00 35 00 85 db 0f 85 c3 d7 ff ff e8 da 03 35 00 48 c7 c6 c0 11 eb 89 48 c7 c7 00 12 eb 89 e8 68 3a f3 07 <0f> 0b e9 a4 d7 ff ff e8 bb 03 35 00 0f 0b e8 b4 03 35 00 0f 0b e8
+RSP: 0000:ffffc90005187938 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801f015880 RSI: ffffffff8161f1f8 RDI: fffff52000a30f19
+RBP: ffffc90005187ac8 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000001 R12: ffff88802017002c
+R13: ffff888020170000 R14: ffffc90005187c10 R15: 0000000000808100
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2675
+ user_mode_thread+0xad/0xe0 kernel/fork.c:2744
+ call_usermodehelper_exec_work kernel/umh.c:174 [inline]
+ call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
 
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
