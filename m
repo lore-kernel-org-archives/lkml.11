@@ -2,112 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57FFC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBADC25B0D
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232256AbiHJJoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S232249AbiHJJoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231417AbiHJJn5 (ORCPT
+        with ESMTP id S231686AbiHJJn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 10 Aug 2022 05:43:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAA15142E;
-        Wed, 10 Aug 2022 02:43:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660124636; x=1691660636;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=+g1tHa8U1L0ibLkauTiBh/SeADRVoqwRkL+l6I4l0TE=;
-  b=KD5tS2QCDwJMQI8UA4rat5QwIhjZFuhAU3fkbBz2Qopqm39IPmlDXEB7
-   kpnEH+pswkbTBg2eWgNhNr6YiMxN3Hp+Qn5rpbdfqH9MMEcci/t6lGxQT
-   xBEaXZ4cYPW9Ix3n6fwjfDzTtBt5AuIsy2VULSwPwadzrJN9L4ktKrDPD
-   vLlT9hRei/ZdO2r5MvenMBohZmEJH/Jb9YhUNlby2H9SBCNtuhQa6IBPp
-   4Q/PUZt5bs+lbyWdpk/MKS33FWmY6c8WmBPO0nsShYhN6LaNW9Dbi/Qbd
-   Gs5zBQQ641dkV1su7JsUxg9Wp/F6lsCDV1m8gmeB4VC3Pz9mTXK4/qJG+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="289798229"
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="289798229"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:43:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="601757538"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 10 Aug 2022 02:43:45 -0700
-Date:   Wed, 10 Aug 2022 17:38:59 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Message-ID: <20220810093859.GF862421@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
- <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
- <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FC145070F
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:43:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660124634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bxa8o9Tbfqnk5UAsXfKTjPHNDbYRHlKkIXBkapUnTe8=;
+        b=OtdfsynKlDxAJByDl+XOHewhNzDjs41yv+uC67M3otEINfR7aTXbDYQrx/LzrtmAc30Fm6
+        5ueBIgCYo7dzUKI+1EnRf1hUWhzSX8QZNNRXIwgGnKji4VBStLqtB3M12kyPbZxEKqt6Wj
+        Ui+O7w2kZvz2hOgKLkIrxljnXJx6/cc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-640-SVq3H4QXNb-QrcTMdb6RIw-1; Wed, 10 Aug 2022 05:43:53 -0400
+X-MC-Unique: SVq3H4QXNb-QrcTMdb6RIw-1
+Received: by mail-wm1-f72.google.com with SMTP id n1-20020a7bcbc1000000b003a4e8c818f5so391052wmi.6
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:43:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=bxa8o9Tbfqnk5UAsXfKTjPHNDbYRHlKkIXBkapUnTe8=;
+        b=h1fDVo6i3xsT6Ci10Y09cWa5dPIIJxXYRSficE/hrqi+sbzw8KYCv/5u4/Ol7Jq97V
+         KBKBkuzQhODlPiAusZg4nXZTKZ0SN2rU14A+lrpKlY7r/jh2IFoG6OliMtFzAweFHfYA
+         veuI5bzlbSNCcdrDhaWA3TN+0hXbT7/eZA6W+kPfMTUgG/I5m9LO6EN32exzbO6SfO1n
+         P2jyS+bGQ3ZvNNQjOXFC24g4L8d0Uxhvfq5U/GpZ56huNSxCw1UoAcNWQK8cUKTvuOmG
+         WYUigwwTZOX80KcBLW4jzwqgmlNAVc5gjr8MV3BaG3zmONJzEaqakN6bXeWgUH1DHbsS
+         GWPQ==
+X-Gm-Message-State: ACgBeo3Do6v+kjGxEwD3MoLH7L4gOxp1dCv91FPQjorxNtnJywW+NCr/
+        pflwXNda7NS8IBQVYwbLjQJWfL45ozKbuwNYYUzrdAyU68cbBsZ/SjBTFiK/QLr2MVy4OtKbbcC
+        jZx1O8O1M5/U2ii9wZk8fBrgI
+X-Received: by 2002:a05:600c:1c19:b0:3a5:a3c7:3800 with SMTP id j25-20020a05600c1c1900b003a5a3c73800mr1842909wms.69.1660124631891;
+        Wed, 10 Aug 2022 02:43:51 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6Jxsv0aCcVhfY1+aZAP46TL6gSQU1Nu4jG9pvamIlkWl0TlioV7Jo9df4vCccE3CDr541Q2g==
+X-Received: by 2002:a05:600c:1c19:b0:3a5:a3c7:3800 with SMTP id j25-20020a05600c1c1900b003a5a3c73800mr1842898wms.69.1660124631718;
+        Wed, 10 Aug 2022 02:43:51 -0700 (PDT)
+Received: from step1.redhat.com (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id q11-20020a5d658b000000b0021e4bc9edbfsm12921743wru.112.2022.08.10.02.43.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 02:43:50 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v2 1/4] vdpa_sim_blk: check if sector is 0 for commands other than read or write
+Date:   Wed, 10 Aug 2022 11:43:44 +0200
+Message-Id: <20220810094347.20449-2-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220810094347.20449-1-sgarzare@redhat.com>
+References: <20220810094347.20449-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 07:55:38PM +0200, Paolo Bonzini wrote:
-> On 7/21/22 11:44, David Hildenbrand wrote:
-> > 
-> > Also, I*think*  you can place pages via userfaultfd into shmem. Not
-> > sure if that would count "auto alloc", but it would certainly bypass
-> > fallocate().
-> 
-> Yeah, userfaultfd_register would probably have to forbid this for
-> F_SEAL_AUTO_ALLOCATE vmas.  Maybe the memfile_node can be reused for this,
-> adding a new MEMFILE_F_NO_AUTO_ALLOCATE flags?  Then userfault_register
-> would do something like memfile_node_get_flags(vma->vm_file) and check the
-> result.
+VIRTIO spec states: "The sector number indicates the offset
+(multiplied by 512) where the read or write is to occur. This field is
+unused and set to 0 for commands other than read or write."
 
-Then we need change userfault_register uAPI for a new property flag.
-Userspace should still the decision-maker for this flag.
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-> 
-> This means moving this patch later, after "mm: Introduce memfile_notifier".
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+index ba253f8bce32..69c9f4f36f9a 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+@@ -112,6 +112,15 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 	offset = sector << SECTOR_SHIFT;
+ 	status = VIRTIO_BLK_S_OK;
+ 
++	if (type != VIRTIO_BLK_T_IN && type != VIRTIO_BLK_T_OUT &&
++	    sector != 0) {
++		dev_dbg(&vdpasim->vdpa.dev,
++			"sector must be 0 for %u request - sector: 0x%llx\n",
++			type, sector);
++		status = VIRTIO_BLK_S_IOERR;
++		goto err_status;
++	}
++
+ 	switch (type) {
+ 	case VIRTIO_BLK_T_IN:
+ 		if (!vdpasim_blk_check_range(sector, to_push)) {
+@@ -178,6 +187,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 		break;
+ 	}
+ 
++err_status:
+ 	/* If some operations fail, we need to skip the remaining bytes
+ 	 * to put the status in the last byte
+ 	 */
+-- 
+2.37.1
 
-Yes, it makes sense now.
-
-Chao
-> 
-> Thanks,
-> 
-> Paolo
