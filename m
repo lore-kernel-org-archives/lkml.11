@@ -2,187 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3152CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA622C25B0C
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232924AbiHJPKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 11:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        id S232982AbiHJPLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 11:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiHJPKo (ORCPT
+        with ESMTP id S232387AbiHJPLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 11:10:44 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE2DB4A5
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:10:43 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id j8so28243354ejx.9
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:10:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=QvWgi4bapgJrNQFkQQ/ZI8kSbG7GnXbksaof+b0rmLc=;
-        b=kDqaOrUd0p917w2v+d7X2KGqQbhozVosVzex2g0KecOPP4HWnCyfpVycR36/m83PkC
-         r/hVZZMqfEpfB7mKxkEPtcyPiqS1KgwmZdOduWmZgbmbXoFP0xMdRxrP2+IRLOL+gj+G
-         a/bob2EBbCfku/BjYYbmzh4nD1gUsYEhfM6st88Co6+JheB1J5myX7YsP+kxmieOtbH0
-         uXjeJ34pA12v4Ap3fRnc/M+VHnE8FQTkIIw+3vQwguJFVxBiSvfTZpJFZ3r48T8VlXhr
-         UxMW5Kw+ZDGmbp9LSMUOBGDLTLxf/D6w/gHE1XFb728KVwkDCNQ2f5LasZ+e5dPa9vZi
-         acow==
+        Wed, 10 Aug 2022 11:11:39 -0400
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840186555E;
+        Wed, 10 Aug 2022 08:11:38 -0700 (PDT)
+Received: by mail-io1-f51.google.com with SMTP id v185so12351366ioe.11;
+        Wed, 10 Aug 2022 08:11:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
          :x-gm-message-state:from:to:cc;
-        bh=QvWgi4bapgJrNQFkQQ/ZI8kSbG7GnXbksaof+b0rmLc=;
-        b=ocaLVtOe2aGcA4D8lc/oLiYXzJE6sT0nju9wVk6tSfUUe+/axtqaSLoHs4S0SJq6il
-         wr6qnKtDCVyI4SFU5XIB+ugCL4OQj3JKXjCYAdluZnie99SMGEFri0vxC+tSbVwwA83p
-         6BbXyFflBIvZWGl3EYrBF20ZEgqbEmQf7C88wp7AZL1EdjQnJbKxBb51hCmH6oRyIFuI
-         S9zmUtoZ07+knn9JFLW+kFXsIsylFzIx389YCHFU35TvREah0KQi2/j6GRPntjj8T+4l
-         vto0Z/+JcC3W44qXkxh0d+kGsEqcYacihRsNRl7xFQWx0kXo3qWoZZbilxeAGh4lbsBf
-         HqGA==
-X-Gm-Message-State: ACgBeo2ATTEvPz3hgRq8PUKh04BFnsbcFCGogpqXZSgGMGBc9i/bKLaI
-        f+mTygqgmm1uRxleCdzMWE5fag==
-X-Google-Smtp-Source: AA6agR6Aze/QbsmhHuigbbQINd3adGnoFr4Q79ghohdECe7s8FeuljsSPzsyr2Iapj6rrFDG5/vvkA==
-X-Received: by 2002:a17:907:8687:b0:730:7c7b:b9ce with SMTP id qa7-20020a170907868700b007307c7bb9cemr20093525ejc.656.1660144242092;
-        Wed, 10 Aug 2022 08:10:42 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id ku19-20020a170907789300b00730b5a35288sm2368814ejc.214.2022.08.10.08.10.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 08:10:41 -0700 (PDT)
-Message-ID: <74b69521-0d40-5e2f-4d1b-76e9697d7471@blackwall.org>
-Date:   Wed, 10 Aug 2022 18:10:40 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RFC net-next 0/3] net: vlan: fix bridge binding behavior
- and add selftests
-Content-Language: en-US
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     netdev@vger.kernel.org, aroulin@nvidia.com, sbrivio@redhat.com,
-        roopa@nvidia.com, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <cover.1660100506.git.sevinj.aghayeva@gmail.com>
- <94ec6182-0804-7a0e-dcba-42655ff19884@blackwall.org>
- <CAMWRUK45nbZS3PeSLR1X=Ko6oavrjKj2AWeh2F1wckMPrz_dEg@mail.gmail.com>
- <49f933c3-7430-a133-9add-ed76c395023b@blackwall.org>
- <CAMWRUK4J6Dp7Cff=pN9iw6OwDN8g61dd4S=OVKQ75vBch-PxXQ@mail.gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <CAMWRUK4J6Dp7Cff=pN9iw6OwDN8g61dd4S=OVKQ75vBch-PxXQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        bh=VdGy62arhSt+BL4EouUN4IOHP2gTgnK0/wSx3k0+9GQ=;
+        b=p37LXXtLjMmIAU65imJU+wvg6/LUkO86YE89axN8BOwgPRTamgDuZl6PptzZ75cZIw
+         RijsKK4+zwCMTAR9Jesc81TptEB3ScbH7OxFD8X1Ja7qxcPAa6w0X9GFcLZyIzG5AvXK
+         4MoAVHocMX5EAF5kHOjx55dbDEoxnumfL0Bjtujx6rKvTc55ewAZ37DzrKdyWp7uWB4v
+         Y+HyW7QYVipqmnCP4gFfBQLj3mbSPRz1e3Y+wOwGp0/P8rTb7L7q/njtSG69Z78OPzEX
+         LnAeiAyBPxscaIeUtbyW4s2EhGntNCvJi377S5W++5NRtyXKbSrHNqM9wA89JAnuMWQF
+         zdGw==
+X-Gm-Message-State: ACgBeo0qIJod+uWvEc4Y5W99mjYgq2xTf+5bC0pv/0Y0RXtCGwxZAty2
+        M/4pNjix1FfFZ4ieS0n2NmVipX2g0g==
+X-Google-Smtp-Source: AA6agR7WvN3Kq0NUIrMMMSYd3sVfG//5Whijw3XcGTtSkmrFdqmuuuPSGfS3vF6YdeztcytZilJZnQ==
+X-Received: by 2002:a05:6638:380c:b0:342:ceb9:7af2 with SMTP id i12-20020a056638380c00b00342ceb97af2mr9653346jav.227.1660144297690;
+        Wed, 10 Aug 2022 08:11:37 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id bs27-20020a056638451b00b0033f51f165e3sm7487923jab.140.2022.08.10.08.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 08:11:37 -0700 (PDT)
+Received: (nullmailer pid 4155387 invoked by uid 1000);
+        Wed, 10 Aug 2022 15:11:36 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-pm@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+In-Reply-To: <20220810030500.2793882-2-bjorn.andersson@linaro.org>
+References: <20220810030500.2793882-1-bjorn.andersson@linaro.org> <20220810030500.2793882-2-bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 1/2] dt-bindings: power: supply: Add Lenovo Yoga C630 EC
+Date:   Wed, 10 Aug 2022 09:11:36 -0600
+Message-Id: <1660144296.239515.4155386.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/08/2022 18:00, Sevinj Aghayeva wrote:
-> On Wed, Aug 10, 2022 at 10:50 AM Nikolay Aleksandrov
-> <razor@blackwall.org> wrote:
->>
->> On 10/08/2022 17:42, Sevinj Aghayeva wrote:
->>>
->>>
->>> On Wed, Aug 10, 2022 at 4:54 AM Nikolay Aleksandrov <razor@blackwall.org <mailto:razor@blackwall.org>> wrote:
->>>
->>>     On 10/08/2022 06:11, Sevinj Aghayeva wrote:
->>>     > When bridge binding is enabled for a vlan interface, it is expected
->>>     > that the link state of the vlan interface will track the subset of the
->>>     > ports that are also members of the corresponding vlan, rather than
->>>     > that of all ports.
->>>     >
->>>     > Currently, this feature works as expected when a vlan interface is
->>>     > created with bridge binding enabled:
->>>     >
->>>     >   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
->>>     >         bridge_binding on
->>>     >
->>>     > However, the feature does not work when a vlan interface is created
->>>     > with bridge binding disabled, and then enabled later:
->>>     >
->>>     >   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
->>>     >         bridge_binding off
->>>     >   ip link set vlan10 type vlan bridge_binding on
->>>     >
->>>     > After these two commands, the link state of the vlan interface
->>>     > continues to track that of all ports, which is inconsistent and
->>>     > confusing to users. This series fixes this bug and introduces two
->>>     > tests for the valid behavior.
->>>     >
->>>     > Sevinj Aghayeva (3):
->>>     >   net: core: export call_netdevice_notifiers_info
->>>     >   net: 8021q: fix bridge binding behavior for vlan interfaces
->>>     >   selftests: net: tests for bridge binding behavior
->>>     >
->>>     >  include/linux/netdevice.h                     |   2 +
->>>     >  net/8021q/vlan.h                              |   2 +-
->>>     >  net/8021q/vlan_dev.c                          |  25 ++-
->>>     >  net/core/dev.c                                |   7 +-
->>>     >  tools/testing/selftests/net/Makefile          |   1 +
->>>     >  .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
->>>     >  6 files changed, 172 insertions(+), 8 deletions(-)
->>>     >  create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
->>>     >
->>>
->>>     Hi,
->>>     NETDEV_CHANGE event is already propagated when the vlan changes flags,
->>>
->>>
->>> I'm not sure if NETDEV_CHANGE is actually propagated when the vlan changes flags. The two functions in the bridge module that handle NETDEV_CHANGE are br_vlan_port_event  and br_vlan_bridge_event. I've installed probes for both, and when I'm changing flags using "sudo ip link set vlan10 type vlan bridge_binding on", I don't see any of those functions getting called, although I do see vlan_dev_change_flags getting called. I think there may be a bug in core/dev.c:__dev_notify_flags.
->>
->> are both vlan and bridge interfaces up?
->> what exactly are you probing for?
+On Tue, 09 Aug 2022 22:04:59 -0500, Bjorn Andersson wrote:
+> Add binding for the Embedded Controller found in the Qualcomm
+> Snapdragon-based Lenovo Yoga C630.
 > 
-> 
-> I first run the attached pre.sh script that sets up the environment
-> and creates a vlan interface with bridge binding off. I then start
-> recording with perf, and here's the list of probes:
-> 
-> $ sudo ./k/linux/tools/perf/perf probe -l
->   probe:br_vlan_bridge_event (on br_vlan_bridge_event in bridge with event dev)
->   probe:br_vlan_port_event (on br_vlan_port_event in bridge with event)
->   probe:br_vlan_set_vlan_dev_state (on br_vlan_set_vlan_dev_state in
-> bridge with br vlan_dev)
->   probe:register_vlan_dev (on register_vlan_dev in 8021q with dev)
->   probe:vlan_changelink (on vlan_changelink in 8021q with dev)
->   probe:vlan_dev_change_flags (on vlan_dev_change_flags in 8021q with dev)
->   probe:vlan_dev_fix_features (on vlan_dev_fix_features in 8021q with dev)
->   probe:vlan_dev_init  (on vlan_dev_init in 8021q with dev)
->   probe:vlan_dev_ioctl (on vlan_dev_ioctl in 8021q with dev)
->   probe:vlan_dev_open  (on vlan_dev_open in 8021q with dev)
->   probe:vlan_dev_stop  (on vlan_dev_stop in 8021q with dev)
->   probe:vlan_dev_uninit (on vlan_dev_uninit in 8021q with dev)
->   probe:vlan_newlink   (on vlan_newlink in 8021q with dev)
-> 
-> I then run the following command to turn the bridge binding flag on:
-> 
-> $ sudo ip link set vlan10 type vlan bridge_binding on
-> 
-> Then I stop the recording and print out the events, and I see this. I
-> don't see br_vlan_port_event or br_vlan_bridge_event getting called.
-> 
->               ip  5933 [003]  2204.722470:
-> probe:vlan_changelink: (ffffffffc1042b50) dev="vlan10"
->               ip  5933 [003]  2204.722476:
-> probe:vlan_dev_change_flags: (ffffffffc1042600) dev="vlan10"
-> 
-> Am I doing something wrong?
-> 
-> Thanks
-> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  .../power/supply/lenovo,yoga-c630-ec.yaml     | 88 +++++++++++++++++++
+>  1 file changed, 88 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/power/supply/lenovo,yoga-c630-ec.yaml
 > 
 
-You can't expect to see br_vlan_bridge_event() called because the notification
-target device is vlan10 and not the bridge. See br_device_event():
-...
-        if (netif_is_bridge_master(dev)) {
-                err = br_vlan_bridge_event(dev, event, ptr);
-                if (err)
-                        return notifier_from_errno(err);
-...
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
+yamllint warnings/errors:
 
-Try probing for br_device_event(), you'll see it gets called every time you change the flag.
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/power/supply/lenovo,yoga-c630-ec.example.dtb: embedded-controller@70: connector@1:ports: 'port@0' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/power/supply/lenovo,yoga-c630-ec.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/power/supply/lenovo,yoga-c630-ec.example.dtb: connector@1: ports: 'port@0' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/connector/usb-connector.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
