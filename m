@@ -2,136 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CF4C2BB45
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CADCC25B0D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbiHJDyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 23:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53622 "EHLO
+        id S229828AbiHJD5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 23:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbiHJDya (ORCPT
+        with ESMTP id S230494AbiHJD42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 23:54:30 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F5E65825
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:54:29 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id 53-20020a9d0838000000b006371d896343so41651oty.10
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 20:54:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=7rU8bDr39Wos4pPlp5rDHY4O2R+eG5nyVtErR7bxkgQ=;
-        b=jN9MOdWDI/Rb19CdE9nA8Rw19kEKGJXLGI6QMin1iEM03ACk31Sm0RnYqYHsxuX3ku
-         gw8l6PZzL81YmIPr1G+rDByM1EVybyUvVwH/BBBDzIWSiDujXTMHdOYe4Omf+p9i3cxo
-         P+7i6zA3CUWW+Mojj0JiOqDwbVSg3zs3DlYRP/Bf0HL634Lp6tmOnzL9qL3IExYA0y8o
-         7ygRdYxo0/GnWcQNrOzoYhEOV8v57eo5Wn38uwfCEFKySVHjLQ6kIq6Zsv0rTR45TQgB
-         dNGEEYgSt//Dd/IOCenNlKpAruUyg9KxV5NP+BBDlAMEEXSJr2W6EWiMY/x1KDAnCyV3
-         9qAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=7rU8bDr39Wos4pPlp5rDHY4O2R+eG5nyVtErR7bxkgQ=;
-        b=ArgT92cWtaog/RQ1hlfD61X6g4xPQvd7PaX38AMpp1dfymGWbuBO57RIOa4w3soBFu
-         wzgyqGyF0FHtsDYiNvMXib4vlhQ8gyvwVszAr0fNIsB1Sed+ZzKatu8LO+UayKivtJZM
-         qpIL5BUjxgg48PNiJdxfe4dqiPmNI8AUbg+OTz6LXdokbec3ahg0DNIuPl9z4Id9nnzi
-         2RI1g7odKXxoyyk+wk9fTnOMu/L2oa0beT0sWHo5UBABGnB2gADZgM/eI1W20t62Lzws
-         qp+k9AZuMG6yeFfPx1ztAcZ1auc8ZwyfeQcoqFylalCcg0sCOx2VouMg3/kKnCIU7VyL
-         IJmA==
-X-Gm-Message-State: ACgBeo3xoSbLj9lAJI2ugiCwmx6KQecQonmqG/c69e9palA2guTr5zh3
-        GNb1yQ0kv6PkThOMNmaQWbaFHA==
-X-Google-Smtp-Source: AA6agR52u71mq4gR0xhKvUZjvRBcpyjsvD4wjJZOe6Ml/U3mAwQDbMyFlLSB8zRTOV2mQfHtFzyX/g==
-X-Received: by 2002:a9d:1b21:0:b0:61d:2e19:4566 with SMTP id l30-20020a9d1b21000000b0061d2e194566mr9818467otl.11.1660103668834;
-        Tue, 09 Aug 2022 20:54:28 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id r13-20020a056871088d00b000f5f4ad194bsm3569732oaq.25.2022.08.09.20.54.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 20:54:28 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] arm64: dts: qcom: c630: Add Embedded Controller node
-Date:   Tue,  9 Aug 2022 22:54:23 -0500
-Message-Id: <20220810035424.2796777-4-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810035424.2796777-1-bjorn.andersson@linaro.org>
-References: <20220810035424.2796777-1-bjorn.andersson@linaro.org>
+        Tue, 9 Aug 2022 23:56:28 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2095.outbound.protection.outlook.com [40.107.255.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777C514012;
+        Tue,  9 Aug 2022 20:56:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Erz9nBe2CJ4UCkVuh3gNrxLw+f0jiB3w66F1UfN7yV+8G0o/tK8hGIcong2UQ3g9+xzIrfUdiFYfLjJNoIs849sQJUE/N4kBzOxHNLcAqAdoys8SrXqsMAG7cXeh1VpMa6SVAGHtByq6cD94CiZmSF3GO9bK/qbXQhgnoW3qD0sDlYBsgTc3RWbrQckVsKl5txGygZRi2kVkAGasBEW1pIb78g10GPWP+FqYxBySkNBjDYc+UmoqIlsrEXHx1zNpIW0Celd/EBuiab1kNmrYKUlzfZ2g0qlJcaPL1jDvppm5ipehPe920/CKG6hxTYiV0NqvwpndEmS5wXUgmKwMJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9j8rPeo3V9dc4CAzyldHLMgdliZ2+EXNA8FukHZDzzM=;
+ b=Iwmpjh2Ime8xujlg1gMze50Oj8wxRbC9QMZm470TD44Mf4Jadc7OYxU6reuNR8L81qTB+v3YjBfOgI6+uzUUs3DBq911Rw6wfw+dXT7G6JpzSIap0W+OkLawSU1+zW8+2hLdwV/Iu8Gl1fFsz9164th+ybq/d4iFPDlPy+Y64rWHZ/1OScbDVlkty7+xjEyt4xrrUqxpfm4jKE7q0kZtWf0/5AwC/tH3vUmhBPX6n1IGVu87SfyG3DkFARkzl7cdzhSRcvdyi/DrVxtWMk4P82XqMsRtIP2TDyK1AEWMicQC3xXnDr6mvS8rEMiAeIyX0q9pxjULa+rJn5Ln1m/tIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ftdichip.com; dmarc=pass action=none header.from=ftdichip.com;
+ dkim=pass header.d=ftdichip.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=ftdichip.com;
+Received: from SG2PR01MB2886.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:30::18) by HK0PR01MB3460.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:ba::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20; Wed, 10 Aug
+ 2022 03:56:15 +0000
+Received: from SG2PR01MB2886.apcprd01.prod.exchangelabs.com
+ ([fe80::e9fc:d5ca:db1a:9b4f]) by SG2PR01MB2886.apcprd01.prod.exchangelabs.com
+ ([fe80::e9fc:d5ca:db1a:9b4f%7]) with mapi id 15.20.5504.021; Wed, 10 Aug 2022
+ 03:56:15 +0000
+Message-ID: <1b94fa11-ee73-6fce-be1c-c113329c27b8@ftdichip.com>
+Date:   Wed, 10 Aug 2022 11:55:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+Subject: Re: [PATCH v1] USB: serial: ftdi_sio: add IDs for NEW FTDI Products
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, malliamireddy009@gmail.com,
+        arun.pappan@ftdichip.com, sowjanya.reddy@ftdichip.com
+References: <ac28f2c5eba23a645b3b9299c224f2755a233eef.1658385786.git.mallikarjuna.reddy@ftdichip.com>
+ <Yu0DgKWYqGim7y3E@hovoldconsulting.com>
+Content-Language: en-US
+From:   "Amireddy Mallikarjuna Reddy (FTDI-SG)" 
+        <Mallikarjuna.reddy@ftdichip.com>
+In-Reply-To: <Yu0DgKWYqGim7y3E@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Antivirus: AVG (VPS 220809-6, 8/9/2022), Outbound message
+X-Antivirus-Status: Clean
+X-ClientProxiedBy: LO4P265CA0087.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2bd::18) To SG2PR01MB2886.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:30::18)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0751c7e7-5248-45e5-6086-08da7a8445c6
+X-MS-TrafficTypeDiagnostic: HK0PR01MB3460:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ck0Uv9Adz0Oyw6W4LaUl3qfydPRBAVV1aJC8LHBM4DSFxR7TJk/9p3lmI3An8wu4jiNpjtILIoaOFNp2GueJsA2XuggywCIpxIIAZbewU4f2N5WtAJUlK6dYHa2KMgw+AntyB98p4Wr7mmXjdhx9zOhLHnh10LtEnGZ+nXu+ovQBm25KGYh8ojBrNnK6nG6h62X7ueOhJn92b6CUUjGEIu4xnKtt9wMnOM7aGnbPFu55Q/+y9fCvMZ50mwxGdRTtEWQO5ua7F9xZ+c3lgXjdYnZb4xp/yfx/rztr6MbvCCJQ82i2B3fLVuVkNt7vTiDwPKPkQv3DTh66dE6f0OJPUD8il9bsIxyVjYZS3cXIslEXRNWVg1+jj5ZtDDA7vNN7EpQtUPA3BYdIjsW5uZId3d6Fie4Ze/GNKogz0wHWYxa+BIR/8dYat2nyaFMLMTTCll4qtEXuOsuf7ti3017+RZRn09v34kclHhIDfnouXmzDLVvNWQb/lIlXP68+4JTzKLpYWBX3PB1OYu5axH+ElIqVEfiPI7DqUZoYpwCRm0GCaltPLiorGgwH8upDif22D6Y1Qae/0R2eIz7ljnpT04H3Lk6oxdnQWJkb5BFWI2qvQCDE021blLK142i5g4pkHDmfiXRsySc0VEfXRV9Gzs5yjODISbfjnUFD++/yf2td1nnnfrXjtf4JYRiTBiLhrwsdp/+raz8hg0yyoy6s1Uu4ra90+RX5l34f3FJVErs2V1DI/0yI5ngEEOuWU8E6FLEegEVol4u3UNjHMlzdLDsiB9FpWf5d6KGNAADWlfnI8F2aTxTo6rokiPXLifUzHRvuHRZbslE24R0faYdbdxL1ZRn6xGTW7Niq/FuTW0xRG9ASjYvArP6KsIKErb7W
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR01MB2886.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(39840400004)(396003)(366004)(136003)(376002)(346002)(36756003)(86362001)(31696002)(31686004)(53546011)(6506007)(6512007)(26005)(6666004)(83380400001)(52116002)(2616005)(186003)(107886003)(8676002)(4744005)(966005)(478600001)(316002)(6486002)(41300700001)(2906002)(4326008)(66476007)(38100700002)(38350700002)(5660300002)(66556008)(66946007)(8936002)(6916009)(231253002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cEtGMmVzREtGcVEyUXRHWjBoWlZzaW1pbmVEbzhMTzQ0VmViNGt2YjNZKzNZ?=
+ =?utf-8?B?aVhjT0t1N0orU0Z1M0ZZMmZFZEFvWC9WeHliVGVHK2RoQUxHS21HWEY0bWlF?=
+ =?utf-8?B?aHg5aHRBcm82b2piSkZoTEJnazhpeEt4YVJ2aXFxcTNEMklIWEVDRWE4ZEdz?=
+ =?utf-8?B?L3RQbEJTYjAvRElpem5OSXdKaENEOWt4VFB6N1h0Qm9xLzQ4N3RPdlFjV2hP?=
+ =?utf-8?B?SC9jRE9sSFhpV1VsWm45QXZOTFh6UG9KdGg0citpZTkvOXJVNzNzeTNVRFhu?=
+ =?utf-8?B?dm14YlhybTVuWUhRbXQxaVBQbjlucDlZaGpKMnlqeWU4UVc4V1lZVzBLTmtP?=
+ =?utf-8?B?emd6aWIrTTIvaEwyeTlLZkZPYVhtVGRQYXFYNkJETUVBMHZOWFhFZG9yVlhn?=
+ =?utf-8?B?bGdscTN0aUJRS1lUdUw2RXZUa0xicm4rdGpXL0JIeVU3WkJBZjlnQkNpbW93?=
+ =?utf-8?B?b0tRRGRIbENzMm5EdVA3ekNNM0dreTVielU5RWlPYWhoVmRaVTU0U1h6SU5N?=
+ =?utf-8?B?OUEzaXc4T2tGTTZpODQ3SXJRTFE1NjFwWHAwSlZCdk9mL1h6UzJHRGZTWjRx?=
+ =?utf-8?B?YUo2YzlMNnpKL3Z4R05TNjVoaEZ4NTU5eGtHRmlDOEpRTXRRbHdyQ2owREZB?=
+ =?utf-8?B?QWxDMU1RaGhUUDg0eEVldEFYdGFydlVmWUcya213TEZJdWw4RllEVE9uK3lZ?=
+ =?utf-8?B?UXpqTnZHMFhEY0ZXZXYxeEZydGtaWThDeHFhUWlqZWk3N0NpUW9odDROQW9L?=
+ =?utf-8?B?eVZVQ3hpMitoZzNQNVhNb0NjMnp4c0czeG5YdUlVSGFabkZ5bFJhUXFYYnRD?=
+ =?utf-8?B?OVByWURMeXJkOTZhZDBqcnZSVGVxS2NicjRiQUpvV0FwVDZ5NVdwRjI1Zy8r?=
+ =?utf-8?B?S2hPVnV2WGVzRVRLMHRyNngwQjZRVXZuQlF3Y0E0amlpQzQ0UDR2MkJGaS83?=
+ =?utf-8?B?RW1Ndi9TU0dqYkxKenJaTzNsbXNrc25vOEtBdUxnWEhwN0pBaXBVeFdta3J3?=
+ =?utf-8?B?TFM2QTJ5cFdJNEpBK2ZuRHduTVZKSkZPZWFPS28vMENDaVVOMlkrTS9TZ25v?=
+ =?utf-8?B?bVA5VU42ajl2aGxvS3RJTncvV1VLWnhwNGQ2LytXUEVxeFFzTzNUK0ZpOXEr?=
+ =?utf-8?B?eThsWWl4Y0t0QlV2c2RFT3hZL291ajllVUtBOFlFa0dROW1qNDNGSnVrMkF1?=
+ =?utf-8?B?a3RYcitOVmRDYWtFbDFEVUw0ZEJWeTVHQ3VIVi9VekFybCt2TVF3aWltdjBl?=
+ =?utf-8?B?M0s0K2hSUVkzY0d1S1lBOVd1RTQxa3VHWmtqRXhaaDNqdjFuWnJ5Qmk1cFA5?=
+ =?utf-8?B?eTJ5Wnd1M1kzK2xvUlVzVUxjN05HZGdJOU9MeENTcmh3NHlvWjFIdng0ZHl2?=
+ =?utf-8?B?QjlSUHc4L3dIVUJkZWt1VXRQbzNZUXV4VmptQUlIaG1lT2M0Vm4xckFxMmhh?=
+ =?utf-8?B?bHVUK2d4UUxvb2QrdDc3dVBnK0lEb0EzQUgzV2NtbGc3cWNZdTF1Qk43TmI1?=
+ =?utf-8?B?S3ZRU0U4dVdUY0dZM3p5SFJJaUx2NmhyZVpaTFRLUFVON1NpbUc5QWlXQlZD?=
+ =?utf-8?B?UzM1Q1doWjlneXlZZ1pzUGg5cWpweHlWaU5Ud2IzVVBhTnYyMC9FdTlUZzcy?=
+ =?utf-8?B?dmVTZFMxdENNUFhUd2EzUXpxY0plRVJqMHhXOHdYckczS3VIdFM0SGpMUmcr?=
+ =?utf-8?B?WWRJTEhHRE9Zamd4VGhTaG92NE1WbUpxSUdOZjlNamtqdU9BYUMzMG5YQWlG?=
+ =?utf-8?B?ejZZOVRXbmxpMjhqMWc1SU9RZnptT0R3TkZOMWl6LzNtWkR6WW5pbVVOQjFX?=
+ =?utf-8?B?RndDbWVPZkt1Y1ZOdnR2b0V6MDdITThZRy85OUhiaDZjUXFHWFlpbEQ3UkM2?=
+ =?utf-8?B?SGpzZkhmZW9KMXZYU2h2RnhGalFoSnR3emNESEFlU3lSTEE3QzYxVmxQbGw5?=
+ =?utf-8?B?ZWRyaXloTlZtSlJlYVdZSEhmdyt1NlVUSEE0NmlvRVVTSjNyRFdMOVliR3cy?=
+ =?utf-8?B?bDZMV0M2T1M2Mk9RV3hub2xUZ2JMazJ3dWdHZDRKOVlyajR4VFZOMmRmbHRM?=
+ =?utf-8?B?aU5wSU5LREthMjA0d3NBYXhKREw5Tzc2YjFKS0VudGxXTTc0cHJYVjBWbndC?=
+ =?utf-8?B?b0NZeDFCWVZhMXR1K2JKMTUrQ1BqN0Y1c3R1Q2kyV3JYWHZ6ZzFGc0FBUmND?=
+ =?utf-8?Q?7kEMOW4dExAziHoww2+R6Tk=3D?=
+X-OriginatorOrg: ftdichip.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0751c7e7-5248-45e5-6086-08da7a8445c6
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR01MB2886.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2022 03:56:15.3746
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: c2456335-1328-47c5-82f2-1fe6783d7182
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Wq84I1ew/sHKJ2gJ1/SXEFN5t1Oshd1VSYDAqE/aV0oMUaRsYkzN6dMqeDk2CyVNOgChkOeAxI/Z3INZuABKMBA6Hu2Rd6JZJb7gCMPx/ec=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR01MB3460
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Embedded Controller in the Lenovo Yoga C630 is accessible on &i2c1
-and provides battery and adapter status, as well as altmode
-notifications for the second USB Type-C port.
+Thank you very much for the review Johan.
 
-Add a definition for the EC.
+mallik
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- .../boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 35 +++++++++++++++++++
- 1 file changed, 35 insertions(+)
+On 5/8/2022 7:48 pm, Johan Hovold wrote:
+> On Thu, Jul 21, 2022 at 03:02:44PM +0800, Amireddy mallikarjuna reddy wrote:
+>> Add the product IDs for the USB-to-Serial devices FT2233HP, FT2233HP,
+>> FT4233HP, FT4232HP, FT233HP, FT232HP, and FT4232HAQ.
+>> Also include BCD values so that the chiptype can be determined.
+>>
+>> Signed-off-by: Amireddy mallikarjuna reddy <mallikarjuna.reddy@ftdichip.com>
+>> ---
+>> v1:
+>> - Initial version.
+> Thanks for the patch. This looks mostly good even I should revisit some
+> clean-up patches I have laying around that gets rid of the unnecessary
+> device-type conditionals that you're now extending.
+>
+> I'll either rebase this patch on top or the other way around, but either
+> way I'll get this in in some form in a few weeks (e.g. after the merge
+> window closes).
+>
+> Johan
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
-index a7af1bed4312..1b9b36faea27 100644
---- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
-@@ -352,6 +352,33 @@ zap-shader {
- &i2c1 {
- 	status = "okay";
- 	clock-frequency = <400000>;
-+
-+	embedded-controller@70 {
-+		compatible = "lenovo,yoga-c630-ec";
-+		reg = <0x70>;
-+
-+		interrupts-extended = <&tlmm 20 IRQ_TYPE_LEVEL_HIGH>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ec_int_state>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		connector@0 {
-+			compatible = "usb-c-connector";
-+			reg = <0>;
-+			power-role = "source";
-+			data-role = "host";
-+		};
-+
-+		connector@1 {
-+			compatible = "usb-c-connector";
-+			reg = <1>;
-+			power-role = "source";
-+			data-role = "host";
-+		};
-+	};
- };
- 
- &i2c3 {
-@@ -676,6 +703,14 @@ mode_pin_active: mode-pin {
- 		input-enable;
- 		bias-disable;
- 	};
-+
-+	ec_int_state: ec-int-state {
-+		pins = "gpio20";
-+		function = "gpio";
-+
-+		input-enable;
-+		bias-disable;
-+	};
- };
- 
- &uart6 {
 -- 
-2.37.1
+This email has been checked for viruses by AVG.
+https://www.avg.com
 
