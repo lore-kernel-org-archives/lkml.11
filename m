@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C34B6C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95773C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 22:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233480AbiHJWHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 18:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
+        id S233453AbiHJWHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 18:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233200AbiHJWHN (ORCPT
+        with ESMTP id S233215AbiHJWHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 18:07:13 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E59683F3C
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 15:07:11 -0700 (PDT)
+        Wed, 10 Aug 2022 18:07:15 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB4A81B2F
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 15:07:14 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 1A7382224E;
-        Thu, 11 Aug 2022 00:07:09 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 32CE622255;
+        Thu, 11 Aug 2022 00:07:11 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1660169229;
+        t=1660169231;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uos5wFE9l5TNcF0CpsE0RvCrDFSCsDt4ePVcmJm7B3E=;
-        b=Dz3MjLS96nYUJuqYuqS7+zXmH56Xj4kQDQ0EwTvCN9keEqeC+kovPxNAxACJIkQQm/A3pq
-        0v+r5qV3ZBO12M5xgH5uiweOWAz8SnQ+XtCoNywLAxgU5pYto0IgCz2P8TV/tjjq7ofwFI
-        /z9lj2FtLYjmk7vfextXcoksqKdVnXI=
+        bh=nwUBCKmQEvGZoCu8didadShDv+CFSRJAtBpbc4Le0yw=;
+        b=DUOel0cpsLAie3JZ7tdkiFqmZVcAO4RAw+185Z4FY+GlPX6VGeCNOsDlxtytKAIeWc+Opa
+        gAJ+sxYo1EZkFwLpxffsblXJu7P0gwgpQ4LPwNmVc8ah/JF8qIsfEuv/2B6dqr6dOQ5Onq
+        ya7pwDi6n/6ly4U6/rdkMDwLsI/bvUk=
 From:   Michael Walle <michael@walle.cc>
 To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Pratyush Yadav <pratyush@kernel.org>
@@ -40,9 +40,9 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
         Michael Walle <michael@walle.cc>,
         Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
-Subject: [PATCH v2 3/7] mtd: spi-nor: remember full JEDEC flash ID
-Date:   Thu, 11 Aug 2022 00:06:50 +0200
-Message-Id: <20220810220654.1297699-4-michael@walle.cc>
+Subject: [PATCH v2 6/7] mtd: spi-nor: add generic flash driver
+Date:   Thu, 11 Aug 2022 00:06:53 +0200
+Message-Id: <20220810220654.1297699-7-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220810220654.1297699-1-michael@walle.cc>
 References: <20220810220654.1297699-1-michael@walle.cc>
@@ -52,75 +52,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the moment, we print the JEDEC ID that is stored in our database. The
-generic flash support won't have such an entry in our database. To find
-out the JEDEC ID later we will have to cache it. There is also another
-advantage: If the flash is found in the database, the ID could be
-truncated because the ID of the entry is used which can be shorter. Some
-flashes still holds valuable information in the bytes after the JEDEC ID
-and come in handy during debugging of when coping with INFO6() entries.
-These are not accessible for now.
-
-Save a copy of the ID bytes after reading and display it via debugfs.
+Our SFDP parsing is everything we need to support all basic operations
+of a flash device. If the flash isn't found in our in-kernel flash
+database, gracefully fall back to a driver described solely by its SFDP
+tables.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 Reviewed-by: Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
 ---
- drivers/mtd/spi-nor/core.c    | 5 +++++
- drivers/mtd/spi-nor/debugfs.c | 2 +-
- include/linux/mtd/spi-nor.h   | 3 +++
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/mtd/spi-nor/core.c | 26 ++++++++++++++++++++++++--
+ drivers/mtd/spi-nor/core.h |  1 +
+ drivers/mtd/spi-nor/sfdp.c | 27 +++++++++++++++++++++++++++
+ 3 files changed, 52 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index f2c64006f8d7..f1d01c7dacce 100644
+index 42f9bb63919c..f10fca5730b8 100644
 --- a/drivers/mtd/spi-nor/core.c
 +++ b/drivers/mtd/spi-nor/core.c
-@@ -1664,6 +1664,11 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
- 		return ERR_PTR(ret);
- 	}
+@@ -1632,6 +1632,16 @@ static const struct spi_nor_manufacturer *manufacturers[] = {
+ 	&spi_nor_xmc,
+ };
  
-+	/* Cache the complete flash ID. */
-+	nor->id = devm_kmemdup(nor->dev, id, SPI_NOR_MAX_ID_LEN, GFP_KERNEL);
-+	if (!nor->id)
-+		return ERR_PTR(-ENOMEM);
++static const struct flash_info spi_nor_generic_flash = {
++	.name = "spi-nor-generic",
++	/*
++	 * JESD216 rev A doesn't specify the page size, therefore we need a
++	 * sane default.
++	 */
++	.page_size = 256,
++	.parse_sfdp = true,
++};
 +
+ static const struct flash_info *spi_nor_match_id(struct spi_nor *nor,
+ 						 const u8 *id)
+ {
+@@ -1670,6 +1680,14 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+ 		return ERR_PTR(-ENOMEM);
+ 
  	info = spi_nor_match_id(nor, id);
++
++	/* Fallback to a generic flash described only by its SFDP data. */
++	if (!info) {
++		ret = spi_nor_check_sfdp_signature(nor);
++		if (!ret)
++			info = &spi_nor_generic_flash;
++	}
++
  	if (!info) {
  		dev_err(nor->dev, "unrecognized JEDEC id bytes: %*ph\n",
-diff --git a/drivers/mtd/spi-nor/debugfs.c b/drivers/mtd/spi-nor/debugfs.c
-index df76cb5de3f9..ff895f6758ea 100644
---- a/drivers/mtd/spi-nor/debugfs.c
-+++ b/drivers/mtd/spi-nor/debugfs.c
-@@ -81,7 +81,7 @@ static int spi_nor_params_show(struct seq_file *s, void *data)
- 	int i;
+ 			SPI_NOR_MAX_ID_LEN, id);
+@@ -2096,8 +2114,12 @@ static int spi_nor_select_pp(struct spi_nor *nor,
+  * spi_nor_select_uniform_erase() - select optimum uniform erase type
+  * @map:		the erase map of the SPI NOR
+  * @wanted_size:	the erase type size to search for. Contains the value of
+- *			info->sector_size or of the "small sector" size in case
+- *			CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is defined.
++ *			info->sector_size, the "small sector" size in case
++ *			CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is defined or 0 if
++ *			there is no information about the sector size. The
++ *			latter is the case if the flash parameters are parsed
++ *			solely by SFDP, then the largest supported erase type
++ *			is selected.
+  *
+  * Once the optimum uniform sector erase command is found, disable all the
+  * other.
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 68aaccaa12d8..ef0a73dbf348 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -701,6 +701,7 @@ int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
+ int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
+ 				     const u8 *buf, size_t len);
  
- 	seq_printf(s, "name\t\t%s\n", info->name);
--	seq_printf(s, "id\t\t%*ph\n", info->id_len, info->id);
-+	seq_printf(s, "id\t\t%*ph\n", SPI_NOR_MAX_ID_LEN, nor->id);
- 	string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
- 	seq_printf(s, "size\t\t%s\n", buf);
- 	seq_printf(s, "write size\t%u\n", params->writesize);
-diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
-index 42218a1164f6..25765556223a 100644
---- a/include/linux/mtd/spi-nor.h
-+++ b/include/linux/mtd/spi-nor.h
-@@ -349,6 +349,8 @@ struct spi_nor_flash_parameter;
-  * @bouncebuf:		bounce buffer used when the buffer passed by the MTD
-  *                      layer is not DMA-able
-  * @bouncebuf_size:	size of the bounce buffer
-+ * @id:			The flash's ID bytes. Always contains
-+ *			SPI_NOR_MAX_ID_LEN bytes.
-  * @info:		SPI NOR part JEDEC MFR ID and other info
-  * @manufacturer:	SPI NOR manufacturer
-  * @addr_nbytes:	number of address bytes
-@@ -379,6 +381,7 @@ struct spi_nor {
- 	struct spi_mem		*spimem;
- 	u8			*bouncebuf;
- 	size_t			bouncebuf_size;
-+	u8			*id;
- 	const struct flash_info	*info;
- 	const struct spi_nor_manufacturer *manufacturer;
- 	u8			addr_nbytes;
++int spi_nor_check_sfdp_signature(struct spi_nor *nor);
+ int spi_nor_parse_sfdp(struct spi_nor *nor);
+ 
+ static inline struct spi_nor *mtd_to_spi_nor(struct mtd_info *mtd)
+diff --git a/drivers/mtd/spi-nor/sfdp.c b/drivers/mtd/spi-nor/sfdp.c
+index 2257f1b4c2e2..0a77f50a2691 100644
+--- a/drivers/mtd/spi-nor/sfdp.c
++++ b/drivers/mtd/spi-nor/sfdp.c
+@@ -1249,6 +1249,33 @@ static void spi_nor_post_sfdp_fixups(struct spi_nor *nor)
+ 		nor->info->fixups->post_sfdp(nor);
+ }
+ 
++/**
++ * spi_nor_check_sfdp_signature() - check for a valid SFDP signature
++ * @nor:	pointer to a 'struct spi_nor'
++ *
++ * Used to detect if the flash supports the RDSFDP command as well as the
++ * presence of a valid SFDP table.
++ *
++ * Return: 0 on success, -errno otherwise.
++ */
++int spi_nor_check_sfdp_signature(struct spi_nor *nor)
++{
++	u32 signature;
++	int err;
++
++	/* Get the SFDP header. */
++	err = spi_nor_read_sfdp_dma_unsafe(nor, 0, sizeof(signature),
++					   &signature);
++	if (err < 0)
++		return err;
++
++	/* Check the SFDP signature. */
++	if (le32_to_cpu(signature) != SFDP_SIGNATURE)
++		return -EINVAL;
++
++	return 0;
++}
++
+ /**
+  * spi_nor_parse_sfdp() - parse the Serial Flash Discoverable Parameters.
+  * @nor:		pointer to a 'struct spi_nor'
 -- 
 2.30.2
 
