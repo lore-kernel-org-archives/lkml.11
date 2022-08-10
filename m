@@ -2,240 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B26C2BB9D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EEAC25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232903AbiHJQYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        id S232618AbiHJQ1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232713AbiHJQYD (ORCPT
+        with ESMTP id S232405AbiHJQ1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:24:03 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788827E834;
-        Wed, 10 Aug 2022 09:24:01 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 628687f6e8a7044b; Wed, 10 Aug 2022 18:23:59 +0200
-Received: from kreacher.localnet (unknown [213.134.187.55])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id ED44E66CF1C;
-        Wed, 10 Aug 2022 18:23:58 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-hwmon@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v1 1/5] ACPI: Rename acpi_bus_get/put_acpi_device()
-Date:   Wed, 10 Aug 2022 18:14:22 +0200
-Message-ID: <4763162.31r3eYUQgx@kreacher>
-In-Reply-To: <12036348.O9o76ZdvQC@kreacher>
-References: <12036348.O9o76ZdvQC@kreacher>
+        Wed, 10 Aug 2022 12:27:17 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0732F6D9CD
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:27:17 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id f28so14174574pfk.1
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=iaOXFsKF+VEOO1NtlLaIlaeLAxiEe5HdvjUlYcOWT3Q=;
+        b=GVeX1RfPqCV4MNhmySGhqVn74U978EnXNlWy8V4rYKKPVMl+gZdNyfITPC6O1m7XA3
+         UjyTN0wfJ/TOOzSXUVhjCj6sO7zhn3q55rwo2cYlRPZp53jFzhY97gJn7NOepzENJC17
+         911046olUQ8Oxebz/BVk9RQfS9RHpiGgZBGD+Yejcwc5gLsODnSxBe9Yg7D/o+aP6mUt
+         uRAuOiJbG+pk8Ic5/M6miuaKzbyYwZ12hrI7AujiS4CYR/h1hRKEc7LNMWVYjQXS4eFL
+         Yvj98HZt91azKkPv3+HHPjurpgBb3dZSG3wA/dUHnhwUgOzhbn+FZPh4wWsKQRwV5aMZ
+         7O9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=iaOXFsKF+VEOO1NtlLaIlaeLAxiEe5HdvjUlYcOWT3Q=;
+        b=KmtqJf/bSxOFYrKWCadtCt9ZNi2ANSbEuFgE1rk+4siyBXgq537MqxZw0RIzf1H5+c
+         uCOIiQcgZmVMVEdE4ILM9IirlRpfgoTgWMwQ44ehI0Es3PWuS9j+Mz0ha3kTjxBUuE+C
+         Ya4Btk/aD+yeOvswX6LgCbqkCYRnOGRJchlhDT0D6Sb1p3JLNaJGg8sZ+ZGqw1VkmC0l
+         08QmLSkS7eM3IaTCm4bBBw3Ll3HXMn2UFPsMkT8wUd60z8hcKahEUHaic5PUvtaxpWTE
+         JsAaiNPHqMCWBaotkdKgj5RD5vyWblh5qnW625xRuu4VDb94+JE5mlyL6fD5hHqGoxyV
+         y5rA==
+X-Gm-Message-State: ACgBeo1+0VVUfyxsgpRguU8q+oT7a4ovyPtMgRNz/7xzXktRt3p3Fo7q
+        rkSkXnzXoRciyeSokXT+GSMqew==
+X-Google-Smtp-Source: AA6agR6wL/KmEd1PVXtdHewoboaIumIX8l2OdRxgDFKHwjSDuXqF//vBbcweilEAqT2bqmFBdDoTIA==
+X-Received: by 2002:a65:6755:0:b0:41d:70c1:be0 with SMTP id c21-20020a656755000000b0041d70c10be0mr12905489pgu.99.1660148836261;
+        Wed, 10 Aug 2022 09:27:16 -0700 (PDT)
+Received: from google.com (238.76.127.34.bc.googleusercontent.com. [34.127.76.238])
+        by smtp.gmail.com with ESMTPSA id m3-20020a17090a2c0300b001f021cdd73dsm1851984pjd.10.2022.08.10.09.27.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 09:27:15 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 16:27:11 +0000
+From:   Carlos Llamas <cmllamas@google.com>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        syzbot <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Todd Kjos <tkjos@android.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>
+Subject: Re: [PATCH v2] binder_alloc: Add missing mmap_lock calls when using
+ the VMA
+Message-ID: <YvPcX6/1E0hAhOO5@google.com>
+References: <20220810160209.1630707-1-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.187.55
-X-CLIENT-HOSTNAME: 213.134.187.55
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegvddgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrddukeejrdehheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukeejrdehhedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepjedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghnkhhosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhn
- vghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqhhifmhhonhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehjuggvlhhvrghrvgesshhushgvrdgtohhmpdhrtghpthhtoheplhhinhhugiesrhhovggtkhdquhhsrdhnvght
-X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810160209.1630707-1-Liam.Howlett@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+On Wed, Aug 10, 2022 at 04:02:25PM +0000, Liam Howlett wrote:
+> Take the mmap_read_lock() when using the VMA in
+> binder_alloc_print_pages() and when checking for a VMA in
+> binder_alloc_new_buf_locked().
+> 
+> It is worth noting binder_alloc_new_buf_locked() drops the VMA read lock
+> after it verifies a VMA exists, but may be taken again deeper in the
+> call stack, if necessary.
+> 
+> Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+> Reported-by: syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com
+> Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the VMA)
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> ---
+>  drivers/android/binder_alloc.c | 31 +++++++++++++++++++++----------
+>  1 file changed, 21 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+> index f555eebceef6..c5e7c6d3a844 100644
+> --- a/drivers/android/binder_alloc.c
+> +++ b/drivers/android/binder_alloc.c
+> @@ -395,12 +395,15 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
+>  	size_t size, data_offsets_size;
+>  	int ret;
+>  
+> +	mmap_read_lock(alloc->vma_vm_mm);
+>  	if (!binder_alloc_get_vma(alloc)) {
+> +		mmap_read_unlock(alloc->vma_vm_mm);
+>  		binder_alloc_debug(BINDER_DEBUG_USER_ERROR,
+>  				   "%d: binder_alloc_buf, no vma\n",
+>  				   alloc->pid);
+>  		return ERR_PTR(-ESRCH);
+>  	}
+> +	mmap_read_unlock(alloc->vma_vm_mm);
+>  
+>  	data_offsets_size = ALIGN(data_size, sizeof(void *)) +
+>  		ALIGN(offsets_size, sizeof(void *));
+> @@ -922,17 +925,25 @@ void binder_alloc_print_pages(struct seq_file *m,
+>  	 * Make sure the binder_alloc is fully initialized, otherwise we might
+>  	 * read inconsistent state.
+>  	 */
+> -	if (binder_alloc_get_vma(alloc) != NULL) {
+> -		for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
+> -			page = &alloc->pages[i];
+> -			if (!page->page_ptr)
+> -				free++;
+> -			else if (list_empty(&page->lru))
+> -				active++;
+> -			else
+> -				lru++;
+> -		}
+> +
+> +	mmap_read_lock(alloc->vma_vm_mm);
+> +	if (binder_alloc_get_vma(alloc) == NULL) {
+> +		mmap_read_unlock(alloc->vma_vm_mm);
+> +		goto uninitialized;
+>  	}
+> +
+> +	mmap_read_unlock(alloc->vma_vm_mm);
+> +	for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
+> +		page = &alloc->pages[i];
+> +		if (!page->page_ptr)
+> +			free++;
+> +		else if (list_empty(&page->lru))
+> +			active++;
+> +		else
+> +			lru++;
+> +	}
+> +
+> +uninitialized:
+>  	mutex_unlock(&alloc->mutex);
+>  	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
+>  	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
+> -- 
+> 2.35.1
 
-Because acpi_bus_get_acpi_device() is completely analogous to
-acpi_fetch_acpi_dev(), rename it to acpi_get_acpi_dev() and
-add a kerneldoc comment to it.
+Thanks Liam, this looks good.
 
-Accordingly, rename acpi_bus_put_acpi_device() to acpi_put_acpi_dev()
-and update all of the users of these two functions.
-
-While at it, move the acpi_fetch_acpi_dev() header next to the
-acpi_get_acpi_dev() header in the header file holding them.
-
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/acpi/bus.c               |    6 +++---
- drivers/acpi/device_pm.c         |    4 ++--
- drivers/acpi/irq.c               |    4 ++--
- drivers/acpi/scan.c              |   21 ++++++++++++++++-----
- drivers/hwmon/acpi_power_meter.c |    2 +-
- include/acpi/acpi_bus.h          |    6 +++---
- 6 files changed, 27 insertions(+), 16 deletions(-)
-
-Index: linux-pm/include/acpi/acpi_bus.h
-===================================================================
---- linux-pm.orig/include/acpi/acpi_bus.h
-+++ linux-pm/include/acpi/acpi_bus.h
-@@ -511,7 +511,6 @@ extern int unregister_acpi_notifier(stru
-  * External Functions
-  */
- 
--struct acpi_device *acpi_fetch_acpi_dev(acpi_handle handle);
- acpi_status acpi_bus_get_status_handle(acpi_handle handle,
- 				       unsigned long long *sta);
- int acpi_bus_get_status(struct acpi_device *device);
-@@ -766,9 +765,10 @@ static inline void acpi_dev_put(struct a
- 		put_device(&adev->dev);
- }
- 
--struct acpi_device *acpi_bus_get_acpi_device(acpi_handle handle);
-+struct acpi_device *acpi_fetch_acpi_dev(acpi_handle handle);
-+struct acpi_device *acpi_get_acpi_dev(acpi_handle handle);
- 
--static inline void acpi_bus_put_acpi_device(struct acpi_device *adev)
-+static inline void acpi_put_acpi_dev(struct acpi_device *adev)
- {
- 	acpi_dev_put(adev);
- }
-Index: linux-pm/drivers/acpi/scan.c
-===================================================================
---- linux-pm.orig/drivers/acpi/scan.c
-+++ linux-pm/drivers/acpi/scan.c
-@@ -429,7 +429,7 @@ void acpi_device_hotplug(struct acpi_dev
- 	acpi_evaluate_ost(adev->handle, src, ost_code, NULL);
- 
-  out:
--	acpi_bus_put_acpi_device(adev);
-+	acpi_put_acpi_dev(adev);
- 	mutex_unlock(&acpi_scan_lock);
- 	unlock_device_hotplug();
- }
-@@ -599,11 +599,22 @@ static void get_acpi_device(void *dev)
- 	acpi_dev_get(dev);
- }
- 
--struct acpi_device *acpi_bus_get_acpi_device(acpi_handle handle)
-+/**
-+ * acpi_get_acpi_dev - Retrieve ACPI device object and reference count it.
-+ * @handle: ACPI handle associated with the requested ACPI device object.
-+ *
-+ * Return a pointer to the ACPI device object associated with @handle and bump
-+ * up that object's reference counter (under the ACPI Namespace lock), if
-+ * present, or return NULL otherwise.
-+ *
-+ * The ACPI device object reference acquired by this function needs to be
-+ * dropped via acpi_dev_put().
-+ */
-+struct acpi_device *acpi_get_acpi_dev(acpi_handle handle)
- {
- 	return handle_to_device(handle, get_acpi_device);
- }
--EXPORT_SYMBOL_GPL(acpi_bus_get_acpi_device);
-+EXPORT_SYMBOL_GPL(acpi_get_acpi_dev);
- 
- static struct acpi_device_bus_id *acpi_device_bus_id_match(const char *dev_id)
- {
-@@ -2238,7 +2249,7 @@ static int acpi_dev_get_first_consumer_d
- {
- 	struct acpi_device *adev;
- 
--	adev = acpi_bus_get_acpi_device(dep->consumer);
-+	adev = acpi_get_acpi_dev(dep->consumer);
- 	if (adev) {
- 		*(struct acpi_device **)data = adev;
- 		return 1;
-@@ -2291,7 +2302,7 @@ static bool acpi_scan_clear_dep_queue(st
- 
- static int acpi_scan_clear_dep(struct acpi_dep_data *dep, void *data)
- {
--	struct acpi_device *adev = acpi_bus_get_acpi_device(dep->consumer);
-+	struct acpi_device *adev = acpi_get_acpi_dev(dep->consumer);
- 
- 	if (adev) {
- 		adev->dep_unmet--;
-Index: linux-pm/drivers/acpi/bus.c
-===================================================================
---- linux-pm.orig/drivers/acpi/bus.c
-+++ linux-pm/drivers/acpi/bus.c
-@@ -511,7 +511,7 @@ static void acpi_bus_notify(acpi_handle
- 		break;
- 	}
- 
--	adev = acpi_bus_get_acpi_device(handle);
-+	adev = acpi_get_acpi_dev(handle);
- 	if (!adev)
- 		goto err;
- 
-@@ -524,14 +524,14 @@ static void acpi_bus_notify(acpi_handle
- 	}
- 
- 	if (!hotplug_event) {
--		acpi_bus_put_acpi_device(adev);
-+		acpi_put_acpi_dev(adev);
- 		return;
- 	}
- 
- 	if (ACPI_SUCCESS(acpi_hotplug_schedule(adev, type)))
- 		return;
- 
--	acpi_bus_put_acpi_device(adev);
-+	acpi_put_acpi_dev(adev);
- 
-  err:
- 	acpi_evaluate_ost(handle, type, ost_code, NULL);
-Index: linux-pm/drivers/acpi/device_pm.c
-===================================================================
---- linux-pm.orig/drivers/acpi/device_pm.c
-+++ linux-pm/drivers/acpi/device_pm.c
-@@ -497,7 +497,7 @@ static void acpi_pm_notify_handler(acpi_
- 
- 	acpi_handle_debug(handle, "Wake notify\n");
- 
--	adev = acpi_bus_get_acpi_device(handle);
-+	adev = acpi_get_acpi_dev(handle);
- 	if (!adev)
- 		return;
- 
-@@ -515,7 +515,7 @@ static void acpi_pm_notify_handler(acpi_
- 
- 	mutex_unlock(&acpi_pm_notifier_lock);
- 
--	acpi_bus_put_acpi_device(adev);
-+	acpi_put_acpi_dev(adev);
- }
- 
- /**
-Index: linux-pm/drivers/acpi/irq.c
-===================================================================
---- linux-pm.orig/drivers/acpi/irq.c
-+++ linux-pm/drivers/acpi/irq.c
-@@ -111,12 +111,12 @@ acpi_get_irq_source_fwhandle(const struc
- 	if (WARN_ON(ACPI_FAILURE(status)))
- 		return NULL;
- 
--	device = acpi_bus_get_acpi_device(handle);
-+	device = acpi_get_acpi_dev(handle);
- 	if (WARN_ON(!device))
- 		return NULL;
- 
- 	result = &device->fwnode;
--	acpi_bus_put_acpi_device(device);
-+	acpi_put_acpi_dev(device);
- 	return result;
- }
- 
-Index: linux-pm/drivers/hwmon/acpi_power_meter.c
-===================================================================
---- linux-pm.orig/drivers/hwmon/acpi_power_meter.c
-+++ linux-pm/drivers/hwmon/acpi_power_meter.c
-@@ -598,7 +598,7 @@ static int read_domain_devices(struct ac
- 			continue;
- 
- 		/* Create a symlink to domain objects */
--		obj = acpi_bus_get_acpi_device(element->reference.handle);
-+		obj = acpi_get_acpi_dev(element->reference.handle);
- 		resource->domain_devices[i] = obj;
- 		if (!obj)
- 			continue;
-
-
-
+Acked-by: Carlos Llamas <cmllamas@google.com>
