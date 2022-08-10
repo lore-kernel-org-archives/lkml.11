@@ -2,121 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7728FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55476C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbiHJJmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
+        id S231472AbiHJJn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231472AbiHJJmj (ORCPT
+        with ESMTP id S230438AbiHJJnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:42:39 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3493B4E62E;
-        Wed, 10 Aug 2022 02:42:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660124558; x=1691660558;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=qA0d1ma9sBVaq90sMThImxJYL3jWm10WlrkDB0bRLLI=;
-  b=VpsHeolrfT1/vhuV9XRwjMznWM1hv7AWaLCMwz+AX0oXIGsxAF4gaVVP
-   pg0v+jgbSrW7O+q2+IdXtGwy7L3DiG+CXTws3Yuma2hir5nYxPZ3k4cJi
-   SRL6F98kuMy33lG6QnPzjkY9Ipu5mq/78000ZNTiZ1XAdi3KAI8+NW0N0
-   oFB1maDuPtdwMj59lAAr/Phx8CTA5UQQHipq206w09hLRYNZIcFtGQTTj
-   ra80LR1ktFEGx1lxLFW/vUESBEJHRyKfGRjjStV9Gdla4p8s2zzrnFHbN
-   NG+Wj35ipPM29fWvAG1xIJcbek1hejW1PNe7lZTUcHcGnArqewtmfcFXH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="291043656"
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="291043656"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:42:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="601757337"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 10 Aug 2022 02:42:27 -0700
-Date:   Wed, 10 Aug 2022 17:37:41 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 05/14] mm/memfd: Introduce MFD_INACCESSIBLE flag
-Message-ID: <20220810093741.GE862421@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-6-chao.p.peng@linux.intel.com>
- <203c752f-9439-b5ae-056c-27b2631dcb81@redhat.com>
+        Wed, 10 Aug 2022 05:43:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3815B5005F
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:43:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660124632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VtlaRizDRVz5xKTGkF8JZcC+vIs+0Z48fSCCTWvcw2I=;
+        b=BDL8blnsdBMBfsHE1BNpEK6s1+Y4D96ijKBCka9yZSScdY8l6SEwhvxsihf7sdxLKGA5wH
+        rEq2YL7F79VGBDKYKg97qw6QNvevi3c05S2gCKaH4hnPYOh6auoesI4hk2LjGpduFDxDnP
+        kWLxtXjyMCj6LXIkIoXPgL+Orn+q7ak=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-625-0jGByBNVMP68i_IV_5IYQA-1; Wed, 10 Aug 2022 05:43:51 -0400
+X-MC-Unique: 0jGByBNVMP68i_IV_5IYQA-1
+Received: by mail-wm1-f71.google.com with SMTP id v130-20020a1cac88000000b003a4f057ed9fso7175182wme.7
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:43:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=VtlaRizDRVz5xKTGkF8JZcC+vIs+0Z48fSCCTWvcw2I=;
+        b=AClCJEKCCDmMwAtnw+b/5M07xzNBvCRZrv/1Z8N2JEKJ403L71wI26jQFJvqXbhJps
+         OQR7LVn3VN6M5e0BHlBkZMBhG6KijU97zgWnkkklLfFMfnLlIy1alcDIdcW6UE9bB+oR
+         LQPo1aYeT6NJ+B/jXYR9W3+th8BpcXxeoEw2n2OvrImZUufOBTLQvuObhxlqPlz0ZFQZ
+         iDfVZOabtOT4cicPyakzunjBXcGHK1ArEY7Zw47RGbf45e2eepmBH2lwL3GCrhzNhyjz
+         whvMUPeDG1mVGA372zjNeaMKfeqM3GWWCTX2mt9YjotDf/oc+ALwBJoxvCq0YpoBoMCc
+         1nxg==
+X-Gm-Message-State: ACgBeo02TIHNzC9RTOBgsPJUIj+m79ZOvXnLA8cFgDBhao2Jdirx9+TX
+        iYrgTl4FTlcrZNBQHoTkC9Rdr7244wg5R6vSM3xceX8FA+bd4zV8C6nOyRd1DvqD6vux/V3tZBK
+        xR5mzu9BsaS8F+vis37mnjFOR
+X-Received: by 2002:a05:600c:4f44:b0:3a5:6de3:8375 with SMTP id m4-20020a05600c4f4400b003a56de38375mr1815822wmq.198.1660124630028;
+        Wed, 10 Aug 2022 02:43:50 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR73NTIQcHhhjgyT7WWLXo220NhOzmLOYriyW/7ugDFMDAUT4z9ZA6kWovCQgVfIpay4scizNQ==
+X-Received: by 2002:a05:600c:4f44:b0:3a5:6de3:8375 with SMTP id m4-20020a05600c4f4400b003a56de38375mr1815803wmq.198.1660124629773;
+        Wed, 10 Aug 2022 02:43:49 -0700 (PDT)
+Received: from step1.redhat.com (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id q11-20020a5d658b000000b0021e4bc9edbfsm12921743wru.112.2022.08.10.02.43.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 02:43:49 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v2 0/4] vdpa_sim_blk: add support for flush, discard, and write-zeroes
+Date:   Wed, 10 Aug 2022 11:43:43 +0200
+Message-Id: <20220810094347.20449-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.37.1
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <203c752f-9439-b5ae-056c-27b2631dcb81@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 03:28:50PM +0200, David Hildenbrand wrote:
-> On 06.07.22 10:20, Chao Peng wrote:
-> > Introduce a new memfd_create() flag indicating the content of the
-> > created memfd is inaccessible from userspace through ordinary MMU
-> > access (e.g., read/write/mmap). However, the file content can be
-> > accessed via a different mechanism (e.g. KVM MMU) indirectly.
-> > 
-> > It provides semantics required for KVM guest private memory support
-> > that a file descriptor with this flag set is going to be used as the
-> > source of guest memory in confidential computing environments such
-> > as Intel TDX/AMD SEV but may not be accessible from host userspace.
-> > 
-> > The flag can not coexist with MFD_ALLOW_SEALING, future sealing is
-> > also impossible for a memfd created with this flag.
-> 
-> It's kind of weird to have it that way. Why should the user have to
-> care? It's the notifier requirement to have that, no?
-> 
-> Why can't we handle that when register a notifier? If anything is
-> already mapped, fail registering the notifier if the notifier has these
-> demands. If registering succeeds, block it internally.
-> 
-> Or what am I missing? We might not need the memfile set flag semantics
-> eventually and would not have to expose such a flag to user space.
+The first 2 patches are in preparation and generalize parts later used
+by the following patches that add handling of flush, discard, and
+write-zeroes requests.
 
-This makes sense if doable. The major concern was: is there a reliable
-way to detect this (already mapped) at the time of memslot registering.
+v2:
+- rebased on https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
+- used dev_dbg() to print errors [Jason]
+- moved sector to be 0 checking to another patch and generalized for
+  other requests
+- modified vdpasim_blk_check_range() to be used also with discard and
+  write-zeroes
+- added discard and write-zeroes requests handling
 
-Chao
-> 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
-> 
+v1: https://lore.kernel.org/virtualization/20220428151242.213824-1-sgarzare@redhat.com/
+
+Tree available here:
+https://gitlab.com/sgarzarella/linux.git vdpa-sim-blk-flush-discard-wz
+
+Thanks,
+Stefano
+
+Stefano Garzarella (4):
+  vdpa_sim_blk: check if sector is 0 for commands other than read or
+    write
+  vdpa_sim_blk: make vdpasim_blk_check_range usable by other requests
+  vdpa_sim_blk: add support for VIRTIO_BLK_T_FLUSH
+  vdpa_sim_blk: add support for discard and write-zeroes
+
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 127 +++++++++++++++++++++++----
+ 1 file changed, 111 insertions(+), 16 deletions(-)
+
+-- 
+2.37.1
+
