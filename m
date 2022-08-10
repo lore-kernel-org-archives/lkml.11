@@ -2,97 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87766C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A958C25B0C
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232114AbiHJJbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        id S232072AbiHJJcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbiHJJbo (ORCPT
+        with ESMTP id S232120AbiHJJcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:31:44 -0400
-Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD55C6B17E;
-        Wed, 10 Aug 2022 02:31:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=FryoR
-        m8qpMRZLvSSer5jc0v+pkFjWZPVOxn3ZzDbYKI=; b=Qcaadhu4KilUZ30mBk9f3
-        W61jbN0r328GpeBmJSMSCCr1FN1bYaqFSDlSqRrcdM5Et47JDwHwu+E84UzRWxzt
-        Rmlvt0mSzaf0+azEknTGQUWo6g1Wa4orS8WsUbfmyXB+qDr01O+ySKPyU6GKSsR5
-        WGAieDadViqaLLRspsG1FQ=
-Received: from slark_xiao$163.com ( [112.97.48.210] ) by
- ajax-webmail-wmsvr114 (Coremail) ; Wed, 10 Aug 2022 17:28:51 +0800 (CST)
-X-Originating-IP: [112.97.48.210]
-Date:   Wed, 10 Aug 2022 17:28:51 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV32
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <8735e4mvtd.fsf@miraculix.mork.no>
-References: <20220810014521.9383-1-slark_xiao@163.com>
- <8735e4mvtd.fsf@miraculix.mork.no>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Wed, 10 Aug 2022 05:32:46 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2C16DF89;
+        Wed, 10 Aug 2022 02:32:44 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27A68jdC004798;
+        Wed, 10 Aug 2022 11:32:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=JGY5zWrfCCK8U/3zgAroqF0FgJuxZGbZAnLQqoBRrso=;
+ b=0j8S3SNqXOkek34mkUPW7uFbheMJ/q/UayZS01EQTvKX2ZCKctNple+tOvUt6NQ3XLgy
+ iflhYECKtF1WaeZkpZa7A2PzvLnKvBSfKcYcnyoPUHeMxaIH0o2ttriPdHBOZojroaeW
+ +R930MK1dlNNsgsbpbrJDhrc1c9ERT7wW1bTVTYSFBvAErdiYoWKTFnv13DItzFUo7ht
+ VOczuZv9+G37EtoMeFnkwukUOC1VQnpWfnrjx2iCkeFgDx/9gbflsMtE/l0ko4Q/eTN2
+ Uids09E37dl1rnUjsntBDXd0iw5cv5S/k0aSaZ9l+vVfDaUgshaxn/rocxeYTc9OPDud AQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3huwpmbmm8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 10 Aug 2022 11:32:21 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E49A110002A;
+        Wed, 10 Aug 2022 11:32:20 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CF39421B52F;
+        Wed, 10 Aug 2022 11:32:20 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 10 Aug
+ 2022 11:32:20 +0200
+From:   <patrice.chotard@foss.st.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
+        <patrice.chotard@foss.st.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v2 0/2] spi: stm32_qspi: use QSPI bus as 8 lines communication channel
+Date:   Wed, 10 Aug 2022 11:32:13 +0200
+Message-ID: <20220810093215.794977-1-patrice.chotard@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <e7fdcfc.30e7.1828715d7af.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: csGowACHv9JTevNihIgsAA--.29964W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDQJZZFaEKSJRGQABsi
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-10_03,2022-08-09_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDgtMTAgMTQ6NTU6NDIsICJCasO4cm4gTW9yayIgPGJq
-b3JuQG1vcmsubm8+IHdyb3RlOgo+U2xhcmsgWGlhbyA8c2xhcmtfeGlhb0AxNjMuY29tPiB3cml0
-ZXM6Cj4KPj4gVGhlcmUgYXJlIDIgbW9kZWxzIGZvciBNVjMyIHNlcmlhbHMuIE1WMzItVy1BIGlz
-IGRlc2lnbmVkCj4+IGJhc2VkIG9uIFF1YWxjb21tIFNEWDYyIGNoaXAsIGFuZCBNVjMyLVctQiBp
-cyBkZXNpZ25lZCBiYXNlZAo+PiBvbiBRdWFsY29tbSBTRFg2NSBjaGlwLiBTbyB3ZSB1c2UgMiBk
-aWZmZXJlbnQgUElEIHRvIHNlcGFyYXRlIGl0Lgo+Pgo+PiBUZXN0IGV2aWRlbmNlIGFzIGJlbG93
-Ogo+PiBUOiAgQnVzPTAzIExldj0wMSBQcm50PTAxIFBvcnQ9MDIgQ250PTAzIERldiM9ICAzIFNw
-ZD00ODAgTXhDaD0gMAo+PiBEOiAgVmVyPSAyLjEwIENscz1lZihtaXNjICkgU3ViPTAyIFByb3Q9
-MDEgTXhQUz02NCAjQ2Zncz0gIDEKPj4gUDogIFZlbmRvcj0xZTJkIFByb2RJRD0wMGYzIFJldj0w
-NS4wNAo+PiBTOiAgTWFudWZhY3R1cmVyPUNpbnRlcmlvbgo+PiBTOiAgUHJvZHVjdD1DaW50ZXJp
-b24gUElEIDB4MDBGMyBVU0IgTW9iaWxlIEJyb2FkYmFuZAo+PiBTOiAgU2VyaWFsTnVtYmVyPWQ3
-YjRiZThkCj4+IEM6ICAjSWZzPSA0IENmZyM9IDEgQXRyPWEwIE14UHdyPTUwMG1BCj4+IEk6ICBJ
-ZiM9MHgwIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9NTAgRHJpdmVy
-PXFtaV93d2FuCj4+IEk6ICBJZiM9MHgxIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3Vi
-PWZmIFByb3Q9NDAgRHJpdmVyPW9wdGlvbgo+PiBJOiAgSWYjPTB4MiBBbHQ9IDAgI0VQcz0gMyBD
-bHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTQwIERyaXZlcj1vcHRpb24KPj4gSTogIElmIz0weDMg
-QWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9ZmYgUHJvdD0zMCBEcml2ZXI9b3B0aW9u
-Cj4KPlRoZSBwYXRjaCBsb29rcyBuaWNlLCBidXQgSSBoYXZlIGEgY291cGxlIG9mIHF1ZXN0aW9u
-cyBzaW5jZSB5b3UncmUgb25lCj5vZiB0aGUgZmlyc3QgcHVzaGluZyBvbmUgb2YgdGhlc2UgU0RY
-NnggbW9kZW1zLgo+Cj5JcyB0aGF0IHByb3RvY29sIHBhdHRlcm4gZml4ZWQgb24gdGhpcyBnZW5l
-cmF0aW9uIG9mIFF1YWxjb21tIGNoaXBzPyAgSXQKPmxvb2tzIGxpa2UgYW4gZXh0ZW5zaW9uIG9m
-IHdoYXQgdGhleSBzdGFydGVkIHdpdGggdGhlIFNEWDU1IGdlbmVyYXRpb24sCj53aGVyZSB0aGUg
-RElBRyBwb3J0IHdhcyBpZGVudGlmaWVkIGJ5IGZmL2ZmLzMwIGFjcm9zcyBtdWx0aXBsZSB2ZW5k
-b3JzLgo+CiBTZWVtcyB5ZXMuIEkgY2hlY2tlZCBzb21lIGRpZmZlcmVudCB1c2JfY29tcG9zaXRp
-b25zIGFuZCBmb3VuZCB0aGF0CiBkaWFnIHBvcnQgaXMgdXNpbmcgcHJvdG9jb2wgJzMwJyBhbHdh
-eXMuCgo+U3BlY2lmaWNhbGx5IHdydCB0aGlzIGRyaXZlciBhbmQgcGF0Y2gsIEkgd29uZGVyIGlm
-IHdlIGNhbi9zaG91bGQgbWF0Y2gKPm9uIGZmL2ZmLzUwIGluc3RlYWQgb2YgaW50ZXJmYWNlIG51
-bWJlciBoZXJlPyAgSSBub3RlIHRoYXQgdGhlIGludGVyZmFjZQoKSSBjaGVja2VkIGFsbCBvdXIg
-ZWRpdGVkIHVzYl9jb21wb3NpdGlvbnMgYW5kIGFsbCBRQyBkZWZhdWx0IHVzYiAKY29tcG9zaXRp
-b25zKDkwMjUsIDkwZGIsIDkwNjcsOTBkNSw5MDg0LDkwOTEsOTBhZCw5MGI4LDkwZTUpLCAKZmYv
-ZmYvNTAgaXMgcm1uZXQgdXNlZCBvbmx5LiAKCj5udW1iZXJzIGFyZSBhbGxvY2F0ZWQgc2VxdWVu
-dGlvbmFsbHkuIFByb2JhYmx5IGluIHRoZSBvcmRlciB0aGVzZQo+ZnVuY3Rpb24gYXJlIGVuYWJs
-ZWQgYnkgdGhlIGZpcm13YXJlPyBJZiBzbywgYXJlIHdlIHN1cmUgdGhpcyBpcyBzdGF0aWM/CgpU
-aGlzIG5lZWRzIG1vcmUgdGltZSB0byBjb25maXJtLiBJIHdpbGwga2VlcCB5b3UgdXBkYXRlZC4K
-Cj5PciBjb3VsZCB3ZSByaXNrIGNvbmZpZyB2YXJpYW50cyB3aGVyZSB0aGUgUk1ORVQvUU1JIGZ1
-bmN0aW9uIGhhdmUgYQo+ZGlmZmVyZW50IGludGVyZmFjZSBudW1iZXIgZm9yIHRoZSBzYW1lIFBJ
-RHM/Cj4KPkFuZCBhbm90aGVyIHBvc3NpYmlsaXR5IHlvdSBtaWdodCBjb25zaWRlci4gIEFzc3Vt
-aW5nIHRoYXQgZmYvZmYvNTAKPnVuaXF1ZWx5IGlkZW50aWZpZXMgUk1ORVQvUU1JIGZ1bmN0aW9u
-cyByZWdhcmRsZXNzIG9mIFBJRCwgd291bGQgeW91Cj5jb25zaWRlciBhIFZJRCtjbGFzcyBtYXRj
-aCB0byBjYXRjaCBhbGwgb2YgdGhlbT8gIFRoaXMgd291bGQgbm90IG9ubHkKPnN1cHBvcnQgYm90
-aCB0aGUgUElEcyBvZiB0aGlzIHBhdGNoIGluIG9uZSBnbywgYnV0IGFsc28gYW55IGZ1dHVyZSBQ
-SURzCj53aXRob3V0IHRoZSBuZWVkIGZvciBmdXJ0aGVyIGRyaXZlciBwYXRjaGVzLgo+Cj4KPkJq
-w7hybgoKSSBoYXZlIGEgY29uY2VybiwgaWYgQ2ludGVyaW9uIG9yIG90aGVyIFZlbmRvcnMsIGxp
-a2UgUXVlY3RlbCwgdXNlIG90aGVyIApjaGlwIChzdWNoIGFzIGludGVsLCBtZWRpYXRlY2sgYW5k
-IHNvIG9uKSwgdGhpcyBtZXRob2RzIG1heSB3b24ndCB3b3JrLApiZWNhdXNlICB0aGV5IHNoYXJl
-IGEgc2FtZSBWSUQuIEFsc28gdGhpcyBtYXkgYmUgY2hhbmdlZCBvbmNlIFF1YWxjb21tIAp1cGRh
-dGUgdGhlIHByb3RvY29sIHBhdHRlcm5zIGZvciBmdXR1cmUgY2hpcC4=
+From: Patrice Chotard <patrice.chotard@foss.st.com>
+
+
+The goal of this series is to allow to use QSPI bus as a 8 lines communication 
+channel for specific purpose.
+
+The QSPI block offers the possibility to communicate with 2 flashes in 
+parrallel using the dual flash mode, 8 data lines are then used.
+Usage of DT parallel-memories property is needed to enable dual flash mode.
+
+The addition of the legacy transfer_one_message() spi callback is also needed
+as currently the stm32-qspi driver only supports spi_controller_mem_ops API.
+
+
+ arch/arm/boot/dts/stm32mp15-pinctrl.dtsi |  50 +++++++----
+ arch/arm/boot/dts/stm32mp157c-ev1.dts    |  12 ++-
+ drivers/spi/spi-stm32-qspi.c             | 103 +++++++++++++++++++++--
+ 3 files changed, 139 insertions(+), 26 deletions(-)
+
+-- 
+2.25.1
+
