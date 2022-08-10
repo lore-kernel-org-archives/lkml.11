@@ -2,356 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0121DC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA48CC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231945AbiHJJHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        id S231959AbiHJJIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231906AbiHJJHc (ORCPT
+        with ESMTP id S231906AbiHJJIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:07:32 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BBD74DDA;
-        Wed, 10 Aug 2022 02:07:30 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id k12so22286939ybk.6;
-        Wed, 10 Aug 2022 02:07:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=5bfd0TT16CcJtnkLNNp0P7AOtKZ2EogVES3OM0Yn8To=;
-        b=g56aEQSwQ0yhPix+Pfw/Gjs9QwQQcU+/R692fDmZ0Qr/oMzK1AYd6JrciH+HNM3N7j
-         HJ+o6MJr4ZF+45z9LUrfSDlBIoLu4hgI14AcQSSmJuVfUtBYCH8pWyZqaSyLXTFYTwnY
-         ItKFTnZ6PCJ/lnYuCaGDL1R+TfxiENG5XVHwPsfPH6LniQtUyzpn2+0j/7v/R4/ftQDy
-         DFjgBr81oISZMooKkN9CDELzpA4Ychda1+unO12us1eJFiTCaYaaiiXQ0lmLNS+6zH3e
-         iPgwxycHT6R6ehAN95p32BFu4mXOC/+tDDqJ9yheq0mAW4Xm2gtoNeOvSq5R1lc/RffE
-         /UuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=5bfd0TT16CcJtnkLNNp0P7AOtKZ2EogVES3OM0Yn8To=;
-        b=S3AhmG4pUoplVRwKkLCfhwWf1Q1MfQOLBSm+KgAP9HRYP3YpvCXqnzxGjkMS+wTItJ
-         77SAgzd9KdGnPkDS1pNl+5Grix3s3U3qRtO3ShXH/UIqbXszqxjmUufqWegSK6MHl6is
-         7uSNEtwOXwMGRQxDnDAYfq2JT9lIumQekADDlyNST6rWm3wQdNjBC8ZQa0RlxzjB4qYD
-         vy0bQr6DBh+RvcpouG6wzmwgTAus9Al4ZffKUVFbQnTmVsg9OJMv68sIGRgG9AewSclQ
-         KOgiBr01jzW06PdQz/qLBGYciht+8t2L/tcnFdwNze1B6kcFHYKLGKolN/n6qCCCKtK9
-         vqqg==
-X-Gm-Message-State: ACgBeo0SKLsCGQitRdlgUVknHmTTkUJJKJrKONY/hArdeRpxaj9Sue3a
-        79gl02ILfwxRjGGQCiJUCKHsGaxShPeSWtwksqU=
-X-Google-Smtp-Source: AA6agR5ugFjNFRzTbTBrmh9MzqHq4kJaDCZUH5/OnKmpmYadclqc9h+Dw/oyE4ze/Gk99e6O5EjcXAtZl/Zmk+8SnV4=
-X-Received: by 2002:a25:d658:0:b0:67b:37ca:dc04 with SMTP id
- n85-20020a25d658000000b0067b37cadc04mr24061093ybg.431.1660122449994; Wed, 10
- Aug 2022 02:07:29 -0700 (PDT)
+        Wed, 10 Aug 2022 05:08:17 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60054.outbound.protection.outlook.com [40.107.6.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE5676479
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:08:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m+n9TwbkWgWDUa/IUKOAjtZoGr4C2XJskHqKj0VU61dEok/XS+J5I+LJ51dxkC6HBaCkeGi71cZoepOPI6X5cPv5YPjvdgIMgcgrj/L3b991KbuBFgPxSO3zbajZeM28Rp8JNlLbW5Jc9/mTz20TMZcG/KyTymxkJ2AgFt6xoV7+GMDnBvhhp1swggyLoBfzuxlVvBS4qNNSicw0/Y5xtOt/uqt/2IGe92J1r0SrL17Msuo2v7E6L1D27BHPbWL1GevuBmibt2Euj6BnunGQBhiewd5YtwwIUjSpUUNsfzDXmlvJdaF8QmW1ftwGmOCSxDPmPCA4IEIMsucj69Vf7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MY5JLcGcl+kO+JgzLql4Q060eECNQrGe1zeI9eSNtCk=;
+ b=AJrSDT8OxdwwCmz5HOOIs4phRaWgozHeCduOwADNPmXklq65aojJ73Qh/2mI/rUGW1IOcjETnprBX0aakD+ze8uZXBHHFPdINpoOJ6ItyP3oAbF2pRaveeqUcrxqw3x+TlTvLcFnBNgN6HGj/3YjLQTJqnGboCHpLtqKFeMloCTZf8Kmm5hqfn0UVN63uwNuXRGcv5ES74dCKAV+BfIIoeojQVkvBOW5qK1gopsRtHb8s2vJe8hUUKURei0xU4LhJg0KoYAU28OI0jW9ewP2C4KSeySn1V8//u50OyJ30CN3Gd8jGVP4D1/QMRvTf/Ix+h/dMeScEjEfpi4vCO4hcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MY5JLcGcl+kO+JgzLql4Q060eECNQrGe1zeI9eSNtCk=;
+ b=ROpV6S68MwH5mpVAhzwV2gzLpmwVLI8MPl0vyWRUK0Qkpa2oZLC9K+t9ouHTUWrEFvvmi9lRWeeArKHbqF7Fiw3CEwNS0e5VrPNF9BQkbeiBtuMVpEAF51/39M1W2A0sGmORxTPRshQFFfN5cJSJJbzgvjT+myNfmGuHPRfhothajLBFBceDfZIgcLFSpTo9mAgSwTmtDqHh7qnYsietI9VHRwZ9OP8LvddF2Fx3rSVhAJQVtbWlwMROqvCR1tEc7JE26gajZztLi98XowMY+rFOQTE8c0a3Ah9auEPcqZrl4EFW2E1/RM2fYYvcSLGP++k2Xau0I8gkBWUx1Z9akA==
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
+ by AM8PR10MB4644.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:367::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Wed, 10 Aug
+ 2022 09:08:13 +0000
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::951b:8d8:2989:be31]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::951b:8d8:2989:be31%7]) with mapi id 15.20.5525.010; Wed, 10 Aug 2022
+ 09:08:13 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     Mazin Al Haddad <mazinalhaddad05@gmail.com>
+CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees@lists.linuxfoundation.org" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        "skhan@linuxfoundation.org" <skhan@linuxfoundation.org>,
+        "paskripkin@gmail.com" <paskripkin@gmail.com>,
+        "syzbot+e3563f0c94e188366dbb@syzkaller.appspotmail.com" 
+        <syzbot+e3563f0c94e188366dbb@syzkaller.appspotmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: RE: [PATCH] tty: n_gsm: fix missing assignment of gsm->receive() in
+ gsmld_attach_gsm()
+Thread-Topic: [PATCH] tty: n_gsm: fix missing assignment of gsm->receive() in
+ gsmld_attach_gsm()
+Thread-Index: AdismLWTN62NoSI9RGqOqYqh03p0jA==
+Date:   Wed, 10 Aug 2022 09:08:13 +0000
+Message-ID: <DB9PR10MB58813E33D3516BAB526156B1E0659@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2022-08-10T09:08:12Z;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Privileged;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=dd49cace-9954-4e8c-a4ec-6ed1aa9320f0;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0
+document_confidentiality: Restricted
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 659118d2-5c1e-4b8d-c5cb-08da7aafdaf3
+x-ms-traffictypediagnostic: AM8PR10MB4644:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +o7z58Rl48n1xQPyay8KBSNEk28ERgtL3hZ39WvSh89ivDVVR2ZxvfrykAF3AJO3MF09/hVeYjXd1xs76EBLMTuCb8Ns0E7YmRDLQGmLkHw2ZouTuff77WTP3QSQPuNW7+NKxE2KxsZJ/22AhAOu+u+h4G0Id+58eBdCMb/7aWP6IO7gpfcMNUT7HBweKzcdX0ZAclJ6PDkMgTTu9AdWd8U8F+nCU6DPW13tZi4E/UjalS7tu4p6qWXKHm2A6rspxZVaHKQdLsIxTu/XMwl6IZG9XJUYRznbDGYMqiaTq0eJj2Ijw2y/+6pdIeSFKQW0GrILANmBsFvGg/wVlSpYJyc07r0hPse+j+44NihqYL1o9ZmxjFk6PptKEpyz9s8c3Da5SuJbTT30ntrZyJazI0BjX+scvKLYCpUdpEHgXwqNAzvbmOQoau4JFYeDbfhfzUhBXwosVr+8x4gjIxmxiinFY+mJVEKJIWBF1a/wTuLnItlRZyocAW396NLRLFa2lo1NaqTG4CuQ6gBfNzAfJCWLIuVrCk/5AsXfF1yko+QfuuE/pahErRyG/mfv3+novRrbuBFyB9WK0jzkou+NuNcSKhvkelwEzNG76cZo6ZO0OScuRxw9gDjHFGkC6koyb+yBnYQeE5HiZvZAGhfQJ9LGJyX1aVPjj3OO2wbdMPEeoFdmKt9ZkMfVjcZk5LrWwjfK156dZR4r2tsSR3BJ1HMjeIAMEzhW1OjwRY7yVvGPH+KlUHDucZ4eZbVusbPViz2TuNkjTT1+aAH0xUAKKIKyk1Ewre2Kq+nE77/wdX2oJhD6ODwGPVIxaQrsFYFPyZyoZK7glp6DQWT67rLBnTsxSBFUKa7MuonVhCKFI/k=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(76116006)(38100700002)(7696005)(33656002)(6506007)(54906003)(6916009)(316002)(52536014)(8936002)(8676002)(66556008)(66476007)(66446008)(64756008)(66946007)(4326008)(122000001)(38070700005)(71200400001)(82960400001)(5660300002)(478600001)(83380400001)(4744005)(2906002)(55016003)(41300700001)(26005)(9686003)(86362001)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?K512hC21PTmVNgEbDKz4TTshM7s9T1Z79f0GM/WaNPk8/zDj0EKo3cxuMOQj?=
+ =?us-ascii?Q?8sASMqBKMlCleL+W6irjgUZPXF7ikjrwnsvkEIQO/hvppClgd2iS1GIGV5EZ?=
+ =?us-ascii?Q?QjcHhyTS69sf2jZZJLv/Q07jfnp2pB3KIUjFc7wOV7LnSP9yiqDe+E8pWd0l?=
+ =?us-ascii?Q?MX86mR57LLnrz24kc6hxLOhoHJSH1+jLaICuYkrL4oBcmt+wPkO5NZo2FZI7?=
+ =?us-ascii?Q?ZVxMU+AtuVOxwtNBngnk2IEsvzS9721YrJ7JL1emJs5Jb1YWbvhbo7m0Dp/i?=
+ =?us-ascii?Q?9LRz/f0tRGsI0CWZbVd6sRSwQWMv1szrWRNTpyenoLDGiLIknN/y7lFItE4/?=
+ =?us-ascii?Q?ZElZydoDLnKrWiPpxL26MznntRSTEkDYI1McrY1e7JycjcBRLEQuhKJcmeCQ?=
+ =?us-ascii?Q?fg8dnxn4NED37ERY2m/+kr6O6FaJPtzOjJzk7aHRpyR5M8P8VFMLLBfgFwDu?=
+ =?us-ascii?Q?fQDU5ZZyxXlPcQZRF/g+RTJ3hGnpTUP/GVYlfzHxjKAyQPgiTlrd3BOnIGDJ?=
+ =?us-ascii?Q?0aLmtnAHq/Xx5BNqh8ZYlWOshPq1YNyWqZMp0LmJ1hAJQT1rbuYrWdgo0fNj?=
+ =?us-ascii?Q?xZ160zLgeSiFDwL08q7VeuAbsrZvM3l9OEHxiOWP7u9s3novDa3UFcSkFuKA?=
+ =?us-ascii?Q?MSSBhEWsMJ25RfHnke3Z2CXQqNwNq40S/IOIRx/X434UuHwc21RNcITN3wmn?=
+ =?us-ascii?Q?Wx35XhbAnD5WhLdBPKffRwES06z+6mlsN/MC/tRHtNPr5I4q/sT1DCWCB2il?=
+ =?us-ascii?Q?AeX5DAubkAO6Vl0eYUcMAkRJENIhPhzki7T2nQcDv12SYld+6i4kezbkPGB4?=
+ =?us-ascii?Q?B5xdXopFp2tqhXtewXeKCdWQFzayYBhWzeqokLUQcaym4CcK/HFDYnDrDJYM?=
+ =?us-ascii?Q?YnpuhgzLTllT8968m6siCsfIJbRsJZxl0eTw8JqLTrCPkyJFswwWXKhftW0R?=
+ =?us-ascii?Q?dH11uLDFZFtUiJB7DX5bujZNIvPVUe95Sul1AZK6bBnWClMyYuXNsO43TZ61?=
+ =?us-ascii?Q?zmloqGBzKfl/+efKjGGVwVg6lbdGrmdzjP12HqZUn990qbuBRN4p/PRJiiW6?=
+ =?us-ascii?Q?DhEGdWxWX/V/IrrOka+mik2KWVb2SNDdE9pIbJtfCVlIAaTJbeEKYj/CR05j?=
+ =?us-ascii?Q?Dzz0862JlNJ0G+eoi0v2SeUWmoCwZXsGp9wAx5XQECa/NbG8II+IFHgxruv0?=
+ =?us-ascii?Q?4rM3FliQr7SrhsgWzZm0CJXn7SpEdFvMQEQfaJH89gLFMNmpUs4SMO5ZgD2q?=
+ =?us-ascii?Q?e9oSOnPPoB9/JDsQct2ZrI83ZAaYf/z54+A4Ec5Br7S1/6qclA93F1uhd53J?=
+ =?us-ascii?Q?NvdUtYz75QZ/0//ykFCkn6jmMpE4GMWilMEudRKqFjVHMZcrUnu0/bi3XNJi?=
+ =?us-ascii?Q?sZv7FTo+RyQwQM72KRNtld6k6knkbzPKF3qp/Xa6hojAhrTcOyxdI/WVY02k?=
+ =?us-ascii?Q?BxboriVNK8+U8SoxeEtz8Qbn+gHlr6g8PY9dq/Y7bDbrySYX6HH+4Tq4BYvj?=
+ =?us-ascii?Q?lM6ibvP/1jwOE3XVxC1oVLrVexmcFq6ETOrSqwajtb7zGcIiY7IMoqhjYXBx?=
+ =?us-ascii?Q?m8d6841UlmQQwGWaaSgu0AP3mlJhPAfykv+/+eh7G+xDybJh+PNccTfziRDb?=
+ =?us-ascii?Q?oA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220329174057.GA17778@srcf.ucam.org> <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
- <CAMj1kXEUT8BK_akqjF1Wx0JkLniFyV_h9s1TfQnPqfxCHsKfWw@mail.gmail.com>
- <7aab2990-9c57-2456-b08d-299ae96ac919@apertussolutions.com>
- <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
- <b1e7b545-8e66-5dc0-ff5a-9f69d1751a5f@apertussolutions.com>
- <CAELHeEcEN=4YrPJROvzHoOiqqe5Bk0f8pDCZDnQ6aS=2LdwNow@mail.gmail.com>
- <f09fe749-e139-db6a-b2ad-45db76da04ae@apertussolutions.com>
- <CAELHeEe5H8BNf8K22XRm3hXf=_imHBnf-MHcFYvPCXX7GYkt4w@mail.gmail.com> <203110bb-b70b-b4f1-9453-46136659f84c@apertussolutions.com>
-In-Reply-To: <203110bb-b70b-b4f1-9453-46136659f84c@apertussolutions.com>
-From:   Brendan Trotter <btrotter@gmail.com>
-Date:   Wed, 10 Aug 2022 18:37:18 +0930
-Message-ID: <CAELHeEe2CiTXfMf3OYu3bzc_kH=rs4qzC-4XQL12AM=Nq8Csjw@mail.gmail.com>
-Subject: Re: Linux DRTM on UEFI platforms
-To:     The development of GNU GRUB <grub-devel@gnu.org>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        James Morris <jmorris@namei.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 659118d2-5c1e-4b8d-c5cb-08da7aafdaf3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Aug 2022 09:08:13.7308
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: b6C2SzKl1/6THBdLKpcnSTcGTTc7YQ6iCFe8RJZRoYz6sACb7xg/E0i0b9wZ/Wb02njUem58OSO+87yaWHRiMRgq4kEDfMUbQzRKQwD/WZ8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR10MB4644
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+> Fix this by setting the gsm->receive() function when the line=20
+> discipline is being attached to the terminal device, inside=20
+> gsmld_attach_gsm(). This will guarantee that the function is assigned=20
+> and a call to TIOCSTI, which calls gsmld_receive_buf(), will not
+> reference a null pointer.
 
-On Tue, Aug 9, 2022 at 8:25 PM Daniel P. Smith
-<dpsmith@apertussolutions.com> wrote:
-> On 7/23/22 01:15, Brendan Trotter wrote:
-> > On Sat, Jul 23, 2022 at 2:53 AM Daniel P. Smith
-> > <dpsmith@apertussolutions.com> wrote:
-> >> On 7/7/22 23:36, Brendan Trotter wrote:
-> >>> On Thu, Jul 7, 2022 at 7:18 PM Daniel P. Smith
-> >>> <dpsmith@apertussolutions.com> wrote:
-> >>>> On 7/5/22 20:03, Brendan Trotter wrote:
-> >>>>> On Wed, Jul 6, 2022 at 4:52 AM Daniel P. Smith
-> >>>>> <dpsmith@apertussolutions.com> wrote:
-> >>>>>> On 6/10/22 12:40, Ard Biesheuvel wrote:> On Thu, 19 May 2022 at 22:59,
-> >>>>>> To help provide clarity, consider the following flows for comparison,
-> >>>>>>
-> >>>>>> Normal/existing efi-stub:
-> >>>>>>     EFI -> efi-stub -> head_64.S
-> >>>>>>
-> >>>>>> Proposed secure launch:
-> >>>>>>     EFI -> efi-stub -> dl-handler -> [cpu] -> sl_stub ->head_64.S
-> >>>>>
-> >>>>> For more clarity; the entire point is to ensure that the kernel only
-> >>>>> has to trust itself and the CPU/TPM hardware (and does not have to
-> >>>>> trust a potentially malicious boot loader)..Any attempt to avoid a
-> >>>>> one-off solution for Linux is an attempt to weaken security.
-> >>>>
-> >>>> Please elaborate so I might understand how this entrypoint allows for
-> >>>> the kernel to only trust itself and the CPU/TPM.
-> >>>
-> >>> Is this a serious request?
-> >>
-> >> Yes, it was serious because I found the statements to be terse and open
-> >> to interpretation. Specifically, when I read it, it almost seemed that
-> >> the position is that dynamic launch is not needed, and that the kernel
-> >> could just establish its own RoT.
-> >>
-> >>> Kernel is started (via. firmware using the kernel's efi-stub, or via.
-> >>> "kexec()", or..); and regardless of how the kernel was started the
-> >>> kernel establishes its own dynamic root of trust.(e.g. AMD"s SKINIT or
-> >>> Intel's TXT, followed by measuring the remainder of itself and
-> >>> anything passed from firmware like APCI tables) without relying on a
-> >>> call-back provided by "untrusted by kernel" third-parties that don't
-> >>> exist in most cases. The dynamic root of trust that kernel creates
-> >>> depends on the kernel, CPU, TPM, etc (and excludes untrusted and
-> >>> unnecessary third parties)..
-> >>
-> >> This clarifies the previous statements and I would say, yes, this is one
-> >> approach. Considering the challenges we have/are facing in getting a
-> >> minimal post-launch handling (sl-stub) into the setup kernel, I would be
-> >> hard-pressed to believe adding all the pre-launch handling would be
-> >> found to be acceptable. If the intent is to have it completely
-> >> self-contained, this would require,
-> >>    1) the introduction of a TPM driver into the setup kernel, a hole I
-> >>       would rather not go down again
-> >
-> > ..which is no more work than the introduction of a TPM driver into one
-> > boot loader (probably less so, as Linux already has TPM drivers that
-> > are used later), and significantly less work than introducing a TPM
-> > driver into many boot loaders.
->
-> Already been there and no it is not as straight forward as one may
-> think. A minimal driver was attempted but rejected by the TPM
-> maintainers with the requirement to reuse the existing driver code. So
-> we would gladly welcome someone to come rewrite the TPM drive.
-> Specifically to de-tangle the core TPM interface code away from all of
-> its kernel proper dependencies so that it can be used by both the setup
-> kernel and the kernel proper.
->
-> > Note that to do this well (with some protection against malicious
-> > devices) you'd disable all PCI devices, then set up IOMMU as "allow
-> > the least possible", then establish a dynamic root of trust, then
-> > enable and allow individual devices only if/when their driver is
-> > started by kernel and not sooner. Without doing it like this there's
-> > less guarantee that the code/data being measured is the same as the
-> > code/data being executed/used (as a malicious device can modify
-> > anything before it's measured, restore the original extremely briefly
-> > while measurement is done, then modify anything after it's measured
-> > and before it's used). Also note that I mean "some protection" and not
-> > 100% protection (it's unsolvable unless firmware uses an "allow the
-> > least necessary by default" strategy) but "some protection" is better
-> > than none.
-> >
-> > In other words; it isn't necessarily just TPM driver alone that would
-> > need to be started "earlier" (ideally it's also IOMMU and PCI
-> > enumeration too). However, "earlier" is "earlier than the
-> > establishment of dynamic root of trust"; which can be achieved by
-> > moving the establishment of dynamic root of trust to a later stage
-> > (rather than bringing things like TPM driver to an earlier stage)..
->
-> With all due respect, the statement above demonstrates a clear lack of
-> understanding how the hardware dynamic launch works. I have written a
-> summary[1], with links to details, of how the process works. It is
-> highly recommended this is read, as well as the referenced sections in
-> Intel's SDM and AMD's APM.
->
-> >>    2) potentially the ability to load files from disk if it is not
-> >>       acceptable for the bootloader to load the DCE (ACM/SLB)
-> >
-> > ..which is both unnecessary and ill-advised.
->
-> See [1]
+In my opinion there are only two possible ways to fix this:
+a) Move the gsm->receive initialization from gsm_activate_mux() to
+gsmld_attach_gsm().
+b) Avoid calling gsm->receive in gsmld_receive_buf() if not initialized.
 
-Yes? If you're referring to the "authenticated code module" (as part
-of senter's internal procedure) it's part of hardware/firmware and
-beyond the scope of software/boot loader/kernel.
+The current code might assume that gsm->receive is only called after MUX
+activation. Therefore, variant a) may break the code in other places.
+I see no need to initialize gsm->receive in gsm_activate_mux() and
+gsmld_attach_gsm().
 
-> >>    3) miscellaneous system evaluations, memory table, machine check, etc.
-> >
-> > ..which is the same regardless of where it's done.
-> >
-> >> The only thing that is gained from such an approach is to make dynamic
-> >> launch for Linux be self-contained in the kernel.
-> >
-> > Making it self-contained in the kernel means:
-> >
-> > a) it actually works, for the most important use case (where UEFI
-> > firmware boots Linux's efi-stub directly)
-> >
-> > b) it actually works, for other use cases (booted via. "kexec()",
-> > booted from LILO, booted from ELILO, ...).
-> >
-> > c) It continues to work; even when you change/update/install/remove a
-> > boot manager (which would otherwise change the measurement and break
-> > anything that depended on the measurement).
-> >
-> > d) it's more portable (e.g. easier to port to ARM/Uboot, etc)
-> >
-> > e) It's more likely to actually be used by end-users (can just install
-> > a kernel like normal without extra pages of instructions on how to
-> > install and configure unnecessary bootware)
-> >
-> > f) It'll be peer reviewed by more people
->
-> The hook approach does all of this.
->
-> >> It does not reduce the
-> >> TCB because the whole design of the dynamic launch is to provide a
-> >> controlled process that establishes a new trust chain/TCB that is
-> >> started from an untrusted state. Specifically, dynamic launch starts
-> >> with the CPU being provided all the material for the process by
-> >> untrusted code that is currently in control at the time the launch is
-> >> initiated.
-> >
-> > The whole design of dynamic launch is to establish a new trust chain
-> > that doesn't depend on an untrusted boot loader (or anything that came
-> > before it - firmware, etc). If the "dynamic root of trust" is
-> > established by boot loader then it partially suffers the same problems
-> > as a static root of trust.
->
-> See [1]
->
-> >>> The only potential benefit that the callback solution provides is that
-> >>> it, in theory, it could reduce duplication of work for other operating
-> >>> systems (FreeBSD, Solaris, Haiku, Fuchsia, .. could use the same
-> >>> callback instead of doing it themselves); but previous discussions
-> >>> (talk of formalising the contract between the boot stub and the Linux
-> >>> kernel) suggest that you aren't interested in any other OS.
-> >>
-> >> With all due respect, but this is where I would have to disagree. There
-> >> is substantial benefit,
-> >>    1) a single code base that needs to be reviewed vs multiple OS
-> >>       specific versions
-> >
-> > If you wanted to minimize code duplication you'd implement it as an
-> > open source library (with a non-restrictive licence like MIT) so that
-> > the code can be used by all the different boot loaders instead of
-> > duplicated by each different boot loader, in addition to being used by
-> > all the different operating systems/kernels.
->
-> I completely agree and my intent is to get there eventually.
->
-> >>    2) establishes an API that decouples pre- and post-launch
-> >
-> > ..by providing a call-back that kernel uses post-launch to call an API
-> > from pre-launch, that couples pre- and post-launch more than has ever
-> > been done before?
->
-> That is not what is being proposed.
-
-Maybe I'm confused. I thought the proposal was that unnecessary and
-untrusted code (Trenchboot) is inserted into "pre kernel launch"
-(between UEFI firmware and Linux's efi-stub), and then (during "post
-kernel launch") kernel calls a callback provided by "pre kernel
-launch" (Trenchboot); thereby coupling pre-launch (Trenchboot) and
-post-launch (Linux kernel) more than has ever be done before.
-
-I also assumed that if the 1st kernel runs for 6 months and then
-starts a 2nd kernel via. "kexec()" ; then the 2nd kernel would call
-the callback provided by "pre 1st kernel launch from 6 months ago".
-
-> >>    3) reduces the complexity required to enable adoption by an OS
-> >
-> > There's only one OS that uses the Linux Boot Protocol. Any other OS
-> > (FreeBSD, Fuschia, Haiku, ...) has to radically change everything
-> > about how it boots before it can think about adopting your Linux
-> > specific solution. Is there even a proposal to add support to GRUB
-> > developers' own multi-boot specification (to "enable easy adoption" by
-> > Solaris and its forks)?
-> >
-> > Building it directly into the Linux kernel would make adoption by
-> > other operating systems easier, as they wouldn't need to change their
-> > boot code and most of them are used to porting code from Linux anway.
->
-> Nothing in this proposal binds it to the Linux Boot Protocol.
->
-> >>    4) zero reduction in the security properties of the architecture
-> >
-> > It's a huge reduction in the security properties. It allows a "just
-> > lie and measure nothing" boot loader to be (pre)installed,, tricking
-> > the kernel into thinking there's security when there is none.
->
-> See [1].
-
-[1] doesn't provide any useful information. How does a kernel know
-that the callback provided by boot loader actually measures what it's
-supposed to measure, or even does anything at all?
-
-> >>> This leaves me wondering what your true motivation is. Are you trying
-> >>> to benefit GRUB/Trenchboot (at the expense of security, end-user
-> >>> convenience, distro installer hassle, etc); or trying to manufacture
-> >>> scope for future man-in-the middle attacks (by promoting a solution
-> >>> that requires something between firmware and kernel)?
-> >>
-> >> As a loyal member of the tinfoil hat brigade, I will always advocate for
-> >> accept nothing and question everything. All I can ask is to evaluate the
-> >> technical merit of the presentations [1][2][3] and the patch series [4].
-> >> If there is anything concerning with the theory or the implementation,
-> >> then it should be raised so that it may be addressed. A means to do so
-> >> is the "what if" game, as it is great to formulate a hypothesis. In this
-> >> case, the "what if" postulated is the assumption that the approach is to
-> >> allow a future MitM attack.
-> >
-> > How quickly could a disgruntled system administrator (or someone
-> > selling computers with a Linux distro pre-installed, or anyone trying
-> > to circumvent a company's digital rights management scheme that
-> > happens to rely on DRTM for remote attestation, or...) break your
-> > security in a way that survives kernel updates?
-> >
-> > My estimate is that it'd take about 5 minutes to download the boot
-> > loader's open source code then 10 minutes to modify it.
-> >
-> > The only real safeguard against this is UEFI's Secure Boot, which
-> > doesn't work on old computers or most "non-8086" computers, doesn't
-> > work if an attacker can install their own secure boot keys, and
-> > doesn't work in most virtual machines.
->
-> See [1].
-
-[1] doesn't provide any useful information. Dynamic root of trust is
-only useful for detecting if a measurement changed; so if the
-measurement was always nonsense from the beginning and never changes
-it becomes worse than nothing.
-
-> >> Then the challenge is to examine the
-> >> process, their underlying mechanism, and the security properties of
-> >> those mechanisms to see if a MitM can be discerned. I will gladly engage
-> >> with anyone that presents an analysis demonstrating an assumption I
-> >> made/missed that opens the possibility for subversion of the launch
-> >> integrity attempting to be built.
-> >
-> > Surely it'd be easier for kernel to ignore the bootloader's
-> > "untrustworthy dynamic root of trust" (and establish its own
-> > "trustworthy dynamic root of trust") than it would be for kernel to
-> > detect a MiTM boot loader.
->
-> See [1].
-
-[1] doesn't provide any useful information. Senter and skinit don't
-provide a method for kernel to detect that (e.g.) a MiTM boot loader
-has always measured a forgery and has changed unmeasured code in a
-different way every time you boot.
-
-- Brendan
+Best regards,
+Daniel Starke
