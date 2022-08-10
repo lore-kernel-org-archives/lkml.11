@@ -2,92 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BDCC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D40B2C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232734AbiHJNaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36814 "EHLO
+        id S232728AbiHJNaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232748AbiHJN3v (ORCPT
+        with ESMTP id S232720AbiHJNaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:29:51 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168FB33A24
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:29:39 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id l10so11511198lje.7
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:29:39 -0700 (PDT)
+        Wed, 10 Aug 2022 09:30:15 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B659521B7;
+        Wed, 10 Aug 2022 06:30:14 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id z19so14253760plb.1;
+        Wed, 10 Aug 2022 06:30:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=M2+lgkUGbiFpPnZJdDr1e6oVq21WQvDGuoGeryWgspw=;
-        b=v76915Wzkkb1kBO16clztnFIfDJ0uvr0SKRaKC9YqQTf4IG6gm5Esg0V2n7qpgVjKc
-         53nyQ/6SBOQYXM3S0uiFmZeMkhhjD6qU654x8jiVbC7Nt8ucqIjFzFVtA7w/z4nbWDSd
-         JE45An8wat3l9WvALCFihINHrujCNJ2Gupi30v++JCi+M0GNMhSuSUzliUhhyTEUFtjw
-         CXxs2tmiy6RbEfe/gpI/6HUrNlz157WV0BTEOTQcnt7A92mZJh2au/0Mgi1w61PS5QAu
-         T6Q51PpTF4bAyyS/dXsa0CkH3HhfdugGRaM1OelRmPstyyYWe/Gc9WoJ+KTJRXSuvIgK
-         S12Q==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=ohl92CQuRhESHtwQxZEMJGVLnoJq8U54PHyx1qfYRJg=;
+        b=l+qPlKn1d4i+hk3n3IaUiEvwJRcpcXN6RJICZH1ImhXT4UHc5m/QYBQt11gao33vKk
+         hKqewCizzqNvifDGsK4daDi17OX0Po4CRfGuFlUgzJAwXnXy5piPpig2aIDjWOoo6Npu
+         lBY3nK6aWR8/jVLuNA1Y+anoXzDftLfW3dCF9X6ZUoJFeeKuNTd0sG83KIpJXQRvih8k
+         npRt6TK4GtaTvhvdNyD3COiksdpAYtNTxu9fr2nFh4xO3sBAgvIAJHeMJxPxT6wgVz1Q
+         S0XmWtdrzglgTdaZ08H0NtKNAjJZ02AwhDYagqqaL4JxRjUwQ127xB0vO1/MLkPyCyhM
+         VF0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=M2+lgkUGbiFpPnZJdDr1e6oVq21WQvDGuoGeryWgspw=;
-        b=doRhGESjXoBVfFEXc+tCw55S8NszZeN2yjwY1+OJWfQhrDur+s6Rn7oA5uM9DPxyGf
-         s7qQMfCZVJvm2rx0LObfGx2SbbjMc0zy9/VCg38fgmr2I/+W+je79VjUdTzUKQkWLxSb
-         sN7v4kvfkUUAQiBYBghMgCjON/tpW1N4sSUu4BRJBD34gbUgtnS4m9pJOI22TZBjMWeq
-         HFZ15n2jQfW0fMmKoBrKncJrTR/0J8U5J5GC1RW5AFRV02v8MU5gxkoM2ruqQsTRqcdm
-         04JmtBylccf+JGfzxjuldInNpX1CsSivVSgtu4xf33nKPuPaJgwxZa/S5qRYON99EEYP
-         PA4w==
-X-Gm-Message-State: ACgBeo3915KU5NQqoFkNKT52q0RvwUgYXilsO8c/+9NzgqO/gBatmI9S
-        z33AB+yIuMTIghZxxNmJtaiEyA==
-X-Google-Smtp-Source: AA6agR56rpbkPS2VaMru/xs//Y04YuIV0S7fJ48JvFSxZ8tdGKn2VGteZCIB89deq4DtpaBko9t+5g==
-X-Received: by 2002:a2e:a28e:0:b0:25e:734f:38fa with SMTP id k14-20020a2ea28e000000b0025e734f38famr8723830lja.446.1660138177491;
-        Wed, 10 Aug 2022 06:29:37 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id d8-20020a19f248000000b0048a934168c0sm349958lfk.35.2022.08.10.06.29.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 06:29:37 -0700 (PDT)
-Message-ID: <dd173944-80d3-e13f-c405-f076401bf6c7@linaro.org>
-Date:   Wed, 10 Aug 2022 16:29:36 +0300
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=ohl92CQuRhESHtwQxZEMJGVLnoJq8U54PHyx1qfYRJg=;
+        b=qKKnL6tUbjS7FpyjGFSHyU1sAMCRMs+JjRAtHpmAiyzKZIAqBvvk1Mfm7ye7O+ch+7
+         nyzdY1KUqviu3THAtpJ4y3bYJtH6lpUt35uF1m06brPg//WVFophblnSbmo0SlnldIkk
+         x0MaP/tojkF8bfFhmzczZzxeMtG165sAOKv7u0db0BJPPInmqpNLkfa6vFYKvexvBkcH
+         mj0AIBLDQknB282WwZhQdeTh4GKh+lSsjjrESnerXYa3L4W+Zdr1CZqBZZy76k1X/aCg
+         JLv3nM95ObWOTbGMoQxAVLznGwpf4pAOmJra8HIfejMDfKXzUeZlcZsvMo2/ssOMxyPp
+         FIDw==
+X-Gm-Message-State: ACgBeo2wS9M91VgHJEl9eN4SazBKh3boIXFftuT97/ZP6mtK2CfB1AxP
+        IrhTyEcsyKYA6XPl+wAkkyU=
+X-Google-Smtp-Source: AA6agR59qnSGP6yr2A6rXmpT9oob62sPQtCj/+xfSkr36oeW3Ha2kpSCWJs5KexgQYDCNHucILTtJQ==
+X-Received: by 2002:a17:90a:7005:b0:1f5:53cc:7336 with SMTP id f5-20020a17090a700500b001f553cc7336mr3791345pjk.27.1660138214224;
+        Wed, 10 Aug 2022 06:30:14 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id bf8-20020a170902b90800b001709e3c750dsm7561437plb.194.2022.08.10.06.30.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 06:30:13 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 10 Aug 2022 06:30:12 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Wilken Gottwalt <wilken.gottwalt@posteo.net>
+Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH] hwmon: corsair-psu: add reporting of rail mode via
+ debugfs
+Message-ID: <20220810133012.GB274220@roeck-us.net>
+References: <YvN4SbnAp3jl+Vzo@monster.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] riscv: dts: microchip: add qspi compatible fallback
-Content-Language: en-US
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-Cc:     nagasuresh.relli@microchip.com,
-        valentina.fernandezalanis@microchip.com, broonie@kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-riscv@lists.infradead.org
-References: <20220810085914.801170-1-conor.dooley@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220810085914.801170-1-conor.dooley@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvN4SbnAp3jl+Vzo@monster.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/08/2022 11:59, Conor Dooley wrote:
-> The "hard" QSPI peripheral on PolarFire SoC is derived from version 2
-> of the FPGA IP core. The original binding had no fallback etc, so this
-> device tree is valid as is. There was also no functional driver for the
-> QSPI IP, so no device with a devicetree from a previous mainline
-> release will regress.
+On Wed, Aug 10, 2022 at 09:20:09AM +0000, Wilken Gottwalt wrote:
+> Adds reporting via debugfs if the PSU is running in single or multi rail
+> mode. Also updates the documentation accordingly.
 > 
-> Link: https://lore.kernel.org/linux-spi/7c9f0d96-2882-964a-cd1f-916ddb3f0410@linaro.org/
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+
+Please use imperative mode.
+
+"Adds reporting" -> Report
+"updates" -> update
+
+See Documentation/process/submitting-patches.rst,
+"Describe your changes".
+
+> Signed-off-by: Wilken Gottwalt <wilken.gottwalt@posteo.net>
 > ---
-> See the link for binding discussion. I'll apply this at some point once
+>  Documentation/hwmon/corsair-psu.rst |  5 +++--
+>  drivers/hwmon/corsair-psu.c         | 21 ++++++++++++++++++++-
+>  2 files changed, 23 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/hwmon/corsair-psu.rst b/Documentation/hwmon/corsair-psu.rst
+> index e8378e7a1d8c..c3a76305c587 100644
+> --- a/Documentation/hwmon/corsair-psu.rst
+> +++ b/Documentation/hwmon/corsair-psu.rst
+> @@ -86,8 +86,9 @@ Debugfs entries
+>  ---------------
+>  
+>  =======================	========================================================
+> -uptime			Current uptime of the psu
+> +ocpmode                 Single or multi rail mode of the PCIe power connectors
+> +product                 Product name of the psu
+> +uptime			Session uptime of the psu
+>  uptime_total		Total uptime of the psu
+>  vendor			Vendor name of the psu
+> -product			Product name of the psu
+>  =======================	========================================================
+> diff --git a/drivers/hwmon/corsair-psu.c b/drivers/hwmon/corsair-psu.c
+> index 14389fd7afb8..9d103613db39 100644
+> --- a/drivers/hwmon/corsair-psu.c
+> +++ b/drivers/hwmon/corsair-psu.c
+> @@ -71,9 +71,10 @@
+>  #define PSU_CMD_RAIL_WATTS	0x96
+>  #define PSU_CMD_VEND_STR	0x99
+>  #define PSU_CMD_PROD_STR	0x9A
+> -#define PSU_CMD_TOTAL_WATTS	0xEE
+>  #define PSU_CMD_TOTAL_UPTIME	0xD1
+>  #define PSU_CMD_UPTIME		0xD2
+> +#define PSU_CMD_OCPMODE		0xD8
+> +#define PSU_CMD_TOTAL_WATTS	0xEE
+>  #define PSU_CMD_INIT		0xFE
+>  
+>  #define L_IN_VOLTS		"v_in"
+> @@ -268,6 +269,7 @@ static int corsairpsu_get_value(struct corsairpsu_data *priv, u8 cmd, u8 rail, l
+>  		break;
+>  	case PSU_CMD_TOTAL_UPTIME:
+>  	case PSU_CMD_UPTIME:
+> +	case PSU_CMD_OCPMODE:
+>  		*val = tmp;
+>  		break;
+>  	default:
+> @@ -660,6 +662,22 @@ static int product_show(struct seq_file *seqf, void *unused)
+>  }
+>  DEFINE_SHOW_ATTRIBUTE(product);
+>  
+> +static int ocpmode_show(struct seq_file *seqf, void *unused)
+> +{
+> +	struct corsairpsu_data *priv = seqf->private;
+> +	long val;
+> +	int ret;
+> +
+> +	ret = corsairpsu_get_value(priv, PSU_CMD_OCPMODE, 0, &val);
+> +	if (ret < 0)
+> +		seq_puts(seqf, "N/A\n");
+> +	else
+> +		seq_printf(seqf, "%s\n", (val == 0x02) ? "multi rail" : "single rail");
 
+If this is not always available, would it be better not to create the file
+in the first place ? If that is not feasible, it should at least be
+documented that the value is not always available to ensure that no one
+complains about it (or at least no one who read the documentation).
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Also, is the value strictly 0x02 for multi-rail configurations, or
+is that possibly just a bit or the number of rails ?
 
+Thanks,
+Guenter
 
-Best regards,
-Krzysztof
+> +
+> +	return 0;
+> +}
+> +DEFINE_SHOW_ATTRIBUTE(ocpmode);
+> +
+>  static void corsairpsu_debugfs_init(struct corsairpsu_data *priv)
+>  {
+>  	char name[32];
+> @@ -671,6 +689,7 @@ static void corsairpsu_debugfs_init(struct corsairpsu_data *priv)
+>  	debugfs_create_file("uptime_total", 0444, priv->debugfs, priv, &uptime_total_fops);
+>  	debugfs_create_file("vendor", 0444, priv->debugfs, priv, &vendor_fops);
+>  	debugfs_create_file("product", 0444, priv->debugfs, priv, &product_fops);
+> +	debugfs_create_file("ocpmode", 0444, priv->debugfs, priv, &ocpmode_fops);
+>  }
+>  
+>  #else
+> -- 
+> 2.37.1
+> 
