@@ -2,96 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52300C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05508C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbiHJLkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 07:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
+        id S232017AbiHJMGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 08:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbiHJLk1 (ORCPT
+        with ESMTP id S230000AbiHJMGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 07:40:27 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1237642FE;
-        Wed, 10 Aug 2022 04:40:21 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id dc19so27122841ejb.12;
-        Wed, 10 Aug 2022 04:40:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=DdJp4UZHmlYx0A4VYaHgo2wRMc0wfMVM5lOUKK2ThO4=;
-        b=Bz3ob9RtssQY/+VrStqxVSL4x5lN7bbl61PFrrY73Et0lNuTTiOR2vflxTmV/gGAGu
-         hk/sGeRPQDy7JQQQ4fHpsGdSze1U6Hgc36NK441s5/sC+QLnyxOTos5GVqXog7HKeLgE
-         jpQffK0TfRZJATt65GZTuMXONlSdTU8y0UZpMnExkSCX9kxyit+7b3DnQ1PHeBF1K46A
-         EbO5S5s5qHaf4m8r3EVBPh6WjsxrlTWub5u5YE2BcSbS4pUqiyGWqp8L+/DJGlrWs9rj
-         88/Ta4hbjAf1paypvJz6kPFuu+mQU8DYFdsoEjGVF5TW6ebz9SQTTVqIUaPjmPPdXySn
-         iESQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=DdJp4UZHmlYx0A4VYaHgo2wRMc0wfMVM5lOUKK2ThO4=;
-        b=cTdPNDUAuvd0zZv3zeOAdikI8ovE9DKUERQVzzVzn5Rt3RMAJiXfGI0OjAUDQWGMX5
-         AQImxqOV8oUdxG8gxHhZtivIlZFk1R93chi9Yipn4Cqvz55vUZw+HjcqYxPscDbMmdJ6
-         1zOXzVzku7PvA/t0IWAMduSOV+k9BZ8nIoWLQQtL9/brUUcWnjfoUlF7F1JsFUzivgsr
-         +2ZX9ycP8U7RgEY/i8b2bxxkjCZQnTJChxJzTd2rjUD7PDDPJ0a7dRw3N1YoS3ODA2xO
-         PMIhqU2aKICr9fNPZHvMfQfl+BXrHYgqU9J970Xjqhf2kJ1hP2UyQYCFTUV7JWLNF7gt
-         hxZg==
-X-Gm-Message-State: ACgBeo2C9ufDhDmO4VyI18RfhvXYdoAb4V9l2IDFgGmjEUrtVPZJhypx
-        bvu50xrUwnfIQNpvMZWr78X9ZU/ehX0=
-X-Google-Smtp-Source: AA6agR4hTX2FKtOUU9qMLkpuVYHtU3N3YoJFjdkyuHvvYrlgWecJoyMlHenkzTFbRxSnaYNXYypt8w==
-X-Received: by 2002:a17:907:9605:b0:6f5:c66:7c13 with SMTP id gb5-20020a170907960500b006f50c667c13mr21037817ejc.66.1660131620373;
-        Wed, 10 Aug 2022 04:40:20 -0700 (PDT)
-Received: from felia.fritz.box (200116b826708900bd59055014c64746.dip.versatel-1u1.de. [2001:16b8:2670:8900:bd59:550:14c6:4746])
-        by smtp.gmail.com with ESMTPSA id ec22-20020a170906b6d600b00730560156b0sm2213435ejb.50.2022.08.10.04.40.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 04:40:20 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>, linux-nfs@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] NFS: clean up a needless assignment in nfs_file_write()
-Date:   Wed, 10 Aug 2022 13:40:01 +0200
-Message-Id: <20220810114001.13513-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 10 Aug 2022 08:06:31 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E8311463;
+        Wed, 10 Aug 2022 05:06:29 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 9E6DD320016F;
+        Wed, 10 Aug 2022 08:06:26 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 10 Aug 2022 08:06:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwcx.xyz; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660133186; x=1660219586; bh=3XbRmvT48M
+        pdRH2ywGW3ehrhy3CjGTqx3lHdeyY6c4c=; b=SXj98chvzemW2+D+giV//Vm4lf
+        r0EJ0mMccOw9xMl0/NXENd7eVaYfQ1DK1HRkBEM8KjHAlXil4CEmBiGCrwPNC+Kh
+        hdahInc6BNxj3+bgqo+qiQy3a2MuRbkMaVbxVTTfDDjaHhca/P4swZ80ycTQgIP0
+        604VoWI9WvUmBiGdjB80uacucJML0c4713e0o9R4bdQi+56kcU9DYg0uRw4eglis
+        qbIXoi+9w7g/9+gT5L4L2sgjwhOahqygyo/49KVLLkeFfHhp8A6o7Qoyir2X+5Mq
+        6W8dxW2k7Lvd2qMAtmeEvB2tHGjRBgChap1El0CZI2m45ugdRZyf9ZnTNU6w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660133186; x=1660219586; bh=3XbRmvT48MpdRH2ywGW3ehrhy3Cj
+        GTqx3lHdeyY6c4c=; b=C4MvPgfFs+BmCzMgV9dR95NpWJBJABmCxPG4pWCiPbl8
+        69YgY7X/ywibwO4u3aUcngLbqOzs8bw21VZCUnAL0Cygb1IhJYA1Icdmur/WTwY9
+        ZUaVmJft7S26teaKS62PW3J3/L8qPLjkznmRb4g/7odmOU+016c0KvtzVpEX/zS6
+        WN7g2aQTWccy0801bi6LM8XMO000IvULM4v5i5APIsjylQiBS3H8CJFnB9bV2vws
+        guhzECP9VxdGWjhW2ZkXygBD2cXmpaGmZBfOIfUo8r07ouAKJPaF2z4GA15x/+8M
+        n+YsI8Wx6HrhkiiKF7gyhHuDQquoswTwSrBhaOlrKg==
+X-ME-Sender: <xms:QZ_zYkgQaZkPKw8JtSWIBwz6vNWku9vl9MqjBGGpTZmDOxuBH9IGmA>
+    <xme:QZ_zYtC6snDGOa6mrvRLMdy-93orr09baR-9wBpGI7lADlAMHGcJ-60FPfcW7xTMv
+    e7T6SKMXLtuWmKksvA>
+X-ME-Received: <xmr:QZ_zYsHCEB9z1_b6YnGWuGDlnFmEV7roc5fGggXpgEBZ9ATbMG-C-ywEv6jOscqBEtAsdma45N1f4GAoa7mds781xm0gNAbM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegvddggeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdlfeehmdenucfjughrpeffhffvvefukfhfgggtuggjsehgtderredt
+    tddvnecuhfhrohhmpefrrghtrhhitghkucghihhllhhirghmshcuoehprghtrhhitghkse
+    hsthiftgigrdighiiiqeenucggtffrrghtthgvrhhnpeehfeejheeftdejiedvfeekffeh
+    ledukeduleelffekgfdtleduledvtdegtdehkeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehprghtrhhitghksehsthiftgigrdighiii
+X-ME-Proxy: <xmx:QZ_zYlS-63UCptcj1fEp1ZNjvHjt0bce7xWTP4hogKk2rjd36sJxEQ>
+    <xmx:QZ_zYhxGE4xrlLKojS2ICOQ-aNFMEGNK5xqvKbKHU2bBXS0lywT51A>
+    <xmx:QZ_zYj6e6F-ell4eS8bcMiK6iLM9_30ZCoMFOga4emjmHKycLwVd9g>
+    <xmx:Qp_zYokX29Hu51nRVBWwF7ZxD-zykgNnZehGy0mL6zPu1dJ67UE65Q>
+Feedback-ID: i68a1478a:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 10 Aug 2022 08:06:25 -0400 (EDT)
+Date:   Wed, 10 Aug 2022 07:06:24 -0500
+From:   Patrick Williams <patrick@stwcx.xyz>
+To:     Potin Lai <potin.lai.pt@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] Update Facebook Bletchley BMC devicetree
+Message-ID: <YvOfQEqj+XsYkuUH@heinlein.stwcx.org.github.beta.tailscale.net>
+References: <20220810004338.329832-1-potin.lai.pt@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="DZeXxxwZnmqG9svL"
+Content-Disposition: inline
+In-Reply-To: <20220810004338.329832-1-potin.lai.pt@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 064109db53ec ("NFS: remove redundant code in nfs_file_write()")
-identifies that filemap_fdatawait_range() will always return 0 and removes
-a dead error-handling case in nfs_file_write(). With this change however,
-assigning the return of filemap_fdatawait_range() to the result variable is
-a dead store.
 
-Remove this needless assignment.
+--DZeXxxwZnmqG9svL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No functional change. No change in object code.
+On Wed, Aug 10, 2022 at 12:43:36AM +0000, Potin Lai wrote:
+> This patch series add modifications as below
+> 1. add a IPMB node for USB debug card communication.
+> 2. remove hdc1080 node due to incompatible 2nd source (si7021).=20
+>=20
+> Potin Lai (2):
+>   ARM: dts: aspeed: bletchley: add USB debug card IPMB node
+>   ARM: dts: aspeed: bletchley: remove hdc1080 node
+>=20
+>  arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+>=20
+> --=20
+> 2.31.1
+>=20
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- fs/nfs/file.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Reviewed-by: Patrick Williams <patrick@stwcx.xyz>
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index d2bcd4834c0e..f2ad9495ee4a 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -658,9 +658,9 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 			goto out;
- 	}
- 	if (mntflags & NFS_MOUNT_WRITE_WAIT) {
--		result = filemap_fdatawait_range(file->f_mapping,
--						 iocb->ki_pos - written,
--						 iocb->ki_pos - 1);
-+		filemap_fdatawait_range(file->f_mapping,
-+					iocb->ki_pos - written,
-+					iocb->ki_pos - 1);
- 	}
- 	result = generic_write_sync(iocb, written);
- 	if (result < 0)
--- 
-2.17.1
+--=20
+Patrick Williams
 
+--DZeXxxwZnmqG9svL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEBGD9ii4LE9cNbqJBqwNHzC0AwRkFAmLznz4ACgkQqwNHzC0A
+wRnPuQ/+PcGTpWhfDtWXamXrYywWWaX0ZK9HYuuwLnUyBv9SR9TL/MNpX6i8mKQ4
+YyY5eiCc9Y9WDlO5sqc6rNluye39Yvo9C87QPRWNj0tjAm7sGwKMl0MuKLx0G0sQ
+9l5Bi2I3MX6XRKnn1F0O/XlAoaG8vwSwK+9q+RYc5tqeZ/lZ5Creh54Egrh234gz
+v3nbGIoN1dIkJFwOScUTzz9SPv/i2jLIzIFJ8yrZ+uDa0gOYLkQVLyRXSNKnFzHD
+taWGhCHxEokkap+iIPjeWtzUgSli7Z/FsBwqZjNLPXGTbH1KxILuuB+ehrAqwXe2
+yBgKVum4GdFLG2/7AEJgd+atBHQ9RadrrY3ufELtM8J5Bi29qs1jG1yRklqp9r3N
+8c8zhU52qQXgMYXEQg6XIzXxZYR/qxb6DfebUJXBvJCGmr6fa3JrXmoEveqcWGpH
+KTCPN8SeziJ7yoFR5nu8NTCg/mLQ5aXi8OefTMQI8hxi3MpdNV+TUf3JUsRhuDbn
+lSQJu8MW7MFtafta+Xw2ljVQd8Wfwe2V9P3r9cDfXJZtxawVs2RJUjmjcLhutk/v
+lcUY75KCnpUhTsdxtOOjWVfO8XMQVZ+JzqugkbkxrlbamFh8D6cjtvZu+PQEq0tW
+f5uhyZhUjOYoGRN0borG4VItlm69bpUeUKOgbYbbfmDfk1CB0HU=
+=egzp
+-----END PGP SIGNATURE-----
+
+--DZeXxxwZnmqG9svL--
