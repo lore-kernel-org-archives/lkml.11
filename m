@@ -2,141 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0841C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 473EDC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbiHJITB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38634 "EHLO
+        id S231668AbiHJITF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231640AbiHJIS4 (ORCPT
+        with ESMTP id S231644AbiHJIS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:18:56 -0400
-Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0784B84ECA;
-        Wed, 10 Aug 2022 01:18:49 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 6033DC01AE;
-        Wed, 10 Aug 2022 10:18:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1660119527; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding:in-reply-to:references;
-        bh=lb5r4fhzCVyIKGPH6lTSEJrvrA9c3e3YpbDRnMWteCU=;
-        b=wCnkZkqj3PbFcJ6FDuHNbEbflqfOKSE/E4JNhelNfdM7vS+lgneIWtqfoz93rsnyxSTBjs
-        B/yWPAC3Smk+cFbsUxeEQLpZuMn+IZrNav/zWpO7zaG6GW6HiowO4MSfFX1tFJZv6jh4EQ
-        cs/TS2oP0I4o8AvNlyvcJdNtuOYOnmFDVWNt70Th2NiFG2+N6yb5dLGgQ/8LaHA63mKE7t
-        QaM4WhQF+CsZCqk/vuedXXvWKNyWuCbRcS7Ma22VWOXkoeB8V3D9aQGjSBtRz/TFF+jM76
-        7QPtPrmovWUzLKIOZFSPy+78aEh+UmUuuO6P2PB4GuLoq616LyB/tUIaj9PrVg==
-From:   Frieder Schrempf <frieder@fris.de>
-To:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        "Ariel D'Alessandro" <ariel.dalessandro@collabora.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Peng Fan <peng.fan@nxp.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 1/3] dt-bindings: arm: fsl: imx6ul-kontron: Update bindings
-Date:   Wed, 10 Aug 2022 10:18:21 +0200
-Message-Id: <20220810081825.19051-2-frieder@fris.de>
-In-Reply-To: <20220810081825.19051-1-frieder@fris.de>
-References: <20220810081825.19051-1-frieder@fris.de>
+        Wed, 10 Aug 2022 04:18:59 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC6483F3E
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:18:57 -0700 (PDT)
+Received: from vanadium.ugent.be (vanadium.ugent.be [157.193.99.61])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 02A623091F0;
+        Wed, 10 Aug 2022 10:18:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1660119536;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w+yQnLCiG0jbS71swkosyqiQn3pRJn0UQmrAJLLbqmM=;
+        b=nTGYPE8IrWGhX/uSDFJkX4dYFjLwq03PZD/ZishAH69GDXWKpgzY15rKvIXqMaPesYrZ1Q
+        hAzgLnfe+P1wXvABrWMiDUi6LzVS1JdeTjTPdi82S6xwveFhZ0lZ4NBwJ467fRJT7xxn19
+        bUXFq4NpR1WZ5cfGI2hSCeTQqIiTaLAwe63OYFWupV1vhz6MzXXxWl6GdFQxYt8DW6BhIy
+        VvNpZmeLYnZ9KISAllBvAWZ3xdNjb35c10ZeLI3iskKrA4ByedYU1Dl65beykfjgP//fNs
+        84P8aBo8HneIBjLDOUfvYDLj1xjRmN653KymZ9Eu/19yZ1GGZc640DQw7ElBVQ==
+Message-ID: <5640838e86add62f7e4bd811391fcc60b7ee42b1.camel@svanheule.net>
+Subject: Re: [PATCH v1 1/5] lib/test_cpumask: drop cpu_possible_mask full
+ test
+From:   Sander Vanheule <sander@svanheule.net>
+To:     =?ISO-8859-1?Q?Ma=EDra?= Canal <mairacanal@riseup.net>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     linux-kernel@vger.kernel.org, David Gow <davidgow@google.com>
+Date:   Wed, 10 Aug 2022 10:18:55 +0200
+In-Reply-To: <15acd7ab-e624-b2ee-cde5-100b69cf7206@riseup.net>
+References: <cover.1660068429.git.sander@svanheule.net>
+         <30d8882efedea697da20c27563050008d1569b9e.1660068429.git.sander@svanheule.net>
+         <15acd7ab-e624-b2ee-cde5-100b69cf7206@riseup.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+Hi Ma=C3=ADra,
 
-This updates the bindings in order to simplify the devicetree
-structure and to add names for the boards that follow the latest
-convention used by Kontron marketing.
+On Tue, 2022-08-09 at 19:26 -0300, Ma=C3=ADra Canal wrote:
+> On 8/9/22 15:08, Sander Vanheule wrote:
+> > cpu_possible_mask is not necessarily completely filled.=C2=A0 That mean=
+s
+> > running a check on cpumask_full() doesn't make sense, so drop the test.
+> >=20
+> > Fixes: c41e8866c28c ("lib/test: introduce cpumask KUnit test suite")
+> > Link: https://lore.kernel.org/lkml/346cb279-8e75-24b0-7d12-9803f2b41c73=
+@riseup.net/
+> > Reported-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
+> > Signed-off-by: Sander Vanheule <sander@svanheule.net>
+>=20
+> Tested-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
 
-It also gets rid of the N6xxx notation in the compatibles and
-file names, as they are not really used anymore and often result
-in confusion.
+Thanks for testing again, and sorry for the trouble!
 
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
----
- .../devicetree/bindings/arm/fsl.yaml          | 31 +++++++------------
- 1 file changed, 12 insertions(+), 19 deletions(-)
+Best,
+Sander
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index ef524378d449..649862052f53 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -553,8 +553,7 @@ properties:
-               - engicam,imx6ul-isiot      # Engicam Is.IoT MX6UL eMMC/NAND Starter kit
-               - fsl,imx6ul-14x14-evk      # i.MX6 UltraLite 14x14 EVK Board
-               - karo,imx6ul-tx6ul         # Ka-Ro electronics TXUL-0010 Module
--              - kontron,imx6ul-n6310-som  # Kontron N6310 SOM
--              - kontron,imx6ul-n6311-som  # Kontron N6311 SOM
-+              - kontron,sl-imx6ul         # Kontron SL i.MX6UL SoM
-               - prt,prti6g                # Protonic PRTI6G Board
-               - technexion,imx6ul-pico-dwarf   # TechNexion i.MX6UL Pico-Dwarf
-               - technexion,imx6ul-pico-hobbit  # TechNexion i.MX6UL Pico-Hobbit
-@@ -590,23 +589,17 @@ properties:
-           - const: phytec,imx6ul-pcl063   # PHYTEC phyCORE-i.MX 6UL
-           - const: fsl,imx6ul
- 
--      - description: Kontron N6310 S Board
-+      - description: Kontron BL i.MX6UL (N631X S) Board
-         items:
--          - const: kontron,imx6ul-n6310-s
--          - const: kontron,imx6ul-n6310-som
-+          - const: kontron,bl-imx6ul       # Kontron BL i.MX6UL Carrier Board
-+          - const: kontron,sl-imx6ul       # Kontron SL i.MX6UL SoM
-           - const: fsl,imx6ul
- 
--      - description: Kontron N6311 S Board
-+      - description: Kontron BL i.MX6UL 43 (N631X S 43) Board
-         items:
--          - const: kontron,imx6ul-n6311-s
--          - const: kontron,imx6ul-n6311-som
--          - const: fsl,imx6ul
--
--      - description: Kontron N6310 S 43 Board
--        items:
--          - const: kontron,imx6ul-n6310-s-43
--          - const: kontron,imx6ul-n6310-s
--          - const: kontron,imx6ul-n6310-som
-+          - const: kontron,bl-imx6ul-43    # Kontron BL i.MX6UL Carrier Board with 4.3" Display
-+          - const: kontron,bl-imx6ul       # Kontron BL i.MX6UL Carrier Board
-+          - const: kontron,sl-imx6ul       # Kontron SL i.MX6UL SoM
-           - const: fsl,imx6ul
- 
-       - description: TQ-Systems TQMa6UL1 SoM on MBa6ULx board
-@@ -636,7 +629,7 @@ properties:
-           - enum:
-               - fsl,imx6ull-14x14-evk     # i.MX6 UltraLiteLite 14x14 EVK Board
-               - joz,jozacp                # JOZ Access Point
--              - kontron,imx6ull-n6411-som # Kontron N6411 SOM
-+              - kontron,sl-imx6ull        # Kontron SL i.MX6ULL SoM
-               - myir,imx6ull-mys-6ulx-eval # MYiR Tech iMX6ULL Evaluation Board
-               - toradex,colibri-imx6ull      # Colibri iMX6ULL Modules
-               - toradex,colibri-imx6ull-emmc # Colibri iMX6ULL 1GB (eMMC) Module
-@@ -697,10 +690,10 @@ properties:
-           - const: toradex,colibri-imx6ull-wifi       # Colibri iMX6ULL Wi-Fi / BT Module
-           - const: fsl,imx6ull
- 
--      - description: Kontron N6411 S Board
-+      - description: Kontron BL i.MX6ULL (N6411 S) Board
-         items:
--          - const: kontron,imx6ull-n6411-s
--          - const: kontron,imx6ull-n6411-som
-+          - const: kontron,bl-imx6ull   # Kontron BL i.MX6ULL Carrier Board
-+          - const: kontron,sl-imx6ull   # Kontron SL i.MX6ULL SoM
-           - const: fsl,imx6ull
- 
-       - description: TQ Systems TQMa6ULLx SoM on MBa6ULx board
--- 
-2.37.1
-
+>=20
+> > Cc: David Gow <davidgow@google.com>
+> > ---
+> > =C2=A0lib/test_cpumask.c | 1 -
+> > =C2=A01 file changed, 1 deletion(-)
+> >=20
+> > diff --git a/lib/test_cpumask.c b/lib/test_cpumask.c
+> > index a31a1622f1f6..4ebf9f5805f3 100644
+> > --- a/lib/test_cpumask.c
+> > +++ b/lib/test_cpumask.c
+> > @@ -54,7 +54,6 @@ static cpumask_t mask_all;
+> > =C2=A0static void test_cpumask_weight(struct kunit *test)
+> > =C2=A0{
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_TRUE(test,=
+ cpumask_empty(&mask_empty));
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_TRUE(test, cpum=
+ask_full(cpu_possible_mask));
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_TRUE(test,=
+ cpumask_full(&mask_all));
+> > =C2=A0
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0KUNIT_EXPECT_EQ(test, 0=
+, cpumask_weight(&mask_empty));
