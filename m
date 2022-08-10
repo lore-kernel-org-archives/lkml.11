@@ -2,118 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7ADC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC3AC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:46:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiHJJpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
+        id S231544AbiHJJqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232260AbiHJJpi (ORCPT
+        with ESMTP id S232328AbiHJJqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:45:38 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D951EAC3;
-        Wed, 10 Aug 2022 02:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660124736; x=1691660736;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=sBavDjNKIFmd2M6Jg3bF8kVDIymkWHMnSEIr5WIN7a0=;
-  b=O61/zh9nP1a3NA1MGvroQMtaoN5BFj12Ro1Ly3C9SI+LvvDmhryVaJP2
-   CarjfMhP3S2UW8pzfkIzHQX/EkG31FdTc3R+Z8xx694dCplk3YqpOQW4J
-   4WWBMeqVCVSOCG3IamVhM36kB761utc/Eer6Jp+NQnCZQQgSmJjmdq2tE
-   iGeMt5wqLmDfQmRA9jFKLpQWvtmhDKxRUQ3ccKTlRnEtmlKtecqbp02H0
-   SMKVZ70THXKKgFwj59jC7+QeIllAUc1U5rVeufdEZF4WAN9e2j7WGo8k7
-   T/jngFph2gS8+E4vFHrqNbjcS6s1SxTCjT7ssgLMSPRW1UlzIpUY8TH5n
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="277983040"
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="277983040"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:45:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="601757857"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 10 Aug 2022 02:45:24 -0700
-Date:   Wed, 10 Aug 2022 17:40:39 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Message-ID: <20220810094039.GG862421@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
- <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
- <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
- <a2b8fa73-4efd-426f-abcd-7975ff9a7101@redhat.com>
+        Wed, 10 Aug 2022 05:46:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16CB01F2F2
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660124763;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RQhjJGzBRGTZiQN80ahY4rWeodzufG2/XfFDBAk+2w4=;
+        b=Tx4O7P5poMIANdX4BpQW8eHtYEPvGvije7XSgKP9ejDXXHWHaCPwiQhpqhvYcq/rYpTwrN
+        7pkRkVDXuwt3/dZBszfOjI5G4jp1lvSXEvvQ7s885dB481RtYdNT3QxVLHX8jPVFRnHs/o
+        V/t4+liQkiK2TPNluwA4W0pOtvDSuMI=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-111--XQKcS0SNKaQapvWqFZXCA-1; Wed, 10 Aug 2022 05:45:54 -0400
+X-MC-Unique: -XQKcS0SNKaQapvWqFZXCA-1
+Received: by mail-wr1-f70.google.com with SMTP id w20-20020adf8bd4000000b002237e71d4e4so152862wra.21
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:45:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=RQhjJGzBRGTZiQN80ahY4rWeodzufG2/XfFDBAk+2w4=;
+        b=ZKRa3a8MGQMW9fq0X1sMEiT1SLlSSb41TO2WAJBG6JPU7B2dfX8hKPn4VKcTMuSmxM
+         pHJS75Pm9MWSvkgSxs93Uoatwcoyepop/sDAsHOStWrAQf6w9u1BhZBmGIa5Rv/qfS/L
+         ib+NU640WjqbMYNN3o3ApuwkyxPeJkBleCTTzSqEbUgLYqP4h4ZHIlLmn3+W+VFA1z8s
+         dr9KQjLrGatCfvjT/u5LICOx+6pgbmrOPTkP/ofm62kBtlWmpTTbQJwyi0Z6IQJBeos/
+         MODML0nf51CEYizCcawOSWjGl/Y7LVBLOcuew//PB2EF9TRzjAcrTPQdJRlIAZ9SUWDo
+         aI6w==
+X-Gm-Message-State: ACgBeo0iehvr3d9yn2o/gDkGMPLwpkzY5xWsD8PXC7duPmzcYKAOWih4
+        A/AC4Bp6DckrpjlGQC0s7bvdXHH7U4ogMnieRnfOsSFtRPrhMP+MIRKlmBXaIq8kjxhW9C+RyDD
+        t3ahyAx6fCDKz6Dtuj7+pD3/3
+X-Received: by 2002:a5d:5273:0:b0:220:5d3e:c50f with SMTP id l19-20020a5d5273000000b002205d3ec50fmr17383755wrc.291.1660124753434;
+        Wed, 10 Aug 2022 02:45:53 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4EiDj3wCjMk+MyRjKRdbx4iiAltWGIB3iGfdatBmWEJl1cqk5OD1IxsBikKX7EYuzK1f+Q+g==
+X-Received: by 2002:a5d:5273:0:b0:220:5d3e:c50f with SMTP id l19-20020a5d5273000000b002205d3ec50fmr17383745wrc.291.1660124753149;
+        Wed, 10 Aug 2022 02:45:53 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1600:a3ce:b459:ef57:7b93? (p200300cbc7071600a3ceb459ef577b93.dip0.t-ipconnect.de. [2003:cb:c707:1600:a3ce:b459:ef57:7b93])
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b003a32297598csm2139946wmq.43.2022.08.10.02.45.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 02:45:52 -0700 (PDT)
+Message-ID: <c9c477de-395d-7a13-a200-c319aaa26be1@redhat.com>
+Date:   Wed, 10 Aug 2022 11:45:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a2b8fa73-4efd-426f-abcd-7975ff9a7101@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 2/2] mm/hugetlb: support write-faults in shared
+ mappings
+Content-Language: en-US
+From:   David Hildenbrand <david@redhat.com>
+To:     Peter Xu <peterx@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Feiner <pfeiner@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+References: <20220805110329.80540-1-david@redhat.com>
+ <20220805110329.80540-3-david@redhat.com> <Yu1dkZeBwv0SUQMq@xz-m1.local>
+ <4f644ac5-c40b-32d4-3234-c1dac3d09f83@redhat.com>
+ <YvE0OwsyQEL3K5Hm@xz-m1.local>
+ <8b317ac7-f80e-4aab-4ad1-4e19a1a0740f@redhat.com>
+ <YvFwU4e3WOSRseh6@xz-m1.local> <YvGJQaYeT9Y8PlDX@xz-m1.local>
+ <12c65d91-5fc0-cb2e-c415-2b3447960b43@redhat.com>
+Organization: Red Hat
+In-Reply-To: <12c65d91-5fc0-cb2e-c415-2b3447960b43@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 08:06:03PM +0200, David Hildenbrand wrote:
-> On 05.08.22 19:55, Paolo Bonzini wrote:
-> > On 7/21/22 11:44, David Hildenbrand wrote:
-> >>
-> >> Also, I*think*  you can place pages via userfaultfd into shmem. Not
-> >> sure if that would count "auto alloc", but it would certainly bypass
-> >> fallocate().
-> > 
-> > Yeah, userfaultfd_register would probably have to forbid this for 
-> > F_SEAL_AUTO_ALLOCATE vmas.  Maybe the memfile_node can be reused for 
-> > this, adding a new MEMFILE_F_NO_AUTO_ALLOCATE flags?  Then 
-> > userfault_register would do something like 
-> > memfile_node_get_flags(vma->vm_file) and check the result.
+On 10.08.22 11:37, David Hildenbrand wrote:
+> On 09.08.22 00:08, Peter Xu wrote:
+>> On Mon, Aug 08, 2022 at 04:21:39PM -0400, Peter Xu wrote:
+>>> On Mon, Aug 08, 2022 at 06:25:21PM +0200, David Hildenbrand wrote:
+>>>>>> Relying on VM_SHARED to detect MAP_PRIVATE vs. MAP_SHARED is
+>>>>>> unfortunately wrong.
+>>>>>>
+>>>>>> If you're curious, take a look at f83a275dbc5c ("mm: account for
+>>>>>> MAP_SHARED mappings using VM_MAYSHARE and not VM_SHARED in hugetlbfs")
+>>>>>> and mmap() code.
+>>>>>>
+>>>>>> Long story short: if the file is read-only, we only have VM_MAYSHARE but
+>>>>>> not VM_SHARED (and consequently also not VM_MAYWRITE).
+>>>>>
+>>>>> To ask in another way: if file is RO but mapped RW (mmap() will have
+>>>>> VM_SHARED cleared but VM_MAYSHARE set), then if we check VM_MAYSHARE here
+>>>>> won't we grant write bit errornously while we shouldn't? As the user
+>>>>> doesn't really have write permission to the file.
+>>>>
+>>>> Thus the VM_WRITE check. :)
+>>>>
+>>>> I wonder if we should just do it cleanly and introduce the maybe_mkwrite
+>>>> semantics here as well. Then there is no need for additional VM_WRITE
+>>>> checks and hugetlb will work just like !hugetlb.
+>>>
+>>> Hmm yeah I think the VM_MAYSHARE check is correct, since we'll need to fail
+>>> the cases where MAYSHARE && !SHARE - we used to silently let it pass.
+>>
+>> Sorry I think this is a wrong statement I made..  IIUC we'll fail correctly
+>> with/without the patch on any write to hugetlb RO regions.
+>>
+>> Then I just don't see a difference on checking VM_SHARED or VM_MAYSHARE
+>> here, it's just that VM_MAYSHARE check should work too like VM_SHARED so I
+>> don't see a problem.
+>>
+>> It also means I can't think of any valid case of having VM_WRITE when
+>> reaching here, then the WARN_ON_ONCE() is okay but maybe also redundant.
+>> Using maybe_mkwrite() seems misleading to me if FOLL_FORCE not ready for
+>> hugetlbfs after all.
+>>
 > 
-> An alternative is to simply have the shmem allocation fail in a similar
-> way. Maybe it does already, I haven't checked (don't think so).
+> The main reason we'd have it would be to scream out lout and fail
+> gracefully if someone would -- for example -- use it for something like
+> FOLL_FORCE. I mean triggering a write fault without VM_WRITE on !hugetlb
+> works, so it would be easy to assume that it similarly simply works for
+> hugetlb as well. And the code most probably wouldn't even blow up
+> immediately :)
+> 
 
-This sounds a better option. We don't need uAPI changes for
-userfault_register uAPI but I guess we will still need a KVM uAPI,
-either on the memslot or on the whole VM since Roth said this feature
-should be optional because some usages may want to disable it for
-performance reason. For details please see discussion:
-  https://lkml.org/lkml/2022/6/23/1905
+I propose the following change to hugetlb_wp():
 
-Chao
-> 
-> 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index a18c071c294e..b92d30d3b33b 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5233,6 +5233,21 @@ static vm_fault_t hugetlb_wp(struct mm_struct *mm, struct vm_area_struct *vma,
+        VM_BUG_ON(unshare && (flags & FOLL_WRITE));
+        VM_BUG_ON(!unshare && !(flags & FOLL_WRITE));
+ 
++       /*
++        * hugetlb does not support FOLL_FORCE-style write faults that keep the
++        * PTE mapped R/O such as maybe_mkwrite() would do.
++        */
++       if (WARN_ON_ONCE(!unshare && !(vma->vm_flags & VM_WRITE)))
++               return VM_FAULT_SIGSEGV;
++
++       /* Let's take out shared mappings first, this should be a rare event. */
++       if (unlikely(vma->vm_flags & VM_MAYSHARE)) {
++               if (unlikely(unshare))
++                       return 0;
++               set_huge_ptep_writable(vma, haddr, ptep);
++               return 0;
++       }
++
+
+
+
+-- 
+Thanks,
+
+David / dhildenb
+
