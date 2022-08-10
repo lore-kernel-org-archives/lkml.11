@@ -2,174 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5EEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE4D0C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbiHJTa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 15:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
+        id S233137AbiHJTbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 15:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232960AbiHJTav (ORCPT
+        with ESMTP id S232960AbiHJTbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 15:30:51 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5427C7538A
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:30:48 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id p132so18834573oif.9
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:30:48 -0700 (PDT)
+        Wed, 10 Aug 2022 15:31:42 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E2975389
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:31:41 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id l5so5566212qtv.4
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:31:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=NwgXjNaIXT7rH65EUl1dyeLewrPUELXtTgeTQdMLe+E=;
-        b=x51/E5hDzQgFUX5IDIMO+0+qp06hlb6XGB2wzq0X2tJe62rx2rvh5yS8+6Ra2XbppH
-         uoBHnv16WXOfyHrONX8AlICDeiAHAOvTBfm09xJ8VDPUttwhsiIkYaGsYxxkOnVGFTTH
-         UISv5WrjFRuTPF5Chq8qKIyAJsFUzBZHF/gCv/8sonfWDjQ/svsT3NhEqBk1iWikbDVD
-         DSuR8oSWmQTuqDTNw788Wrrk+NKZU3d03rWPjh4Rv25+klF59OMp2VPy4ZDWK+fmTBJw
-         HRqJcWIqa0XU5Ah7r2qMWJ4hJEDxnfFzDWkB8bFJEjqo5+9MjcEtqVRJ/Mq6wuUemxID
-         z30Q==
+        bh=dLpGkLIiz/54cVWJRgggdlnjUABVaQiLzQFQiAlQPGA=;
+        b=ouc3/Q4QmYB1bJ51O5HBWOL3LY/GeDOT4Zl4M2lOTIvMyM5yOFAcxdjShv7m+mw7st
+         NkJxfNCPxm1koPC2HWtD9C8QKkXudV/HjezWm4QGzfYIPpJ3aY57nxKXWyl7ZTXX0dCu
+         csKga0oGb8iJrnLMCk58S/UU5GQoeTdVd/FYyRQbgND37OHxNQYFFgDEKL91yNzxqaOZ
+         /SR7cBPnwo4HClujH5IJYvqKz/2fserwC/SR3p4cyq+SHsw483ZCWWXd8t1uCkCP1FcZ
+         IIkZjutHyYx5zsUmxMMPC4Fq0TXxMzmjcCuvOl3vy7RbhavW8V0c0NerNvZswYH47SFF
+         h4zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=NwgXjNaIXT7rH65EUl1dyeLewrPUELXtTgeTQdMLe+E=;
-        b=mbNl4pXbRdopM4pScr10u3cpJ0qTuh0R68h11O6xvOtXOeFkmt3i7nU/pIkR/IqJ/N
-         a6c4/KKOwHsIgbGZaD9XHphApBWfu1L0sjQvRrt33LwJjx7Ky4OoOYffmmrCYp1r1QJV
-         NnF3jwNYprkl7hahMhD3yI+MsCq3O5RBdoX/NPGSJLOxfWbk/9lDHIwv9Zu8/Z6Tyu3v
-         fIYFXwwPb2QA8IZwcPF5gGkz2Ih+wIq/RO02j210HemgpNHzTy/GKgSfVmcwqRe7Hq1e
-         FJjK8nZqKRC4GEXqyCv43OIeIlBE2JISesBDQF3/T3i6GbeGNPQX8MPB02bdfWr5fADE
-         /teQ==
-X-Gm-Message-State: ACgBeo0S2CVmmsIGpQx33ZdvysYqIoY8HkyThKkyv6tiA87T0S8dYJP2
-        ePNAgNqqqQJVoplGhVG/HnXPhg==
-X-Google-Smtp-Source: AA6agR6uCpFhs/aaQcXxM0h5iWRFp9CRyHa+NsPEEGZPDgDlQJe+SPfDlBEK0GF6bziC+igOBicLrA==
-X-Received: by 2002:a05:6808:124b:b0:2da:38f0:945f with SMTP id o11-20020a056808124b00b002da38f0945fmr1981969oiv.171.1660159847678;
-        Wed, 10 Aug 2022 12:30:47 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id l3-20020aca1903000000b00339c8aab320sm768712oii.3.2022.08.10.12.30.46
+        bh=dLpGkLIiz/54cVWJRgggdlnjUABVaQiLzQFQiAlQPGA=;
+        b=kO3iCXuR+TETX1fkPaJJBkN2SPehCcjbjrMTbcd2paIM48WdbjMzMqCBAxNy6UuuNw
+         34p84yAfRLn8AmrO153kGulDaL1EYZIzmPbwPVVKcdN/QI77Uow8sPnfG+nME+TSB2vr
+         wfEuxrB/LoUiv5Ytiy2dxzdl8Do1TjBKG+OwTyrATOzgK7WvYSLC+QxqNjQC+zfJANo0
+         AMnhdLBbotvCtIaPDfN49dpkCZui0TQlpJJZkK+E3Us0KxO1iPcUE3MvLgjxq/Oq9/t3
+         uUmgGu1QplAlaEHmMqoV3OO4EekPT9rZUITTT1I7HoXuqUjPQQSyjNJ+zrZj93plVBAY
+         aDRQ==
+X-Gm-Message-State: ACgBeo1/TlqVWnqU9SZaU2G4H6SlCgPsk9U+4odg9MuvS9vch+kn6LAH
+        K9jFX5ZpBV/XLqlJAF2VVNNBCv2t70QS1Q==
+X-Google-Smtp-Source: AA6agR63H3khOeYEyAgxUArdGqdtq4HNQfyGWhenU0M9vtjj3U1R0WqUmrP9r2uH1h2GBlSYweiCeA==
+X-Received: by 2002:a05:622a:190:b0:31f:3999:b949 with SMTP id s16-20020a05622a019000b0031f3999b949mr25242898qtw.444.1660159900306;
+        Wed, 10 Aug 2022 12:31:40 -0700 (PDT)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id bl35-20020a05620a1aa300b006b555509398sm397591qkb.136.2022.08.10.12.31.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 12:30:47 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 12:33:23 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: power: supply: Add Lenovo Yoga C630 EC
-Message-ID: <YvQIA5Xnp1LaIIUf@ripper>
-References: <20220810030500.2793882-1-bjorn.andersson@linaro.org>
- <20220810030500.2793882-2-bjorn.andersson@linaro.org>
- <ceb74aee-6436-f1f6-2408-fd01475cb234@linaro.org>
+        Wed, 10 Aug 2022 12:31:39 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 15:31:38 -0400
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     Chris Murphy <lists@colorremedies.com>
+Cc:     Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
+        Linux-RAID <linux-raid@vger.kernel.org>,
+        linux-block@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: stalling IO regression in linux 5.12
+Message-ID: <YvQHmjpmqfV55e8A@localhost.localdomain>
+References: <e38aa76d-6034-4dde-8624-df1745bb17fc@www.fastmail.com>
+ <YvPvghdv6lzVRm/S@localhost.localdomain>
+ <2220d403-e443-4e60-b7c3-d149e402c13e@www.fastmail.com>
+ <cb1521d5-8b07-48d8-8b88-ca078828cf69@www.fastmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ceb74aee-6436-f1f6-2408-fd01475cb234@linaro.org>
+In-Reply-To: <cb1521d5-8b07-48d8-8b88-ca078828cf69@www.fastmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 10 Aug 06:35 PDT 2022, Krzysztof Kozlowski wrote:
-
-> On 10/08/2022 06:04, Bjorn Andersson wrote:
-> > Add binding for the Embedded Controller found in the Qualcomm
-> > Snapdragon-based Lenovo Yoga C630.
+On Wed, Aug 10, 2022 at 02:42:40PM -0400, Chris Murphy wrote:
 > 
-> Thank you for your patch. There is something to discuss/improve.
 > 
-> > +
-> > +description:
-> > +  The Qualcomm Snapdragon-based Lenovo Yoga C630 has an Embedded Controller
-> > +  (EC) which handles things such as battery and USB Type-C. This binding
-> > +  describes the interface, on an I2C bus, to this EC.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: lenovo,yoga-c630-ec
-> > +
-> > +  reg:
-> > +    const: 0x70
-> > +
-> > +  '#address-cells':
-> > +    const: 1
+> On Wed, Aug 10, 2022, at 2:33 PM, Chris Murphy wrote:
+> > On Wed, Aug 10, 2022, at 1:48 PM, Josef Bacik wrote:
+> >
+> >> To help narrow this down can you disable any IO controller you've got enabled
+> >> and see if you can reproduce?  If you can sysrq+w is super helpful as it'll
+> >> point us in the next direction to look.  Thanks,
+> >
+> > I'm not following, sorry. I can boot with 
+> > systemd.unified_cgroup_hierarchy=0 to make sure it's all off, but we're 
+> > not using an IO cgroup controllers specifically as far as I'm aware.
 > 
-> Just to clarify: the EC have physically two USB connectors?
-> 
+> OK yeah that won't work because the workload requires cgroup2 or it won't run.
+>
 
-Correct, while it's only possible to do Displayport on the second
-connector, the EC is involved in both the connectors - based on the
-events received from it.
+Oh no I don't want cgroups completley off, just disable the io controller, so
+figure out which cgroup your thing is being run in, and then
 
-> > +
-> > +  '#size-cells':
-> > +    const: 0
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +patternProperties:
-> > +  '^connector@\d$':
-> > +    $ref: /schemas/connector/usb-connector.yaml#
-> 
-> unevaluatedProperties:false inside connector (on its level)
-> 
+echo "-io" > <parent dir>/cgroup.subtree_control
 
-Okay, will update accordingly.
+If you cat /sys/fs/cgroup/whatever/cgroup/cgroup.controllers and you see "io" in
+there keep doing the above in the next highest parent directory until io is no
+longer in there.  Thanks,
 
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |+
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    i2c1 {
-> > +      clock-frequency = <400000>;
-> > +
-> > +      #address-cells = <1>;
-> > +      #size-cells = <0>;
-> > +
-> > +      embedded-controller@70 {
-> > +        compatible = "lenovo,yoga-c630-ec";
-> > +        reg = <0x70>;
-> > +
-> > +        interrupts-extended = <&tlmm 20 IRQ_TYPE_LEVEL_HIGH>;
-> > +
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        connector@0 {
-> > +          compatible = "usb-c-connector";
-> > +          reg = <0>;
-> > +          power-role = "source";
-> > +          data-role = "host";
-> > +        };
-> > +
-> > +        connector@1 {
-> > +          compatible = "usb-c-connector";
-> > +          reg = <1>;
-> > +          power-role = "source";
-> > +          data-role = "host";
-> > +
-> > +          ports {
-> > +            #address-cells = <1>;
-> > +            #size-cells = <0>;
-> > +            port@1 {
-> > +              reg = <1>;
-> > +              lenovo_ec_dp_in: endpoint {
-> > +                   remote-endpoint = <&mdss_dp_out>;
-> 
-> You have inconsistent indentation. Use 4-spaces for entire DTS example.
-> 
-
-Odd, will fix.
-
-Thanks,
-Bjorn
-
-> Best regards,
-> Krzysztof
+Josef 
