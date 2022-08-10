@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD7FC19F2A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D992AC25B07
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbiHJQGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
+        id S233320AbiHJQGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbiHJQFj (ORCPT
+        with ESMTP id S233381AbiHJQFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:05:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0CB6B665
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:05:37 -0700 (PDT)
+        Wed, 10 Aug 2022 12:05:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3058578BF0
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:05:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5AE361196
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B2CAC4347C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2B04B81D6A
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:05:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F0F9C43142;
         Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oLoDF-000Uz2-1P;
+        id 1oLoDF-000V08-2c;
         Wed, 10 Aug 2022 12:05:41 -0400
-Message-ID: <20220810160541.268997705@goodmis.org>
+Message-ID: <20220810160541.646408756@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Wed, 10 Aug 2022 12:04:57 -0400
+Date:   Wed, 10 Aug 2022 12:04:59 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Ben Hutchings <benh@debian.org>
-Subject: [for-linus][PATCH 2/4] tools/rtla: Fix command symlinks
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [for-linus][PATCH 4/4] rtla: Consolidate and show all necessary libraries that failed for
+ building
 References: <20220810160455.872730397@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -41,37 +42,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <benh@debian.org>
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-"ln -s" stores the next argument directly as the symlink target, so
-it needs to be a relative path.  In this case, just "rtla".
+When building rtla tools, if the necessary libraries are not installed
+(libtraceevent and libtracefs), show the ones that are missing in one
+consolidated output, and also show how to install them (at least for
+Fedora).
 
-Link: https://lore.kernel.org/linux-trace-devel/YtLBXMI6Ui4HLIF1@decadent.org.uk
+Link: https://lore.kernel.org/all/CAHk-=wh+e1qcCnEYJ3JRDVLNCYbJ=0u+Ts5bOYZnY3mX_k-hFA@mail.gmail.com/
+Link: https://lkml.kernel.org/r/20220810113918.5d19ce59@gandalf.local.home
 
-Fixes: 0605bf009f18 ("rtla: Add osnoise tool")
-Fixes: a828cd18bc4a ("rtla: Add timerlat tool and timelart top mode")
-Signed-off-by: Ben Hutchings <benh@debian.org>
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- tools/tracing/rtla/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/tracing/rtla/Makefile | 62 +++++++++++++++++++++----------------
+ 1 file changed, 36 insertions(+), 26 deletions(-)
 
 diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 1bea2d16d4c1..b8fe10d941ce 100644
+index f392708c7a1e..22e28b76f800 100644
 --- a/tools/tracing/rtla/Makefile
 +++ b/tools/tracing/rtla/Makefile
-@@ -108,9 +108,9 @@ install: doc_install
- 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
- 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
- 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
--	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/osnoise
-+	ln -s rtla $(DESTDIR)$(BINDIR)/osnoise
- 	@test ! -f $(DESTDIR)$(BINDIR)/timerlat || rm $(DESTDIR)$(BINDIR)/timerlat
--	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/timerlat
-+	ln -s rtla $(DESTDIR)$(BINDIR)/timerlat
+@@ -61,40 +61,50 @@ endif
+ LIBTRACEEVENT_MIN_VERSION = 1.5
+ LIBTRACEFS_MIN_VERSION = 1.3
  
- .PHONY: clean tarball
- clean: doc_clean
++.PHONY:	all warnings show_warnings
++all:	warnings rtla
++
+ TEST_LIBTRACEEVENT = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEEVENT_MIN_VERSION) libtraceevent > /dev/null 2>&1 || echo n")
+ ifeq ("$(TEST_LIBTRACEEVENT)", "n")
+-.PHONY: warning_traceevent
+-warning_traceevent:
+-	@echo "********************************************"
+-	@echo "** NOTICE: libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher not found"
+-	@echo "**"
+-	@echo "** Consider installing the latest libtraceevent from your"
+-	@echo "** distribution, e.g., 'dnf install libtraceevent' on Fedora,"
+-	@echo "** or from source:"
+-	@echo "**"
+-	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ "
+-	@echo "**"
+-	@echo "********************************************"
++WARNINGS = show_warnings
++MISSING_LIBS += echo "**   libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher";
++MISSING_PACKAGES += "libtraceevent-devel"
++MISSING_SOURCE += echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ ";
+ endif
+ 
+ TEST_LIBTRACEFS = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEFS_MIN_VERSION) libtracefs > /dev/null 2>&1 || echo n")
+ ifeq ("$(TEST_LIBTRACEFS)", "n")
+-.PHONY: warning_tracefs
+-warning_tracefs:
+-	@echo "********************************************"
+-	@echo "** NOTICE: libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher not found"
+-	@echo "**"
+-	@echo "** Consider installing the latest libtracefs from your"
+-	@echo "** distribution, e.g., 'dnf install libtracefs' on Fedora,"
+-	@echo "** or from source:"
+-	@echo "**"
+-	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ "
+-	@echo "**"
+-	@echo "********************************************"
++WARNINGS = show_warnings
++MISSING_LIBS += echo "**   libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher";
++MISSING_PACKAGES += "libtracefs-devel"
++MISSING_SOURCE += echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ ";
+ endif
+ 
+-.PHONY:	all
+-all:	rtla
++define show_dependencies
++	@echo "********************************************";				\
++	echo "** NOTICE: Failed build dependencies";					\
++	echo "**";									\
++	echo "** Required Libraries:";							\
++	$(MISSING_LIBS)									\
++	echo "**";									\
++	echo "** Consider installing the latest libtracefs from your";			\
++	echo "** distribution, e.g., 'dnf install $(MISSING_PACKAGES)' on Fedora,";	\
++	echo "** or from source:";							\
++	echo "**";									\
++	$(MISSING_SOURCE)								\
++	echo "**";									\
++	echo "********************************************"
++endef
++
++show_warnings:
++	$(call show_dependencies);
++
++ifneq ("$(WARNINGS)", "")
++ERROR_OUT = $(error Please add the necessary dependencies)
++
++warnings: $(WARNINGS)
++	$(ERROR_OUT)
++endif
+ 
+ rtla: $(OBJ)
+ 	$(CC) -o rtla $(LDFLAGS) $(OBJ) $(LIBS)
 -- 
 2.35.1
