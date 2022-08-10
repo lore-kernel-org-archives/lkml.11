@@ -2,90 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E85C25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E4CC25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbiHJOSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 10:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S231919AbiHJOTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbiHJOSA (ORCPT
+        with ESMTP id S229487AbiHJOTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 10:18:00 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AC77287F
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:17:58 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-10ea9ef5838so17959855fac.3
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=aLbFUlGFxratZwVvqyKdINnxG6W9VgbuCyf2C3Yr28o=;
-        b=h9IxXV/InGN8vO34EJQcwzBtQSN+sI8COLJgVOhVYaaXwaxFYA7G1nkVrb0CET53Ul
-         14AEsDOlYSsolAEa0PoOdzcKUDEFBFQPIztw86mKYuG9NaCFAsFMi3CnEL3MuNKXdp73
-         Tm3ZI+Sep57ObzNbbf6z3yZZjy+wuhSlpzids=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=aLbFUlGFxratZwVvqyKdINnxG6W9VgbuCyf2C3Yr28o=;
-        b=Nj9Tz+Wb30fe8wNer5umt6DSCwr0oC0V9Mc+WX8YycbM4dCD2omMqznh67heL+pcbI
-         vWoyRo+8XSqqbYxVp1xt9/2CieGUkE4sdZs+QvmwXiiPjfZSzty4fDQykfJobRvDxksb
-         jPtV9WXpgmrnZkLtYLzarlkWZTivmy5Bo8K6rzrnn3Q3g4TKmPXFIZX+13GNrn/dPbRN
-         8UeJpvz8N9i2PzgjvnK+rT1/dvIw633uxldLiQt0MX8qLuJlIwEmOPVZUDKWVdeSOThT
-         e33Dcwdo8VTcPMZnYAGTyBAXxDikz70jNkTw38qabYiECSvT4f50ZGf0uB4RGdClZ5TG
-         BqQw==
-X-Gm-Message-State: ACgBeo3U1VSmAf0RPavx9ZCH6kf4mMHxBz8LjIwI8YAFMrWfxU2FmpGf
-        diABYqiFDDABdOhq605HkNbqyQ==
-X-Google-Smtp-Source: AA6agR4vts6CzXsb3tJwgh/SJvCYXoI1Mq5loN4pZ3z7ZS0hpWeCu5I9XQ4HwjBOowhwtdECj6fAAA==
-X-Received: by 2002:a05:6870:c58b:b0:10b:d21d:ad5e with SMTP id ba11-20020a056870c58b00b0010bd21dad5emr1551174oab.287.1660141077335;
-        Wed, 10 Aug 2022 07:17:57 -0700 (PDT)
-Received: from fedora64.linuxtx.org (99-47-93-78.lightspeed.rcsntx.sbcglobal.net. [99.47.93.78])
-        by smtp.gmail.com with ESMTPSA id f63-20020a9d03c5000000b00636dd66b24dsm695583otf.42.2022.08.10.07.17.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 07:17:56 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Date:   Wed, 10 Aug 2022 09:17:54 -0500
-From:   Justin Forbes <jforbes@fedoraproject.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 00/35] 5.18.17-rc1 review
-Message-ID: <YvO+Eui1TScY5a3+@fedora64.linuxtx.org>
-References: <20220809175515.046484486@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
+        Wed, 10 Aug 2022 10:19:14 -0400
+Received: from mo-csw-fb.securemx.jp (mo-csw-fb1514.securemx.jp [210.130.202.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B8C72867;
+        Wed, 10 Aug 2022 07:19:12 -0700 (PDT)
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1514) id 27ADYBu0001630; Wed, 10 Aug 2022 22:34:11 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 27ADXWQt004392; Wed, 10 Aug 2022 22:33:32 +0900
+X-Iguazu-Qid: 34trbpZOfxdrYAuJt4
+X-Iguazu-QSIG: v=2; s=0; t=1660138412; q=34trbpZOfxdrYAuJt4; m=JZGbdTzhMCopwAS/kSRkstYoG19+c9pcH1uvin1I6zQ=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1510) id 27ADXVpQ039291
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 10 Aug 2022 22:33:31 +0900
+X-SA-MID: 43725403
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Hans Verkuil <hverkuil@xs4all.nl>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH v3 4/4] MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
+Date:   Wed, 10 Aug 2022 22:28:22 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220810132822.32534-5-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220810132822.32534-1-yuji2.ishikawa@toshiba.co.jp>
+References: <20220810132822.32534-1-yuji2.ishikawa@toshiba.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 08:00:29PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.17 release.
-> There are 35 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.17-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+Added entries for visconti Video Input Interface driver, including;
+* device tree bindings
+* source files
+* documentation files
 
-Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
-s390x, x86_64), and boot tested x86_64. No regressions noted.
+Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+---
+Changelog v2:
+- no change
 
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+Changelog v3:
+- added entry for driver API documentation
+---
+ MAINTAINERS | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dd36acc87..04423ae9a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2792,12 +2792,15 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iwamatsu/linux-visconti.git
+ F:	Documentation/devicetree/bindings/arm/toshiba.yaml
++F:	Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+ F:	Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+ F:	Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+ F:	Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml
+ F:	Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
++F:	Documentation/driver-api/media/drivers/visconti-viif.rst
+ F:	arch/arm64/boot/dts/toshiba/
++F:	drivers/media/platform/visconti/
+ F:	drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+ F:	drivers/gpio/gpio-visconti.c
+ F:	drivers/pci/controller/dwc/pcie-visconti.c
+-- 
+2.17.1
+
+
