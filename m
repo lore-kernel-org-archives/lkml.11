@@ -2,86 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65A0C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61245C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiHJNjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
+        id S231318AbiHJNlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231854AbiHJNjM (ORCPT
+        with ESMTP id S232825AbiHJNkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:39:12 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448396583F
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:39:09 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1660138745tdu021vk
-Received: from localhost.localdomain ( [182.148.14.53])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 10 Aug 2022 21:39:03 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: svq08P3H43XysrHG5O8YQOL7NCARp11jQQ/d0i2y4vJ5mUitLQ3G+dXMq8vQx
-        6w7MJ02hNuwQ+uOnWgAOYXeafIaquK1wb70U1x2r2ZHx/iCI1SiQadd8EzfxBP8KpXNPguy
-        uOSjDCjcTxCnv1C1cZM+i4iLBtk7mURdtH3w41Xl19jmDxGZH4ZWXCuJuozfhUF5bDbFAjL
-        D8VJrbT7e7AkvQ+8xc3i+PUU3gA6ClNj2TVfcTyFKa9C3fjcKAHauxrD63CJ7q+2vxNEdAw
-        AicoWz6QuqmlaC+l51Roo+bGPsxvI39aox5qB4Xu7uUzxW1/Vijrw41ACnO15+5J8ZnRX1D
-        GY5FiMXb2j7ecz0qBQ4lOkaQHW9FgVDezsQioXKsR8Q6Tk+P+SYQTTnFmvyTUzB+9GTLdMx
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     miquel.raynal@bootlin.com, vigneshr@ti.com
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] mtd/ubi: fix repeated words in comments
-Date:   Wed, 10 Aug 2022 21:38:56 +0800
-Message-Id: <20220810133856.4546-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 10 Aug 2022 09:40:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DED3055E;
+        Wed, 10 Aug 2022 06:40:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CEAC8CE1BFC;
+        Wed, 10 Aug 2022 13:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A988C433D6;
+        Wed, 10 Aug 2022 13:40:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660138840;
+        bh=wLk5bRUV/7zoq0ykHRoJu6VMP/9stZ4NhAOjcjRvdhU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UfTKxEyXYWHbIKp5OFyPWVgJ4+pDpCPoy1i/b/7uwS+iC7Pcj4Pq52DfHnt1BfWC4
+         0wY8qwELzASM7xo0DpkVnjcaQVVNlfU0T/NgL3yaEYQj+cbrdvpVWw1WUGNOxrnD2z
+         OmB0S3VZn0165sjNrC04uOHXcoezAPz/2kO/FpybOXoHUSq4ZMxe5zlB7R0nrsH3HY
+         RyPAV+dsSlxcl6MYa6oxCmnEOJqEb6OOSpjOOFZKPSPK+f5oVytfFbVJ671+FfDmDZ
+         shJb6IrXXf7YrqiZhN3x+UQFfzgAfgU9lJUJRiVoYTS5uE//bquI1OtdtFY8ltiNu3
+         kP8v7xEHOrcCw==
+Date:   Wed, 10 Aug 2022 14:40:35 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Patrice CHOTARD <patrice.chotard@foss.st.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-spi@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        christophe.kerello@foss.st.com
+Subject: Re: [PATCH v2 1/2] spi: stm32_qspi: Add transfer_one_message() spi
+ callback
+Message-ID: <YvO1U7VB7WQv0oKR@sirena.org.uk>
+References: <20220810093215.794977-1-patrice.chotard@foss.st.com>
+ <20220810093215.794977-2-patrice.chotard@foss.st.com>
+ <YvOtZtrRHd4AT+j+@sirena.org.uk>
+ <d41e3814-3fab-18a3-7218-d5c28eaecff8@foss.st.com>
+ <YvOxOg0vXSGrZLfP@sirena.org.uk>
+ <38200a6f-fdc1-fa94-7bc6-91ca528235ed@foss.st.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="21y0RXUsptdj3o80"
+Content-Disposition: inline
+In-Reply-To: <38200a6f-fdc1-fa94-7bc6-91ca528235ed@foss.st.com>
+X-Cookie: First pull up, then pull down.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'a'.
- Delete the redundant word 'the'.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/mtd/ubi/wl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+--21y0RXUsptdj3o80
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
-index 55bae06cf408..0fadd55beee0 100644
---- a/drivers/mtd/ubi/wl.c
-+++ b/drivers/mtd/ubi/wl.c
-@@ -376,7 +376,7 @@ static struct ubi_wl_entry *find_mean_wl_entry(struct ubi_device *ubi,
-  * refill_wl_user_pool().
-  * @ubi: UBI device description object
-  *
-- * This function returns a a wear leveling entry in case of success and
-+ * This function returns a wear leveling entry in case of success and
-  * NULL in case of failure.
-  */
- static struct ubi_wl_entry *wl_get_wle(struct ubi_device *ubi)
-@@ -429,7 +429,7 @@ static int prot_queue_del(struct ubi_device *ubi, int pnum)
- /**
-  * sync_erase - synchronously erase a physical eraseblock.
-  * @ubi: UBI device description object
-- * @e: the the physical eraseblock to erase
-+ * @e: the physical eraseblock to erase
-  * @torture: if the physical eraseblock has to be tortured
-  *
-  * This function returns zero in case of success and a negative error code in
-@@ -1016,7 +1016,7 @@ static int ensure_wear_leveling(struct ubi_device *ubi, int nested)
- 
- 	/*
- 	 * If the ubi->scrub tree is not empty, scrubbing is needed, and the
--	 * the WL worker has to be scheduled anyway.
-+	 * WL worker has to be scheduled anyway.
- 	 */
- 	if (!ubi->scrub.rb_node) {
- #ifdef CONFIG_MTD_UBI_FASTMAP
--- 
-2.36.1
+On Wed, Aug 10, 2022 at 03:31:59PM +0200, Patrice CHOTARD wrote:
+> On 8/10/22 15:23, Mark Brown wrote:
+> > On Wed, Aug 10, 2022 at 03:15:08PM +0200, Patrice CHOTARD wrote:
 
+> > Yes.  Though I'm not clear if the bindings actually want to enforce it
+> > there, it's a device level property not a controller level one so it
+> > might not be something where controller support gets validated.
+
+> Ah yes, i see, parallel-memories should not be used in our qspi controller node.
+> So i can't reuse parallel-memories for my purpose.
+
+> So i need to add a new proprietary property at controller level as done in the v1 ?
+
+Can't the controller figure this out by looking at the properties of the
+connected devices?  You'd need to just return an error if we ever
+triggered transfer_one_message() on a device that can't support the
+operation.
+
+--21y0RXUsptdj3o80
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLztVIACgkQJNaLcl1U
+h9B5Nwf+LqqU0x5SAVtWEAkovEh2F95cA6yjgmiKu5b4XJoJIIkHIi8Hym6frbxI
+/Dr2p4xqVytxvWo3HeH1mc/utjZ2nogSlwgODbdIsIW9pCVdZqdIckw/Bxc7u4nF
+/sqKHA8I8UwKqgFNeEAJtLRSOvm55KPe8UrjjFXgxB3yEFLrm0jgS9ULBXNpv9Mf
+W7+hbsbmtgOhkHeh9qpWExwBx/y//jLxQ8h/D0UT9F2A2TgiXMaKUeX8du0Z+PLr
+HD2BB2+vm3Bq/YprTBNGp/zyFdg/ESuWfhlmG041cW0CxPKFTGcr9Oz2qEtV8TYY
+fhc72oFs7Ylf8lrTOVN1FuQ+cH6GPg==
+=f5sp
+-----END PGP SIGNATURE-----
+
+--21y0RXUsptdj3o80--
