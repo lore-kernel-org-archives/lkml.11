@@ -2,163 +2,389 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF7CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2C1C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:58:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233242AbiHJTwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 15:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
+        id S232895AbiHJT6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 15:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiHJTwo (ORCPT
+        with ESMTP id S231834AbiHJT6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 15:52:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44BBB8C00E
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:52:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660161162;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w05t+rLGLxKHngeNj1Dk/emo7DjYevCR6PViqoPcu98=;
-        b=RPKKYsT3iZwVQgFMJKXUcXNsd/QH25o0jtuDhTGiucKeKs10wj7eLHlatmX8Cd2ZZuc6Ha
-        xEervzTDpwiCDtZ/2l8FNbXx5Fy5sRdezNEDsJxKbF4ZLvwIhQCUyERk3iuMMqQoK/8Uzm
-        aojz8mYH/ZxJoAiekDLMI85mS7aSrCs=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-_12d-q5TP9yCCWKn0Xlz8A-1; Wed, 10 Aug 2022 15:52:41 -0400
-X-MC-Unique: _12d-q5TP9yCCWKn0Xlz8A-1
-Received: by mail-il1-f199.google.com with SMTP id 15-20020a056e0220cf00b002e1d24dcb7cso829518ilq.0
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:52:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=w05t+rLGLxKHngeNj1Dk/emo7DjYevCR6PViqoPcu98=;
-        b=U9wCElWmfhv7m68ZZLp9kHGCOwIyz8qT5f0AdVNmh9WCoJisZZxWmx8omjYkjNQNAf
-         xrak8oxkDNbkdrmq0NN2ULUTvQh9kCR7GUGny8AQcFUAYmvHxRm3TPg6t7WmxVgpFGS1
-         zcDTSGE3k2MhgBOd5WLEHZl6PLIi7hCLL19yrXQNQPPewZRT0C/EblBXWR/UZTKDz6Po
-         CvWnDkPAXp8Pz5tUpmQYXBRsflG9QhMhN1VhWrkcUPu528Uy4s99WFIHxgxtZaiyYFdm
-         MR61ZreW+PorVTzmPorh77N+4b2uoPoQyviztp8Wxw9ynTwprhZrp6r4eKWVhIs80MIM
-         yBVg==
-X-Gm-Message-State: ACgBeo2bT8oiffda/gMwnhje24+ND/+Z2XHRzv7NPDVpB3fW66AUf7ru
-        MVJTJomTalEOtX5vecyQA+CU1Qo5YpZqhCehe1buzFv78UAkEo4iRkb6RxUDQvTPCx+vfW6YJU0
-        Kky/SUJPplZegkvIyU/xQIouA
-X-Received: by 2002:a5d:9d9e:0:b0:67c:2675:50a with SMTP id ay30-20020a5d9d9e000000b0067c2675050amr12220052iob.184.1660161160416;
-        Wed, 10 Aug 2022 12:52:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4E1ySyuz/xm3IUeQGZWCYW0/w8nq9zXzROPbsMRuRJzvlRvQXA+i6JOt8Th+E/1MwIlG0UHA==
-X-Received: by 2002:a5d:9d9e:0:b0:67c:2675:50a with SMTP id ay30-20020a5d9d9e000000b0067c2675050amr12220047iob.184.1660161160187;
-        Wed, 10 Aug 2022 12:52:40 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id s24-20020a02cf38000000b0034339c2dd5fsm1464329jar.91.2022.08.10.12.52.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 12:52:39 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 15:52:38 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Feiner <pfeiner@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: Re: [PATCH v1 2/2] mm/hugetlb: support write-faults in shared
- mappings
-Message-ID: <YvQMhonK5cC4MXiQ@xz-m1.local>
-References: <20220805110329.80540-3-david@redhat.com>
- <Yu1dkZeBwv0SUQMq@xz-m1.local>
- <4f644ac5-c40b-32d4-3234-c1dac3d09f83@redhat.com>
- <YvE0OwsyQEL3K5Hm@xz-m1.local>
- <8b317ac7-f80e-4aab-4ad1-4e19a1a0740f@redhat.com>
- <YvFwU4e3WOSRseh6@xz-m1.local>
- <YvGJQaYeT9Y8PlDX@xz-m1.local>
- <12c65d91-5fc0-cb2e-c415-2b3447960b43@redhat.com>
- <YvQHKCylnFjgkFtw@xz-m1.local>
- <b3efd062-1548-cf80-dd1c-21f144887b9b@redhat.com>
+        Wed, 10 Aug 2022 15:58:00 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F25832DC
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:57:59 -0700 (PDT)
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27AGuPrE003027
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:57:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=XDxeXuDboKdINjQri1bKZgYJiOQSeIPX+ZMOopIfn38=;
+ b=EPdMJ1iXPdG6onhQLKPz9b9ef1wL/rA9ZiL78BcnmPX4Crk9x+rhy2gG3iAewQ5cw1QA
+ 98aYocr6ZhVDbw+TOV2VVIqOjwmjuWLJIuhALHV6BohhZwAZbu2Tz0bgzRPbpCXXbq3P
+ WK/gfPMK2dy1SjXKUauEdmUEszc+5E8Dbvo= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hvdb6bexr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:57:58 -0700
+Received: from twshared33626.07.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Wed, 10 Aug 2022 12:57:57 -0700
+Received: by devvm6390.atn0.facebook.com (Postfix, from userid 352741)
+        id F1AB12289C1A; Wed, 10 Aug 2022 12:57:51 -0700 (PDT)
+From:   <alexlzhu@fb.com>
+To:     <linux-mm@kvack.org>, <kernel-team@fb.com>,
+        <linux-kernel@vger.kernel.org>, <akpm@linux-foundation.org>
+CC:     Alexander Zhu <alexlzhu@fb.com>
+Subject: [PATCH v3] mm: add thp_utilization metrics to debugfs
+Date:   Wed, 10 Aug 2022 12:57:50 -0700
+Message-ID: <20220810195750.1813446-1-alexlzhu@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <b3efd062-1548-cf80-dd1c-21f144887b9b@redhat.com>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: 6NgP_OJW0CYNuigK_9mT8bi_4BcVw5Av
+X-Proofpoint-GUID: 6NgP_OJW0CYNuigK_9mT8bi_4BcVw5Av
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-10_13,2022-08-10_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 09:40:11PM +0200, David Hildenbrand wrote:
-> On 10.08.22 21:29, Peter Xu wrote:
-> > On Wed, Aug 10, 2022 at 11:37:13AM +0200, David Hildenbrand wrote:
-> >> On 09.08.22 00:08, Peter Xu wrote:
-> >>> On Mon, Aug 08, 2022 at 04:21:39PM -0400, Peter Xu wrote:
-> >>>> On Mon, Aug 08, 2022 at 06:25:21PM +0200, David Hildenbrand wrote:
-> >>>>>>> Relying on VM_SHARED to detect MAP_PRIVATE vs. MAP_SHARED is
-> >>>>>>> unfortunately wrong.
-> >>>>>>>
-> >>>>>>> If you're curious, take a look at f83a275dbc5c ("mm: account for
-> >>>>>>> MAP_SHARED mappings using VM_MAYSHARE and not VM_SHARED in hugetlbfs")
-> >>>>>>> and mmap() code.
-> >>>>>>>
-> >>>>>>> Long story short: if the file is read-only, we only have VM_MAYSHARE but
-> >>>>>>> not VM_SHARED (and consequently also not VM_MAYWRITE).
-> >>>>>>
-> >>>>>> To ask in another way: if file is RO but mapped RW (mmap() will have
-> >>>>>> VM_SHARED cleared but VM_MAYSHARE set), then if we check VM_MAYSHARE here
-> >>>>>> won't we grant write bit errornously while we shouldn't? As the user
-> >>>>>> doesn't really have write permission to the file.
-> >>>>>
-> >>>>> Thus the VM_WRITE check. :)
-> >>>>>
-> >>>>> I wonder if we should just do it cleanly and introduce the maybe_mkwrite
-> >>>>> semantics here as well. Then there is no need for additional VM_WRITE
-> >>>>> checks and hugetlb will work just like !hugetlb.
-> >>>>
-> >>>> Hmm yeah I think the VM_MAYSHARE check is correct, since we'll need to fail
-> >>>> the cases where MAYSHARE && !SHARE - we used to silently let it pass.
-> >>>
-> >>> Sorry I think this is a wrong statement I made..  IIUC we'll fail correctly
-> >>> with/without the patch on any write to hugetlb RO regions.
-> >>>
-> >>> Then I just don't see a difference on checking VM_SHARED or VM_MAYSHARE
-> >>> here, it's just that VM_MAYSHARE check should work too like VM_SHARED so I
-> >>> don't see a problem.
-> >>>
-> >>> It also means I can't think of any valid case of having VM_WRITE when
-> >>> reaching here, then the WARN_ON_ONCE() is okay but maybe also redundant.
-> >>> Using maybe_mkwrite() seems misleading to me if FOLL_FORCE not ready for
-> >>> hugetlbfs after all.
-> >>>
-> >>
-> >> The main reason we'd have it would be to scream out lout and fail
-> >> gracefully if someone would -- for example -- use it for something like
-> >> FOLL_FORCE.
-> > 
-> > Having that WARN_ON_ONCE() is okay to me, but just to double check we're on
-> > the same page: why there's concern on using FOLL_FORCE? IIUC we're talking
-> > about shared mappings here, then no FOLL_FORCE possible at all?  IOW,
-> > "!is_cow_mapping()" should fail in check_vma_flags() already.
-> 
-> This code path also covers the anon case.
+From: Alexander Zhu <alexlzhu@fb.com>
 
-But this specific warning is under the VM_MAYSHARE if clause just added in
-this patch?
+THPs have historically been enabled on a per application basis due to
+performance increase or decrease depending on how the particular
+application uses physical memory. When THPs are heavily utilized,
+application performance improves due to fewer TLB cache misses.
+It has long been suspected that performance regressions when THP
+is enabled happens due to heavily underutilized anonymous THPs.
 
-My understanding is any FOLL_FORCE will always constantly fail before this
-patch, and it should keep failing as usual and I don't see any case it'll
-be failing at the warn_on_once here.
+Previously there was no way to track how much of a THP is
+actually being used. With this change, we seek to gain visibility
+into the utilization of THPs in order to make more intelligent
+decisions regarding paging.
 
-So again, I'm fine with having the warning, but I just want to make sure
-what you want to capture is what you expected..
+This change introduces a tool that scans through all of physical
+memory for anonymous THPs and groups them into buckets based
+on utilization. It also includes an interface under
+/sys/kernel/debug/thp_utilization.
 
-> > 
-> > The other thing is I'm wondering whether patch 2 should be postponed anyway
-> > so that we can wait for a full resolution of the problem from Mike.
-> 
-> To make the code more robust and avoid any other such surprises I prefer
-> to have this in rather earlier than later.
-> 
-> As the commit says "Let's add a safety net ..."
+Utilization of a THP is defined as the percentage of nonzero
+pages in the THP. The worker thread will scan through all
+of physical memory and obtain utilization of all anonymous
+THPs. It will gather this information by periodically scanning
+through all of physical memory for anonymous THPs, group them
+into buckets based on utilization, and report utilization
+information through debugfs under /sys/kernel/debug/thp_utilization.
 
-Sure, no strong opinion.  I'll leave that to Mike.  Thanks,
+Signed-off-by: Alexander Zhu <alexlzhu@fb.com>
 
--- 
-Peter Xu
+Changes in v3:
+-changed to use folio instead of page in thp_number_utilized_pages
+method
+-changed thp_number_utilized_pages to work on 32 bit architectures
+with HIGHMEM.
+
+Changes in v2:
+-moved thp_utilization metrics from /proc to /sys/kernel/debug
+-adjusted documentation to reflect that thp_utilization is no longer
+in /proc
+-changed is_anon_transparent_hugepage method to be static inline to
+fix warning.
+-removed unused *head pointer based on warning.
+-adjust to use compound_head(page) instead of page in
+thp_number_utilized_pages. There are rare instances where they
+are not equivalent.
+-fixed header to be v2. Previous v1 had v3 in the header by mistake.
+---
+ Documentation/admin-guide/mm/transhuge.rst |   9 ++
+ include/linux/huge_mm.h                    |   2 +
+ mm/huge_memory.c                           | 176 +++++++++++++++++++++
+ 3 files changed, 187 insertions(+)
+
+diff --git a/Documentation/admin-guide/mm/transhuge.rst b/Documentation/a=
+dmin-guide/mm/transhuge.rst
+index c9c37f16eef8..d883ff9fddc7 100644
+--- a/Documentation/admin-guide/mm/transhuge.rst
++++ b/Documentation/admin-guide/mm/transhuge.rst
+@@ -297,6 +297,15 @@ To identify what applications are mapping file trans=
+parent huge pages, it
+ is necessary to read ``/proc/PID/smaps`` and count the FileHugeMapped fi=
+elds
+ for each mapping.
+=20
++The utilization of transparent hugepages can be viewed by reading
++``/sys/kernel/debug/thp_utilization``. The utilization of a THP is defin=
+ed
++as the ratio of non zero filled 4kb pages to the total number of pages i=
+n a
++THP. The buckets are labelled by the range of total utilized 4kb pages w=
+ith
++one line per utilization bucket. Each line contains the total number of
++THPs in that bucket and the total number of zero filled 4kb pages summed
++over all THPs in that bucket. The last two lines show the timestamp and
++duration respectively of the most recent scan over all of physical memor=
+y.
++
+ Note that reading the smaps file is expensive and reading it
+ frequently will incur overhead.
+=20
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index 768e5261fdae..c9086239deb7 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -179,6 +179,8 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+ unsigned long thp_get_unmapped_area(struct file *filp, unsigned long add=
+r,
+ 		unsigned long len, unsigned long pgoff, unsigned long flags);
+=20
++int thp_number_utilized_pages(struct page *page);
++
+ void prep_transhuge_page(struct page *page);
+ void free_transhuge_page(struct page *page);
+=20
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 8a7c1b344abe..7f75cd3d553c 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -45,6 +45,16 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/thp.h>
+=20
++/*
++ * The number of utilization buckets THPs will be grouped in
++ * under /sys/kernel/debug/thp_utilization.
++ */
++#define THP_UTIL_BUCKET_NR 10
++/*
++ * The number of addresses to scan through on each periodic
++ * run of the scanner that generates /sys/kernel/debug/thp_utilization.
++ */
++#define THP_UTIL_SCAN_SIZE 256
+ /*
+  * By default, transparent hugepage support is disabled in order to avoi=
+d
+  * risking an increased memory footprint for applications that are not
+@@ -70,6 +80,25 @@ static atomic_t huge_zero_refcount;
+ struct page *huge_zero_page __read_mostly;
+ unsigned long huge_zero_pfn __read_mostly =3D ~0UL;
+=20
++static void thp_utilization_workfn(struct work_struct *work);
++static DECLARE_DELAYED_WORK(thp_utilization_work, thp_utilization_workfn=
+);
++
++struct thp_scan_info_bucket {
++	int nr_thps;
++	int nr_zero_pages;
++};
++
++struct thp_scan_info {
++	struct thp_scan_info_bucket buckets[THP_UTIL_BUCKET_NR];
++	struct zone *scan_zone;
++	struct timespec64 last_scan_duration;
++	struct timespec64 last_scan_time;
++	unsigned long pfn;
++};
++
++static struct thp_scan_info thp_scan_debugfs;
++static struct thp_scan_info thp_scan;
++
+ bool hugepage_vma_check(struct vm_area_struct *vma,
+ 			unsigned long vm_flags,
+ 			bool smaps, bool in_pf)
+@@ -486,6 +515,7 @@ static int __init hugepage_init(void)
+ 	if (err)
+ 		goto err_slab;
+=20
++	schedule_delayed_work(&thp_utilization_work, HZ);
+ 	err =3D register_shrinker(&huge_zero_page_shrinker, "thp-zero");
+ 	if (err)
+ 		goto err_hzp_shrinker;
+@@ -600,6 +630,11 @@ static inline bool is_transparent_hugepage(struct pa=
+ge *page)
+ 	       page[1].compound_dtor =3D=3D TRANSHUGE_PAGE_DTOR;
+ }
+=20
++static inline bool is_anon_transparent_hugepage(struct page *page)
++{
++	return PageAnon(page) && is_transparent_hugepage(page);
++}
++
+ static unsigned long __thp_get_unmapped_area(struct file *filp,
+ 		unsigned long addr, unsigned long len,
+ 		loff_t off, unsigned long flags, unsigned long size)
+@@ -650,6 +685,38 @@ unsigned long thp_get_unmapped_area(struct file *fil=
+p, unsigned long addr,
+ }
+ EXPORT_SYMBOL_GPL(thp_get_unmapped_area);
+=20
++int thp_number_utilized_pages(struct page *page)
++{
++	struct folio *folio;
++	unsigned long page_offset, value;
++	int thp_nr_utilized_pages =3D HPAGE_PMD_NR;
++	int step_size =3D sizeof(unsigned long);
++	bool is_all_zeroes;
++	void *kaddr;
++	int i;
++
++	if (!page || !is_anon_transparent_hugepage(page))
++		return -1;
++
++	folio =3D page_folio(page);
++	for (i =3D 0; i < folio_nr_pages(folio); i++) {
++		kaddr =3D kmap_local_folio(folio, i);
++		is_all_zeroes =3D true;
++		for (page_offset =3D 0; page_offset < PAGE_SIZE; page_offset +=3D step=
+_size) {
++			value =3D *(unsigned long *)(kaddr + page_offset);
++			if (value !=3D 0) {
++				is_all_zeroes =3D false;
++				break;
++			}
++		}
++		if (is_all_zeroes)
++			thp_nr_utilized_pages--;
++
++		kunmap_local(kaddr);
++	}
++	return thp_nr_utilized_pages;
++}
++
+ static vm_fault_t __do_huge_pmd_anonymous_page(struct vm_fault *vmf,
+ 			struct page *page, gfp_t gfp)
+ {
+@@ -3135,6 +3202,42 @@ static int __init split_huge_pages_debugfs(void)
+ 	return 0;
+ }
+ late_initcall(split_huge_pages_debugfs);
++
++static int thp_utilization_show(struct seq_file *seqf, void *pos)
++{
++	int i;
++	int start;
++	int end;
++
++	for (i =3D 0; i < THP_UTIL_BUCKET_NR; i++) {
++		start =3D i * HPAGE_PMD_NR / THP_UTIL_BUCKET_NR;
++		end =3D (i + 1 =3D=3D THP_UTIL_BUCKET_NR)
++			   ? HPAGE_PMD_NR
++			   : ((i + 1) * HPAGE_PMD_NR / THP_UTIL_BUCKET_NR - 1);
++		/* The last bucket will need to contain 100 */
++		seq_printf(seqf, "Utilized[%d-%d]: %d %d\n", start, end,
++			   thp_scan_debugfs.buckets[i].nr_thps,
++			   thp_scan_debugfs.buckets[i].nr_zero_pages);
++	}
++	seq_printf(seqf, "Last Scan Time: %lu.%02lu\n",
++		   (unsigned long)thp_scan_debugfs.last_scan_time.tv_sec,
++		   (thp_scan_debugfs.last_scan_time.tv_nsec / (NSEC_PER_SEC / 100)));
++
++	seq_printf(seqf, "Last Scan Duration: %lu.%02lu\n",
++		   (unsigned long)thp_scan_debugfs.last_scan_duration.tv_sec,
++		   (thp_scan_debugfs.last_scan_duration.tv_nsec / (NSEC_PER_SEC / 100)=
+));
++
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(thp_utilization);
++
++static int __init thp_utilization_debugfs(void)
++{
++	debugfs_create_file("thp_utilization", 0200, NULL, NULL,
++			    &thp_utilization_fops);
++	return 0;
++}
++late_initcall(thp_utilization_debugfs);
+ #endif
+=20
+ #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+@@ -3220,3 +3323,76 @@ void remove_migration_pmd(struct page_vma_mapped_w=
+alk *pvmw, struct page *new)
+ 	trace_remove_migration_pmd(address, pmd_val(pmde));
+ }
+ #endif
++
++static void thp_scan_next_zone(void)
++{
++	struct timespec64 current_time;
++	int i;
++	bool update_debugfs;
++
++	thp_scan.scan_zone =3D next_zone(thp_scan.scan_zone);
++	update_debugfs =3D !thp_scan.scan_zone;
++	thp_scan.scan_zone =3D update_debugfs ? (first_online_pgdat())->node_zo=
+nes
++			: thp_scan.scan_zone;
++	thp_scan.pfn =3D (thp_scan.scan_zone->zone_start_pfn + HPAGE_PMD_NR - 1=
+)
++			& ~(HPAGE_PMD_SIZE - 1);
++	if (!update_debugfs)
++		return;
++
++	ktime_get_ts64(&current_time);
++	thp_scan_debugfs.last_scan_duration =3D timespec64_sub(current_time,
++							     thp_scan_debugfs.last_scan_time);
++	thp_scan_debugfs.last_scan_time =3D current_time;
++
++	for (i =3D 0; i < THP_UTIL_BUCKET_NR; i++) {
++		thp_scan_debugfs.buckets[i].nr_thps =3D thp_scan.buckets[i].nr_thps;
++		thp_scan_debugfs.buckets[i].nr_zero_pages =3D thp_scan.buckets[i].nr_z=
+ero_pages;
++		thp_scan.buckets[i].nr_thps =3D 0;
++		thp_scan.buckets[i].nr_zero_pages =3D 0;
++	}
++}
++
++static void thp_util_scan(unsigned long pfn_end)
++{
++	struct page *page =3D NULL;
++	int bucket, num_utilized_pages, current_pfn;
++	int i;
++
++	for (i =3D 0; i < THP_UTIL_SCAN_SIZE; i++) {
++		current_pfn =3D thp_scan.pfn;
++		thp_scan.pfn +=3D HPAGE_PMD_NR;
++		if (current_pfn >=3D pfn_end)
++			return;
++
++		if (!pfn_valid(current_pfn))
++			continue;
++
++		page =3D pfn_to_page(current_pfn);
++		num_utilized_pages =3D thp_number_utilized_pages(page);
++		if (num_utilized_pages < 0)
++			continue;
++
++		bucket =3D num_utilized_pages * THP_UTIL_BUCKET_NR / HPAGE_PMD_NR;
++		bucket =3D min(bucket, THP_UTIL_BUCKET_NR - 1);
++		thp_scan.buckets[bucket].nr_thps++;
++		thp_scan.buckets[bucket].nr_zero_pages +=3D (HPAGE_PMD_NR - num_utiliz=
+ed_pages);
++	}
++}
++
++static void thp_utilization_workfn(struct work_struct *work)
++{
++	unsigned long pfn_end;
++
++	if (!thp_scan.scan_zone)
++		thp_scan.scan_zone =3D (first_online_pgdat())->node_zones;
++
++	pfn_end =3D (thp_scan.scan_zone->zone_start_pfn +
++			thp_scan.scan_zone->spanned_pages + HPAGE_PMD_NR - 1)
++			& ~(HPAGE_PMD_SIZE - 1);
++	if (!populated_zone(thp_scan.scan_zone) || thp_scan.pfn >=3D pfn_end)
++		thp_scan_next_zone();
++	else
++		thp_util_scan(pfn_end);
++
++	schedule_delayed_work(&thp_utilization_work, HZ);
++}
+--=20
+2.30.2
 
