@@ -2,125 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D1FC25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49955C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232507AbiHJQLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
+        id S232285AbiHJQMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233393AbiHJQKj (ORCPT
+        with ESMTP id S232234AbiHJQMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:10:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E3367CBB;
-        Wed, 10 Aug 2022 09:10:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EA1A611D0;
-        Wed, 10 Aug 2022 16:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B2CFC433B5;
-        Wed, 10 Aug 2022 16:10:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660147820;
-        bh=QTQpyH18zwzbYkh2/bVnVVxQxt/jCGHQ7waGnCuPTY4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iS2jpbq12KbFuPQqfi8BvF272M+SGoG8VIl+h/5inlSO7fcu22uH/kVebSIyFwS55
-         cIBNwSg5+g+ReIVxHgBRI6u2RIUDTwjykyg9sd7ulYOKNk/ghgm02tH1wOngrKEbkb
-         VE/cqiV6v8ezV3y4LPj8HxKtP/ySY9WtpqE+3/S3A411Tuy1cmlnHDLExT0sPSZN1O
-         vYc9HClcOFXGAXWJeYI6xjTeFZ0Y+/bBYPuLsUimgsotPjB80Jm3CNcZgAqjf/I+rH
-         8eGpPvJXWsKg9cT8rNO3tcJNHobDAdqqxRajNv3hVQgY5c6wXm3TVItHj0HHpPdfjm
-         P3PYFeUKvXsDg==
-Date:   Wed, 10 Aug 2022 17:10:15 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Da Xue <da@libre.computer>
-Subject: Re: [PATCH] spi: meson-spicc: save pow2 datarate between messages
-Message-ID: <YvPYZ/0o/Xa+vDKa@sirena.org.uk>
-References: <20220809152019.461741-1-narmstrong@baylibre.com>
- <YvJ84qkuXdvVgXRm@sirena.org.uk>
- <39c2f53b-8f53-ceb1-ae0c-81e5e53d01aa@baylibre.com>
- <YvOmnDJA+ov49chC@sirena.org.uk>
- <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
- <YvPBX7zJ72RXnrpk@sirena.org.uk>
- <9dabe979-f6b5-329d-f017-a8f0c00adeca@baylibre.com>
- <YvPFZZ2HT2zK9XjQ@sirena.org.uk>
- <c7bfda2e-8135-fd2e-5d2b-5f547215bb18@baylibre.com>
+        Wed, 10 Aug 2022 12:12:10 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6635D0EF;
+        Wed, 10 Aug 2022 09:12:10 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id 130so14087720pfv.13;
+        Wed, 10 Aug 2022 09:12:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc;
+        bh=2amLnF7kw0jf315Gwn3wjZctELTRSJzZovauimpYDMY=;
+        b=bAnZBr/yVhBmRt1rHL99nE/TJRGF+Ct+cxwYjUBM9rs4kJ0W6Wapq9IiNjAQd9SwM6
+         v7T9qO00y9TgilWkBYSCG7nmQ8qFQrwS+j+onmsLB+WTY9e5gxBsXtdSahbAIX43Z9B0
+         ZWYhgnYwbEdCf4gixnE+1urQxNZr2mTP3lMWr6tiRvSUuIHU3iDCnWMU+MmoGBcUQeWl
+         wDgRvSv5sYEvfrsuwxe08ekxEskPC0/u8MCKuUIvrkNbpvMdomh8J+uVQYp4fQBpOmY9
+         7rZF3+tcxKyecUZU8J8rq9RohYVBr8JamTwhkmwV3vDM4HCCI8HXLPzFI5L+fkOiRv/Y
+         AaLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc;
+        bh=2amLnF7kw0jf315Gwn3wjZctELTRSJzZovauimpYDMY=;
+        b=of7VQTeHeSB0nRkKlrmWG76r4Qchl7FSk9GzvjVEDF5LjvxZpDP16BXP0yglo/jQ7m
+         EIikc0qZ9QmHKSOww18Aq+d7SGeQZWp0aUN8mpKjvQyeFsx0rtQqKpgRW83xhW3w0da9
+         HNqiGBV14gLTmDjwaqDWpx24FwLgS62pmNy+/Jkdi1Ev2/jH5iycS8wwLfHKb7ZBZAGC
+         ugKw90fb2r/KuNxqBxzXtWxVvRzInPK55TJPFQbHDPFmAmu/fFp5CzcIzPZKAX0yL+kZ
+         uk4TRvx8OHwr2QAP/l6WYXPEtzvyEOgQmLNzwaL1NiBLIWavVeziVsENFSFRpAWZ/ED3
+         UTlg==
+X-Gm-Message-State: ACgBeo3TNABB6D29XqKMBNRJxSD26xRY3PLlVHT5vn0XsFyDzkcQNg4i
+        Krw9B7hzVTJqfP0QiOJWuPA+0VOikg8=
+X-Google-Smtp-Source: AA6agR5qc53eYzs+sBm4V1Cog4u1n2809ez1ELYQed3ePH7a2IhaCsDWZzJGTdfCYaLUB1j+iFoPlQ==
+X-Received: by 2002:a05:6a00:a06:b0:52d:f9fa:8fc9 with SMTP id p6-20020a056a000a0600b0052df9fa8fc9mr28601609pfh.15.1660147929610;
+        Wed, 10 Aug 2022 09:12:09 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o5-20020a170902d4c500b0016ecc7d5297sm13174164plg.292.2022.08.10.09.12.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 09:12:08 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <d2e09dc8-9bcd-c6e1-eec3-548dbd26b671@roeck-us.net>
+Date:   Wed, 10 Aug 2022 09:12:07 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="GD/R3KVKIHaGYn3m"
-Content-Disposition: inline
-In-Reply-To: <c7bfda2e-8135-fd2e-5d2b-5f547215bb18@baylibre.com>
-X-Cookie: First pull up, then pull down.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [GIT PULL] hwmon fixes for hwmon-fixes-for-v6.0-rc1
+Content-Language: en-US
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220810134533.380417-1-linux@roeck-us.net>
+In-Reply-To: <20220810134533.380417-1-linux@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 8/10/22 06:45, Guenter Roeck wrote:
+> Hi Linus,
+> 
+> Please pull hwmon fixes for Linux hwmon-fixes-for-v6.0-rc1 from signed tag:
+> 
 
---GD/R3KVKIHaGYn3m
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hmm, I really need to work on the script generating those subject lines
+and descriptions. Sorry for that.
 
-On Wed, Aug 10, 2022 at 05:51:33PM +0200, Neil Armstrong wrote:
-> On 10/08/2022 16:49, Mark Brown wrote:
+Guenter
 
-> > I don't recall the code for clock providers being that hard?  They're
-> > generally pretty small, some of the ASoC CODEC drivers did something
-> > similar.
+>      git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-fixes-for-v6.0-rc1
+> 
+> Thanks,
+> Guenter
+> ------
+> 
+> The following changes since commit d4252071b97d2027d246f6a82cbee4d52f618b47:
+> 
+>    add barriers to buffer_uptodate and set_buffer_uptodate (2022-08-09 15:03:02 -0700)
+> 
+> are available in the Git repository at:
+> 
+>    git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git tags/hwmon-fixes-for-v6.0-rc1
+> 
+> for you to fetch changes up to f4e6960f4f16b1ca5da16cec7612ecc86402ac05:
+> 
+>    hwmon: (nct6775) Fix platform driver suspend regression (2022-08-10 06:37:01 -0700)
+> 
+> ----------------------------------------------------------------
+> hwmon fixes for v6.0-rc1
+> 
+> Fix two regressions in nct6775 and lm90 drivers
+> 
+> ----------------------------------------------------------------
+> Guenter Roeck (1):
+>        hwmon: (lm90) Fix error return value from detect function
+> 
+> Zev Weiss (1):
+>        hwmon: (nct6775) Fix platform driver suspend regression
+> 
+>   drivers/hwmon/lm90.c             | 2 +-
+>   drivers/hwmon/nct6775-core.c     | 3 ++-
+>   drivers/hwmon/nct6775-platform.c | 2 +-
+>   drivers/hwmon/nct6775.h          | 2 ++
+>   4 files changed, 6 insertions(+), 3 deletions(-)
 
-> Seems over-engineering to me, but I can explore this path if it's the best
-> route to follow.
-
-Please.
-
-> > > had an open-coded function which perfectly worked before.
-
-> > Except in the cases it didn't...
-
-> It did but wasn't generic enough to take the new clock path introduced
-> in the new SoCs.
-
-Right, it's leaving landmines lying around - it's hard for me to be
-confident that we couldn't also get another surprise due to a new test
-case exercising the code differently somehow, never mind the fragility
-of the code.
-
-> > > I'm perfectly OK to remove the CCF driver for the legacy clock path
-> > > and return back to the old open coded calculation since it perfectly
-> > > worked and stop using the legacy clock path for new SoCs since it would
-> > > never be selected anyway...
-
-> > It does seem better to go the clock provider route TBH.
-
-> I'm afraid this won't fix the problem since CCF won't set the clock again
-> if the rate is already ok in it's cache, we'd still need to save the divider
-> value and restore it after the reset as I did on this exact patch.
-
-The goal here is to ensure that the clock framework's idea of what the
-programmed configuration is and the SPI driver's idea of what that is
-can't get out of sync - instead of saving the value by virtue of reading
-it back out of the hardware at some specific point and hoping that
-there's never any changes triggered by the clock framework between the
-save and restore the driver is getting notified whenever there's a
-change being made and can update the cache then.  That way we ensure
-we can't miss any cases and things are robust.
-
---GD/R3KVKIHaGYn3m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLz2GYACgkQJNaLcl1U
-h9BETgf6A4XinT60F61d/MHWSmN4hMrkGsjOwipHMdahU+IQyfLjeAQG6DS4MOB8
-xmzwQ4p72BFI8WW3ttEvto1jiGZmYBDfWypFnMfxZh4BqMHfcz3KjJsuXH7yIotF
-8D+fv1hMWS00JoEm9Vow2NJF76Hs5ElPIKwryFN9GejdOQZiFx8X/klsCke5oVG1
-tY3IrNkZTz8m3X0xjspyoSQZvPMwyUnLILMyXxSaKTUyFgmhWnV8RGHvwRvzwEV4
-WKboOjCQv4mtNNceitVoM3nhEI7NGzaZvKYQ0ETpG+sgkP/vUSRIxvCdU6pesVl6
-uoy/LMriG0xzBwxB2IoExcZCCF1bZw==
-=cIX0
------END PGP SIGNATURE-----
-
---GD/R3KVKIHaGYn3m--
