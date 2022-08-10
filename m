@@ -2,331 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75631C19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 02:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4761C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 02:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiHJCBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 22:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
+        id S229436AbiHJCC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 22:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiHJCBu (ORCPT
+        with ESMTP id S229479AbiHJCCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 22:01:50 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44D080F43
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 19:01:47 -0700 (PDT)
-X-UUID: 9f05555bce6943ec8b941971f42bb69e-20220810
-X-GW-Reason: 11109
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 104
-        audit/email.address 1
-        dict/adv 1
-        dict/contack 1
-        dict/notice 2
-        dict/operate 1
-        meta/cnt.alert 1
-X-UUID: 9f05555bce6943ec8b941971f42bb69e-20220810
-X-User: oushixiong@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <oushixiong@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 120562178; Wed, 10 Aug 2022 09:02:22 +0800
-From:   oushixiong <oushixiong@kylinos.cn>
-To:     Dave Airlie <airlied@redhat.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        oushixiong <oushixiong@kylinos.cn>
-Subject: [PATCH] drm/ast: radeon amdgpu for ast add prime
-Date:   Wed, 10 Aug 2022 09:02:16 +0800
-Message-Id: <20220810010216.15941-1-oushixiong@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 9 Aug 2022 22:02:24 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC60980F47
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 19:02:22 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id bb13-20020a056602380d00b006849ed2e8a2so4255913iob.0
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 19:02:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=EUqcMCnkW9ptlpOtVDUqxUIBPbjt8Mo7rSYsVIeMRi8=;
+        b=CrzhE4rwpaHgzn7c074QG6wVPCTdsLQnaN//JDjrvDw+CZstINRPgZmDTHgsTapqMl
+         WE2xOwxLmu3tR2Hfsj8Y+XX+1I8fb57sT9D3SCjl0yNO2lZbmvwK6W+dIQ26jE+IpgWQ
+         1NeQ4IfuMwOSlybxKs9dtmaHVRvXmGquS8nCRdmkDftWMVskiy+jetcObb3h9GKBC6GR
+         0vLDn9NuB0v9H7/+ntkqKEd6cz11FxKsp6zvhhOAXq4P0/TYPIZL09DCzXpYjjXxbWHi
+         huwo8Wqms63BPmBHfG7DQFmSQPvEjKeoWfMGa7CcKx7AZrO6fncrW08qLxvINXJqYjxr
+         vD8g==
+X-Gm-Message-State: ACgBeo0FAqlb6k8cjhg+86LwPoNIzX/lk/4UPbUmuywJqpT+RQDXzp34
+        cf5AfuuAcyIn8DxaoyjT8u+dF5xHb15Zzlp1aKcTnJ0+4zN5
+X-Google-Smtp-Source: AA6agR54NPc2vW1qogwyuaEe9hhHm7H1JEraW38yluhGcKhHj2EGuwBllZUO/bnl/iEQ+Qaon75VcSdJhSt6PtzpSEcZ7ciYjRNC
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:148c:b0:2de:c3b:91d with SMTP id
+ n12-20020a056e02148c00b002de0c3b091dmr12043433ilk.95.1660096942244; Tue, 09
+ Aug 2022 19:02:22 -0700 (PDT)
+Date:   Tue, 09 Aug 2022 19:02:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008909d405e5d970b8@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in __io_remove_buffers
+From:   syzbot <syzbot+6a8a923895a61a5dbf18@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds ast specific codes for DRM prime feature.
-Add the prime function to solve the xorg conflict problem when AST
-and AMD are in place at the same time, so that both can be displayed.
+Hello,
 
-Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+syzbot found the following issue on:
+
+HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=12e0afb1080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=6a8a923895a61a5dbf18
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14d81cbc080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17c7f1c1080000
+
+The issue was bisected to:
+
+commit c7fb19428d67dd0a2a78a4f237af01d39c78dc5a
+Author: Jens Axboe <axboe@kernel.dk>
+Date:   Sat Apr 30 20:38:53 2022 +0000
+
+    io_uring: add support for ring mapped supplied buffers
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17499eb6080000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14c99eb6080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10c99eb6080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6a8a923895a61a5dbf18@syzkaller.appspotmail.com
+Fixes: c7fb19428d67 ("io_uring: add support for ring mapped supplied buffers")
+
+==================================================================
+BUG: KASAN: use-after-free in __io_remove_buffers.part.0+0x3c6/0x4f0 io_uring/kbuf.c:217
+Read of size 2 at addr ffff8880269a8012 by task kworker/u4:0/8
+
+CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events_unbound io_ring_exit_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+ kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+ __io_remove_buffers.part.0+0x3c6/0x4f0 io_uring/kbuf.c:217
+ __io_remove_buffers io_uring/kbuf.c:255 [inline]
+ io_destroy_buffers+0x9a/0x3b0 io_uring/kbuf.c:255
+ io_ring_ctx_free io_uring/io_uring.c:2477 [inline]
+ io_ring_exit_work+0x784/0xc7c io_uring/io_uring.c:2661
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+ </TASK>
+
+Allocated by task 3601:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+ kmalloc include/linux/slab.h:600 [inline]
+ kmalloc_array include/linux/slab.h:639 [inline]
+ kcalloc include/linux/slab.h:671 [inline]
+ io_init_bl_list+0x4c/0x139 io_uring/kbuf.c:195
+ io_register_pbuf_ring.cold+0x11/0x84 io_uring/kbuf.c:495
+ __io_uring_register io_uring/io_uring.c:3855 [inline]
+ __do_sys_io_uring_register+0x6b2/0x1030 io_uring/io_uring.c:3897
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Freed by task 3601:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1754 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
+ slab_free mm/slub.c:3534 [inline]
+ kfree+0xe2/0x4d0 mm/slub.c:4562
+ io_register_pbuf_ring+0x4e9/0x5d0 io_uring/kbuf.c:515
+ __io_uring_register io_uring/io_uring.c:3855 [inline]
+ __do_sys_io_uring_register+0x6b2/0x1030 io_uring/io_uring.c:3897
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ call_rcu+0x99/0x790 kernel/rcu/tree.c:2793
+ netlink_release+0xf08/0x1db0 net/netlink/af_netlink.c:815
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+The buggy address belongs to the object at ffff8880269a8000
+ which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 18 bytes inside of
+ 2048-byte region [ffff8880269a8000, ffff8880269a8800)
+
+The buggy address belongs to the physical page:
+page:ffffea00009a6a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x269a8
+head:ffffea00009a6a00 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 0000000000000000 dead000000000001 ffff888011842000
+raw: 0000000000000000 0000000080080008 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 1, tgid 1 (swapper/0), ts 10266954305, free_ts 0
+ prep_new_page mm/page_alloc.c:2535 [inline]
+ get_page_from_freelist+0x210d/0x3a30 mm/page_alloc.c:4282
+ __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5506
+ alloc_page_interleave+0x1e/0x200 mm/mempolicy.c:2113
+ alloc_pages+0x2b1/0x310 mm/mempolicy.c:2275
+ alloc_slab_page mm/slub.c:1824 [inline]
+ allocate_slab+0x27e/0x3d0 mm/slub.c:1969
+ new_slab mm/slub.c:2029 [inline]
+ ___slab_alloc+0x89d/0xef0 mm/slub.c:3031
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
+ slab_alloc_node mm/slub.c:3209 [inline]
+ __kmalloc_node_track_caller+0x360/0x480 mm/slub.c:4955
+ kmalloc_reserve net/core/skbuff.c:358 [inline]
+ __alloc_skb+0xd9/0x340 net/core/skbuff.c:430
+ alloc_skb include/linux/skbuff.h:1249 [inline]
+ nlmsg_new include/net/netlink.h:953 [inline]
+ rtmsg_ifinfo_build_skb+0x72/0x1a0 net/core/rtnetlink.c:3904
+ rtmsg_ifinfo_event net/core/rtnetlink.c:3940 [inline]
+ rtmsg_ifinfo_event net/core/rtnetlink.c:3931 [inline]
+ rtmsg_ifinfo+0x83/0x120 net/core/rtnetlink.c:3949
+ register_netdevice+0x128d/0x15e0 net/core/dev.c:10112
+ register_netdev+0x2d/0x50 net/core/dev.c:10191
+ rose_proto_init+0x317/0x66a net/rose/af_rose.c:1532
+ do_one_initcall+0xfe/0x650 init/main.c:1300
+ do_initcall_level init/main.c:1375 [inline]
+ do_initcalls init/main.c:1391 [inline]
+ do_basic_setup init/main.c:1410 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1617
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffff8880269a7f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8880269a7f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8880269a8000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                         ^
+ ffff8880269a8080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880269a8100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
 ---
- drivers/gpu/drm/ast/ast_drv.c                |  22 ++++
- drivers/gpu/drm/ast/ast_mode.c               | 115 ++++++++++++++++++-
- drivers/gpu/drm/drm_gem_framebuffer_helper.c |   1 -
- drivers/gpu/drm/drm_gem_vram_helper.c        |  16 ++-
- include/drm/drm_gem_vram_helper.h            |   4 +-
- 5 files changed, 150 insertions(+), 8 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
-index 7465c4f0156a..3650462a8734 100644
---- a/drivers/gpu/drm/ast/ast_drv.c
-+++ b/drivers/gpu/drm/ast/ast_drv.c
-@@ -28,6 +28,7 @@
- 
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/dma-buf.h>
- 
- #include <drm/drm_aperture.h>
- #include <drm/drm_atomic_helper.h>
-@@ -50,6 +51,23 @@ module_param_named(modeset, ast_modeset, int, 0400);
- 
- DEFINE_DRM_GEM_FOPS(ast_fops);
- 
-+struct drm_gem_object *ast_gem_prime_import_sg_table(struct drm_device *dev,
-+					struct dma_buf_attachment *attach,
-+					struct sg_table *sg)
-+{
-+	struct drm_gem_vram_object *gbo;
-+	struct dma_resv *resv = attach->dmabuf->resv;
-+
-+	ww_mutex_lock(&resv->lock, NULL);
-+	gbo = drm_gem_vram_create(dev, attach->dmabuf->size, 0, sg, resv);
-+	ww_mutex_unlock(&resv->lock);
-+
-+	if (IS_ERR(gbo))
-+		return NULL;
-+
-+	return &gbo->bo.base;
-+}
-+
- static const struct drm_driver ast_driver = {
- 	.driver_features = DRIVER_ATOMIC |
- 			   DRIVER_GEM |
-@@ -63,6 +81,10 @@ static const struct drm_driver ast_driver = {
- 	.minor = DRIVER_MINOR,
- 	.patchlevel = DRIVER_PATCHLEVEL,
- 
-+	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
-+	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
-+	.gem_prime_import_sg_table = ast_gem_prime_import_sg_table,
-+
- 	DRM_GEM_VRAM_DRIVER
- };
- 
-diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
-index 45b56b39ad47..f059faa8c35a 100644
---- a/drivers/gpu/drm/ast/ast_mode.c
-+++ b/drivers/gpu/drm/ast/ast_mode.c
-@@ -48,6 +48,8 @@
- #include "ast_drv.h"
- #include "ast_tables.h"
- 
-+MODULE_IMPORT_NS(DMA_BUF);
-+
- static inline void ast_load_palette_index(struct ast_private *ast,
- 				     u8 index, u8 red, u8 green,
- 				     u8 blue)
-@@ -926,7 +928,7 @@ static int ast_cursor_plane_init(struct ast_private *ast)
- 	size = roundup(AST_HWC_SIZE + AST_HWC_SIGNATURE_SIZE, PAGE_SIZE);
- 
- 	for (i = 0; i < ARRAY_SIZE(ast_cursor_plane->hwc); ++i) {
--		gbo = drm_gem_vram_create(dev, size, 0);
-+		gbo = drm_gem_vram_create(dev, size, 0, NULL, NULL);
- 		if (IS_ERR(gbo)) {
- 			ret = PTR_ERR(gbo);
- 			goto err_hwc;
-@@ -1535,8 +1537,117 @@ static const struct drm_mode_config_helper_funcs ast_mode_config_helper_funcs =
- 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
- };
- 
-+int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
-+					int width, int height)
-+{
-+	struct drm_gem_vram_object *dst_bo = NULL;
-+	void *dst = NULL;
-+	int ret = 0, i;
-+	unsigned long offset = 0;
-+	bool unmap = false;
-+	unsigned int bytesPerPixel;
-+	struct iosys_map map;
-+	struct iosys_map dmabuf_map;
-+
-+	bytesPerPixel = fb->format->cpp[0];
-+
-+	if (!fb->obj[0]->import_attach)
-+		return -EINVAL;
-+
-+	if (!fb->obj[0]->import_attach->dmabuf->vmap_ptr.vaddr) {
-+		ret = dma_buf_vmap(fb->obj[0]->import_attach->dmabuf, &dmabuf_map);
-+		if (ret)
-+			return 0;
-+	} else {
-+		dmabuf_map.vaddr = fb->obj[0]->import_attach->dmabuf->vmap_ptr.vaddr;
-+	}
-+
-+	dst_bo = drm_gem_vram_of_gem(fb->obj[0]);
-+
-+	ret = drm_gem_vram_pin(dst_bo, 0);
-+	if (ret) {
-+		DRM_ERROR("ast_bo_pin failed\n");
-+		goto error;
-+	}
-+
-+	if (!dst_bo->map.vaddr) {
-+		ret = drm_gem_vram_vmap(dst_bo, &map);
-+		if (ret) {
-+			DRM_ERROR("failed to vmap fbcon\n");
-+			drm_gem_vram_unpin(dst_bo);
-+			goto error;
-+		}
-+		unmap = true;
-+	}
-+	dst = dst_bo->map.vaddr;
-+
-+	for (i = y; i < y + height; i++) {
-+		offset = i * fb->pitches[0] + (x * bytesPerPixel);
-+		memcpy_toio(dst + offset, dmabuf_map.vaddr + offset,
-+			width * bytesPerPixel);
-+	}
-+
-+	if (unmap)
-+		drm_gem_vram_vunmap(dst_bo, &map);
-+
-+	drm_gem_vram_unpin(dst_bo);
-+error:
-+	return 0;
-+}
-+
-+
-+int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
-+				struct drm_file *file,
-+				unsigned int flags,
-+				unsigned int color,
-+				struct drm_clip_rect *clips,
-+				unsigned int num_clips)
-+{
-+	int i, ret = 0;
-+
-+	drm_modeset_lock_all(fb->dev);
-+	if (fb->obj[0]->import_attach) {
-+		ret = dma_buf_begin_cpu_access(fb->obj[0]->import_attach->dmabuf,
-+				DMA_FROM_DEVICE);
-+		if (ret)
-+			goto unlock;
-+	}
-+
-+	for (i = 0; i < num_clips; i++) {
-+		ret = ast_handle_damage(fb, clips[i].x1, clips[i].y1,
-+				clips[i].x2 - clips[i].x1, clips[i].y2 - clips[i].y1);
-+		if (ret)
-+			break;
-+	}
-+
-+	if (fb->obj[0]->import_attach) {
-+		dma_buf_end_cpu_access(fb->obj[0]->import_attach->dmabuf,
-+				DMA_FROM_DEVICE);
-+	}
-+
-+unlock:
-+	drm_modeset_unlock_all(fb->dev);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(ast_user_framebuffer_dirty);
-+
-+static const struct drm_framebuffer_funcs ast_gem_fb_funcs_dirtyfb = {
-+	.destroy	= drm_gem_fb_destroy,
-+	.create_handle	= drm_gem_fb_create_handle,
-+	.dirty		= ast_user_framebuffer_dirty,
-+};
-+
-+struct drm_framebuffer *
-+ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
-+				const struct drm_mode_fb_cmd2 *mode_cmd)
-+{
-+	return drm_gem_fb_create_with_funcs(dev, file, mode_cmd,
-+					&ast_gem_fb_funcs_dirtyfb);
-+}
-+
- static const struct drm_mode_config_funcs ast_mode_config_funcs = {
--	.fb_create = drm_gem_fb_create,
-+	.fb_create = ast_gem_fb_create_with_dirty,
- 	.mode_valid = drm_vram_helper_mode_valid,
- 	.atomic_check = drm_atomic_helper_check,
- 	.atomic_commit = drm_atomic_helper_commit,
-diff --git a/drivers/gpu/drm/drm_gem_framebuffer_helper.c b/drivers/gpu/drm/drm_gem_framebuffer_helper.c
-index f4619803acd0..f65165d5e86c 100644
---- a/drivers/gpu/drm/drm_gem_framebuffer_helper.c
-+++ b/drivers/gpu/drm/drm_gem_framebuffer_helper.c
-@@ -15,7 +15,6 @@
- #include <drm/drm_gem.h>
- #include <drm/drm_gem_framebuffer_helper.h>
- #include <drm/drm_modeset_helper.h>
--
- #include "drm_internal.h"
- 
- MODULE_IMPORT_NS(DMA_BUF);
-diff --git a/drivers/gpu/drm/drm_gem_vram_helper.c b/drivers/gpu/drm/drm_gem_vram_helper.c
-index dc7f938bfff2..a31adb3c546d 100644
---- a/drivers/gpu/drm/drm_gem_vram_helper.c
-+++ b/drivers/gpu/drm/drm_gem_vram_helper.c
-@@ -184,14 +184,22 @@ static void drm_gem_vram_placement(struct drm_gem_vram_object *gbo,
-  */
- struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 						size_t size,
--						unsigned long pg_align)
-+						unsigned long pg_align,
-+						struct sg_table *sg,
-+						struct dma_resv *resv)
- {
- 	struct drm_gem_vram_object *gbo;
- 	struct drm_gem_object *gem;
- 	struct drm_vram_mm *vmm = dev->vram_mm;
- 	struct ttm_device *bdev;
-+	enum ttm_bo_type type;
- 	int ret;
- 
-+	if (sg)
-+		type = ttm_bo_type_sg;
-+	else
-+		type = ttm_bo_type_device;
-+
- 	if (WARN_ONCE(!vmm, "VRAM MM not initialized"))
- 		return ERR_PTR(-EINVAL);
- 
-@@ -225,8 +233,8 @@ struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 	 * A failing ttm_bo_init will call ttm_buffer_object_destroy
- 	 * to release gbo->bo.base and kfree gbo.
- 	 */
--	ret = ttm_bo_init(bdev, &gbo->bo, size, ttm_bo_type_device,
--			  &gbo->placement, pg_align, false, NULL, NULL,
-+	ret = ttm_bo_init(bdev, &gbo->bo, size, type,
-+			  &gbo->placement, pg_align, false, sg, resv,
- 			  ttm_buffer_object_destroy);
- 	if (ret)
- 		return ERR_PTR(ret);
-@@ -521,7 +529,7 @@ int drm_gem_vram_fill_create_dumb(struct drm_file *file,
- 	if (!size)
- 		return -EINVAL;
- 
--	gbo = drm_gem_vram_create(dev, size, pg_align);
-+	gbo = drm_gem_vram_create(dev, size, pg_align, NULL, NULL);
- 	if (IS_ERR(gbo))
- 		return PTR_ERR(gbo);
- 
-diff --git a/include/drm/drm_gem_vram_helper.h b/include/drm/drm_gem_vram_helper.h
-index c083a1d71cf4..42c8f181cbd7 100644
---- a/include/drm/drm_gem_vram_helper.h
-+++ b/include/drm/drm_gem_vram_helper.h
-@@ -92,7 +92,9 @@ static inline struct drm_gem_vram_object *drm_gem_vram_of_gem(
- 
- struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 						size_t size,
--						unsigned long pg_align);
-+						unsigned long pg_align,
-+						struct sg_table *sg,
-+						struct dma_resv *resv);
- void drm_gem_vram_put(struct drm_gem_vram_object *gbo);
- s64 drm_gem_vram_offset(struct drm_gem_vram_object *gbo);
- int drm_gem_vram_pin(struct drm_gem_vram_object *gbo, unsigned long pl_flag);
--- 
-2.17.1
-
-
-No virus found
-		Checked by Hillstone Network AntiVirus
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
