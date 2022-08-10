@@ -2,129 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D03C25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 522C6C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbiHJGdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 02:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
+        id S231390AbiHJGeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 02:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231376AbiHJGdP (ORCPT
+        with ESMTP id S231378AbiHJGeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 02:33:15 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7D26E2DF
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 23:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660113194; x=1691649194;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PGR8oSk4ngEBEGDpyq9h6FThvhV42UZ8jkU3Q9MaFhM=;
-  b=Io3DLD/Ylc9cUn5VzY54YV8dXbNXx/v/lxcNfo9zNY88GeDOQX4ud/TO
-   nWjej8Xhfo2NrK4vcRtzpD4BnoLp8om3BPxMcPNJgZqkeYodjRKsxUoNr
-   Yr/pGVMxT2pPBz7w8B1qFQX8mZmv9IhmDfnzPQ+lGXi7XMO2cfgPJW5h4
-   SYQ2Fg5UhbXD3Bzw6/vlyXdiixmRLhX6Y8ux7GRSyTIovKGHyiAYryLih
-   2moNqYxoBbr3+Fft/nn2V1RqHeQjDXipb+dcWKC6YeOGwrJ+lVPvsCFjW
-   MDgLgxpsXPG1JYetse0rDqzcoh+e5/Z0tNF5E4q0g8O6dZi8yOVDYrsAR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="277949320"
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="277949320"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 23:33:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="633645557"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 09 Aug 2022 23:33:12 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oLfHE-000NbZ-0T;
-        Wed, 10 Aug 2022 06:33:12 +0000
-Date:   Wed, 10 Aug 2022 14:32:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:timers/urgent] BUILD SUCCESS
- e362359ace6f87c201531872486ff295df306d13
-Message-ID: <62f350f4.wDdKmKrx39xGDAdm%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 10 Aug 2022 02:34:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34FC46E2D2
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 23:34:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660113248;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8IIzlB4jensj1oGktEeyGAu5ttHJ4e1db9NKIaRaDkY=;
+        b=NVJUWg0KqNnI/yRxes7RWL21R7bs+tXjjUSniyzLvTT7FWMuEU2v89D5jKapWoLpxAkpaI
+        TAqilS/hmhozXSgtptJxpIXPYGzTBazdaB0Czi0Tz01+eoD1HyH7NWpl0pBRzdH61bR4t0
+        sRxF7ghlznz39Z3fwDsSpp9m+PYxhs4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-271-ynl2zvoXMO6j_n5de7QVDA-1; Wed, 10 Aug 2022 02:34:03 -0400
+X-MC-Unique: ynl2zvoXMO6j_n5de7QVDA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B0BB485A597;
+        Wed, 10 Aug 2022 06:34:02 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (unknown [10.39.192.75])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D120DC15BA1;
+        Wed, 10 Aug 2022 06:33:59 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David.Laight@ACULAB.COM, carlos@redhat.com,
+        Peter Oskolkov <posk@posk.io>
+Subject: Re: [PATCH v3 02/23] rseq: Introduce extensible rseq ABI
+References: <20220729190225.12726-1-mathieu.desnoyers@efficios.com>
+        <20220729190225.12726-3-mathieu.desnoyers@efficios.com>
+Date:   Wed, 10 Aug 2022 08:33:58 +0200
+In-Reply-To: <20220729190225.12726-3-mathieu.desnoyers@efficios.com> (Mathieu
+        Desnoyers's message of "Fri, 29 Jul 2022 15:02:04 -0400")
+Message-ID: <8735e4hajt.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers/urgent
-branch HEAD: e362359ace6f87c201531872486ff295df306d13  posix-cpu-timers: Cleanup CPU timers before freeing them during exec
+* Mathieu Desnoyers:
 
-elapsed time: 715m
+> Introduce the extensible rseq ABI, where the feature size supported by
+> the kernel and the required alignment are communicated to user-space
+> through ELF auxiliary vectors.
+>
+> This allows user-space to call rseq registration with a rseq_len of
+> either 32 bytes for the original struct rseq size (which includes
+> padding), or larger.
+>
+> If rseq_len is larger than 32 bytes, then it must be large enough to
+> contain the feature size communicated to user-space through ELF
+> auxiliary vectors.
 
-configs tested: 53
-configs skipped: 2
+I don't think this works with the glibc extension mechanism because
+__rseq_size does not change until the padding is exhausted.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+I think you'll need to add the suggested flags to the auxiliary vector,
+and then we can use that during registration and also communicate these
+flags via __rseq_flags.
 
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                                defconfig
-x86_64                          rhel-8.3-func
-x86_64                              defconfig
-x86_64                         rhel-8.3-kunit
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                           rhel-8.3-kvm
-x86_64                        randconfig-a015
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-x86_64                        randconfig-a006
-arm                                 defconfig
-x86_64                               rhel-8.3
-i386                             allyesconfig
-riscv                randconfig-r042-20220810
-i386                          randconfig-a014
-arc                  randconfig-r043-20220810
-x86_64                           allyesconfig
-arm64                            allyesconfig
-i386                          randconfig-a012
-i386                          randconfig-a016
-arm                              allyesconfig
-s390                 randconfig-r044-20220810
-ia64                             allmodconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
+Size and alignment can be stored in a single auxiliary vector entry.
 
-clang tested configs:
-x86_64                        randconfig-a012
-x86_64                        randconfig-a016
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a014
-x86_64                        randconfig-a003
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220810
-i386                          randconfig-a011
-hexagon              randconfig-r045-20220810
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
+Thanks,
+Florian
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
