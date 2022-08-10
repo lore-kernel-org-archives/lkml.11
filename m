@@ -2,91 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2ABEC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F73C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiHJKHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 06:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
+        id S231625AbiHJKIO convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 06:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiHJKHr (ORCPT
+        with ESMTP id S229452AbiHJKIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 06:07:47 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63CA72EC7
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 03:07:44 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id l22so17179622wrz.7
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 03:07:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=LWzqLuQMDEGMHZoekanxcPWRbunj7NWtZ9GA9V1JO+M=;
-        b=qvEDKFZl7goY+YsVsf9474bsbHIMv5a1lhvRzWEXO+qTIcBfv4R3FFaxCgoJzQ67MS
-         JaVX+jvKjH5wdq6BmFRmOGAgGqRVxh/5Fm1kLJxlqVd/34xvvQjs9/hUtSnkKYt9JS2A
-         wRZRxd9rZ+eI+49vciYHIfwEEZSHSscv73+JeIpN7wQ5UuxKBryD3S4T1psRd+rAdYE3
-         CmEwfL0ck/SM1bxKXduhfPOC8kgjeQqf/La33nD0/GNrJKa0wuZdFFLDXLENo6sgC+oQ
-         XCiMXWYTqgBx0gQBoxACArf/QUKw5d4zdE6HkjZwu06tZsVoj3PBvaz1G4OEkPemWJcK
-         Yk7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=LWzqLuQMDEGMHZoekanxcPWRbunj7NWtZ9GA9V1JO+M=;
-        b=Bc7XH2Uglk0/QVeto/1LJjy2Xbf08azxfoTTVSsJ9url51+21JYguPcV3mSLDdoQRA
-         KS+myV5wr1tIENU1AkwjmjOSGERkWxZ0VImZKZyAYPHD9n60B6QBeSKJkYjUnEbblMD+
-         rCKMKrMHQVOIcbWRaxdAzf96GC9ceCAe6If/EbQfT9M33XZQS+6ZNVwqkQVmqq7/GQ7x
-         +n/v1fhj1Af5TX1dRi7VT8UZusyoZbzLiSmYNR9C4lmv3jx55oJi2iCXrxpkjlymQQxW
-         xR6ytMTNCdNaUTIzZEEckzEy+1vv2vNkoCg06izv8/DDkqqJ+niZhmKKPRZSoKxvCfcO
-         Q10Q==
-X-Gm-Message-State: ACgBeo1BSpQJUs/qHh+ZFB1eV1RBSEv5M3qkj7By4mIrLb7K1VMthcPA
-        vOEauJ7RREd3DFeB4obTlSbjvg==
-X-Google-Smtp-Source: AA6agR6F2DFf2ERJv6skFwyV9xeFH7tzlIIKgxlXFcn53bH1pjzj9rbMdyaC5YrLVVJ0nlWwjRHIRw==
-X-Received: by 2002:a5d:6608:0:b0:220:625e:f4e1 with SMTP id n8-20020a5d6608000000b00220625ef4e1mr17635086wru.252.1660126063271;
-        Wed, 10 Aug 2022 03:07:43 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b0021e491fd250sm16037067wrv.89.2022.08.10.03.07.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 03:07:42 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        linux-pm@vger.kernel.org (open list:THERMAL),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] thermal/core: Add missing EXPORT_SYMBOL_GPL
-Date:   Wed, 10 Aug 2022 12:07:31 +0200
-Message-Id: <20220810100731.749317-1-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 10 Aug 2022 06:08:12 -0400
+X-Greylist: delayed 7600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 03:08:10 PDT
+Received: from delos.net (unknown [5.206.227.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE5D173927
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 03:08:10 -0700 (PDT)
+Received: from cafe24.com (delos.net [IPv6:::1])
+        by delos.net (Postfix) with ESMTP id DB54B1DEE06
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:51:49 +0000 (UTC)
+Reply-To: admin@goldenfxtrading.com
+From:   GoldenFx Trading Inc <manager@cafe24.com>
+To:     linux-kernel@vger.kernel.org
+Subject: This Mail is intended for you!!!
+Date:   10 Aug 2022 09:51:47 +0200
+Message-ID: <20220810095147.429339A1BD2F303F@cafe24.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function thermal_zone_device_register_with_trips() is not exported
-for modules.
+Warm Greetings linux-kernel@vger.kernel.org,
 
-Add the missing EXPORT_SYMBOL_GPL().
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
----
- drivers/thermal/thermal_core.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index b4c68410c158..10c979dce512 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -1329,6 +1329,7 @@ thermal_zone_device_register_with_trips(const char *type, struct thermal_trip *t
- 	kfree(tz);
- 	return ERR_PTR(result);
- }
-+EXPORT_SYMBOL_GPL(thermal_zone_device_register_with_trips);
- 
- struct thermal_zone_device *thermal_zone_device_register(const char *type, int ntrips, int mask,
- 							 void *devdata, struct thermal_zone_device_ops *ops,
--- 
-2.34.1
+This is GoldenFx trading Inc and we are writing you this mail 
+because  we just confirmed linux-kernel@vger.kernel.org as being 
+the reachable email to the next of kin of Mr. Eric Who happens to 
+own a portfolio containing a huge amount of Cryptocurrency  on 
+our platform and Information reaching us, reveals that Mr. Eric 
+is dead and no one is yet to come and claim his portfolio with
+us.
+
+At this point, we are left with no choice than to contact you to 
+come and claim your relative's accumulated cryptocurrency that is 
+ready for withdrawal on our platform.
+
+We will be waiting for your soonest response. Thanks
+
+
+Sincerely,
+Golden Fx Traders Inc.
+
+
+
+
+
+
+
+Confidentiality: This mail is officially generated from Goldenfx 
+Trading Inc and it is intended for linux-kernel@vger.kernel.org 
+And the information contained in this email communication 
+(including any attachment(s)) is strictly confidential and 
+intended solely for the person or entity named above. If you are 
+not the intended recipient of this email, you are hereby notified 
+that any disclosure, distribution, reproduction, or other use of 
+this communication is strictly prohibited. If you have received 
+this communication in error, please immediately notify the sender 
+by return email and permanently delete this communication 
+(including any attachment(s)) from your system.
+
 
