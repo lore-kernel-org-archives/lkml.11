@@ -2,194 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7B3C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7ADC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231241AbiHJJp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
+        id S231364AbiHJJpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232281AbiHJJoa (ORCPT
+        with ESMTP id S232260AbiHJJpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:44:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23BF06CF5F
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:44:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660124661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k7/Qe+5eTUGxbNC+s2zlukeDJxV02+FkntfjhZmwiRA=;
-        b=IHtYczn8yF9U6uDJYMiX7nKeO1jJX62iWHj65B06HVCPbLourgjfliH1b1zn07bCJA0Mw5
-        ++jEtNG1iAbnLlb9uWSEV9nia2gfNXKh1Guip0MjSSExuufgn82glpT1yeKLUwwEJLDyYo
-        vAlblbXmyFZtnYPfJ2d/mhrFZbILrk8=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-510-Pw5ok0ipPw-NxEPFp_QvpQ-1; Wed, 10 Aug 2022 05:44:18 -0400
-X-MC-Unique: Pw5ok0ipPw-NxEPFp_QvpQ-1
-Received: by mail-wm1-f70.google.com with SMTP id f21-20020a1cc915000000b003a3551598a1so395762wmb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:44:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=k7/Qe+5eTUGxbNC+s2zlukeDJxV02+FkntfjhZmwiRA=;
-        b=hDYai9toXeJOyIpPcgE1gZd2NqVDHuvFyX04yOQHv0OyHXEgxtrv135s3OSQ1ReWTv
-         v9paLxqh/89Q8Q1JM3mWiEv6ZdKvlUv3Y8SvLhP0wYVbTrYVBeQ1TCvmBTQq46Jfx26u
-         Cqbx6BCxnq4PTQw7GRhvawee+l+CsUHa5YSEj6WwzMTfxRmunh/Rlhtyc9p0U/nLLkDd
-         XsvL6HEqZAxkLUnG0rc62qYzWnmxxd+rYoN4o04CLFxrMF1tM/B2+xCD03mgE+vkbzw4
-         r3Z5udN53BcbwYnQaks3BWrdD0rEDJDUcko+W1BBlB3danu0t6Qj6fBVXMpL/xNoPIVe
-         DPTg==
-X-Gm-Message-State: ACgBeo2zGR3WDvqsIXS0gp+rfX1+QNLvrKwVbw2F6PbE3R/5GKuRmDyr
-        0wU+y4avxywK8onP2PP281iYXb/61z5JfHfAliBNYbwhmjIM/cYB+CPGuhXtEwadU9AxJXwh+Vk
-        44NXKhsBhPKmCf5o2nrO9lEv+
-X-Received: by 2002:a05:6000:1542:b0:220:603d:ec93 with SMTP id 2-20020a056000154200b00220603dec93mr17536686wry.73.1660124657612;
-        Wed, 10 Aug 2022 02:44:17 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6iclGAZJP+HWE3V0NXvbb7Pj7rFr6PGzc2/8kqTzVx9Xl8yB8UdjXdKIphvt2YtlzIaVYsVg==
-X-Received: by 2002:a05:6000:1542:b0:220:603d:ec93 with SMTP id 2-20020a056000154200b00220603dec93mr17536672wry.73.1660124657375;
-        Wed, 10 Aug 2022 02:44:17 -0700 (PDT)
-Received: from step1.redhat.com (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id t188-20020a1c46c5000000b003a327f19bf9sm1729195wma.14.2022.08.10.02.44.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 02:44:16 -0700 (PDT)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH v2 4/4] vdpa_sim_blk: add support for discard and write-zeroes
-Date:   Wed, 10 Aug 2022 11:43:47 +0200
-Message-Id: <20220810094347.20449-5-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810094347.20449-1-sgarzare@redhat.com>
-References: <20220810094347.20449-1-sgarzare@redhat.com>
+        Wed, 10 Aug 2022 05:45:38 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D951EAC3;
+        Wed, 10 Aug 2022 02:45:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660124736; x=1691660736;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=sBavDjNKIFmd2M6Jg3bF8kVDIymkWHMnSEIr5WIN7a0=;
+  b=O61/zh9nP1a3NA1MGvroQMtaoN5BFj12Ro1Ly3C9SI+LvvDmhryVaJP2
+   CarjfMhP3S2UW8pzfkIzHQX/EkG31FdTc3R+Z8xx694dCplk3YqpOQW4J
+   4WWBMeqVCVSOCG3IamVhM36kB761utc/Eer6Jp+NQnCZQQgSmJjmdq2tE
+   iGeMt5wqLmDfQmRA9jFKLpQWvtmhDKxRUQ3ccKTlRnEtmlKtecqbp02H0
+   SMKVZ70THXKKgFwj59jC7+QeIllAUc1U5rVeufdEZF4WAN9e2j7WGo8k7
+   T/jngFph2gS8+E4vFHrqNbjcS6s1SxTCjT7ssgLMSPRW1UlzIpUY8TH5n
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="277983040"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="277983040"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:45:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="601757857"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga007.jf.intel.com with ESMTP; 10 Aug 2022 02:45:24 -0700
+Date:   Wed, 10 Aug 2022 17:40:39 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
+Message-ID: <20220810094039.GG862421@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
+ <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
+ <472207cf-ff71-563b-7b66-0c7bea9ea8ad@redhat.com>
+ <a2b8fa73-4efd-426f-abcd-7975ff9a7101@redhat.com>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a2b8fa73-4efd-426f-abcd-7975ff9a7101@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Expose VIRTIO_BLK_F_DISCARD and VIRTIO_BLK_F_WRITE_ZEROES features
-to the drivers and handle VIRTIO_BLK_T_DISCARD and
-VIRTIO_BLK_T_WRITE_ZEROES requests checking ranges and flags.
+On Fri, Aug 05, 2022 at 08:06:03PM +0200, David Hildenbrand wrote:
+> On 05.08.22 19:55, Paolo Bonzini wrote:
+> > On 7/21/22 11:44, David Hildenbrand wrote:
+> >>
+> >> Also, I*think*  you can place pages via userfaultfd into shmem. Not
+> >> sure if that would count "auto alloc", but it would certainly bypass
+> >> fallocate().
+> > 
+> > Yeah, userfaultfd_register would probably have to forbid this for 
+> > F_SEAL_AUTO_ALLOCATE vmas.  Maybe the memfile_node can be reused for 
+> > this, adding a new MEMFILE_F_NO_AUTO_ALLOCATE flags?  Then 
+> > userfault_register would do something like 
+> > memfile_node_get_flags(vma->vm_file) and check the result.
+> 
+> An alternative is to simply have the shmem allocation fail in a similar
+> way. Maybe it does already, I haven't checked (don't think so).
 
-The simulator behaves like a ramdisk, so for VIRTIO_BLK_F_DISCARD
-does nothing, while for VIRTIO_BLK_T_WRITE_ZEROES sets to 0 the
-specified region.
+This sounds a better option. We don't need uAPI changes for
+userfault_register uAPI but I guess we will still need a KVM uAPI,
+either on the memslot or on the whole VM since Roth said this feature
+should be optional because some usages may want to disable it for
+performance reason. For details please see discussion:
+  https://lkml.org/lkml/2022/6/23/1905
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 74 +++++++++++++++++++++++++++-
- 1 file changed, 73 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-index 1f18f336cf0c..db85df1d5073 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-@@ -30,11 +30,14 @@
- 				 (1ULL << VIRTIO_BLK_F_SEG_MAX)  | \
- 				 (1ULL << VIRTIO_BLK_F_BLK_SIZE) | \
- 				 (1ULL << VIRTIO_BLK_F_TOPOLOGY) | \
--				 (1ULL << VIRTIO_BLK_F_MQ))
-+				 (1ULL << VIRTIO_BLK_F_MQ)       | \
-+				 (1ULL << VIRTIO_BLK_F_DISCARD)  | \
-+				 (1ULL << VIRTIO_BLK_F_WRITE_ZEROES))
- 
- #define VDPASIM_BLK_CAPACITY	0x40000
- #define VDPASIM_BLK_SIZE_MAX	0x1000
- #define VDPASIM_BLK_SEG_MAX	32
-+#define VDPASIM_BLK_DWZ_MAX_SECTORS UINT_MAX
- 
- /* 1 virtqueue, 1 address space, 1 virtqueue group */
- #define VDPASIM_BLK_VQ_NUM	1
-@@ -193,6 +196,64 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
- 		/* nothing to do */
- 		break;
- 
-+	case VIRTIO_BLK_T_DISCARD:
-+	case VIRTIO_BLK_T_WRITE_ZEROES:
-+		struct virtio_blk_discard_write_zeroes range;
-+		u32 num_sectors, flags;
-+
-+		if (to_pull != sizeof(range)) {
-+			dev_dbg(&vdpasim->vdpa.dev,
-+				"discard/write_zeroes header len: 0x%zx [expected: 0x%zx]\n",
-+				to_pull, sizeof(range));
-+			status = VIRTIO_BLK_S_IOERR;
-+			break;
-+		}
-+
-+		bytes = vringh_iov_pull_iotlb(&vq->vring, &vq->out_iov, &range,
-+					      to_pull);
-+		if (bytes < 0) {
-+			dev_dbg(&vdpasim->vdpa.dev,
-+				"vringh_iov_pull_iotlb() error: %zd offset: 0x%llx len: 0x%zx\n",
-+				bytes, offset, to_pull);
-+			status = VIRTIO_BLK_S_IOERR;
-+			break;
-+		}
-+
-+		sector = vdpasim64_to_cpu(vdpasim, range.sector);
-+		offset = sector << SECTOR_SHIFT;
-+		num_sectors = vdpasim32_to_cpu(vdpasim, range.num_sectors);
-+		flags = vdpasim32_to_cpu(vdpasim, range.flags);
-+
-+		if (type == VIRTIO_BLK_T_DISCARD && flags != 0) {
-+			dev_dbg(&vdpasim->vdpa.dev,
-+				"discard unexpected flags set - flags: 0x%x\n",
-+				flags);
-+			status = VIRTIO_BLK_S_UNSUPP;
-+			break;
-+		}
-+
-+		if (type == VIRTIO_BLK_T_WRITE_ZEROES &&
-+		    flags & ~VIRTIO_BLK_WRITE_ZEROES_FLAG_UNMAP) {
-+			dev_dbg(&vdpasim->vdpa.dev,
-+				"write_zeroes unexpected flags set - flags: 0x%x\n",
-+				flags);
-+			status = VIRTIO_BLK_S_UNSUPP;
-+			break;
-+		}
-+
-+		if (!vdpasim_blk_check_range(vdpasim, sector, num_sectors,
-+					     VDPASIM_BLK_DWZ_MAX_SECTORS)) {
-+			status = VIRTIO_BLK_S_IOERR;
-+			break;
-+		}
-+
-+		if (type == VIRTIO_BLK_T_WRITE_ZEROES) {
-+			memset(vdpasim->buffer + offset, 0,
-+			       num_sectors << SECTOR_SHIFT);
-+		}
-+
-+		break;
-+
- 	default:
- 		dev_dbg(&vdpasim->vdpa.dev,
- 			"Unsupported request type %d\n", type);
-@@ -281,6 +342,17 @@ static void vdpasim_blk_get_config(struct vdpasim *vdpasim, void *config)
- 	blk_config->min_io_size = cpu_to_vdpasim16(vdpasim, 1);
- 	blk_config->opt_io_size = cpu_to_vdpasim32(vdpasim, 1);
- 	blk_config->blk_size = cpu_to_vdpasim32(vdpasim, SECTOR_SIZE);
-+	/* VIRTIO_BLK_F_DISCARD */
-+	blk_config->discard_sector_alignment =
-+		cpu_to_vdpasim32(vdpasim, SECTOR_SIZE);
-+	blk_config->max_discard_sectors =
-+		cpu_to_vdpasim32(vdpasim, VDPASIM_BLK_DWZ_MAX_SECTORS);
-+	blk_config->max_discard_seg = cpu_to_vdpasim32(vdpasim, 1);
-+	/* VIRTIO_BLK_F_WRITE_ZEROES */
-+	blk_config->max_write_zeroes_sectors =
-+		cpu_to_vdpasim32(vdpasim, VDPASIM_BLK_DWZ_MAX_SECTORS);
-+	blk_config->max_write_zeroes_seg = cpu_to_vdpasim32(vdpasim, 1);
-+
- }
- 
- static void vdpasim_blk_mgmtdev_release(struct device *dev)
--- 
-2.37.1
-
+Chao
+> 
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
