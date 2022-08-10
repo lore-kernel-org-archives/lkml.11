@@ -2,97 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C39C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA15C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233034AbiHJPOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 11:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
+        id S232923AbiHJPQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 11:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233026AbiHJPN7 (ORCPT
+        with ESMTP id S232102AbiHJPQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 11:13:59 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4007696D
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:13:58 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id cr9so8137554qtb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:13:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=+MoVzT70dgl0mrZk7FCfrLX/L2nz+J+RAFiYQSmi77Q=;
-        b=ut7ty8IYr6nvoF8DmomdY0c0ZKH/1E4b9vQjdJzgG01Jur4RD2IQhKjY73UHj/JDQ0
-         tSK7nFjF0qMpQlLbA52iprHneX586PS0ogRCLECHukFt64gEy9kfgB2AoJo8a2qrgvwX
-         zNuwQAv3+R66dSDFDvgwej7mz2J9jYWRY55aMmzmnGxSILdVqBYNpPUzK0Q0CXYIVkFA
-         gfZQwgmCvw3L0NuAs1Cyp1DU+0Ffi9F5Cr+4BPg8/BlpPhOcr0QMPzcnPKl6epveecLF
-         AOy2DRuHHzpUZQdikwoPt4nDTfkzAnAlSDzaXgIT+VTPkJn/GNrHEEJhioGVn7rd9D6J
-         15Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=+MoVzT70dgl0mrZk7FCfrLX/L2nz+J+RAFiYQSmi77Q=;
-        b=oti9rx1xbJAgkh9x9Qc9Db9odbMPGLBs7OmUzOhfABAFnNg30puWFmXogj71KS5mYm
-         rqEHXqs92/QFXVa7uiokDqyFrSjUtSMlsgDktZRlIeZiCoPow0sPzWubWgFxUN/e1yU4
-         jVbyzlV0S13VtvuWoFB2BHHNXOypCzZX2ymvNAs6x54x+Kdd7tCBBsg7wJI7l6knGktb
-         1tsZVBMxC94zsbMGLvwvMjUf13CLcL9D5CfP8PwILTE1dXbocfNn4wAgrUm5oKlAWL3G
-         zs6527NvlvYM1sKKftt3lRvi4t+/ULG3iD8ano3rWEhIBwP2lFpj6m9KKb9OA1YvChPm
-         TYQA==
-X-Gm-Message-State: ACgBeo1XcWZYBbhf+bM4BAf9W0JLshQHQDMIQ0fr9BCWxnxHBOEUcL6o
-        2xDekNx8+yfbDwHloDQxfI9Ddw==
-X-Google-Smtp-Source: AA6agR7vY4GYQ0CbLjTAsDH/FBPEK+GeSb0SHUsoDFZFYUGTRwKonj1tgkgiaePEC2EAmSfzYjYCEw==
-X-Received: by 2002:ac8:59d3:0:b0:31e:ff86:f344 with SMTP id f19-20020ac859d3000000b0031eff86f344mr24108168qtf.199.1660144437339;
-        Wed, 10 Aug 2022 08:13:57 -0700 (PDT)
-Received: from localhost (2603-7000-0c01-2716-00ea-7f88-5fd9-01cd.res6.spectrum.com. [2603:7000:c01:2716:ea:7f88:5fd9:1cd])
-        by smtp.gmail.com with ESMTPSA id u14-20020a05620a0c4e00b006b6757a11fcsm13521998qki.36.2022.08.10.08.13.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 08:13:57 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 11:13:56 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Hao Jia <jiahao.os@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, mingo@kernel.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com,
+        Wed, 10 Aug 2022 11:16:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C91C60523
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:16:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73B8F60C21
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 15:16:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5594C433D6;
+        Wed, 10 Aug 2022 15:16:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660144587;
+        bh=GM01A3vPn4SxbCncDoqhIanwmfKrvFK0yJfID6wv9/0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MZJAGKppH3GVnFiDRHrWIpYX8tBuSzAHVkVPohIPo4Z+L1VvCtGHTJbd33cnC44ID
+         kPhl3ddcOsVc1HKGaG934XejXHzhQnhPCaSTkLJgN3mtZxqh0Xk+OFVb08TNOUwyNt
+         VtcTJg6pVRXXAjwEWVuDTu3AgpMAJ3VrZAqfNzBfFaOGkunfVe7kXWN4cSD7xN6HRy
+         gFLoaETFr0mtytXIWQq3V0sm5z6A5HOVGfWPA+GKIaLJs2RTQ9siBAWJ9En+i5GYc9
+         R6Zqw/5cOPYBQd7nm/64Yl/qWl9lf30JVFuJ3bQFXrw2RsmrOEw+/AGqkm2mhDmb8n
+         Nck270E/EoJHg==
+Date:   Wed, 10 Aug 2022 16:16:23 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     matti.vaittinen@fi.rohmeurope.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] sched/psi: psi bug fixes and cleanups
-Message-ID: <YvPLNNlIyjLXv71v@cmpxchg.org>
-References: <20220806120510.96131-1-jiahao.os@bytedance.com>
- <YvKbUbFCaf6WcF26@slm.duckdns.org>
+Subject: Re: [RFC PATCH 2/7] regulator: Add devm helpers for get and enable
+Message-ID: <YvPLx5hizWMEBjVK@sirena.org.uk>
+References: <cover.1660127865.git.mazziesaccount@gmail.com>
+ <b6058e052b842a19c8bb639798d8692cd0e7589f.1660127865.git.mazziesaccount@gmail.com>
+ <YvOdBv0edrE3wKsO@sirena.org.uk>
+ <e8900490-1eec-83d8-b190-6d6983d81c4a@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+tMecClWfAgfuSlW"
 Content-Disposition: inline
-In-Reply-To: <YvKbUbFCaf6WcF26@slm.duckdns.org>
+In-Reply-To: <e8900490-1eec-83d8-b190-6d6983d81c4a@gmail.com>
+X-Cookie: First pull up, then pull down.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 07:37:21AM -1000, Tejun Heo wrote:
-> (cc'ing Johannes)
-> 
-> On Sat, Aug 06, 2022 at 08:05:07PM +0800, Hao Jia wrote:
-> > These three patches are about PSI.
-> > patch 1: Fixed PSI statistics error caused by unzeroed memory
-> > in struct psi_group.
-> > patch 2 and patch 3 are to clean up some unused functions
-> > and parameters.
-> > 
-> > Hao Jia (3):
-> >   sched/psi: Zero the memory of struct psi_group
-> >   sched/psi: Remove unused parameter nbytes of psi_trigger_create()
-> >   sched/psi: Remove redundant cgroup_psi() when !CONFIG_CGROUPS
-> > 
-> >  include/linux/cgroup.h |  5 -----
-> >  include/linux/psi.h    |  2 +-
-> >  kernel/cgroup/cgroup.c |  2 +-
-> >  kernel/sched/psi.c     | 10 +++-------
-> >  4 files changed, 5 insertions(+), 14 deletions(-)
-> 
-> Johannes, care to review these patches?
 
-They look good to me.
+--+tMecClWfAgfuSlW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks!
+On Wed, Aug 10, 2022 at 03:19:05PM +0300, Matti Vaittinen wrote:
 
+> In order to tackle the issue the suggested API does not return handle to =
+the
+> regulators - it really just provides the "get'n enable, then forget"
+> solution. The consumers who use the suggested API to "devm get'n enable"
+> will have had time manually controlling the regulator afterwards as they
+> will not get the handle. I would almost claim that the pattern we nowadays
+> see (devm_get, enable, add_action_or_reset(disable())) is more error prone
+> as users seem to in many case be storing the regulator handle w/o any
+> comment about the automated disable at detach.
+
+Hrm, right - that does help with that case.  However we do need a bulk=20
+version since that's an obvious problem case.
+
+--+tMecClWfAgfuSlW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLzy8YACgkQJNaLcl1U
+h9DSPgf/aMwuVB03tEyJWgsMUoa/+AzXF+i+5ryTdmp8FB5hhK81JwSjAsSbtknL
+eYh7L7XcgXOm3pwbnCLKC8nF7hJ+gqwfZHfnVnFF2EL+h8QZwBdXcAPN1HgCvJP+
+J20/iIgxfKl+Qxb/Mk7jJBbv+u1hDzsEnCNHS8Xw5Y3hs/o+BuitSBASCnO+e4sm
+HjmE8o5N/0HpSxLA9EGsX8w+iTwLNbyvjouAX/TqKPe3h5vYa9TOnS2s0z4tOleS
+wuzwsEIEM/I1UjFtVDGNMit3yBBW1JOkJXo0E/ZrOR35/oNiS4YvCvDJ6BPQYisZ
+UfeW5Y6Rzpib21/7etsbrxkD1pqGlg==
+=aNEN
+-----END PGP SIGNATURE-----
+
+--+tMecClWfAgfuSlW--
