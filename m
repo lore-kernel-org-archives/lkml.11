@@ -2,219 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12C8C25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF41C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 06:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231136AbiHJGQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 02:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52242 "EHLO
+        id S231330AbiHJGQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 02:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbiHJGQL (ORCPT
+        with ESMTP id S231414AbiHJGQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 02:16:11 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2062.outbound.protection.outlook.com [40.107.212.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A91224BC7;
-        Tue,  9 Aug 2022 23:16:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Revx+4IIqmWlZzmQqN6iOCn8MlISmiGWqmE0HGM7sBzxga67hbhkK1mSiyO1KZu6tH3msrFJixt8bRcCxfUccxZRHKTLGjv78FAtWYGmSioUZKwHy1siSgBIF5z+6L3k9iVTguAT9aqGyMGDvTisEC5JvfAiomH7g/fBzLJrceN2NUqBP3uxIxZK4VnUIkpoLnyo2P2gEK5POemW8KPDZOCNLPWadLGX034j/vfFVnuOrCEWUR3xoy97iNb/RLzh/bK+kZ0xdlfmrYTif4WVy8u/nsN2ZycJcfuC51GDYrQ2aTNGaYiAR8YrcrjKX+Qdt7KQh6q+1z6flgWLEEuvHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GR4F0hLb1RfTPlWxdUvliDgkDtRGi/1FubkI13uYPg8=;
- b=Ex72Tzx5vIsyULgZtbJe8LeaWornGCM/9mSgeXRJVltDgDaNWIMC3oS5yDpgwIoipDoDeHKvHV+rixIHplbgcqwvWVM9uf9ZSdaZyitEMrryfFsMJntGCghaoZkH7HFRnPt/fjpLddT6uoQr6kPPBK1wi6aL8bZGEryPCQcv+j7mc8qscARofKVTPX6MKUnbvA1kPzlsugB5rJ3Zw97PNnxag+uLAu9jpNlIhuM9NIncwrei+araRpvWBn8KiBLiAom0bIIvaWkerYUshPhqDfjUVMEdzVOazJtgQjgxutWOYt8UV7OoIOV7a/hrvGzNFIdoOpDA2w7rTSF6h5hTRA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GR4F0hLb1RfTPlWxdUvliDgkDtRGi/1FubkI13uYPg8=;
- b=EW20Ok+Y+R9h4Gm7DeQu66I4LRBqqd9UYfiFtervUYMy7bcND/cp0dbrs7oBJwdKXRAvXYoNyIAUwMWRnUlhRr3TXZIFi3abtd8zvpYPCJlu53I2HI0VCeoPAXHSbs8AEpvFuK1+Ud4pPkXk7iQkOCTUbzRcs/l2i7b062uwp6M=
-Received: from MW4PR04CA0061.namprd04.prod.outlook.com (2603:10b6:303:6b::6)
- by BYAPR12MB3240.namprd12.prod.outlook.com (2603:10b6:a03:136::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Wed, 10 Aug
- 2022 06:16:07 +0000
-Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6b:cafe::9c) by MW4PR04CA0061.outlook.office365.com
- (2603:10b6:303:6b::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.14 via Frontend
- Transport; Wed, 10 Aug 2022 06:16:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5525.11 via Frontend Transport; Wed, 10 Aug 2022 06:16:07 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 10 Aug
- 2022 01:15:58 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <santosh.shukla@amd.com>,
-        <mlevitsk@redhat.com>
-Subject: [PATCHv3 6/8] KVM: nSVM: implement nested VNMI
-Date:   Wed, 10 Aug 2022 11:42:24 +0530
-Message-ID: <20220810061226.1286-7-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220810061226.1286-1-santosh.shukla@amd.com>
-References: <20220810061226.1286-1-santosh.shukla@amd.com>
+        Wed, 10 Aug 2022 02:16:43 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F40D65577
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 23:16:42 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id f22so17723054edc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 23:16:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=ifqcMNgVyZIcs1Y0FmGPTKuFLhWkVB6lCLmVgx28/qg=;
+        b=wOnviD9udZL+xDTvmKmNEZnbwA8h032MGvWiviO4cpf7Wi5qwVKs0lVMY5Bdi3xyEA
+         PvYUd4QL3WqKl/+izyqN/JX+hYlmAnNjbdfOBgmtUUlA+/y276RrEO96CscN//pe7wxi
+         iINYpvvaa7EIPcxEUfpRMO3Pb10VOEo4qYtX/NP/sws0y6r63bJsj3Hx/wdghmEJM7Wm
+         S1A8TKDzUwReIIPOwu+7Vt8KOLRkLgEdkGNDEDXRTDPdjmfzC3CsPzu3Fa2aLACP2mVE
+         xOu6+HkghjJQtYLExFpIHRFojdqlPczOeDZWwlM2MkUzreRfeWTsFRMeIgSrFUJNcQIS
+         3NsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=ifqcMNgVyZIcs1Y0FmGPTKuFLhWkVB6lCLmVgx28/qg=;
+        b=dCyQO/f9QQDnH3+Gd6i7bPPuGCP+tntmTD1AwHPuG5ZDr3voHG6eWwseJ+rtwK03lP
+         OYhL1fBxxVhoNEBPF+8Qa8q5wIfAAE8DaQXj4CFSwyWF7ip2C7K6ihe2iHBBppQkY4kl
+         ZpzN3g2HE9KiVlb1P75FJrbrBQjXeimCqedupXnNsnkz4lBFKsTZo+xmLbEBonGO/GWu
+         ZfbS6TcNXtTitXeZL8Z8DofhP7fVsVzh8dfsC1OTHlhM900FXLzNT0xAM9V+6ASl2hJs
+         a5dmtUzM+KY0/XXfmyWcWksSY7N8sGz6gkbXJk11uVPUFLIxvc4k1CQNELu32wynKbJK
+         yBiQ==
+X-Gm-Message-State: ACgBeo0OhGc9DeMEvN7gGU/KTZ0QRg9Xj85K16tUJFbkhp021eJmTpQE
+        XJviN4kLt71daIrnBusfk+KjNQVZoyu2N9RpGJr/rQ==
+X-Google-Smtp-Source: AA6agR4z9L7CWMTfKtA+eGb27rhb/Ii1ePdFpwVieqBxwzEi/OoluNnriuk+Xx+yPCh7tNb0x64YhiRT5GFGGy5dqoY=
+X-Received: by 2002:aa7:c70d:0:b0:440:432a:5f9e with SMTP id
+ i13-20020aa7c70d000000b00440432a5f9emr18608206edq.110.1660112200803; Tue, 09
+ Aug 2022 23:16:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7c5e26a6-b800-48f8-4541-08da7a97cfeb
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3240:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Pxln12FpWZ2NWV7qGIDXMYJYlbxT2kXgz6vRWsdBxQX6ZKs9QNM5dUhtuQZVIRb9+EBR2VSfOB3xGYJelBpCgKu8J6YGkYbb3mNYBeD3kfft7VN9Nhe3zeaAuFTGqaUPP6/hmQnPRkFkYpaQTO2sipp+2jXGUeIHMptQkM5BqfeXTFZKh6Ut8hqxv6I6sx0jvWmIXnERrlQLWM+CtVD9n1cSGigAUSJT3tsKNFSQpfUsM+V7uPn1Han5ta+7rsqKnAOwk5A71MomcpaTMY/0gM7TOTkwzgcUCU9WdCnaLu8y9vCl8DoQ+7RlvmdRoWyaoa6MmjMPPgs13BAS8Mr98rlWJWxto/tjxdzQhC3oSNrBfNe2b58h80KFwdSdoGTTfh7JwINaRj7FsmV+wXTHNpFYgT1+OYro9KhOacMoC46Ka6ngTcYbzEIeH14eRr+BT9pkPQDZGLlxEsAJX4nHM9xiw9uAjaVzputaxRLz8Xs54jvXZTOXwIyX1W9oSoQfVpua9Q4zX544856sCHUgffKrHQA8LfEJi5JLRfSD6UneP6vXR6685pCCZwyCWiZnlqe3z9FRZv3V9eUotLadilRAL0UU6uUAxrH45r+E07NCC7CsCb4kzH+CBGC/ZE7re5o808Z+5wGyS/C8WYzFR1NOP8DpfldZZWqTUmHzp1tsqgRAETb27uqhebyPxYUXKUUHaW94vx7RcYh8Z1CI//gCkLAvFqSGZAHarhqGJ2uNuFhAOiYO0iSdvVf4nWTMHz18Aq4UCVdcPv1pdI1pZW9A+DAoaDWBpIJO2m5yBeEL1zAkyUCUh75jJw6/qyuh6ft/F0biWkXlxBXuUZ7NQg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(39860400002)(346002)(40470700004)(46966006)(36840700001)(6916009)(316002)(5660300002)(70206006)(40460700003)(4326008)(54906003)(82310400005)(8676002)(86362001)(40480700001)(36756003)(478600001)(8936002)(44832011)(70586007)(36860700001)(2906002)(83380400001)(82740400003)(81166007)(356005)(47076005)(41300700001)(7696005)(6666004)(426003)(2616005)(186003)(1076003)(16526019)(26005)(336012)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2022 06:16:07.0955
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c5e26a6-b800-48f8-4541-08da7a97cfeb
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3240
+References: <20220809175515.046484486@linuxfoundation.org>
+In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 10 Aug 2022 11:46:29 +0530
+Message-ID: <CA+G9fYs_yMc0vU0iNkNDJm0AesjKvwS+gTDQXRvYi2jMP19q3g@mail.gmail.com>
+Subject: Re: [PATCH 5.18 00/35] 5.18.17-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to support nested VNMI requires saving and restoring the VNMI
-bits during nested entry and exit.
-In case of L1 and L2 both using VNMI- Copy VNMI bits from vmcb12 to
-vmcb02 during entry and vice-versa during exit.
-And in case of L1 uses VNMI and L2 doesn't- Copy VNMI bits from vmcb01 to
-vmcb02 during entry and vice-versa during exit.
+On Tue, 9 Aug 2022 at 23:36, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.18.17 release.
+> There are 35 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.17-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
+>
 
-Tested with the KVM-unit-test and Nested Guest scenario.
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
----
-v3:
-- Added code to save and restore VNMI bit for L1 using vnmi and L2
-  doesn't for the entry and exit case.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-v2:
-- Save the V_NMI_PENDING/MASK state in vmcb12 on vmexit.
-- Tested nested environment - L1 injecting vnmi to L2.
-- Tested vnmi in kvm-unit-test.
+## Build
+* kernel: 5.18.17-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.18.y
+* git commit: 732bf05a92abae4d0d6c3aca109cbc5bb0ffdb25
+* git describe: v5.18.16-36-g732bf05a92ab
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18.16-36-g732bf05a92ab
 
- arch/x86/kvm/svm/nested.c | 27 +++++++++++++++++++++++++++
- arch/x86/kvm/svm/svm.c    |  5 +++++
- arch/x86/kvm/svm/svm.h    |  6 ++++++
- 3 files changed, 38 insertions(+)
+## No test regressions (compared to v5.18.16)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 76dcc8a3e849..3d986ec83147 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -662,6 +662,11 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
- 	else
- 		int_ctl_vmcb01_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
- 
-+	if (nested_vnmi_enabled(svm))
-+		int_ctl_vmcb12_bits |= (V_NMI_PENDING | V_NMI_ENABLE | V_NMI_MASK);
-+	else
-+		int_ctl_vmcb01_bits |= (V_NMI_PENDING | V_NMI_ENABLE | V_NMI_MASK);
-+
- 	/* Copied from vmcb01.  msrpm_base can be overwritten later.  */
- 	vmcb02->control.nested_ctl = vmcb01->control.nested_ctl;
- 	vmcb02->control.iopm_base_pa = vmcb01->control.iopm_base_pa;
-@@ -1010,6 +1015,28 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 	vmcb12->control.event_inj         = svm->nested.ctl.event_inj;
- 	vmcb12->control.event_inj_err     = svm->nested.ctl.event_inj_err;
- 
-+	if (nested_vnmi_enabled(svm)) {
-+		if (vmcb02->control.int_ctl & V_NMI_MASK)
-+			vmcb12->control.int_ctl |= V_NMI_MASK;
-+		else
-+			vmcb12->control.int_ctl &= ~V_NMI_MASK;
-+
-+		if (vmcb02->control.int_ctl & V_NMI_PENDING)
-+			vmcb12->control.int_ctl |= V_NMI_PENDING;
-+		else
-+			vmcb12->control.int_ctl &= ~V_NMI_PENDING;
-+	} else {
-+		if (vmcb02->control.int_ctl & V_NMI_MASK)
-+			vmcb01->control.int_ctl |= V_NMI_MASK;
-+		else
-+			vmcb01->control.int_ctl &= ~V_NMI_MASK;
-+
-+		if (vmcb02->control.int_ctl & V_NMI_PENDING)
-+			vmcb01->control.int_ctl |= V_NMI_PENDING;
-+		else
-+			vmcb01->control.int_ctl &= ~V_NMI_PENDING;
-+	}
-+
- 	if (!kvm_pause_in_guest(vcpu->kvm)) {
- 		vmcb01->control.pause_filter_count = vmcb02->control.pause_filter_count;
- 		vmcb_mark_dirty(vmcb01, VMCB_INTERCEPTS);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 8c4098b8a63e..c9636e033782 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4217,6 +4217,8 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 
- 	svm->vgif_enabled = vgif && guest_cpuid_has(vcpu, X86_FEATURE_VGIF);
- 
-+	svm->vnmi_enabled = vnmi && guest_cpuid_has(vcpu, X86_FEATURE_V_NMI);
-+
- 	svm_recalc_instruction_intercepts(vcpu, svm);
- 
- 	/* For sev guests, the memory encryption bit is not reserved in CR3.  */
-@@ -4967,6 +4969,9 @@ static __init void svm_set_cpu_caps(void)
- 		if (vgif)
- 			kvm_cpu_cap_set(X86_FEATURE_VGIF);
- 
-+		if (vnmi)
-+			kvm_cpu_cap_set(X86_FEATURE_V_NMI);
-+
- 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
- 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
- 	}
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 7857a89d0ec8..4d6245ef5b6c 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -253,6 +253,7 @@ struct vcpu_svm {
- 	bool pause_filter_enabled         : 1;
- 	bool pause_threshold_enabled      : 1;
- 	bool vgif_enabled                 : 1;
-+	bool vnmi_enabled                 : 1;
- 
- 	u32 ldr_reg;
- 	u32 dfr_reg;
-@@ -533,6 +534,11 @@ static inline bool is_x2apic_msrpm_offset(u32 offset)
- 	       (msr < (APIC_BASE_MSR + 0x100));
- }
- 
-+static inline bool nested_vnmi_enabled(struct vcpu_svm *svm)
-+{
-+	return svm->vnmi_enabled && (svm->nested.ctl.int_ctl & V_NMI_ENABLE);
-+}
-+
- static inline struct vmcb *get_vnmi_vmcb(struct vcpu_svm *svm)
- {
- 	if (!vnmi)
+## No metric regressions (compared to v5.18.16)
+
+## No test fixes (compared to v5.18.16)
+
+## No metric fixes (compared to v5.18.16)
+
+## Test result summary
+total: 133738, pass: 119625, fail: 846, skip: 12384, xfail: 883
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 301 total, 301 passed, 0 failed
+* arm64: 62 total, 60 passed, 2 failed
+* i386: 52 total, 50 passed, 2 failed
+* mips: 45 total, 45 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 18 total, 18 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 55 total, 53 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
 -- 
-2.25.1
-
+Linaro LKFT
+https://lkft.linaro.org
