@@ -2,187 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0067EC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A808EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231871AbiHJJiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
+        id S232164AbiHJJkT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231228AbiHJJiu (ORCPT
+        with ESMTP id S231228AbiHJJkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:38:50 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A896EF00
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:38:49 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id dc19so26605491ejb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:38:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Rpc1heuT2lTdf2haoFSyi9HX+0SVlsyo53PGOFGRe2g=;
-        b=wlEvESgHc817iRkxJfikIheDgY6KLfBZ1yb8op9fkFoU54F7nSPdfh7KvCPFsJEfEW
-         kngon2s5Wy8qUSYjbS7+izRz2SC73YrUkoXlRluIAKOnWAryWeF89b37VsVodWphoO4l
-         luWlnpJ8j+M16+HKwK4vb4mY0ntQtVjI1T5/VfG7L0OXZ1jLUaXEaFxT0xXo5QZpnEuS
-         3aOsJxCT4MoeEl7QM/ZrS86xZ6EQD63Z0hvFJ1ExhPoVj8DV4BjM1XgZwz1eC2Cw7PMH
-         SFO4IXplFb/ekV0vBAuZF4c2pUtHX0iIFwRn3fYXMecnQ3YMKzyBSy/ugBnkrE827rZR
-         y3hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Rpc1heuT2lTdf2haoFSyi9HX+0SVlsyo53PGOFGRe2g=;
-        b=nNWJuJj1zZppgqjjv+QVKns08O8MLAzyFYPDUmQlBbScDyu9ExPJDqvhKnjnBnv7MX
-         Tz59TFfkIsd/VFzlT4WePzvsqpKHz5lGCnkhkrZgmQh7BatenUrEo0mIHovTtFdcLJZk
-         rljHdlenODvcWvZqWm2l6N/1cilb8s4MpwjINgLG5GiRJ5TLrZoxYL1ZyaLFmIfJTwyo
-         XWbEfI2GWffYVZu94sdz3GLQeGePID9/zla7Uk1Y+Riyj7WCL0gz5+L3sPrbLiyTBbWS
-         BP+eAvdfvPcdR9AwOZNGkftTAG7gQo6SJPy0XN8l7qt8dGzuEpD2kyW3S3Q/AjI5aLqa
-         RvcQ==
-X-Gm-Message-State: ACgBeo0l7zDEJnAK1Sqdlqiw69ymOkvmcMkacIjWWy19AJPU946+EEL4
-        T76sVmcaG/OzOwRNAWNYFGPe8v6wX28IyHzKkVhjNQ==
-X-Google-Smtp-Source: AA6agR7hUlP3cvvlEctjDrH/fvmLzvB9gYRrnFXynBOi5/OrP/CJeV01JulZEGnfXXdDJJWhBvCJiY0nyNvUFm5E6PA=
-X-Received: by 2002:a17:907:86ac:b0:731:5180:8aa0 with SMTP id
- qa44-20020a17090786ac00b0073151808aa0mr10541617ejc.366.1660124327536; Wed, 10
- Aug 2022 02:38:47 -0700 (PDT)
+        Wed, 10 Aug 2022 05:40:17 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68AB1C9;
+        Wed, 10 Aug 2022 02:40:15 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27A9eBeo091533;
+        Wed, 10 Aug 2022 04:40:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660124411;
+        bh=X29vcjWFhF4UVgvsFJrukUPzgpktPiXJ72hCk4ztzTE=;
+        h=From:To:CC:Subject:Date;
+        b=XUIlmLqN/8G4QIu55VacPa/R9V/83MeZxa0BTiaOk7+RkMtbNCtStQ3SIjEar/9ma
+         cEyFWuLMx+UIqR3zMPvAXmCkIyis2eoQyOitlK/RVEyfYe2x3AWUgGSKbuPO5BJdaK
+         7EZfc/Vdxim4im4wsq9HaakFSR8EOOYiZB9rjWsg=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27A9eB8a039120
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 10 Aug 2022 04:40:11 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 10
+ Aug 2022 04:40:10 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 10 Aug 2022 04:40:10 -0500
+Received: from ubuntu.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27A9e2Po121822;
+        Wed, 10 Aug 2022 04:40:05 -0500
+From:   Matt Ranostay <mranostay@ti.com>
+To:     <vigneshr@ti.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Nishanth Menon <nm@ti.com>,
+        Matt Ranostay <mranostay@ti.com>
+Subject: [PATCH RESEND 1/6] arm64: dts: ti: k3-j721s2-main: Add support for USB
+Date:   Wed, 10 Aug 2022 02:39:55 -0700
+Message-ID: <20220810094000.248487-1-mranostay@ti.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220809175513.082573955@linuxfoundation.org>
-In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 10 Aug 2022 15:08:36 +0530
-Message-ID: <CA+G9fYtb4o4uxuxO1QYpBrGfse76z_rbz1yh1cStK0fhUu9DZQ@mail.gmail.com>
-Subject: Re: [PATCH 4.19 00/32] 4.19.255-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 9 Aug 2022 at 23:32, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.19.255 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.255-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+From: Aswath Govindraju <a-govindraju@ti.com>
 
-Results from Linaro's test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Add support for single instance of USB 3.0 controller in J721S2 SoC.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Cc: Vignesh Raghavendra <vigneshr@ti.com>
+Cc: Nishanth Menon <nm@ti.com>
+Acked-by: Matt Ranostay <mranostay@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi | 42 ++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-NOTE:
-Following warnings were noticed on arm64 and arm
+diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
+index 34e7d577ae13..f7e359da8690 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
+@@ -26,6 +26,20 @@ l3cache-sram@200000 {
+ 		};
+ 	};
+ 
++	scm_conf: scm-conf@104000 {
++		compatible = "ti,j721e-system-controller", "syscon", "simple-mfd";
++		reg = <0x00 0x00104000 0x00 0x18000>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges = <0x00 0x00 0x00104000 0x18000>;
++
++		usb_serdes_mux: mux-controller@0 {
++			compatible = "mmio-mux";
++			#mux-control-cells = <1>;
++			mux-reg-masks = <0x0 0x8000000>; /* USB0 to SERDES0 lane 1/3 mux */
++		};
++	};
++
+ 	gic500: interrupt-controller@1800000 {
+ 		compatible = "arm,gic-v3";
+ 		#address-cells = <2>;
+@@ -686,6 +700,34 @@ cpts@310d0000 {
+ 		};
+ 	};
+ 
++	usbss0: cdns-usb@4104000 {
++		compatible = "ti,j721e-usb";
++		reg = <0x00 0x04104000 0x00 0x100>;
++		clocks = <&k3_clks 360 16>, <&k3_clks 360 15>;
++		clock-names = "ref", "lpm";
++		assigned-clocks = <&k3_clks 360 16>; /* USB2_REFCLK */
++		assigned-clock-parents = <&k3_clks 360 17>;
++		power-domains = <&k3_pds 360 TI_SCI_PD_EXCLUSIVE>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		dma-coherent;
++
++		usb0: usb@6000000 {
++			compatible = "cdns,usb3";
++			reg = <0x00 0x06000000 0x00 0x10000>,
++			      <0x00 0x06010000 0x00 0x10000>,
++			      <0x00 0x06020000 0x00 0x10000>;
++			reg-names = "otg", "xhci", "dev";
++			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "host", "peripheral", "otg";
++			maximum-speed = "super-speed";
++			dr_mode = "otg";
++		};
++	};
++
+ 	main_mcan0: can@2701000 {
+ 		compatible = "bosch,m_can";
+ 		reg = <0x00 0x02701000 0x00 0x200>,
+-- 
+2.36.1
 
-WARNING: modpost: Found 1 section mismatch(es).
-To see full details build your kernel with:
-'make CONFIG_DEBUG_SECTION_MISMATCH=y'
-aarch64-linux-gnu-ld: warning: -z norelro ignored
-aarch64-linux-gnu-ld: warning: .tmp_vmlinux1 has a LOAD segment with
-RWX permissions
-aarch64-linux-gnu-ld: warning: -z norelro ignored
-aarch64-linux-gnu-ld: warning: .tmp_vmlinux2 has a LOAD segment with
-RWX permissions
-aarch64-linux-gnu-ld: warning: -z norelro ignored
-aarch64-linux-gnu-ld: warning: vmlinux has a LOAD segment with RWX permissions
-
-This was reported on earlier stable rc reviews
-ref:
-https://lore.kernel.org/lkml/CA+G9fYuxx3wdLXiKhYAPEs-g6uxPn-OsyaiHQOvjuegVEShgMg@mail.gmail.com/
-
-## Build
-* kernel: 4.19.255-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-4.19.y
-* git commit: 02c6011ece11c67e9ec89b3d3e0c25cff42b3ea0
-* git describe: v4.19.254-33-g02c6011ece11
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19.254-33-g02c6011ece11
-
-## No test Regressions (compared to v4.19.253-63-gf68ffa0f9e2a)
-
-## No metric Regressions (compared to v4.19.253-63-gf68ffa0f9e2a)
-
-## No test Fixes (compared to v4.19.253-63-gf68ffa0f9e2a)
-
-## No Metric Fixes (compared to v4.19.253-63-gf68ffa0f9e2a)
-
-## Test result summary
-total: 66365, pass: 57931, fail: 287, skip: 7425, xfail: 722
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 291 total, 286 passed, 5 failed
-* arm64: 58 total, 57 passed, 1 failed
-* i386: 26 total, 25 passed, 1 failed
-* mips: 35 total, 35 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 54 total, 54 passed, 0 failed
-* s390: 12 total, 12 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 52 total, 51 passed, 1 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-
---
-Linaro LKFT
-https://lkft.linaro.org
