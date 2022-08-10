@@ -2,64 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96961C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 11:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E880C25B06
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 11:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231907AbiHJLLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 07:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
+        id S231965AbiHJLML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 07:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231962AbiHJLL2 (ORCPT
+        with ESMTP id S231972AbiHJLLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 07:11:28 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDACD3122A
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 04:11:26 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id x25so15725151ljm.5
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 04:11:26 -0700 (PDT)
+        Wed, 10 Aug 2022 07:11:41 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EF46C758
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 04:11:35 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id z20so15749441ljq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 04:11:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
-        bh=VHNhyDjWR9A/L2KQArWKJFSPozuYsj2rLhAic5fPBHM=;
-        b=ROXXSFVzqe1Zz63dqIcfPgzxzvUEqLnmhfjU1XisX6pI7Fg9VI/iP2XZzbqWIwWtEC
-         G8B8CEQNitjRp2rdh5nA1ZI6wiqWGq9IR55uU/NhlYWarV7o9jTrCEPT4SyZekxbP0AA
-         MDLsuLv7VMHfAOZhFPXAszKJt0DwvQcgundVF4tnmUoBeI7+ivB9POtozCMHD+AG5oaB
-         mXDDzsB9OTthVc66TOozJn9yB/OCHE5L+s69esV5Vy+BpzWxLzvu3HQP2GjnbW5jLeBy
-         CjcyvOSQu5UaKlFm/hSV7NFtPOt0K0Npo+aCaeZaxKMEGrGZMNraTS3cgxL2TQizPqOS
-         CnZA==
+        bh=MTvbXjWSZdoTdxi/MGUg+5CYiWwb+h69AxhprDFl7dg=;
+        b=ji00btkdbQCHm8ePTKk8JGslms699uCMzw48PWG5K0BlNNTW1378zkcKX+Khyon9lJ
+         xBNpo9MT649Cnyx1brkYeh60sED0Skz3qFyJvHQ1SQDkE+fHGM15yNrR4m2a1FVOKCGT
+         5z+L3AchbHVT8aPDyRjmXo7T1bkJ4KmiNK+5u5/5xtFi0H4etJjqYPB79QKyMjbZDsFt
+         IHS+SOi6D17uqVo2x7Jds9WaMODbqbg0/JjbA/++GHp1MZwxUYw7bAWpeG8b+jje8pD0
+         NHOJv2yuftWUNPoqDY0lpyXWaQXo1D41hZNqOZCcXCKpqO4xEZlRrniNqKiP22Bb3t65
+         D4Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=VHNhyDjWR9A/L2KQArWKJFSPozuYsj2rLhAic5fPBHM=;
-        b=SzhiBSiGEh5S+UlURhlHHE1Gqi+luitb+0JHutdbiLPF95BXJYlJKbzvqjWK7DSpkU
-         d69OJ1UU4L9IkiMdy+qc1GzGjAoxPR5MftsV6hv/IhH0MBV3YDV3fEoSnWIlvJIiKT67
-         qxeO8uq90gemmwG5zxjpYHkDXQTWSkoyDvQsDfLaMEr/B11fO/m7LL/vM55lM5rH0QXF
-         A1cHMGSYurYKO80xXHIrrmrzmFyy9991f5/pXwsEjnOqlJt5sLaO6T8VTdlfPJ+XqEcO
-         sJObnSMtgGnMN3/FV0xzGyVjht2SS02aYwH7FqdOJeIPYCQcIEPqIRSSAchumk2tPIEJ
-         wb8w==
-X-Gm-Message-State: ACgBeo0cGVkHTKH94m2lCfftBXnIUFyPWAaI0r0vHXYchxy4kFxl3sc2
-        +ko69hvlREPqRCAu8Bj6esrKYA==
-X-Google-Smtp-Source: AA6agR7k195OyxE1PMCoZG/M/aQ6yVDYxWIX2vFnmcbu3QLh+nAhyFchz97evph2O/by9pUP40qmug==
-X-Received: by 2002:a2e:8081:0:b0:253:ce61:3c66 with SMTP id i1-20020a2e8081000000b00253ce613c66mr8237625ljg.98.1660129885304;
-        Wed, 10 Aug 2022 04:11:25 -0700 (PDT)
+        bh=MTvbXjWSZdoTdxi/MGUg+5CYiWwb+h69AxhprDFl7dg=;
+        b=RjP3UlZ5tePljPV9Nh5l3MBxSVqHbwogFYQN7GKzTkaxRl3rnN/IgesVfrrfpuqA9D
+         BKAsLSxS+gjq77Ks/OKf/24oiUV+kjzlGwITme9UiZKnvWihGrM6yz4BACwDRZlksLag
+         JHaI38gC986bL9CYAa1WtPJbByvYMn+Jf3JresPDdO7EPHkUb3l1jwnjENh9VwCvfhzJ
+         Kc9z45jopkGpHFZrrqgTVvqBDp/foGoXhevF6u38kTtjKPSXwHE5yWFho1R5GKDnWwMq
+         bRcx6c2kD+MbvT7BD0ZgyrAP8BBFxQl8hutKeGFJnHQaLvIBz74oaYW9zMYA+HrRESYR
+         IQjw==
+X-Gm-Message-State: ACgBeo0rDMyheW567UQznjG+bexiGDk04NlrBHmtIlDtqsedcy2m48Hr
+        KkSPZvyeFtH/CL1111qeWCDOpg==
+X-Google-Smtp-Source: AA6agR6sYbkUd4hpt0tN0uHYQXMQ6CcLADQReCb0ugSZqyXlxkc++xWQN0SSbi4NbLLIgDzkcupPRA==
+X-Received: by 2002:a2e:a58e:0:b0:25f:d8c5:3898 with SMTP id m14-20020a2ea58e000000b0025fd8c53898mr4614556ljp.302.1660129893525;
+        Wed, 10 Aug 2022 04:11:33 -0700 (PDT)
 Received: from localhost.localdomain ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id f1-20020a193801000000b0048b119dbb40sm306483lfa.74.2022.08.10.04.11.24
+        by smtp.gmail.com with ESMTPSA id z24-20020a196518000000b0048afbe9d0fasm308577lfb.45.2022.08.10.04.11.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 04:11:24 -0700 (PDT)
+        Wed, 10 Aug 2022 04:11:33 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
+To:     Qin Jian <qinjian@cqplus1.com>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] ARM: dts: armada-xp: align SPI node name with dtschema
-Date:   Wed, 10 Aug 2022 14:11:22 +0300
-Message-Id: <20220810111122.281184-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] ARM: dts: sunplus: sp7021: drop incorrect spi-max-frequency
+Date:   Wed, 10 Aug 2022 14:11:31 +0300
+Message-Id: <20220810111131.281262-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,26 +64,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic and DT schema expects certain pattern.
+spi-max-frequency is a property of a SPI slave device, not controller:
+
+  sunplus-sp7021-demo-v3.dtb: spi@f480: Unevaluated properties are not allowed ('spi-max-frequency' was unexpected)
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/sunplus-sp7021.dtsi | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts b/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts
-index 87dcb502f72d..0dad95ea26c2 100644
---- a/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts
-+++ b/arch/arm/boot/dts/armada-xp-lenovo-ix4-300d.dts
-@@ -164,7 +164,7 @@ scroll-button {
+diff --git a/arch/arm/boot/dts/sunplus-sp7021.dtsi b/arch/arm/boot/dts/sunplus-sp7021.dtsi
+index 7dc4ce3619c7..ae9bbe0320b8 100644
+--- a/arch/arm/boot/dts/sunplus-sp7021.dtsi
++++ b/arch/arm/boot/dts/sunplus-sp7021.dtsi
+@@ -211,7 +211,6 @@ spi_controller1: spi@f480 {
+ 			interrupt-names = "dma_w", "master_risc", "slave_risc";
+ 			clocks = <&clkc CLK_SPI_COMBO_1>;
+ 			resets = <&rstc RST_SPI_COMBO_1>;
+-			spi-max-frequency = <25000000>;
+ 			status = "disabled";
  		};
- 	};
  
--	spi3 {
-+	spi-3 {
- 		compatible = "spi-gpio";
- 		status = "okay";
- 		gpio-sck = <&gpio0 25 GPIO_ACTIVE_LOW>;
+@@ -225,7 +224,6 @@ spi_controller2: spi@f600 {
+ 			interrupt-names = "dma_w", "master_risc", "slave_risc";
+ 			clocks = <&clkc CLK_SPI_COMBO_2>;
+ 			resets = <&rstc RST_SPI_COMBO_2>;
+-			spi-max-frequency = <25000000>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -239,7 +237,6 @@ spi_controller3: spi@f780 {
+ 			interrupt-names = "dma_w", "master_risc", "slave_risc";
+ 			clocks = <&clkc CLK_SPI_COMBO_3>;
+ 			resets = <&rstc RST_SPI_COMBO_3>;
+-			spi-max-frequency = <25000000>;
+ 			status = "disabled";
+ 		};
+ 
 -- 
 2.34.1
 
