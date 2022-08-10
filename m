@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E432C19F2A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E29EC25B07
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233289AbiHJQDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
+        id S233223AbiHJQDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233125AbiHJQDq (ORCPT
+        with ESMTP id S232809AbiHJQDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:03:46 -0400
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AF865557;
-        Wed, 10 Aug 2022 09:03:45 -0700 (PDT)
-Received: by mail-io1-f41.google.com with SMTP id q124so12510996iod.3;
-        Wed, 10 Aug 2022 09:03:45 -0700 (PDT)
+        Wed, 10 Aug 2022 12:03:45 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1986A65655;
+        Wed, 10 Aug 2022 09:03:44 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id 68so5850154iou.2;
+        Wed, 10 Aug 2022 09:03:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=gUFodgoC2lqTFaNasV7YrZykU95cfxFWACtBt8544i0=;
-        b=lNPXpJjAlH+kfbNsc/LmCL00cz91ASc3DmizDNEC6o/JhnHemB29GwnpVDet95lYKM
-         Rrc/x/l0dwPR3Gw0cpR3HRzaCpcz2nIHLTT5UUZlhssMHyfCFfuQhYE0DjGRKGV9mf5H
-         QTIWe3v2OB+UWJ1F8fpvShOhX8F1Z4sq1aP1ixeIliPLKco4u2pafU/puIafL2DHiNeX
-         P4OAzOJ7cUHrZI0pOibtBxTTYITuZyI3uCYhC5MadDySMpgp77BvoN9tnarg9mDu5na7
-         yzNs7oLGke8ba52hIx4iXIlyJ3vgD/qcFxiQyurmakg189oZnpwi1Un9MKGVcaBxwe5B
-         6CMw==
-X-Gm-Message-State: ACgBeo1IcjUIqQg3/Jqtq5l9Ytr03IIJhD8NO8jTsSgO4oqA6xnOZ7Mg
-        pHNHP0N3MQREZo41lCTO4p863hXwug==
-X-Google-Smtp-Source: AA6agR4B7/p6u94ML83YbYJrjwN2UKytsOAzrt31dANpFxXzc/VXUvtvEbBrHLarP+5xG25DICyg+g==
-X-Received: by 2002:a05:6638:2504:b0:343:38c9:eb27 with SMTP id v4-20020a056638250400b0034338c9eb27mr2808124jat.92.1660147424916;
-        Wed, 10 Aug 2022 09:03:44 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=pLszvMp06j4ZdOd51Hbi3XTm/T7L8XdJjW4rKKC5yT0=;
+        b=FuHDwaIgZ55vVVz8ajVTNg4w61riGUCOZa+nwo+IAVNGEe55EjztDTrWWpFInKRnEX
+         QHaarp7ETsCqk38kzCwMyGJjCOAErIPPOMQzQdzN77fCW4jFGMSIGg04Bk+8Pv+NoIu8
+         9gSM4YMHfxo3pfSPQc/8+uF2R1e3lh2SDYt01BfWOp4fXPsd1Air1IQzSeKM534nkJ6q
+         8gMYVElW05OpvwDzrfzdpaPgmPx1DRv+EgEu0PNYbcvkC3U/MbxqWavQTW+FvLSIgvUh
+         h2DDmMgrT2UT8p/omzpgrqd5PD6HZLu0f/Pw7/Gpik8TwqMePf+QtL97ijkRO0VfsMLl
+         kzuQ==
+X-Gm-Message-State: ACgBeo2h/88fMxJWhyVfav23vMKkXdCFa/HyR5+OsaEnu68vGV53v6zo
+        K6RCb0edy6JWBf4wcUgQOA==
+X-Google-Smtp-Source: AA6agR4+T5TZB8tmai+ZHR92K3UgZWu/lvjnSFQjQi9/vetr7i8iQFHeQNJ/h7qEmSMf7JBs7XaLkg==
+X-Received: by 2002:a02:6d1f:0:b0:33f:8d28:4d6d with SMTP id m31-20020a026d1f000000b0033f8d284d6dmr13241554jac.16.1660147423297;
+        Wed, 10 Aug 2022 09:03:43 -0700 (PDT)
 Received: from xps15.herring.priv ([64.188.179.248])
-        by smtp.googlemail.com with ESMTPSA id a27-20020a02735b000000b00341a215d3cesm7617629jae.63.2022.08.10.09.03.43
+        by smtp.googlemail.com with ESMTPSA id a27-20020a02735b000000b00341a215d3cesm7617629jae.63.2022.08.10.09.03.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 09:03:44 -0700 (PDT)
+        Wed, 10 Aug 2022 09:03:43 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Thierry Reding <thierry.reding@gmail.com>,
@@ -44,41 +44,37 @@ To:     Linus Walleij <linus.walleij@linaro.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: display: arm,versatile-tft-panel: Drop erroneous properties in example
-Date:   Wed, 10 Aug 2022 10:03:40 -0600
-Message-Id: <20220810160341.51995-2-robh@kernel.org>
+Subject: [PATCH 0/2] Convert arm,versatile-sysreg to DT schema
+Date:   Wed, 10 Aug 2022 10:03:39 -0600
+Message-Id: <20220810160341.51995-1-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220810160341.51995-1-robh@kernel.org>
-References: <20220810160341.51995-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'arm,versatile-sysreg' node in the example should not have
-'#address-cells' and '#size-cells' properties as the child node doesn't
-have 'reg'.
+This short series converts the arm,versatile-sysreg binding to DT schema.
+The binding is already in use in examples which unsurprisingly needs a
+fix with the schema added.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../bindings/display/panel/arm,versatile-tft-panel.yaml        | 3 ---
- 1 file changed, 3 deletions(-)
+This is part of getting rid of the remaining ~40 cases of compatibles
+without a schema in the examples.
 
-diff --git a/Documentation/devicetree/bindings/display/panel/arm,versatile-tft-panel.yaml b/Documentation/devicetree/bindings/display/panel/arm,versatile-tft-panel.yaml
-index be69e0cc50fc..c9958f824d9a 100644
---- a/Documentation/devicetree/bindings/display/panel/arm,versatile-tft-panel.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/arm,versatile-tft-panel.yaml
-@@ -37,9 +37,6 @@ examples:
-         compatible = "arm,versatile-sysreg", "syscon", "simple-mfd";
-         reg = <0x00000 0x1000>;
- 
--        #address-cells = <1>;
--        #size-cells = <0>;
--
-         panel {
-             compatible = "arm,versatile-tft-panel";
- 
--- 
+Rob
+
+
+Rob Herring (2):
+  dt-bindings: display: arm,versatile-tft-panel: Drop erroneous
+    properties in example
+  dt-bindings: arm,versatile-sysreg: Convert to DT schema format
+
+ .../bindings/arm/arm,versatile-sysreg.yaml    | 35 +++++++++++++++++++
+ .../bindings/arm/versatile-sysreg.txt         | 10 ------
+ .../panel/arm,versatile-tft-panel.yaml        |  3 --
+ 3 files changed, 35 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,versatile-sysreg.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/versatile-sysreg.txt
+
+--
 2.34.1
-
