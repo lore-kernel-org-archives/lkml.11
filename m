@@ -2,132 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E07C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E73BC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232714AbiHJOmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 10:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        id S231311AbiHJOnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232664AbiHJOmB (ORCPT
+        with ESMTP id S232731AbiHJOmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 10:42:01 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B51751A01;
-        Wed, 10 Aug 2022 07:41:42 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id k26so28136289ejx.5;
-        Wed, 10 Aug 2022 07:41:42 -0700 (PDT)
+        Wed, 10 Aug 2022 10:42:47 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA566AA3F
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:42:23 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id p132so17901407oif.9
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:42:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=FikqBGBdu6x0dvHeaCyYGZeHuRdv4sBlsHEPXRgAZ58=;
-        b=ffdypMKK/ep4+DITQK84DLW7WEK36T/ksk5u0KwrFGTYvPS9eaMwVyx7laY9CkW858
-         R5DUAZJRBhoETpnMK9eX6PFWzAQPvwPkyJ5LJVkBNgkn9NyM4lnSQsJJ3YC+9OecsoZm
-         uvjQzxVarpotbURJ474oTqo2bUcnuY+RXRIiJWpQ3WExUouXiTc2GFED9wuk5FbmblRO
-         dQwBIA9d6vKAi76EJZDZ2XScvT9/VQxesGrwuUVf6krZSGDGI6HkyLT9ZCi94sZej/Nx
-         ijX+xe2MIR3IRShMCa5LboY98JDqqvUk/0xQ5dYsGTQGVaVsRVFEVM6al6DG63DSbgEd
-         zBXA==
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=DS6U6GvTmBDChfW+8rl7ucrMk19CxC9ovZCujy3CVBU=;
+        b=GsvTQFiB67QEe4TvXkSZJwvwNI/EwnaxKcQZInaGUlmxpZJ/eD+nHmdk+MHd3biIBA
+         e8fnDiF5yD4V9O1Cp/Cg+5d+JFH47op6s5zVTxwjiXghJFsjRKqDfS8kgcuX9VjYTETj
+         mZq/Q7TUiF7P2pQqUlX6H9aDfZGWPSUflpITw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=FikqBGBdu6x0dvHeaCyYGZeHuRdv4sBlsHEPXRgAZ58=;
-        b=o5pnLAh/qDhxA4ZawQvbpzhu30LVvaluRmeGzOvRNlUoBZMWVLBj2MZ1uqkUNrajkP
-         DezHmQ+nMKXx7zHSSkyl00zvtCc5BqigeoCqI0ZIwsMURUKb3DFglviushpa0cnIxtmd
-         VsHAyMvJ8FJwvcvcX4EbSaDHzo2KkDxXntz4fCEuRSjtKfjWglLzSQ36SSZ4gsYmTzpQ
-         HvdsRhpducn8O2NRyp7HiUjbZ9MkmAOVoGv5dUqlU8UhvEylugSbSBLpesjeYsxCaFVK
-         NuHYLPQ3SvfBBtD55r26fRe79zjZli2Vg0vtmxiE7OmZWoNCcKLlc7f6HpqHybmXMRkP
-         w20g==
-X-Gm-Message-State: ACgBeo2xYGup1GE/e5C7Tgh9zl5n+X+T5NX4QhXYuvi5t4gFVfGMKN1k
-        vpmlHKqs4GENATmTyC8rp4d4AyenBfk=
-X-Google-Smtp-Source: AA6agR4d7csoW30nuv2zRdV3XRrHGwArOWcLEHh4+2IyLT/pgV06qrIkqzxIZr34Q4QYFBzPrijgJw==
-X-Received: by 2002:a17:907:7284:b0:731:82a3:16e3 with SMTP id dt4-20020a170907728400b0073182a316e3mr7710834ejc.30.1660142500924;
-        Wed, 10 Aug 2022 07:41:40 -0700 (PDT)
-Received: from xws.localdomain ([37.120.217.162])
-        by smtp.gmail.com with ESMTPSA id d25-20020aa7d699000000b0043cedad30a5sm7778049edr.21.2022.08.10.07.41.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 07:41:40 -0700 (PDT)
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: [PATCH 1/3] platform/surface: aggregator_registry: Rename HID device nodes based on their function
-Date:   Wed, 10 Aug 2022 16:41:15 +0200
-Message-Id: <20220810144117.493710-2-luzmaximilian@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810144117.493710-1-luzmaximilian@gmail.com>
-References: <20220810144117.493710-1-luzmaximilian@gmail.com>
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=DS6U6GvTmBDChfW+8rl7ucrMk19CxC9ovZCujy3CVBU=;
+        b=XwhXWPH/1Iybf+c6zW+6W7ZNHtT5WOCFzEvHnRQsHLuV0Yh6po2DRQ6OW8VbdCJqZ2
+         v74l9LZ16qgylgobHrMj+YoUBUzO6JruvhR1cXKhaXgPvO3NJZh+BDQDsM6oS8oHt+gK
+         baMsxphHkqhn2WOJVWaDMqjCOC5Qut4jw++NcgS4d3ItdZxxsX0MC7SwDJdYiXBc5rUP
+         XwrzScxEcLPwjFXGHANBwjGvRhCS0DdbHqgnshxCB94mWTwaxAorh3Ic2DusVHnmExgD
+         ncwpcvWYkMV9IQMqpFshbZdhajr6FFrjWLlJyBsnEmrdUL6ISD7RXn5mqg91ngeCP15j
+         sKvw==
+X-Gm-Message-State: ACgBeo3wrzoF2YeH6t36FPHWp/ZJEXrWPYK5zekl1NYiFEm+FrF7goXu
+        UQtJxO9nOos0ZC/dQJdoA44KRg==
+X-Google-Smtp-Source: AA6agR6kw8zt7AhLPLqCw/JHTPc0z+2M7xtEdgRXOyU+fxyBSA3laz4neFxQX7esaeISXzyk1VhiRQ==
+X-Received: by 2002:aca:1a05:0:b0:33b:149f:c0e5 with SMTP id a5-20020aca1a05000000b0033b149fc0e5mr1611700oia.125.1660142543091;
+        Wed, 10 Aug 2022 07:42:23 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id r26-20020a4aea9a000000b004354a4412edsm678472ooh.29.2022.08.10.07.42.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 07:42:22 -0700 (PDT)
+Subject: Re: [PATCH 5.10 00/23] 5.10.136-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220809175512.853274191@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <d11c2552-3db6-e82c-e759-d1fe8c17c7dc@linuxfoundation.org>
+Date:   Wed, 10 Aug 2022 08:42:21 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename HID device nodes based on their function. In particular, these
-are nodes for firmware updates via the CFU mechanism (component firmware
-update), HID based sensors, and a USB-C UCSI client.
+On 8/9/22 12:00 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.136 release.
+> There are 23 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.136-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
----
- .../surface/surface_aggregator_registry.c      | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+Compiled and booted on my test system. No dmesg regressions.
 
-diff --git a/drivers/platform/surface/surface_aggregator_registry.c b/drivers/platform/surface/surface_aggregator_registry.c
-index d5655f6a4a41..c1ee8af7996d 100644
---- a/drivers/platform/surface/surface_aggregator_registry.c
-+++ b/drivers/platform/surface/surface_aggregator_registry.c
-@@ -104,14 +104,14 @@ static const struct software_node ssam_node_hid_tid1_touchpad = {
- 	.parent = &ssam_node_root,
- };
- 
--/* HID device instance 6 (TID1, unknown HID device). */
--static const struct software_node ssam_node_hid_tid1_iid6 = {
-+/* HID device instance 6 (TID1, HID sensor collection). */
-+static const struct software_node ssam_node_hid_tid1_sensors = {
- 	.name = "ssam:01:15:01:06:00",
- 	.parent = &ssam_node_root,
- };
- 
--/* HID device instance 7 (TID1, unknown HID device). */
--static const struct software_node ssam_node_hid_tid1_iid7 = {
-+/* HID device instance 7 (TID1, UCM UCSI HID client). */
-+static const struct software_node ssam_node_hid_tid1_ucm_ucsi = {
- 	.name = "ssam:01:15:01:07:00",
- 	.parent = &ssam_node_root,
- };
-@@ -182,8 +182,8 @@ static const struct software_node ssam_node_hid_kip_touchpad = {
- 	.parent = &ssam_node_hub_kip,
- };
- 
--/* HID device instance 5 (KIP hub, unknown HID device). */
--static const struct software_node ssam_node_hid_kip_iid5 = {
-+/* HID device instance 5 (KIP hub, type-cover firmware update). */
-+static const struct software_node ssam_node_hid_kip_fwupd = {
- 	.name = "ssam:01:15:02:05:00",
- 	.parent = &ssam_node_hub_kip,
- };
-@@ -244,8 +244,8 @@ static const struct software_node *ssam_node_group_sls[] = {
- 	&ssam_node_hid_tid1_keyboard,
- 	&ssam_node_hid_tid1_penstash,
- 	&ssam_node_hid_tid1_touchpad,
--	&ssam_node_hid_tid1_iid6,
--	&ssam_node_hid_tid1_iid7,
-+	&ssam_node_hid_tid1_sensors,
-+	&ssam_node_hid_tid1_ucm_ucsi,
- 	&ssam_node_hid_tid1_sysctrl,
- 	NULL,
- };
-@@ -278,7 +278,7 @@ static const struct software_node *ssam_node_group_sp8[] = {
- 	&ssam_node_hid_kip_keyboard,
- 	&ssam_node_hid_kip_penstash,
- 	&ssam_node_hid_kip_touchpad,
--	&ssam_node_hid_kip_iid5,
-+	&ssam_node_hid_kip_fwupd,
- 	NULL,
- };
- 
--- 
-2.37.1
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
+thanks,
+-- Shuah
