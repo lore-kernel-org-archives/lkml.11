@@ -2,159 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E87C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27010C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233339AbiHJRIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 13:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        id S233321AbiHJRKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 13:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233090AbiHJRI2 (ORCPT
+        with ESMTP id S233118AbiHJRKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 13:08:28 -0400
-Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA2F6D555
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1660151307; x=1691687307;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HLAG2MAdQMkynHzaOpUgDbLqFXb4qGmeTI64Ae+vFXc=;
-  b=EQwXjZlbfE9l0BhHfl36Q2UNYkOOJl/jfl+1M3Exhu9tcuihAwa2xzV1
-   opBghp3sI183B7idOPrTzjxfhxcCLrTqZ7XJgRJJpXIdPDuAexjCUUDWE
-   KRX3z3YNTktw4eJXOkOfOdAAGHGaDvgXj/iS0axn0E2Rke7ydQaZihU9K
-   XJOc8LD1rSob5cLTbg01/4QE3Jeoxtavm4XEJAPQpwsZUbNg6oO3Rvswm
-   Qks7iauGArF+y0/jRafMNvMzTxO37iA4Eqm76oTKYCx0JUFg6FYsxDip/
-   7FbtCR55YRnyX4RkuXRnhTZGu2Im8t+Vyt8M0HnhI0bpFA/rnu6mNeZQD
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,227,1654531200"; 
-   d="scan'208";a="312648478"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 11 Aug 2022 01:05:04 +0800
-IronPort-SDR: EJzeyO2Rzo0xerI4eXBQT9wMUsb7e0JlUXxXxdyIiRIaVJA0jikkYfvEIRdtbZvcDQZU65LSo5
- 3/v7+9NT5WP5y88utsmNsZ6Y497hSTrAaSnTnhpurqvzD66eZvdWFDqlRi7s23JhS3SnMo5q8m
- nCxTA/D4+u51lq9sAiEV/XIcL+fi1Wl/vjC97dcN+03ObxCmtk+MNpFdpF8OaNhkxVRzEYy6P/
- A0No4ZfYMm4obwDVSRZ4M5LVKD5pe7tMkJo2RaAzryCB03VcCoTcH5ksvv/i6UYsPtyg+PIAHl
- A7pWeVLX3+2jwzDM5YqawQzc
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 10 Aug 2022 09:20:34 -0700
-IronPort-SDR: RizA7CHEPqooW+aPZbtiP767KSk6GZb2F5kw1Zyy2N7Q0RSMjuv1thSEcZpj5KCJ6kBj1wRgdm
- BoDFBmM8SbJlnfxOc8Iw72MocYJcZCe2vXS9jcXou4J+deECxW3Hou/tHzqtqpDkYVFJ5Qdvz/
- KY44cqa+jmCDRdwF/ryFpPuomn0JfVAxn587UJdG6qx2pkwpchZvGRXiQDcCd3U/NUKKbdLFIh
- 6XBRuQDhpt/UUyKIzWitn8izOJFw4GijnInyfndYbj92qu+5ak4kOe7kVZPHk7ruiTqF0t//Gd
- vnk=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 10 Aug 2022 10:04:59 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4M2xBd6MBCz1Rwqy
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:04:57 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1660151096; x=1662743097; bh=HLAG2MAdQMkynHzaOpUgDbLqFXb4qGmeTI6
-        4Ae+vFXc=; b=TdfgDS5faJoHWDTYREJ381G9CP4HfuOIRXtpaJJLW4wBI1b/SHP
-        AAkVbsUoTm+239ekFaNGKrcFMFe97CSgbrthryJciRMN50+Hj71pirupyCdhqi6T
-        nVjIHr240xCCGgE7SICObVKAbOpVhYujaiuVVwgYovQXuEeGbelXwwXLVAvBIp8G
-        Y4ubnW7OIfiPkDXk7oDgjAqg3dlQDL2sDsz9Ur2ZXZZM5JcQtGlXBakRDQavd7i/
-        D06VIMSlVdwwuwlNK5Pfp2LCEkLucBn9DWwygSFnmvhJ6s2UUTlJF/BlKW1FQ4cS
-        RW73Ij0jIvGIaehRGYHzOcu12QVeBBmbZxw==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Bbd-GxJ61qon for <linux-kernel@vger.kernel.org>;
-        Wed, 10 Aug 2022 10:04:56 -0700 (PDT)
-Received: from [10.111.68.99] (c02drav6md6t.sdcorp.global.sandisk.com [10.111.68.99])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4M2xBb523Qz1RtVk;
-        Wed, 10 Aug 2022 10:04:55 -0700 (PDT)
-Message-ID: <89327143-48b1-297a-bf16-1ea7a2128595@opensource.wdc.com>
-Date:   Wed, 10 Aug 2022 10:04:55 -0700
+        Wed, 10 Aug 2022 13:10:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6F5078BFE
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660151398;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/nqhyggpe6XCtIwWAg9ZL+8LA2Yq47qLEz8joLIyWGk=;
+        b=AyNwEjpKyVHt7V+eoG/7x5gpNtK77Bo6N5mn4ppkj8o1Z0eiXAwhOSftccQc7oJ9L9UJn8
+        TtCFkUBjdVgwjrbvEb+OADmxU2hRd+tncHG03u3rKW1Orfagq11ebnve1oz8023RCGlDws
+        QLCB4ZD8VlRuH3ye1JneTSFqbNBKnJA=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-550-jrur-WIwP_qk1fAPDTjEuA-1; Wed, 10 Aug 2022 13:09:57 -0400
+X-MC-Unique: jrur-WIwP_qk1fAPDTjEuA-1
+Received: by mail-il1-f197.google.com with SMTP id o9-20020a056e0214c900b002dc29c288bfso10967376ilk.3
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:09:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=/nqhyggpe6XCtIwWAg9ZL+8LA2Yq47qLEz8joLIyWGk=;
+        b=MbbAAw4jreKaUJESXZmHS1aGaHXGQ9A/dS45ZYLFX9I+1wgfnlkrmWkG9/9jw6PPft
+         NTsCwEGDmeJGHxfENW5XvaJNysQ9QxKhxEyURLNJnsAaW/KbgJoo+mnqcdhBhNcPVo/E
+         PVs7YRmoQlHAahtgE3W+iA/O3+rMmVzsBEm17fdtfflC9Z0J3BOtyKc6uMqb8arn/tif
+         5SAZeDildKil+HHjUAlWWHppFa6fLEvXxm1ghwK1LkyCpcHHLqhPZPhcCzHtvJFNjoro
+         Gmw1ZsgYq3EROM1xO48sLqhAY5EapugqWiLd6hDTP14QNxyGnXOxudHO0kidRgIUdujt
+         KxKQ==
+X-Gm-Message-State: ACgBeo2B8EeNul41WNc4H3ie0pRnJQw3REk1pmBp8DUAJ9mRYK73Vbi5
+        tZSgLoYVhDbpYpLKwJdlKKSzMKHh/VxxZKInRsaXyJthyc8TYR0PRanGT09RemC7V6h0v0Eem5p
+        LfahzzWn+E5aS//1X9tisH5gQ
+X-Received: by 2002:a5d:87d7:0:b0:680:651d:fd5a with SMTP id q23-20020a5d87d7000000b00680651dfd5amr12129531ios.145.1660151396671;
+        Wed, 10 Aug 2022 10:09:56 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR79pXZsjRY8UcBeEs22hOBGTnRl2wWH/Q7ZJLepDiKnp6XFZcVzTizVMrYu/sfYtIxflRpxlA==
+X-Received: by 2002:a5d:87d7:0:b0:680:651d:fd5a with SMTP id q23-20020a5d87d7000000b00680651dfd5amr12129523ios.145.1660151396413;
+        Wed, 10 Aug 2022 10:09:56 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id z26-20020a056638215a00b00342847fc497sm7586643jaj.8.2022.08.10.10.09.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 10:09:56 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 13:09:54 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     "Huang, Ying" <ying.huang@intel.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andi Kleen <andi.kleen@intel.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+Subject: Re: [PATCH v3 7/7] mm/swap: Cache swap migration A/D bits support
+Message-ID: <YvPmYnxmHCxNvPtH@xz-m1.local>
+References: <20220809220100.20033-1-peterx@redhat.com>
+ <20220809220100.20033-8-peterx@redhat.com>
+ <87tu6keh8r.fsf@yhuang6-desk2.ccr.corp.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH v9 04/13] nvmet: Allow ZNS target to support
- non-power_of_2 zone sizes
-Content-Language: en-US
-To:     Pankaj Raghav <p.raghav@samsung.com>, Johannes.Thumshirn@wdc.com,
-        snitzer@kernel.org, axboe@kernel.dk, agk@redhat.com, hch@lst.de
-Cc:     dm-devel@redhat.com, matias.bjorling@wdc.com, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, pankydev8@gmail.com,
-        jaegeuk@kernel.org, hare@suse.de, linux-block@vger.kernel.org,
-        linux-nvme@lists.infradead.org, bvanassche@acm.org,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20220803094801.177490-1-p.raghav@samsung.com>
- <CGME20220803094806eucas1p24e1fd0f3a595e050d79c4315559d97ae@eucas1p2.samsung.com>
- <20220803094801.177490-5-p.raghav@samsung.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220803094801.177490-5-p.raghav@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87tu6keh8r.fsf@yhuang6-desk2.ccr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/08/03 2:47, Pankaj Raghav wrote:
-> A generic bdev_zone_no() helper is added to calculate zone number for a
-> given sector in a block device. This helper internally uses disk_zone_no()
-> to find the zone number.
+On Wed, Aug 10, 2022 at 02:37:40PM +0800, Huang, Ying wrote:
+> Peter Xu <peterx@redhat.com> writes:
 > 
-> Use the helper bdev_zone_no() to calculate nr of zones. This let's us
-> make modifications to the math if needed in one place and adds now
-> support for zoned devices with non po2 zone size.
+> > Introduce a variable swap_migration_ad_supported to cache whether the arch
+> > supports swap migration A/D bits.
+> >
+> > Here one thing to mention is that SWP_MIG_TOTAL_BITS will internally
+> > reference the other macro MAX_PHYSMEM_BITS, which is a function call on
+> > x86 (constant on all the rest of archs).
+> >
+> > It's safe to reference it in swapfile_init() because when reaching here
+> > we're already during initcalls level 4 so we must have initialized 5-level
+> > pgtable for x86_64 (right after early_identify_cpu() finishes).
+> >
+> > - start_kernel
+> >   - setup_arch
+> >     - early_cpu_init
+> >       - get_cpu_cap --> fetch from CPUID (including X86_FEATURE_LA57)
+> >       - early_identify_cpu --> clear X86_FEATURE_LA57 (if early lvl5 not enabled (USE_EARLY_PGTABLE_L5))
+> >   - arch_call_rest_init
+> >     - rest_init
+> >       - kernel_init
+> >         - kernel_init_freeable
+> >           - do_basic_setup
+> >             - do_initcalls --> calls swapfile_init() (initcall level 4)
+> >
+> > This should slightly speed up the migration swap entry handlings.
+> >
+> > Signed-off-by: Peter Xu <peterx@redhat.com>
+> > ---
+> >  include/linux/swapfile.h | 1 +
+> >  include/linux/swapops.h  | 7 +------
+> >  mm/swapfile.c            | 8 ++++++++
+> >  3 files changed, 10 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/include/linux/swapfile.h b/include/linux/swapfile.h
+> > index 54078542134c..87ec5e2cdb02 100644
+> > --- a/include/linux/swapfile.h
+> > +++ b/include/linux/swapfile.h
+> > @@ -9,5 +9,6 @@
+> >  extern struct swap_info_struct *swap_info[];
+> >  extern unsigned long generic_max_swapfile_size(void);
+> >  extern unsigned long max_swapfile_size(void);
+> > +extern bool swap_migration_ad_supported;
+> >  
+> >  #endif /* _LINUX_SWAPFILE_H */
+> > diff --git a/include/linux/swapops.h b/include/linux/swapops.h
+> > index 0e9579b90659..e6afc77c51ad 100644
+> > --- a/include/linux/swapops.h
+> > +++ b/include/linux/swapops.h
+> > @@ -301,13 +301,8 @@ static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
+> >   */
+> >  static inline bool migration_entry_supports_ad(void)
+> >  {
+> > -	/*
+> > -	 * max_swapfile_size() returns the max supported swp-offset plus 1.
+> > -	 * We can support the migration A/D bits iff the pfn swap entry has
+> > -	 * the offset large enough to cover all of them (PFN, A & D bits).
+> > -	 */
+> >  #ifdef CONFIG_SWAP
+> > -	return max_swapfile_size() >= (1UL << SWP_MIG_TOTAL_BITS);
+> > +	return swap_migration_ad_supported;
+> >  #else  /* CONFIG_SWAP */
+> >  	return false;
+> >  #endif	/* CONFIG_SWAP */
+> > diff --git a/mm/swapfile.c b/mm/swapfile.c
+> > index 794fa37bd0c3..c49cf25f0d08 100644
+> > --- a/mm/swapfile.c
+> > +++ b/mm/swapfile.c
+> > @@ -64,6 +64,9 @@ EXPORT_SYMBOL_GPL(nr_swap_pages);
+> >  long total_swap_pages;
+> >  static int least_priority = -1;
+> >  static unsigned long swapfile_maximum_size;
+> > +#ifdef CONFIG_MIGRATION
+> > +bool swap_migration_ad_supported;
+> > +#endif	/* CONFIG_MIGRATION */
+> >  
+> >  static const char Bad_file[] = "Bad swap file entry ";
+> >  static const char Unused_file[] = "Unused swap file entry ";
+> > @@ -3685,6 +3688,11 @@ static int __init swapfile_init(void)
+> >  
+> >  	swapfile_maximum_size = arch_max_swapfile_size();
+> >  
+> > +#ifdef CONFIG_MIGRATION
+> > +	if (swapfile_maximum_size >= (1UL << SWP_MIG_TOTAL_BITS))
+> > +		swap_migration_ad_supported = true;
+> > +#endif	/* CONFIG_MIGRATION */
+> > +
+> >  	return 0;
+> >  }
+> >  subsys_initcall(swapfile_init);
 > 
-> Reviewed by: Adam Manzanares <a.manzanares@samsung.com>
-> Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-> Reviewed-by: Hannes Reinecke <hare@suse.de>
-> Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-> ---
->  drivers/nvme/target/zns.c | 3 +--
->  include/linux/blkdev.h    | 5 +++++
->  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/nvme/target/zns.c b/drivers/nvme/target/zns.c
-> index c7ef69f29fe4..662f1a92f39b 100644
-> --- a/drivers/nvme/target/zns.c
-> +++ b/drivers/nvme/target/zns.c
-> @@ -241,8 +241,7 @@ static unsigned long nvmet_req_nr_zones_from_slba(struct nvmet_req *req)
->  {
->  	unsigned int sect = nvmet_lba_to_sect(req->ns, req->cmd->zmr.slba);
->  
-> -	return bdev_nr_zones(req->ns->bdev) -
-> -		(sect >> ilog2(bdev_zone_sectors(req->ns->bdev)));
-> +	return bdev_nr_zones(req->ns->bdev) - bdev_zone_no(req->ns->bdev, sect);
->  }
->  
->  static unsigned long get_nr_zones_from_buf(struct nvmet_req *req, u32 bufsize)
-> diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-> index 5aa15172299d..ead848a15946 100644
-> --- a/include/linux/blkdev.h
-> +++ b/include/linux/blkdev.h
-> @@ -1345,6 +1345,11 @@ static inline enum blk_zoned_model bdev_zoned_model(struct block_device *bdev)
->  	return BLK_ZONED_NONE;
->  }
->  
-> +static inline unsigned int bdev_zone_no(struct block_device *bdev, sector_t sec)
-> +{
-> +	return disk_zone_no(bdev->bd_disk, sec);
-> +}
-> +
->  static inline int queue_dma_alignment(const struct request_queue *q)
->  {
->  	return q ? q->dma_alignment : 511;
+> I don't think it's necessary to add a variable for such a simple
+> function and it's not a super hot path.  But I don't have strong
+> opinions here.
 
-I know that it is generally better to introduce a new helper together with its
-user, but in this case, these 2 changes belong to different subsystems. So I
-think it really may be better to have 2 patches here. Jens can decide about this
-though.
+Logically referencing SWP_MIG_TOTAL_BITS needs to go check
+MAX_PHYSMEM_BITS, which should further go with:
+
+# define MAX_PHYSMEM_BITS	(pgtable_l5_enabled() ? 52 : 46)
+
+Then since swapfile.c doesn't have USE_EARLY_PGTABLE_L5 defined..
+
+#define pgtable_l5_enabled() cpu_feature_enabled(X86_FEATURE_LA57)
+
+Then,
+
+#define cpu_feature_enabled(bit)	\
+	(__builtin_constant_p(bit) && DISABLED_MASK_BIT_SET(bit) ? 0 : static_cpu_has(bit))
+
+I think LA57 shouldn't be in DISABLED_MASK_BIT_SET() at all, in our case
+the relevant disable mask is:
+
+#define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP| \
+			 DISABLE_ENQCMD)
+
+Here we should have:
+
+#ifdef CONFIG_X86_5LEVEL
+# define DISABLE_LA57	0
+#else
+# define DISABLE_LA57	(1<<(X86_FEATURE_LA57 & 31))
+#endif
+
+So DISABLE_LA57 should be 0 when 5level enabled (true in my case).  Then we
+really should land at static_cpu_has().
+
+I checked up the code generated and surprisingly it's fairly fast indeed:
+
+   (after fetching swapfile_maximum_size() and put into %rax, I'll change
+    that into a variable soon..)
+   0xffffffff83932e41 <+185>:   mov    $0x1,%edx
+   0xffffffff83932e46 <+190>:   shl    $0x24,%rdx
+   0xffffffff83932e4a <+194>:   xor    %r8d,%r8d
+   0xffffffff83932e4d <+197>:   cmp    %rdx,%rax
+   0xffffffff83932e50 <+200>:   jb     0xffffffff83932e59 <swapfile_init+209>
+   0xffffffff83932e52 <+202>:   movb   $0x1,0xeab897(%rip)        # 0xffffffff847de6f0 <swap_migration_ad_supported>
+   0xffffffff83932e59 <+209>:   mov    %r8d,%eax
+
+Obviously on my testing host SWP_MIG_TOTAL_BITS is directly set as $0x24
+(which reflects a 4-level pgtable) but frankly I cannot tell how it did
+that without checking boot cpu x86_capabilities flags..  I'm pretty sure my
+kernel config has CONFIG_X86_5LEVEL=y.
+
+It'll be great if anyone already notices why it can be optimized into a
+constant, but even if so I'm not confident that'll be a constant for all
+the hosts and whether static_cpu_has() will still consume some insns.
+
+Since the change is fairly simple after previous patch, I think it'll be
+nice to keep it too.
+
+Thanks,
 
 -- 
-Damien Le Moal
-Western Digital Research
+Peter Xu
+
