@@ -2,175 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCE8C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165C4C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232457AbiHJQKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
+        id S233354AbiHJQK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbiHJQKI (ORCPT
+        with ESMTP id S233341AbiHJQKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:10:08 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E312D7A527;
-        Wed, 10 Aug 2022 09:10:06 -0700 (PDT)
-Received: from dev010.ch-qa.sw.ru ([172.29.1.15])
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1oLoF9-00F6Pf-It;
-        Wed, 10 Aug 2022 18:08:38 +0200
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-kernel@vger.kernel.org, "Denis V . Lunev" <den@openvz.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>,
-        kernel@openvz.org, devel@openvz.org
-Subject: [PATCH v2 0/2] neighbour: fix possible DoS due to net iface start/stop loop
-Date:   Wed, 10 Aug 2022 19:08:38 +0300
-Message-Id: <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
-References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+        Wed, 10 Aug 2022 12:10:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74A8B7C745
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660147807;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EKo8MVKlyw+SXHb20Eh7M8mnIDKk4tia9D6xw3EgvBA=;
+        b=MaoFxXwKHVOMv1/3VVUFC875hs4K8RNeextOZSfUUxD8tIJX1IWFBuRTki8kzdADkXs1LF
+        cb6CcynKaz9SFFgcsnw7DCCDmtyzybmv+Hr/bTnmwvTIQgsv3jxk2AwazKufm5X4MGVdWe
+        q5hZ0Uw8WYtOhnRZIH+jJ/hSOroX+jM=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-465-aCbHZpyhMoKmsGvqUbBrkw-1; Wed, 10 Aug 2022 12:10:05 -0400
+X-MC-Unique: aCbHZpyhMoKmsGvqUbBrkw-1
+Received: by mail-pl1-f197.google.com with SMTP id q11-20020a170902dacb00b0016efd6984c3so10090475plx.17
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:10:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=EKo8MVKlyw+SXHb20Eh7M8mnIDKk4tia9D6xw3EgvBA=;
+        b=azaD6xlbKtjc2UKuzlrC6SAhhHBZIoCpXOgHTNxMfV0g8CWarsBqXiqMRt2pgXvcOQ
+         0/Sa9IIkoqgkymKjc5HZ0rDKY6neAzAYaxjC732e7G3si5ehjN8wwWHje4XdknRfe0dH
+         jOafL4N7w4MKLjP+k4to5a8vL4CcmjoODEIhu9/LyE6Y6fTT3ZD59GP5+660PRImrL2f
+         fiTVo42ObGiqhm9muWVR0mt3JpIQOdd+AVh0rqs2IQHUlq34WCw25nFisWWOw3lUKGAy
+         St079XlT2bGywGIB8zaVNxaZJ/m5a0V1bkS+JCG8enSzTjwP/iUoDWUGlsQzkKnGfQZw
+         XU5A==
+X-Gm-Message-State: ACgBeo1/SVlzpl1rL/o2NcO3ed92Cf18EGc/tN4IujnjfiisKfUNrd58
+        S4QLfxPlGVhnpLIWhGftnXmhrWedbPQh8ie9H5ed6KEy/KqEkOgm2eXwhFKleL2EFaom4d+Radb
+        0V/QUAhN3fVie3yk7JpTINYvs
+X-Received: by 2002:a17:90a:c205:b0:1f5:1041:a4ff with SMTP id e5-20020a17090ac20500b001f51041a4ffmr4421859pjt.14.1660147804219;
+        Wed, 10 Aug 2022 09:10:04 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5GLuV2/hBEjYTz01Fw2asicci9chTvjWSKIlU1dYjF3QgCwW0tiO66AT8MrmKNBgHK7p2k8A==
+X-Received: by 2002:a17:90a:c205:b0:1f5:1041:a4ff with SMTP id e5-20020a17090ac20500b001f51041a4ffmr4421830pjt.14.1660147803925;
+        Wed, 10 Aug 2022 09:10:03 -0700 (PDT)
+Received: from xps13.. ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
+        by smtp.gmail.com with ESMTPSA id n11-20020a17090a928b00b001ef8780f873sm1810449pjo.39.2022.08.10.09.10.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 09:10:03 -0700 (PDT)
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, axboe@kernel.dk
+Cc:     pbonzini@redhat.com, stefanha@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        suwan.kim027@gmail.com, Shigeru Yoshida <syoshida@redhat.com>
+Subject: [PATCH v2] virtio-blk: Avoid use-after-free on suspend/resume
+Date:   Thu, 11 Aug 2022 01:09:48 +0900
+Message-Id: <20220810160948.959781-1-syoshida@redhat.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear friends,
+hctx->user_data is set to vq in virtblk_init_hctx().  However, vq is
+freed on suspend and reallocated on resume.  So, hctx->user_data is
+invalid after resume, and it will cause use-after-free accessing which
+will result in the kernel crash something like below:
 
-Recently one of OpenVZ users reported that they have issues with network
-availability of some containers. It was discovered that the reason is absence
-of ARP replies from the Host Node on the requests about container IPs.
+[   22.428391] Call Trace:
+[   22.428899]  <TASK>
+[   22.429339]  virtqueue_add_split+0x3eb/0x620
+[   22.430035]  ? __blk_mq_alloc_requests+0x17f/0x2d0
+[   22.430789]  ? kvm_clock_get_cycles+0x14/0x30
+[   22.431496]  virtqueue_add_sgs+0xad/0xd0
+[   22.432108]  virtblk_add_req+0xe8/0x150
+[   22.432692]  virtio_queue_rqs+0xeb/0x210
+[   22.433330]  blk_mq_flush_plug_list+0x1b8/0x280
+[   22.434059]  __blk_flush_plug+0xe1/0x140
+[   22.434853]  blk_finish_plug+0x20/0x40
+[   22.435512]  read_pages+0x20a/0x2e0
+[   22.436063]  ? folio_add_lru+0x62/0xa0
+[   22.436652]  page_cache_ra_unbounded+0x112/0x160
+[   22.437365]  filemap_get_pages+0xe1/0x5b0
+[   22.437964]  ? context_to_sid+0x70/0x100
+[   22.438580]  ? sidtab_context_to_sid+0x32/0x400
+[   22.439979]  filemap_read+0xcd/0x3d0
+[   22.440917]  xfs_file_buffered_read+0x4a/0xc0
+[   22.441984]  xfs_file_read_iter+0x65/0xd0
+[   22.442970]  __kernel_read+0x160/0x2e0
+[   22.443921]  bprm_execve+0x21b/0x640
+[   22.444809]  do_execveat_common.isra.0+0x1a8/0x220
+[   22.446008]  __x64_sys_execve+0x2d/0x40
+[   22.446920]  do_syscall_64+0x37/0x90
+[   22.447773]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Of course, we started from tcpdump analysis and noticed that ARP requests
-successfuly comes to the problematic node external interface. So, something
-was wrong from the kernel side.
+This patch fixes this issue by getting vq from vblk, and removes
+virtblk_init_hctx().
 
-I've played a lot with arping and perf in attempts to understand what's
-happening. And the key observation was that we experiencing issues only
-with ARP requests with broadcast source ip (skb->pkt_type == PACKET_BROADCAST).
-But for packets skb->pkt_type == PACKET_HOST everything works flawlessly.
+Fixes: 4e0400525691 ("virtio-blk: support polling I/O")
+Cc: "Suwan Kim" <suwan.kim027@gmail.com>
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+---
+ drivers/block/virtio_blk.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
-Let me show a small piece of code:
-
-static int arp_process(struct sock *sk, struct sk_buff *skb)
-...
-				if (NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED ||
-				    skb->pkt_type == PACKET_HOST ||
-				    NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY) == 0) { // reply instantly
-					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
-						     sip, dev, tip, sha,
-						     dev->dev_addr, sha,
-						     reply_dst);
-				} else {
-					pneigh_enqueue(&arp_tbl,                     // reply with delay
-						       in_dev->arp_parms, skb);
-					goto out_free_dst;
-				}
-
-The problem was that for PACKET_BROADCAST packets we delaying replies and use pneigh_enqueue() function.
-For some reason, queued packets were lost almost all the time! The reason for such behaviour is pneigh_queue_purge()
-function which cleanups all the queue, and this function called everytime once some network device in the system
-gets link down.
-
-neigh_ifdown -> pneigh_queue_purge
-
-Now imagine that we have a node with 500+ containers with microservices. And some of that microservices are buggy
-and always restarting... in this case, pneigh_queue_purge function will be called very frequently.
-
-This problem is reproducible only with so-called "host routed" setup. The classical scheme bridge + veth
-is not affected.
-
-Minimal reproducer
-
-Suppose that we have a network 172.29.1.1/16 brd 172.29.255.255
-and we have free-to-use IP, let it be 172.29.128.3
-
-1. Network configuration. I showing the minimal configuration, it makes no sense
-as we have both veth devices stay at the same net namespace, but for demonstation and simplicity sake it's okay.
-
-ip l a veth31427 type veth peer name veth314271
-ip l s veth31427 up
-ip l s veth314271 up
-
-# setup static arp entry and publish it
-arp -Ds -i br0 172.29.128.3 veth31427 pub
-# setup static route for this address
-route add 172.29.128.3/32 dev veth31427
-
-2. "attacker" side (kubernetes pod with buggy microservice :) )
-
-unshare -n
-ip l a type veth
-ip l s veth0 up
-ip l s veth1 up
-for i in {1..100000}; do ip link set veth0 down; sleep 0.01; ip link set veth0 up; done
-
-This will totaly block ARP replies for 172.29.128.3 address. Just try
-# arping -I eth0 172.29.128.3 -c 4
-
-Our proposal is simple:
-1. Let's cleanup queue partially. Remove only skb's that related to the net namespace
-of the adapter which link is down.
-
-2. Let's account proxy_queue limit properly per-device. Current limitation looks
-not fully correct because we comparing per-device configurable limit with the
-"global" qlen of proxy_queue.
-
-Thanks,
-Alex
-
-v2:
-	- only ("neigh: fix possible DoS due to net iface start/stop") is changed
-		do del_timer_sync() if queue is empty after pneigh_queue_purge()
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Denis V. Lunev <den@openvz.org>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Cc: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Cc: kernel@openvz.org
-Cc: devel@openvz.org
-Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-
-Alexander Mikhalitsyn (1):
-  neighbour: make proxy_queue.qlen limit per-device
-
-Denis V. Lunev (1):
-  neigh: fix possible DoS due to net iface start/stop loop
-
- include/net/neighbour.h |  1 +
- net/core/neighbour.c    | 46 +++++++++++++++++++++++++++++++++--------
- 2 files changed, 38 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index 6fc7850c2b0a..d756423e0059 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -101,6 +101,14 @@ static inline blk_status_t virtblk_result(struct virtblk_req *vbr)
+ 	}
+ }
+ 
++static inline struct virtio_blk_vq *get_virtio_blk_vq(struct blk_mq_hw_ctx *hctx)
++{
++	struct virtio_blk *vblk = hctx->queue->queuedata;
++	struct virtio_blk_vq *vq = &vblk->vqs[hctx->queue_num];
++
++	return vq;
++}
++
+ static int virtblk_add_req(struct virtqueue *vq, struct virtblk_req *vbr)
+ {
+ 	struct scatterlist hdr, status, *sgs[3];
+@@ -416,7 +424,7 @@ static void virtio_queue_rqs(struct request **rqlist)
+ 	struct request *requeue_list = NULL;
+ 
+ 	rq_list_for_each_safe(rqlist, req, next) {
+-		struct virtio_blk_vq *vq = req->mq_hctx->driver_data;
++		struct virtio_blk_vq *vq = get_virtio_blk_vq(req->mq_hctx);
+ 		bool kick;
+ 
+ 		if (!virtblk_prep_rq_batch(req)) {
+@@ -837,7 +845,7 @@ static void virtblk_complete_batch(struct io_comp_batch *iob)
+ static int virtblk_poll(struct blk_mq_hw_ctx *hctx, struct io_comp_batch *iob)
+ {
+ 	struct virtio_blk *vblk = hctx->queue->queuedata;
+-	struct virtio_blk_vq *vq = hctx->driver_data;
++	struct virtio_blk_vq *vq = get_virtio_blk_vq(hctx);
+ 	struct virtblk_req *vbr;
+ 	unsigned long flags;
+ 	unsigned int len;
+@@ -862,22 +870,10 @@ static int virtblk_poll(struct blk_mq_hw_ctx *hctx, struct io_comp_batch *iob)
+ 	return found;
+ }
+ 
+-static int virtblk_init_hctx(struct blk_mq_hw_ctx *hctx, void *data,
+-			  unsigned int hctx_idx)
+-{
+-	struct virtio_blk *vblk = data;
+-	struct virtio_blk_vq *vq = &vblk->vqs[hctx_idx];
+-
+-	WARN_ON(vblk->tag_set.tags[hctx_idx] != hctx->tags);
+-	hctx->driver_data = vq;
+-	return 0;
+-}
+-
+ static const struct blk_mq_ops virtio_mq_ops = {
+ 	.queue_rq	= virtio_queue_rq,
+ 	.queue_rqs	= virtio_queue_rqs,
+ 	.commit_rqs	= virtio_commit_rqs,
+-	.init_hctx	= virtblk_init_hctx,
+ 	.complete	= virtblk_request_done,
+ 	.map_queues	= virtblk_map_queues,
+ 	.poll		= virtblk_poll,
 -- 
-2.36.1
+2.37.1
 
