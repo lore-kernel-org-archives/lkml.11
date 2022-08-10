@@ -2,96 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57678C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC81C25B0E
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232269AbiHJQXw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        id S232684AbiHJQYY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231557AbiHJQXe (ORCPT
+        with ESMTP id S232637AbiHJQX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:23:34 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDA075FFA
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:23:33 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id w11-20020a17090a380b00b001f73f75a1feso2685889pjb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:23:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=l8jhnzzqeUT5rXTZfmZY4lz5ekShp+fFejfQhPINonU=;
-        b=VhANZ/q4aqvEs0EeI/8SuOVCaH8vxi28tvShKjDV/ju2ZX1OV7fEpSOLKwmr24AOil
-         nCzLc2WEEpb+uhU66hB5q4Xo6kodhi/kjxdnv9tObLw/YWf8nELjzcx86Fy/6imXbO1L
-         eAAF6VKmrWkvCTICh9BPkrnWubsegUWjHMlYtJ+f87fGI5I0a6anSI1Y3iehWDcNP8A+
-         WuUmZPdEcYaoAetjaz+MRizyIET0lFomI+Yc6KTbTbcvcaL7dyx2AJkejFIePXtusjw+
-         mGF1IDBzXzx8v7ZweCFVMIJSjukqeKmqhzmw2Yx3QAxYz4jtjG2Kz+1YLFaVDmKaxmFG
-         /Deg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=l8jhnzzqeUT5rXTZfmZY4lz5ekShp+fFejfQhPINonU=;
-        b=CwecSD9gyUrM1yMyuVUDhk8NESRCEcS8S0n9nb9Tn3VuGHLT3Ptfs69XgQcgJh9M45
-         3Ur9XRFptt7GS9YjCErLV7X8upRrxFxhFDNEvZB65gAHHq8Q5DV0sYNnhT1JfdY9A7ms
-         QYOnUkSIqFz1sLji8n+frlGTpMwN/xy13yR0REjCLxEb0YK9nRl2cABBoX+ze18wmryz
-         Eo/DrN+asvvC3k05kNbnQbLNMAF2ThgmS/YhzsbqkxxGRs5WkL3mdtNhebz5g68+KFsO
-         GEVs2dENMrFiZl8Mcr1O69B7/RW5t6wqctsOqWiFM2TPotr21sWWjhfdIrPUu+ZtsOzF
-         91aQ==
-X-Gm-Message-State: ACgBeo0iBDm8RSmYUbWptA0xZ3shnuLozEtn1e/UlaU+5OtIcXgm31Om
-        lMe+R+9DhU3D5idnr8+iYPXciwxRGN26YBPBDXqrNQ==
-X-Google-Smtp-Source: AA6agR4OvhdIkxW4LvoYb4FzC7Lsm5mQfR6T+5vFXIuNHryu6LWpDn/2oTNhAq1Rm5tFAzkNDd87dg==
-X-Received: by 2002:a17:902:7c01:b0:16f:9649:be73 with SMTP id x1-20020a1709027c0100b0016f9649be73mr23601802pll.70.1660148613445;
-        Wed, 10 Aug 2022 09:23:33 -0700 (PDT)
-Received: from localhost.localdomain ([223.79.192.142])
-        by smtp.gmail.com with ESMTPSA id u13-20020a170902e80d00b0015e8d4eb1f7sm13307539plg.65.2022.08.10.09.23.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 09:23:32 -0700 (PDT)
-From:   John Sanpe <sanpeqf@gmail.com>
-To:     philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
-        christoph.boehmwalder@linbit.com
-Cc:     drbd-dev@lists.linbit.com, linux-kernel@vger.kernel.org,
-        John Sanpe <sanpeqf@gmail.com>
-Subject: [PATCH] lib/ubsan: add missing line feed of alignment-assumption.
-Date:   Thu, 11 Aug 2022 00:23:01 +0800
-Message-Id: <20220810162301.201540-1-sanpeqf@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 10 Aug 2022 12:23:59 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EE8792E7;
+        Wed, 10 Aug 2022 09:23:56 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 2d7ae212334240e6; Wed, 10 Aug 2022 18:23:55 +0200
+Received: from kreacher.localnet (unknown [213.134.187.55])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id BD40B66CF1C;
+        Wed, 10 Aug 2022 18:23:54 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: [PATCH v1 4/5] ACPI: scan: Eliminate __acpi_device_add()
+Date:   Wed, 10 Aug 2022 18:17:23 +0200
+Message-ID: <13078324.uLZWGnKmhe@kreacher>
+In-Reply-To: <12036348.O9o76ZdvQC@kreacher>
+References: <12036348.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.187.55
+X-CLIENT-HOSTNAME: 213.134.187.55
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegvddgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrddukeejrdehheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukeejrdehhedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepgedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghnkhhosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhn
+ vghlrdhorhhg
+X-DCC--Metrics: v370.home.net.pl 1024; Body=4 Fuz1=4 Fuz2=4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added three missing '\n' to pr_err format.
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Signed-off-by: John Sanpe <sanpeqf@gmail.com>
+Instead of having acpi_device_add() defined as a wrapper around
+__acpi_device_add(), export acpi_tie_acpi_dev() so it can be called
+directly by acpi_add_power_resource(), fold acpi_device_add() into the
+latter and rename __acpi_device_add() to acpi_device_add().
+
+No intentional functional impact.
+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- lib/ubsan.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/acpi/internal.h |    1 +
+ drivers/acpi/power.c    |    6 +++++-
+ drivers/acpi/scan.c     |   17 +++--------------
+ 3 files changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/lib/ubsan.c b/lib/ubsan.c
-index 36bd75e33426..705250ba88bf 100644
---- a/lib/ubsan.c
-+++ b/lib/ubsan.c
-@@ -371,14 +371,14 @@ void __ubsan_handle_alignment_assumption(void *_data, unsigned long ptr,
- 	ubsan_prologue(&data->location, "alignment-assumption");
+Index: linux-pm/drivers/acpi/internal.h
+===================================================================
+--- linux-pm.orig/drivers/acpi/internal.h
++++ linux-pm/drivers/acpi/internal.h
+@@ -104,6 +104,7 @@ struct acpi_device_bus_id {
  
- 	if (offset)
--		pr_err("assumption of %lu byte alignment (with offset of %lu byte) for pointer of type %s failed",
-+		pr_err("assumption of %lu byte alignment (with offset of %lu byte) for pointer of type %s failed\n",
- 		       align, offset, data->type->type_name);
- 	else
--		pr_err("assumption of %lu byte alignment for pointer of type %s failed",
-+		pr_err("assumption of %lu byte alignment for pointer of type %s failed\n",
- 		       align, data->type->type_name);
+ void acpi_init_device_object(struct acpi_device *device, acpi_handle handle,
+ 			     int type, void (*release)(struct device *));
++int acpi_tie_acpi_dev(struct acpi_device *adev);
+ int acpi_device_add(struct acpi_device *device);
+ int acpi_device_setup_files(struct acpi_device *dev);
+ void acpi_device_remove_files(struct acpi_device *dev);
+Index: linux-pm/drivers/acpi/scan.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/scan.c
++++ linux-pm/drivers/acpi/scan.c
+@@ -643,7 +643,7 @@ static int acpi_device_set_name(struct a
+ 	return 0;
+ }
  
- 	real_ptr = ptr - offset;
--	pr_err("%saddress is %lu aligned, misalignment offset is %lu bytes",
-+	pr_err("%saddress is %lu aligned, misalignment offset is %lu bytes\n",
- 	       offset ? "offset " : "", BIT(real_ptr ? __ffs(real_ptr) : 0),
- 	       real_ptr & (align - 1));
+-static int acpi_tie_acpi_dev(struct acpi_device *adev)
++int acpi_tie_acpi_dev(struct acpi_device *adev)
+ {
+ 	acpi_handle handle = adev->handle;
+ 	acpi_status status;
+@@ -673,7 +673,7 @@ static void acpi_store_pld_crc(struct ac
+ 	ACPI_FREE(pld);
+ }
  
--- 
-2.36.1
+-static int __acpi_device_add(struct acpi_device *device)
++int acpi_device_add(struct acpi_device *device)
+ {
+ 	struct acpi_device_bus_id *acpi_device_bus_id;
+ 	int result;
+@@ -755,17 +755,6 @@ err_unlock:
+ 	return result;
+ }
+ 
+-int acpi_device_add(struct acpi_device *adev)
+-{
+-	int ret;
+-
+-	ret = acpi_tie_acpi_dev(adev);
+-	if (ret)
+-		return ret;
+-
+-	return __acpi_device_add(adev);
+-}
+-
+ /* --------------------------------------------------------------------------
+                                  Device Enumeration
+    -------------------------------------------------------------------------- */
+@@ -1866,7 +1855,7 @@ static int acpi_add_single_object(struct
+ 		mutex_unlock(&acpi_dep_list_lock);
+ 
+ 	if (!result)
+-		result = __acpi_device_add(device);
++		result = acpi_device_add(device);
+ 
+ 	if (result) {
+ 		acpi_device_release(&device->dev);
+Index: linux-pm/drivers/acpi/power.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/power.c
++++ linux-pm/drivers/acpi/power.c
+@@ -952,6 +952,7 @@ struct acpi_device *acpi_add_power_resou
+ 	strcpy(acpi_device_name(device), ACPI_POWER_DEVICE_NAME);
+ 	strcpy(acpi_device_class(device), ACPI_POWER_CLASS);
+ 	device->power.state = ACPI_STATE_UNKNOWN;
++	device->flags.match_driver = true;
+ 
+ 	/* Evaluate the object to get the system level and resource order. */
+ 	status = acpi_evaluate_object(handle, NULL, NULL, &buffer);
+@@ -968,7 +969,10 @@ struct acpi_device *acpi_add_power_resou
+ 
+ 	pr_info("%s [%s]\n", acpi_device_name(device), acpi_device_bid(device));
+ 
+-	device->flags.match_driver = true;
++	result = acpi_tie_acpi_dev(device);
++	if (result)
++		goto err;
++
+ 	result = acpi_device_add(device);
+ 	if (result)
+ 		goto err;
+
+
 
