@@ -2,122 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960A3C25B0C
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E50C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231961AbiHJPvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 11:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
+        id S232110AbiHJPvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 11:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiHJPvi (ORCPT
+        with ESMTP id S230468AbiHJPvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 11:51:38 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E56149B60
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:51:37 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id j7so18263478wrh.3
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:51:37 -0700 (PDT)
+        Wed, 10 Aug 2022 11:51:39 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF89F4BD19;
+        Wed, 10 Aug 2022 08:51:37 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id h13so18244219wrf.6;
+        Wed, 10 Aug 2022 08:51:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc;
-        bh=de1bfIeCzht/PqANgMdEHr89VgLf+QFh5U3BT1EWLbA=;
-        b=BTpT3e1IHvP3qZibGNSre2fvR3R4RZDlEChu2oxdCo8+w163kWUdzxwWt+S6XxwKl0
-         fh5l/JAO4Zr3ojSmGQwE/RGhvehU4kerq0S8VN3szDU4JpTxhc5AxIy4OnUthI0WTb3C
-         sOzSS5BDklAOGjIeHLdmqQokLG2gd4b7PB8Yv4Zs6yFPnJg0LzierVnzZZoTUNZXtr3F
-         sdyswUaVZV9wUZjN/zjcuOeJ8fPO6TxXf5FvNib1kn2sUDKMBn3JEMBMY3GHs50arRXX
-         rqImfwqZV+MaGStHCPAeBXcfVVqhK/3RzLlRWKN2iHDtUkugHz2Em2I62nhTArbGDo6d
-         z0Vg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=eLUXa/7f03mrrlxRZvP1+mfNlm5ZK61/IOpf+UOnfpA=;
+        b=WqSg1M4LPvRvE7ifojxAgf7wRBU1icJ6/c02Okmzy1I7MNcWnJciMvgd9E29H25H4Q
+         hOSe7+Md7Co6t5MC+3/kIvdRVkg5NK+48WzlsJpoKmlT00h4hLNZDfBAFl5jNzjUkw2L
+         tDwbjfZBV458pAPRzXjVRiCGwRDFyQTytaD+8YF9Tuc0TmbJm9yw+HSJc6BXCFKIzpEK
+         D9d891nlEEq+OcCtS7778AT52Q5yAJ9ZCs40vzIlwX+6P3K1D46S8DHPJLWHUfGr37ct
+         L8IZcVVnoD/jWZzALGwunGKNX3cSyxrT1U/+O4o866OfJT0bJ2tZvGB0V4x8e0v/HdlK
+         ai3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=de1bfIeCzht/PqANgMdEHr89VgLf+QFh5U3BT1EWLbA=;
-        b=Mq3G/6qGIVZ2SIu/DWNJpvTAaNc45nAuQaSME1QnmWHInZAYq7McPOBAIoqFZ8j98l
-         m8R55h4RPMXRz/FmQo2r6Hp6L0SIP4aQ+btq4S5vDAfEfqBG9w/i/IGNFROcOaOH3OXg
-         IUH93jBnRA05G8CX0QTdNtUjFM1MTyC7b87U0HVHToNwNsP9JXrSrT1xoY0GubD27U7M
-         22ybVXyVCG4wtGpPIQm80UlsKpFQqw1EHhQLNqwkzITlRBiquRGY+oUwctPC2jHs6KbR
-         MjDgRIBLrI0RHEMixJHeYq+oVXNswLkNimbFkfadUcuyBXyww9zwqarI+KNGL2cMxZQe
-         kesA==
-X-Gm-Message-State: ACgBeo0lDLRPiv1eGfy7o6m/Nqp652Cv+8L9T7lGMAedaemZzZvH7s74
-        7d78CFh88lIQLOlgf9U+fnNwZY2ODfoOFg==
-X-Google-Smtp-Source: AA6agR7Q5Mp3w9f9/hxYT2JWYltgiLUYBmJ093avPRRW1qIQyFWlA5lbd3ieExjR2ZNFGI9kCBxmeQ==
-X-Received: by 2002:a5d:6248:0:b0:222:cd3b:94c8 with SMTP id m8-20020a5d6248000000b00222cd3b94c8mr9557443wrv.97.1660146695304;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=eLUXa/7f03mrrlxRZvP1+mfNlm5ZK61/IOpf+UOnfpA=;
+        b=PDmlgHkjxhpRjysIgyU8FX7XTDV2pTtjJoJHk3fI/D9V4walimyaTK4CRsXt1W0Mal
+         imDWnQgvAHB73P9kza5SuxWIxGp4WORg+9U4HXcIMtDu2swoMLkwBvdlAfPSupk0gnjx
+         CAbZPMwO36XuvLFsAXj67RGFelK6gIlya9yWf8JJdvVPeEFp2j6PeC/ultZB69FpyKzp
+         X+H/l3koCWTbPcWjQG7ZCB9KoZyFLk1MU644GP4RNJQfHRImD0JaCuwUhVhKnBH4DHAl
+         UTqtfI5c0paVjICC50xQlUZgs+H3hEEGm3Kn++nw7Z+HFLVqVAh5GOdoCvZWYW7wst38
+         wOVg==
+X-Gm-Message-State: ACgBeo0J9DV2UUZR6tRSjf0dfJ37490P6A0Oa22uinFrbkZ8ch4trQCe
+        DXfMtkqr/JRE4MUfJmD7zM8aIbFs7Ok=
+X-Google-Smtp-Source: AA6agR5DJfVKYDlrSNLa3wNyuLPvwubsZF8VZQM6JU+GS2BugrOvjw9AFh0IiP8A3TZSNH/OEieLog==
+X-Received: by 2002:a05:6000:785:b0:220:6d7f:dd1f with SMTP id bu5-20020a056000078500b002206d7fdd1fmr18016045wrb.578.1660146695975;
         Wed, 10 Aug 2022 08:51:35 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:bbf0:b69d:fecb:8006? ([2a01:e0a:982:cbb0:bbf0:b69d:fecb:8006])
-        by smtp.gmail.com with ESMTPSA id g9-20020a05600c4ec900b003a325bd8517sm4164965wmq.5.2022.08.10.08.51.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 08:51:34 -0700 (PDT)
-Message-ID: <c7bfda2e-8135-fd2e-5d2b-5f547215bb18@baylibre.com>
-Date:   Wed, 10 Aug 2022 17:51:33 +0200
+Received: from 127.0.0.1localhost (188.28.126.24.threembb.co.uk. [188.28.126.24])
+        by smtp.gmail.com with ESMTPSA id ay1-20020a05600c1e0100b003a342933727sm3004519wmb.3.2022.08.10.08.51.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 08:51:35 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org,
+        Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [RFC net-next io_uring 00/11] improve io_uring's ubuf_info refcounting
+Date:   Wed, 10 Aug 2022 16:49:08 +0100
+Message-Id: <cover.1660124059.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] spi: meson-spicc: save pow2 datarate between messages
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Da Xue <da@libre.computer>
-References: <20220809152019.461741-1-narmstrong@baylibre.com>
- <YvJ84qkuXdvVgXRm@sirena.org.uk>
- <39c2f53b-8f53-ceb1-ae0c-81e5e53d01aa@baylibre.com>
- <YvOmnDJA+ov49chC@sirena.org.uk>
- <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
- <YvPBX7zJ72RXnrpk@sirena.org.uk>
- <9dabe979-f6b5-329d-f017-a8f0c00adeca@baylibre.com>
- <YvPFZZ2HT2zK9XjQ@sirena.org.uk>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <YvPFZZ2HT2zK9XjQ@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/08/2022 16:49, Mark Brown wrote:
-> On Wed, Aug 10, 2022 at 04:40:04PM +0200, Neil Armstrong wrote:
-> 
->> I don't think it's worth adding so much code for this since we already
-> 
-> I don't recall the code for clock providers being that hard?  They're
-> generally pretty small, some of the ASoC CODEC drivers did something
-> similar.
+There is a couple of tricks we can do with io_uring to improve ubuf_info
+refcounting. First, we ammortise reference grabbing and then give them
+away to the network layer, which is implemented in 8 and 11. Also, we
+don't need need additional pinning for TCP, which is removed by 7.
 
-Seems over-engineering to me, but I can explore this path if it's the best
-route to follow.
+1-4 are needed because otherwise we're out of space in io_notif_data and
+using ->desc or some other field of ubuf_info would be ugly. It'll also
+facilitate further ideas like adding a simpler notification model for UDP.
 
-> 
->> had an open-coded function which perfectly worked before.
-> 
-> Except in the cases it didn't...
+liburing/examples/io_uring-sendzc benchmark using a branch containing the
+patchset and some more [1] showed ~1.6% qps improvement for UDP (dummy dev),
+and ~1% for TCP (localhost + hacks enabling zc).
 
-It did but wasn't generic enough to take the new clock path introduced
-in the new SoCs.
+I didn't specifically test xen and vhost and not sure how, would love
+some help with that.
 
-> 
->> I'm perfectly OK to remove the CCF driver for the legacy clock path
->> and return back to the old open coded calculation since it perfectly
->> worked and stop using the legacy clock path for new SoCs since it would
->> never be selected anyway...
-> 
-> It does seem better to go the clock provider route TBH.
+[1] https://github.com/isilence/linux/tree/net/zc-ref-optimisation
 
-I'm afraid this won't fix the problem since CCF won't set the clock again
-if the rate is already ok in it's cache, we'd still need to save the divider
-value and restore it after the reset as I did on this exact patch.
+Pavel Begunkov (11):
+  net: introduce struct ubuf_info_msgzc
+  xen/netback: use struct ubuf_info_msgzc
+  vhost/net: use struct ubuf_info_msgzc
+  net: shrink struct ubuf_info
+  net: rename ubuf_info's flags
+  net: add flags for controlling ubuf_info
+  net/tcp: optimise tcp ubuf refcounting
+  net: let callers provide ->msg_ubuf refs
+  io_uring/notif: add helper for flushing refs
+  io_uring/notif: mark notifs with UARGFL_CALLER_PINNED
+  io_uring/notif: add ubuf_info ref caching
 
-> 
->> ... but GX SoCs are broken so it would need an intermediate fix until
->> I push the refactoring to cleanup all this.
-> 
-> I'm trying to figure out if this is actually fixing the problem or just
-> papering over one case where things happened to go badly.
+ drivers/net/xen-netback/common.h    |  2 +-
+ drivers/net/xen-netback/interface.c |  4 +--
+ drivers/net/xen-netback/netback.c   |  7 +++---
+ drivers/vhost/net.c                 | 17 +++++++------
+ include/linux/skbuff.h              | 35 +++++++++++++++++++++++---
+ io_uring/net.c                      |  8 +++++-
+ io_uring/notif.c                    | 21 ++++++++++------
+ io_uring/notif.h                    | 22 +++++++++++++++-
+ net/core/skbuff.c                   | 39 ++++++++++++++++-------------
+ net/ipv4/ip_output.c                |  3 ++-
+ net/ipv4/tcp.c                      | 11 +++++---
+ net/ipv6/ip6_output.c               |  3 ++-
+ 12 files changed, 123 insertions(+), 49 deletions(-)
 
-It does, when clk_set_rate() is called, the datarate field would be the
-same as after the previous call.
+-- 
+2.37.0
 
-Neil
