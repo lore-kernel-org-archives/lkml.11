@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5051C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 186BAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiHJBfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 21:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
+        id S230110AbiHJBhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 21:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiHJBed (ORCPT
+        with ESMTP id S230156AbiHJBhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 21:34:33 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC216E8A6;
-        Tue,  9 Aug 2022 18:34:32 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id F00E15C0225;
-        Tue,  9 Aug 2022 21:34:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 09 Aug 2022 21:34:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1660095271; x=1660181671; bh=RmoM/4oIo6wEIqBAN+lEhaPi9
-        bDevafPtd5uBxBK7UY=; b=M2j9G+Unc9fn3oNdPnclF/EUeZk3vYIqhAIIj7UVg
-        mwIgKhePiDGreA3US6YNTmw2drytW+Yc9MVctH3mtytnbFt/uG4NbIXyXJEnLrXl
-        faX0rP9zCpQfEKDWyv8SwiOJAylJCbzLlWOhS2dAR4VHiqGoT0wYK4xI1kTpcjro
-        5P9LHXRRMq2C9QvsugVT2431m2YEDo7+jvEK7OCJGwVcU3EWJIeDqVXqOKGk1yev
-        S8sLHswcAZhHaw5YsRClOHZIaV6RV2ayJYfzQ7zfjsYSZN9GrRvPRUJGqLoUq78j
-        igocq0G9V2tPiiVzpr/gFM0jQ7l3weJI+322OJru3GZ7g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660095271; x=1660181671; bh=RmoM/4oIo6wEIqBAN+lEhaPi9bDevafPtd5
-        uBxBK7UY=; b=V8Sj/IB1vn4QSG8cNuVuFf2s0Z7QvhkBvcs8KJQy6UA9QA0BBjj
-        GNrvFiYZbQmp8x4E/RBtN5zLiCbQX0Z9G8NQNHoC91xwAu3Su44ky8l2PPe3PPy0
-        sTbeX/OibKV0zMq4rUX3QRhCfuwdvSYR55oIOQYtNe/nPic5fIxSsxHdn/pU35XB
-        YjWjBxlTO5zXH/MavQuhSKF8d7JNp4STLkPubk0dfV7TvtSA2eLKhHn390XU9Msf
-        5QHV99PirnHxqNL2ss9W5VRilmi4hHaXYhcHTNdDu7WUwcI0BdvGLG1ILyRQrE//
-        CMwrD5KM32267qsODkazOrhJjKPx+4pSWmA==
-X-ME-Sender: <xms:JwvzYqNI8oaDIY5mGybKZu15N5D4EvjjjwMWX8HLkHREtoBoYo1zsA>
-    <xme:JwvzYo97pbovDtHSk3T6RH7DYV_hV2boG-4p4P1hoRj7g_jT_Lx0XkuEH1jfbYTIX
-    hwKb2WOQCalWQVAqg>
-X-ME-Received: <xmr:JwvzYhRurAaEu5Skb3hIe2XHaCqXtCwEdfB3cTrC60SJHz5u43loWWWDRi3U_IXgkm5dyXcBIIz67UX1wL1F7QurMwA9mfDTmhDWARQ2IRgtNilObhZZW4yjn2whp2Ev_qyZqg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeguddggeekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
-    ucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecuggftrf
-    grthhtvghrnhepkeevlefhjeeuleeltedvjedvfeefteegleehueejffehgffffeekhefh
-    hfekkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:JwvzYqtCpNlmzzHOP37l2TIgXxaM-v5PB0ddjeLERezsGDD-KdIl0g>
-    <xmx:JwvzYifJvToFxzgNY1b5exkjOAIFKUtuHfAXwOqQny1pfEwAzu3WBg>
-    <xmx:JwvzYu1LYkgkZm70mmmlgIXAzqHSj67ukI1ubtvv9X_ASPqmQsSRJA>
-    <xmx:JwvzYvEjmxXhpgshZZ4feNAOcubgWNSMVxTw6tH_ArNQvQJKgIapXg>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Aug 2022 21:34:31 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>, Lee Jones <lee.jones@linaro.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: mfd: x-powers,axp152: Document the AXP228 variant
-Date:   Tue,  9 Aug 2022 20:34:30 -0500
-Message-Id: <20220810013430.27061-1-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 9 Aug 2022 21:37:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFB5061B05
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 18:37:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660095424;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fDv7Pkf2Mty62Q47m8/QIRgG7qucyNEE5ltfwkyv+3E=;
+        b=GOQiluKqUrTP6cqp/eEWH8ExkThJkgjx0qWlWSLGe7J559CixyZMMdmC7uBuBUBftgUGNz
+        EolQMu/tNlYZg3lJuwUMI2LGnEevizkpEW4oO2lmhpHx/Qqbm0tUzYCX5plHSvTYI739Jg
+        QgkMo3Gs8VVkaFfehJzROrfN9XzygIg=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-383-43pIiNFQPjq97qJMTTPtxA-1; Tue, 09 Aug 2022 21:37:03 -0400
+X-MC-Unique: 43pIiNFQPjq97qJMTTPtxA-1
+Received: by mail-qk1-f200.google.com with SMTP id bs33-20020a05620a472100b006b97dc17ab4so2534643qkb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 18:37:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=fDv7Pkf2Mty62Q47m8/QIRgG7qucyNEE5ltfwkyv+3E=;
+        b=Sx4NMLoVTGgfbFyvhPRy2PdxAV8CKvhljwWU5IQb0IubBF6BesHpK5z+3Vd2FKHbKB
+         vJ3o2CqwdjIgCQX+UGq8HkwaQ7wd4IYH54DTXqZaiZ1NiO2Voogp8yo3cEunBLuWr21g
+         FhfqH1KSHepauiQ7e9u6GE+g7Fm/eXYcHn+LaBRWF8V3Yj0+0KyFQ0MtKazBMPGWC0Tt
+         F9rBctHCtDtiavbsX6U6c0iX7qxV8aUKSo99vucNwTDDpGY1WJJtcmfd0VHkjjwAzy2C
+         9sBZtYjsbOa3IQdUGNnhDTZ2lE8CNIy6yqTm96l1TjsDZeXH7e4lAD8lrmZvqytZ9l4b
+         udcA==
+X-Gm-Message-State: ACgBeo2QYiPwZ7/MiO47uox7HmtxfPyyATmN1rODAZGZoURzVEspqqUF
+        s6y+rqz+cNJVZ7U9+CwHFl0FXDjHzOr7WcfktAQvEHl3V44lAxmueolPJQsExrIT2iwrcOpJ8bb
+        f29jaebBoLgtSTU/vu9DlvKXe
+X-Received: by 2002:a05:622a:5c7:b0:320:f913:76a0 with SMTP id d7-20020a05622a05c700b00320f91376a0mr22413531qtb.115.1660095423167;
+        Tue, 09 Aug 2022 18:37:03 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6Wv3i51PLvqvZIGParL/hMF7UGnnqIvKrsgzpUw+f5GPmER0Nz9G4myzKTTrm6eQxhSVqMsQ==
+X-Received: by 2002:a05:622a:5c7:b0:320:f913:76a0 with SMTP id d7-20020a05622a05c700b00320f91376a0mr22413520qtb.115.1660095422933;
+        Tue, 09 Aug 2022 18:37:02 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id e123-20020a376981000000b006b5f68bc106sm11767006qkc.110.2022.08.09.18.37.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 18:37:02 -0700 (PDT)
+Message-ID: <0ec636c5-0162-c208-5c53-22f2ce53ea91@redhat.com>
+Date:   Tue, 9 Aug 2022 21:37:01 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC net] bonding: 802.3ad: fix no transmission of LACPDUs
+Content-Language: en-US
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+References: <c2f698e6f73e6e78232ab4ded065c3828d245dbd.1660065706.git.jtoppins@redhat.com>
+ <YvMJYb0VDJW+6CRh@Laptop-X1>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <YvMJYb0VDJW+6CRh@Laptop-X1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AXP228 is a PMIC used on boards such as the Clockwork ClockworkPi and
-DevTerm. Its register map appears to be identical to the AXP221 variant.
-The only known difference is in the default values for regulator on/off
-states and voltages.
+On 8/9/22 21:26, Hangbin Liu wrote:
+> On Tue, Aug 09, 2022 at 01:21:46PM -0400, Jonathan Toppins wrote:
+>> ---
+>>   MAINTAINERS                                   |  1 +
+>>   drivers/net/bonding/bond_3ad.c                |  2 +-
+>>   .../net/bonding/bond-break-lacpdu-tx.sh       | 88 +++++++++++++++++++
+> 
+> Hi Jon,
+> 
+> You need a Makefile in this folder and set TEST_PROGS so we can generate the
+> test in kselftest-list.txt.
+> 
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+Thank you. I have a v2 coming. I also broke up the fix from the test 
+that way it is simpler to backport.
 
- Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml b/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
-index 3a53bae611bc..cfbf221789bb 100644
---- a/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
-+++ b/Documentation/devicetree/bindings/mfd/x-powers,axp152.yaml
-@@ -92,6 +92,9 @@ properties:
-           - x-powers,axp806
-           - x-powers,axp809
-           - x-powers,axp813
-+      - items:
-+          - const: x-powers,axp228
-+          - const: x-powers,axp221
-       - items:
-           - const: x-powers,axp805
-           - const: x-powers,axp806
--- 
-2.35.1
+-Jon
 
