@@ -2,148 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DD2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED30C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiHJBTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 21:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        id S229989AbiHJBUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 21:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiHJBTi (ORCPT
+        with ESMTP id S229567AbiHJBUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 21:19:38 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA796716C
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 18:19:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660094377; x=1691630377;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=HJUr0cpq2k0Fdw1RYMsCCP+3t05b3N8dkraf9iPYaxY=;
-  b=N/qoMfJ0DyDJyAwj03A5q6kQ5mXWomulOAMk6VgvL2YItVIPwueqy7Dx
-   B3JL3m6MQBPqt7arUTXtS2NDaoRBsA3UenoSFVjqEkD9Ix0vYDa/sBQet
-   3m9ADsWD8v8PLXmxZMWdaZ0sPs+QkniZcNG6t1ePjMlY6h208ppwRnZKp
-   u1taHczti8EsCrKT8oAsv7o4ev/kSzi63eB/vrJlvJdAItcMK0mO0C6nX
-   5OOA8ck6VRbUFF7ME8WxvlLX+ectY/Vp68HYIlpRCzrXD+AnUuy7x1oZj
-   6c736oTrlSXNS4+cv5kBd16lzOoeDtKS2yvykoDwUNMgAp7VNiZRZX4M5
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="277908504"
-X-IronPort-AV: E=Sophos;i="5.93,225,1654585200"; 
-   d="scan'208";a="277908504"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 18:19:37 -0700
-X-IronPort-AV: E=Sophos;i="5.93,225,1654585200"; 
-   d="scan'208";a="673106026"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 18:19:34 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Minchan Kim <minchan@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-Subject: Re: [PATCH v3 2/7] mm/swap: Comment all the ifdef in swapops.h
-References: <20220809220100.20033-1-peterx@redhat.com>
-        <20220809220100.20033-3-peterx@redhat.com>
-Date:   Wed, 10 Aug 2022 09:19:31 +0800
-In-Reply-To: <20220809220100.20033-3-peterx@redhat.com> (Peter Xu's message of
-        "Tue, 9 Aug 2022 18:00:55 -0400")
-Message-ID: <87fsi4gajg.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 9 Aug 2022 21:20:52 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD0CF595;
+        Tue,  9 Aug 2022 18:20:51 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id o3so12913937ple.5;
+        Tue, 09 Aug 2022 18:20:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=oGCv7UOSFGXLD0hQznWAtmA26tIFvqeIa9EinYUWVqA=;
+        b=fC0U2DXU6q9z36mNMnyJd8n0tF2sj/fY4ZoMcLQUglJ5Mv8CeapvBbb7hzgSHJ7wZ6
+         q1pWb3XaRBWx01MTbTw0YK//UMKS1o/PT4aN2QD6eJ2DfnBlH57zmqU0XWGWEKvutvtP
+         Cxo77XVPWBLi+eUFsxt1b3Y02DBIBXJB/38TjW3EyLYgJrFTycwI8Zja8DE/7N5+OSyM
+         RkqR2Dvco01PIFu1bTvvkMbsxVOGt0eHciLupObXtOqJ1GMVQaBI80VxcHvI1Su1arE6
+         n7UXUsG9cRwaLeOcFX90v2jZCDmUmVEPIrj+ZmFYMTvZl48Z6obELvUcxTIghUvn3Tbo
+         r7vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=oGCv7UOSFGXLD0hQznWAtmA26tIFvqeIa9EinYUWVqA=;
+        b=S6zMy9mPjIzndAItNFeWRrqehNLbafYPKY4Wv5+J6mk3plm5MgTNWQ6P6c0lzjezW0
+         xOL7DNnl/YtZWQiTaTK9YgQqVP1YXkFm5o4Eec5iBx67Kt3Bbf0HhTkLtrZip9dGBtoC
+         db3B0PH63Kihc9+Q8qXaJ+rdS9+vgI4pZXQxPUoX1AXRAiuLKabWJD+EbQGwfS99L7Cp
+         PZ1mKYRG/Ors3IvomxUXWF/2LRCuYD/69yUwV4HvQyVLoSq+VjgBDJPXcnnI7hPd9SQV
+         nGng5m07j3Fv+zfrIq8eFTvZMzUL2GOQmuKHy6+Umep0QFkvUKGWX1mWpgfdNjP0+olM
+         O82g==
+X-Gm-Message-State: ACgBeo0PFTvmhaQYVwk0aTBHuXKbwGr1+sQQhAGaX8ofS5KcQ9ogqzq2
+        /Z/jV8MQ+aVaSLTJ9YUzd3Y=
+X-Google-Smtp-Source: AA6agR6ABR8JaIlus86kMkZiJWMLOXekVsGlDr2DXxQHm6TZBGj3W7vZVDhoDRAZOK9tv4j/eoAv5g==
+X-Received: by 2002:a17:902:ce8e:b0:16f:8f2b:b16f with SMTP id f14-20020a170902ce8e00b0016f8f2bb16fmr22570853plg.167.1660094451054;
+        Tue, 09 Aug 2022 18:20:51 -0700 (PDT)
+Received: from localhost.localdomain (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id s18-20020a170903215200b0016c3affe60esm11356754ple.46.2022.08.09.18.20.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 18:20:50 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai.pt@gmail.com>
+Subject: [PATCH 0/2] Update Facebook Bletchley BMC devicetree
+Date:   Wed, 10 Aug 2022 00:43:36 +0000
+Message-Id: <20220810004338.329832-1-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Xu <peterx@redhat.com> writes:
+This patch series add modifications as below
+1. add a IPMB node for USB debug card communication.
+2. remove hdc1080 node due to incompatible 2nd source (si7021). 
 
-> swapops.h contains quite a few layers of ifdef, some of the "else" and
-> "endif" doesn't get proper comment on the macro so it's hard to follow on
-> what are they referring to.  Add the comments.
->
-> Suggested-by: Nadav Amit <nadav.amit@gmail.com>
-> Signed-off-by: Peter Xu <peterx@redhat.com>
+Potin Lai (2):
+  ARM: dts: aspeed: bletchley: add USB debug card IPMB node
+  ARM: dts: aspeed: bletchley: remove hdc1080 node
 
-Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+ arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-> ---
->  include/linux/swapops.h | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-> index a3d435bf9f97..3a2901ff4f1e 100644
-> --- a/include/linux/swapops.h
-> +++ b/include/linux/swapops.h
-> @@ -247,8 +247,8 @@ extern void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
->  #ifdef CONFIG_HUGETLB_PAGE
->  extern void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl);
->  extern void migration_entry_wait_huge(struct vm_area_struct *vma, pte_t *pte);
-> -#endif
-> -#else
-> +#endif	/* CONFIG_HUGETLB_PAGE */
-> +#else  /* CONFIG_MIGRATION */
->  static inline swp_entry_t make_readable_migration_entry(pgoff_t offset)
->  {
->  	return swp_entry(0, 0);
-> @@ -276,7 +276,7 @@ static inline void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
->  #ifdef CONFIG_HUGETLB_PAGE
->  static inline void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl) { }
->  static inline void migration_entry_wait_huge(struct vm_area_struct *vma, pte_t *pte) { }
-> -#endif
-> +#endif	/* CONFIG_HUGETLB_PAGE */
->  static inline int is_writable_migration_entry(swp_entry_t entry)
->  {
->  	return 0;
-> @@ -286,7 +286,7 @@ static inline int is_readable_migration_entry(swp_entry_t entry)
->  	return 0;
->  }
->  
-> -#endif
-> +#endif	/* CONFIG_MIGRATION */
->  
->  typedef unsigned long pte_marker;
->  
-> @@ -426,7 +426,7 @@ static inline int is_pmd_migration_entry(pmd_t pmd)
->  {
->  	return is_swap_pmd(pmd) && is_migration_entry(pmd_to_swp_entry(pmd));
->  }
-> -#else
-> +#else  /* CONFIG_ARCH_ENABLE_THP_MIGRATION */
->  static inline int set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
->  		struct page *page)
->  {
-> @@ -455,7 +455,7 @@ static inline int is_pmd_migration_entry(pmd_t pmd)
->  {
->  	return 0;
->  }
-> -#endif
-> +#endif  /* CONFIG_ARCH_ENABLE_THP_MIGRATION */
->  
->  #ifdef CONFIG_MEMORY_FAILURE
->  
-> @@ -495,7 +495,7 @@ static inline void num_poisoned_pages_sub(long i)
->  	atomic_long_sub(i, &num_poisoned_pages);
->  }
->  
-> -#else
-> +#else  /* CONFIG_MEMORY_FAILURE */
->  
->  static inline swp_entry_t make_hwpoison_entry(struct page *page)
->  {
-> @@ -514,7 +514,7 @@ static inline void num_poisoned_pages_inc(void)
->  static inline void num_poisoned_pages_sub(long i)
->  {
->  }
-> -#endif
-> +#endif  /* CONFIG_MEMORY_FAILURE */
->  
->  static inline int non_swap_entry(swp_entry_t entry)
->  {
+-- 
+2.31.1
+
