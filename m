@@ -2,117 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8296C25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E28C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232906AbiHJN7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:59:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
+        id S232913AbiHJOBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232763AbiHJN6k (ORCPT
+        with ESMTP id S231821AbiHJOBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:58:40 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D1D6C769
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:58:38 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id a18-20020a05600c349200b003a30de68697so1734271wmq.0
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:58:38 -0700 (PDT)
+        Wed, 10 Aug 2022 10:01:38 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C043A6CD33
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:01:37 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id b6so7836310wmq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:01:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=i8HHjwl7WH0iFq76RCd/7R6qXQKnZ7/bS7IRpUVTWS0=;
-        b=wktmSceVeQiJ00CteNAZ/9N6Sm2lvi2R+yz76BkP9XOPDuz2Z/6h6BBlwJGOUaEPmJ
-         EkatXfHekpnCRrmhtpqUrrWc5QHKgBi0WPefSRBiTJuxbPMSjkQneGHmefMfciQ3ORJu
-         IVl5i9l7RoSs6MMcrq6Ze8TD1AX7/O6YDKH26uMF6qp5Q0X3uXc270P2TucMhtS7r0uM
-         HJcaYQ7vNmtXSbchS64n/vLwszX6CTOFovvsMaSsdyIj7v0MPRXhRyMUHr/NTK6Vc7WU
-         O2WF8N13S0X2VbC8BsJieugkmCkRmIIlX04ftjrFDGVUcM+0eJrzwNLYygBVqYNdpq+y
-         Btsg==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc;
+        bh=dZA7yOywUXukdcu5pO+Io3zvJr55DJZjswrAfBadLys=;
+        b=Yn8uEP++9IJloQ1BDCmMiI3k7Ee8qgEzlCEAYmHEDqta1P+Vib47gUxe6vH3H4XdOV
+         OQkpMmnZbDPz5ZX+zt2N196uqkG5xcL5/Kx/Wb43oX4ErRJWdjMi0ew0lu/wjmc8Yjuy
+         sFyHWISDMv2E9DqiHP1/J0w2EuhM24mGHNrb4Ifk62k07OzhsHShfSKkxVKjBCkYkmOC
+         SfBZ5uckbvCi0a0mbgdNeZ2wy8YvQU/QtZtPC/PFahOvXfByRXvwnLyTDuPoMx64qAnG
+         4mFLpCptRa301NI9CDIrmS097PGpKW57ag53WZk2Gx6MJ05SzA6QUFllmNpPRl9jQWFN
+         gfRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=i8HHjwl7WH0iFq76RCd/7R6qXQKnZ7/bS7IRpUVTWS0=;
-        b=cyxxbQ9nAnf4A5IMleKn65CR1viPeA+E/NeF5/CHEi+xzJ1drMX4/EwdYIX4y+AG+o
-         /KkQV5Em6HL9UBNeVgCOESKe4Hm/RndDH4r3LR6n9HaBYfhALd5tt2eO6R3uvZINQ8A6
-         pBJ/Vewj/qE9KhZyBVIIMDii5y9M/Y5oL6Q8OFRng25qmr7UXQ+L4csXB21xij0tRTvo
-         HmvzL77MCVmNQOsStWrruUBJIdEo3PTRzmU3ZigXT6EH7BK37FU+Prh1SBo9NwxWqLEN
-         I7gz9hEWlM8kt6ZvW1wghXGeC88vtBALpvE4zhmR40HjkmHZnKaiE1bZmRhFa3N8cSYa
-         szkg==
-X-Gm-Message-State: ACgBeo2tCIEqcONuXgBh9wesGyS+t3azkIrA4fLPm2wIQ6TnaF3O9CYa
-        A7rTiJVbw8gDUnZetWeukJVuvg==
-X-Google-Smtp-Source: AA6agR6rDW8RUZXfTUmjdc22Q9BqrI8EAo6g/7PjpBCS6Em9aSvgLhZp3xCCg159xw/CA6Ou3td9Qg==
-X-Received: by 2002:a05:600c:1f11:b0:3a5:3df9:4859 with SMTP id bd17-20020a05600c1f1100b003a53df94859mr2484539wmb.175.1660139917198;
-        Wed, 10 Aug 2022 06:58:37 -0700 (PDT)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id u11-20020adfeb4b000000b0021f15514e7fsm19366090wrn.0.2022.08.10.06.58.36
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=dZA7yOywUXukdcu5pO+Io3zvJr55DJZjswrAfBadLys=;
+        b=1t5OElyVjw0rStUgBcYCmft9FCc8r+KYz+mQPb7L1vOnciaAkxbojMf5rZL3JBoJSR
+         gUAYM8+D2djTl4k9nAmLxavPeS+c4ygg9Eqd15l/fVmOC/Os8HNYdRpa5whaGoiu3HCO
+         4s4HBvlO0Njr+9NFTpmh6///FMANafvQaJEgs0ROQtJ/2DDJW306DMDCv5QlYMgoEpEH
+         fLlImpmvnOYJd+SQaxfiRUEBVUZsI0l7qL7EXJlTW4kL20aPMoYQtueTdkpqn8DdgaqD
+         O+CZJ13jWb1/y0MDe7mPA7KLYCb9c0U6PqAsVjCq9aglP0u7VNDZk/7dQreZfc8kKiOp
+         u3+w==
+X-Gm-Message-State: ACgBeo3ibJbRP1nFllKmyyIpXevkpfJF6YJegfeYEyLUzQiNwroI7Sk5
+        0bkx28EoLWMYAwybrgI600S+fw==
+X-Google-Smtp-Source: AA6agR7DzgEgT3CgQhryxKIY8bUl9vYO/MdJ9kGHKEoVxRh7PUHU+GxrH0F86bCtL7LF92AxXsWGgg==
+X-Received: by 2002:a05:600c:1d1e:b0:3a5:4f8d:743f with SMTP id l30-20020a05600c1d1e00b003a54f8d743fmr2558911wms.121.1660140096061;
+        Wed, 10 Aug 2022 07:01:36 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:bbf0:b69d:fecb:8006? ([2a01:e0a:982:cbb0:bbf0:b69d:fecb:8006])
+        by smtp.gmail.com with ESMTPSA id az21-20020a05600c601500b003a31ca9dfb6sm3347611wmb.32.2022.08.10.07.01.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 06:58:36 -0700 (PDT)
-Message-ID: <cbfa173b-25d9-e04f-e230-1cebedce75ce@linaro.org>
-Date:   Wed, 10 Aug 2022 15:58:35 +0200
+        Wed, 10 Aug 2022 07:01:35 -0700 (PDT)
+Message-ID: <518f22f4-1582-924c-9eaa-28ebbe53a632@baylibre.com>
+Date:   Wed, 10 Aug 2022 16:01:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH] thermal/core: Add missing EXPORT_SYMBOL_GPL
+Subject: Re: [PATCH] spi: meson-spicc: save pow2 datarate between messages
 Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220810100731.749317-1-daniel.lezcano@linaro.org>
- <CAJZ5v0iv4oMsZyUg7-YY6cD2jsYyLdi7sDeE0GEm814kCEAvmQ@mail.gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <CAJZ5v0iv4oMsZyUg7-YY6cD2jsYyLdi7sDeE0GEm814kCEAvmQ@mail.gmail.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Da Xue <da@libre.computer>
+References: <20220809152019.461741-1-narmstrong@baylibre.com>
+ <YvJ84qkuXdvVgXRm@sirena.org.uk>
+ <39c2f53b-8f53-ceb1-ae0c-81e5e53d01aa@baylibre.com>
+ <YvOmnDJA+ov49chC@sirena.org.uk>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <YvOmnDJA+ov49chC@sirena.org.uk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/08/2022 13:58, Rafael J. Wysocki wrote:
-> On Wed, Aug 10, 2022 at 12:07 PM Daniel Lezcano
-> <daniel.lezcano@linaro.org> wrote:
->>
->> The function thermal_zone_device_register_with_trips() is not exported
->> for modules.
->>
->> Add the missing EXPORT_SYMBOL_GPL().
->>
->> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+On 10/08/2022 14:37, Mark Brown wrote:
+> On Wed, Aug 10, 2022 at 11:17:14AM +0200, Neil Armstrong wrote:
+>> On 09/08/2022 17:27, Mark Brown wrote:
+>>> On Tue, Aug 09, 2022 at 05:20:19PM +0200, Neil Armstrong wrote:
 > 
-> A Fixes tag missing?
-
-I've added the missing tag in the thermal/linux-next branch
-
-https://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git/commit/?h=thermal/linux-next&id=78ad78d78b43538e6dcbce3fd0699f15b79cfe3f
-
+>>> When you say the value set by the clock framework does that mean that
+>>> the clock driver is adjusting hardware inside the SPI controller IP
+>>> block which is then getting reset by the SPI driver without the SPI
+>>> driver knowing about it?  That seems like a bad idea as you're finding
+>>> here.
 > 
->> ---
->>   drivers/thermal/thermal_core.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
->> index b4c68410c158..10c979dce512 100644
->> --- a/drivers/thermal/thermal_core.c
->> +++ b/drivers/thermal/thermal_core.c
->> @@ -1329,6 +1329,7 @@ thermal_zone_device_register_with_trips(const char *type, struct thermal_trip *t
->>          kfree(tz);
->>          return ERR_PTR(result);
->>   }
->> +EXPORT_SYMBOL_GPL(thermal_zone_device_register_with_trips);
->>
->>   struct thermal_zone_device *thermal_zone_device_register(const char *type, int ntrips, int mask,
->>                                                           void *devdata, struct thermal_zone_device_ops *ops,
->> --
->> 2.34.1
->>
+>> The SPI driver is explicitely triggering a reset at the end of each message
+>> to get back to a clean HW state, but it does reset the content of the "legacy"
+>> registers containing the power of 2 divider value, the new registers configuring
+>> the new clock divider path (only on newer SoCs) doesn't get cleared.
+> 
+> Sure, but that doesn't really address the concern - is this something
+> that the clk driver programmed or is this the driver forgetting to
+> restore a register that it programmed itself?  The commit message sounds
+> like the former which is a much bigger problem.
 
+It's what is programmed by the Clock Framework yes, it was designed as-is
+so the Clock Framework takes the most accurate clock path but the reset case
+wasn't taken in account.
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Neil
