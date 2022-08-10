@@ -2,78 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E48C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E81C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232032AbiHJJVJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47206 "EHLO
+        id S231616AbiHJJVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbiHJJVG (ORCPT
+        with ESMTP id S232059AbiHJJVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:21:06 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E9B6B162;
-        Wed, 10 Aug 2022 02:21:02 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 4BB5E1C000B; Wed, 10 Aug 2022 11:21:00 +0200 (CEST)
-Date:   Wed, 10 Aug 2022 11:20:59 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/32] 4.19.255-rc1 review
-Message-ID: <20220810092059.GA1540@duo.ucw.cz>
-References: <20220809175513.082573955@linuxfoundation.org>
+        Wed, 10 Aug 2022 05:21:17 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8394B6B168
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:21:16 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id b4-20020a92c564000000b002df416e18a7so10100842ilj.7
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:21:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=beK/RyAk6JMkokDhacR9sWsAak3KfcE5cJn8YM9YfXo=;
+        b=CoK/T89im2JphSwafpe+E0XpJPBOJ86NRcuRGT+yn+oOPcpzYzoCPIgxvASH1+GWrC
+         l7Lwl8qe3UoxLil1l4uy0ztqzZmhdE/s1zs/6DAfkKVv77U+yAPSx6Yr6+gF0cW9bQJH
+         hUDCU2BH5HCUE+iGuYatNP51+gXWqOWJYjPc21adThTAlGElIrsxYIE7NorbAZWtQFZs
+         zBKKYQuvMtz8NNHY3j/HRvt/dgA4VvcCPrtug2Yfi4ck0NKvbm/mxQuT9cASNW5i59fU
+         WhqLkl+P6rxRKt+Q2MfdK4Txm+anaHVIly6I2sGtL17IJyMkeC4VrvRqwHF/ymPgL5V4
+         n4JQ==
+X-Gm-Message-State: ACgBeo3VKDeyAj0fYsY5DNqLKL7ZbeD+bLnvizUtMCM3dR608qwio4aj
+        HcU/Qyg7BSdtn2NtYf9k9jcYsPy9iHVJmVnEJHv+uGSnhPY7
+X-Google-Smtp-Source: AA6agR6ue90cOnN3b6APDtHTxxyZV2Ri32eZNHueoSS0CsGnxVIUIlx6F7PHmVBLe5nS869MW/sVtQ8z8zKRyRqMpful94vI3koA
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
-Content-Disposition: inline
-In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a05:6638:3721:b0:343:47cc:848d with SMTP id
+ k33-20020a056638372100b0034347cc848dmr150268jav.84.1660123275927; Wed, 10 Aug
+ 2022 02:21:15 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 02:21:15 -0700
+In-Reply-To: <000000000000f2b07b05d5dc87cc@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000025251905e5df9239@google.com>
+Subject: Re: [syzbot] general protection fault in fscache_free_cookie
+From:   syzbot <syzbot+5b129e8586277719bab3@syzkaller.appspotmail.com>
+To:     dhowells@redhat.com, linux-cachefs-bounces@redhat.com,
+        linux-cachefs-owner@redhat.com, linux-cachefs@redhat.com,
+        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---fdj2RfSjLxBAspz7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi!
-
-> This is the start of the stable review cycle for the 4.19.255 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-
-CIP testing did not find any problems here:
-
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y
-
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>
-
-Best regards,
-                                                                Pavel
-
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---fdj2RfSjLxBAspz7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYvN4ewAKCRAw5/Bqldv6
-8rFIAKCFwkLJUTpYG6/xTUaW2bIDYtZ5HwCgsgHsJnpKGYOnauER7luWzKqSYec=
-=1XzE
------END PGP SIGNATURE-----
-
---fdj2RfSjLxBAspz7--
+This bug is marked as fixed by commit:
+fscache: fix GPF in fscache_free_cookie
+But I can't find it in any tested tree for more than 90 days.
+Is it a correct commit? Please update it by replying:
+#syz fix: exact-commit-title
+Until then the bug is still considered open and
+new crashes with the same signature are ignored.
