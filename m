@@ -2,89 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D62C25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFB5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbiHJBZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 21:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        id S230010AbiHJB0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 21:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiHJBYh (ORCPT
+        with ESMTP id S229460AbiHJB0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 21:24:37 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3EE60686
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 18:24:36 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id v3so16188901wrp.0
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 18:24:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=mXbQNg6xL4amK0e8t2R+lhFBx4wz53d/3c+qVrE8XHQ=;
-        b=op7XGQ/C392xu2zrnE49ze1FL2X/BB3TSORunubDIWKmitp1TLcY6O90TfdNYXvIW/
-         I7nWo69gvFaL3WiOO7zePx5tpo2DJNfPXcdSNBZYKedmn0vrrNrh7n7zFL+Def1g2U7/
-         fMUlVyAIFFHQR74Wfsfp6J21m1Y35D2MyCLOOIKEKnJToIz3tp/+fi7Ap/jiLfKkvDaz
-         mAp9Zz851/7pQPHSJXlCxdQq8uKfxguAT27V+Hze0qDBI896Jia8hJShF/FbA/RBLlhK
-         elLfNrOA702fCyHYKMBhdUEr85bN/XPjGgenSxWZCDEhg3PzcxR2Hf0b5J+V7D6IagQd
-         wqkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=mXbQNg6xL4amK0e8t2R+lhFBx4wz53d/3c+qVrE8XHQ=;
-        b=TRQmdvGMtoFG6AH6xtt0lX+hw8N+w/6hb4P+EmJogjjOT/N8m/Kql/psRX+y+BnjJs
-         Ee+zjmDPnZXDhtwYTrmghJNXA2ToehncK+hPontIWSUGOf9Us3Kuj0KyNk2ub0xSVW3Y
-         MJ0FPSwpXP8zxEYK+kgxryKC+dTkxl5rzQLAU7HnqZDILb1HEDu8FjhAyfPc/LVnWHID
-         fSwXZZQTPiqEvvHltC72/bn5zfPrvMIEIL0ggZ27PzJogAzK2xausOIwKd5KsktbW1hR
-         j4vks7D5hYyepPrLoiYtEab1CfAamH8vXMZ1b/Ql559wjgp1JPpcFijmEhV+K7HNpEqw
-         cRQg==
-X-Gm-Message-State: ACgBeo34wmtefwmVO6q61cCX5orMRLnXEcB4GPKqY64l/3aw7Z44kZEv
-        fxUdF5JuyQbxcDjjaFvgRhdTTXkuzcDlxT7wuHWwIQ==
-X-Google-Smtp-Source: AA6agR7YwzWUpfkACpeYV8uYguM7R+gPEIWJxB4Le3ZfVGmWnbsjVoQBJaXHBRBWgEBkMKC/Ubjqi4/VywGWwd8ntvM=
-X-Received: by 2002:a05:6000:1869:b0:220:639b:8337 with SMTP id
- d9-20020a056000186900b00220639b8337mr16291929wri.572.1660094674949; Tue, 09
- Aug 2022 18:24:34 -0700 (PDT)
+        Tue, 9 Aug 2022 21:26:10 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F815FADD
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 18:26:09 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2XJz3RDFzmVcn;
+        Wed, 10 Aug 2022 09:24:03 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 10 Aug 2022 09:26:07 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
+ 2022 09:26:06 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <maz@kernel.org>, <james.morse@arm.com>,
+        <alexandru.elisei@arm.com>, <suzuki.poulose@arm.com>,
+        <oliver.upton@linux.dev>
+Subject: [PATCH v3] KVM: arm64: fix compile error because of shift overflow
+Date:   Wed, 10 Aug 2022 09:34:35 +0800
+Message-ID: <20220810013435.1525363-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220805214734.1937451-1-eugenis@google.com> <875yj1x0k0.wl-maz@kernel.org>
- <CAFKCwrjVaOdrGktxVHLCDPyJSRjZ0B3FHTGsb3PXMULL=dw9rA@mail.gmail.com>
- <87v8r1uztz.wl-maz@kernel.org> <CAFKCwriq-Vh+fhxso=xqtKzkL95QkYOOkMR8XwTOJfeg1M-2qQ@mail.gmail.com>
-In-Reply-To: <CAFKCwriq-Vh+fhxso=xqtKzkL95QkYOOkMR8XwTOJfeg1M-2qQ@mail.gmail.com>
-From:   Peter Collingbourne <pcc@google.com>
-Date:   Tue, 9 Aug 2022 18:24:23 -0700
-Message-ID: <CAMn1gO5Va0eVFqzoOLLLJ+C+x-5=cc4qXDTw0e9J7v0RpYWusA@mail.gmail.com>
-Subject: Re: [PATCH] mte: Follow arm64.nomte override in MMU setup.
-To:     Evgenii Stepanov <eugenis@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 10:29 AM Evgenii Stepanov <eugenis@google.com> wrote:
->
-> On Tue, Aug 9, 2022 at 9:49 AM Marc Zyngier <maz@kernel.org> wrote:
-> >
-> > In which case what is the tag memory doing in the linear map?
-> > Shouldn't it be marked as reserved, not mapped, and in general
-> > completely ignored by the NS OS?
->
-> That would be wasteful. The idea is to only reserve the parts of the
-> tag memory that correspond to the TZ carveout and release the rest to
-> the NS OS.
+Using GENMASK() to generate the masks of device type and device id, it makes
+code unambiguous, also it can fix the following fix compile error because of
+shift overflow when using low verison gcc(mine version is 7.5):
 
-More generally, one can imagine a system where *any* tagged memory
-transaction can result in an SError because the MTE implementation was
-not configured by an earlier bootloader phase, e.g. because the
-bootloader was configured to disable MTE at runtime. On such systems,
-the kernel must refrain from causing tagged memory transactions to be
-issued via the linear map, and that's exactly what this patch does.
+In function ‘kvm_vm_ioctl_set_device_addr.isra.38’,
+    inlined from ‘kvm_arch_vm_ioctl’ at arch/arm64/kvm/arm.c:1454:10:
+././include/linux/compiler_types.h:354:38: error: call to ‘__compiletime_assert_599’ \
+declared with attribute error: FIELD_GET: mask is not constant
+  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
 
-Peter
+Fixes: 9f968c9266aa ("KVM: arm64: vgic-v2: Add helper for legacy dist/cpuif base address setting")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v3:
+ replace '15/31' with 'SHIFT + 15' to make it more readable.
+v2:
+  Using GENMASK() to generate the masks.
+---
+ arch/arm64/include/uapi/asm/kvm.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+index 3bb134355874..316917b98707 100644
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -75,9 +75,11 @@ struct kvm_regs {
+ 
+ /* KVM_ARM_SET_DEVICE_ADDR ioctl id encoding */
+ #define KVM_ARM_DEVICE_TYPE_SHIFT	0
+-#define KVM_ARM_DEVICE_TYPE_MASK	(0xffff << KVM_ARM_DEVICE_TYPE_SHIFT)
++#define KVM_ARM_DEVICE_TYPE_MASK	GENMASK(KVM_ARM_DEVICE_TYPE_SHIFT + 15, \
++						KVM_ARM_DEVICE_TYPE_SHIFT)
+ #define KVM_ARM_DEVICE_ID_SHIFT		16
+-#define KVM_ARM_DEVICE_ID_MASK		(0xffff << KVM_ARM_DEVICE_ID_SHIFT)
++#define KVM_ARM_DEVICE_ID_MASK		GENMASK(KVM_ARM_DEVICE_ID_SHIFT + 15, \
++						KVM_ARM_DEVICE_ID_SHIFT)
+ 
+ /* Supported device IDs */
+ #define KVM_ARM_DEVICE_VGIC_V2		0
+-- 
+2.25.1
+
