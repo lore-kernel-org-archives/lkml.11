@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D77CC00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 687BDC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbiHJHrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 03:47:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
+        id S231411AbiHJHsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 03:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231356AbiHJHqs (ORCPT
+        with ESMTP id S231430AbiHJHrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 03:46:48 -0400
+        Wed, 10 Aug 2022 03:47:41 -0400
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDAC6E880;
-        Wed, 10 Aug 2022 00:46:47 -0700 (PDT)
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27A77pFg023911;
-        Wed, 10 Aug 2022 07:46:31 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BC66E8A2;
+        Wed, 10 Aug 2022 00:47:40 -0700 (PDT)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27A4xHSk026309;
+        Wed, 10 Aug 2022 07:46:58 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=EVrrA2igkIFkqdzYyhExZvBddokYK1TV+gNlMRojUY0=;
- b=RYYImUb9lQlYEhaa2xSIu5Ck8tLbZ62P7wbC0n0mIX7MkJtp3jVBis93Ya0Exzgf9/Fa
- qrGiA24K5D73pa93A5At9A3CYUB/rWmmEaipOnkms4LNjg4qHvRrtCDAVeZec1NZOyPs
- BbcdP5mlXayDeE71mXrRCD76qn0EUxjsXJeNy45lJzlhr/HTSgO/9YOvj5vbGNQAuZHT
- qcjP81yuiThBihBuzWhM22S3Wx6so5qlcDwFgIk9m6Z9/7hIoHn+l/gWKxoqv8B7j2cv
- bmQvNX5ATH9Sb9RLgnCjNbW3xiGGkpbaK15mRU2HF1QBy0f8iCYWj9Qti28lJRu69dfk SA== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3huwqm9jsd-1
+ bh=kw2ZC8sC7x+cqfiQ3ZNhh2i8yULi4ctNpNX8Ot1GGII=;
+ b=cFyiP88LdcfcWDYpYTBYSWJjPtZbBfyi6YjBJvycHpRIHgNRZEW1LZd/MMZCEBFZzoI1
+ yAi2F0p4nbj+vT9spYvUjaHqzXEDunbGnq9+MRy+MjFxS6vS3HWuT2zCbEVlRYoYcn8G
+ OO+Lcr1jjIM7+ZoM/atJkXxqYAh60bPsnpi8+VcTCONXm2N+OtiGRK0UJuMQYDkSJ/De
+ /Qa6m2+8c5ldIMkrOufT5O/t/itaVqFcjj3VwdG+sB0CKspYDC7o0XdwLiNzi1X1QkWB
+ opY609GEsAg31QItzW7tlRCrnd3SYuauj8nTCM6KjfGpKSjEMDpR8g025ooT7tNiB9vz LQ== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3huwqgsknn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 07:46:31 +0000
+        Wed, 10 Aug 2022 07:46:58 +0000
 Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27A7kUa6009639
+        by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27A7kvJM007719
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 07:46:30 GMT
+        Wed, 10 Aug 2022 07:46:57 GMT
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 10 Aug 2022 00:46:30 -0700
+ 15.2.986.22; Wed, 10 Aug 2022 00:46:57 -0700
 Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 10 Aug 2022 00:46:24 -0700
+ 15.2.986.22; Wed, 10 Aug 2022 00:46:51 -0700
 From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
         <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
@@ -53,9 +53,9 @@ To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
         <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
         <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
 CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v3 1/8] dt-bindings: remoteproc: qcom: adsp: Make ADSP pil loader as generic
-Date:   Wed, 10 Aug 2022 13:15:51 +0530
-Message-ID: <1660117558-21829-2-git-send-email-quic_srivasam@quicinc.com>
+Subject: [PATCH v3 6/8] remoteproc: qcom: Add efuse evb selection control
+Date:   Wed, 10 Aug 2022 13:15:56 +0530
+Message-ID: <1660117558-21829-7-git-send-email-quic_srivasam@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1660117558-21829-1-git-send-email-quic_srivasam@quicinc.com>
 References: <1660117558-21829-1-git-send-email-quic_srivasam@quicinc.com>
@@ -66,52 +66,69 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: vItlZ4c0hq1HNWyu2hQDqsyULdyt5iAC
-X-Proofpoint-ORIG-GUID: vItlZ4c0hq1HNWyu2hQDqsyULdyt5iAC
+X-Proofpoint-GUID: FWtNN2bzBRZin2gP8hRV3nvFWfzCHZj1
+X-Proofpoint-ORIG-GUID: FWtNN2bzBRZin2gP8hRV3nvFWfzCHZj1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-10_03,2022-08-09_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
- impostorscore=0 mlxlogscore=795 bulkscore=0 malwarescore=0
- priorityscore=1501 suspectscore=0 mlxscore=0 clxscore=1015 spamscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0 bulkscore=0
+ mlxlogscore=990 mlxscore=0 phishscore=0 impostorscore=0 clxscore=1015
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208100022
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename sdm845 adsp pil bindings to generic name, for using same binings
-file for subsequent SoCs.
+Add efuse evb selection control and enable it for starting ADSP.
 
 Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 ---
-Changes since V2:
-	-- Generate patch with -M flag.
+ drivers/remoteproc/qcom_q6v5_adsp.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
- .../{qcom,sdm845-adsp-pil.yaml => qcom,lpass-adsp-pil.yaml}           | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
- rename Documentation/devicetree/bindings/remoteproc/{qcom,sdm845-adsp-pil.yaml => qcom,lpass-adsp-pil.yaml} (97%)
-
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
-similarity index 97%
-rename from Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-rename to Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
-index 1535bbb..9f11332 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
-@@ -1,10 +1,10 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/remoteproc/qcom,sdm845-adsp-pil.yaml#
-+$id: http://devicetree.org/schemas/remoteproc/qcom,lpass-adsp-pil.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
+index 141fd339..f2945bf 100644
+--- a/drivers/remoteproc/qcom_q6v5_adsp.c
++++ b/drivers/remoteproc/qcom_q6v5_adsp.c
+@@ -56,6 +56,7 @@
  
--title: Qualcomm SDM845 ADSP Peripheral Image Loader
-+title: Qualcomm LPASS ADSP Peripheral Image Loader
+ #define LPASS_BOOT_CORE_START	BIT(0)
+ #define LPASS_BOOT_CMD_START	BIT(0)
++#define LPASS_EFUSE_Q6SS_EVB_SEL 0x0
  
- maintainers:
-   - Bjorn Andersson <bjorn.andersson@linaro.org>
+ struct adsp_pil_data {
+ 	int crash_reason_smem;
+@@ -86,6 +87,7 @@ struct qcom_adsp {
+ 	struct clk_bulk_data *clks;
+ 
+ 	void __iomem *qdsp6ss_base;
++	void __iomem *lpass_efuse;
+ 
+ 	struct reset_control *pdc_sync_reset;
+ 	struct reset_control *restart;
+@@ -368,6 +370,9 @@ static int adsp_start(struct rproc *rproc)
+ 	/* Program boot address */
+ 	writel(adsp->mem_phys >> 4, adsp->qdsp6ss_base + RST_EVB_REG);
+ 
++	if (adsp->lpass_efuse)
++		writel(LPASS_EFUSE_Q6SS_EVB_SEL, adsp->lpass_efuse);
++
+ 	/* De-assert QDSP6 stop core. QDSP6 will execute after out of reset */
+ 	writel(LPASS_BOOT_CORE_START, adsp->qdsp6ss_base + CORE_START_REG);
+ 
+@@ -522,6 +527,11 @@ static int adsp_init_mmio(struct qcom_adsp *adsp,
+ 		return PTR_ERR(adsp->qdsp6ss_base);
+ 	}
+ 
++	adsp->lpass_efuse =  devm_platform_ioremap_resource_byname(pdev, "lpass_efuse");
++	if (IS_ERR(adsp->lpass_efuse)) {
++		adsp->lpass_efuse = NULL;
++		dev_dbg(adsp->dev, "failed to map LPASS efuse registers\n");
++	}
+ 	syscon = of_parse_phandle(pdev->dev.of_node, "qcom,halt-regs", 0);
+ 	if (!syscon) {
+ 		dev_err(&pdev->dev, "failed to parse qcom,halt-regs\n");
 -- 
 2.7.4
 
