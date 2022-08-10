@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A82C1C25B07
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96157C00140
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 20:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbiHJUWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 16:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
+        id S232738AbiHJUWN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 16:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230209AbiHJUWH (ORCPT
+        with ESMTP id S230492AbiHJUWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 16:22:07 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E3811468
+        Wed, 10 Aug 2022 16:22:08 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861CE12AD9
         for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 13:22:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1660162927; x=1691698927;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3UfGyFVQ2WmrPgaEdcoJCW+o1R+svTrwDPYf3xkTFJ0=;
-  b=YhAD5OQHaoQDEtoUPyiXZ/PfX4UFVL7AySgYKbYLyuDJqgpuTAz/N0zB
-   su3+ssgiq/y9oNWbiByBQmLm29MCBTHMDg34nprV8cj0USijCmBQH3x8T
-   gnSiSoTuDp459qghtli0W3xltN9I4BL4TmWIzj6Yw6L5+kiVLFXBueW2B
-   koTHNRkyIG3/cemNTsBjHolVG+MM2R7qzdUnNA61FVtFeCc7HkShb7uMM
-   4IcI8vZxmf3YmlsLWhaErFNiUeJn1ED7kHnIKs2pQZjeRwv+N13MzYyBi
-   lvuSvuRWQsjV8yvQ/AkTLI66RUXLlXdrnufmRk4ar4XROvLKyIumhUDWO
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="288752444"
+  bh=ihiZiczXoJLr8/d4cifJsJgiNY/aT7mxmMEmLwUyNxM=;
+  b=ExVRbmdOI/RiB5j8FN8Ke9sz7KzB7xm/rDjfsfLK64gDsWgv3rgP0Iyv
+   HvT4wgKfEEDKQ21DaCyE4vzieJnhINA2QvzVVrmC9Hcf5tVqZS4/Oo8hH
+   oOngMe/dh4qzZSUM9FmGVlx0q43SgvQVJDCjASW5HRH7BCQ+LkXZqJpk4
+   D8rxqMyO39tiE2scGRO47VB8Nv4h+z8/vJfavZiSCm1RDjv7+Y/9msJkC
+   id+t66W4O5ReWYkVeMKKGa8SEkrBpKMZEj+ZTc9Fna5mKU/DeDj3GO7u8
+   BI+ohhv3AHrdI5LrBM60/e0zemdRp/341BuuXYXsmUY/CuQylqldD3a83
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="274239798"
 X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="288752444"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 13:22:06 -0700
+   d="scan'208";a="274239798"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 13:22:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="850957673"
+   d="scan'208";a="605285668"
 Received: from lkp-server02.sh.intel.com (HELO 5d6b42aa80b8) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Aug 2022 13:22:05 -0700
+  by orsmga002.jf.intel.com with ESMTP; 10 Aug 2022 13:22:06 -0700
 Received: from kbuild by 5d6b42aa80b8 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oLsDN-0000gL-0X;
+        id 1oLsDN-0000gI-0P;
         Wed, 10 Aug 2022 20:22:05 +0000
-Date:   Thu, 11 Aug 2022 04:21:58 +0800
+Date:   Thu, 11 Aug 2022 04:21:56 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Mikhail Khelik <mkhelik@cisco.com>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
         Hans Verkuil <hverkuil@xs4all.nl>
 Subject: [hverkuil-media-tree:hdcp 3/4] drivers/media/i2c/adv7842.c:3449:38:
  warning: 'adv7842_ctrl_hdcp_auth' defined but not used
-Message-ID: <202208110437.wfh39aEX-lkp@intel.com>
+Message-ID: <202208110420.xBIcVvwn-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -59,7 +59,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 tree:   git://linuxtv.org/hverkuil/media_tree.git hdcp
 head:   da521c491aa5d01b7a920ef66c8d9aef36f14a02
 commit: aea22ce596846ba20f94105739f3867b8459ae45 [3/4] Added HDCP support for ADV7842
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220811/202208110437.wfh39aEX-lkp@intel.com/config)
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220811/202208110420.xBIcVvwn-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
 reproduce (this is a W=1 build):
         git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
@@ -67,7 +67,7 @@ reproduce (this is a W=1 build):
         git checkout aea22ce596846ba20f94105739f3867b8459ae45
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/media/i2c/
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/media/i2c/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
