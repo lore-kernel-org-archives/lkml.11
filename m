@@ -2,72 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2202BC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 11:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D168EC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 11:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232066AbiHJLb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 07:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
+        id S232070AbiHJLcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 07:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiHJLaz (ORCPT
+        with ESMTP id S232068AbiHJLbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 07:30:55 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4AF75FE5;
-        Wed, 10 Aug 2022 04:30:54 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id t1so20814336lft.8;
-        Wed, 10 Aug 2022 04:30:54 -0700 (PDT)
+        Wed, 10 Aug 2022 07:31:34 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7439D6DF96;
+        Wed, 10 Aug 2022 04:31:33 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id x19so12538260lfq.7;
+        Wed, 10 Aug 2022 04:31:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=eB7oLoCQF6payCuc5mHfMzJURoGI/V0Crtv4U4P2dAI=;
-        b=jw+YMrEl/xDtcCkzbVNModdhkasctgvd4R8F/uvn33TCxkX+hwPGiENWLDDcWV7kAG
-         cYkRt5HOJZdUkwEUjkNv6WJo5l171joS98ni5erRsormwBzF7FGYkRbxDuZ79NR8uxAi
-         RuSd2LBFGE1qOW5SE65EpMVyY8jNTglYfR2hgI44ZVPBecA7V94u/Cky8Pk1zW5j4q7V
-         0z7qLiUDEdGjmmHZj8dn73AwZA0m42JrmNjefT/i26Zgk5VldmU8thpLAgYR4nFZmXvo
-         JdO4lmGwnrd3jqpxwNledgLr8aVcafZ/5z46W2+UBYsL6hR/0s2hYSZxsuC4BCkkZxIK
-         s5eg==
+        bh=orgHsxCL/eDSeRNUzdbN1mK+oxAKvucrAmf97xEKdZ4=;
+        b=aQBbvfoxFa5ZcvxCLanORYq1fw6LPa6LJS0OX6FJ0JtBpG5jUfth69xuLBOg1Pb36N
+         W/3oXgvSrJxxSowDotXK1W7QR/tQX+wOJ3vc4ZGNP50sdBTohycLImlEEdHbKEBuf6MC
+         JDEqLFaQ55xdrfizREF5egPILUc0JxUeBxHGr1fIVbur0jVNRixK97P/J6FvCi3W0bl/
+         nVGWZFxHEAsOeqCKKqYc0OzbCU9uunyxjcDwiCxvsWOMqVzjq8xc69l946Q6IWAuQHF9
+         xtbIuMg/I1lCvB7wvfHTh1n7CSw6HjBr/3kT7LuX25ZQH0TEdPtlJG17wzbGaE0jSWen
+         f/Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=eB7oLoCQF6payCuc5mHfMzJURoGI/V0Crtv4U4P2dAI=;
-        b=rj163t9H1qByHt1ZosoVRDT3vA9USIVV+LIyDSK9FXdK89vTg8m4i9DScMZ9++rJ9o
-         TQKnyo2Y6nnbiY5fuCb8uA2NTsmt5gk3LnUS6K8i3vV0Yzf0Z9f7DacyhRxJjjboNKQq
-         FBiAkX5xLZhqt/SNc/7kGtXAcOPAf4FEDI5kp0m4/jmB9hHq8RBSxdxkPI+DkgCOvN1m
-         ZWWRvlNjQAzLRLFZX10rT79nHKQ5FoR7aPyEZ3uwJaWUezIQf+R+CU1E/Uufzv3kGNBZ
-         TZHeQRJPPpp2thTLxJ23oLK3YvxWhvnKBXo/q2DevCPk/WVTfh359Tt/WLoR7CH+UkhA
-         Zs9Q==
-X-Gm-Message-State: ACgBeo3uH+AQGge83gb58vyqCkfVi1i42m3C3UdQNC9rQUw2w4ZhzOrS
-        8mS1ZATritlg/bwSJOR28Ew=
-X-Google-Smtp-Source: AA6agR7b7RztjkrU1SD51bchus+hJlyMSsls6cXl5Pq+GNFYFU/CdxrG1O0ZZCdJRM+AX+zvDwB9dg==
-X-Received: by 2002:ac2:4c4c:0:b0:48b:9780:2b3 with SMTP id o12-20020ac24c4c000000b0048b978002b3mr6500559lfk.682.1660131052543;
-        Wed, 10 Aug 2022 04:30:52 -0700 (PDT)
+        bh=orgHsxCL/eDSeRNUzdbN1mK+oxAKvucrAmf97xEKdZ4=;
+        b=nAkYku9lWJOk0KuKTmL2DIeq/QAXf9AHLU4gLL83+FgVLHfD26OE6gL25kA1NpQULJ
+         ilUQLhyAxvIh1j21BgXostRqF6YGw3IXf3PO/iCcJ7mn5BsSFLRwhLEI4dZakuNNBOfC
+         Ymz/LQ21n8aEc5Mp0Wc8kcvNvchcw3utwbVcLcL5P6RebbP7yPtqCiDqKpd9vX43Esnv
+         fTnIcIhCXjfTLxG9MM3EHA3FBvQLamTatdOCkIJgoN8VQq8EJUD8s7u3yURTpLVUAS11
+         NuD6WZyrCgYnqGB2+Etd1yw1MWgcXvoUQjcX7cJC0Unc2Jafxz55FYKu1hIFMLTmn9CR
+         Yr6w==
+X-Gm-Message-State: ACgBeo0BEIcXALls2yF3ryx48fM0NFYB0A1EXprdx9iEw9q7MqZqj68h
+        CMaBpfDJ+4r+VEzJ+dQOHLCh6M+8xzhwgQ==
+X-Google-Smtp-Source: AA6agR7JBR57kzyt+os6biJsAEIfgSQ8d2KfZwIU6MqbBsmV7bTr8/YkqnI+aQiMYBwj/s8+hOWD6g==
+X-Received: by 2002:a05:6512:32c5:b0:48b:969a:9c24 with SMTP id f5-20020a05651232c500b0048b969a9c24mr6704678lfg.300.1660131091804;
+        Wed, 10 Aug 2022 04:31:31 -0700 (PDT)
 Received: from fedora ([213.255.186.46])
-        by smtp.gmail.com with ESMTPSA id d23-20020a056512369700b00489c6c76385sm304917lfs.268.2022.08.10.04.30.51
+        by smtp.gmail.com with ESMTPSA id f18-20020a19ae12000000b0048b998be041sm300359lfc.309.2022.08.10.04.31.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 04:30:51 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 14:30:36 +0300
+        Wed, 10 Aug 2022 04:31:30 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 14:31:16 +0300
 From:   Matti Vaittinen <mazziesaccount@gmail.com>
 To:     matti.vaittinen@fi.rohmeurope.com, mazziesaccount@gmail.com
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 3/7] docs: devres: regulator: Add new get_enable
- functions to devres.rst
-Message-ID: <1f935c9ef14fd95663646c1dfd22483ac4b71fe1.1660127865.git.mazziesaccount@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 4/7] clk: cdce925: simplify using
+ devm_regulator_get_enable()
+Message-ID: <7daaf2e66cc72d646e88a93e8cca39e104ef6505.1660127865.git.mazziesaccount@gmail.com>
 References: <cover.1660127865.git.mazziesaccount@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="b5brqWRO9x+JmUFp"
+        protocol="application/pgp-signature"; boundary="pjh2KveCiReW/EIb"
 Content-Disposition: inline
 In-Reply-To: <cover.1660127865.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -75,33 +68,61 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---b5brqWRO9x+JmUFp
+--pjh2KveCiReW/EIb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Add the new devm_regulator_get_enable() and
-devm_regulator_get_enable_optional() to devres.rst
+Simplify the driver using devm_regulator_get_enable() instead of
+open-coding the devm_add_action_or_reset().
+
+A (minor?) functional change is that we don't print an error in case of a
+deferred probe. Now we also print the error no matter which of the
+involved calls caused the failure.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
 ---
- Documentation/driver-api/driver-model/devres.rst | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clk/clk-cdce925.c | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentati=
-on/driver-api/driver-model/devres.rst
-index 271d1eb2234b..6ee8e9ab2478 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -409,6 +409,8 @@ REGULATOR
-   devm_regulator_bulk_register_supply_alias()
-   devm_regulator_bulk_get()
-   devm_regulator_get()
-+  devm_regulator_get_enable()
-+  devm_regulator_get_enable_optional()
-   devm_regulator_get_exclusive()
-   devm_regulator_get_optional()
-   devm_regulator_irq_helper()
+diff --git a/drivers/clk/clk-cdce925.c b/drivers/clk/clk-cdce925.c
+index ef9a2d44e40c..6350682f7e6d 100644
+--- a/drivers/clk/clk-cdce925.c
++++ b/drivers/clk/clk-cdce925.c
+@@ -603,28 +603,15 @@ of_clk_cdce925_get(struct of_phandle_args *clkspec, v=
+oid *_data)
+ 	return &data->clk[idx].hw;
+ }
+=20
+-static void cdce925_regulator_disable(void *regulator)
+-{
+-	regulator_disable(regulator);
+-}
+-
+ static int cdce925_regulator_enable(struct device *dev, const char *name)
+ {
+-	struct regulator *regulator;
+ 	int err;
+=20
+-	regulator =3D devm_regulator_get(dev, name);
+-	if (IS_ERR(regulator))
+-		return PTR_ERR(regulator);
+-
+-	err =3D regulator_enable(regulator);
+-	if (err) {
+-		dev_err(dev, "Failed to enable %s: %d\n", name, err);
+-		return err;
+-	}
++	err =3D devm_regulator_get_enable(dev, name);
++	if (err)
++		dev_err_probe(dev, err, "Failed to enable %s:\n", name);
+=20
+-	return devm_add_action_or_reset(dev, cdce925_regulator_disable,
+-					regulator);
++	return err;
+ }
+=20
+ /* The CDCE925 uses a funky way to read/write registers. Bulk mode is
 --=20
 2.37.1
 
@@ -118,19 +139,19 @@ Simon says - in Latin please.
 ~~~ "non cogito me" dixit Rene Descarte, deinde evanescavit ~~~
 Thanks to Simon Glass for the translation =3D]=20
 
---b5brqWRO9x+JmUFp
+--pjh2KveCiReW/EIb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmLzltwACgkQeFA3/03a
-ocWthwf/TFG58eWrBlE6Yb6BqzMfdJ4vdfY2vsp69hWKvC4iqjeJHjYDdpBisdwR
-OB4kNTr1sTHZYV5ZB30kHHdFvrIfsd+6btFKzcBa1CjgLZ3h9AJ0rRsXuaxhaTDV
-B/mz2U0vKaFPzuzS4HizIOGl73dvA7aoiKhdNIZeqgg5j5lWJwjUbtvUwMgIO1VB
-4qFNTpdD23pxN8t1E/YHdh42nAFDG55p+IocqmMKn08FkSMbLu0BhHF/HUxoyh7U
-gZuFwijAM25W0KmUgOBHIOQfx+zngVyT+kQf2IjGzRvqPBPHBjyFSvkeVbIel8n5
-cODNmCZorwBXEhGlHyUAtl3wVQZxHw==
-=eIgl
+iQEzBAEBCAAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmLzlwQACgkQeFA3/03a
+ocXROAgAmxCDpZZxZ93CGZ6jIwXn4OGmKyfR7a6PjxqD5qL2rGck9VBS1VZPenS7
++C7/Qu9ViKNCG+VU2ftVKQDh/PhHC83+6e7YPJQERS53clNvRZoth/Qntoaer1FA
+T3mWCTJyo/UDvWGixLOCtC4dMUXHys9vHKyTOiHXAGFU/rsvWHu0alSrv7ENm3Wr
+TzJWewPAYrUbHVGBG8/E3rYVTdQB7tAKYtC8h0ZqFwQwi6hrp4I8Vy1Y3TTdfX7K
+HDUFrIGbVEbISD+fLFTlTR8i2BNiUAVGfb+QAZSX6gkLUMGlaxylNKG73ovbvg3X
+Y3/dNRzZrKxRMPaGVYCbBKZUOnJ/qQ==
+=3blC
 -----END PGP SIGNATURE-----
 
---b5brqWRO9x+JmUFp--
+--pjh2KveCiReW/EIb--
