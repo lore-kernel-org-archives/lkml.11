@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BC5C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CE3C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232654AbiHJNfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        id S232136AbiHJNhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbiHJNfl (ORCPT
+        with ESMTP id S231854AbiHJNhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:35:41 -0400
+        Wed, 10 Aug 2022 09:37:07 -0400
 Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59D345070
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:35:37 -0700 (PDT)
-X-QQ-mid: bizesmtp87t1660138534t671eein
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8863C61119
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:37:05 -0700 (PDT)
+X-QQ-mid: bizesmtp91t1660138621tyjh25xz
 Received: from localhost.localdomain ( [182.148.14.53])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 10 Aug 2022 21:35:32 +0800 (CST)
+        id ; Wed, 10 Aug 2022 21:37:00 +0800 (CST)
 X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: YHTLUubWl24Slu4pVAID6bxJUflmsmt+JbUdJbjA0TwZHDJ+hVF/dgy7djQt8
-        zQ8R6YlY51wydDSXpBqU7MrNG4ng2aoBZbZIdHNpAAj3EaC+XxDzuqeF90Yb9TRkvK38S5p
-        wwyxjOafxM7wr33uxjAPpkQzYdTUn3iMcbFg2R+hhvQmgqNVFy4RS2+qJZD4sKUHHwniD9A
-        ATMK2tptX7EwlqhfFUfwZieEoiBlJevNeEqvQARWx5uBQeTCB7EMgxCu2DRKCFHvuAXBISy
-        M3EDxH6CaV1p5YzYIkg37IaMSpUqS32NSgUkZFcLP3z8e0KUpXxkfwI9RBOLCoE949aLGbx
-        3Ksscsn0pvTzwKw+meqSYguo3swl9lXjZrR2JqzkfpUKPWtTw98Rbc+XFuKls5pCO05/Tyx
+X-QQ-FEAT: HIVLo4mOhq43Fq7BEHvabMsAS1Zg45v+vFnVO246XRRJsgce/ZriXp1vHMZmh
+        +CmT7ygsoNutrLCO+AhuJtcnxtHwOrnqqF4fKE1Y5CF8jcc7yYCZXlFTA1fKv13lNBsLzt0
+        X5/xncwrAkjElfPRoez5ea1e3z7qcV6BS3fthWYoOV2JWELWHKc1DUR4k6BXJkPiVHAWp5Z
+        POKAN5hbZU8aAhHJlxSLGDXk8JNQnCeuQgG+lv2AWdHeYIoEIf5QLggK7sXUFamXY69o3eU
+        X2QeNNsLUDBNxbjZinY9mAOUorpb4h2h7NzXmdjdbm9cJ8XK6q7ka4N5Rjyro6HCTMPm/V+
+        hjg2uVGJsE8V7yO0lGbLGJ79kolyDh+OAsqZ6bEo+Z6KFvPknuoRHD/975ns4Lztp0wObh6
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
 To:     miquel.raynal@bootlin.com, vigneshr@ti.com
 Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
         Jilin Yuan <yuanjilin@cdjrlc.com>
 Subject: [PATCH] mtd/ubi: fix repeated words in comments
-Date:   Wed, 10 Aug 2022 21:35:26 +0800
-Message-Id: <20220810133526.2958-1-yuanjilin@cdjrlc.com>
+Date:   Wed, 10 Aug 2022 21:36:53 +0800
+Message-Id: <20220810133653.3873-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -43,45 +43,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'also'.
  Delete the redundant word 'the'.
+ Delete the redundant word 'a'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/mtd/ubi/ubi.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/mtd/ubi/ubi-media.h | 2 +-
+ drivers/mtd/ubi/vmt.c       | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/ubi/ubi.h b/drivers/mtd/ubi/ubi.h
-index 078112e23dfd..0110eb3d4db6 100644
---- a/drivers/mtd/ubi/ubi.h
-+++ b/drivers/mtd/ubi/ubi.h
-@@ -86,7 +86,7 @@ void ubi_err(const struct ubi_device *ubi, const char *fmt, ...);
-  * Error codes returned by the I/O sub-system.
+diff --git a/drivers/mtd/ubi/ubi-media.h b/drivers/mtd/ubi/ubi-media.h
+index 386db0598e95..2c9cd3b6434f 100644
+--- a/drivers/mtd/ubi/ubi-media.h
++++ b/drivers/mtd/ubi/ubi-media.h
+@@ -131,7 +131,7 @@ enum {
+  * is changed radically. This field is duplicated in the volume identifier
+  * header.
   *
-  * UBI_IO_FF: the read region of flash contains only 0xFFs
-- * UBI_IO_FF_BITFLIPS: the same as %UBI_IO_FF, but also also there was a data
-+ * UBI_IO_FF_BITFLIPS: the same as %UBI_IO_FF, but also there was a data
-  *                     integrity error reported by the MTD driver
-  *                     (uncorrectable ECC error in case of NAND)
-  * UBI_IO_BAD_HDR: the EC or VID header is corrupted (bad magic or CRC)
-@@ -281,7 +281,7 @@ struct ubi_eba_leb_desc {
- 
- /**
-  * struct ubi_volume - UBI volume description data structure.
-- * @dev: device object to make use of the the Linux device model
-+ * @dev: device object to make use of the Linux device model
-  * @cdev: character device object to create character device
-  * @ubi: reference to the UBI device description object
+- * The @vid_hdr_offset and @data_offset fields contain the offset of the the
++ * The @vid_hdr_offset and @data_offset fields contain the offset of the
+  * volume identifier header and user data, relative to the beginning of the
+  * physical eraseblock. These values have to be the same for all physical
+  * eraseblocks.
+diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
+index 6ea95ade4ca6..8fcc0bdf0635 100644
+--- a/drivers/mtd/ubi/vmt.c
++++ b/drivers/mtd/ubi/vmt.c
+@@ -623,7 +623,7 @@ void ubi_free_volume(struct ubi_device *ubi, struct ubi_volume *vol)
+  * @ubi: UBI device description object
   * @vol_id: volume ID
-@@ -439,7 +439,7 @@ struct ubi_debug_info {
- 
- /**
-  * struct ubi_device - UBI device description structure
-- * @dev: UBI device object to use the the Linux device model
-+ * @dev: UBI device object to use the Linux device model
-  * @cdev: character device object to create character device
-  * @ubi_num: UBI device number
-  * @ubi_name: UBI device name
+  *
+- * Returns zero if volume is all right and a a negative error code if not.
++ * Returns zero if volume is all right and a negative error code if not.
+  */
+ static int self_check_volume(struct ubi_device *ubi, int vol_id)
+ {
+@@ -776,7 +776,7 @@ static int self_check_volume(struct ubi_device *ubi, int vol_id)
+  * self_check_volumes - check information about all volumes.
+  * @ubi: UBI device description object
+  *
+- * Returns zero if volumes are all right and a a negative error code if not.
++ * Returns zero if volumes are all right and a negative error code if not.
+  */
+ static int self_check_volumes(struct ubi_device *ubi)
+ {
 -- 
 2.36.1
 
