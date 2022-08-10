@@ -2,95 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BE9C19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA98FC25B0C
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 01:23:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbiHJBVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 21:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
+        id S229973AbiHJBW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 21:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiHJBU5 (ORCPT
+        with ESMTP id S229526AbiHJBW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 21:20:57 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E7E1147C;
-        Tue,  9 Aug 2022 18:20:56 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id q19so12343559pfg.8;
-        Tue, 09 Aug 2022 18:20:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=K8PB1ciS662o1jhXEW/30/xnIB1fBOdqWTq+opSx6m8=;
-        b=K5ZL9QYOWSZsR/ShTSrILo4k4ZAWTcKhdo8r/L9sgegOaH4Kagm2nvicjb/KBScaoa
-         OxQHtMrxRnj1OPOH0sxeqCkQG5k6Lt0Gy+zXx55QneuNCTN+caP02M/Pme2oHr9f+UjF
-         vJtcfBZLC5PMA5ENvK9lrwI8cDkPMlK7GWCOFX+Ovjoys0DY9S3E0aaQ3wlunzRE0l59
-         0xlK5p0mzbkuPId9nt9BEkPgDCQTJbIGQ+ttogMkxVGmjWGNcJZuo6XOxwZlh/PxrcHl
-         d/l1FPhk0mgA2mH/EZIPA4LL3B2P40QcoO+bURitbAtJ3FiIThP06msuHcUSi66iecbx
-         LHGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=K8PB1ciS662o1jhXEW/30/xnIB1fBOdqWTq+opSx6m8=;
-        b=hkAOIzh7hqYCYmcMQBxAOHjMHKPyUdV6GVC0YdE5I9Q51Rv00tYUsW++XDdwdpbk/n
-         LLI41G6L5j5NTPscVbxGxw2ed4WqOrKLZyhogI1dvIUDSE16AsBrAKEf0QHzHovOrNoI
-         Nvx1iPpSo9y0vY2K9bnt8jEBk62oT1yoGtMK26QKCjzPofe9+2Et1L/I0RIMS7FPXwlf
-         k3HF2ol4YbcTRDz40E14JKdwDCaf95G/+R7me4EoMWzB5PnT5GX/61BjY8owBNOvVAUp
-         UMSyXmIuqBh8MutXBTUR+LLXoU/0xd9GP7N5m00GBvKeRWce6hhPA8oYtyEO4oXNWh+5
-         BycA==
-X-Gm-Message-State: ACgBeo3Axj4l8zRc8dymz/N7Mj3MDBZFAgwRsyEhYYLAfxWXzKBIoeAN
-        0QvBF1AXpZqWK6+BbarxbHffCW5cVSLAwg==
-X-Google-Smtp-Source: AA6agR4GqR70FuMvJ7suELLr5AKo8xKVh84iqXtuNR07KxSiTtk66QetWIgLvl0R1XQOM1kT482y0g==
-X-Received: by 2002:a05:6a00:1948:b0:525:45e3:2eb7 with SMTP id s8-20020a056a00194800b0052545e32eb7mr25750251pfk.77.1660094455911;
-        Tue, 09 Aug 2022 18:20:55 -0700 (PDT)
-Received: from localhost.localdomain (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
-        by smtp.gmail.com with ESMTPSA id s18-20020a170903215200b0016c3affe60esm11356754ple.46.2022.08.09.18.20.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 18:20:55 -0700 (PDT)
-From:   Potin Lai <potin.lai.pt@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai.pt@gmail.com>
-Subject: [PATCH 2/2] ARM: dts: aspeed: bletchley: remove hdc1080 node
-Date:   Wed, 10 Aug 2022 00:43:38 +0000
-Message-Id: <20220810004338.329832-3-potin.lai.pt@gmail.com>
+        Tue, 9 Aug 2022 21:22:58 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB55C95F;
+        Tue,  9 Aug 2022 18:22:57 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M2XBx4V4JzXdQw;
+        Wed, 10 Aug 2022 09:18:49 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
+ 2022 09:22:54 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH RFC] jbd2: detect old record when do journal scan
+Date:   Wed, 10 Aug 2022 09:34:42 +0800
+Message-ID: <20220810013442.3474533-1-yebin10@huawei.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220810004338.329832-1-potin.lai.pt@gmail.com>
-References: <20220810004338.329832-1-potin.lai.pt@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because of incompatible 2nd source si7021, removing hdc1080 node from
-devicetree, and move node probe to user-space layer.
+As https://github.com/tytso/e2fsprogs/issues/120 describe tune2fs do not update
+j_tail_sequence when do journal recovery. This maybe recover old journal record,
+then will lead to file system corruption.
+To avoid file system corruption in this case, if detect current transaction's
+commit time earlier than previous transaction's commit time when do journal
+scan, just return error.
 
-Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
 ---
- arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts | 5 -----
- 1 file changed, 5 deletions(-)
+ fs/jbd2/recovery.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-index 54c9f182f6a5c..1f72017c1e2d9 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-@@ -882,11 +882,6 @@ tmp421@4f {
- 		reg = <0x4f>;
- 	};
- 
--	hdc1080@40 {
--		compatible = "ti,hdc1080";
--		reg = <0x40>;
--	};
--
- 	front_leds: pca9552@67 {
- 		compatible = "nxp,pca9552";
- 		reg = <0x67>;
+diff --git a/fs/jbd2/recovery.c b/fs/jbd2/recovery.c
+index f548479615c6..f3def21a96a5 100644
+--- a/fs/jbd2/recovery.c
++++ b/fs/jbd2/recovery.c
+@@ -812,8 +812,17 @@ static int do_one_pass(journal_t *journal,
+ 					break;
+ 				}
+ 			}
+-			if (pass == PASS_SCAN)
++			if (pass == PASS_SCAN) {
++				if (commit_time < last_trans_commit_time) {
++					pr_err("JBD2: old journal record found "
++					       "in transaction %u\n",
++					       next_commit_ID);
++					err = -EFSBADCRC;
++					brelse(bh);
++					goto failed;
++				}
+ 				last_trans_commit_time = commit_time;
++			}
+ 			brelse(bh);
+ 			next_commit_ID++;
+ 			continue;
 -- 
 2.31.1
 
