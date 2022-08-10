@@ -2,74 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B87C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A4EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232775AbiHJQ5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
+        id S233061AbiHJQ77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232474AbiHJQ5F (ORCPT
+        with ESMTP id S232315AbiHJQ7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:57:05 -0400
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2092983B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:57:02 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout01.posteo.de (Postfix) with ESMTPS id AEC06240028
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 18:57:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
-        t=1660150620; bh=1O+saA+RO333tBIlQHbodRBUTU7Qknox3og0fEHKBoI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=g6TI6O+IIAg2wi/xnH3jZx60SadPTyFM3Jejgd25EMs2VH+oJ2vDsElIHiZV2OQAy
-         eA8GGl6i3QLmGmALVM1QJeB5f/s4OCFvC/Hqjg0FbC1pKoTIRff3j9ImPTEkgEL8hG
-         6ADkv96agRWals9drjs5PHNvNbahwdA0pcwkCMP7NTXccgGAgoWkuOFjFt1cHRWmw8
-         jEPUeO+4dycklw05KxF7ashncD7WVq9sgjnC0olQ9y14no5zqtB4ctp6GuPTQKUE8Y
-         tsUkjsPd2cAmo5mSqddI/bwj9f0Uudn2H3SX5TK4sLyCU/00GX/gaQpZtOB6HKQtPM
-         k2po3c97KmG1w==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4M2x1R42Hhz6tnx;
-        Wed, 10 Aug 2022 18:56:59 +0200 (CEST)
-Date:   Wed, 10 Aug 2022 16:56:58 +0000
-From:   Wilken Gottwalt <wilken.gottwalt@posteo.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH v2] hwmon: corsair-psu: add reporting of rail mode via
- debugfs
-Message-ID: <20220810185658.6e27d9bd@posteo.net>
-In-Reply-To: <ace70782-777f-ab7c-d190-735f5c65a5e4@roeck-us.net>
-References: <YvO4cfx12Q9gcmPg@monster.localdomain>
-        <ace70782-777f-ab7c-d190-735f5c65a5e4@roeck-us.net>
+        Wed, 10 Aug 2022 12:59:53 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0B132BBE;
+        Wed, 10 Aug 2022 09:59:51 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M2x4d5SC8z67jRt;
+        Thu, 11 Aug 2022 00:59:45 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 10 Aug 2022 18:59:48 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <haoluo@google.com>, <jolsa@kernel.org>, <corbet@lwn.net>,
+        <dhowells@redhat.com>, <jarkko@kernel.org>, <rostedt@goodmis.org>,
+        <mingo@redhat.com>, <paul@paul-moore.com>, <jmorris@namei.org>,
+        <serge@hallyn.com>, <shuah@kernel.org>
+CC:     <bpf@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <keyrings@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v10 1/9] bpf: Allow kfuncs to be used in LSM programs
+Date:   Wed, 10 Aug 2022 18:59:24 +0200
+Message-ID: <20220810165932.2143413-2-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220810165932.2143413-1-roberto.sassu@huawei.com>
+References: <20220810165932.2143413-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 09:31:21 -0700
-Guenter Roeck <linux@roeck-us.net> wrote:
+From: KP Singh <kpsingh@kernel.org>
 
-> On 8/10/22 06:53, Wilken Gottwalt wrote:
-> > Add reporting if the PSU is running in single or multi rail mode via
-> > ocpmode debugfs entry. Also update the documentation accordingly.
-> > 
-> > Signed-off-by: Wilken Gottwalt <wilken.gottwalt@posteo.net>
-> > ---
-> > Changes in v2:
-> >    - fixed spelling issues in commit message
-> 
-> You did not address or even provide feedback on my second comment.
+In preparation for the addition of new kfuncs, allow kfuncs defined in the
+tracing subsystem to be used in LSM programs by mapping the LSM program
+type to the TRACING hook.
 
-Oh darn ... sorry, I was quite busy and didn't really pay attention. I will
-answer the earlier mail and think about it.
+Signed-off-by: KP Singh <kpsingh@kernel.org>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ kernel/bpf/btf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Though, maybe you can help me with that what keeps me so busy. Would it be okay
-to use a kthread in a hwmon driver to do sampling (500ms - 10s) in conjunction
-with HWMON_C_UPDATE_INTERVAL, or is this a strict no-no? I know it is actually
-used to set a sample/update rate in a sensor (-register), but this USB-HID
-approach is a pure polling thing. It seems to work quite and enables the driver
-to collect data quite early in the boot process.
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 903719b89238..e49b3b6d48ad 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -7243,6 +7243,7 @@ static int bpf_prog_type_to_kfunc_hook(enum bpf_prog_type prog_type)
+ 	case BPF_PROG_TYPE_STRUCT_OPS:
+ 		return BTF_KFUNC_HOOK_STRUCT_OPS;
+ 	case BPF_PROG_TYPE_TRACING:
++	case BPF_PROG_TYPE_LSM:
+ 		return BTF_KFUNC_HOOK_TRACING;
+ 	case BPF_PROG_TYPE_SYSCALL:
+ 		return BTF_KFUNC_HOOK_SYSCALL;
+-- 
+2.25.1
 
-greetings
