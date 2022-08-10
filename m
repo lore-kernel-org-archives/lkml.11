@@ -2,128 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A83CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CACC25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 15:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233018AbiHJPN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 11:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
+        id S233043AbiHJPOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 11:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233062AbiHJPNq (ORCPT
+        with ESMTP id S233090AbiHJPOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 11:13:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9890576953
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:13:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660144423;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VuHszj4L1r9q9EYspHE6rVD8WDtJziprQeMYsIFB++M=;
-        b=MQjSjsZCo7Gw7YGMybHWyziFU07I1uwLYIg7QI3gBHi/4ocBp+D282nAIN6NzBQH++2E15
-        xt6gjq+7doKdm73Bt/rXR5HoWTCgYYvMDvUZvY3hkih5D7siqSqiUqvPztVu/oArVxxrRX
-        X/R5X+FeiSK8aOMEn8gvxeg0abggOiA=
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
- [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-216-desA1vLpMKOiHil534jb4Q-1; Wed, 10 Aug 2022 11:13:42 -0400
-X-MC-Unique: desA1vLpMKOiHil534jb4Q-1
-Received: by mail-io1-f70.google.com with SMTP id j8-20020a6b7948000000b0067c2923d1b8so8103226iop.6
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:13:42 -0700 (PDT)
+        Wed, 10 Aug 2022 11:14:23 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288E176969
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:14:22 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id y13so28216968ejp.13
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 08:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=a7p2Aw6uqyxGssz8N+URjITzJ9u83rNDpdd6+DwVix0=;
+        b=c7ogfFCYk7LHsN7fWjkFNGKWDOb3QEPWn3xYbvLXkLsXTvXWay55qJITaojRTU/15Y
+         ae3X470ITVyVB5ZmVwbAkMxPzgRxfaL90Ws/zfABUa1fnLJmHHVb6y+XydkHyh3s8LmM
+         DXjVOFKEdJxEwd5t54RZRcaG8kSx0OEz47p/S4F+YC2yBG8e+0+jkAbYZpLdX9xsmdWe
+         w66cFE/zVP7I/5/jcOPPaBX6eI13hxAXB95WNNwu5sLPuQymu0VZ9KMZpzbSqkF415+1
+         B/4mhJq41/eY5QdM26ZNOEtL7DAbBH1O5Z/Y4DE/5bp5TxtC1JdnZnGJ/u1LfnLhjrkr
+         5TQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=VuHszj4L1r9q9EYspHE6rVD8WDtJziprQeMYsIFB++M=;
-        b=Lme18QfDswGAwF/ne7vus2r9fwMLGWQXWJgGb6U+e9YaQK08vI1NlTMPWlL2KRCp03
-         I4C8oQOVzYrUw0iYoO/zxu+H5/3kAR0WvW1PXD6aGV6p5NjEhxRYqIDHOlVFKwz8m2Zi
-         VXlsTic/dMUtqpSaiNlhY5UDpQuGB2jibx/V/Su2xZZTqymNcz/HN9MbsNGL8wFSx2BA
-         ZcapqRuwCrGGLli8eX5Avk1Zistq2PGEWwATezQqDeJ9sVn8qaA67HVDSgjhwvsOM+Ck
-         /sLoKsW5sa3gHWX+65MyP4iN7tte5xHzGhLD1z49Jx6PZtKWlfgLUR9ATFjQrm5+kFR4
-         nxFQ==
-X-Gm-Message-State: ACgBeo0f4/EcEEx5KrlpIGdHFsxseXcsilbS7ukP9IQ36JtEL7LGkxs5
-        UcAqR/qdN+CRwERmq7a4hD1cyJNtL5dwNaUk3TnkU/fxMvJcmtw2emVcaOzDc2yYViOd4KYDEBm
-        TsIDwEzs5Xa96OyWWhkXkLnaY
-X-Received: by 2002:a6b:b548:0:b0:67b:fb71:9b22 with SMTP id e69-20020a6bb548000000b0067bfb719b22mr11630909iof.164.1660144421744;
-        Wed, 10 Aug 2022 08:13:41 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR58Zmo3JphRCV1dvwo1ydhZTdMnJnzqTvCJD5Jx2PD8aJZzXAXHXuj4C+qYhejwg9wwtr0mow==
-X-Received: by 2002:a6b:b548:0:b0:67b:fb71:9b22 with SMTP id e69-20020a6bb548000000b0067bfb719b22mr11630892iof.164.1660144421468;
-        Wed, 10 Aug 2022 08:13:41 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id o9-20020a056e0214c900b002de990656f5sm2248531ilk.32.2022.08.10.08.13.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 08:13:40 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 11:13:39 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Minchan Kim <minchan@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-Subject: Re: [PATCH v3 4/7] mm/thp: Carry over dirty bit when thp splits on
- pmd
-Message-ID: <YvPLI0GdrlEWF959@xz-m1.local>
-References: <20220809220100.20033-1-peterx@redhat.com>
- <20220809220100.20033-5-peterx@redhat.com>
- <877d3gfwf2.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=a7p2Aw6uqyxGssz8N+URjITzJ9u83rNDpdd6+DwVix0=;
+        b=s5dJ1Vk5soNKtL6H1+HSpUiOm7lfg/KVeU06uOSELyQdNFlvjrmuAG59nPsRhxLdNY
+         BLr0w1KQdIdOwvqMCmnhCzJhMXrPvZQHyYr+xr2WA+dUA7dgoGolcsnXHkUb+fzscXQN
+         MMgaKqrahmnZaUl8m3lNQvd+FfK9ZE3GXGuYwHMFUC3wO1efmBSzwY5JIWp9eyIpULv2
+         1q70oq36VBCvcoUZPO65VBDQO0SogPVlFStUMcPLkQHm+A9fpJRTaUaAyv1qCodjDKlr
+         H1XbGIGkVTg0fSqwjgYwBKUnWb3WlqTXVYmtTPbiBQAvpl05DbpryZhSX481yU6TwnLB
+         B9hA==
+X-Gm-Message-State: ACgBeo3GPVZi35ZBAAjYvNKTECTy0gRslmNM8c8CFnjxmbOSqNGA+ZCc
+        HQr9mu6WVceFgxTLCuWykhwm+IMQgF1RXUlVNOcWLoGRvpsgNw==
+X-Google-Smtp-Source: AA6agR7y9hhKnZINQP71Ks1DUUklmiwHLYS0noEA84FATWHb2VED65vVJB3AjkDqkfcSTFrDPU+aNJoQXrUrRKkCLUU=
+X-Received: by 2002:a17:906:ae95:b0:730:7c7d:3868 with SMTP id
+ md21-20020a170906ae9500b007307c7d3868mr19938951ejb.564.1660144460733; Wed, 10
+ Aug 2022 08:14:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <877d3gfwf2.fsf@yhuang6-desk2.ccr.corp.intel.com>
+References: <20220809201428.118523-1-sudip.mukherjee@sifive.com>
+ <20220809201428.118523-3-sudip.mukherjee@sifive.com> <361fa56d-617c-ee92-151e-5d8fe0a29e53@microchip.com>
+In-Reply-To: <361fa56d-617c-ee92-151e-5d8fe0a29e53@microchip.com>
+From:   Sudip Mukherjee <sudip.mukherjee@sifive.com>
+Date:   Wed, 10 Aug 2022 16:14:09 +0100
+Message-ID: <CAHyZL-dgrGu3z4ySy_EdG7KdZwU+DHdo8nH=+Go_nGZUZYFq_A@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] mtd: spi-nor: add SFDP fixups for Quad Page Program
+To:     Tudor Ambarus <Tudor.Ambarus@microchip.com>
+Cc:     Pratyush Yadav <pratyush@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+        William Salmon <william.salmon@sifive.com>,
+        Adnan Chowdhury <adnan.chowdhury@sifive.com>,
+        Ben Dooks <ben.dooks@sifive.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 02:24:33PM +0800, Huang, Ying wrote:
-> Peter Xu <peterx@redhat.com> writes:
-> 
-> > Carry over the dirty bit from pmd to pte when a huge pmd splits.  It
-> > shouldn't be a correctness issue since when pmd_dirty() we'll have the page
-> > marked dirty anyway, however having dirty bit carried over helps the next
-> > initial writes of split ptes on some archs like x86.
+On Wed, Aug 10, 2022 at 9:06 AM <Tudor.Ambarus@microchip.com> wrote:
+>
+> On 8/9/22 23:14, Sudip Mukherjee wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > >
-> > Signed-off-by: Peter Xu <peterx@redhat.com>
-> > ---
-> >  mm/huge_memory.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > SFDP table of some flash chips do not advertise support of Quad Input
+> > Page Program even though it has support. Use fixup flags and add hardware
+> > cap for these chips.
 > >
-> > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> > index 0611b2fd145a..e8e78d1bac5f 100644
-> > --- a/mm/huge_memory.c
-> > +++ b/mm/huge_memory.c
-> > @@ -2005,7 +2005,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
-> >  	pgtable_t pgtable;
-> >  	pmd_t old_pmd, _pmd;
-> >  	bool young, write, soft_dirty, pmd_migration = false, uffd_wp = false;
-> > -	bool anon_exclusive = false;
-> > +	bool anon_exclusive = false, dirty = false;
-> >  	unsigned long addr;
-> >  	int i;
-> >  
-> > @@ -2098,6 +2098,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
-> >  			SetPageDirty(page);
-> >  		write = pmd_write(old_pmd);
-> >  		young = pmd_young(old_pmd);
-> > +		dirty = pmd_dirty(old_pmd);
-> 
-> Nitpick: This can be put under
-> 
-> 		if (pmd_dirty(old_pmd))
-> 			SetPageDirty(page);
-> 
-> Not a big deal.
-> 
-> Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
 
-Yeah will do, thanks.
+<snip>
 
--- 
-Peter Xu
+> > @@ -520,6 +521,7 @@ struct flash_info {
+> >         u8 fixup_flags;
+> >  #define SPI_NOR_4B_OPCODES             BIT(0)
+> >  #define SPI_NOR_IO_MODE_EN_VOLATILE    BIT(1)
+> > +#define SPI_NOR_QUAD_PP                        BIT(2)
+>
+> No, as I previously said, SPI_NOR_QUAD_PP should be declared as a
+> info->flags, not as info->fixup_flags.
 
+Sorry, I was confused as info->fixup_flags says "it indicates support
+that can be discovered via SFDP ideally, but can not be discovered
+for this particular flash because the SFDP table that indicates this
+support is not defined by the flash."
+
+--
+Regards
+Sudip
