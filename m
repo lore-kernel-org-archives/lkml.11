@@ -2,47 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FC1C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B26C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiHJQYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
+        id S232903AbiHJQYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232659AbiHJQYA (ORCPT
+        with ESMTP id S232713AbiHJQYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:24:00 -0400
+        Wed, 10 Aug 2022 12:24:03 -0400
 Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85168760F8;
-        Wed, 10 Aug 2022 09:23:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788827E834;
+        Wed, 10 Aug 2022 09:24:01 -0700 (PDT)
 Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
  by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 91ea0ad7bd64d3e0; Wed, 10 Aug 2022 18:23:54 +0200
+ id 628687f6e8a7044b; Wed, 10 Aug 2022 18:23:59 +0200
 Received: from kreacher.localnet (unknown [213.134.187.55])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id A76F566CF1C;
-        Wed, 10 Aug 2022 18:23:52 +0200 (CEST)
+        by v370.home.net.pl (Postfix) with ESMTPSA id ED44E66CF1C;
+        Wed, 10 Aug 2022 18:23:58 +0200 (CEST)
 From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
 To:     Linux ACPI <linux-acpi@vger.kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Linux PM <linux-pm@vger.kernel.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        linux-hyperv@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH v1 5/5][RFT] ACPI: Drop parent field from struct acpi_device
-Date:   Wed, 10 Aug 2022 18:23:05 +0200
-Message-ID: <2196460.iZASKD2KPV@kreacher>
+        linux-hwmon@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v1 1/5] ACPI: Rename acpi_bus_get/put_acpi_device()
+Date:   Wed, 10 Aug 2022 18:14:22 +0200
+Message-ID: <4763162.31r3eYUQgx@kreacher>
 In-Reply-To: <12036348.O9o76ZdvQC@kreacher>
 References: <12036348.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
@@ -51,339 +42,200 @@ Content-Type: text/plain; charset="UTF-8"
 X-CLIENT-IP: 213.134.187.55
 X-CLIENT-HOSTNAME: 213.134.187.55
 X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegvddgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrddukeejrdehheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukeejrdehhedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepudejpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghnughrihihrdhshhgvvhgthhgvnhhkoheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghr
- nhgvlhdrohhrghdprhgtphhtthhopehkhihssehmihgtrhhoshhofhhtrdgtohhmpdhrtghpthhtohephhgrihihrghnghiisehmihgtrhhoshhofhhtrdgtohhmpdhrtghpthhtohepshhthhgvmhhmihhnsehmihgtrhhoshhofhhtrdgtohhmpdhrtghpthhtohepfigvihdrlhhiuheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepuggvtghuihesmhhitghrohhsohhfthdrtghomhdprhgtphhtthhopegsrhhoohhnihgvsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhgurhgvrghsrdhnohgvvhgvrhesghhmrghilhdrtghomhdprhgtphhtthhopehmihgthhgrvghlrdhjrghmvghtsehinhhtvghlrdgtohhmpdhrtghpthhtohepmhhikhgrrdifvghsthgvrhgsvghrgheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopegjvghhvgiikhgvlhfuhheusehgmhgrihhlrdgtohhmpdhrtghpthhtoheplhhinhhugidqhhihphgvrhhvsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshhpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhushgssehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=17 Fuz1=17 Fuz2=17
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegvddgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppedvudefrddufeegrddukeejrdehheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukeejrdehhedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepjedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghnkhhosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhn
+ vghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqhhifmhhonhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehjuggvlhhvrghrvgesshhushgvrdgtohhmpdhrtghpthhtoheplhhinhhugiesrhhovggtkhdquhhsrdhnvght
+X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-The parent field in struct acpi_device is, in fact, redundant,
-because the dev.parent field in it effectively points to the same
-object and it is used by the driver core.
+Because acpi_bus_get_acpi_device() is completely analogous to
+acpi_fetch_acpi_dev(), rename it to acpi_get_acpi_dev() and
+add a kerneldoc comment to it.
 
-Accordingly, the parent field can be dropped from struct acpi_device
-and for this purpose define acpi_dev_parent() to retrieve the parent
-struct acpi_device pointer from the dev.parent field in struct
-acpi_device.  Next, update all of the users of the parent field
-in struct acpi_device to use acpi_dev_parent() instead of it and
-drop it.
+Accordingly, rename acpi_bus_put_acpi_device() to acpi_put_acpi_dev()
+and update all of the users of these two functions.
 
-While at it, drop the ACPI_IS_ROOT_DEVICE() macro that is only used
-in one place in a confusing way.
-
-No intentional functional impact.
+While at it, move the acpi_fetch_acpi_dev() header next to the
+acpi_get_acpi_dev() header in the header file holding them.
 
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
+ drivers/acpi/bus.c               |    6 +++---
+ drivers/acpi/device_pm.c         |    4 ++--
+ drivers/acpi/irq.c               |    4 ++--
+ drivers/acpi/scan.c              |   21 ++++++++++++++++-----
+ drivers/hwmon/acpi_power_meter.c |    2 +-
+ include/acpi/acpi_bus.h          |    6 +++---
+ 6 files changed, 27 insertions(+), 16 deletions(-)
 
-I may have missed some places where adev->parent is used directly, so
-if that's happened, please let me know (I'm assuming that 0-day will
-pick up this patch and run it through all of the relevant configs
-anyway).
-
----
- drivers/acpi/acpi_platform.c |    6 +++---
- drivers/acpi/acpi_video.c    |    2 +-
- drivers/acpi/device_pm.c     |   19 ++++++++++---------
- drivers/acpi/property.c      |    6 ++++--
- drivers/acpi/sbs.c           |    2 +-
- drivers/acpi/sbshc.c         |    2 +-
- drivers/acpi/scan.c          |   17 ++++++-----------
- drivers/hv/vmbus_drv.c       |    3 ++-
- drivers/spi/spi.c            |    2 +-
- drivers/thunderbolt/acpi.c   |    2 +-
- include/acpi/acpi_bus.h      |   10 +++++++++-
- 11 files changed, 39 insertions(+), 32 deletions(-)
-
-Index: linux-pm/drivers/acpi/scan.c
-===================================================================
---- linux-pm.orig/drivers/acpi/scan.c
-+++ linux-pm/drivers/acpi/scan.c
-@@ -29,8 +29,6 @@ extern struct acpi_device *acpi_root;
- #define ACPI_BUS_HID			"LNXSYBUS"
- #define ACPI_BUS_DEVICE_NAME		"System Bus"
- 
--#define ACPI_IS_ROOT_DEVICE(device)    (!(device)->parent)
--
- #define INVALID_ACPI_HANDLE	((acpi_handle)empty_zero_page)
- 
- static const char *dummy_hid = "device";
-@@ -1110,7 +1108,7 @@ static void acpi_device_get_busid(struct
- 	 * The device's Bus ID is simply the object name.
- 	 * TBD: Shouldn't this value be unique (within the ACPI namespace)?
- 	 */
--	if (ACPI_IS_ROOT_DEVICE(device)) {
-+	if (!acpi_dev_parent(device)) {
- 		strcpy(device->pnp.bus_id, "ACPI");
- 		return;
- 	}
-@@ -1646,7 +1644,7 @@ static void acpi_init_coherency(struct a
- {
- 	unsigned long long cca = 0;
- 	acpi_status status;
--	struct acpi_device *parent = adev->parent;
-+	struct acpi_device *parent = acpi_dev_parent(adev);
- 
- 	if (parent && parent->flags.cca_seen) {
- 		/*
-@@ -1690,7 +1688,7 @@ static int acpi_check_serial_bus_slave(s
- 
- static bool acpi_is_indirect_io_slave(struct acpi_device *device)
- {
--	struct acpi_device *parent = device->parent;
-+	struct acpi_device *parent = acpi_dev_parent(device);
- 	static const struct acpi_device_id indirect_io_hosts[] = {
- 		{"HISI0191", 0},
- 		{}
-@@ -1766,10 +1764,7 @@ void acpi_init_device_object(struct acpi
- 	INIT_LIST_HEAD(&device->pnp.ids);
- 	device->device_type = type;
- 	device->handle = handle;
--	if (parent) {
--		device->parent = parent;
--		device->dev.parent = &parent->dev;
--	}
-+	device->dev.parent = parent ? &parent->dev : NULL;
- 	device->dev.release = release;
- 	device->dev.bus = &acpi_bus_type;
- 	fwnode_init(&device->fwnode, &acpi_device_fwnode_ops);
-@@ -1866,8 +1861,8 @@ static int acpi_add_single_object(struct
- 	acpi_device_add_finalize(device);
- 
- 	acpi_handle_debug(handle, "Added as %s, parent %s\n",
--			  dev_name(&device->dev), device->parent ?
--				dev_name(&device->parent->dev) : "(null)");
-+			  dev_name(&device->dev), device->dev.parent ?
-+				dev_name(device->dev.parent) : "(null)");
- 
- 	*child = device;
- 	return 0;
 Index: linux-pm/include/acpi/acpi_bus.h
 ===================================================================
 --- linux-pm.orig/include/acpi/acpi_bus.h
 +++ linux-pm/include/acpi/acpi_bus.h
-@@ -364,7 +364,6 @@ struct acpi_device {
- 	int device_type;
- 	acpi_handle handle;		/* no handle for fixed hardware */
- 	struct fwnode_handle fwnode;
--	struct acpi_device *parent;
- 	struct list_head wakeup_list;
- 	struct list_head del_list;
- 	struct acpi_device_status status;
-@@ -457,6 +456,14 @@ static inline void *acpi_driver_data(str
- #define to_acpi_device(d)	container_of(d, struct acpi_device, dev)
- #define to_acpi_driver(d)	container_of(d, struct acpi_driver, drv)
+@@ -511,7 +511,6 @@ extern int unregister_acpi_notifier(stru
+  * External Functions
+  */
  
-+static inline struct acpi_device *acpi_dev_parent(struct acpi_device *adev)
-+{
-+	if (adev->dev.parent)
-+		return to_acpi_device(adev->dev.parent);
-+
-+	return NULL;
-+}
-+
- static inline void acpi_set_device_status(struct acpi_device *adev, u32 sta)
+-struct acpi_device *acpi_fetch_acpi_dev(acpi_handle handle);
+ acpi_status acpi_bus_get_status_handle(acpi_handle handle,
+ 				       unsigned long long *sta);
+ int acpi_bus_get_status(struct acpi_device *device);
+@@ -766,9 +765,10 @@ static inline void acpi_dev_put(struct a
+ 		put_device(&adev->dev);
+ }
+ 
+-struct acpi_device *acpi_bus_get_acpi_device(acpi_handle handle);
++struct acpi_device *acpi_fetch_acpi_dev(acpi_handle handle);
++struct acpi_device *acpi_get_acpi_dev(acpi_handle handle);
+ 
+-static inline void acpi_bus_put_acpi_device(struct acpi_device *adev)
++static inline void acpi_put_acpi_dev(struct acpi_device *adev)
  {
- 	*((u32 *)&adev->status) = sta;
-@@ -477,6 +484,7 @@ void acpi_initialize_hp_context(struct a
- /* acpi_device.dev.bus == &acpi_bus_type */
- extern struct bus_type acpi_bus_type;
- 
-+struct acpi_device *acpi_dev_parent(struct acpi_device *adev);
- int acpi_bus_for_each_dev(int (*fn)(struct device *, void *), void *data);
- int acpi_dev_for_each_child(struct acpi_device *adev,
- 			    int (*fn)(struct acpi_device *, void *), void *data);
-Index: linux-pm/drivers/acpi/property.c
+ 	acpi_dev_put(adev);
+ }
+Index: linux-pm/drivers/acpi/scan.c
 ===================================================================
---- linux-pm.orig/drivers/acpi/property.c
-+++ linux-pm/drivers/acpi/property.c
-@@ -298,8 +298,10 @@ static void acpi_init_of_compatible(stru
- 		ret = acpi_dev_get_property(adev, "compatible",
- 					    ACPI_TYPE_STRING, &of_compatible);
- 		if (ret) {
--			if (adev->parent
--			    && adev->parent->flags.of_compatible_ok)
-+			struct acpi_device *parent;
-+
-+			parent = acpi_dev_parent(adev);
-+			if (parent && parent->flags.of_compatible_ok)
- 				goto out;
+--- linux-pm.orig/drivers/acpi/scan.c
++++ linux-pm/drivers/acpi/scan.c
+@@ -429,7 +429,7 @@ void acpi_device_hotplug(struct acpi_dev
+ 	acpi_evaluate_ost(adev->handle, src, ost_code, NULL);
  
- 			return;
+  out:
+-	acpi_bus_put_acpi_device(adev);
++	acpi_put_acpi_dev(adev);
+ 	mutex_unlock(&acpi_scan_lock);
+ 	unlock_device_hotplug();
+ }
+@@ -599,11 +599,22 @@ static void get_acpi_device(void *dev)
+ 	acpi_dev_get(dev);
+ }
+ 
+-struct acpi_device *acpi_bus_get_acpi_device(acpi_handle handle)
++/**
++ * acpi_get_acpi_dev - Retrieve ACPI device object and reference count it.
++ * @handle: ACPI handle associated with the requested ACPI device object.
++ *
++ * Return a pointer to the ACPI device object associated with @handle and bump
++ * up that object's reference counter (under the ACPI Namespace lock), if
++ * present, or return NULL otherwise.
++ *
++ * The ACPI device object reference acquired by this function needs to be
++ * dropped via acpi_dev_put().
++ */
++struct acpi_device *acpi_get_acpi_dev(acpi_handle handle)
+ {
+ 	return handle_to_device(handle, get_acpi_device);
+ }
+-EXPORT_SYMBOL_GPL(acpi_bus_get_acpi_device);
++EXPORT_SYMBOL_GPL(acpi_get_acpi_dev);
+ 
+ static struct acpi_device_bus_id *acpi_device_bus_id_match(const char *dev_id)
+ {
+@@ -2238,7 +2249,7 @@ static int acpi_dev_get_first_consumer_d
+ {
+ 	struct acpi_device *adev;
+ 
+-	adev = acpi_bus_get_acpi_device(dep->consumer);
++	adev = acpi_get_acpi_dev(dep->consumer);
+ 	if (adev) {
+ 		*(struct acpi_device **)data = adev;
+ 		return 1;
+@@ -2291,7 +2302,7 @@ static bool acpi_scan_clear_dep_queue(st
+ 
+ static int acpi_scan_clear_dep(struct acpi_dep_data *dep, void *data)
+ {
+-	struct acpi_device *adev = acpi_bus_get_acpi_device(dep->consumer);
++	struct acpi_device *adev = acpi_get_acpi_dev(dep->consumer);
+ 
+ 	if (adev) {
+ 		adev->dep_unmet--;
+Index: linux-pm/drivers/acpi/bus.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/bus.c
++++ linux-pm/drivers/acpi/bus.c
+@@ -511,7 +511,7 @@ static void acpi_bus_notify(acpi_handle
+ 		break;
+ 	}
+ 
+-	adev = acpi_bus_get_acpi_device(handle);
++	adev = acpi_get_acpi_dev(handle);
+ 	if (!adev)
+ 		goto err;
+ 
+@@ -524,14 +524,14 @@ static void acpi_bus_notify(acpi_handle
+ 	}
+ 
+ 	if (!hotplug_event) {
+-		acpi_bus_put_acpi_device(adev);
++		acpi_put_acpi_dev(adev);
+ 		return;
+ 	}
+ 
+ 	if (ACPI_SUCCESS(acpi_hotplug_schedule(adev, type)))
+ 		return;
+ 
+-	acpi_bus_put_acpi_device(adev);
++	acpi_put_acpi_dev(adev);
+ 
+  err:
+ 	acpi_evaluate_ost(handle, type, ost_code, NULL);
 Index: linux-pm/drivers/acpi/device_pm.c
 ===================================================================
 --- linux-pm.orig/drivers/acpi/device_pm.c
 +++ linux-pm/drivers/acpi/device_pm.c
-@@ -74,6 +74,7 @@ static int acpi_dev_pm_explicit_get(stru
-  */
- int acpi_device_get_power(struct acpi_device *device, int *state)
- {
-+	struct acpi_device *parent = acpi_dev_parent(device);
- 	int result = ACPI_STATE_UNKNOWN;
- 	int error;
+@@ -497,7 +497,7 @@ static void acpi_pm_notify_handler(acpi_
  
-@@ -82,8 +83,7 @@ int acpi_device_get_power(struct acpi_de
+ 	acpi_handle_debug(handle, "Wake notify\n");
  
- 	if (!device->flags.power_manageable) {
- 		/* TBD: Non-recursive algorithm for walking up hierarchy. */
--		*state = device->parent ?
--			device->parent->power.state : ACPI_STATE_D0;
-+		*state = parent ? parent->power.state : ACPI_STATE_D0;
- 		goto out;
- 	}
+-	adev = acpi_bus_get_acpi_device(handle);
++	adev = acpi_get_acpi_dev(handle);
+ 	if (!adev)
+ 		return;
  
-@@ -122,10 +122,10 @@ int acpi_device_get_power(struct acpi_de
- 	 * point, the fact that the device is in D0 implies that the parent has
- 	 * to be in D0 too, except if ignore_parent is set.
- 	 */
--	if (!device->power.flags.ignore_parent && device->parent
--	    && device->parent->power.state == ACPI_STATE_UNKNOWN
--	    && result == ACPI_STATE_D0)
--		device->parent->power.state = ACPI_STATE_D0;
-+	if (!device->power.flags.ignore_parent && parent &&
-+	    parent->power.state == ACPI_STATE_UNKNOWN &&
-+	    result == ACPI_STATE_D0)
-+		parent->power.state = ACPI_STATE_D0;
+@@ -515,7 +515,7 @@ static void acpi_pm_notify_handler(acpi_
  
- 	*state = result;
+ 	mutex_unlock(&acpi_pm_notifier_lock);
  
-@@ -159,6 +159,7 @@ static int acpi_dev_pm_explicit_set(stru
-  */
- int acpi_device_set_power(struct acpi_device *device, int state)
- {
-+	struct acpi_device *parent = acpi_dev_parent(device);
- 	int target_state = state;
- 	int result = 0;
- 
-@@ -191,12 +192,12 @@ int acpi_device_set_power(struct acpi_de
- 		return -ENODEV;
- 	}
- 
--	if (!device->power.flags.ignore_parent && device->parent &&
--	    state < device->parent->power.state) {
-+	if (!device->power.flags.ignore_parent && parent &&
-+	    state < parent->power.state) {
- 		acpi_handle_debug(device->handle,
- 				  "Cannot transition to %s for parent in %s\n",
- 				  acpi_power_state_string(state),
--				  acpi_power_state_string(device->parent->power.state));
-+				  acpi_power_state_string(parent->power.state));
- 		return -ENODEV;
- 	}
- 
-Index: linux-pm/drivers/acpi/acpi_platform.c
-===================================================================
---- linux-pm.orig/drivers/acpi/acpi_platform.c
-+++ linux-pm/drivers/acpi/acpi_platform.c
-@@ -78,7 +78,7 @@ static void acpi_platform_fill_resource(
- 	 * If the device has parent we need to take its resources into
- 	 * account as well because this device might consume part of those.
- 	 */
--	parent = acpi_get_first_physical_node(adev->parent);
-+	parent = acpi_get_first_physical_node(acpi_dev_parent(adev));
- 	if (parent && dev_is_pci(parent))
- 		dest->parent = pci_find_resource(to_pci_dev(parent), dest);
+-	acpi_bus_put_acpi_device(adev);
++	acpi_put_acpi_dev(adev);
  }
-@@ -97,6 +97,7 @@ static void acpi_platform_fill_resource(
- struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
- 						    const struct property_entry *properties)
- {
-+	struct acpi_device *parent = acpi_dev_parent(adev);
- 	struct platform_device *pdev = NULL;
- 	struct platform_device_info pdevinfo;
- 	struct resource_entry *rentry;
-@@ -137,8 +138,7 @@ struct platform_device *acpi_create_plat
- 	 * attached to it, that physical device should be the parent of the
- 	 * platform device we are about to create.
- 	 */
--	pdevinfo.parent = adev->parent ?
--		acpi_get_first_physical_node(adev->parent) : NULL;
-+	pdevinfo.parent = parent ? acpi_get_first_physical_node(parent) : NULL;
- 	pdevinfo.name = dev_name(&adev->dev);
- 	pdevinfo.id = -1;
- 	pdevinfo.res = resources;
-Index: linux-pm/drivers/acpi/acpi_video.c
+ 
+ /**
+Index: linux-pm/drivers/acpi/irq.c
 ===================================================================
---- linux-pm.orig/drivers/acpi/acpi_video.c
-+++ linux-pm/drivers/acpi/acpi_video.c
-@@ -2030,7 +2030,7 @@ static int acpi_video_bus_add(struct acp
- 	acpi_status status;
+--- linux-pm.orig/drivers/acpi/irq.c
++++ linux-pm/drivers/acpi/irq.c
+@@ -111,12 +111,12 @@ acpi_get_irq_source_fwhandle(const struc
+ 	if (WARN_ON(ACPI_FAILURE(status)))
+ 		return NULL;
  
- 	status = acpi_walk_namespace(ACPI_TYPE_DEVICE,
--				device->parent->handle, 1,
-+				acpi_dev_parent(device)->handle, 1,
- 				acpi_video_bus_match, NULL,
- 				device, NULL);
- 	if (status == AE_ALREADY_EXISTS) {
-Index: linux-pm/drivers/acpi/sbs.c
+-	device = acpi_bus_get_acpi_device(handle);
++	device = acpi_get_acpi_dev(handle);
+ 	if (WARN_ON(!device))
+ 		return NULL;
+ 
+ 	result = &device->fwnode;
+-	acpi_bus_put_acpi_device(device);
++	acpi_put_acpi_dev(device);
+ 	return result;
+ }
+ 
+Index: linux-pm/drivers/hwmon/acpi_power_meter.c
 ===================================================================
---- linux-pm.orig/drivers/acpi/sbs.c
-+++ linux-pm/drivers/acpi/sbs.c
-@@ -632,7 +632,7 @@ static int acpi_sbs_add(struct acpi_devi
+--- linux-pm.orig/drivers/hwmon/acpi_power_meter.c
++++ linux-pm/drivers/hwmon/acpi_power_meter.c
+@@ -598,7 +598,7 @@ static int read_domain_devices(struct ac
+ 			continue;
  
- 	mutex_init(&sbs->lock);
- 
--	sbs->hc = acpi_driver_data(device->parent);
-+	sbs->hc = acpi_driver_data(acpi_dev_parent(device));
- 	sbs->device = device;
- 	strcpy(acpi_device_name(device), ACPI_SBS_DEVICE_NAME);
- 	strcpy(acpi_device_class(device), ACPI_SBS_CLASS);
-Index: linux-pm/drivers/acpi/sbshc.c
-===================================================================
---- linux-pm.orig/drivers/acpi/sbshc.c
-+++ linux-pm/drivers/acpi/sbshc.c
-@@ -266,7 +266,7 @@ static int acpi_smbus_hc_add(struct acpi
- 	mutex_init(&hc->lock);
- 	init_waitqueue_head(&hc->wait);
- 
--	hc->ec = acpi_driver_data(device->parent);
-+	hc->ec = acpi_driver_data(acpi_dev_parent(device));
- 	hc->offset = (val >> 8) & 0xff;
- 	hc->query_bit = val & 0xff;
- 	device->driver_data = hc;
-Index: linux-pm/drivers/spi/spi.c
-===================================================================
---- linux-pm.orig/drivers/spi/spi.c
-+++ linux-pm/drivers/spi/spi.c
-@@ -4256,7 +4256,7 @@ static int acpi_spi_notify(struct notifi
- 
- 	switch (value) {
- 	case ACPI_RECONFIG_DEVICE_ADD:
--		ctlr = acpi_spi_find_controller_by_adev(adev->parent);
-+		ctlr = acpi_spi_find_controller_by_adev(acpi_dev_parent(adev));
- 		if (!ctlr)
- 			break;
- 
-Index: linux-pm/drivers/thunderbolt/acpi.c
-===================================================================
---- linux-pm.orig/drivers/thunderbolt/acpi.c
-+++ linux-pm/drivers/thunderbolt/acpi.c
-@@ -42,7 +42,7 @@ static acpi_status tb_acpi_add_link(acpi
- 	 */
- 	dev = acpi_get_first_physical_node(adev);
- 	while (!dev) {
--		adev = adev->parent;
-+		adev = acpi_dev_parent(adev);
- 		if (!adev)
- 			break;
- 		dev = acpi_get_first_physical_node(adev);
-Index: linux-pm/drivers/hv/vmbus_drv.c
-===================================================================
---- linux-pm.orig/drivers/hv/vmbus_drv.c
-+++ linux-pm/drivers/hv/vmbus_drv.c
-@@ -2423,7 +2423,8 @@ static int vmbus_acpi_add(struct acpi_de
- 	 * Some ancestor of the vmbus acpi device (Gen1 or Gen2
- 	 * firmware) is the VMOD that has the mmio ranges. Get that.
- 	 */
--	for (ancestor = device->parent; ancestor; ancestor = ancestor->parent) {
-+	for (ancestor = acpi_dev_parent(device); ancestor;
-+	     ancestor = acpi_dev_parent(ancestor)) {
- 		result = acpi_walk_resources(ancestor->handle, METHOD_NAME__CRS,
- 					     vmbus_walk_resources, NULL);
- 
+ 		/* Create a symlink to domain objects */
+-		obj = acpi_bus_get_acpi_device(element->reference.handle);
++		obj = acpi_get_acpi_dev(element->reference.handle);
+ 		resource->domain_devices[i] = obj;
+ 		if (!obj)
+ 			continue;
 
 
 
