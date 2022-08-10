@@ -2,54 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AFCC25B0D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD7FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233348AbiHJQGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
+        id S233331AbiHJQGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233372AbiHJQFj (ORCPT
+        with ESMTP id S233371AbiHJQFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 10 Aug 2022 12:05:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD22E7E
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:05:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0CB6B665
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:05:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 878AA6115A
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5AE361196
         for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 015ACC433C1;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B2CAC4347C;
         Wed, 10 Aug 2022 16:05:36 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oLoDF-000Uxs-09;
+        id 1oLoDF-000Uz2-1P;
         Wed, 10 Aug 2022 12:05:41 -0400
-Message-ID: <20220810160455.872730397@goodmis.org>
+Message-ID: <20220810160541.268997705@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Wed, 10 Aug 2022 12:04:55 -0400
+Date:   Wed, 10 Aug 2022 12:04:57 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [for-linus][PATCH 0/4] rtla: Last minute fixes and a couple I forgot to add
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Ben Hutchings <benh@debian.org>
+Subject: [for-linus][PATCH 2/4] tools/rtla: Fix command symlinks
+References: <20220810160455.872730397@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alexandre Vicenzi (1):
-      rtla: Fix tracer name
+From: Ben Hutchings <benh@debian.org>
 
-Ben Hutchings (2):
-      tools/rtla: Fix command symlinks
-      tools/rtla: Build with EXTRA_{C,LD}FLAGS
+"ln -s" stores the next argument directly as the symlink target, so
+it needs to be a relative path.  In this case, just "rtla".
 
-Steven Rostedt (Google) (1):
-      rtla: Consolidate and show all necessary libraries that failed for building
+Link: https://lore.kernel.org/linux-trace-devel/YtLBXMI6Ui4HLIF1@decadent.org.uk
 
-----
- Documentation/tools/rtla/rtla-timerlat-hist.rst |  2 +-
- tools/tracing/rtla/Makefile                     | 70 ++++++++++++++-----------
- tools/tracing/rtla/src/timerlat_hist.c          |  2 +-
- tools/tracing/rtla/src/timerlat_top.c           |  2 +-
- 4 files changed, 43 insertions(+), 33 deletions(-)
+Fixes: 0605bf009f18 ("rtla: Add osnoise tool")
+Fixes: a828cd18bc4a ("rtla: Add timerlat tool and timelart top mode")
+Signed-off-by: Ben Hutchings <benh@debian.org>
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ tools/tracing/rtla/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 1bea2d16d4c1..b8fe10d941ce 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -108,9 +108,9 @@ install: doc_install
+ 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
+ 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
+ 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
+-	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/osnoise
++	ln -s rtla $(DESTDIR)$(BINDIR)/osnoise
+ 	@test ! -f $(DESTDIR)$(BINDIR)/timerlat || rm $(DESTDIR)$(BINDIR)/timerlat
+-	ln -s $(DESTDIR)$(BINDIR)/rtla $(DESTDIR)$(BINDIR)/timerlat
++	ln -s rtla $(DESTDIR)$(BINDIR)/timerlat
+ 
+ .PHONY: clean tarball
+ clean: doc_clean
+-- 
+2.35.1
