@@ -2,98 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774B2C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E789C25B0D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:16:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232365AbiHJQPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
+        id S232467AbiHJQQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiHJQPW (ORCPT
+        with ESMTP id S230000AbiHJQQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:15:22 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A12B02228B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:15:21 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 3DC10210CB11;
-        Wed, 10 Aug 2022 09:15:21 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3DC10210CB11
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1660148121;
-        bh=eLRZ89FweLs3mKAejSXm82Lf0LVTVfp7vtGx4U+EfJU=;
-        h=From:To:Subject:Date:From;
-        b=Z9/23526H5J2DCQyiuaAje86oqJurj1QE/YiTbxkOGuSD7cNwlk3UhqpmvctkgX7/
-         qEucWvbO9PAysXAjSUrnfDBnF3j49XZw6ArD/5Tn2UnioYsj8fZ86r8/PP3nOPlBCB
-         D4itizPTf9F6XUJTMcmLV9crXvKGg0RzU6yRhQiU=
-From:   Saurabh Sengar <ssengar@linux.microsoft.com>
-To:     ssengar@microsoft.com, mikelley@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, peterz@infradead.org,
-        tim.c.chen@linux.intel.com, will@kernel.org,
-        song.bao.hua@hisilicon.com, suravee.suthikulpanit@amd.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] x86/cacheinfo: Don't use cpu_llc_shared_map for !CONFIG_SMP
-Date:   Wed, 10 Aug 2022 09:15:15 -0700
-Message-Id: <1660148115-302-1-git-send-email-ssengar@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+        Wed, 10 Aug 2022 12:16:42 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9086554B;
+        Wed, 10 Aug 2022 09:16:39 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id r5so12521476iod.10;
+        Wed, 10 Aug 2022 09:16:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=OymQtlIn9kZlALxo/zpxpVBZn4m4pQcHISZuq81uRio=;
+        b=MjcxaaCnzo2q7MjCBOI6nyRogI+9Gax0RofvMu6oRLfyqO0v6qjfzh9x4RlLfa2J7e
+         d5tYMiEcW5FEh7lb50cmTVkSCbLp2HLgjDq7QwMCKgTXah5hVIepbGNt+E+MyWsAVP30
+         zs+hYHwQrjyXldUTRFRiSwyN3wm4TF3uMtCsJh0JpBB5b1XodTeZO/DLc95w0RdNGv2e
+         kMGvvqg6MN1YUtmiTXZVsOB7Nleu2NrRQRlZpF0e2b55BXzedvGqEZWRxeK4zKbzqJ1k
+         9GtYOeSWFZKbsIr/xZBrzrvbymzay5ibEcJxBwUf7TYUTnXPV/RsGO/9rJdgHhC3UezT
+         aJzg==
+X-Gm-Message-State: ACgBeo2t4qycyVMpVpUHiXjXMVvtT+lhMcGuHdgWlGFJRU0LJXRjyuZ5
+        iua5ONQzT6LvFNnCUIZ8mg==
+X-Google-Smtp-Source: AA6agR4KUEtY0qAyGhNW2eFu0jzbjqmIighV7qcuqPWJtLkc+jLRcrx7+pJAVcN91xpZjv0I7uWyOg==
+X-Received: by 2002:a05:6602:2b8a:b0:67b:c57f:b4bc with SMTP id r10-20020a0566022b8a00b0067bc57fb4bcmr11332902iov.55.1660148198176;
+        Wed, 10 Aug 2022 09:16:38 -0700 (PDT)
+Received: from xps15.herring.priv ([64.188.179.248])
+        by smtp.googlemail.com with ESMTPSA id z17-20020a056602081100b0067885c5fd94sm2496974iow.29.2022.08.10.09.16.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 09:16:37 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Lee Jones <lee@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: pinctrl: aspeed: Add missing properties to examples
+Date:   Wed, 10 Aug 2022 10:16:34 -0600
+Message-Id: <20220810161635.73936-2-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220810161635.73936-1-robh@kernel.org>
+References: <20220810161635.73936-1-robh@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cpu_llc_shared_map is always declared and defined, but populated in
-arch/x86/kernel/smpboot.c which only builds for CONFIG_SMP=y. For
-UniProcessor builds this mask is never populated and hence invalid.
-Current code doesn't handle the case of AMD UniProcessor correctly,
-which results "shared_cpu_map" and "shared_cpu_list" files missing from
-sysfs entries for l3 cache. This patch fixes this issue.
-This code used to work because of a another bug in 'cpumask_next',
-where in the CONFIG_SMP=n case the cpumask_next() ignores empty mask
-that results as if CPU 0 was set. This bug in 'cpumask_next' was fixed by
-following commit, which exposes the cpu_llc_shared_map bug.
+The aspeed pinctrl parent node (SCU) in the examples is missing various
+properties. Add the properties in preparation for the SCU schema.
 
-b81dce77ced ("cpumask: Fix invalid uniprocessor mask assumption")
-
-Fixes: 2b83809a5e ("x86/cpu/amd: Derive L3 shared_cpu_map from cpu_llc_shared_mask")
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- arch/x86/kernel/cpu/cacheinfo.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml | 6 ++++++
+ .../devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml | 4 ++++
+ .../devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml | 6 ++++++
+ 3 files changed, 16 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/cacheinfo.c b/arch/x86/kernel/cpu/cacheinfo.c
-index 66556833d7af..8753bf33fec4 100644
---- a/arch/x86/kernel/cpu/cacheinfo.c
-+++ b/arch/x86/kernel/cpu/cacheinfo.c
-@@ -889,10 +889,12 @@ static int __cache_amd_cpumap_setup(unsigned int cpu, int index,
- 	int i, sibling;
+diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
+index d3a8911728d0..f4f1ee6b116e 100644
+--- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
+@@ -63,6 +63,12 @@ examples:
+     syscon: scu@1e6e2000 {
+         compatible = "aspeed,ast2400-scu", "syscon", "simple-mfd";
+         reg = <0x1e6e2000 0x1a8>;
++        #clock-cells = <1>;
++        #reset-cells = <1>;
++
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0x1e6e2000 0x1000>;
  
- 	/*
--	 * For L3, always use the pre-calculated cpu_llc_shared_mask
--	 * to derive shared_cpu_map.
-+	 * For L3, in case of SMP systems use the pre-calculated
-+	 * cpu_llc_shared_mask to derive shared_cpu_map. In case
-+	 * of UP simply set the only cpu in mask.
- 	 */
- 	if (index == 3) {
-+#ifdef CONFIG_SMP
- 		for_each_cpu(i, cpu_llc_shared_mask(cpu)) {
- 			this_cpu_ci = get_cpu_cacheinfo(i);
- 			if (!this_cpu_ci->info_list)
-@@ -905,6 +907,14 @@ static int __cache_amd_cpumap_setup(unsigned int cpu, int index,
- 						&this_leaf->shared_cpu_map);
- 			}
- 		}
-+#else
-+		this_cpu_ci = get_cpu_cacheinfo(cpu);
-+		WARN_ON(!this_cpu_ci->info_list);
-+		if (!this_cpu_ci->info_list)
-+			return 0;
-+		this_leaf = this_cpu_ci->info_list + index;
-+		cpumask_set_cpu(cpu, &this_leaf->shared_cpu_map);
-+#endif
- 	} else if (boot_cpu_has(X86_FEATURE_TOPOEXT)) {
- 		unsigned int apicid, nshared, first, last;
+         pinctrl: pinctrl {
+             compatible = "aspeed,ast2400-pinctrl";
+diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
+index 5d2c1b1fb7fd..8168f0088471 100644
+--- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
+@@ -82,6 +82,10 @@ examples:
+         #clock-cells = <1>;
+         #reset-cells = <1>;
  
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0x1e6e2000 0x1000>;
++
+         pinctrl: pinctrl {
+             compatible = "aspeed,ast2500-pinctrl";
+             aspeed,external-nodes = <&gfx>, <&lhc>;
+diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
+index e92686d2f062..62424c42c981 100644
+--- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
+@@ -96,6 +96,12 @@ examples:
+     syscon: scu@1e6e2000 {
+         compatible = "aspeed,ast2600-scu", "syscon", "simple-mfd";
+         reg = <0x1e6e2000 0xf6c>;
++        #clock-cells = <1>;
++        #reset-cells = <1>;
++
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0x1e6e2000 0x1000>;
+ 
+         pinctrl: pinctrl {
+             compatible = "aspeed,ast2600-pinctrl";
 -- 
-2.25.1
+2.34.1
 
