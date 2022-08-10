@@ -2,161 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F269C25B07
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACE5C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 19:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233058AbiHJTUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 15:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49816 "EHLO
+        id S233070AbiHJTUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 15:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233014AbiHJTUH (ORCPT
+        with ESMTP id S233014AbiHJTUd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 15:20:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B21A2872D
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:20:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660159205;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mg9jfkgOJMJfQD+UBNUpUZRupW9q/o+qow5RgcfsokI=;
-        b=c6/RojSa6dwXMDtxI3lm2Q1KHgizIbwElXwxCsUT3JDwvoohX1aq2GO9PMg2wr5W+FsSkA
-        49jKxN3CDyhPUoPyTlPVKcq/p1GPtveextmwpg2+Lb3I8So8PzcRvG4qCRBUlAbQtJQnCb
-        cvP1U1wqIwwAtutzqhfQzwfeJfN8xRc=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-658-Eq8hyjpGOYe_6Jv6w_gRFA-1; Wed, 10 Aug 2022 15:20:04 -0400
-X-MC-Unique: Eq8hyjpGOYe_6Jv6w_gRFA-1
-Received: by mail-ej1-f70.google.com with SMTP id gs35-20020a1709072d2300b00730e14fd76eso4600187ejc.15
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 12:20:04 -0700 (PDT)
+        Wed, 10 Aug 2022 15:20:33 -0400
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052D24332B;
+        Wed, 10 Aug 2022 12:20:33 -0700 (PDT)
+Received: by mail-io1-f51.google.com with SMTP id d187so6206560iof.4;
+        Wed, 10 Aug 2022 12:20:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=mg9jfkgOJMJfQD+UBNUpUZRupW9q/o+qow5RgcfsokI=;
-        b=xdmul8YkBnd9EwIkRsKpSlUQttGjbgl95O3dUUb6BPZuHemF/lIClGNcwKa4yoIIqs
-         YAO+XIE19MBEqphs7yLl+44m2fdHxCFR97W0UE8JMOLAETVLCkL6Af1HOOD0ozZngxEq
-         UViK2qTShfTKeJeZZU5RYdlRTTbdYuF+MFQazmjk3XxzMm1N5MTtqN+OyPkDZCcZerAk
-         g5RB7MEctodlQDM5inAfmhsQ9b2AWhBAVxqajWi0CqkgPuLqp1bAD9Nm9ZqJ+RIjHsWy
-         Frf8vkw5kRndsoAy0rzx+uT1Mc158votUOjEEqfWJ5Yd5QOPpU6Imdgjqy5HNkTnr0Ri
-         t4gw==
-X-Gm-Message-State: ACgBeo2/gTWP6NuKlEwh8jm398dTqbOHtD4siYQUaeLG0Y6XUz5q53pF
-        KnH1Y+Vko0TV5efD77TKk/pLGgfAjdMQYAfL/yYmIS/ZWfbXoViS4uw5mGozxVboorXIjyKg4Jw
-        fH375sqKwu1ydvRDd+HocxnzI
-X-Received: by 2002:a05:6402:11cb:b0:43c:c7a3:ff86 with SMTP id j11-20020a05640211cb00b0043cc7a3ff86mr28501453edw.383.1660159203356;
-        Wed, 10 Aug 2022 12:20:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR513nGcOyEx/cZZy+oLMyNgfYHlcNGvOvBbmD5iBHW2tkSoDlCb8kDWjvUl/mnZVx0X2sxUhw==
-X-Received: by 2002:a05:6402:11cb:b0:43c:c7a3:ff86 with SMTP id j11-20020a05640211cb00b0043cc7a3ff86mr28501439edw.383.1660159203147;
-        Wed, 10 Aug 2022 12:20:03 -0700 (PDT)
-Received: from redhat.com ([2.52.152.113])
-        by smtp.gmail.com with ESMTPSA id d15-20020aa7d5cf000000b0043d6ece495asm8111225eds.55.2022.08.10.12.19.58
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=eax0+SGVw4tBj19ILUSTbTcJRsETWk3FdReG+6FrUnA=;
+        b=IbyFHMxxzQhy3f9ClGQ9V/qzpGlUTkakgPiq++SxH7Fbi35T4ohcSXRkAp7MuMVRFO
+         7QYDTitfVF28OuDjyayeupdL+Xz0MgXNFukBOCxqtmZ8Kc3ZDteQtjsBDuupFkgE9Qxv
+         NqTYCSUjxLZkFpWtUFzmi740GOwOp+g7iS8+cUe+9cXM0I69NV3GeZoqSlX7GRIXg/GY
+         Ymu2KVdgsyd8iKXCF/oNmneoamN4ZlI+U954W1JZpqKn1aVui4BaIKbKjc1GsD6oBeWT
+         UkhLDb/E7Lc+fW5Uq4W9zrPTBfjJnHTBZTtXVZZWn8muYppNdVmvCfDopfwm6Jt7Tz+4
+         XjRg==
+X-Gm-Message-State: ACgBeo1fjvjprY2QCT+k95m5WNokGAYyF1pOdJEzGioWNq09S4Aa9N/a
+        ZkRSGuwBIxAUrIrHaNrqlp2CjM5HdQ==
+X-Google-Smtp-Source: AA6agR6FFKbmn+Fpy3ft72ITauYQistHwXv5H9dilXQOuhTLEsIachLlOd8qiJZOFeLXy1VKLShs/Q==
+X-Received: by 2002:a05:6638:24d0:b0:342:70d4:7ad1 with SMTP id y16-20020a05663824d000b0034270d47ad1mr13422064jat.14.1660159232216;
+        Wed, 10 Aug 2022 12:20:32 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id g3-20020a02c543000000b003427e69f2b8sm7775181jaj.144.2022.08.10.12.20.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 12:20:02 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 15:19:56 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dinang@xilinx.com, martinpo@xilinx.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Piotr.Uminski@intel.com, gautam.dawar@amd.com,
-        ecree.xilinx@gmail.com, martinh@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>, pabloc@xilinx.com,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
-        Longpeng <longpeng2@huawei.com>, lulu@redhat.com,
-        hanand@xilinx.com, Parav Pandit <parav@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v7 0/4] Implement vdpasim suspend operation
-Message-ID: <20220810151907-mutt-send-email-mst@kernel.org>
-References: <20220810171512.2343333-1-eperezma@redhat.com>
+        Wed, 10 Aug 2022 12:20:31 -0700 (PDT)
+Received: (nullmailer pid 378129 invoked by uid 1000);
+        Wed, 10 Aug 2022 19:20:29 -0000
+Date:   Wed, 10 Aug 2022 13:20:29 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] dt-bindings: msm/dp: Add SDM845 and SC8280XP
+ compatibles
+Message-ID: <20220810192029.GF200295-robh@kernel.org>
+References: <20220810035013.3582848-1-bjorn.andersson@linaro.org>
+ <20220810035013.3582848-2-bjorn.andersson@linaro.org>
+ <c5cc8752-d7e2-b870-6887-c025137ed8a1@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220810171512.2343333-1-eperezma@redhat.com>
+In-Reply-To: <c5cc8752-d7e2-b870-6887-c025137ed8a1@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 07:15:08PM +0200, Eugenio Pérez wrote:
-> Implement suspend operation for vdpa_sim devices, so vhost-vdpa will offer
-> that backend feature and userspace can effectively suspend the device.
+On Wed, Aug 10, 2022 at 05:47:52PM +0300, Krzysztof Kozlowski wrote:
+> On 10/08/2022 06:50, Bjorn Andersson wrote:
+> > Add compatibles for the DisplayPort and Embedded DisplayPort blocks in
+> > Qualcomm SDM845 and SC8280XP platforms.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  .../devicetree/bindings/display/msm/dp-controller.yaml         | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> > index 94bc6e1b6451..90f9302d1731 100644
+> > --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> > +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> > @@ -16,11 +16,14 @@ description: |
+> >  properties:
+> >    compatible:
+> >      enum:
+> > +      - qcom,sdm845-dp
+> >        - qcom,sc7180-dp
 > 
-> This is a must before getting virtqueue indexes (base) for live migration,
-> since the device could modify them after userland gets them. There are
-> individual ways to perform that action for some devices
-> (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-> way to perform it for any vhost device (and, in particular, vhost-vdpa).
+> Alphabetical order, please.
 > 
-> After a successful return of ioctl the device must not process more virtqueue
-> descriptors. The device can answer to read or writes of config fields as if it
-> were not suspended. In particular, writing to "queue_enable" with a value of 1
-> will not make the device start processing virtqueue buffers.
-> 
-> In the future, we will provide features similar to
-> VHOST_USER_GET_INFLIGHT_FD so the device can save pending operations.
-> 
-> Applied on top of [1] branch after removing the old commits.
+> The DTS warnings from the bot look unrelated to this patch.
 
-Except, I can't really do this without invaliding all testing.
-Can't you post an incremental patch?
+Yes, but there are a ton of them and I thought Bjorn might care. Looks 
+like the schema is pretty out of sync with reality and they don't really 
+look like dts side fixes.
 
-> Comments are welcome.
-> 
-> v7:
-> * Remove ioctl leftover argument and update doc accordingly.
-
-> v6:
-> * Remove the resume operation, making the ioctl simpler. We can always add
->   another ioctl for VM_STOP/VM_RESUME operation later.
-> * s/stop/suspend/ to differentiate more from reset.
-> * Clarify scope of the suspend operation.
-> 
-> v5:
-> * s/not stop/resume/ in doc.
-> 
-> v4:
-> * Replace VHOST_STOP to VHOST_VDPA_STOP in vhost ioctl switch case too.
-> 
-> v3:
-> * s/VHOST_STOP/VHOST_VDPA_STOP/
-> * Add documentation and requirements of the ioctl above its definition.
-> 
-> v2:
-> * Replace raw _F_STOP with BIT_ULL(_F_STOP).
-> * Fix obtaining of stop ioctl arg (it was not obtained but written).
-> * Add stop to vdpa_sim_blk.
-> 
-> [1] git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-> 
-> Eugenio Pérez (4):
->   vdpa: Add suspend operation
->   vhost-vdpa: introduce SUSPEND backend feature bit
->   vhost-vdpa: uAPI to suspend the device
->   vdpa_sim: Implement suspend vdpa op
-> 
->  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 14 +++++++++++
->  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
->  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
->  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
->  drivers/vhost/vdpa.c                 | 35 +++++++++++++++++++++++++++-
->  include/linux/vdpa.h                 |  4 ++++
->  include/uapi/linux/vhost.h           |  9 +++++++
->  include/uapi/linux/vhost_types.h     |  2 ++
->  8 files changed, 70 insertions(+), 1 deletion(-)
-> 
-> -- 
-> 2.31.1
-> 
-
+Rob
