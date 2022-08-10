@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C7DC2BB47
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ACDDC2BBC5
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbiHJDys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 23:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53612 "EHLO
+        id S230421AbiHJDyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 23:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbiHJDy3 (ORCPT
+        with ESMTP id S230292AbiHJDyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 23:54:29 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B8F6580A
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:54:28 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id k29-20020a9d701d000000b0061c99652493so9813299otj.8
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 20:54:28 -0700 (PDT)
+        Tue, 9 Aug 2022 23:54:31 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1FA6613C
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:54:30 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-116c7286aaaso524040fac.11
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 20:54:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ry+ibPoPjFsGLqx07kgp5fWkflkrTbeFQgZo2EyqkqE=;
-        b=tw/iUHjUhBM1Jb0bsYEVv6P9HbZT21GNFQmSCWk4eLKD4mkBXqKwVGPJyvb1hddl4X
-         9G42R6frr8FSAsgHfBHBpAzNxOd+LN6XSws1vIzWGDmgEWz1XnUQsrrtBmhbzS3q4ojZ
-         gXnf4I0xyq9fASqWKTCnSINPY0QkCXPMxuxeTqFC9S27j2RjBQZswzvNs2nzc+RtstLJ
-         mL9PwTzcZigQWfVtMNUoa2U6XuNkOSz39Xq4p/orcurCQGYnuLowRao1o2SzGoaei5wx
-         L2NUBIw+R2CkNdMvyQHzgnZdxMsER3Oncl81qvrFtZqfw12/9ZpaX6SAL1ToQkzRb68z
-         9FSA==
+        bh=iRmS9eiX84T3Eljq6nFBiYGemoOHkrIHDqMiXTc5WkY=;
+        b=i76f7LSTmC2x3191zfAwPlIX3DHmSK1SSpHrmfuk0aveIhp3EAf0a8rat4UNfyrZNm
+         dsyiLOQPGQlck0KIqOtoUe/FludXJXUb9g0ZumMbSH4JqkIAKzSBEp7Qtts0qxHQd6zu
+         Jl8l/R48RpgDh3CM8/Db0wBa8B23u4/MGJ3a1E0ZBGZ00gG6D9CAtJDl8457yXdfEywm
+         IwPWZcJgP3W0ahtlfXKufJoGAthkRpzuUxPmnkqy6CsaU9CdBLSMJ5TbM9ajQq7Iy9RW
+         qLz93HOvWNlFK6y2Od5Mq7i5UaPj3ue/Z+vz+vROY5nod5rPXQvT/7+Gb8WT8+Xs2aUy
+         FYEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ry+ibPoPjFsGLqx07kgp5fWkflkrTbeFQgZo2EyqkqE=;
-        b=Chr55GNhzoP8V/h0OvK0VVBVsH2IcKT0PleNTpfXIW8BfwecXf71T4EhO0RXO/F7x1
-         EVgZnl1Eutf/2rnfxGDFejlcMaL0we/kM3z7Rs+dgbIdpp/OORsuQ/MMN0lr1oDB2t1b
-         xCOnjOQBadmBRWM0ptpqy+aUjTlWtYox60o+ANcILm2gwiV01lkIXlCVSIKWTiS1mtVa
-         mgvQSgOOpZPxtW9TFzOTBlWfBgF7Vt8NZ4buDQCRJbnPP0MMKJMz1sbuqJFcwjVmxwGi
-         i1Z7TN28TgA6UfcDKs5IjOXFqVwAonsFlIAnWlnHn0QOFCgswYd37fDiiPsnmqm2JAZq
-         1ZDg==
-X-Gm-Message-State: ACgBeo2csN99o34FmBD5mXLhk4m4WnVnKKSEdWI9H1HxK2ukSmPazmvy
-        xgJZnIJB93KHQNIu7BirSUI70w==
-X-Google-Smtp-Source: AA6agR7AC3Nx3L/Jc8GUrjAPqdz3P8KG7jVDlTu2KGz8zpD9uwar7E9OOC8m11GCpTOS5QCH3k9cpg==
-X-Received: by 2002:a9d:5383:0:b0:61c:6ca8:c68 with SMTP id w3-20020a9d5383000000b0061c6ca80c68mr9706838otg.303.1660103667797;
-        Tue, 09 Aug 2022 20:54:27 -0700 (PDT)
+        bh=iRmS9eiX84T3Eljq6nFBiYGemoOHkrIHDqMiXTc5WkY=;
+        b=SRc1TE3LgBpAoYph2WPQwBsTIiFJkteORsqgefI53uE+gD6GssYSAeuYM0DWNiiiNd
+         Z8IzZZkEuK7i1C7ESJgQx5rBj/TcDXfs+AUQwl8CZ4OrCf3s7qX47kV3tS/FSfZDabhx
+         9InRdQaUoUFgPRnugK7QC1ZJdiKAitOcu1kE+ehCXdEbpZ1ZUCd/Jn4C66e1PdDshIAK
+         Z775wWqh81F27csaICgvjZsEMMLOMtHlBoY3z/v/6q6RV53pP6qKp0GL6s8yH9eIbgCR
+         WwKdv/9HN2vxzC//D4mINYMw5Uq8J39GS0tGXIu6uZwsLmy2vL3cirHg3DvHtnUhTYf/
+         CkRQ==
+X-Gm-Message-State: ACgBeo3kPmQiU0fn2Jh+XfR1prkPnADi5EcwP5SpBG8cWlnyzWbr16W8
+        j01H8aGejwW4Wll1/SSKKO3iyg==
+X-Google-Smtp-Source: AA6agR6ybtnb3nnuOWfKEttcZflNL02RQ1P+Cg6d/WG7ASEGFg1dOw5IGpBPhZlMHsc0WXBNI1DKKQ==
+X-Received: by 2002:a05:6871:411:b0:10e:a23c:65b6 with SMTP id d17-20020a056871041100b0010ea23c65b6mr626373oag.93.1660103669926;
+        Tue, 09 Aug 2022 20:54:29 -0700 (PDT)
 Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id r13-20020a056871088d00b000f5f4ad194bsm3569732oaq.25.2022.08.09.20.54.26
+        by smtp.gmail.com with ESMTPSA id r13-20020a056871088d00b000f5f4ad194bsm3569732oaq.25.2022.08.09.20.54.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 20:54:27 -0700 (PDT)
+        Tue, 09 Aug 2022 20:54:29 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -56,9 +56,9 @@ To:     Andy Gross <agross@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] arm64: dts: qcom: sdm845: add displayport node
-Date:   Tue,  9 Aug 2022 22:54:22 -0500
-Message-Id: <20220810035424.2796777-3-bjorn.andersson@linaro.org>
+Subject: [PATCH 4/4] arm64: dts: qcom: c630: Add DisplayPort controller
+Date:   Tue,  9 Aug 2022 22:54:24 -0500
+Message-Id: <20220810035424.2796777-5-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220810035424.2796777-1-bjorn.andersson@linaro.org>
 References: <20220810035424.2796777-1-bjorn.andersson@linaro.org>
@@ -68,122 +68,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Add and enable the DisplayPort controller found in the Lenovo Yoga C630
+and wire this up to the Embedded Controller for HPD notifications.
 
-Add displayport controller device node, describing DisplayPort hardware
-block on SDM845.
-
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 82 +++++++++++++++++++++++++++-
- 1 file changed, 80 insertions(+), 2 deletions(-)
+ .../boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index eae307a4babf..a8ba6ebc714f 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -4457,13 +4457,20 @@ ports {
- 
- 					port@0 {
- 						reg = <0>;
--						dpu_intf1_out: endpoint {
--							remote-endpoint = <&dsi0_in>;
-+						dpu_intf0_out: endpoint {
-+							remote-endpoint = <&dp_in>;
- 						};
- 					};
- 
- 					port@1 {
- 						reg = <1>;
-+						dpu_intf1_out: endpoint {
-+							remote-endpoint = <&dsi0_in>;
-+						};
-+					};
+diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+index 1b9b36faea27..0e4d086cd64e 100644
+--- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
++++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+@@ -377,6 +377,17 @@ connector@1 {
+ 			reg = <1>;
+ 			power-role = "source";
+ 			data-role = "host";
 +
-+					port@2 {
-+						reg = <2>;
- 						dpu_intf2_out: endpoint {
- 							remote-endpoint = <&dsi1_in>;
- 						};
-@@ -4495,6 +4502,77 @@ opp-430000000 {
- 				};
- 			};
- 
-+			mdss_dp: displayport-controller@ae90000 {
-+				status = "disabled";
-+				compatible = "qcom,sdm845-dp";
-+
-+				reg = <0 0xae90000 0 0x200>,
-+				      <0 0xae90200 0 0x200>,
-+				      <0 0xae90400 0 0x600>,
-+				      <0 0xae90a00 0 0x600>,
-+				      <0 0xae91000 0 0x600>;
-+
-+				interrupt-parent = <&mdss>;
-+				interrupts = <12>;
-+
-+				clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DP_AUX_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DP_LINK_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DP_LINK_INTF_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DP_PIXEL_CLK>;
-+				clock-names = "core_iface", "core_aux", "ctrl_link",
-+					      "ctrl_link_iface", "stream_pixel";
-+				#clock-cells = <1>;
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_DP_LINK_CLK_SRC>,
-+						  <&dispcc DISP_CC_MDSS_DP_PIXEL_CLK_SRC>;
-+				assigned-clock-parents = <&dp_phy 0>, <&dp_phy 1>;
-+				phys = <&dp_phy>;
-+				phy-names = "dp";
-+
-+				operating-points-v2 = <&dp_opp_table>;
-+				power-domains = <&rpmhpd SDM845_CX>;
-+
-+				ports {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					port@0 {
-+						reg = <0>;
-+						dp_in: endpoint {
-+							remote-endpoint = <&dpu_intf0_out>;
-+						};
-+					};
-+
-+					port@1 {
-+						reg = <1>;
-+						dp_out: endpoint { };
-+					};
-+				};
-+
-+				dp_opp_table: dp-opp-table {
-+					compatible = "operating-points-v2";
-+
-+					opp-162000000 {
-+						opp-hz = /bits/ 64 <162000000>;
-+						required-opps = <&rpmhpd_opp_low_svs>;
-+					};
-+
-+					opp-270000000 {
-+						opp-hz = /bits/ 64 <270000000>;
-+						required-opps = <&rpmhpd_opp_svs>;
-+					};
-+
-+					opp-540000000 {
-+						opp-hz = /bits/ 64 <540000000>;
-+						required-opps = <&rpmhpd_opp_svs_l1>;
-+					};
-+
-+					opp-810000000 {
-+						opp-hz = /bits/ 64 <810000000>;
-+						required-opps = <&rpmhpd_opp_nom>;
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++				port@1 {
++					reg = <1>;
++					lenovo_ec_dp_in: endpoint {
++						remote-endpoint = <&mdss_dp_out>;
 +					};
 +				};
 +			};
+ 		};
+ 	};
+ };
+@@ -500,6 +511,20 @@ &mdss {
+ 	status = "okay";
+ };
+ 
++&mdss_dp {
++	status = "okay";
++	data-lanes = <0 1>;
 +
- 			dsi0: dsi@ae94000 {
- 				compatible = "qcom,mdss-dsi-ctrl";
- 				reg = <0 0x0ae94000 0 0x400>;
++	ports {
++		port@1 {
++			reg = <1>;
++			mdss_dp_out: endpoint {
++				remote-endpoint = <&lenovo_ec_dp_in>;
++			};
++		};
++	};
++};
++
+ &mss_pil {
+ 	status = "okay";
+ 	firmware-name = "qcom/LENOVO/81JL/qcdsp1v2850.mbn", "qcom/LENOVO/81JL/qcdsp2850.mbn";
 -- 
 2.37.1
 
