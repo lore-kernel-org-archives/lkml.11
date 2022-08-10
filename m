@@ -2,125 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BBEC19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8800C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 03:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbiHJDed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 23:34:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
+        id S230062AbiHJDfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 23:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiHJDdz (ORCPT
+        with ESMTP id S229952AbiHJDfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 23:33:55 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B1D647E6
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:33:54 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-32a17d3bba2so7469617b3.9
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 20:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=3cjaT3D6IYASOPbKDBEtNtgYyK5QupPCiaUCe5h6Nq8=;
-        b=cmBevBSVU6Br7M2bF9rmfK+ww/fcIy2N3APcYT3Og81DXB6hK79PfU3JOGbbEhh4Ei
-         wcQV7SUQ6BpJ+oWyUiMZQtj3kDjoCj4VQwW75xYQOa+ggntJq0ZV5CCE3Tq7q4XMKa4x
-         1Xt4nxlx/xLRF5aiQbfqNJ0o/02FEhFu961ZAzzBsoCWogkxmWHBCtmCPtVBx+P6XR+o
-         /1cB8BRRrh3lkGcZDF01s7GtYrVBGDhDwEjrPcwPLl5rylh8dDmzP5X0ffUt72A/K/Jy
-         9Qc5zz4P/58inRNsCpMXsxCGm4oAcZmQHJ1m8eCHGsndNPDKRcd102yKTe0ZmTvLANol
-         60MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=3cjaT3D6IYASOPbKDBEtNtgYyK5QupPCiaUCe5h6Nq8=;
-        b=CChpmMH3u79sUMea5Ux3xeXBwn9GkzrDZ7SnNWjdZORsOlv3R7i3TjAJdbfpRytuzr
-         Rp6loHQ54hbGXVjn8T50fzGDp2fPQDAEc9oeSho8ID99kUR+RzhEY6rzU0hb6Hyxy8rL
-         LlEqo+OMyB3cug4JmnS+rGmklNliCvcPHSP8cBQ/p4tvItnek0bFocvQAMxvIxP3yPai
-         AtL4CqMqICC4eh6QOH9W7xgmoLV6ODxB2pxrR6lemDEbJgKseJOPHtruk+DAWOlCyoES
-         g8K9MHN1wGaPN3J5WXDLWdxC1VlqGMB2+pu7cjLEW8ExWR/RSBCww07aWePhL5GKaLSX
-         e5pA==
-X-Gm-Message-State: ACgBeo0rBs30/+44ZqYJzVvqBniqx5l0/HwuryzMRXNqum8B1kVIZwcz
-        58uhhALQk2yqFquotDEdkIGH2nR1M1oJeV0FyCmfoQ==
-X-Google-Smtp-Source: AA6agR7jn3MKdQrGAor5mYwf2qrDtRA5dsA9mLjSm2XKsb93VwGfri0j8JuHR+Azk1RcSpWqy5PNoDtTTag5UuVxv64=
-X-Received: by 2002:a81:50d4:0:b0:31f:5f85:566a with SMTP id
- e203-20020a8150d4000000b0031f5f85566amr25879823ywb.218.1660102433592; Tue, 09
- Aug 2022 20:33:53 -0700 (PDT)
+        Tue, 9 Aug 2022 23:35:11 -0400
+X-Greylist: delayed 1461 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 09 Aug 2022 20:35:07 PDT
+Received: from mx5.cs.washington.edu (mx5.cs.washington.edu [IPv6:2607:4000:200:11::6a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBDA647F9
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 20:35:07 -0700 (PDT)
+Received: from mx5.cs.washington.edu (localhost [IPv6:0:0:0:0:0:0:0:1])
+        by mx5.cs.washington.edu (8.17.1/8.17.1/1.26) with ESMTP id 27A3Aj4X207166;
+        Tue, 9 Aug 2022 20:10:45 -0700
+Received: from attu4.cs.washington.edu (attu4.cs.washington.edu [IPv6:2607:4000:200:10:0:0:0:8c])
+        (authenticated bits=128)
+        by mx5.cs.washington.edu (8.17.1/8.17.1/1.26) with ESMTPSA id 27A3AjBd207162
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Tue, 9 Aug 2022 20:10:45 -0700
+Received: from attu4.cs.washington.edu (localhost [127.0.0.1])
+        by attu4.cs.washington.edu (8.15.2/8.15.2/1.23) with ESMTP id 27A3AiYQ2620315;
+        Tue, 9 Aug 2022 20:10:44 -0700
+Received: (from klee33@localhost)
+        by attu4.cs.washington.edu (8.15.2/8.15.2/Submit/1.2) id 27A3AiAT2620314;
+        Tue, 9 Aug 2022 20:10:44 -0700
+From:   Kenneth Lee <klee33@uw.edu>
+To:     srinivas.kandagatla@linaro.org
+Cc:     linux-kernel@vger.kernel.org, Kenneth Lee <klee33@uw.edu>
+Subject: [PATCH] nvmem: brcm_nvram: Use kzalloc for allocating only one element
+Date:   Tue,  9 Aug 2022 20:10:37 -0700
+Message-Id: <20220810031037.2620221-1-klee33@uw.edu>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220727181936.3250466-1-saravanak@google.com>
- <20220809103052.GA1778649@roeck-us.net> <CAGETcx_ATE6vy9YhygHnBA2P1GDVi54np-=E+50F+cwnj6Wg4A@mail.gmail.com>
- <0c6ef9a3-bbb1-9f1c-7f00-ceb05589594e@roeck-us.net>
-In-Reply-To: <0c6ef9a3-bbb1-9f1c-7f00-ceb05589594e@roeck-us.net>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 9 Aug 2022 20:33:17 -0700
-Message-ID: <CAGETcx8yKqEthtyd8Zb=mqMBNp1TPRXbQOoFp+OxeCoXnTs2kw@mail.gmail.com>
-Subject: Re: [PATCH v6] amba: Remove deferred device addition
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        patches@armlinux.org.uk, kernel-team@android.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 6:34 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On 8/9/22 17:42, Saravana Kannan wrote:
-> > On Tue, Aug 9, 2022 at 3:30 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> >>
-> >> Hi,
-> >>
-> >> On Wed, Jul 27, 2022 at 11:19:35AM -0700, Saravana Kannan wrote:
-> >>> The uevents generated for an amba device need PID and CID information
-> >>> that's available only when the amba device is powered on, clocked and
-> >>> out of reset. So, if those resources aren't available, the information
-> >>> can't be read to generate the uevents. To workaround this requirement,
-> >>> if the resources weren't available, the device addition was deferred and
-> >>> retried periodically.
-> >>>
-> >> ...
-> >>
-> >> This patch results in a large number of crashes in various qemu
-> >> emulations. Crash and bisect logs below. Reverting this patch
-> >> fixes the problem.
-> >
-> > Hey Guenter,
-> >
-> > Thanks for the report. I'm kinda surprised because I had a pl011 probe
-> > successfully in my local testing.
-> >
->
-> Maybe it only happens with qemu emulations, or with certain configurations.
+Use kzalloc(...) rather than kcalloc(1, ...) because the number of
+elements we are specifying in this case is 1, so kzalloc would
+accomplish the same thing and we can simplify.
 
-I tested on a qemu emulation too.
+Signed-off-by: Kenneth Lee <klee33@uw.edu>
+---
+ drivers/nvmem/brcm_nvram.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Can you give me more details on the qemu configuration so I could try
-to reproduce it?
+diff --git a/drivers/nvmem/brcm_nvram.c b/drivers/nvmem/brcm_nvram.c
+index 450b927691c3..4441daa20965 100644
+--- a/drivers/nvmem/brcm_nvram.c
++++ b/drivers/nvmem/brcm_nvram.c
+@@ -96,7 +96,7 @@ static int brcm_nvram_parse(struct brcm_nvram *priv)
+ 
+ 	len = le32_to_cpu(header.len);
+ 
+-	data = kcalloc(1, len, GFP_KERNEL);
++	data = kzalloc(len, GFP_KERNEL);
+ 	memcpy_fromio(data, priv->base, len);
+ 	data[len - 1] = '\0';
+ 
+-- 
+2.31.1
 
-> > I'm wondering if you are having an interaction with some other changes I made.
-> > Can you try pulling this series in and see if it helps?
-> >
-> > https://lore.kernel.org/lkml/20220727185012.3255200-1-saravanak@google.com/
-> >
-> >> Additional information: The decoded stack trace suggests that the
-> >> "id" parameter of pl011_probe() may be NULL.
-> >
-> > That's strange! I'll take a closer look once you confirm that the
-> > series above doesn't help.
-> >
->
-> That series does not make a difference.
-
-Thanks for checking that.
-
--Saravana
