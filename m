@@ -2,182 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 258CCC19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 00:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04741C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 00:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbiHJAUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 20:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
+        id S229904AbiHJAZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 20:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiHJAUj (ORCPT
+        with ESMTP id S229476AbiHJAZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 20:20:39 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E5EC48;
-        Tue,  9 Aug 2022 17:20:36 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 94BA55C02F0;
-        Tue,  9 Aug 2022 20:20:34 -0400 (EDT)
-Received: from imap42 ([10.202.2.92])
-  by compute2.internal (MEProxy); Tue, 09 Aug 2022 20:20:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1660090834; x=1660177234; bh=JJXnYXScrO
-        NTr0QnytBFq2JW9kKGkCqeaX23Leur64w=; b=deMUUoGI9GyzbpJZ2qZaNNaqia
-        PEv88jyoyUcckPD/knKkeJ5bd/E/VKHginf9hEU9k+cbw/S9hYElOxpQo0nvoSRC
-        nQ13t2baRPfUf9/M/BNOz20wBaJoDwBrOF/9D9XEOWi+bXo6gvUJ9QDqTisTJR5E
-        7NUSP2uqSbEkxXCB8ZxnJSkuHKcJNKD9LA2m9ymwoUC0ys+zuNJYBgE5goz+SRmg
-        u74JVIw6u6cgKqP3BkRKVewJTB7n+YGwnbcbbP34mf0Uye99+Rt+7ZQQBDOdBB0D
-        BpuX+TG+8VHFB9+POyT1nSg6Jf4GJeyEnAXX62UOuRh7id3bPO8MTSXrAMeA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660090834; x=1660177234; bh=JJXnYXScrONTr0QnytBFq2JW9kKG
-        kCqeaX23Leur64w=; b=Ha04nrJz4DH9sleMdvxuF2B2Na0468dFVg5fAK4O3Viq
-        rk3LJh3rMSp9jH0qa82OCfUuZxmXbbZEO5LYfJE8CrTEMF+3qEsicwqqb6MMqsA0
-        6bGxMCzfg7hah91I93jRFLFp29CKzeZ54TMiZyWtnyObcNj1Ed7bzAGxSIqeRNvx
-        +Zas3FTLBA2tYSs0svf25u5g8Bf8KEE9kIyKbABFVVCTNm5X5ONPfLG9ADaaDY0O
-        yubYDTR7VMvSGoa82yTOM4glBSIeaBeNF0Blnq1gE1VxS07varm/tdebcn8XAaoB
-        bLByx3Hu2YCXo60oAPVuJxIPDHFuCKURIi6V02xNyw==
-X-ME-Sender: <xms:0vnyYoeLVRENpMw11BH7ieWgSPC4qTN4i6L5fzgBS_rwpEEjHFVwvA>
-    <xme:0vnyYqPOMTe5pREHtqTWqgzydfilAaTx3UMeIMwqXw0N6IldtLj90EOAJeC-qrxok
-    xiRxeYw7MIkzNqsfQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeguddgfeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdlfeehmdenucfjughrpefofgggkfgjfhffhffvvefutgesthdtredt
-    reertdenucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihusegugihuuhhurdighi
-    iiqeenucggtffrrghtthgvrhhnpedtudehudfhveduieeikeejudeljeffuddtieffieel
-    jedtudehhfekheehuedvkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:0vnyYpjFfw-dM8ZvefI9qo0wFRir16KwkVun2Hp5LSd3O1NIlLzKbw>
-    <xmx:0vnyYt8d8aGy9_ztZljOaYl-vBvkXLEYOK02Wn4D5NLpQiNthMNj6Q>
-    <xmx:0vnyYkvWV7ybhzuHCSOpvhhhxg6Bva9BQ1Bpz23vLfch4vomtAi_4w>
-    <xmx:0vnyYgKJedoeMgy4jUvfFkeYokKHhinkwwNj2eeXJf3s6WKXwLB3Dw>
-Feedback-ID: i6a694271:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 5B8D8BC0075; Tue,  9 Aug 2022 20:20:34 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-811-gb808317eab-fm-20220801.001-gb808317e
-Mime-Version: 1.0
-Message-Id: <a2c064c4-4dd6-4f36-a00f-d1fab9e56bd4@www.fastmail.com>
-In-Reply-To: <37649bee-5eb3-93a2-ac57-56eb375ef8cd@iogearbox.net>
-References: <cover.1660062725.git.dxu@dxuuu.xyz>
- <6436220efacfa99f343ffc451e3d5dc8b7f31f05.1660062725.git.dxu@dxuuu.xyz>
- <37649bee-5eb3-93a2-ac57-56eb375ef8cd@iogearbox.net>
-Date:   Tue, 09 Aug 2022 18:20:14 -0600
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Daniel Borkmann" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Add connmark read test
-Content-Type: text/plain
+        Tue, 9 Aug 2022 20:25:18 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F16625F
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 17:25:14 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-32194238c77so127658297b3.4
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 17:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1VUI2HFiheDo58arrnc79/Qbxj5WTqZQ2QhX4iv40Nk=;
+        b=ABPWt08krXKfSXeDcebcG/m72KIW6vO/4ih2HdtXW6Xcflaa31kKaLJUzYJyA+hjN5
+         /hos42tL2v9m84JqszthxP3dn6c/aGKTK66PuFX4Z0fjxJzOK5uctw+SStmmWvgWafd7
+         MKbDZ8Sg0XjW/oLYmkjK93RHOUprdKYO8gm7b5y2cWYfPwkQcxfkl1aJQz7u3MOHnZCH
+         rdFJVgtMvEFznU1m+kpmWML4RW6xlptVIsorWBXGkpapFj7ucqQosGltArtrkMjUMvr8
+         bzpYAIDT8iGLrKJTU7i0DiQ4ZrsFOu903DZ2B9J+RQpVsmlU48hAaJ4q+isVtpHsUKog
+         1ADA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1VUI2HFiheDo58arrnc79/Qbxj5WTqZQ2QhX4iv40Nk=;
+        b=a7yn+Bm0bh0ayVOz62JG7pT1dlH/89u6CQb243I2DP6AdJ+mckNBwMF6b5v7hxZkc1
+         D1MwNSjIO75a/ruzk34moKEdypnWSHeOuAjYLbje/O9DKZgWHl6lCqlMIO4I67rzDprS
+         TStfLEsbz2njI6lEjLvtoXCSDoaDaieV9K3N0nAMR/s9RBKQTLVD+NIc9ahgbVV6qpiC
+         /zhRh6vDK9ZqmdANQhvjj+jqztmknkaZ6GZ+X2Nax/r64YPmzmzs1iHF54J/qZy06HlB
+         clfE0ul/cKtELrZZ/GjxoNSSc+SM1o+fQ23jGPtyQEYvvAxXcyINgjRXZSGboxX5Sz+3
+         HNvQ==
+X-Gm-Message-State: ACgBeo0o/Bw7KgeanwjiQ6ImItB7aAF88PhrwW15qqsSOI+AIw5R7+dY
+        Cje6bf9H63/K67qg++op9i2T39lKXLVh0vxjGFxkA6iTnmQ=
+X-Google-Smtp-Source: AA6agR6ldAkTAJtS3AzePk06qtNOc1jE0hT59EJbzuTuMPqiGKi5H6FdfLEZjbfEkE01KyVeWy2EIeHuNtHBK05yhwk=
+X-Received: by 2002:a0d:fd05:0:b0:329:3836:53ac with SMTP id
+ n5-20020a0dfd05000000b00329383653acmr23670331ywf.455.1660091113143; Tue, 09
+ Aug 2022 17:25:13 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220727185012.3255200-1-saravanak@google.com>
+ <YuI6shUi6iJdMSfB@kroah.com> <CAD=FV=W1P=4vzyTYQ+yVC=fH-7i=hjCAk7FV8jcGcGY+xa62pA@mail.gmail.com>
+In-Reply-To: <CAD=FV=W1P=4vzyTYQ+yVC=fH-7i=hjCAk7FV8jcGcGY+xa62pA@mail.gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 9 Aug 2022 17:24:37 -0700
+Message-ID: <CAGETcx9+ST9OwoO8H3EMoODCW3AUtvFcwPmYDaB266fdgoXtEQ@mail.gmail.com>
+Subject: Re: [PATCH v1 0/3] Bring back driver_deferred_probe_check_state() for now
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        kernel-team@android.com, LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
-
-On Tue, Aug 9, 2022, at 3:14 PM, Daniel Borkmann wrote:
-> Hi Daniel,
+On Tue, Aug 9, 2022 at 4:47 PM Doug Anderson <dianders@chromium.org> wrote:
 >
-> On 8/9/22 6:34 PM, Daniel Xu wrote:
->> Test that the prog can read from the connection mark. This test is nice
->> because it ensures progs can interact with netfilter subsystem
->> correctly.
->> 
->> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
->> ---
->>   tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 3 ++-
->>   tools/testing/selftests/bpf/progs/test_bpf_nf.c | 3 +++
->>   2 files changed, 5 insertions(+), 1 deletion(-)
->> 
->> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
->> index 317978cac029..7232f6dcd252 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
->> @@ -44,7 +44,7 @@ static int connect_to_server(int srv_fd)
->>   
->>   static void test_bpf_nf_ct(int mode)
->>   {
->> -	const char *iptables = "iptables -t raw %s PREROUTING -j CT";
->> +	const char *iptables = "iptables -t raw %s PREROUTING -j CONNMARK --set-mark 42/0";
->>   	int srv_fd = -1, client_fd = -1, srv_client_fd = -1;
->>   	struct sockaddr_in peer_addr = {};
->>   	struct test_bpf_nf *skel;
->> @@ -114,6 +114,7 @@ static void test_bpf_nf_ct(int mode)
->>   	/* expected status is IPS_SEEN_REPLY */
->>   	ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
->>   	ASSERT_EQ(skel->data->test_exist_lookup, 0, "Test existing connection lookup");
->> +	ASSERT_EQ(skel->bss->test_exist_lookup_mark, 43, "Test existing connection lookup ctmark");
->>   end:
->>   	if (srv_client_fd != -1)
->>   		close(srv_client_fd);
->> diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
->> index 84e0fd479794..2722441850cc 100644
->> --- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
->> +++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
->> @@ -28,6 +28,7 @@ __be16 sport = 0;
->>   __be32 daddr = 0;
->>   __be16 dport = 0;
->>   int test_exist_lookup = -ENOENT;
->> +u32 test_exist_lookup_mark = 0;
->>   
->>   struct nf_conn;
->>   
->> @@ -174,6 +175,8 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
->>   		       sizeof(opts_def));
->>   	if (ct) {
->>   		test_exist_lookup = 0;
->> +		if (ct->mark == 42)
->> +			test_exist_lookup_mark = 43;
+> Hi,
 >
-> Looks like CI failed here:
+> On Thu, Jul 28, 2022 at 12:29 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Wed, Jul 27, 2022 at 11:50:08AM -0700, Saravana Kannan wrote:
+> > > More fixes/changes are needed before driver_deferred_probe_check_state()
+> > > can be deleted. So, bring it back for now.
+> > >
+> > > Greg,
+> > >
+> > > Can we get this into 5.19? If not, it might not be worth picking up this
+> > > series. I could just do the other/more fixes in time for 5.20.
+> >
+> > Wow, no, it is _WAY_ too late for 5.19 to make a change like this,
+> > sorry.
+> >
+> > What is so broken that we need to revert these now?  I could do so for
+> > 5.20-rc1, and then backport to 5.19.y if that release is really broken,
+> > but this feels odd so late in the cycle.
+
+Greg,
+
+I didn't realize the patches I'm trying to revert never landed on
+5.19. So you can ignore this thread.
+
 >
->    [...]
->    progs/test_bpf_nf.c:178:11: error: no member named 'mark' in 'struct 
-> nf_conn'
->                    if (ct->mark == 42)
->                        ~~  ^
->    1 error generated.
->    make: *** [Makefile:521: 
-> /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/test_bpf_nf.o] 
-> Error 1
->    make: *** Waiting for unfinished jobs....
->    Error: Process completed with exit code 2.
+> I spent a bunch of time bisecting mainline today on my
+> sc7180-trogdor-lazor board. When building the top of Linus's tree
+> today the display doesn't come up. I can make it come up by turning
+> fw_devlink off (after fixing a regulator bug that I just posted a fix
+> for).
 >
-> Likely due to missing CONFIG_NF_CONNTRACK_MARK for the CI instance.
+> I found that the first bad commit was commit 5a46079a9645 ("PM:
+> domains: Delete usage of driver_deferred_probe_check_state()")
+>
+> ...but only when applied to mainline. When I cherry-pick that back to
+> v5.19-rc1 (and pick another bugfix needed to boot my board against
+> v5.19-rc1) then it works OK. After yet more bisecting, I found that on
+> trogdor there's a bad interaction with the commit e511a760 ("arm64:
+> dts: qcom: sm7180: remove assigned-clock-rate property for mdp clk").
+> That commit is perfectly legit but I guess it somehow changed how
+> fw_devlink was interpreting things?
+>
+> Sure enough, picking this revert series fixes things on Linus's tree.
+> Any chance we can still get the revert in for v5.20-rc1? ;-)
 
-Originally (as stated in the cover letter) I thought the CI kconfig was hosted
-somewhere else. Looking closer I see the kconfigs are checked into the
-selftest tree.
+I guess it's 6.0 now. But I'm almost done with my actual fixes that
+rewrite some parts of fw_devlink to make it a lot more robust. So, I'm
+not sure if all these reverts need to land anymore.
 
-I think the following should fix the CI. I'll send out a v3 tomorrow morning:
+I'm hoping to send out the proper fixes by the end of this week. Maybe
+you can try that out and let me know if it solves your issues (I
+expect it to).
 
-diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
-index fabf0c014349..3fc46f9cfb22 100644
---- a/tools/testing/selftests/bpf/config
-+++ b/tools/testing/selftests/bpf/config
-@@ -50,9 +50,11 @@ CONFIG_NET_SCHED=y
- CONFIG_NETDEVSIM=m
- CONFIG_NETFILTER=y
- CONFIG_NETFILTER_SYNPROXY=y
-+CONFIG_NETFILTER_XT_CONNMARK=y
- CONFIG_NETFILTER_XT_MATCH_STATE=y
- CONFIG_NETFILTER_XT_TARGET_CT=y
- CONFIG_NF_CONNTRACK=y
-+CONFIG_NF_CONNTRACK_MARK=y
- CONFIG_NF_DEFRAG_IPV4=y
- CONFIG_NF_DEFRAG_IPV6=y
- CONFIG_RC_CORE=y
+I'm surprised that specific clock patch has an impact though. It's
+just touching properties that fw_devlink doesn't parse.
 
-[...]
-
-Thanks,
-Daniel
+-Saravana
