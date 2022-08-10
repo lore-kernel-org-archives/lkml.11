@@ -2,95 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1ABCC19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 18:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B01D5C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 18:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233514AbiHJSIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 14:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
+        id S233569AbiHJSKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 14:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231213AbiHJSIQ (ORCPT
+        with ESMTP id S231213AbiHJSKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 14:08:16 -0400
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2296B3AE66;
-        Wed, 10 Aug 2022 11:08:14 -0700 (PDT)
-Received: by mail-pl1-f177.google.com with SMTP id w14so14904835plp.9;
-        Wed, 10 Aug 2022 11:08:14 -0700 (PDT)
+        Wed, 10 Aug 2022 14:10:17 -0400
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CC710D8;
+        Wed, 10 Aug 2022 11:10:16 -0700 (PDT)
+Received: by mail-il1-f177.google.com with SMTP id o14so8724735ilt.2;
+        Wed, 10 Aug 2022 11:10:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=WAz9mh0IMcPdbiRN1XIuRByL3cLsDNo1Q7uXhFSH7jI=;
-        b=kycvjobjoL11wFj3wtElhmyJWrZ2B+EF11vjqLiHL5X7z97Ea9AP5xztT3xskAO/7t
-         SxDjw1iVR2ipVYRFF7idyGdkuj71jroXA/lOyvl86ggTjE0Ts6NMzbeQUQ8RzQPfB3WQ
-         Ul1SJUuEjeIfRCPiHrKZIovmwOnSjdNUS0YCHqppzcditcufWvaNYeYcHQYe1QDJzlvd
-         d7IOYYSnRPTSsDgyVH2QP9i9iV+sK7GC/JGvCBqDA9GAkRZeEhxu8AOsW/UJtXoSE0tL
-         MRyxznMA5FOVKIEGm9706quYpHc3/1urwXKfrOVvUu6bI/Ltk3wl5TAPCjqmAaPi1mqp
-         E7Lg==
-X-Gm-Message-State: ACgBeo3sbVefQmjLYpxIggKadMdPkhRTFjqocctUBUFNbyu8N9JFOg8e
-        xrsAVQUgDdGl7RDfw1io/gs=
-X-Google-Smtp-Source: AA6agR5jM/nbSx9z0HeWh1HFzKrkMa4Kzfp81C3UpA7WpcMCn3mLxDqfU0xqc4p9uyEAeY5jej6aDA==
-X-Received: by 2002:a17:903:11c7:b0:171:2818:4cd7 with SMTP id q7-20020a17090311c700b0017128184cd7mr7466175plh.136.1660154893409;
-        Wed, 10 Aug 2022 11:08:13 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:85c9:163f:8564:e41f? ([2620:15c:211:201:85c9:163f:8564:e41f])
-        by smtp.gmail.com with ESMTPSA id n28-20020a056a00213c00b0052b94e757ecsm2283678pfj.213.2022.08.10.11.08.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 11:08:12 -0700 (PDT)
-Message-ID: <8aa0e7a4-265c-21f4-bdb4-57641d15b7b9@acm.org>
-Date:   Wed, 10 Aug 2022 11:08:11 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=0D2zsyejY7H3mCUQMpi1C3N991oh7KCilN66QDRGx+o=;
+        b=Acc3xPZtKcljW8SzxOb/ZDnvQcmPH2FU0PlBXVFCvEsQENbCymQfzQZkr12wOdJWy1
+         hFRQFq3ibeTFzbPcObvoKUBt9LpYknyqpwEvU5d4fq+pkAw/++wflHdx1LF1tacg/rJD
+         RgBGCYjjerrlaDzpZ01qIKR4KnF9qUw7rn7QSk/pIpIJUOkitrafboOkfNmSna+gkZhr
+         OXJYzWeFj0UQUmaqql4RuTu5p1PhWcrZDBpx7b8snOYgJYv86BnNI7XHVrr/P3WRAiqD
+         DegzqiovukhbjyTWzr+qiOEWC8rgBXn7oTM3xZy+ywwYahQF4iqRcjHbjx95kMA/xZOq
+         dDsw==
+X-Gm-Message-State: ACgBeo3cyNblYpl8JNWzCMv4l0kp08IoUJBWAYlk/rrpnyGT9L83vDGc
+        QK8jXaJpSaYkdrDguO92kA==
+X-Google-Smtp-Source: AA6agR5d4AsX9K90n0Ys1OYAoyj/B+E1S7TnIfhjyAAak/DzJ5cPFU4MiDHA4HNZaHyC/UVS/jKP+w==
+X-Received: by 2002:a05:6e02:1a41:b0:2de:e162:c5bb with SMTP id u1-20020a056e021a4100b002dee162c5bbmr13479096ilv.102.1660155015561;
+        Wed, 10 Aug 2022 11:10:15 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id l9-20020a02a889000000b00339e158bd3esm7757356jam.38.2022.08.10.11.10.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 11:10:15 -0700 (PDT)
+Received: (nullmailer pid 260691 invoked by uid 1000);
+        Wed, 10 Aug 2022 18:10:12 -0000
+Date:   Wed, 10 Aug 2022 12:10:12 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Mark Kettenis <mark.kettenis@xs4all.nl>
+Cc:     sven@svenpeter.dev, marcel@holtmann.org, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, marcan@marcan.st, alyssa@rosenzweig.io,
+        asahi@lists.linux.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] dt-bindings: net: Add Broadcom BCM4377 family PCI
+ Bluetooth
+Message-ID: <20220810181012.GC200295-robh@kernel.org>
+References: <20220801103633.27772-1-sven@svenpeter.dev>
+ <20220801103633.27772-3-sven@svenpeter.dev>
+ <20220801153921.GC1031441-robh@kernel.org>
+ <d3ce6343fdaaf127@bloch.sibelius.xs4all.nl>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted
- blk_opf_t
-Content-Language: en-US
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <jth@kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
-References: <202208061533.YBqXyzHm-lkp@intel.com>
- <affa6eee-3b7c-105a-8f4a-35f1ed81f0cd@opensource.wdc.com>
- <b3a6b038-ba0c-2242-3a29-5bcadcaa9d71@acm.org>
- <24b7e027-e098-269b-ccf7-b14deb499c33@opensource.wdc.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <24b7e027-e098-269b-ccf7-b14deb499c33@opensource.wdc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d3ce6343fdaaf127@bloch.sibelius.xs4all.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/10/22 07:36, Damien Le Moal wrote:
-> On 2022/08/08 8:37, Bart Van Assche wrote:
->> Thanks for having taken a look. Please help with verifying whether the
->> following patch is sufficient to fix the reported warning: "[PATCH]
->> tracing: Suppress sparse warnings triggered by is_signed_type()"
->> (https://lore.kernel.org/all/20220717151047.19220-1-bvanassche@acm.org/).
+On Mon, Aug 01, 2022 at 05:51:23PM +0200, Mark Kettenis wrote:
+> > Date: Mon, 1 Aug 2022 09:39:21 -0600
+> > From: Rob Herring <robh@kernel.org>
+> > 
+> > On Mon, Aug 01, 2022 at 12:36:30PM +0200, Sven Peter wrote:
+> > > These chips are combined Wi-Fi/Bluetooth radios which expose a
+> > > PCI subfunction for the Bluetooth part.
+> > > They are found in Apple machines such as the x86 models with the T2
+> > > chip or the arm64 models with the M1 or M2 chips.
+> > > 
+> > > Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> > > ---
+> > >  .../bindings/net/brcm,bcm4377-bluetooth.yaml  | 77 +++++++++++++++++++
+> > >  MAINTAINERS                                   |  1 +
+> > >  2 files changed, 78 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+> > > new file mode 100644
+> > > index 000000000000..afe6ecebd939
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+> > > @@ -0,0 +1,77 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/net/brcm,bcm4377-bluetooth.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Broadcom BCM4377 family PCI Bluetooth Chips
+> > > +
+> > > +allOf:
+> > > +  - $ref: bluetooth-controller.yaml#
+> > > +
+> > > +maintainers:
+> > > +  - Sven Peter <sven@svenpeter.dev>
+> > > +
+> > > +description:
+> > > +  This binding describes Broadcom BCM4377 family PCI-attached bluetooth chips
+> > 
+> > s/PCI/PCIe/
+> > 
+> > > +  usually found in Apple machines. The Wi-Fi part of the chip is described in
+> > > +  bindings/net/wireless/brcm,bcm4329-fmac.yaml.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    enum:
+> > > +      - pci14e4,5fa0 # BCM4377
+> > > +      - pci14e4,5f69 # BCM4378
+> > > +      - pci14e4,5f71 # BCM4387
+> > > +
+> > > +  reg:
+> > > +    description: PCI device identifier.
+> > > +
+> > > +  brcm,board-type:
+> > > +    $ref: /schemas/types.yaml#/definitions/string
+> > > +    description: Board type of the Bluetooth chip. This is used to decouple
+> > > +      the overall system board from the Bluetooth module and used to construct
+> > > +      firmware and calibration data filenames.
+> > > +      On Apple platforms, this should be the Apple module-instance codename
+> > > +      prefixed by "apple,", e.g. "apple,atlantisb".
+> > 
+> > pattern: '^apple,.*'
+> > 
+> > And when there's other known vendors we can add them.
+> > 
+> > Really, I'm not all that crazy about this property. 'firmware-name' 
+> > doesn't work? Or perhaps this should just be a more specific compatible 
+> > string.
 > 
-> With the current Linus tree, I do not see this sparse warning. However, applying
-> the above patch, "make M=fs/zonefs C=1" generates a lot of warnings:
+> This matches the property proposed here:
+> 
+>   https://patchwork.kernel.org/project/linux-wireless/patch/20220104072658.69756-2-marcan@marcan.st/
+> 
+> Unfortunately that series didn't make progress for other reasons...
+> 
+> There was some significant bikeshedding in the original version of that series already:
+> 
+>   https://patchwork.kernel.org/project/linux-wireless/patch/20211226153624.162281-2-marcan@marcan.st/
+> 
+> Are you sure you want to repeat that? ;)
 
-That doesn't make sense to me. My patch reduces the number of sparse 
-warnings that are reported.
+No, it's fine. :)
 
-> make -j64 M=fs/zonefs C=1
->    CC [M]  fs/zonefs/super.o
->    CC [M]  fs/zonefs/sysfs.o
->    CHECK   fs/zonefs/sysfs.c
->    CHECK   fs/zonefs/super.c
-> fs/zonefs/sysfs.c: note: in included file (through include/linux/bitops.h,
-> include/linux/kernel.h, arch/x86/include/asm/percpu.h,
-> arch/x86/include/asm/preempt.h, include/linux/preempt.h,
-> include/linux/spinlock.h, ...):
-> ./arch/x86/include/asm/bitops.h:66:1: warning: unreplaced symbol 'return'
-
-I think that you are hitting a bug in sparse. See also 
-https://lore.kernel.org/all/e91d351c-3c16-e48d-7e9d-9f096c4acbc9@debian.org/T/. 
-I also see the above warnings if I use the sparse binary from Debian 
-testing. I do not see these sparse warnings if I download the sparse 
-source code and compile that source code myself.
-
-Bart.
+Rob
