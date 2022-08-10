@@ -2,854 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1853C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 05:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8739C25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 05:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230452AbiHJFxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 01:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53926 "EHLO
+        id S231144AbiHJFzd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 01:55:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiHJFxY (ORCPT
+        with ESMTP id S229693AbiHJFzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 01:53:24 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC49584EFD
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 22:53:21 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id n13-20020a056e02140d00b002dfa5464967so8571018ilo.19
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 22:53:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=qfbEno11JU5aPOWM4KWb/lGUK1OxQ2xKTbPHtLO/MsM=;
-        b=AtXnKyXUs/ok3PgTWKFBWCiFqBsnWB2fr7sSzc/QeZ8xvCuuenUyXWAAkuWnF+5yuN
-         PHsgN+kozhO+DzuXHxE4HAu/x7VEyCd53/9z1o5M2QUS998Mu1HxHS3uD/rvkOXVPfhJ
-         oulALXlB3+PcAeePCoIQAZtUgoxhLyqUT6W4nwInptnCDiWOH5YWUnCgEpqwNLcsbzfb
-         KrezwaqJ1pBEHAQ+Iav8htK+DG5OAUpsljjrW33MpwslA76H/hWQAB0GQ/aM7cAoLOQK
-         bZ/WdRwyDZk7MFUvq3151ih4PHbtLH41MmcIOZfn3Z8rtsWTRWYSK49WfLm83spZSA4V
-         XA2g==
-X-Gm-Message-State: ACgBeo3Kon5kijUsbFNiVQkyIK731zo9VO41muJtCrx89GRg31uMacv6
-        QkLXOLP5Pf/vEskpFfV+7+xqirsxYs5gpig43aL0r6R1EFcn
-X-Google-Smtp-Source: AA6agR7PIO43oVSOY39t3so1l6FOuIaVN2JuPX+77SmchRl4dqllloQeDOqFSQ3vfT+OW98z7IBtqkmgez8WwMcjQsrfQ4axP2jj
+        Wed, 10 Aug 2022 01:55:25 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2040.outbound.protection.outlook.com [40.107.244.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58A263DD;
+        Tue,  9 Aug 2022 22:55:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gyBoNMO9NkNOUVJvairHGMt8Iv5/ol0FJhhnyGE3Jg3vnyLd5YVxvm23sCFjnOwRyGQr23Ee0C/G/MKR6s1eL++eaVj7e6PpIOl6aa0DgV12o68zwia9g3ywlRzh/hHEwzoJJuMzNPFY2cEy7NKmw5v4Zk9DFr9q6dnqd1bI8ht5gWGEqwuiJXmAAMnIXumLtdzzJ1LLN8aGbN6aYp9R7axkSZyV02FAV59eDIjGJ6jE4DTVY8E45rTXRnGAhSbm3JFJFvcQdVfEg0Vrk8khBVNLk+129UTSm8pN+aynnGw9dyo0PzPS3008UpJ2o7sLxywXq1dmxcDS4eYK5qGfnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=A7/TDF2eWXC0UqWxTepQfK9zXwsTNOllxMc5CldvwJU=;
+ b=JvJdyBtCBH2guvD3KiZ9lLEHcyTFTxiEOkznrC7ZoVdbRq2kysjx01Y2wFRPbP7oaumcszpIOzKnDmLJNAmvSo4pAtB5pPtYH8s63uaRAZ2sWPNRK8GP6NJuA6tn2Ym+1N3SzCES7y91wi7iVmbw5mz8z0BPuf3He7JkBGWY0rLt4g9kS/JbbBqbwLgJjrozv46j48t74I++eEBhakh+RRJ5YtFoYr5qFn3Y7g6grsL4RzS4HnGqlUCcgjF72al1bZcuIXISXvIzodYIyA5uDvzbji2KfwrAAlXb3puoGIWxNfVugn7XjrZQ4rPfDQmweWLfuNq504timyMHyFPj4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=A7/TDF2eWXC0UqWxTepQfK9zXwsTNOllxMc5CldvwJU=;
+ b=uVSwGm38yPWrqzEcWE+yQ8KeLiI5IulQdIyzp6gaarXAglpF5WjMbgLbt2jTieBiI2oYiEXLZiDwCOMBiTmJSOuNfs6T/WUilLA2Dph5GomicIA4LsxB2mtzRavIikkwk7t7OOfFbQ3+q22wPTXISonTWbTk1StZJMG+XkG+O9k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by SJ0PR12MB6712.namprd12.prod.outlook.com (2603:10b6:a03:44e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Wed, 10 Aug
+ 2022 05:55:22 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5504.020; Wed, 10 Aug 2022
+ 05:55:21 +0000
+Message-ID: <298c183e-6608-6550-6a3f-3283edc43f39@amd.com>
+Date:   Wed, 10 Aug 2022 07:55:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [Linaro-mm-sig] Re: DMA-buf and uncached system memory
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        "Sharma, Shashank" <Shashank.Sharma@amd.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        linaro-mm-sig@lists.linaro.org,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-media <linux-media@vger.kernel.org>
+References: <fbb228cd78e9bebd7e7921c19e0c4c09d0891f23.camel@pengutronix.de>
+ <e691bccc-171d-f674-2817-13a945970f4a@amd.com>
+ <95cca943bbfda6af07339fb8d2dc7f4da3aa0280.camel@pengutronix.de>
+ <05814ddb-4f3e-99d8-025a-c31db7b2c46b@amd.com>
+ <708e27755317a7650ca08ba2e4c14691ac0d6ba2.camel@pengutronix.de>
+ <6287f5f8-d9af-e03d-a2c8-ea8ddcbdc0d8@amd.com>
+ <CAPj87rOykZv7bjNhHPT4StrsPz8Y_DWqab4Ryq=Qqh77LS2e=Q@mail.gmail.com>
+ <578953dd-6298-2bfe-a8fb-52004b84fd17@amd.com>
+ <YrY0cQY1BTL5H7Xp@phenom.ffwll.local>
+ <5eeefadd-7804-3876-c8da-3e6f1bcb9dc0@gmail.com>
+ <YvJzM1km0iJ3eFnR@phenom.ffwll.local>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <YvJzM1km0iJ3eFnR@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR3P281CA0149.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:95::20) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1602:b0:67c:d660:397 with SMTP id
- x2-20020a056602160200b0067cd6600397mr10914466iow.163.1660110801097; Tue, 09
- Aug 2022 22:53:21 -0700 (PDT)
-Date:   Tue, 09 Aug 2022 22:53:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000096592405e5dcaa9f@google.com>
-Subject: [syzbot] INFO: task hung in __generic_file_fsync (3)
-From:   syzbot <syzbot+ed920a72fd23eb735158@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7a016b1a-740a-405f-e58e-08da7a94e8d1
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB6712:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hK7k6b4aQcVRwvFyRtEvSic3S94dLudMnUC26kw8LVJU0FjOidfxcxm6oHb7H2RfhC3suEbevZPp1RdHAAVjt3w4KucyeFeQRB0b3jnYvaI1jRV1tIGuJLBo2FDNyoexsgRi7sC7yGdGcLpEiaWq72MGL7cAbOVPE/Qoxic5zs98p786sZszz6o72nZgXLXYcWwhV/+cufgUCYdu4DHK6Vb8GVjD4D+7c3aEu4OkkWEhNb0TCw1NCVCEZIideRtR1heFIwMJus7QqEENjchcv4n4g/ZpL1kpWOQBlQwgB6BcSuDk2cpdpQc31yCCitVh1yb16xY6rNF6d6dbGr/7lQ/sSmmSeSU/pucH3XWE12bPPbx71yKUSbz82HfXDUJD0SikGHul0yUvTSyGe6zXj0fenjdYCAX9neWzI6WilOcs/c603nkONeamBRazeg/KOsxQnNGI690DbGb24NKuYTPQ15LIzy5C/ZQjVBmGbznSqM4lk6mp7McS9UpbtnieWoTusSgVpEn9t7yJJQBzmpVoDQrZbiDcgJkOj7RYCirtz8tTZW6icyynsrkVLhm235lCXv5hNR3SdfVcfMua+zx5fdqS1NTHWi3n7+i27lqAWEBjyXyTMPxdn8dheahaVlDaIgEaBoW1wZAjzQz6CB6O7Dr4hIKNTfTbMtoagR7AfRebVGFrAn56nBUhHstY+EXMjYcCJE/ualjfRWGNJu1Olkjxt8VBsbWYwC+vk1S210pPuFMg2mcIDJEg8Z/DA7j8Ya4vzwfpNIRrNzT+wWhzKe6ALg2cIEgP0aMt+6RzNQ7n/8/KIyJcZ9ItWS431ab0C/cCnjz8PVjfBSxXWuZKds8/w+H09iSRcpDlx7U=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(6486002)(478600001)(41300700001)(921005)(6666004)(6512007)(6506007)(86362001)(36756003)(31696002)(66574015)(186003)(31686004)(83380400001)(2616005)(110136005)(8936002)(8676002)(66476007)(66556008)(66946007)(316002)(5660300002)(2906002)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?blZ3Q25lRFI0K1lBMkhlZU94Ym01S3VON2pkTUMrWTZ4OFhwMTE3MDB0cmdI?=
+ =?utf-8?B?cmR1eFF1U1RHbEpRZmpXdGEyNVB5NGovaWc5VW1xK1RyR0M5UkRtMjczS1lY?=
+ =?utf-8?B?WVNBUUtjV3B2M2FzQzhQYlRacFRVTTkyRmt3ZFkvZWxpS1RzdVJzUFBvdmNJ?=
+ =?utf-8?B?ODBJSG1WUy8vblJGUGRJVm1wN1J4aDd0Wm5oT210eWxiTks0TG1UWmZYVzc2?=
+ =?utf-8?B?NG0veXgzRG1RdVZYOTkwWGJvNk91Z2Y0dkM4NURieG9VaHc1MWNBa3JvZmEr?=
+ =?utf-8?B?OVpqcDZ3MEZxUzJVTmNVYm5TakNsMUViL0h5UkFadFluWTBSZFIrK2QrSCtC?=
+ =?utf-8?B?SEg1U1AvdFR1OEhZYTBUaU51cjlUUy9VMjByZXJtcHhCbHB0RHRncWFDLzdy?=
+ =?utf-8?B?RDhTZEV4VHBhNmhKdlZMd3RGNHB4elBVMnpTWjVxZW53ZnE5VGoyS3FQeWdH?=
+ =?utf-8?B?SmpabU83MTFLZHBRTXM5UUR6djlmRnBNZWptMGpUWnZaZzdnbXNFR1JWMjFX?=
+ =?utf-8?B?RjB2U2ZXOEE0akJsdE00dWtLekNHVlh5aGNubit1YmFpMkNtYmJjR0tsbkZn?=
+ =?utf-8?B?WDFYMzNneGtRbWlRbmhwTTd6NWF4Zndma2d2Vk1oZFQwc1ZtUklaVDZMb3B2?=
+ =?utf-8?B?cW44S3NoeUdVNituTGpBYmhjTFZxVEhBSGZtVFVkQUMxeTJjQjVSaHYxai9a?=
+ =?utf-8?B?eW44Rzl5TTRNMjdHMlIwQ1NMRjFzMldpdldpNEc3cy9RdktUd2IzY3QzeEox?=
+ =?utf-8?B?VXNncmVieE1Nb3c2REszU3BsUEVJYnVjblhaaGJtclcydFVnQW1hQXZuS2Ix?=
+ =?utf-8?B?K2RUaDQrRWFsRW1WeFp0V0VkaWVYY3NseTBYNWZBZnUvT2gxcloxbFg5b2hu?=
+ =?utf-8?B?TU5uWS84ZXBJNjd5NjByUEYwclBFUnZBbENpUUtzUzk0VVcxMThvcjZrUStt?=
+ =?utf-8?B?OVZHTjZsRVAwUUkvelZsd2tsMW9lR2ZJcUZYUURYYWlsNEMwc01NLzNhb1hk?=
+ =?utf-8?B?eFJudm5Xb3RYRFRPWStCNXIzeTQ2MmZEdy8zVFY2djJsaU82N3BIdlErdG1Q?=
+ =?utf-8?B?Sy9CM0RJN2lsVDJLa2dQcCtYdEdCaTRzeERjZlFVcWlqM0dKYno3SXJiQmpG?=
+ =?utf-8?B?Y0dJYXVEL0pKRjIyN0xLbW5rSkZVamorQ2pPMTdZNHFKN3N5YTI5cVJFTE0z?=
+ =?utf-8?B?RzlrUS8xVVgrTXA2NVJYN1I2MGxpNVZvT3h4cUNJTlJKbzRoS0Rtc2hxYmtU?=
+ =?utf-8?B?bnRmbUpvc2RDRXh0VHhWalZ0QnRTUE5oN0FVQUNrYWNFMTZOTDZ4bG9SL0xi?=
+ =?utf-8?B?U2ppVmREb0ZuS0YyYWI0L1dNRktQSi9UWnViWUpMek5EWlh2eDhXdVQ5QnA4?=
+ =?utf-8?B?OWtla1pQa1BJY0I0QjFpeWRZcC9LbjVmZlJYU0R0NzJ4NWlpaWtJcDhVKzJN?=
+ =?utf-8?B?bFpiL3FuZ1pqRXdXMGxGdmRtNENxQjgveExtejlEK0lxL0x0L3VUNndDbGha?=
+ =?utf-8?B?SjZYVHkxMmhWVk1BVGRqZjMyNi93UjlCU3BLNG1NekFZNWFOb002TS9hL2xS?=
+ =?utf-8?B?V2dVRmNSbCtOY0NzZ0hxSUozcmtpUHRkVU44cGM2a1kwQmZCRjlZeE4rZVhm?=
+ =?utf-8?B?T2JMVmtPTnlxWnJDdFNEMVpmeDI4c0hUbzhoZ0RIZWh4WGkrNjlTZ3BxSXpI?=
+ =?utf-8?B?MTlodWV6Y0xwZ05vOXBsbWt5WTNWM0psc3JPS0RpZVNJcE80UUNlR2QrRmNr?=
+ =?utf-8?B?UGp0NTVUc09BMnYzRHhCRmsxK1BSc1VxMmdNMWZQVTBZb2FUbmNCTHRVYTJH?=
+ =?utf-8?B?K0hXV20zY0ZZUzQzcVdscUtmY0ZHMFR0RHhVdTZiVW1tZ1UwbXBXTTh0bUxs?=
+ =?utf-8?B?SmhYQWlhSWxwUlkwUUdqTFJzYk4wcVh6a095cUlteG0yV2RWRmVFZm5ucEI2?=
+ =?utf-8?B?c1hUbnk0MFhqK3JWRnErU3hsOEZRRnUvM1hRaFJvemRVMk1HRlRJMWtRTVcy?=
+ =?utf-8?B?ZE5HN0Z0WWxHMkNiVkc3ZWNiMnMxNnUzc3haOVExbGowUjNGNmYyZzYxZnNS?=
+ =?utf-8?B?UmFYNkNRRFhNYStVajB4WVI1cm1tYzFESit3b2xmZVhjSTFBYWFGaUZOVU1F?=
+ =?utf-8?B?VlJZdlRQRlBBUkNxWlNRY3VSSW1GaWRnUkpTcG1WZTdwZmsrNWtmWXZ2ZW1U?=
+ =?utf-8?Q?kIg4V+venBtZSq6GQosUSEdnYmJnEmrHYI+B9uhbEz6u?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a016b1a-740a-405f-e58e-08da7a94e8d1
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2022 05:55:20.8664
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wcf0iiC0InK2h3Y/qJ5kS82TF+yM1adp6DTntXQhAR3xEe4CzaPDltyq3g5YfPSg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6712
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Am 09.08.22 um 16:46 schrieb Daniel Vetter:
+> On Mon, Jul 04, 2022 at 03:48:03PM +0200, Christian König wrote:
+>> Hi Daniel,
+>>
+>> Am 25.06.22 um 00:02 schrieb Daniel Vetter:
+>>> On Thu, Jun 23, 2022 at 01:32:18PM +0200, Christian König wrote:
+>>>> Am 23.06.22 um 13:27 schrieb Daniel Stone:
+>>>>> [SNIP]
+>>>>> If it's really your belief that dmabuf requires universal snooping, I
+>>>>> recommend you send the patch to update the documentation, as well as
+>>>>> to remove DRIVER_PRIME from, realistically, most non-PCIE drivers.
+>>>> Well, to be honest I think that would indeed be necessary.
+>>>>
+>>>> What we have created are essentially two different worlds, one for PCI
+>>>> devices and one for the rest.
+>>>>
+>>>> This was indeed not the intention, but it's a fact that basically all
+>>>> DMA-buf based PCI drivers assume coherent access.
+>>> dma-buf does not require universal snooping.
+>>>
+>>> It does defacto require that all device access is coherent with all other
+>>> device access, and consistent with the exporters notion of how cpu
+>>> coherency is achieved. Not that coherent does not mean snooping, as long
+>>> as all devices do unsnooped access and the exporter either does wc/uc or
+>>> flushes caches that's perfectly fine, and how all the arm soc dma-buf
+>>> sharing works.
+>> We should probably start documenting that better.
+> Agreed :-)
+>
+> Are you volunteering to type up something that reflects the current sorry
+> state of affairs? I'm not sure I'm the best since I guess I've been too
+> badly involved in this ...
 
-syzbot found the following issue on:
+Yeah, already working on this. But you know, normal human being with two 
+hands and one head.
 
-HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13d08412080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
-dashboard link: https://syzkaller.appspot.com/bug?extid=ed920a72fd23eb735158
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15dd033e080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16dbfa46080000
+With all the workload I'm pretty sure people would have cloned me by now 
+if tech would be just a bit more advanced.
 
-Bisection is inconclusive: the issue happens on the oldest tested release.
+Christian.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15e0af61080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17e0af61080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13e0af61080000
+>
+>>> We did originally have the wording in there that you have to map/unamp
+>>> around every device access, but that got dropped because no one was doing
+>>> that anyway.
+>>>
+>>> Now where this totally breaks down is how we make this work, because the
+>>> idea was that dma_buf_attach validates this all. Where this means all the
+>>> hilarious reasons buffer sharing might not work:
+>>> - wrong coherency mode (cpu cached or not)
+>>> - not contiguous (we do check that, but only once we get the sg from
+>>>     dma_buf_attachment_map, which strictly speaking is a bit too late but
+>>>     most drivers do attach&map as one step so not that bad in practice)
+>>> - whether the dma api will throw in bounce buffers or not
+>>> - random shit like "oh this is in the wrong memory bank", which I think
+>>>     never landed in upstream
+>>>
+>>> p2p connectivity is about the only one that gets this right, yay. And the
+>>> only reason we can even get it right is because all the information is
+>>> exposed to drivers fully.
+>> Yeah, that's why I designed P2P that way :)
+>>
+>> I also don't think it's that bad, at least for radeon, nouveau and amdgpu
+>> all the migration restrictions are actually handled correctly.
+>>
+>> In other words when a DMA-buf is about to be used by another device we use
+>> TTM to move the buffer around so that it can actually be accessed by that
+>> device.
+>>
+>> What I haven't foreseen in here is that we need to deal with different
+>> caching behaviors between exporter and importer.
+> Yeah we should have done caching explicitly and full opt-in like with p2p.
+> The trouble is that this would have been a multi-year fight with dma api
+> folks, who insist it must be all transparent. So the politically clever
+> thing was to just ignore the problem and land dma-buf, but it comes back
+> to bite us now :-/
+>
+>>> The issue is that the device dma api refuses to share this information
+>>> because it would "leak". Which sucks, because we have defacto build every
+>>> single cross-device use-case of dma-buf on the assumption we can check
+>>> this (up to gl/vk specs), but oh well.
+>>>
+>>> So in practice this gets sorted out by endless piles of hacks to make
+>>> individual use-cases work.
+>>>
+>>> Oh and: This is definitely not limited to arm socs. x86 socs with intel
+>>> at least have exactly all the same issues, and they get solved by adding
+>>> various shitty hacks to the involved drivers (like i915+amdgpu). Luckily
+>>> the intel camera driver isn't in upstream yet, since that would break a
+>>> bunch of the hacks since suddently there will be now 2 cpu cache
+>>> incoherent devices in an x86 system.
+>>>
+>>> Ideally someone fixes this, but I'm not hopeful.
+>>>
+>>> I recommend pouring more drinks.
+>>>
+>>> What is definitely not correct is claiming that dma-buf wasn't meant for
+>>> this. We discussed cache coherency issues endless in budapest 12 or so
+>>> years ago, I was there. It's just that the reality of the current
+>>> implementation is falling short, and every time someone tries to fix it we
+>>> get shouted down by dma api maintainers for looking behind their current.
+>> Well that explains this, I've joined the party a year later and haven't
+>> witnessed all of this.
+> Yay, cleared up another confusion!
+>
+>>> tldr; You have to magically know to not use cpu cached allocators on these
+>>> machines.
+>> Or reject the attachment. As far as I can see that is still the cleanest
+>> option.
+> Yeah rejecting is always an ok thing if it just doesn't work.
+> -Daniel
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ed920a72fd23eb735158@syzkaller.appspotmail.com
-
-INFO: task kworker/0:1:14 blocked for more than 143 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/0:1     state:D stack:26544 pid:   14 ppid:     2 flags:0x00004000
-Workqueue: dio/loop5 dio_aio_complete_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
- fat_file_fsync+0x73/0x200 fs/fat/file.c:191
- vfs_fsync_range+0x13a/0x220 fs/sync.c:188
- generic_write_sync include/linux/fs.h:2861 [inline]
- dio_complete+0x6dd/0x950 fs/direct-io.c:310
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-INFO: task kworker/1:0:22 blocked for more than 143 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/1:0     state:D stack:27968 pid:   22 ppid:     2 flags:0x00004000
-Workqueue: dio/loop1 dio_aio_complete_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
- fat_file_fsync+0x73/0x200 fs/fat/file.c:191
- vfs_fsync_range+0x13a/0x220 fs/sync.c:188
- generic_write_sync include/linux/fs.h:2861 [inline]
- dio_complete+0x6dd/0x950 fs/direct-io.c:310
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-INFO: task kworker/1:1:27 blocked for more than 143 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/1:1     state:D stack:28856 pid:   27 ppid:     2 flags:0x00004000
-Workqueue: dio/loop1 dio_aio_complete_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
- fat_file_fsync+0x73/0x200 fs/fat/file.c:191
- vfs_fsync_range+0x13a/0x220 fs/sync.c:188
- generic_write_sync include/linux/fs.h:2861 [inline]
- dio_complete+0x6dd/0x950 fs/direct-io.c:310
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-INFO: task kworker/0:2:140 blocked for more than 143 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/0:2     state:D stack:26536 pid:  140 ppid:     2 flags:0x00004000
-Workqueue: dio/loop5 dio_aio_complete_work
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
- fat_file_fsync+0x73/0x200 fs/fat/file.c:191
- vfs_fsync_range+0x13a/0x220 fs/sync.c:188
- generic_write_sync include/linux/fs.h:2861 [inline]
- dio_complete+0x6dd/0x950 fs/direct-io.c:310
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-INFO: task syz-executor775:3664 blocked for more than 144 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor775 state:D stack:26128 pid: 3664 ppid:  3656 flags:0x00004004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- __inode_dio_wait fs/inode.c:2381 [inline]
- inode_dio_wait+0x22a/0x270 fs/inode.c:2399
- fat_setattr+0x3de/0x13c0 fs/fat/file.c:509
- notify_change+0xcd0/0x1440 fs/attr.c:418
- do_truncate+0x13c/0x200 fs/open.c:65
- do_sys_ftruncate+0x536/0x730 fs/open.c:193
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df03fc79
-RSP: 002b:00007f65defec2f8 EFLAGS: 00000246 ORIG_RAX: 000000000000004d
-RAX: ffffffffffffffda RBX: 0000000000000033 RCX: 00007f65df03fc79
-RDX: ffffffffffffffb8 RSI: 00000000010099b8 RDI: 0000000000000004
-RBP: 00007f65df0c4408 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f65df0c4400
-R13: 00007f65df0c440c R14: 00007f65df0910c4 R15: 0030656c69662f2e
- </TASK>
-INFO: task syz-executor775:3682 blocked for more than 144 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor775 state:D stack:27472 pid: 3682 ppid:  3656 flags:0x00000004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
- call_write_iter include/linux/fs.h:2187 [inline]
- aio_write+0x34a/0x7a0 fs/aio.c:1603
- __io_submit_one fs/aio.c:1975 [inline]
- io_submit_one+0xf9c/0x1c70 fs/aio.c:2022
- __do_sys_io_submit fs/aio.c:2081 [inline]
- __se_sys_io_submit fs/aio.c:2051 [inline]
- __x64_sys_io_submit+0x18c/0x330 fs/aio.c:2051
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df03fc79
-RSP: 002b:00007f65defc22f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000d1
-RAX: ffffffffffffffda RBX: 000000000000003c RCX: 00007f65df03fc79
-RDX: 0000000020000540 RSI: 0000000000001801 RDI: 00007f65defc3000
-RBP: 00007f65df0c4418 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f65df0c4410
-R13: 00007f65df0c441c R14: 00007f65df0910c4 R15: 0030656c69662f2e
- </TASK>
-INFO: task syz-executor775:3670 blocked for more than 144 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor775 state:D stack:27136 pid: 3670 ppid:  3659 flags:0x00000004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- do_truncate+0x12a/0x200 fs/open.c:63
- do_sys_ftruncate+0x536/0x730 fs/open.c:193
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df03fc79
-RSP: 002b:00007f65defec2f8 EFLAGS: 00000246 ORIG_RAX: 000000000000004d
-RAX: ffffffffffffffda RBX: 0000000000000026 RCX: 00007f65df03fc79
-RDX: ffffffffffffffb8 RSI: 00000000010099b8 RDI: 0000000000000004
-RBP: 00007f65df0c4408 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f65df0c4400
-R13: 00007f65df0c440c R14: 00007f65df0910c4 R15: 0030656c69662f2e
- </TASK>
-INFO: task syz-executor775:3676 blocked for more than 144 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor775 state:D stack:26840 pid: 3676 ppid:  3659 flags:0x00000004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
- call_write_iter include/linux/fs.h:2187 [inline]
- aio_write+0x34a/0x7a0 fs/aio.c:1603
- __io_submit_one fs/aio.c:1975 [inline]
- io_submit_one+0xf9c/0x1c70 fs/aio.c:2022
- __do_sys_io_submit fs/aio.c:2081 [inline]
- __se_sys_io_submit fs/aio.c:2051 [inline]
- __x64_sys_io_submit+0x18c/0x330 fs/aio.c:2051
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df03fc79
-RSP: 002b:00007f65defc22f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000d1
-RAX: ffffffffffffffda RBX: 000000000000002f RCX: 00007f65df03fc79
-RDX: 0000000020000540 RSI: 0000000000001801 RDI: 00007f65defc3000
-RBP: 00007f65df0c4418 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f65df0c4410
-R13: 00007f65df0c441c R14: 00007f65df0910c4 R15: 0030656c69662f2e
- </TASK>
-INFO: task syz-executor775:3668 blocked for more than 145 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor775 state:D stack:25792 pid: 3668 ppid:  3658 flags:0x00000004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- do_truncate+0x12a/0x200 fs/open.c:63
- do_sys_ftruncate+0x536/0x730 fs/open.c:193
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df03fc79
-RSP: 002b:00007f65defec2f8 EFLAGS: 00000246 ORIG_RAX: 000000000000004d
-RAX: ffffffffffffffda RBX: 0000000000000037 RCX: 00007f65df03fc79
-RDX: ffffffffffffffb8 RSI: 00000000010099b8 RDI: 0000000000000004
-RBP: 00007f65df0c4408 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f65df0c4400
-R13: 00007f65df0c440c R14: 00007f65df0910c4 R15: 0030656c69662f2e
- </TASK>
-INFO: task syz-executor775:3675 blocked for more than 145 seconds.
-      Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor775 state:D stack:26600 pid: 3675 ppid:  3658 flags:0x00004004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5178 [inline]
- __schedule+0xa00/0x4c10 kernel/sched/core.c:6490
- schedule+0xda/0x1b0 kernel/sched/core.c:6566
- rwsem_down_write_slowpath+0x697/0x11e0 kernel/locking/rwsem.c:1182
- __down_write_common kernel/locking/rwsem.c:1297 [inline]
- __down_write_common kernel/locking/rwsem.c:1294 [inline]
- __down_write kernel/locking/rwsem.c:1306 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1553
- inode_lock include/linux/fs.h:760 [inline]
- generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
- call_write_iter include/linux/fs.h:2187 [inline]
- aio_write+0x34a/0x7a0 fs/aio.c:1603
- __io_submit_one fs/aio.c:1975 [inline]
- io_submit_one+0xf9c/0x1c70 fs/aio.c:2022
- __do_sys_io_submit fs/aio.c:2081 [inline]
- __se_sys_io_submit fs/aio.c:2051 [inline]
- __x64_sys_io_submit+0x18c/0x330 fs/aio.c:2051
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df03fc79
-RSP: 002b:00007f65defc22f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000d1
-RAX: ffffffffffffffda RBX: 000000000000002a RCX: 00007f65df03fc79
-RDX: 0000000020000540 RSI: 0000000000001801 RDI: 00007f65defc3000
-RBP: 00007f65df0c4418 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f65df0c4410
-R13: 00007f65df0c441c R14: 00007f65df0910c4 R15: 0030656c69662f2e
- </TASK>
-
-Showing all locks held in the system:
-5 locks held by kworker/u4:0/8:
-1 lock held by rcu_tasks_kthre/12:
- #0: ffffffff8bd86870 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x26/0xc70 kernel/rcu/tasks.h:507
-1 lock held by rcu_tasks_trace/13:
- #0: ffffffff8bd86570 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp+0x26/0xc70 kernel/rcu/tasks.h:507
-3 locks held by kworker/0:1/14:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90000137da8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:0/22:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900001c7da8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:1/27:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90000a3fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-1 lock held by khungtaskd/28:
- #0: ffffffff8bd873c0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6492
-3 locks held by kworker/0:2/140:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90001567da8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-2 locks held by getty/3279:
- #0: ffff88814adf2098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
- #1: ffffc90002d162e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xe50/0x13c0 drivers/tty/n_tty.c:2124
-2 locks held by syz-executor775/3664:
- #0: ffff888076e3a460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- #0: ffff888076e3a460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- #1: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #1: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: do_truncate+0x12a/0x200 fs/open.c:63
-1 lock held by syz-executor775/3682:
- #0: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #0: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
-2 locks held by syz-executor775/3670:
- #0: ffff888076e3a460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- #0: ffff888076e3a460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- #1: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #1: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: do_truncate+0x12a/0x200 fs/open.c:63
-1 lock held by syz-executor775/3676:
- #0: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #0: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
-2 locks held by syz-executor775/3668:
- #0: ffff888076e3a460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- #0: ffff888076e3a460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- #1: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #1: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: do_truncate+0x12a/0x200 fs/open.c:63
-1 lock held by syz-executor775/3675:
- #0: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #0: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
-2 locks held by syz-executor775/3672:
- #0: ffff888022a56460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- #0: ffff888022a56460 (sb_writers#9){.+.+}-{0:0}, at: do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- #1: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #1: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: do_truncate+0x12a/0x200 fs/open.c:63
-1 lock held by syz-executor775/3678:
- #0: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #0: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: generic_file_write_iter+0x8a/0x220 mm/filemap.c:3901
-3 locks held by dio/loop1/3680:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000372fd58 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by dio/loop5/3683:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000375fd58 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:0/3684:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000376fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:2/3687:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000379fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:3/3688:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900037afda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:3/3689:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900037bfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:4/3690:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900037cfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:4/3691:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900037dfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:5/3692:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900037efda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/1:6/3693:
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff88801d7af938 ((wq_completion)dio/loop1){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900037ffda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de3b60 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:5/3695:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000381fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:6/3696:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000382fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:7/3697:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000383fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:8/3698:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000384fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:9/3699:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000385fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:10/3700:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000386fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:11/3701:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000387fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:12/3702:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000388fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:13/3703:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000389fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:14/3704:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900038afda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:15/3705:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900038bfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:16/3706:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900038cfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:17/3707:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900038dfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:18/3708:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900038efda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:19/3709:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900038ffda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:20/3710:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000390fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:21/3714:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000394fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:22/3715:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000395fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:23/3716:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000364fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:24/3717:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000396fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:25/3718:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000397fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:30/3723:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc900039cfda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:33/3726:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000361fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-3 locks held by kworker/0:35/3728:
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888079013538 ((wq_completion)dio/loop5){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90003a0fda8 ((work_completion)(&dio->complete_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:760 [inline]
- #2: ffff888072de54a0 (&sb->s_type->i_mutex_key#15){+.+.}-{3:3}, at: __generic_file_fsync+0xb0/0x1f0 fs/libfs.c:1119
-
-=============================================
-
-NMI backtrace for cpu 1
-CPU: 1 PID: 28 Comm: khungtaskd Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
- nmi_trigger_cpumask_backtrace+0x1e6/0x230 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:212 [inline]
- watchdog+0xc1d/0xf50 kernel/hung_task.c:369
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 3657 Comm: syz-executor775 Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:kasan_check_range+0x15/0x180 mm/kasan/generic.c:188
-Code: e4 ff ff 89 43 08 5b 5d 41 5c c3 66 2e 0f 1f 84 00 00 00 00 00 48 85 f6 0f 84 3c 01 00 00 49 89 f9 41 54 44 0f b6 c2 49 01 f1 <55> 53 0f 82 18 01 00 00 48 b8 ff ff ff ff ff 7f ff ff 48 39 c7 0f
-RSP: 0018:ffffc900035bf950 EFLAGS: 00000096
-RAX: 0000000000000001 RBX: 0000000000000041 RCX: ffffffff815e4bee
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffffff9068e948
-RBP: ffff88802373e342 R08: 0000000000000000 R09: ffffffff9068e950
-R10: fffffbfff20d1d29 R11: 0000000000000001 R12: ffff88802373e320
-R13: ffff88802373d880 R14: 0000000000000000 R15: 87649dd64f9f83ce
-FS:  0000555556405300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f65df090828 CR3: 00000000714a8000 CR4: 0000000000350ef0
-Call Trace:
- <TASK>
- instrument_atomic_read include/linux/instrumented.h:71 [inline]
- test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
- hlock_class kernel/locking/lockdep.c:227 [inline]
- lookup_chain_cache_add kernel/locking/lockdep.c:3741 [inline]
- validate_chain kernel/locking/lockdep.c:3797 [inline]
- __lock_acquire+0x163e/0x5660 kernel/locking/lockdep.c:5053
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- seqcount_lockdep_reader_access include/linux/seqlock.h:102 [inline]
- ktime_get+0x7c/0x470 kernel/time/timekeeping.c:846
- __hrtimer_start_range_ns kernel/time/hrtimer.c:1244 [inline]
- hrtimer_start_range_ns+0x20f/0xa80 kernel/time/hrtimer.c:1298
- hrtimer_start_expires include/linux/hrtimer.h:432 [inline]
- hrtimer_sleeper_start_expires kernel/time/hrtimer.c:1965 [inline]
- do_nanosleep+0x1e8/0x690 kernel/time/hrtimer.c:2041
- hrtimer_nanosleep+0x1f9/0x4a0 kernel/time/hrtimer.c:2097
- common_nsleep+0xa2/0xc0 kernel/time/posix-timers.c:1236
- __do_sys_clock_nanosleep kernel/time/posix-timers.c:1276 [inline]
- __se_sys_clock_nanosleep kernel/time/posix-timers.c:1254 [inline]
- __x64_sys_clock_nanosleep+0x2f4/0x430 kernel/time/posix-timers.c:1254
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f65df06673a
-Code: 83 ff 03 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
