@@ -2,106 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55476C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C33C28B2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 09:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbiHJJn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 05:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
+        id S232230AbiHJJn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 05:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiHJJnx (ORCPT
+        with ESMTP id S230438AbiHJJn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 05:43:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3815B5005F
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:43:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660124632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VtlaRizDRVz5xKTGkF8JZcC+vIs+0Z48fSCCTWvcw2I=;
-        b=BDL8blnsdBMBfsHE1BNpEK6s1+Y4D96ijKBCka9yZSScdY8l6SEwhvxsihf7sdxLKGA5wH
-        rEq2YL7F79VGBDKYKg97qw6QNvevi3c05S2gCKaH4hnPYOh6auoesI4hk2LjGpduFDxDnP
-        kWLxtXjyMCj6LXIkIoXPgL+Orn+q7ak=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-625-0jGByBNVMP68i_IV_5IYQA-1; Wed, 10 Aug 2022 05:43:51 -0400
-X-MC-Unique: 0jGByBNVMP68i_IV_5IYQA-1
-Received: by mail-wm1-f71.google.com with SMTP id v130-20020a1cac88000000b003a4f057ed9fso7175182wme.7
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 02:43:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=VtlaRizDRVz5xKTGkF8JZcC+vIs+0Z48fSCCTWvcw2I=;
-        b=AClCJEKCCDmMwAtnw+b/5M07xzNBvCRZrv/1Z8N2JEKJ403L71wI26jQFJvqXbhJps
-         OQR7LVn3VN6M5e0BHlBkZMBhG6KijU97zgWnkkklLfFMfnLlIy1alcDIdcW6UE9bB+oR
-         LQPo1aYeT6NJ+B/jXYR9W3+th8BpcXxeoEw2n2OvrImZUufOBTLQvuObhxlqPlz0ZFQZ
-         iDfVZOabtOT4cicPyakzunjBXcGHK1ArEY7Zw47RGbf45e2eepmBH2lwL3GCrhzNhyjz
-         whvMUPeDG1mVGA372zjNeaMKfeqM3GWWCTX2mt9YjotDf/oc+ALwBJoxvCq0YpoBoMCc
-         1nxg==
-X-Gm-Message-State: ACgBeo02TIHNzC9RTOBgsPJUIj+m79ZOvXnLA8cFgDBhao2Jdirx9+TX
-        iYrgTl4FTlcrZNBQHoTkC9Rdr7244wg5R6vSM3xceX8FA+bd4zV8C6nOyRd1DvqD6vux/V3tZBK
-        xR5mzu9BsaS8F+vis37mnjFOR
-X-Received: by 2002:a05:600c:4f44:b0:3a5:6de3:8375 with SMTP id m4-20020a05600c4f4400b003a56de38375mr1815822wmq.198.1660124630028;
-        Wed, 10 Aug 2022 02:43:50 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR73NTIQcHhhjgyT7WWLXo220NhOzmLOYriyW/7ugDFMDAUT4z9ZA6kWovCQgVfIpay4scizNQ==
-X-Received: by 2002:a05:600c:4f44:b0:3a5:6de3:8375 with SMTP id m4-20020a05600c4f4400b003a56de38375mr1815803wmq.198.1660124629773;
-        Wed, 10 Aug 2022 02:43:49 -0700 (PDT)
-Received: from step1.redhat.com (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id q11-20020a5d658b000000b0021e4bc9edbfsm12921743wru.112.2022.08.10.02.43.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 02:43:49 -0700 (PDT)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH v2 0/4] vdpa_sim_blk: add support for flush, discard, and write-zeroes
-Date:   Wed, 10 Aug 2022 11:43:43 +0200
-Message-Id: <20220810094347.20449-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.37.1
-Content-Type: text/plain; charset="utf-8"
+        Wed, 10 Aug 2022 05:43:57 -0400
+X-Greylist: delayed 733 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 02:43:54 PDT
+Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D6375005F;
+        Wed, 10 Aug 2022 02:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=2VIQQ
+        95gk95C9WT9eCAq0QCaLRckhjSmiqdbBAKp79Q=; b=gj87QYmU3HkOFsQhtIVIE
+        X9Jk7mdtV5neLx6LqoFnqCtD8uBNBY+9aQXrZYJ+LAygHdu9xp+P4ODH+uN6O8OK
+        LVflaBwXtcF6hKv4MWiwxYSWSLN4D47Zub6pIYnKTbmvcDnDWFZKakJvxvgPJJc/
+        fzI0cYnyvFbJA4ojwTGBkQ=
+Received: from slark_xiao$163.com ( [112.97.48.210] ) by
+ ajax-webmail-wmsvr114 (Coremail) ; Wed, 10 Aug 2022 17:41:22 +0800 (CST)
+X-Originating-IP: [112.97.48.210]
+Date:   Wed, 10 Aug 2022 17:41:22 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re:Re:Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion
+ MV32
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <e7fdcfc.30e7.1828715d7af.Coremail.slark_xiao@163.com>
+References: <20220810014521.9383-1-slark_xiao@163.com>
+ <8735e4mvtd.fsf@miraculix.mork.no>
+ <e7fdcfc.30e7.1828715d7af.Coremail.slark_xiao@163.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <61ca0e63.3207.18287214d7a.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: csGowAD3L9NCffNioYosAA--.32997W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDRpZZFaEKSJ5BQABsO
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first 2 patches are in preparation and generalize parts later used
-by the following patches that add handling of flush, discard, and
-write-zeroes requests.
-
-v2:
-- rebased on https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-- used dev_dbg() to print errors [Jason]
-- moved sector to be 0 checking to another patch and generalized for
-  other requests
-- modified vdpasim_blk_check_range() to be used also with discard and
-  write-zeroes
-- added discard and write-zeroes requests handling
-
-v1: https://lore.kernel.org/virtualization/20220428151242.213824-1-sgarzare@redhat.com/
-
-Tree available here:
-https://gitlab.com/sgarzarella/linux.git vdpa-sim-blk-flush-discard-wz
-
-Thanks,
-Stefano
-
-Stefano Garzarella (4):
-  vdpa_sim_blk: check if sector is 0 for commands other than read or
-    write
-  vdpa_sim_blk: make vdpasim_blk_check_range usable by other requests
-  vdpa_sim_blk: add support for VIRTIO_BLK_T_FLUSH
-  vdpa_sim_blk: add support for discard and write-zeroes
-
- drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 127 +++++++++++++++++++++++----
- 1 file changed, 111 insertions(+), 16 deletions(-)
-
--- 
-2.37.1
-
+CgoKCkF0IDIwMjItMDgtMTAgMTc6Mjg6NTEsICJTbGFyayBYaWFvIiA8c2xhcmtfeGlhb0AxNjMu
+Y29tPiB3cm90ZToKPkF0IDIwMjItMDgtMTAgMTQ6NTU6NDIsICJCasO4cm4gTW9yayIgPGJqb3Ju
+QG1vcmsubm8+IHdyb3RlOgo+PlNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4gd3JpdGVz
+Ogo+Pgo+Pj4gVGhlcmUgYXJlIDIgbW9kZWxzIGZvciBNVjMyIHNlcmlhbHMuIE1WMzItVy1BIGlz
+IGRlc2lnbmVkCj4+PiBiYXNlZCBvbiBRdWFsY29tbSBTRFg2MiBjaGlwLCBhbmQgTVYzMi1XLUIg
+aXMgZGVzaWduZWQgYmFzZWQKPj4+IG9uIFF1YWxjb21tIFNEWDY1IGNoaXAuIFNvIHdlIHVzZSAy
+IGRpZmZlcmVudCBQSUQgdG8gc2VwYXJhdGUgaXQuCj4+Pgo+Pj4gVGVzdCBldmlkZW5jZSBhcyBi
+ZWxvdzoKPj4+IFQ6ICBCdXM9MDMgTGV2PTAxIFBybnQ9MDEgUG9ydD0wMiBDbnQ9MDMgRGV2Iz0g
+IDMgU3BkPTQ4MCBNeENoPSAwCj4+PiBEOiAgVmVyPSAyLjEwIENscz1lZihtaXNjICkgU3ViPTAy
+IFByb3Q9MDEgTXhQUz02NCAjQ2Zncz0gIDEKPj4+IFA6ICBWZW5kb3I9MWUyZCBQcm9kSUQ9MDBm
+MyBSZXY9MDUuMDQKPj4+IFM6ICBNYW51ZmFjdHVyZXI9Q2ludGVyaW9uCj4+PiBTOiAgUHJvZHVj
+dD1DaW50ZXJpb24gUElEIDB4MDBGMyBVU0IgTW9iaWxlIEJyb2FkYmFuZAo+Pj4gUzogIFNlcmlh
+bE51bWJlcj1kN2I0YmU4ZAo+Pj4gQzogICNJZnM9IDQgQ2ZnIz0gMSBBdHI9YTAgTXhQd3I9NTAw
+bUEKPj4+IEk6ICBJZiM9MHgwIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFBy
+b3Q9NTAgRHJpdmVyPXFtaV93d2FuCj4+PiBJOiAgSWYjPTB4MSBBbHQ9IDAgI0VQcz0gMyBDbHM9
+ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTQwIERyaXZlcj1vcHRpb24KPj4+IEk6ICBJZiM9MHgyIEFs
+dD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9NDAgRHJpdmVyPW9wdGlvbgo+
+Pj4gSTogIElmIz0weDMgQWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9ZmYgUHJvdD0z
+MCBEcml2ZXI9b3B0aW9uCj4+Cj4+VGhlIHBhdGNoIGxvb2tzIG5pY2UsIGJ1dCBJIGhhdmUgYSBj
+b3VwbGUgb2YgcXVlc3Rpb25zIHNpbmNlIHlvdSdyZSBvbmUKPj5vZiB0aGUgZmlyc3QgcHVzaGlu
+ZyBvbmUgb2YgdGhlc2UgU0RYNnggbW9kZW1zLgo+Pgo+PklzIHRoYXQgcHJvdG9jb2wgcGF0dGVy
+biBmaXhlZCBvbiB0aGlzIGdlbmVyYXRpb24gb2YgUXVhbGNvbW0gY2hpcHM/ICBJdAo+Pmxvb2tz
+IGxpa2UgYW4gZXh0ZW5zaW9uIG9mIHdoYXQgdGhleSBzdGFydGVkIHdpdGggdGhlIFNEWDU1IGdl
+bmVyYXRpb24sCj4+d2hlcmUgdGhlIERJQUcgcG9ydCB3YXMgaWRlbnRpZmllZCBieSBmZi9mZi8z
+MCBhY3Jvc3MgbXVsdGlwbGUgdmVuZG9ycy4KPj4KPiBTZWVtcyB5ZXMuIEkgY2hlY2tlZCBzb21l
+IGRpZmZlcmVudCB1c2JfY29tcG9zaXRpb25zIGFuZCBmb3VuZCB0aGF0Cj4gZGlhZyBwb3J0IGlz
+IHVzaW5nIHByb3RvY29sICczMCcgYWx3YXlzLgo+Cj4+U3BlY2lmaWNhbGx5IHdydCB0aGlzIGRy
+aXZlciBhbmQgcGF0Y2gsIEkgd29uZGVyIGlmIHdlIGNhbi9zaG91bGQgbWF0Y2gKPj5vbiBmZi9m
+Zi81MCBpbnN0ZWFkIG9mIGludGVyZmFjZSBudW1iZXIgaGVyZT8gIEkgbm90ZSB0aGF0IHRoZSBp
+bnRlcmZhY2UKPgo+SSBjaGVja2VkIGFsbCBvdXIgZWRpdGVkIHVzYl9jb21wb3NpdGlvbnMgYW5k
+IGFsbCBRQyBkZWZhdWx0IHVzYiAKPmNvbXBvc2l0aW9ucyg5MDI1LCA5MGRiLCA5MDY3LDkwZDUs
+OTA4NCw5MDkxLDkwYWQsOTBiOCw5MGU1KSwgCj5mZi9mZi81MCBpcyBybW5ldCB1c2VkIG9ubHku
+IAo+Cj4+bnVtYmVycyBhcmUgYWxsb2NhdGVkIHNlcXVlbnRpb25hbGx5LiBQcm9iYWJseSBpbiB0
+aGUgb3JkZXIgdGhlc2UKPj5mdW5jdGlvbiBhcmUgZW5hYmxlZCBieSB0aGUgZmlybXdhcmU/IElm
+IHNvLCBhcmUgd2Ugc3VyZSB0aGlzIGlzIHN0YXRpYz8KPgo+VGhpcyBuZWVkcyBtb3JlIHRpbWUg
+dG8gY29uZmlybS4gSSB3aWxsIGtlZXAgeW91IHVwZGF0ZWQuCj4KPj5PciBjb3VsZCB3ZSByaXNr
+IGNvbmZpZyB2YXJpYW50cyB3aGVyZSB0aGUgUk1ORVQvUU1JIGZ1bmN0aW9uIGhhdmUgYQo+PmRp
+ZmZlcmVudCBpbnRlcmZhY2UgbnVtYmVyIGZvciB0aGUgc2FtZSBQSURzPwo+Pgo+PkFuZCBhbm90
+aGVyIHBvc3NpYmlsaXR5IHlvdSBtaWdodCBjb25zaWRlci4gIEFzc3VtaW5nIHRoYXQgZmYvZmYv
+NTAKPj51bmlxdWVseSBpZGVudGlmaWVzIFJNTkVUL1FNSSBmdW5jdGlvbnMgcmVnYXJkbGVzcyBv
+ZiBQSUQsIHdvdWxkIHlvdQo+PmNvbnNpZGVyIGEgVklEK2NsYXNzIG1hdGNoIHRvIGNhdGNoIGFs
+bCBvZiB0aGVtPyAgVGhpcyB3b3VsZCBub3Qgb25seQo+PnN1cHBvcnQgYm90aCB0aGUgUElEcyBv
+ZiB0aGlzIHBhdGNoIGluIG9uZSBnbywgYnV0IGFsc28gYW55IGZ1dHVyZSBQSURzCj4+d2l0aG91
+dCB0aGUgbmVlZCBmb3IgZnVydGhlciBkcml2ZXIgcGF0Y2hlcy4KPj4KPj4KPj5CasO4cm4KPgo+
+SSBoYXZlIGEgY29uY2VybiwgaWYgQ2ludGVyaW9uIG9yIG90aGVyIFZlbmRvcnMsIGxpa2UgUXVl
+Y3RlbCwgdXNlIG90aGVyIAo+Y2hpcCAoc3VjaCBhcyBpbnRlbCwgbWVkaWF0ZWNrIGFuZCBzbyBv
+biksIHRoaXMgbWV0aG9kcyBtYXkgd29uJ3Qgd29yaywKCk15IGJhZC4gUU1JX1dXQU4gZHJpdmVy
+IGlzIGRlc2lnbmVkIGZvciBRdWFsY29tbSBiYXNlZCBjaGlwcyBvbmx5LArCoHJpZ2h0PyAKCj5i
+ZWNhdXNlICB0aGV5IHNoYXJlIGEgc2FtZSBWSUQuIEFsc28gdGhpcyBtYXkgYmUgY2hhbmdlZCBv
+bmNlIFF1YWxjb21tIAo+dXBkYXRlIHRoZSBwcm90b2NvbCBwYXR0ZXJucyBmb3IgZnV0dXJlIGNo
+aXAuCgoK
