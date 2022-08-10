@@ -2,90 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A96C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 22:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D844C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 22:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233507AbiHJW3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 18:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
+        id S233524AbiHJWdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 18:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233209AbiHJW32 (ORCPT
+        with ESMTP id S233491AbiHJWdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 18:29:28 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A0D8D3FA;
-        Wed, 10 Aug 2022 15:29:26 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M34Ny3M22z4x1P;
-        Thu, 11 Aug 2022 08:29:22 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1660170562;
-        bh=Yh8cEFXsUsPqRCWFXvS4zQ3WyZG92Bk9SCcCNWzyj1s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=WBHpeY5F1FlxEH0Lar/nbIwK3eNQi5PcuuKrq5vtvGfTugyQce/Y22TDVbWIORDqf
-         tUVelTW1nc5qcpk8U/mvvJ/xdOTettA1oPe2BO4eICIApDhIP0UyP6MkROaiL2Mlos
-         z9Rph+7MtFVCRNnmw407nVt2hkPSGM6UOp611rwMPtfAz+iBkbpwzXaHo4MvsiL81B
-         dH8YnHANZCUk5CmI958SKKsOaB/+E9BtlM02FFZ2QU+Y2g5GtGyD9kNOI4ziBDem3m
-         odjgCL1s0s+LMDjU9wig8xdxaqSo5Ne58zOd5DkWelsvaoaPdXbrtK509nk2kAQ8C9
-         mBPe716jOT0qA==
-Date:   Thu, 11 Aug 2022 08:28:57 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the vhost tree
-Message-ID: <20220811082857.1ff15c69@canb.auug.org.au>
+        Wed, 10 Aug 2022 18:33:35 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA977E037;
+        Wed, 10 Aug 2022 15:33:34 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so3486523pjf.2;
+        Wed, 10 Aug 2022 15:33:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=3j0nqNxIb4WWGt44FuKaH0AOkMYtek5yMvvRues8MRo=;
+        b=WNVUzJhKmVU/WLkiU0oPj6rjE5i4uYu8VWBAktlaU4VU0KngmqNhCR6FvXt8ikr2TE
+         bEfwXWr/m7C/sNICOBV2dFy94bYwTnB61nSVv+XIpYukc5ZF3NU08N7/4+bDX/M1QFfr
+         RLop0eqI9mMNi+zobtHwlscn1mw9G101TRBNWcjINCL7w0N5AFI4YRsL5CnvARIPgtsQ
+         XCM6y4a6kBHxcNIx8akdYQVo8s9a8OI29frAa3NKk5FKsqu2BXh0zbgxyVDgaCc24QQu
+         /32plMf6LQCmruoLCCAtY05SFATwr6L887eTdYweipdA/Hg635MhSsPfK4//Ub90/+0k
+         M9Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=3j0nqNxIb4WWGt44FuKaH0AOkMYtek5yMvvRues8MRo=;
+        b=5mAqo3aVO9ddN65wIInKmw711Rug2JfbodYzzQagl9SxiA8Ah7KYsAXQxgzZXzNGR1
+         s8j8NlMIcSUC/Ho1BR3N6RccbfGAXdiLZLi4XhAdflvdO7FfuAFcW2X8LnnxuvEgqdnn
+         eK+kdUcoxlVu42fTcxjPmnqmmIGPYr+fV5lGqX3a/eYfZ033yEY4hmHrf9zaP3k8hqNX
+         5kW6/Bh9FF4PChdrs/dfr3qdIW++QtsFSgfuEGB7NQxC3b4LybGnHemA1zKsFlBHlF22
+         qqLzKwPKGHAXgdPpxlBB738e/EMQHW2yMwaNI2UDFnbDrJ+US9rm6aNbQxoRc1VZAsfk
+         KZlw==
+X-Gm-Message-State: ACgBeo03o2McMCbhR97o9U6rrLRpfuoQj6H8PLwBIonxaBVC7cXrzi0J
+        0XkuukfSuDQPG6XUJg5FS/c=
+X-Google-Smtp-Source: AA6agR6tM+sxdnBf95t4iIxceRkJDbs1v70HQiMHw/eMZ7bEAg2t6Bdtg/orTJMMD+SensuFznuTpQ==
+X-Received: by 2002:a17:902:ed44:b0:16d:b1a2:f24 with SMTP id y4-20020a170902ed4400b0016db1a20f24mr29036608plb.145.1660170814282;
+        Wed, 10 Aug 2022 15:33:34 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:a3c8:d6b9:a5c2:1eca])
+        by smtp.gmail.com with ESMTPSA id y12-20020aa79aec000000b0052ce1737ee1sm2542174pfp.37.2022.08.10.15.33.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 15:33:33 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 15:33:30 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Caleb Connolly <caleb@connolly.tech>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        phone-devel@vger.kernel.org
+Subject: Re: [PATCH 1/3] input: add event codes for user programmable switch
+ events
+Message-ID: <YvQyOhgSGjQLHHvv@google.com>
+References: <20220516142158.1612109-1-caleb@connolly.tech>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/uKIkBrX1F/=qjIH_DvIOJgr";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516142158.1612109-1-caleb@connolly.tech>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/uKIkBrX1F/=qjIH_DvIOJgr
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Caleb,
 
-Hi all,
+On Mon, May 16, 2022 at 02:22:57PM +0000, Caleb Connolly wrote:
+> Add SW_PROG{1,2,3,4} for device switches which are handled by userspace.
+> 
+> This can be used for devices with "generic" switches which are intended
+> to be user-programmable, for example OnePlus phones contain a tri-state
+> key which can be used for switching between mute/vibrate/ring, or
+> programmed by the user to perform any arbitrary actions.
+> 
+> These are analogous to the keys KEY_PROG{1,2,3,4} found on some
+> keyboards.
 
-In commit
+This has been proposed a few times but this goes against the spirit of
+the input subsystem where each key or switch has a defined [default]
+purpose and userspace is normally expected to act upon input events
+without paying attention to what device they actually are coming from.
+IOW if you want to deal with particular GPIO signals you are better off
+using GPIO subsystem.
 
-  5be8d7869e2d ("Bluetooth: virtio_bt: fix an error code in probe()")
+In this context adding KEY_PROG1-4 was actually a mistake and we should
+try not extend it further.
 
-Fixes tag
+As fas as modeling the sliders with multiple settings goes I'd look into
+ABS events, probably ABS_MISC, with a set of values.
 
-  Fixes: 212a6e51a630 ("Bluetooth: virtio_bt: fix device removal")
+Thanks.
 
-has these problem(s):
-
-  - Target SHA1 does not exist
-
-Maybe you meant
-
-Fixes: bdbbdac22c63 ("Bluetooth: virtio_bt: fix device removal")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/uKIkBrX1F/=qjIH_DvIOJgr
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL0MSoACgkQAVBC80lX
-0GxO1wf/Rh0OVVpwMs6g4LSFjSvqtYQ/2/G8NBkkLlPWvwLPg/OO4Uzq9c4hyqCp
-ONM8QXUzuQUOBjKvvbMOyS774Mh85DXtofkTmq05zDoHxHtxtNQ93omJoIysTo5v
-qLJFSi24UKYN298L2Cqp4T4D8qesb7ZMmOYBkby2DdrJRWumQb+RAkgIzBK7LUaH
-dLSRqr3P8vL0UMw/bYHai9rmfjr/mJ8QfZ4nGMDPHqr62y5WEcGHhsj0Mef+D9GQ
-eZRI83bmjDyGwilm/MSYB91KbBzTULsVZI7Ef0KrED15elaXZejkUZ7NtovW6AmD
-lx8ChUHtZVy/SIyeEcvmpqGA42cC/A==
-=bDqY
------END PGP SIGNATURE-----
-
---Sig_/uKIkBrX1F/=qjIH_DvIOJgr--
+-- 
+Dmitry
