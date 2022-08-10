@@ -2,242 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCF6C25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C3BC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 17:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233284AbiHJRBc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 13:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
+        id S233075AbiHJRCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 13:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbiHJRBO (ORCPT
+        with ESMTP id S233397AbiHJRCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 13:01:14 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1F6201AD;
-        Wed, 10 Aug 2022 10:01:13 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M2x362g4Xz67yLV;
-        Thu, 11 Aug 2022 00:58:26 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 10 Aug 2022 19:01:10 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <corbet@lwn.net>,
-        <dhowells@redhat.com>, <jarkko@kernel.org>, <rostedt@goodmis.org>,
-        <mingo@redhat.com>, <paul@paul-moore.com>, <jmorris@namei.org>,
-        <serge@hallyn.com>, <shuah@kernel.org>
-CC:     <bpf@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <keyrings@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v10 8/9] selftests/bpf: Add additional tests for bpf_lookup_*_key()
-Date:   Wed, 10 Aug 2022 18:59:31 +0200
-Message-ID: <20220810165932.2143413-9-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220810165932.2143413-1-roberto.sassu@huawei.com>
-References: <20220810165932.2143413-1-roberto.sassu@huawei.com>
+        Wed, 10 Aug 2022 13:02:36 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DD02A958
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:02:34 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id j3so9553542ljo.0
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 10:02:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=f7wY4+TCVlOsefMDOe5awPGi8MWMNO4jCwUTni3WBgc=;
+        b=IKghbtR1o4EFWP9t2qaIK2WuGTpVZIRjdZFCrnenMelm3fh7CLCb/GXs99g3LH37sR
+         35YcAyViC+Icacu+wTzjuDYkyH5K/6Onu+qVtQMYvmOWTHmGpiM71iDhzkuZ5ozE81yG
+         2ZttwdwictUX/n+o7APxIOi+vbVmWngMUqsrHSp6I8mFbgKE8kSn9d1SZLGsm5QACKdE
+         uLNPaTke2LdHPSvXm2Kcp6Os+t2LQW9QmVUvfuxUkBNwJj3pKF2DOOgRfbUpaGcmZc6T
+         t1DBYSUbkPvRTlesThbyz3d8iapSIhhhgXbtQ12hMP0m3qQ1yGQVRZldptcH+A0woh4T
+         ANug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=f7wY4+TCVlOsefMDOe5awPGi8MWMNO4jCwUTni3WBgc=;
+        b=4OoQFy21hjcTGXUhWdZeIJSXHCLMLW3kf4rk0FbuZdjECoaveWlzWy/A7gFbTzl0Or
+         DlBq0cINmYlemqNY9nprFsMg9QkjXb/FQ4VanJqCXPxI41P8+yEJY2nr4/saFI2jpKmF
+         QvozfETQwv7s0Ir6SAcI1tGnBMRs24ACBZR3u8kfs/2rgyR/DvMl1wwnO3RQTM0P3OIo
+         oN8XpI5+AzFVsd7MWE6XNcQ1Kyc5g5mjKNj1o9eZu7DF8iQxoDYZGFz5zd7dufKM2eym
+         pUHETa+vG4P8XL69vck3fH0GL7dOlaWwPOpeX9BJ+iaQH7BzeH77g+IRKGbFN3datA/P
+         MGmw==
+X-Gm-Message-State: ACgBeo218od0F+E2hVY8VPC7DYHFuNIc5VjFt4tQW2m1TDIvd/hOzyb8
+        /FCr1CMcSTEaTUadDrTed5pCCA==
+X-Google-Smtp-Source: AA6agR47JGqH+QGZWdmLoxLNsBnQGaubUo6vgEWZ34kHa6N2an6+qcjSIXbfzwYYmyDwLI7LvDViwg==
+X-Received: by 2002:a2e:9415:0:b0:25e:477b:adc9 with SMTP id i21-20020a2e9415000000b0025e477badc9mr8380761ljh.109.1660150952622;
+        Wed, 10 Aug 2022 10:02:32 -0700 (PDT)
+Received: from ?IPv6:2a02:a31b:33d:9c00:463a:87e3:44fc:2b2f? ([2a02:a31b:33d:9c00:463a:87e3:44fc:2b2f])
+        by smtp.gmail.com with ESMTPSA id m3-20020a2e8703000000b0025e87b1fdbcsm459930lji.63.2022.08.10.10.02.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 10:02:32 -0700 (PDT)
+Subject: Re: [PATCH v2 0/5] KVM: Fix oneshot interrupts forwarding
+To:     Marc Zyngier <maz@kernel.org>, eric.auger@redhat.com
+Cc:     "Dong, Eddie" <eddie.dong@intel.com>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Liu, Rong L" <rong.l.liu@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        "upstream@semihalf.com" <upstream@semihalf.com>,
+        Dmitry Torokhov <dtor@google.com>
+References: <20220805193919.1470653-1-dmy@semihalf.com>
+ <BL0PR11MB30429034B6D59253AF22BCE08A639@BL0PR11MB3042.namprd11.prod.outlook.com>
+ <c5d8f537-5695-42f0-88a9-de80e21f5f4c@semihalf.com>
+ <BL0PR11MB304213273FA9FAC4EBC70FF88A629@BL0PR11MB3042.namprd11.prod.outlook.com>
+ <ef9ffbde-445e-f00f-23c1-27e23b6cca4f@semihalf.com>
+ <87o7wsbngz.wl-maz@kernel.org>
+ <8ff76b5e-ae28-70c8-2ec5-01662874fb15@redhat.com>
+ <87r11ouu9y.wl-maz@kernel.org>
+From:   Dmytro Maluka <dmy@semihalf.com>
+Message-ID: <72e40c17-e5cd-1ffd-9a38-00b47e1cbd8e@semihalf.com>
+Date:   Wed, 10 Aug 2022 19:02:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+In-Reply-To: <87r11ouu9y.wl-maz@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test to ensure that bpf_lookup_user_key() creates a referenced
-special keyring when the KEY_LOOKUP_CREATE flag is passed to this function.
+Hi Marc,
 
-Ensure that the kfunc rejects invalid flags.
+On 8/10/22 3:01 PM, Marc Zyngier wrote:
+> On Wed, 10 Aug 2022 09:12:18 +0100,
+> Eric Auger <eric.auger@redhat.com> wrote:
+>>
+>> Hi Marc,
+>>
+>> On 8/10/22 08:51, Marc Zyngier wrote:
+>>> On Wed, 10 Aug 2022 00:30:29 +0100,
+>>> Dmytro Maluka <dmy@semihalf.com> wrote:
+>>>> On 8/9/22 10:01 PM, Dong, Eddie wrote:
+>>>>>
+>>>>>> -----Original Message-----
+>>>>>> From: Dmytro Maluka <dmy@semihalf.com>
+>>>>>> Sent: Tuesday, August 9, 2022 12:24 AM
+>>>>>> To: Dong, Eddie <eddie.dong@intel.com>; Christopherson,, Sean
+>>>>>> <seanjc@google.com>; Paolo Bonzini <pbonzini@redhat.com>;
+>>>>>> kvm@vger.kernel.org
+>>>>>> Cc: Thomas Gleixner <tglx@linutronix.de>; Ingo Molnar <mingo@redhat.com>;
+>>>>>> Borislav Petkov <bp@alien8.de>; Dave Hansen <dave.hansen@linux.intel.com>;
+>>>>>> x86@kernel.org; H. Peter Anvin <hpa@zytor.com>; linux-
+>>>>>> kernel@vger.kernel.org; Eric Auger <eric.auger@redhat.com>; Alex
+>>>>>> Williamson <alex.williamson@redhat.com>; Liu, Rong L <rong.l.liu@intel.com>;
+>>>>>> Zhenyu Wang <zhenyuw@linux.intel.com>; Tomasz Nowicki
+>>>>>> <tn@semihalf.com>; Grzegorz Jaszczyk <jaz@semihalf.com>;
+>>>>>> upstream@semihalf.com; Dmitry Torokhov <dtor@google.com>
+>>>>>> Subject: Re: [PATCH v2 0/5] KVM: Fix oneshot interrupts forwarding
+>>>>>>
+>>>>>> On 8/9/22 1:26 AM, Dong, Eddie wrote:
+>>>>>>>> The existing KVM mechanism for forwarding of level-triggered
+>>>>>>>> interrupts using resample eventfd doesn't work quite correctly in the
+>>>>>>>> case of interrupts that are handled in a Linux guest as oneshot
+>>>>>>>> interrupts (IRQF_ONESHOT). Such an interrupt is acked to the device
+>>>>>>>> in its threaded irq handler, i.e. later than it is acked to the
+>>>>>>>> interrupt controller (EOI at the end of hardirq), not earlier. The
+>>>>>>>> existing KVM code doesn't take that into account, which results in
+>>>>>>>> erroneous extra interrupts in the guest caused by premature re-assert of an
+>>>>>> unacknowledged IRQ by the host.
+>>>>>>> Interesting...  How it behaviors in native side?
+>>>>>> In native it behaves correctly, since Linux masks such a oneshot interrupt at the
+>>>>>> beginning of hardirq, so that the EOI at the end of hardirq doesn't result in its
+>>>>>> immediate re-assert, and then unmasks it later, after its threaded irq handler
+>>>>>> completes.
+>>>>>>
+>>>>>> In handle_fasteoi_irq():
+>>>>>>
+>>>>>> 	if (desc->istate & IRQS_ONESHOT)
+>>>>>> 		mask_irq(desc);
+>>>>>>
+>>>>>> 	handle_irq_event(desc);
+>>>>>>
+>>>>>> 	cond_unmask_eoi_irq(desc, chip);
+>>>>>>
+>>>>>>
+>>>>>> and later in unmask_threaded_irq():
+>>>>>>
+>>>>>> 	unmask_irq(desc);
+>>>>>>
+>>>>>> I also mentioned that in patch #3 description:
+>>>>>> "Linux keeps such interrupt masked until its threaded handler finishes, to
+>>>>>> prevent the EOI from re-asserting an unacknowledged interrupt.
+>>>>> That makes sense. Can you include the full story in cover letter too?
+>>>> Ok, I will.
+>>>>
+>>>>>
+>>>>>> However, with KVM + vfio (or whatever is listening on the resamplefd) we don't
+>>>>>> check that the interrupt is still masked in the guest at the moment of EOI.
+>>>>>> Resamplefd is notified regardless, so vfio prematurely unmasks the host
+>>>>>> physical IRQ, thus a new (unwanted) physical interrupt is generated in the host
+>>>>>> and queued for injection to the guest."
+>>> Sorry to barge in pretty late in the conversation (just been Cc'd on
+>>> this), but why shouldn't the resamplefd be notified? If there has been
+>> yeah sorry to get you involved here ;-)
+> 
+> No problem!
+> 
+>>> an EOI, a new level must be made visible to the guest interrupt
+>>> controller, no matter what the state of the interrupt masking is.
+>>>
+>>> Whether this new level is actually *presented* to a vCPU is another
+>>> matter entirely, and is arguably a problem for the interrupt
+>>> controller emulation.
+>>
+>> FWIU on guest EOI the physical line is still asserted so the pIRQ is
+>> immediatly re-sampled by the interrupt controller (because the
+>> resamplefd unmasked the physical IRQ) and recorded as a guest IRQ
+>> (although it is masked at guest level). When the guest actually unmasks
+>> the vIRQ we do not get a chance to re-evaluate the physical line level.
+> 
+> Indeed, and maybe this is what should be fixed instead of moving the
+> resampling point around (I was suggesting something along these lines
+> in [1]).
+> 
+> We already do this on arm64 for the timer, and it should be easy
+> enough it generalise to any interrupt backed by the GIC (there is an
+> in-kernel API to sample the pending state). No idea how that translate
+> for other architectures though.
 
-Ensure that a keyring can be obtained from bpf_lookup_system_key() when one
-of the pre-determined keyring IDs is provided.
+Actually I'm now thinking about changing the behavior implemented in my
+patchset, which is:
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- .../selftests/bpf/prog_tests/lookup_key.c     | 112 ++++++++++++++++++
- .../selftests/bpf/progs/test_lookup_key.c     |  46 +++++++
- 2 files changed, 158 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/lookup_key.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_lookup_key.c
+    1. If vEOI happens for a masked vIRQ, don't notify resamplefd, so
+       that no new physical IRQ is generated, and the vIRQ is not set as
+       pending.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/lookup_key.c b/tools/testing/selftests/bpf/prog_tests/lookup_key.c
-new file mode 100644
-index 000000000000..2e0cde729dc7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/lookup_key.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <linux/keyctl.h>
-+#include <test_progs.h>
-+
-+#include "test_lookup_key.skel.h"
-+
-+#define KEY_LOOKUP_CREATE	0x01
-+#define KEY_LOOKUP_PARTIAL	0x02
-+
-+static bool kfunc_not_supported;
-+
-+static int libbpf_print_cb(enum libbpf_print_level level, const char *fmt,
-+			   va_list args)
-+{
-+	char *func;
-+
-+	if (strcmp(fmt, "libbpf: extern (func ksym) '%s': not found in kernel or module BTFs\n"))
-+		return 0;
-+
-+	func = va_arg(args, char *);
-+
-+	if (strcmp(func, "bpf_lookup_user_key") && strcmp(func, "bpf_key_put") &&
-+	    strcmp(func, "bpf_lookup_system_key"))
-+		return 0;
-+
-+	kfunc_not_supported = true;
-+	return 0;
-+}
-+
-+void test_lookup_key(void)
-+{
-+	libbpf_print_fn_t old_print_cb;
-+	struct test_lookup_key *skel;
-+	u32 next_id;
-+	int ret;
-+
-+	skel = test_lookup_key__open();
-+	if (!ASSERT_OK_PTR(skel, "test_lookup_key__open"))
-+		return;
-+
-+	old_print_cb = libbpf_set_print(libbpf_print_cb);
-+	ret = test_lookup_key__load(skel);
-+	libbpf_set_print(old_print_cb);
-+
-+	if (ret < 0 && kfunc_not_supported) {
-+		printf("%s:SKIP:bpf_lookup_*_key(), bpf_key_put() kfuncs not supported\n",
-+		       __func__);
-+		test__skip();
-+		goto close_prog;
-+	}
-+
-+	if (!ASSERT_OK(ret, "test_lookup_key__load"))
-+		goto close_prog;
-+
-+	ret = test_lookup_key__attach(skel);
-+	if (!ASSERT_OK(ret, "test_lookup_key__attach"))
-+		goto close_prog;
-+
-+	skel->bss->monitored_pid = getpid();
-+	skel->bss->key_serial = KEY_SPEC_THREAD_KEYRING;
-+
-+	/* The thread-specific keyring does not exist, this test fails. */
-+	skel->bss->flags = 0;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Force creation of the thread-specific keyring, this test succeeds. */
-+	skel->bss->flags = KEY_LOOKUP_CREATE;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Pass both lookup flags for parameter validation. */
-+	skel->bss->flags = KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Pass invalid flags. */
-+	skel->bss->flags = UINT64_MAX;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	skel->bss->key_serial = 0;
-+	skel->bss->key_id = 1;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	skel->bss->key_id = UINT32_MAX;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	ASSERT_LT(ret, 0, "bpf_prog_get_next_id");
-+
-+close_prog:
-+	skel->bss->monitored_pid = 0;
-+	test_lookup_key__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_lookup_key.c b/tools/testing/selftests/bpf/progs/test_lookup_key.c
-new file mode 100644
-index 000000000000..c73776990ae3
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_lookup_key.c
-@@ -0,0 +1,46 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+__u32 monitored_pid;
-+__u32 key_serial;
-+__u32 key_id;
-+__u64 flags;
-+
-+extern struct bpf_key *bpf_lookup_user_key(__u32 serial, __u64 flags) __ksym;
-+extern struct bpf_key *bpf_lookup_system_key(__u64 id) __ksym;
-+extern void bpf_key_put(struct bpf_key *key) __ksym;
-+
-+SEC("lsm.s/bpf")
-+int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
-+{
-+	struct bpf_key *bkey;
-+	__u32 pid;
-+
-+	pid = bpf_get_current_pid_tgid() >> 32;
-+	if (pid != monitored_pid)
-+		return 0;
-+
-+	if (key_serial)
-+		bkey = bpf_lookup_user_key(key_serial, flags);
-+	else
-+		bkey = bpf_lookup_system_key(key_id);
-+
-+	if (!bkey)
-+		return -ENOENT;
-+
-+	bpf_key_put(bkey);
-+
-+	return 0;
-+}
--- 
-2.25.1
+    2. After this vIRQ is unmasked by the guest, notify resamplefd.
 
+to the following one:
+
+    1. If vEOI happens for a masked vIRQ, notify resamplefd as usual,
+       but also remember this vIRQ as, let's call it, "pending oneshot".
+
+    2. A new physical IRQ is immediately generated, so the vIRQ is
+       properly set as pending.
+
+    3. After the vIRQ is unmasked by the guest, check and find out that
+       it is not just pending but also "pending oneshot", so don't
+       deliver it to a vCPU. Instead, immediately notify resamplefd once
+       again.
+
+In other words, don't avoid extra physical interrupts in the host
+(rather, use those extra interrupts for properly updating the pending
+state of the vIRQ) but avoid propagating those extra interrupts to the
+guest.
+
+Does this sound reasonable to you?
+
+Your suggestion to sample the pending state of the physical IRQ sounds
+interesting too. But as you said, it's yet to be checked how feasible it
+would be on architectures other than arm64. Also it assumes that the IRQ
+in question is a forwarded physical interrupt, while I can imagine that
+KVM's resamplefd could in principle also be useful for implementing
+purely emulated interrupts.
+
+Do you see any advantages of sampling the physical IRQ pending state
+over remembering the "pending oneshot" state as described above?
+
+> 
+> 	M.
+> 
+> [1] https://lore.kernel.org/r/87mtccbie4.wl-maz@kernel.org
+> 
