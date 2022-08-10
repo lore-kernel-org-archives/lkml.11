@@ -2,174 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22F7C19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67721C25B07
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 14:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232398AbiHJOXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 10:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34206 "EHLO
+        id S232409AbiHJOY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 10:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiHJOXi (ORCPT
+        with ESMTP id S232637AbiHJOYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 10:23:38 -0400
-Received: from outbound-smtp27.blacknight.com (outbound-smtp27.blacknight.com [81.17.249.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EAD12755
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:23:35 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp27.blacknight.com (Postfix) with ESMTPS id 12E43CAEA6
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 15:23:33 +0100 (IST)
-Received: (qmail 10887 invoked from network); 10 Aug 2022 14:23:32 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 10 Aug 2022 14:23:32 -0000
-Date:   Wed, 10 Aug 2022 15:19:59 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
-Message-ID: <20220810141959.ictqchz7josyd7pt@techsingularity.net>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
- <8cf143e7-2b62-1a1e-de84-e3dcc6c027a4@suse.cz>
+        Wed, 10 Aug 2022 10:24:11 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342D012ABA
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:24:08 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id a11so7880184wmq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 07:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=s02MYhFisswhR/oml/6C35b5IOfg5F1QOhp/QJOQoMA=;
+        b=IPggfYhsg7S72d0+crr42oLh2z/EQ2LSKKJdOZMorRJ4If/4qz9Xlow7pIX+YKWZpI
+         +Dzvpz8Lclupl/+LT6cEYFVLW1a48uHLYgCcMMM4ysO5rBGmX1dXj//mAu8J62sHv7ze
+         7GIaLTyRhF6DknmROuZh7UKX+qf0a3Ox/uQQYrn4oInhIEIWm7hff7Qtsz+AmU+czJr5
+         H9HWc9HX+b8UV7tUbGnOS8tVgeTziVL1p6HtlxmEd0cj1+0wXpWUy45SdaSgJV3qNn6+
+         7MEh5BCog1kIiBu7EQRS6ZpI2G9b7TxLxScvUzULo9qSuU6Yelf9dTTwCuVScRJKgrUw
+         uvGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=s02MYhFisswhR/oml/6C35b5IOfg5F1QOhp/QJOQoMA=;
+        b=UsQbyrSDMqJ5Vlwm5I7koaDYjWQnKtmIxWMKkkw0tTWLYYOYrOiBVMx9XEgis/Qlw+
+         kRIVypxIzxOPt11EVq9aPam9vuyjibJ8YzO0QAEJYF9A5FB+jrm0KAda7vmKedqbm50k
+         Dmz5/2rTn0O68Tw0VZ2wL+lQSVOciuyq9AGnaEJoiShLCxX72cloQxHM1WOUJT2oD6qJ
+         4WhBOs92UxlETh8ERBoR5K6Aw6TMBGYzVdwyfJfDmY9EOLWt1oizvxAXrYcEFinI33mu
+         W+VAlVg0NTqaHqYK7KcQFMaEYzKTIZHw+6wn5gnNERwZOQPobnQbFUDYWzVePChu2iHA
+         8QYg==
+X-Gm-Message-State: ACgBeo1eko8Nwtoq9FCqK1QlOlOwgBByX0PfbFNv5zvnQuDHCWMhIDDN
+        UpqhTW9ZShHjIDSoWZbsRqPBETd2UOHIt0RgX9woFg==
+X-Google-Smtp-Source: AA6agR7dsoBEuPHZkASaOuZphZaQ28UgXVC0ir0+cOXaD/SFKR5yFMxzrNFRTi5qQwEi9XiCrxZNqPpNqPy2TsqQwCA=
+X-Received: by 2002:a05:600c:4e86:b0:3a3:417a:2fcd with SMTP id
+ f6-20020a05600c4e8600b003a3417a2fcdmr2716098wmq.149.1660141446416; Wed, 10
+ Aug 2022 07:24:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <8cf143e7-2b62-1a1e-de84-e3dcc6c027a4@suse.cz>
+References: <20220804221816.1802790-1-irogers@google.com> <20220804221816.1802790-8-irogers@google.com>
+ <ad2ad328-89f9-7dea-a6fd-b473da2f1ad0@huawei.com>
+In-Reply-To: <ad2ad328-89f9-7dea-a6fd-b473da2f1ad0@huawei.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 10 Aug 2022 07:23:53 -0700
+Message-ID: <CAP-5=fVWx9ROmHiOYJdBRvQNCdoUxf83dY8nBOsxMe5Xb-ofKQ@mail.gmail.com>
+Subject: Re: [PATCH v4 07/17] perf jevents: Sort json files entries
+To:     John Garry <john.garry@huawei.com>
+Cc:     Will Deacon <will@kernel.org>, James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 01:49:41PM +0200, Vlastimil Babka wrote:
-> On 6/14/22 14:02, Kirill A. Shutemov wrote:
-> > UEFI Specification version 2.9 introduces the concept of memory
-> > acceptance. Some Virtual Machine platforms, such as Intel TDX or AMD
-> > SEV-SNP, require memory to be accepted before it can be used by the
-> > guest. Accepting happens via a protocol specific to the Virtual Machine
-> > platform.
-> > 
-> > There are several ways kernel can deal with unaccepted memory:
-> > 
-> >  1. Accept all the memory during the boot. It is easy to implement and
-> >     it doesn't have runtime cost once the system is booted. The downside
-> >     is very long boot time.
-> > 
-> >     Accept can be parallelized to multiple CPUs to keep it manageable
-> >     (i.e. via DEFERRED_STRUCT_PAGE_INIT), but it tends to saturate
-> >     memory bandwidth and does not scale beyond the point.
-> > 
-> >  2. Accept a block of memory on the first use. It requires more
-> >     infrastructure and changes in page allocator to make it work, but
-> >     it provides good boot time.
-> > 
-> >     On-demand memory accept means latency spikes every time kernel steps
-> >     onto a new memory block. The spikes will go away once workload data
-> >     set size gets stabilized or all memory gets accepted.
-> > 
-> >  3. Accept all memory in background. Introduce a thread (or multiple)
-> >     that gets memory accepted proactively. It will minimize time the
-> >     system experience latency spikes on memory allocation while keeping
-> >     low boot time.
-> > 
-> >     This approach cannot function on its own. It is an extension of #2:
-> >     background memory acceptance requires functional scheduler, but the
-> >     page allocator may need to tap into unaccepted memory before that.
-> > 
-> >     The downside of the approach is that these threads also steal CPU
-> >     cycles and memory bandwidth from the user's workload and may hurt
-> >     user experience.
-> > 
-> > Implement #2 for now. It is a reasonable default. Some workloads may
-> > want to use #1 or #3 and they can be implemented later based on user's
-> > demands.
-> > 
-> > Support of unaccepted memory requires a few changes in core-mm code:
-> > 
-> >   - memblock has to accept memory on allocation;
-> > 
-> >   - page allocator has to accept memory on the first allocation of the
-> >     page;
-> > 
-> > Memblock change is trivial.
-> > 
-> > The page allocator is modified to accept pages on the first allocation.
-> > The new page type (encoded in the _mapcount) -- PageUnaccepted() -- is
-> > used to indicate that the page requires acceptance.
-> > 
-> > Architecture has to provide two helpers if it wants to support
-> > unaccepted memory:
-> > 
-> >  - accept_memory() makes a range of physical addresses accepted.
-> > 
-> >  - range_contains_unaccepted_memory() checks anything within the range
-> >    of physical addresses requires acceptance.
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > Acked-by: Mike Rapoport <rppt@linux.ibm.com>	# memblock
-> > Reviewed-by: David Hildenbrand <david@redhat.com>
-> 
-> Hmm I realize it's not ideal to raise this at v7, and maybe it was discussed
-> before, but it's really not great how this affects the core page allocator
-> paths. Wouldn't it be possible to only release pages to page allocator when
-> accepted, and otherwise use some new per-zone variables together with the
-> bitmap to track how much exactly is where to accept? Then it could be hooked
-> in get_page_from_freelist() similarly to CONFIG_DEFERRED_STRUCT_PAGE_INIT -
-> if we fail zone_watermark_fast() and there are unaccepted pages in the zone,
-> accept them and continue. With a static key to flip in case we eventually
-> accept everything. Because this is really similar scenario to the deferred
-> init and that one was solved in a way that adds minimal overhead.
-> 
+On Fri, Aug 5, 2022 at 3:49 AM John Garry <john.garry@huawei.com> wrote:
+>
+> On 04/08/2022 23:18, Ian Rogers wrote:
+> > Sort the json files entries on conversion to C. The sort order tries to
+> > replicated cmp_sevent from pmu.c so that the input there is already
+>
+> replicate
 
-I think it might be more straight-forward to always accept pages in the
-size of the pageblock. Smaller ranges should matter because they have been
-accepted in deferred_free_range. In expand, if PageUnaccepted is set on
-a pageblock-sized page, take it off the list, drop the zone->lock leaving
-IRQs disabled, accept the memory and reacquire the lock to split the page
-into the required order.
+Ack.
 
-IRQs being left disabled is unfortunate but even if the acceptance is slow,
-it's presumably not so slow to cause major problems. This would would reduce
-and probably eliminate the need to do the assert check in accept_page. It
-might also simplify __free_one_page if it's known that a pageblock range
-of pages are either all accepted or unaccepted.
+> > sorted except for sysfs events.
+> >
+> > Add the topic to JsonEvent on reading to simplify. Remove an unnecessary
+> > lambda in the json reading.
+>
+> We sort the attributes of the events alphabetically by attribute name,
+> right? Is there any advantage in this? Do we need it for later?
 
-Lastly, the default behaviour should probably be "accept all memory at
-boot" and use Kconfig to allow acceptable be deferred or overridden by
-command line. There are at least two reasons for this. Even though this
-is a virtual machine, there still may be latency sensitive applications
-running early in boot using pinned vcpu->pcpu and no memory overcommit.
-The unpredictable performance of the application early in boot may be
-unacceptable and unavoidable. It might take a long time but it could
-eventually generate bug reports about "unpredictable performance early
-in boot" that will be hard to track down unless accept_memory is observed
-using perf at the right time. Even when that does happen, there will need
-to be an option to turn it off if the unpredictable performance cannot
-be tolerated. Second, any benchmarking done early in boot is likely to
-be disrupted making the series a potential bisection magnet that masks a
-performance bug elsewhere in the merge window.
 
--- 
-Mel Gorman
-SUSE Labs
+The sort order is given by the tuple:
+(not j.desc is None, fix_none(j.topic), fix_none(j.name),
+fix_none(j.pmu), fix_none(j.metric_name))
+which is putting events with descriptions and topics before those
+without, then sorting by name, then pmu and finally metric_name. The
+advantage is that when we qsort alias events:
+https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/pmu.c?h=perf/core#n1759
+the events are already in the sorted format, which should make the
+code faster - it still has to qsort the sysfs events.
+
+Longer term I'd like to make the searching for an event, or metric, by
+name a binary rather than a linear search.
+
+Thanks,
+Ian
+
+> thanks,
+> John
+>
+> >
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >   tools/perf/pmu-events/jevents.py | 48 +++++++++++++++++++++++---------
+> >   1 file changed, 35 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/tools/perf/pmu-events/jevents.py b/tools/perf/pmu-events/jevents.py
+> > index 12d2daf3570c..30e0e792221a 100755
+> > --- a/tools/perf/pmu-events/jevents.py
+> > +++ b/tools/perf/pmu-events/jevents.py
+> > @@ -18,6 +18,8 @@ _sys_event_tables = []
+> >   _arch_std_events = {}
+> >   # Track whether an events table is currently being defined and needs closing.
+> >   _close_table = False
+> > +# Events to write out when the table is closed
+> > +_pending_events = []
+> >
+> >
+> >   def removesuffix(s: str, suffix: str) -> str:
+> > @@ -127,6 +129,7 @@ class JsonEvent:
+> >         eventcode |= int(jd['ExtSel']) << 8
+> >       configcode = int(jd['ConfigCode'], 0) if 'ConfigCode' in jd else None
+> >       self.name = jd['EventName'].lower() if 'EventName' in jd else None
+> > +    self.topic = ''
+> >       self.compat = jd.get('Compat')
+> >       self.desc = fixdesc(jd.get('BriefDescription'))
+> >       self.long_desc = fixdesc(jd.get('PublicDescription'))
+> > @@ -199,7 +202,7 @@ class JsonEvent:
+> >           s += f'\t{attr} = {value},\n'
+> >       return s + '}'
+> >
+> > -  def to_c_string(self, topic_local: str) -> str:
+> > +  def to_c_string(self) -> str:
+> >       """Representation of the event as a C struct initializer."""
+> >
+> >       def attr_string(attr: str, value: str) -> str:
+> > @@ -211,25 +214,27 @@ class JsonEvent:
+> >         return attr_string(attr, getattr(self, attr))
+> >
+> >       s = '{\n'
+> > -    s += f'\t.topic = "{topic_local}",\n'
+> >       for attr in [
+> >           'aggr_mode', 'compat', 'deprecated', 'desc', 'event', 'long_desc',
+> >           'metric_constraint', 'metric_expr', 'metric_group', 'metric_name',
+> > -        'name', 'perpkg', 'pmu', 'unit'
+> > +        'name', 'perpkg', 'pmu', 'topic', 'unit'
+> >       ]:
+> >         s += str_if_present(self, attr)
+> >       s += '},\n'
+> >       return s
+> >
+> >
+> > -def read_json_events(path: str) -> Sequence[JsonEvent]:
+> > +def read_json_events(path: str, topic: str) -> Sequence[JsonEvent]:
+> >     """Read json events from the specified file."""
+> >
+> >     try:
+> > -    return json.load(open(path), object_hook=lambda d: JsonEvent(d))
+> > +    result = json.load(open(path), object_hook=JsonEvent)
+> >     except BaseException as err:
+> >       print(f"Exception processing {path}")
+> >       raise
+> > +  for event in result:
+> > +    event.topic = topic
+> > +  return result
+> >
+> >
+> >   def preprocess_arch_std_files(archpath: str) -> None:
+> > @@ -237,7 +242,7 @@ def preprocess_arch_std_files(archpath: str) -> None:
+> >     global _arch_std_events
+> >     for item in os.scandir(archpath):
+> >       if item.is_file() and item.name.endswith('.json'):
+> > -      for event in read_json_events(item.path):
+> > +      for event in read_json_events(item.path, topic=''):
+> >           if event.name:
+> >             _arch_std_events[event.name.lower()] = event
+> >
+> > @@ -251,19 +256,36 @@ def print_events_table_prefix(tblname: str) -> None:
+> >     _close_table = True
+> >
+> >
+> > -def print_events_table_entries(item: os.DirEntry, topic: str) -> None:
+> > -  """Create contents of an events table."""
+> > +def add_events_table_entries(item: os.DirEntry, topic: str) -> None:
+> > +  """Add contents of file to _pending_events table."""
+> >     if not _close_table:
+> >       raise IOError('Table entries missing prefix')
+> > -  for event in read_json_events(item.path):
+> > -    _args.output_file.write(event.to_c_string(topic))
+> > +  for e in read_json_events(item.path, topic):
+> > +    _pending_events.append(e)
+> >
+> >
+> >   def print_events_table_suffix() -> None:
+> >     """Optionally close events table."""
+> > +
+> > +  def event_cmp_key(j: JsonEvent):
+> > +    def fix_none(s: str):
+> > +      if s is None:
+> > +        return ''
+> > +      return s
+> > +
+> > +    return (not j.desc is None, fix_none(j.topic), fix_none(j.name), fix_none(j.pmu),
+> > +            fix_none(j.metric_name))
+> > +
+> >     global _close_table
+> > -  if _close_table:
+> > -    _args.output_file.write("""{
+> > +  if not _close_table:
+> > +    return
+> > +
+> > +  global _pending_events
+> > +  for event in sorted(_pending_events, key=event_cmp_key):
+> > +    _args.output_file.write(event.to_c_string())
+> > +    _pending_events = []
+> > +
+> > +  _args.output_file.write("""{
+> >   \t.name = 0,
+> >   \t.event = 0,
+> >   \t.desc = 0,
+> > @@ -306,7 +328,7 @@ def process_one_file(parents: Sequence[str], item: os.DirEntry) -> None:
+> >     if not item.is_file() or not item.name.endswith('.json'):
+> >       return
+> >
+> > -  print_events_table_entries(item, get_topic(item.name))
+> > +  add_events_table_entries(item, get_topic(item.name))
+> >
+> >
+> >   def print_mapping_table(archs: Sequence[str]) -> None:
+>
