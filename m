@@ -2,159 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59767C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88324C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbiHJIby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
+        id S231566AbiHJIce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbiHJIbu (ORCPT
+        with ESMTP id S231384AbiHJIcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:31:50 -0400
-Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90057.outbound.protection.outlook.com [40.107.9.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2401065A1
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:31:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WG5J8JOwS8f63avE6V5xmqhw8BYlIhMFH7Gb/S95z/LVuDLw0VRY+4IGoFETPj1CQHdqY0xFyzPYd/2wxFbFmxlA//kUI5Gpnz8aRJVpN4X5/lhCdChrtoTLIJhcNblgjL50pg3LFXrPmdX5mDaHDs3VpAOPIeeeljWOVKMBWKmTykzw2BJb4+NcWaQ9Ij/p+jXndpALvIrSk8iRmHrRgXs3YReYhetFIc2YspsRJ3q7J/smpMCEV1a+qLDVnxQJYjStpseCByP1OMQB0Qq4bdeweE50sRXYx86fGHWawbiJ1XEfPHc6BlhaSyKFs3VVl9nZBVp/2eLJAbVVF0eNWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mpti2XHImHLz2RAZjk/Mic55z8CbSYZWCpohy7Hwbcs=;
- b=XZ8T3UQw7YMJR8ot4NYWhWwApCjS2ZunOKaa2BDBGIv4cst4F06X8OhJAQ+bR2NN9fShbuyyGMuLj5MH0Zgiy+HnPPt7aI14UIy5J/n3UN/8LLkboLC2y8y3bBOMOtIpJOkJCWkb8GYJTHesIZrbwTdCHWbm20CbKgOPu/zKAqsLRuAVYCVC/su90+j8pmbNra4yqE9Qaa8gSAlYqpA6wk6I5k4Ndtddw12g+eQsI2JV3O3qQnCEjOBp6DKguQHIi3MDFUB6JdQTs3XrQ9ZPErvoqMt1CXLXCoMbN7nuTcTq+CWuKzFjq5cMGQ8WOeF8b1UVyBpNVEpceRVSdVNu3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mpti2XHImHLz2RAZjk/Mic55z8CbSYZWCpohy7Hwbcs=;
- b=KJ+JzIh5rhM05xLD5uYegJ0NfZYNeka/vhVS2ElHTOMjv2t/tOvc5NBbb5CRWbC0eiF7PiAwVNPN/sM2BnLRSVmsksMDEu5skAAhrxWde3Z1zZbfp0y8u88k7L8M0XIDBQYZxvHMPe/9AG7etPVMPPk1cpnBh3799AEwzSmbGar/7zFbWFeOfb6c+ITXPio1CYS21ZeGzxCb9nEZy+L7jNQIeYzK+LPQ+DJTczsEeJqQqSVf2vRBC7f2Bcl5mROU6BKwiorZb+G1RaQJSRFT64glpac3mBIL57Ww4NDLdxuwUOqkK1YsvTD4l/45q7wozm3lKEkMeWeH/Ta1xP2OuQ==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by PAZP264MB4014.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:188::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Wed, 10 Aug
- 2022 08:31:46 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::e063:6eff:d302:8624]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::e063:6eff:d302:8624%6]) with mapi id 15.20.5504.021; Wed, 10 Aug 2022
- 08:31:46 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Sathvika Vasireddy <sv@linux.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-CC:     "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "npiggin@gmail.com" <npiggin@gmail.com>,
-        "chenzhongjin@huawei.com" <chenzhongjin@huawei.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH 02/16] powerpc: override __ALIGN() and __ALIGN_STR()
- macros
-Thread-Topic: [PATCH 02/16] powerpc: override __ALIGN() and __ALIGN_STR()
- macros
-Thread-Index: AQHYqxzwk4yeb3x530GBrIBDR86zva2n0QWA
-Date:   Wed, 10 Aug 2022 08:31:46 +0000
-Message-ID: <0d2438e6-9aaa-a9c9-9613-b833771c9362@csgroup.eu>
-References: <20220808114908.240813-1-sv@linux.ibm.com>
- <20220808114908.240813-3-sv@linux.ibm.com>
-In-Reply-To: <20220808114908.240813-3-sv@linux.ibm.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: efbca229-2ab6-4268-701c-08da7aaac326
-x-ms-traffictypediagnostic: PAZP264MB4014:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B3pKo9oVSkPdnjPTdRQHxqvnjWPQym4VTlj5enc7jpvg5qs2SSwNUbKqnprd6zjnQTzskSI9h9VzqF9NpUfSTTrUOd1+ArcT22e0I7mgtrqAdHssmCWBzTc5JFoDZx5e5hhd9G8QIcKHJE06cGmtpW1V4s8ayCpOJr9rG0B7kHke3sMYElB1q2t4j9pPFFQb464ScycsVcbA+zQDFWwt6V6bzdjDk2JANAIBk5s9aIRrfDJEWMuehutUyypABPHPlsw0CTxjc63RNcnRGAzLYAniEgGZAGSA1wVeFus2ltmBDZ/k7UTce3OAIYFuP/xvZvuJFipCokgqqe9k1vWnKkw5g41KNo+boBQNY4h4CehKj7J4XHGwkPyObFuZUIWjOZanYhO6WN6gvshFwLdZeR0ffAJDy2+16rBTWAVC/PUL6qw2kj488ywn1KLzMiIwX8y0oU//qaKcGgK/9lYSs0iLYopYjb94Og93E6/oZfNMJE4aKa/OTNVAMq2P89fgY/fsdmiOHwHsMgrpTMfEoujs1lNf3lU9aGS/VBLLlmUb6vA0xNrEQDuwrVGwmq62axXHx/uJOoO/dRP/M6tA1nGZEW4SOR/3VxuS703u7Pkak8Y4fPOgSlGKvdLuTrCC4slYZoKERKWbwXPcULKXIywYfwj3ejhCwgWY9jPpAj5J9Ke/D6OjniSzXmFdlx3V+yHaB6NwFiaAAr9rrNO0owhsdFPVexxSVZAC0peCtdfrbY6Ay+d+vZGNTtI+u1CHl//VZ7Kbs10p1xmvE+Mu/RlMKJ1aKuwOVZmZj++zQ/u7jwbfMdvgD/fuKxr30TonTPnz0QIpLVD8YHGI0CGBb4S3MJrlsTeAnk805wYSwc0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(396003)(136003)(376002)(39850400004)(2906002)(38070700005)(2616005)(6506007)(6512007)(478600001)(8936002)(26005)(6486002)(44832011)(41300700001)(4744005)(7416002)(122000001)(64756008)(86362001)(31696002)(186003)(38100700002)(83380400001)(5660300002)(66556008)(4326008)(66476007)(8676002)(66446008)(76116006)(110136005)(54906003)(91956017)(66946007)(71200400001)(31686004)(316002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SW43TDhpQVdWanp6OW03aGtSN0NBMDZRdlZyWUpWWTkvOFE2TFFzYWJVaVIz?=
- =?utf-8?B?Zk03b1E3VUNMeStYM3A2cVFoWkczb2JqVmNKNm1oSVdYMHNpK2NvVXJodWZ5?=
- =?utf-8?B?WWJsSjBVVHZHUUFHNVIvdmh1cklUMjdyaXZLZk80MXhrVGZxaUZRL29pM042?=
- =?utf-8?B?WVR3ZjNpVVdXbXF5bzJJYmNueTVwVFdBYjlKUlVHVVRWV3FuY1R0d1p3UFBv?=
- =?utf-8?B?RWkrbXpGajUzaC9jTEowcWgyUmhMNkxZcVRYOWg3eUd1OWtONzNDSzVjT1J3?=
- =?utf-8?B?SnVpR0xkbkZhVXR2THZLZU0zKzVFbDl3cytRc2Y4QlI2SVNmVnhuSzltVHM3?=
- =?utf-8?B?aXZ6T2ZrMlVwN2I3dGZLbzhVSGhyNXAvYndHaUd6NFVaY2c0R1Y2Z1pFNGU0?=
- =?utf-8?B?RGwzY3Z2NEtpb0Q4T05uYWFjQmFJZmpzWk85amFhdDJWdTVlS3JXL3ZpT0M5?=
- =?utf-8?B?UGYwaVFFSGx4c1cwcHc2cjJ0L0xDdUZBUUZSenFmNGZTUytvN3NaK3I2eVYv?=
- =?utf-8?B?d0Q0eVVzWStUajhvaWtJOFU3WXJNcThRQlo5bDdKREVXYjlxTk0rZUJmaTlY?=
- =?utf-8?B?aFFUSXVnaHM4MWpKWjJ2TWhCczJIYUF5QTFrNEMyUHhaWTluY01vZHVKclUy?=
- =?utf-8?B?U3loZDk4d0UrUG1JSTJ1QmFyTWluRTZzWm04NXhFcmtkajlnWm43c28xV3Qr?=
- =?utf-8?B?UUxyRm1IVmx1eHlDZzVpTTJFN3dRdXNncWc4bHJyK3QwUnFqRU1RWStwNlk0?=
- =?utf-8?B?K1IwWGpkdS85SkZ3VkppLy9QaUlOL1h5ZnpJR1dIbmFUeGg5NWNMdjJ1cFRQ?=
- =?utf-8?B?a3A2R3M0aHBzZUp2dG8xWkV0d20xSHF6SFNkZzEzZkZpVUNaQ0FqODBKazhj?=
- =?utf-8?B?cVcxZ3A3OG1ieENDRTBMM0xmOHNpcHMzQTBRazR4SEwwalYyTFlZQmhtcEIy?=
- =?utf-8?B?WGpXMzlsZlpkdWhtOUdsa2g2aHl4bkF2OVVwUnJnSmhBS3V3cGNsMmw1UFN3?=
- =?utf-8?B?bXNqbGhDcGFHdGVoS3JhcVgxM1NUbU5QK0VTbUhsVGhSRHJjdURXWml3aDdE?=
- =?utf-8?B?blZuK0tXMjUxNzUrL2w2RlZwRlZvTS9hRUFmM09FMCtrWG9nS21JMHArWGRw?=
- =?utf-8?B?UTBFWndmNHliTXJFNnFneEM1cUxoUUVLSTFkeThDZTFhTGxxcVM4UEhreDRG?=
- =?utf-8?B?aTFKODNuNDVnR2xrT3BQMHRBeVYwYzRNbHI1QlBCS2tMUEduaWpucDRkcllI?=
- =?utf-8?B?T3JqajlFT2t1MFR3Mjl5Q0Z0ejh2b2F2UE1NR01lb0VULytKQ1BYMmY1dWxm?=
- =?utf-8?B?K2l6d1k2SXlZWmhvYk9tWW9ZSUpkaG9Wb0szUjNpbmhya0lCUno5QW9CQUJI?=
- =?utf-8?B?Tnh4U0tpTHpCM25zZnFXK2VUNkxXem5lVEFhQ3BHL3FuaGlWcWZXODBuaWNm?=
- =?utf-8?B?WHdMZUQzb2tqaEVTdWR4c0Y4MUxhTFpKemVPSmlxMHY2TFdmLzArRW5ZUCtv?=
- =?utf-8?B?Z0hKQXlKOVFzRVhIRktPKy93Z3hIc0x2TVRhV2Zpbm5wWGpLSDNWU2hrb0dm?=
- =?utf-8?B?ekU4YUl1dWZpN0xWK0g4N0NIVVFjN09zYnlkS2VyRDZTb20rMlA2OGs0N0Yw?=
- =?utf-8?B?UnQzR0U0SS9uTnFydXgwd0lyOWJVQWpWRDVtYkd2a0YrU3VNMHVKU0l3T0xy?=
- =?utf-8?B?MGI3YVBBSnlsM00va3VHTElkczhXdnE4Uk8zd0NlRXFNME5hL2dSYUIyTlBE?=
- =?utf-8?B?WHlsRnBhY0d5TTBqUENJNnVTR2QxdTV5dGNFRlZqOVBYcW94enlNK1hZY3A4?=
- =?utf-8?B?YTViVFBEZzNKMzZaSnBxU1NPVWQ2UGN2Rk5FREtHOXFkdGdrcTBtS2tWanJR?=
- =?utf-8?B?bWJjMEF1N1d2ckhWZUFyMHdWUFduUHdoZlJMVTJiaENSSU4vTlFZUkFRZkQ0?=
- =?utf-8?B?Y21MZHBLTlR5S3NLS1dMWkFuRmtNanF2NzJ5eWhDTnAxeVRyOWlpK1NCdUl2?=
- =?utf-8?B?Wm9vOUVuOEFoU2xoM2dFazJyTmthdDg5MXBUcUk3T0ZhZnN5YU1UWjZWWk12?=
- =?utf-8?B?eElzMFV2Q1dIKzk0NDJMRVhBQXpvYTk5ak13QnZDYU1sZ2pYWm4zTHRzME8r?=
- =?utf-8?B?OCtVNkM1OXJ5Y0lMek9XSDJHR2lrQzMvaTkySElSbkE3RG5McmZkWEk2WGRq?=
- =?utf-8?B?WkE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9DBDA80BDCB21041BE55C1EBCAD29077@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Wed, 10 Aug 2022 04:32:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D907F57245
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:32:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660120351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XGNRL7RXjtq0mKAACNMvTHAR+zCxpXxi84pe8w824HU=;
+        b=HF1+lNP2XWhzgvVjc6xIZGWk2QQi2yH+clbVDIQ7hMOTdf9bhQ70T5Bw+3AfE/J+1DO2W4
+        cuwie8q0oAs3i065Y7Fcka/xgCtW978pUrRaq4KMoG/vjGMnTiisgl/plwen3GiE1Blp3D
+        UPNSJC8TrUydrTGPig0TBZDz3UEawz0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-37-Gt-AURWtPx2OXqEtZWhTjQ-1; Wed, 10 Aug 2022 04:32:29 -0400
+X-MC-Unique: Gt-AURWtPx2OXqEtZWhTjQ-1
+Received: by mail-wm1-f71.google.com with SMTP id m4-20020a7bce04000000b003a386063752so322165wmc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:32:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=XGNRL7RXjtq0mKAACNMvTHAR+zCxpXxi84pe8w824HU=;
+        b=ygaSjx0rMllkfIPKLZk2tRm+bk1m+kSK611lbah+H2ALhQFPcw7n3mcI0AGCDvYKcU
+         /s/CfbLa/Q2C1V/oWnMHORE94iAK9VpJRRolJ/cvlNuXa42KFgRRx5ec4cunaLIFgPU6
+         I2MWU3nPVSxCa1wvjBovqvcf0TpKtmDC7k2tjHC7tm7UPLfW2Uum1ZZbsELVc7RZJxu+
+         DcxYyHv4bwnSht3NiQWki/jpVtnn79YtAJgww2FbNmXRTUVTivZVhozYCLti39uC1SW7
+         7nEU/tBf3gpbqLYQ7z9mDGd1SQFbkEg7fyOh3T2p7OPsO2Q9TBqKy16/nOAMcRn52qTv
+         z5iQ==
+X-Gm-Message-State: ACgBeo3RLU4Omxl4eBZucSR8sa8yoBoDWB0lND0uKCfX/g18glGwHf8k
+        iN+sbmtYX3FyGpCPEmkaDTkVIXTFyx3T8tH+gSDczUasKARMy9Do380dOBwHYsweIHjclSkdOum
+        Y/Bg9PmbnsuvacSeg6RFb5ZHM
+X-Received: by 2002:a05:600c:4e03:b0:3a5:1755:8498 with SMTP id b3-20020a05600c4e0300b003a517558498mr1619494wmq.137.1660120348459;
+        Wed, 10 Aug 2022 01:32:28 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5qxjbgUdwuQgliLtypD01fweSDVzMfPiufIkKAYAH4GBeQyjU+/MsIMI+BYxf4zmWEP/Y+2w==
+X-Received: by 2002:a05:600c:4e03:b0:3a5:1755:8498 with SMTP id b3-20020a05600c4e0300b003a517558498mr1619476wmq.137.1660120348253;
+        Wed, 10 Aug 2022 01:32:28 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1600:a3ce:b459:ef57:7b93? (p200300cbc7071600a3ceb459ef577b93.dip0.t-ipconnect.de. [2003:cb:c707:1600:a3ce:b459:ef57:7b93])
+        by smtp.gmail.com with ESMTPSA id p13-20020a05600c358d00b003a4c6e67f01sm1552735wmq.6.2022.08.10.01.32.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 01:32:27 -0700 (PDT)
+Message-ID: <f3da23f5-950a-9569-20b3-f7d4779a69f7@redhat.com>
+Date:   Wed, 10 Aug 2022 10:32:26 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: efbca229-2ab6-4268-701c-08da7aaac326
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Aug 2022 08:31:46.2983
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4JUZ3JITvx0t0ZPwnH4/Los2QOqK76IHxVgNkME7GlWeF/4x+jvwyK1axex+QPkK12bbs3+RdX6syktaMQ6snk9Bj8vCp2MVIxJC+AqkYqc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAZP264MB4014
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] mm: add warning if __vm_enough_memory fails
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Yongqiang Liu <liuyongqiang13@huawei.com>
+References: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCkxlIDA4LzA4LzIwMjIgw6AgMTM6NDgsIFNhdGh2aWthIFZhc2lyZWRkeSBhIMOpY3JpdMKg
-Og0KPiBTaW5jZSB3ZSBuZWVkIGFuIGFsaWdubWVudCBvZiA0IGJ5dGVzLCBvdmVycmlkZQ0KPiBf
-X0FMSUdOKCkgYW5kIF9fQUxJR05fU1RSKCkgYWNjb3JkaW5nbHkuDQoNCldoeS9XaGVuIGRvIHdl
-IG5vdyBuZWVkIGFuIGFsaWdubWVudCBvZiA0IGJ5dGVzID8gUGxlYXNlIGV4cGxhaW4gdGhlIA0K
-cmVhc29uIGluIHRoZSBjb21taXQgbWVzc2FnZS4NCg0KPiANCj4gU2lnbmVkLW9mZi1ieTogU2F0
-aHZpa2EgVmFzaXJlZGR5IDxzdkBsaW51eC5pYm0uY29tPg0KPiAtLS0NCj4gICBhcmNoL3Bvd2Vy
-cGMvaW5jbHVkZS9hc20vbGlua2FnZS5oIHwgNCArKysrDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDQg
-aW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2Fz
-bS9saW5rYWdlLmggYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vbGlua2FnZS5oDQo+IGluZGV4
-IGI3MWI5NTgyZTc1NC4uOGRmODhmZTYxNDM4IDEwMDY0NA0KPiAtLS0gYS9hcmNoL3Bvd2VycGMv
-aW5jbHVkZS9hc20vbGlua2FnZS5oDQo+ICsrKyBiL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9s
-aW5rYWdlLmgNCj4gQEAgLTIsOCArMiwxMiBAQA0KPiAgICNpZm5kZWYgX0FTTV9QT1dFUlBDX0xJ
-TktBR0VfSA0KPiAgICNkZWZpbmUgX0FTTV9QT1dFUlBDX0xJTktBR0VfSA0KPiAgIA0KPiArI2lu
-Y2x1ZGUgPGxpbnV4L3N0cmluZ2lmeS5oPg0KPiAgICNpbmNsdWRlIDxhc20vdHlwZXMuaD4NCj4g
-ICANCj4gKyNkZWZpbmUgX19BTElHTgkJCS5hbGlnbiAyDQo+ICsjZGVmaW5lIF9fQUxJR05fU1RS
-CQlfX3N0cmluZ2lmeShfX0FMSUdOKQ0KDQpXaHkgZG8geW91IG5lZWQgdG8gdXNlIF9fc3RyaW5n
-aWZ5ID8NCg0KQVJNNjQgZG9lczoNCg0KI2RlZmluZSBfX0FMSUdOCQkuYWxpZ24gMg0KI2RlZmlu
-ZSBfX0FMSUdOX1NUUgkiLmFsaWduIDIiDQoNCg0KDQoNCj4gKw0KPiAgICNpZmRlZiBDT05GSUdf
-UFBDNjRfRUxGX0FCSV9WMQ0KPiAgICNkZWZpbmUgY29uZF9zeXNjYWxsKHgpIFwNCj4gICAJYXNt
-ICgiXHQud2VhayAiICN4ICJcblx0LnNldCAiICN4ICIsIHN5c19uaV9zeXNjYWxsXG4iCQlc
+On 26.07.22 16:54, Kefeng Wang wrote:
+> If a process has no enough memory to allocate a new virtual mapping, we
+> may meet kinds of error, eg, fork cannot allocate memory, SIGBUS error
+> in shmem, but it is difficult to confirm them, let's add some debug
+> information to easy to check this scenario if __vm_enough_memory fails.
+> 
+> Reported-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+> v2: use pr_warn_ratelimited, suggested by David Hildenbrand
+> 
+>  mm/util.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/mm/util.c b/mm/util.c
+> index 1266a33a49ea..c786e21c6051 100644
+> --- a/mm/util.c
+> +++ b/mm/util.c
+> @@ -1020,6 +1020,8 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
+>  	if (percpu_counter_read_positive(&vm_committed_as) < allowed)
+>  		return 0;
+>  error:
+> +	pr_warn_ratelimited("%s: pid: %d, comm: %s, no enough memory for the allocation\n",
+> +			    __func__, current->pid, current->comm);
+>  	vm_unacct_memory(pages);
+>  
+>  	return -ENOMEM;
+
+Acked-by: David Hildenbrand <david@redhat.com>
+
+-- 
+Thanks,
+
+David / dhildenb
+
