@@ -2,82 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47675C48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6844AC25B0D
 	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 13:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232699AbiHJN2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 09:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35212 "EHLO
+        id S232716AbiHJN2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 09:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232682AbiHJN2J (ORCPT
+        with ESMTP id S232749AbiHJN2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 09:28:09 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA7633E0B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 06:27:56 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1660138071tm7fbmh1
-Received: from localhost.localdomain ( [182.148.14.53])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 10 Aug 2022 21:27:50 +0800 (CST)
-X-QQ-SSF: 01000000002000B0D000B00A0000000
-X-QQ-FEAT: YHTLUubWl26igChFXzRkm64UDKpjaoOCHUIjXC277Z+iI0dvZuzPe9dE5tUrX
-        N3kqbzrnzvJKRKdJRbeDjz24k0gJZ37cLkU0jZ2PbeAjSRHHu72HT5wGDSpdAEZf5tUFCmh
-        bVbPV+3Gu/zZxwSq05ns4+i165ggmIRlSAC+epOGmnShx3Hg67BUOkkJ3jgvVe0ck0Bz7/t
-        6AwrhQ+WJwuRajvoINmr4oYOiE/VcyRMSLaz7OeP16mp5aXo3PaBTAFcrmuaU2urAQxgbty
-        9Sq02EE7/W4T+LQgl5H55ktOpCBXY7/bb+0P2jCrb9v054jol1YxEmFb36Oz9ZCdQKM9NlW
-        OlvZz7HNMSPLsPY4rSyjRCLS8mq+CQ3h+6VqUQQt0n4HjbHniGQbGgxaK6PjA==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     miquel.raynal@bootlin.com, vigneshr@ti.com
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] nand/raw: fix repeated words in comments
-Date:   Wed, 10 Aug 2022 21:27:33 +0800
-Message-Id: <20220810132733.63767-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+        Wed, 10 Aug 2022 09:28:23 -0400
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5442F002;
+        Wed, 10 Aug 2022 06:28:20 -0700 (PDT)
+Received: by mail-io1-f48.google.com with SMTP id x64so12141221iof.1;
+        Wed, 10 Aug 2022 06:28:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=4epIfRahObDv/a6dumDmRQy3l18v8+waUrRo2YnWvdM=;
+        b=eHEUr1XZSj9OYrBVxxDKBDVWfgO8OLCPY8KibmX04ivuiDcIFPtDDME3s5oxjeb/cQ
+         tYTebl5IHdiHEuAnMWUBWNL8MRpRwERnwbUe3FK2/v6ALbBChg//U20f4Zv4+qdZCcza
+         wEO5qKTRPa8l2J89H9y8kF6YIcJkN3w3vvP4+4nZ6iL3sphYPogiLdwxU47ZmOuQ5eiu
+         9tjzvzVAF8vVeRz1AvsSafOk36bH/2gtTf7QBllkzqlVjxypSSHFOknXrNNNFi4tf2jD
+         033eu5LQXx88/wg9a0D2JeqbzWU7DupjyS4MzZ8tPYF5q7L+LNBSLjySftOQ/JuqJxq8
+         X8KQ==
+X-Gm-Message-State: ACgBeo0xH3ZMeCCZs8nOnSpABVTwbXY4MRbZXaqGqCpVQeubLNFjJadO
+        q4zO7B5gfsW12hO6vep8TpNJijBehA==
+X-Google-Smtp-Source: AA6agR6Y72wFm60tqJ+C1vVwSKALhtNNXerxG30Sj4nbpvo6VW5QJA0hxBdJ221EXQ/rdDb/R4f2aw==
+X-Received: by 2002:a05:6638:450:b0:343:af3:dc0 with SMTP id r16-20020a056638045000b003430af30dc0mr6247769jap.287.1660138099765;
+        Wed, 10 Aug 2022 06:28:19 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id b9-20020a92c149000000b002dd16300beasm2219717ilh.51.2022.08.10.06.28.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 06:28:19 -0700 (PDT)
+Received: (nullmailer pid 3991544 invoked by uid 1000);
+        Wed, 10 Aug 2022 13:28:15 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        orsonzhai@gmail.com, linux-kernel@vger.kernel.org,
+        baolin.wang@linux.alibaba.com, devicetree@vger.kernel.org,
+        zhang.lyra@gmail.com, lee@kernel.org
+In-Reply-To: <20220810130344.1488578-1-gengcixi@gmail.com>
+References: <20220810130344.1488578-1-gengcixi@gmail.com>
+Subject: Re: [PATCH] dt-bindings: mfd: sprd: Add bindings for ums512 global registers
+Date:   Wed, 10 Aug 2022 07:28:15 -0600
+Message-Id: <1660138095.903227.3991543.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Delete the redundant word 'and'.
- Delete the redundant word 'is'.
+On Wed, 10 Aug 2022 21:03:44 +0800, Cixi Geng wrote:
+> From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> 
+> Add bindings for Unisoc system global register which provide register map
+> for clocks.
+> 
+> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> ---
+>  .../bindings/mfd/sprd,ums512-glbreg.yaml      | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+> 
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/mtd/nand/raw/davinci_nand.c | 2 +-
- drivers/mtd/nand/raw/sm_common.c    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/drivers/mtd/nand/raw/davinci_nand.c b/drivers/mtd/nand/raw/davinci_nand.c
-index 3e98e3c255bf..b9377d6c3c89 100644
---- a/drivers/mtd/nand/raw/davinci_nand.c
-+++ b/drivers/mtd/nand/raw/davinci_nand.c
-@@ -375,7 +375,7 @@ static int nand_davinci_correct_4bit(struct nand_chip *chip, u_char *data,
- 
- /* An ECC layout for using 4-bit ECC with small-page flash, storing
-  * ten ECC bytes plus the manufacturer's bad block marker byte, and
-- * and not overlapping the default BBT markers.
-+ * not overlapping the default BBT markers.
-  */
- static int hwecc4_ooblayout_small_ecc(struct mtd_info *mtd, int section,
- 				      struct mtd_oob_region *oobregion)
-diff --git a/drivers/mtd/nand/raw/sm_common.c b/drivers/mtd/nand/raw/sm_common.c
-index ba24cb36d0b9..b2b42dd1a2de 100644
---- a/drivers/mtd/nand/raw/sm_common.c
-+++ b/drivers/mtd/nand/raw/sm_common.c
-@@ -52,7 +52,7 @@ static const struct mtd_ooblayout_ops oob_sm_ops = {
- 	.free = oob_sm_ooblayout_free,
- };
- 
--/* NOTE: This layout is is not compatabable with SmartMedia, */
-+/* NOTE: This layout is not compatabable with SmartMedia, */
- /* because the 256 byte devices have page depenent oob layout */
- /* However it does preserve the bad block markers */
- /* If you use smftl, it will bypass this and work correctly */
--- 
-2.36.1
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/clock/sprd,ums512-clk.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.example.dtb: syscon@71000000: clock-controller@0: False schema does not allow {'compatible': ['sprd,ums512-apahb-gate'], 'reg': [[0, 8192]], '#clock-cells': [[1]]}
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.example.dtb:0:0: /example-0/syscon@71000000/clock-controller@0: failed to match any schema with compatible: ['sprd,ums512-apahb-gate']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
