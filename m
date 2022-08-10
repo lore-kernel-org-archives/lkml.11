@@ -2,249 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F7BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A27DC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbiHJM5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 08:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51472 "EHLO
+        id S232360AbiHJM5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 08:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232347AbiHJM4i (ORCPT
+        with ESMTP id S232339AbiHJM4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 08:56:38 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 816BD5B052;
-        Wed, 10 Aug 2022 05:56:37 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27ACobru003244;
-        Wed, 10 Aug 2022 12:56:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=v3mI9pBXv3/3EDB31sjcbJrExOo43e9SJBGEzzM6aoY=;
- b=VKv0u51GqiotyTocik9nXEAbn4rf8EIcFM0uD0yif55nEAm9/3Sfa9Pp5J2dT/c3Dx+0
- 9bPDQSMZNw35aNeu6b0SXwQS/mT05bc8f8onBrw4YsG/AGFRhjEMiAj34hnwIgd4XhmL
- QV0zOI1mTiW24yz8Xw6biusazvMQ69kGf61CjkMCSTZWvgjGpdRKPgncDeyFX5XCcw9D
- 5iINyEWnSL5sZzgdaaR29Z/r7CbloldBR6ww0Kp1iFwEBaanztWY/n3Gguy5Eh0XE4+a
- VXYjfZlHNgYtRqY/iG/nhpoPlXbqo8wd7PqDb+I9pZf9czK5Lu4XFTFV8ejJuLcgnZpi UQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hv65w61rr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 12:56:37 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27ACphrq008714;
-        Wed, 10 Aug 2022 12:56:36 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hv65w61qf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 12:56:36 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27ACuSp2012812;
-        Wed, 10 Aug 2022 12:56:34 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma02fra.de.ibm.com with ESMTP id 3huww0ru73-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Aug 2022 12:56:33 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27ACuUTk36176156
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Aug 2022 12:56:30 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6550F4C044;
-        Wed, 10 Aug 2022 12:56:30 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BFA094C040;
-        Wed, 10 Aug 2022 12:56:29 +0000 (GMT)
-Received: from p-imbrenda.bredband2.com (unknown [9.145.0.105])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 10 Aug 2022 12:56:29 +0000 (GMT)
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-Subject: [PATCH v13 5/6] KVM: s390: pv: support for Destroy fast UVC
-Date:   Wed, 10 Aug 2022 14:56:24 +0200
-Message-Id: <20220810125625.45295-6-imbrenda@linux.ibm.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810125625.45295-1-imbrenda@linux.ibm.com>
-References: <20220810125625.45295-1-imbrenda@linux.ibm.com>
+        Wed, 10 Aug 2022 08:56:50 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DFD60519
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 05:56:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660136210; x=1691672210;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4Y5z0ZDyydKnej9IdSZAQHbHgCINGNRafiCXrqPAudc=;
+  b=V4IdcGPPAXGUjziOyoR2K6/LQy0UhX+V0ZaEWb2heDldXTWeYyxOtpnu
+   j042FubKYmWeLW4fOsfGD0be92tL4fDGFBvxYDn5Ma8Trw4QBv0CSy612
+   9uo7Ap0AoSaTJEcWCwmGWXaTyBamfiAdEtx320bWEb1TsE5i4DcSo3rdj
+   6pWhd15dCMIxC4zx4WJoZFANIGlmSss1v46Wrk4ujZlZzTjL/545IvIGj
+   qE3znCItPG3SwtQI8oTgJY1P1X5rKG3zWMD1cDGruOZ6Z3aq5z+fqc3hP
+   gSLAkWkNArAMTK7PoXNFFULYh4Uu7F+qPzMz/Ogq92dBVUxTj8b6zA50v
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="377364386"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="377364386"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 05:56:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="581221963"
+Received: from lkp-server02.sh.intel.com (HELO 5d6b42aa80b8) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 10 Aug 2022 05:56:48 -0700
+Received: from kbuild by 5d6b42aa80b8 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oLlGS-0000HI-0O;
+        Wed, 10 Aug 2022 12:56:48 +0000
+Date:   Wed, 10 Aug 2022 20:56:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oded Gabbay <ogabbay@habana.ai>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ogabbay:accel 1/2] drivers/accelerators/accel_sysfs.c:66:5:
+ warning: no previous prototype for 'accel_sysfs_init'
+Message-ID: <202208102011.HntMqTCc-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 3QomBZ9wUqO9A9fV37DLo3O_WznEyn9e
-X-Proofpoint-GUID: IXafiDRlK-u9tz6baDTWsCUPuoLDcp-A
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-10_07,2022-08-10_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- impostorscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015
- suspectscore=0 priorityscore=1501 phishscore=0 mlxscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208100037
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the Destroy Secure Configuration Fast Ultravisor call,
-and take advantage of it for asynchronous destroy.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git accel
+head:   7cd6e545486f8ead2f046747a9557f62e8bbfff3
+commit: ddc47a3f6a4387c32ae88c644a65529533f28d96 [1/2] accel: initial commit
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220810/202208102011.HntMqTCc-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=ddc47a3f6a4387c32ae88c644a65529533f28d96
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay accel
+        git checkout ddc47a3f6a4387c32ae88c644a65529533f28d96
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/accelerators/
 
-When supported, the protected guest is destroyed immediately using the
-new UVC, leaving only the memory to be cleaned up asynchronously.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
----
- arch/s390/include/asm/uv.h | 10 +++++++
- arch/s390/kvm/pv.c         | 57 ++++++++++++++++++++++++++++++++------
- 2 files changed, 59 insertions(+), 8 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/arch/s390/include/asm/uv.h b/arch/s390/include/asm/uv.h
-index be3ef9dd6972..28a9ad57b6f1 100644
---- a/arch/s390/include/asm/uv.h
-+++ b/arch/s390/include/asm/uv.h
-@@ -34,6 +34,7 @@
- #define UVC_CMD_INIT_UV			0x000f
- #define UVC_CMD_CREATE_SEC_CONF		0x0100
- #define UVC_CMD_DESTROY_SEC_CONF	0x0101
-+#define UVC_CMD_DESTROY_SEC_CONF_FAST	0x0102
- #define UVC_CMD_CREATE_SEC_CPU		0x0120
- #define UVC_CMD_DESTROY_SEC_CPU		0x0121
- #define UVC_CMD_CONV_TO_SEC_STOR	0x0200
-@@ -81,6 +82,7 @@ enum uv_cmds_inst {
- 	BIT_UVC_CMD_UNSHARE_ALL = 20,
- 	BIT_UVC_CMD_PIN_PAGE_SHARED = 21,
- 	BIT_UVC_CMD_UNPIN_PAGE_SHARED = 22,
-+	BIT_UVC_CMD_DESTROY_SEC_CONF_FAST = 23,
- 	BIT_UVC_CMD_DUMP_INIT = 24,
- 	BIT_UVC_CMD_DUMP_CONFIG_STOR_STATE = 25,
- 	BIT_UVC_CMD_DUMP_CPU = 26,
-@@ -230,6 +232,14 @@ struct uv_cb_nodata {
- 	u64 reserved20[4];
- } __packed __aligned(8);
- 
-+/* Destroy Configuration Fast */
-+struct uv_cb_destroy_fast {
-+	struct uv_cb_header header;
-+	u64 reserved08[2];
-+	u64 handle;
-+	u64 reserved20[5];
-+} __packed __aligned(8);
-+
- /* Set Shared Access */
- struct uv_cb_share {
- 	struct uv_cb_header header;
-diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-index eba4f3fc2138..160ef95cea68 100644
---- a/arch/s390/kvm/pv.c
-+++ b/arch/s390/kvm/pv.c
-@@ -201,6 +201,9 @@ static int kvm_s390_pv_dispose_one_leftover(struct kvm *kvm,
- {
- 	int cc;
- 
-+	/* It used the destroy-fast UVC, nothing left to do here */
-+	if (!leftover->handle)
-+		goto done_fast;
- 	cc = uv_cmd_nodata(leftover->handle, UVC_CMD_DESTROY_SEC_CONF, rc, rrc);
- 	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY LEFTOVER VM: rc %x rrc %x", *rc, *rrc);
- 	WARN_ONCE(cc, "protvirt destroy leftover vm failed rc %x rrc %x", *rc, *rrc);
-@@ -215,6 +218,7 @@ static int kvm_s390_pv_dispose_one_leftover(struct kvm *kvm,
- 	free_pages(leftover->stor_base, get_order(uv_info.guest_base_stor_len));
- 	free_pages(leftover->old_gmap_table, CRST_ALLOC_ORDER);
- 	vfree(leftover->stor_var);
-+done_fast:
- 	atomic_dec(&kvm->mm->context.protected_count);
- 	return 0;
- }
-@@ -248,6 +252,32 @@ static void kvm_s390_destroy_lower_2g(struct kvm *kvm)
- 	srcu_read_unlock(&kvm->srcu, srcu_idx);
- }
- 
-+static int kvm_s390_pv_deinit_vm_fast(struct kvm *kvm, u16 *rc, u16 *rrc)
-+{
-+	struct uv_cb_destroy_fast uvcb = {
-+		.header.cmd = UVC_CMD_DESTROY_SEC_CONF_FAST,
-+		.header.len = sizeof(uvcb),
-+		.handle = kvm_s390_pv_get_handle(kvm),
-+	};
-+	int cc;
-+
-+	cc = uv_call_sched(0, (u64)&uvcb);
-+	*rc = uvcb.header.rc;
-+	*rrc = uvcb.header.rrc;
-+	WRITE_ONCE(kvm->arch.gmap->guest_handle, 0);
-+	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM FAST: rc %x rrc %x", *rc, *rrc);
-+	WARN_ONCE(cc, "protvirt destroy vm fast failed rc %x rrc %x", *rc, *rrc);
-+	/* Inteded memory leak on "impossible" error */
-+	if (!cc)
-+		kvm_s390_pv_dealloc_vm(kvm);
-+	return cc ? -EIO : 0;
-+}
-+
-+static inline bool is_destroy_fast_available(void)
-+{
-+	return test_bit_inv(BIT_UVC_CMD_DESTROY_SEC_CONF_FAST, uv_info.inst_calls_list);
-+}
-+
- /**
-  * kvm_s390_pv_set_aside - Set aside a protected VM for later teardown.
-  * @kvm: the VM
-@@ -269,6 +299,7 @@ static void kvm_s390_destroy_lower_2g(struct kvm *kvm)
- int kvm_s390_pv_set_aside(struct kvm *kvm, u16 *rc, u16 *rrc)
- {
- 	struct pv_vm_to_be_destroyed *priv;
-+	int res = 0;
- 
- 	/*
- 	 * If another protected VM was already prepared, refuse.
-@@ -280,14 +311,21 @@ int kvm_s390_pv_set_aside(struct kvm *kvm, u16 *rc, u16 *rrc)
- 	if (!priv)
- 		return -ENOMEM;
- 
--	priv->stor_var = kvm->arch.pv.stor_var;
--	priv->stor_base = kvm->arch.pv.stor_base;
--	priv->handle = kvm_s390_pv_get_handle(kvm);
--	priv->old_gmap_table = (unsigned long)kvm->arch.gmap->table;
--	WRITE_ONCE(kvm->arch.gmap->guest_handle, 0);
--	if (s390_replace_asce(kvm->arch.gmap)) {
-+	if (is_destroy_fast_available()) {
-+		res = kvm_s390_pv_deinit_vm_fast(kvm, rc, rrc);
-+	} else {
-+		priv->stor_var = kvm->arch.pv.stor_var;
-+		priv->stor_base = kvm->arch.pv.stor_base;
-+		priv->handle = kvm_s390_pv_get_handle(kvm);
-+		priv->old_gmap_table = (unsigned long)kvm->arch.gmap->table;
-+		WRITE_ONCE(kvm->arch.gmap->guest_handle, 0);
-+		if (s390_replace_asce(kvm->arch.gmap))
-+			res = -ENOMEM;
-+	}
-+
-+	if (res) {
- 		kfree(priv);
--		return -ENOMEM;
-+		return res;
- 	}
- 
- 	kvm_s390_destroy_lower_2g(kvm);
-@@ -464,6 +502,7 @@ static void kvm_s390_pv_mmu_notifier_release(struct mmu_notifier *subscription,
- {
- 	struct kvm *kvm = container_of(subscription, struct kvm, arch.pv.mmu_notifier);
- 	u16 dummy;
-+	int r;
- 
- 	/*
- 	 * No locking is needed since this is the last thread of the last user of this
-@@ -472,7 +511,9 @@ static void kvm_s390_pv_mmu_notifier_release(struct mmu_notifier *subscription,
- 	 * unregistered. This means that if this notifier runs, then the
- 	 * struct kvm is still valid.
- 	 */
--	kvm_s390_cpus_from_pv(kvm, &dummy, &dummy);
-+	r = kvm_s390_cpus_from_pv(kvm, &dummy, &dummy);
-+	if (!r && is_destroy_fast_available())
-+		kvm_s390_pv_deinit_vm_fast(kvm, &dummy, &dummy);
- }
- 
- static const struct mmu_notifier_ops kvm_s390_pv_mmu_notifier_ops = {
+>> drivers/accelerators/accel_sysfs.c:66:5: warning: no previous prototype for 'accel_sysfs_init' [-Wmissing-prototypes]
+      66 | int accel_sysfs_init(void)
+         |     ^~~~~~~~~~~~~~~~
+>> drivers/accelerators/accel_sysfs.c:91:6: warning: no previous prototype for 'accel_sysfs_destroy' [-Wmissing-prototypes]
+      91 | void accel_sysfs_destroy(void)
+         |      ^~~~~~~~~~~~~~~~~~~
+>> drivers/accelerators/accel_sysfs.c:105:16: warning: no previous prototype for 'accel_sysfs_minor_alloc' [-Wmissing-prototypes]
+     105 | struct device *accel_sysfs_minor_alloc(struct accel_minor *minor)
+         |                ^~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/accel_sysfs_init +66 drivers/accelerators/accel_sysfs.c
+
+    55	
+    56	/**
+    57	 * accel_sysfs_init - initialize sysfs helpers
+    58	 *
+    59	 * This is used to create the ACCEL class, which is the implicit parent of any
+    60	 * other top-level ACCEL sysfs objects.
+    61	 *
+    62	 * You must call accel_sysfs_destroy() to release the allocated resources.
+    63	 *
+    64	 * Return: 0 on success, negative error code on failure.
+    65	 */
+  > 66	int accel_sysfs_init(void)
+    67	{
+    68		int err;
+    69	
+    70		accel_class = class_create(THIS_MODULE, "accel");
+    71		if (IS_ERR(accel_class))
+    72			return PTR_ERR(accel_class);
+    73	
+    74		err = class_create_file(accel_class, &class_attr_version.attr);
+    75		if (err) {
+    76			class_destroy(accel_class);
+    77			accel_class = NULL;
+    78			return err;
+    79		}
+    80	
+    81		accel_class->devnode = accel_devnode;
+    82	
+    83		return 0;
+    84	}
+    85	
+    86	/**
+    87	 * accel_sysfs_destroy - destroys ACCEL class
+    88	 *
+    89	 * Destroy the ACCEL device class.
+    90	 */
+  > 91	void accel_sysfs_destroy(void)
+    92	{
+    93		if (IS_ERR_OR_NULL(accel_class))
+    94			return;
+    95		class_remove_file(accel_class, &class_attr_version.attr);
+    96		class_destroy(accel_class);
+    97		accel_class = NULL;
+    98	}
+    99	
+   100	static void accel_sysfs_release(struct device *dev)
+   101	{
+   102		kfree(dev);
+   103	}
+   104	
+ > 105	struct device *accel_sysfs_minor_alloc(struct accel_minor *minor)
+   106	{
+   107		const char *minor_str;
+   108		struct device *kdev;
+   109		int r;
+   110	
+   111		if (minor->type == ACCEL_MINOR_CONTROL)
+   112			minor_str = "ac_ControlD%d";
+   113		else
+   114			minor_str = "ac%d";
+   115	
+   116		kdev = kzalloc(sizeof(*kdev), GFP_KERNEL);
+   117		if (!kdev)
+   118			return ERR_PTR(-ENOMEM);
+   119	
+   120		device_initialize(kdev);
+   121		kdev->devt = MKDEV(ACCEL_MAJOR, minor->index);
+   122		kdev->class = accel_class;
+   123		kdev->type = &accel_sysfs_device_minor;
+   124		kdev->parent = minor->dev->dev;
+   125		kdev->release = accel_sysfs_release;
+   126		dev_set_drvdata(kdev, minor);
+   127	
+   128		r = dev_set_name(kdev, minor_str, minor->index);
+   129		if (r < 0)
+   130			goto err_free;
+   131	
+   132		return kdev;
+   133	
+   134	err_free:
+   135		put_device(kdev);
+   136		return ERR_PTR(r);
+   137	}
+   138	
+
 -- 
-2.37.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
