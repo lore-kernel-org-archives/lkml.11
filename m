@@ -2,94 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE7FC25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182DDC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbiHJKlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 06:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
+        id S231414AbiHJKmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 06:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiHJKlu (ORCPT
+        with ESMTP id S231339AbiHJKmD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 06:41:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0660E6B66C;
-        Wed, 10 Aug 2022 03:41:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 10 Aug 2022 06:42:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AF7C6C752
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 03:42:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660128121;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9bKhNJI7G6HPFM7ZC8g4f1RPMl031HWjaKYN/Cgan+A=;
+        b=aPCYH67JsBdv9GfUcuvyKc9JLniBAowtMQqE119GQlGvJO/QpQDYRNSSXmf3/Tj7U3ofY+
+        HAPiYY/CIRPuv+kmNxS618yXATk8vkX+FPRfwJxNhPEA7osOD8sTMZxFfJ8rBfme112x+H
+        5ixUqPMfKfD7ASQMzXeJ60VyVStf7so=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-187-vNqntwxVNh6f0s2lJnO8VQ-1; Wed, 10 Aug 2022 06:41:58 -0400
+X-MC-Unique: vNqntwxVNh6f0s2lJnO8VQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBF9611B7;
-        Wed, 10 Aug 2022 10:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA45BC433D6;
-        Wed, 10 Aug 2022 10:41:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660128108;
-        bh=UTgDPlLmDwf3UdAjiC20kp3vocuyG6ERqW53VpoUqWw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hkUhxpdTGKBCILjzQV8Q4xOSsJzF6VT3kayFmWnEWeMlSmjVOBO/Eu4TUWAEa2mZv
-         hpCqv3KSHJ/XeT9mgXydskDbLrrzGT23Vr/b4LiUgvU1eUwjxU+mGo1itlyFaxH5pB
-         Xk8t6MzBtLtuk6rTKccMTDNQyQ/Vz1xGVVpCNn30=
-Date:   Wed, 10 Aug 2022 12:41:45 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Szuying Chen <chensiying21@gmail.com>
-Cc:     mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
-        michael.jamet@intel.com, YehezkelShB@gmail.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yd_Tseng@asmedia.com.tw, Chloe_Chen@asmedia.com.tw,
-        Richard_Hsu@asmedia.com.tw
-Subject: Re: [PATCH] thunderbolt: thunderbolt: add vendor's NVM formats
-Message-ID: <YvOLacO4H3ObAGL3@kroah.com>
-References: <20220810101743.11214-1-chensiying21@gmail.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 91AFC2999B2D;
+        Wed, 10 Aug 2022 10:41:57 +0000 (UTC)
+Received: from gshan.redhat.com (vpn2-54-77.bne.redhat.com [10.64.54.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F1D304050067;
+        Wed, 10 Aug 2022 10:41:52 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, fweimer@redhat.com,
+        shan.gavin@gmail.com, maz@kernel.org, andrew.jones@linux.dev,
+        mathieu.desnoyers@efficios.com, pbonzini@redhat.com,
+        yihyu@redhat.com, seanjc@google.com, oliver.upton@linux.dev
+Subject: [PATCH v2 0/2] kvm/selftests: Two rseq_test fixes
+Date:   Wed, 10 Aug 2022 18:41:12 +0800
+Message-Id: <20220810104114.6838-1-gshan@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810101743.11214-1-chensiying21@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 06:17:43PM +0800, Szuying Chen wrote:
-> The patch add tb_nvm_quirks() contain an array that has functions
-> pointers to tb_nvm_vendor_apply().
-> And tb_nvm_vendor_apply() that recognize supported vendor works in one
-> of the following cases:
-> Case NvmUpgradeSuppport: enable nvm's attribute by setting
-> no_nvm_upgrade flag to create nvm_authenticate file node.
-> Case NvmAdd:add active/non-active NVM devices.
-> Case NvmWrite:update firmware to non-ative NVM device.
-> 
-> Signed-off-by: Szuying Chen <chensiying21@gmail.com>
-> ---
->  drivers/thunderbolt/nvm.c    | 59 ++++++++++++++----------------------
->  drivers/thunderbolt/switch.c | 19 +++++++-----
->  drivers/thunderbolt/tb.h     | 18 +++++++----
->  3 files changed, 46 insertions(+), 50 deletions(-)
-> 
-> diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
-> index d5f283889da8..2aae8b3fa5dc 100644
-> --- a/drivers/thunderbolt/nvm.c
-> +++ b/drivers/thunderbolt/nvm.c
-> @@ -14,6 +14,7 @@
->  #include "tb.h"
-> 
->  static DEFINE_IDA(nvm_ida);
-> +
->  static int tb_switch_nvm_read(void *priv, unsigned int offset, void *val,
->  			      size_t bytes)
->  {
-> @@ -22,7 +23,6 @@ static int tb_switch_nvm_read(void *priv, unsigned int offset, void *val,
->  	int ret;
-> 
->  	pm_runtime_get_sync(&sw->dev);
-> -
->  	if (!mutex_trylock(&sw->tb->lock)) {
->  		ret = restart_syscall();
->  		goto out;
+There are two issues in current rseq_test implementation and the
+series intends to fix them:
 
-These are odd whitespace changes that you do not discuss in your
-changelog, which means we can't take this.  Also, whitespace cleanups
-should be in a separate commit.
+- From glibc-2.35, rseq information is registered by TLS. It means
+  rseq_test is unable to register its own rseq information. PATCH[01]
+  fixes the issue by reusing "../rseq/rseq.c" to fetch TLS's rseq
+  information if possible.
 
-thanks,
+- sched_getcpu() relies on glibc's implementation and it can simply
+  returns the CPU ID cached in the rseq information. In this case,
+  it's pointless to compare the return value from sched_getcpu()
+  and that fetched from rseq information. PATCH[02] fixes the issue
+  by replacing sched_getcpu() with getcpu().
 
-greg k-h
+v1: https://lore.kernel.org/lkml/8c1f33b4-a5a1-fcfa-4521-36253ffa22c8@redhat.com/T/
+
+Changelog
+=========
+v2:
+  * Add "-ldl" to LDLIBS as Florian suggested.
+  * Reuse "../rseq/rseq.c" as Paolo/Mathieu/Sean suggested.
+  * Add comments to sys_getcpu() as Sean suggested.
+
+Gavin Shan (2):
+  KVM: selftests: Make rseq compatible with glibc-2.35
+  KVM: selftests: Use getcpu() instead of sched_getcpu() in rseq_test
+
+ tools/testing/selftests/kvm/Makefile    |  5 ++-
+ tools/testing/selftests/kvm/rseq_test.c | 60 ++++++++++++-------------
+ 2 files changed, 33 insertions(+), 32 deletions(-)
+
+-- 
+2.23.0
+
