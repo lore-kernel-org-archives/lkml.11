@@ -2,94 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D6EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 18:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9997BC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 18:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233352AbiHJSe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 14:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
+        id S232937AbiHJSf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 14:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233808AbiHJSeC (ORCPT
+        with ESMTP id S232335AbiHJSfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 14:34:02 -0400
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E4D8C025;
-        Wed, 10 Aug 2022 11:34:01 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 43E275806F4;
-        Wed, 10 Aug 2022 14:33:59 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute3.internal (MEProxy); Wed, 10 Aug 2022 14:33:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        colorremedies.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660156439; x=
-        1660160039; bh=s937p5S+ceUeuGttr8ilCz3uf4ZJwae9ficmCjs8F74=; b=a
-        NMKIxViWmetgN3koeks1gxsuPGBEYp6vfI1oIkwcxq5nVjr6dt5uX2SPqCIv+ytp
-        0dCgFrB13TluAJBVVakaxNkRZRTyDBvy0TQ/QXGsCN/kU/O9B/3lhEV+itpFGqOQ
-        JoW4EYo7K/8fco/N2FciiGon1/9MpymrzcGSLsmW+8e2wOmIicQzBVyBiIUwG0AT
-        tvv65YHVYJ/cLCJskw2QiGPsfYyBOtqRlsWaPDwhRZCDJqANFTMoiHqT8f3p5BE1
-        4jqjJYd5KDhFi7JB+3gnyY0/XZ1q4BLWcFMGF50DYXF8s6B32duwM9YmlW8wnUhm
-        AtNd5NiRHjhBVbRWZ9Irg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660156439; x=1660160039; bh=s937p5S+ceUeuGttr8ilCz3uf4ZJ
-        wae9ficmCjs8F74=; b=Sr7lag5wE7wLcDL52FWeJg1TXR9hMWX/ZaWoLGbk4+pc
-        ZxgtMWG0FmXZUiCHgnDnO175vswE961Q5uesBG9lA5gyTau3VVzPJTayINIs+14I
-        T8rrVKqgwvyP4kA2mBPgmVnN7pky1jP/bHsL3IaxjR1/AI0+qlJNKX99b/CsAWwM
-        g0zwGuJh8OzH5nBBQ6uSfFk0CcPCGZNheyzjQQJYAKIADfn9OT2kezgx98g4yq88
-        AVJxPtC1ziZiUJuQPPVXOM0Unoke4QapWewxtbkyHqyz6zLEpNiWXuq/FGBlNXvQ
-        OwbSgVD8gLrOMCTYnh/ImFXcEgzacxffYwMg4q/VCQ==
-X-ME-Sender: <xms:F_rzYqXVth2Y0QCBlQTMkH0N1JX10vibAR_NSeglcadxF1HnvXSypw>
-    <xme:F_rzYmlR3TxzE7L9ra93OciqpTFnquwB3zTVPig5ZwbzDsf4NsGf6rnDiwrXMwY4v
-    9TsNLfN7aTGt2dktLM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegvddguddvgecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdev
-    hhhrihhsucfouhhrphhhhidfuceolhhishhtshestgholhhorhhrvghmvgguihgvshdrtg
-    homheqnecuggftrfgrthhtvghrnhepgfdvueektdefgfefgfdtleffvdeileetgfefuddt
-    ffelueeiveeiveekhedtheeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomheplhhishhtshestgholhhorhhrvghmvgguihgvshdrtghomh
-X-ME-Proxy: <xmx:F_rzYuZXjNMWEjIMcz_Z6JH_qkj1Hbs5tgBhnP-W3MFuoCc-JWXGfg>
-    <xmx:F_rzYhV9perismQnBGilPn0hCmmz-RwJVy1JKyViw8VyDeY24jR2sA>
-    <xmx:F_rzYknkdljaHdKUVe3VG0TmVt0zQiRwWsZ2eXEEJumYs3jpabS96Q>
-    <xmx:F_rzYpzRdFGTt3qs8SkQ2Z1pX4El1tPIEClcI8v48TNTkeiYowSaSQ>
-Feedback-ID: i06494636:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 00DA91700083; Wed, 10 Aug 2022 14:33:58 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-811-gb808317eab-fm-20220801.001-gb808317e
+        Wed, 10 Aug 2022 14:35:51 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DD04F194
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 11:35:49 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id on14-20020a17090b1d0e00b001f842dd5e90so1176194pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 11:35:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=StV40VjCzIbs0ONKjYL2l7pJgoeJUydvC6NjtajotZM=;
+        b=TR2sVuwAFo5AhL42uNDy55fzgvtI1X0HYToqFodl8b4HADyhB+NrTON+kGuUDlJQYy
+         LNm8U/xv49HkfejxEiK1ITOeKtXfpbNxrVJxsCMA8EBgnSibCtvxJlf7YIb36PbYwDqv
+         3AaZJvVwNmuQTW+h222Tpyc5MEtA3RpmEJPGBMQVxumH0IlOdRPRGG2ZcSfHDyTJ585x
+         hzOkft2/U3k1srnhMDrW5upfvxZkQuJwqs2i5YJfu6EL/pRwvsYJsx9X1m+2of0ZassS
+         bIrMr3UlCEDgXJONNB4qSSJzPYfBPlP6//fPPkNGqC/kgsrgOYlKBO6fKN60Yzoumu5Y
+         2xZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=StV40VjCzIbs0ONKjYL2l7pJgoeJUydvC6NjtajotZM=;
+        b=v99m7CTqF9GM6YGXkVMn5Ljb25My4oadnG2pBN53kK1z8kUzJpKtzhBpsPrRXYdB9i
+         A9Yxu0lnuTxwa3hoG98HsjAN0cOjyI1ViiBfGD35YaLIGxWTZteOfBFVIYPHMium02R2
+         BGLV4eFBSyTligIp0h5JRt8hN3C9a7I7bFVONVriajjjbTQo2GnkjhT1I3+dhw68KHYF
+         Fq6nIQtcvC/BJ5r0/+pWpggyzoxFxlONubHtgnTXVqoF3R9FYp8FN4kSBkTrXnhAar3E
+         SlWki9z3nHSJPd6BFj1zzzZHdiipMb5Wx2oWmBcBY7iDlk4OL0AgMhJvGEhAIXI8VQGP
+         UGTg==
+X-Gm-Message-State: ACgBeo2Iqci15I58WXUFO99N0tLV1PKUQ3tRoK6ykwCWHxzk13IqrV01
+        /ci3f2IK1IQvbjXYTHo0XG43d0fcldqIsjGKjxQ=
+X-Google-Smtp-Source: AA6agR6l7NljeD7dazk/n6QicN0MZ8KfMR4WFppBfLuOpPBC8NjVf0HWlA34iD+MLsLCNlhmPyP75F72gs62DN568uk=
+X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
+ (user=willmcvicker job=sendgmr) by 2002:a63:1648:0:b0:41a:49f9:77ae with SMTP
+ id 8-20020a631648000000b0041a49f977aemr23985662pgw.377.1660156549486; Wed, 10
+ Aug 2022 11:35:49 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 18:35:34 +0000
+In-Reply-To: <20220810183536.1630940-1-willmcvicker@google.com>
+Message-Id: <20220810183536.1630940-2-willmcvicker@google.com>
 Mime-Version: 1.0
-Message-Id: <2220d403-e443-4e60-b7c3-d149e402c13e@www.fastmail.com>
-In-Reply-To: <YvPvghdv6lzVRm/S@localhost.localdomain>
-References: <e38aa76d-6034-4dde-8624-df1745bb17fc@www.fastmail.com>
- <YvPvghdv6lzVRm/S@localhost.localdomain>
-Date:   Wed, 10 Aug 2022 14:33:38 -0400
-From:   "Chris Murphy" <lists@colorremedies.com>
-To:     "Josef Bacik" <josef@toxicpanda.com>
-Cc:     "Btrfs BTRFS" <linux-btrfs@vger.kernel.org>,
-        Linux-RAID <linux-raid@vger.kernel.org>,
-        linux-block@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: stalling IO regression in linux 5.12
-Content-Type: text/plain
+References: <20220810183536.1630940-1-willmcvicker@google.com>
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [PATCH v2 1/2] PCI: dwc: drop dependency on ZONE_DMA32
+From:   Will McVicker <willmcvicker@google.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will McVicker <willmcvicker@google.com>
+Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
+        kernel test robot <lkp@intel.com>,
+        "Isaac J . Manjarres" <isaacmanjarres@google.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Re-work the msi_msg DMA allocation logic to use dma_alloc_coherent()
+which uses the coherent DMA mask to try and return an allocation within
+the DMA mask limits. This allows kernel configurations that disable
+ZONE_DMA32 to continue supporting a 32-bit DMA mask. Without this patch,
+the PCIe host device will fail to probe when ZONE_DMA32 is disabled.
 
+Fixes: 35797e672ff0 ("PCI: dwc: Fix MSI msi_msg DMA mapping")
+Reported-by: Isaac J. Manjarres <isaacmanjarres@google.com>
+Signed-off-by: Will McVicker <willmcvicker@google.com>
+---
+ .../pci/controller/dwc/pcie-designware-host.c | 23 ++++++++-----------
+ 1 file changed, 9 insertions(+), 14 deletions(-)
 
-On Wed, Aug 10, 2022, at 1:48 PM, Josef Bacik wrote:
-
-> To help narrow this down can you disable any IO controller you've got enabled
-> and see if you can reproduce?  If you can sysrq+w is super helpful as it'll
-> point us in the next direction to look.  Thanks,
-
-I'm not following, sorry. I can boot with systemd.unified_cgroup_hierarchy=0 to make sure it's all off, but we're not using an IO cgroup controllers specifically as far as I'm aware.
-
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index 7746f94a715f..8f2222f51671 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -272,9 +272,9 @@ static void dw_pcie_free_msi(struct dw_pcie_rp *pp)
+ 		struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+ 		struct device *dev = pci->dev;
+ 
+-		dma_unmap_page(dev, pp->msi_data, PAGE_SIZE, DMA_FROM_DEVICE);
+-		if (pp->msi_page)
+-			__free_page(pp->msi_page);
++		dma_free_coherent(dev, PAGE_SIZE, pp->msi_page, pp->msi_data);
++		pp->msi_data = 0;
++		pp->msi_page = NULL;
+ 	}
+ }
+ 
+@@ -375,22 +375,17 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
+ 						    dw_chained_msi_isr, pp);
+ 	}
+ 
+-	ret = dma_set_mask(dev, DMA_BIT_MASK(32));
++	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		dev_warn(dev, "Failed to set DMA mask to 32-bit. Devices with only 32-bit MSI support may not work properly\n");
+ 
+-	pp->msi_page = alloc_page(GFP_DMA32);
+-	pp->msi_data = dma_map_page(dev, pp->msi_page, 0,
+-				    PAGE_SIZE, DMA_FROM_DEVICE);
+-	ret = dma_mapping_error(dev, pp->msi_data);
+-	if (ret) {
+-		dev_err(pci->dev, "Failed to map MSI data\n");
+-		__free_page(pp->msi_page);
+-		pp->msi_page = NULL;
++	pp->msi_page = dma_alloc_coherent(dev, PAGE_SIZE, &pp->msi_data,
++					  GFP_KERNEL);
++	if (!pp->msi_page) {
++		dev_err(dev, "Failed to alloc and map MSI data\n");
+ 		pp->msi_data = 0;
+ 		dw_pcie_free_msi(pp);
+-
+-		return ret;
++		return -ENOMEM;
+ 	}
+ 
+ 	return 0;
 -- 
-Chris Murphy
+2.37.1.559.g78731f0fdb-goog
+
