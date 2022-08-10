@@ -2,95 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10468C25B0C
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5142C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbiHJIZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46146 "EHLO
+        id S231717AbiHJIZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231708AbiHJIZp (ORCPT
+        with ESMTP id S231461AbiHJIZW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:25:45 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BC826113;
-        Wed, 10 Aug 2022 01:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660119944; x=1691655944;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=5ATw0VTrbYx/w/efXJbAdex8AhTtbEgFmRBtW+ZH5hI=;
-  b=bGc3rXDxyor+pjYx78m+WvV/XBGnhcD/8sqflFk/NPmo3KfUf5IWO+uj
-   K/YTPVRS9cVIpKXN1yRmFmrhCp4xMKkFU5iAlJz2qyXpr4YcdFyCMa52Q
-   NOkRiMvYYvwhZaBrlCWI/Ed8wyOesAVEiMIC7qeGrr0HheLjApi2cUU6g
-   bZiUwqs6a05hGEQ29PhDLVqiE828tUsR2PIcZG/DxylG2KP/WzxIC5usH
-   jpAq92PM7/dVMq4l+sGeiHCrHk7OETsKzYh+Noazve6vbZAaenUn89rt7
-   JLA/4N6WkHtty8tv2OWTxCArJoUPknB7NR6de9QlJFKCSmZFW1KHi+d92
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="316975943"
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="316975943"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 01:25:44 -0700
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="664801047"
-Received: from vaslau-mobl.ger.corp.intel.com ([10.252.62.177])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 01:25:42 -0700
-Date:   Wed, 10 Aug 2022 11:26:05 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/2] serial: pic32_uart: Utilize
- uart_console_enabled()
-In-Reply-To: <20220806225643.40897-1-andriy.shevchenko@linux.intel.com>
-Message-ID: <7fb01d46-b67-2eff-d54d-c96b079dc5c@linux.intel.com>
-References: <20220806225643.40897-1-andriy.shevchenko@linux.intel.com>
+        Wed, 10 Aug 2022 04:25:22 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D21A11822
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:25:21 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z20so16171776edb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:25:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=nbqAsyz9z6bB6QA6vWSugiDElg43hTOGFFgfozHm3AQ=;
+        b=qwjPN5kJN+YqUEgcEd5RNxjvkJufZEP1pmxUrSsk9g0CQb2zCisfSy4qWjPVl6ZxPn
+         46SiZDV3JoVt1zHLPxRWFIgr/doPX5EGgwFX4J7/nf2LkVn7ilanCp72hmN7aZbLCXWh
+         XJBtM2S0Pf1stUCMZQ+utGYN1yov7EMdiWe32dlMRKuV25zrH6ueFOvz6V98QbOsjPWT
+         ETWrbBj0/px4ddZNr1p+SJgym/JahUr+nVRv+eVsjtMiTcQZTaoB6IVDGVZbO2cUb7zo
+         yRHJkTX5grd4g1ryDa5M/1u5ywtEcwxBB1xiRyAO1CPyjTeiK6Rm4yS8QOVDG06ZfM/9
+         gP7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=nbqAsyz9z6bB6QA6vWSugiDElg43hTOGFFgfozHm3AQ=;
+        b=Op93G+wfOK/Sz4JL8Ml28YDAXAis+HWNbHt6R7wi5x/nkGe29e1eC1uVSPvc3lvBR2
+         yg/5DFcHcAUu2qhFlyq8+WysB8pkbKZnANDTUfP/Ev0IX8CIEQpZPKZZM1yduGVf7jTK
+         tk4FiWxU2zb6CGJX+F8IqfNEitvI+BOHU3OvUzz9eFXtMCmXkNjnLuVsx4mjHqCc0kim
+         /XiEcOBcB5dVJAymUrzrH2QI7wwl18149TbIEmPUzJwVvYQ+Tu8/YhAuDZpFi1fKZyYX
+         c3rCgKEqBJJZvjZ3diGVFEChAdcPpDewV4wwNbZwPTHqLaNTwKTgT7PtWCoES+JYO+vu
+         1A1Q==
+X-Gm-Message-State: ACgBeo1WJpF6TjzcLoM3DDyJvm+PTeOfMdriBoyIpifyyLDy1bIWKoMG
+        J2+9fcx2d5QHrW0kQTO9yqbXDvLnjtV3bbzx3Hc56Q==
+X-Google-Smtp-Source: AA6agR5PFq+2RmZqmuJGsirwLqVekGzCqhnVl5AAzlCaTRPW3O/gngZbz2svEcUJu7W/0M23IurHskzsV1MmdYog28o=
+X-Received: by 2002:aa7:da93:0:b0:43d:1d9d:1e5 with SMTP id
+ q19-20020aa7da93000000b0043d1d9d01e5mr25868835eds.55.1660119919628; Wed, 10
+ Aug 2022 01:25:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-726611098-1660119969=:1755"
+References: <20220809175512.853274191@linuxfoundation.org>
+In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 10 Aug 2022 13:55:08 +0530
+Message-ID: <CA+G9fYvLSEb8Or+vM+vSmopny7AAWsudzMTjeka-WdsLYSeEVw@mail.gmail.com>
+Subject: Re: [PATCH 5.10 00/23] 5.10.136-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, 9 Aug 2022 at 23:34, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.10.136 release.
+> There are 23 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.136-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
---8323329-726611098-1660119969=:1755
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+Results from Linaro's test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-On Sun, 7 Aug 2022, Andy Shevchenko wrote:
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-> The serial core already provides a helper to check if the given port
-> is an enabled console. Utilize it instead of open coded variant.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+## Build
+* kernel: 5.10.136-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.10.y
+* git commit: cf6f87a93412e15617900d8213013eb3a6ca08ed
+* git describe: v5.10.135-24-gcf6f87a93412
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10.135-24-gcf6f87a93412
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+## No test Regressions (compared to v5.10.133-168-g4fd9cb57a3f5)
 
--- 
- i.
+## No metric Regressions (compared to v5.10.133-168-g4fd9cb57a3f5)
 
-> ---
->  drivers/tty/serial/pic32_uart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-> index f418f1de66b3..1562c2a48467 100644
-> --- a/drivers/tty/serial/pic32_uart.c
-> +++ b/drivers/tty/serial/pic32_uart.c
-> @@ -943,7 +943,7 @@ static int pic32_uart_probe(struct platform_device *pdev)
->  	}
->  
->  #ifdef CONFIG_SERIAL_PIC32_CONSOLE
-> -	if (uart_console(port) && (pic32_console.flags & CON_ENABLED)) {
-> +	if (uart_console_enabled(port)) {
->  		/* The peripheral clock has been enabled by console_setup,
->  		 * so disable it till the port is used.
->  		 */
-> 
+## No test Fixes (compared to v5.10.133-168-g4fd9cb57a3f5)
 
---8323329-726611098-1660119969=:1755--
+## No metric Fixes (compared to v5.10.133-168-g4fd9cb57a3f5)
+
+## Test result summary
+total: 112413, pass: 99753, fail: 530, skip: 11427, xfail: 703
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 301 total, 301 passed, 0 failed
+* arm64: 62 total, 60 passed, 2 failed
+* i386: 52 total, 50 passed, 2 failed
+* mips: 45 total, 45 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 51 total, 51 passed, 0 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 55 total, 53 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
