@@ -2,72 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772CEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B49DC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 16:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbiHJQEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 12:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
+        id S233314AbiHJQEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 12:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233310AbiHJQD5 (ORCPT
+        with ESMTP id S233309AbiHJQEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 12:03:57 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8493E6580A;
-        Wed, 10 Aug 2022 09:03:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=ATWjZwDzLd1FXTxu36i7ECb5X4VhABeeCLXPqvahL08=;
-        t=1660147436; x=1661357036; b=ppqE0xXY3EffjWZqBNoU7T+g3g2T3n+8KYzJUWL1sNQ95fZ
-        PyDvuRaDFLmTKwfE9SaObb5OKip1oJdYKUOB0p5uvavnXLAyuZFrvc8NQW60zAQnqPJzkpXJwzLOV
-        OVqgRL22ZSmKoZ1uHX8ic6OjZb33gsBtpKlPq9wXV3wcfgYF9RUhm1i0Nk4mh7EQGKAHQXSTGpnHT
-        65Pr/DOSpR0kldRuztn1lpGQRCK1sSWLAlFQ6czIuH/3Lom2ILKGRxRyQGrqGJ/7cVg1NU+FocXZ6
-        KiB0/zdNbGTF0zMJi+P1PtT+mjkjmZ3YhLNtRkrgsYMWwokh+cixq/7/zZrGKzWg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oLoBH-004F4D-0T;
-        Wed, 10 Aug 2022 18:03:39 +0200
-Message-ID: <bfc5f964d8dadd6378f2da5b3b6ef4bc9fb847c2.camel@sipsolutions.net>
-Subject: Re: [PATCH v5 1/5] sysfs: Add attribute info for
- /sys/devices/.../coredump_disabled
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Manish Mandlik <mmandlik@google.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        marcel@holtmann.org, luiz.dentz@gmail.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-bluetooth@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Won Chung <wonchung@google.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 10 Aug 2022 18:03:37 +0200
-In-Reply-To: <20220810085753.v5.1.I5622b2a92dca4d2703a0f747e24f3ef19303e6df@changeid>
-References: <20220810085753.v5.1.I5622b2a92dca4d2703a0f747e24f3ef19303e6df@changeid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Wed, 10 Aug 2022 12:04:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4680C792F5
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 09:04:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6D8761199
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 16:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9004FC433D6;
+        Wed, 10 Aug 2022 16:04:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660147460;
+        bh=Ji77jQb/mPc8cT+aCiNaXW8eudUIuT0bN1cvWw8nyKQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=R/LwNnziA2wEz2jyx27fiVxvdrlUtIn+frWrYj0cYcQoGTt/vKVMJ5zaq1cYLumCd
+         lNCMQL9SW+gqg34+a92f+gkhuxTrez6bs8N/ppsc3C8qQPZpxHLaOrwjuY/Hp0vQKD
+         CT6q2BmmX/3TdUZLkODJZ+mkYEbqoPD/nVRxN3lKZ23W8xkGgLICffPV+otViHPpDK
+         cMpDSmGwjPKKaoXpOw00JrH8ygKmxPQ8qaCAdfbY+VX/Y43o7jDfJDy+jMfuPS9wPb
+         KNUlqGIym13ZkNofLLzpfaoRU50TYTBtzro1G5BCJ68IFs2dEas7cNoq67MTRG8aRa
+         eg7yKSGflL25Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org
+In-Reply-To: <20220809142738.1.I91625242f137c707bb345c51c80c5ecee02eeff3@changeid>
+References: <20220809142738.1.I91625242f137c707bb345c51c80c5ecee02eeff3@changeid>
+Subject: Re: [PATCH] regulator: core: Fix missing error return from regulator_bulk_get()
+Message-Id: <166014745930.381561.14131467318227618078.b4-ty@kernel.org>
+Date:   Wed, 10 Aug 2022 17:04:19 +0100
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-fe10a
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-10 at 09:00 -0700, Manish Mandlik wrote:
-> This patch adds the specification for /sys/devices/.../coredump_disabled
-> attribute which allows the userspace to enable/disable devcoredump for a
-> particular device and drivers can use it to enable/disable functionality
-> accordingly. It is available when the CONFIG_DEV_COREDUMP is enabled and
-> driver has implemented the .coredump() callback.
->=20
+On Tue, 9 Aug 2022 14:27:45 -0700, Douglas Anderson wrote:
+> In commit 6eabfc018e8d ("regulator: core: Allow specifying an initial
+> load w/ the bulk API") I changed the error handling but had a subtle
+> that caused us to always return no error even if there was an
+> error. Fix it.
+> 
+> 
 
-It would be nice to say _why_? What problem does this solve? You could
-just create the dump and discard it, instead, for example?
+Applied to
 
-johannes
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+
+Thanks!
+
+[1/1] regulator: core: Fix missing error return from regulator_bulk_get()
+      commit: d511e8a7e850db567cd7f633288aa96a19508e5b
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
