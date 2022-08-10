@@ -2,131 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A139DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20630C25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbiHJMGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 08:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
+        id S231740AbiHJMNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 08:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232135AbiHJMGr (ORCPT
+        with ESMTP id S229476AbiHJMNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 08:06:47 -0400
-X-Greylist: delayed 376 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 05:06:44 PDT
-Received: from proxmox-new.maurer-it.com (proxmox-new.maurer-it.com [94.136.29.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D508D13D59;
-        Wed, 10 Aug 2022 05:06:44 -0700 (PDT)
-Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
-        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id 19E5A43DAD;
-        Wed, 10 Aug 2022 14:00:26 +0200 (CEST)
-Message-ID: <96e0749a-6036-c728-d224-b812caadcd1b@proxmox.com>
-Date:   Wed, 10 Aug 2022 14:00:23 +0200
+        Wed, 10 Aug 2022 08:13:50 -0400
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC1E6AA08;
+        Wed, 10 Aug 2022 05:13:48 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id B914F43E374;
+        Wed, 10 Aug 2022 08:13:47 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 8t9Hz8TKmCkp; Wed, 10 Aug 2022 08:13:47 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 299A343E476;
+        Wed, 10 Aug 2022 08:13:47 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 299A343E476
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1660133627;
+        bh=0eurnLuzGZ3qRL2RZDsSm+WisnojruHn4tv9O7FmRX8=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=QQxEv68RxQrIJUHel8B5NqVQiSRYnTSX4SMexm5Stu1Q6lDuB3Ld3kNF2nGXeiFaz
+         0IKoFvLzBOXNgbT2unYVeCTDOIH8xQ0HOrNsOldtTX8qr4iF1NDl5/DKOD8/v4HMR6
+         PMivxdTdid9OgK3LPHZRDRAgQ6N2N8CoRdQKvT3w2ir1Z+XqJVN6Xk/Vov3cnRjxLc
+         hShyheT/68e7en/rTTa1gcsdqJPqxrUFbFOT1k3NwvCvbbnIXz+kBNi5fQe2/+okH8
+         MSKifwpchrzhRFkCX6bsVwD8NNb/dq3SzM4HXydzMHSr+yZb10QsTDgSme9/sFNQHO
+         +kKVcxxeW2KEA==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id mEyeHWUF-4Si; Wed, 10 Aug 2022 08:13:47 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 10D1543E88F;
+        Wed, 10 Aug 2022 08:13:47 -0400 (EDT)
+Date:   Wed, 10 Aug 2022 08:13:46 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Gavin Shan <gshan@redhat.com>, shuah <shuah@kernel.org>,
+        Florian Weimer <fweimer@redhat.com>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-kselftest <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>, maz <maz@kernel.org>,
+        oliver upton <oliver.upton@linux.dev>,
+        andrew jones <andrew.jones@linux.dev>,
+        yihyu <yihyu@redhat.com>, shan gavin <shan.gavin@gmail.com>
+Message-ID: <1478461718.353.1660133626967.JavaMail.zimbra@efficios.com>
+In-Reply-To: <YvLT1fd8ddybF5Uw@google.com>
+References: <20220809060627.115847-1-gshan@redhat.com> <8735e6ncxw.fsf@oldenburg.str.redhat.com> <7844e3fa-e49e-de75-e424-e82d3a023dd6@redhat.com> <87o7wtnay6.fsf@oldenburg.str.redhat.com> <616d4de6-81f6-9d14-4e57-4a79fec45690@redhat.com> <797306043.114963.1660047714774.JavaMail.zimbra@efficios.com> <1014177394.115022.1660052656961.JavaMail.zimbra@efficios.com> <YvLT1fd8ddybF5Uw@google.com>
+Subject: Re: [PATCH 1/2] KVM: selftests: Make rseq compatible with
+ glibc-2.35
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101
- Thunderbird/104.0
-Subject: Re: [PATCH v3 00/13] SMM emulation and interrupt shadow fixes
-Content-Language: en-GB
-To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sean Christopherson <seanjc@google.com>, x86@kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-References: <20220803155011.43721-1-mlevitsk@redhat.com>
-From:   Thomas Lamprecht <t.lamprecht@proxmox.com>
-In-Reply-To: <20220803155011.43721-1-mlevitsk@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4372 (ZimbraWebClient - FF103 (Linux)/8.8.15_GA_4372)
+Thread-Topic: selftests: Make rseq compatible with glibc-2.35
+Thread-Index: 2L3u2zUliaiWmqLcWHUzldusZle8bA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/08/2022 17:49, Maxim Levitsky wrote:
-> This patch series is a result of long debug work to find out why
-> sometimes guests with win11 secure boot
-> were failing during boot.
+----- On Aug 9, 2022, at 5:38 PM, Sean Christopherson seanjc@google.com wrote:
+
+> On Tue, Aug 09, 2022, Mathieu Desnoyers wrote:
+>> ----- On Aug 9, 2022, at 8:21 AM, Mathieu Desnoyers
+>> mathieu.desnoyers@efficios.com wrote:
+>> 
+>> > ----- Gavin Shan <gshan@redhat.com> wrote:
+>> >> Hi Florian,
+>> >> 
+>> >> On 8/9/22 5:16 PM, Florian Weimer wrote:
+>> >> >>> __builtin_thread_pointer doesn't work on all architectures/GCC
+>> >> >>> versions.
+>> >> >>> Is this a problem for selftests?
+>> >> >>>
+>> >> >>
+>> >> >> It's a problem as the test case is running on all architectures. I think I
+>> >> >> need introduce our own __builtin_thread_pointer() for where it's not
+>> >> >> supported: (1) PowerPC  (2) x86 without GCC 11
+>> >> >>
+>> >> >> Please let me know if I still have missed cases where
+>> >> >> __buitin_thread_pointer() isn't supported?
+>> >> > 
+>> >> > As far as I know, these are the two outliers that also have rseq
+>> >> > support.  The list is a bit longer if we also consider non-rseq
+>> >> > architectures (csky, hppa, ia64, m68k, microblaze, sparc, don't know
+>> >> > about the Linux architectures without glibc support).
+>> >> > 
+>> >> 
+>> >> For kvm/selftests, there are 3 architectures involved actually. So we
+>> >> just need consider 4 cases: aarch64, x86, s390 and other. For other
+>> >> case, we just use __builtin_thread_pointer() to maintain code's
+>> >> integrity, but it's not called at all.
+>> >> 
+>> >> I think kvm/selftest is always relying on glibc if I'm correct.
+>> > 
+>> > All those are handled in the rseq selftests and in librseq. Why duplicate all
+>> > that logic again?
+>> 
+>> More to the point, considering that we have all the relevant rseq registration
+>> code in tools/testing/selftests/rseq/rseq.c already, and the relevant thread
+>> pointer getter code in tools/testing/selftests/rseq/rseq-*thread-pointer.h,
+>> is there an easy way to get test applications in tools/testing/selftests/kvm
+>> and in tools/testing/selftests/rseq to share that common code ?
+>> 
+>> Keeping duplicated compatibility code is bad for long-term maintainability.
 > 
-> During writing a unit test I found another bug, turns out
-> that on rsm emulation, if the rsm instruction was done in real
-> or 32 bit mode, KVM would truncate the restored RIP to 32 bit.
-> 
-> I also refactored the way we write SMRAM so it is easier
-> now to understand what is going on.
-> 
-> The main bug in this series which I fixed is that we
-> allowed #SMI to happen during the STI interrupt shadow,
-> and we did nothing to both reset it on #SMI handler
-> entry and restore it on RSM.
-> 
-> V3: addressed most of the review feedback from Sean (thanks!)
-> 
-> Best regards,
-> 	Maxim Levitsky
-> 
-> Maxim Levitsky (13):
->   bug: introduce ASSERT_STRUCT_OFFSET
->   KVM: x86: emulator: em_sysexit should update ctxt->mode
->   KVM: x86: emulator: introduce emulator_recalc_and_set_mode
->   KVM: x86: emulator: update the emulation mode after rsm
->   KVM: x86: emulator: update the emulation mode after CR0 write
->   KVM: x86: emulator/smm: number of GPRs in the SMRAM image depends on
->     the image format
->   KVM: x86: emulator/smm: add structs for KVM's smram layout
->   KVM: x86: emulator/smm: use smram structs in the common code
->   KVM: x86: emulator/smm: use smram struct for 32 bit smram load/restore
->   KVM: x86: emulator/smm: use smram struct for 64 bit smram load/restore
->   KVM: x86: SVM: use smram structs
->   KVM: x86: SVM: don't save SVM state to SMRAM when VM is not long mode
->     capable
->   KVM: x86: emulator/smm: preserve interrupt shadow in SMRAM
-> 
->  arch/x86/include/asm/kvm_host.h |  11 +-
->  arch/x86/kvm/emulate.c          | 305 +++++++++++++++++---------------
->  arch/x86/kvm/kvm_emulate.h      | 223 ++++++++++++++++++++++-
->  arch/x86/kvm/svm/svm.c          |  30 ++--
->  arch/x86/kvm/vmx/vmcs12.h       |   5 +-
->  arch/x86/kvm/vmx/vmx.c          |   4 +-
->  arch/x86/kvm/x86.c              | 175 +++++++++---------
->  include/linux/build_bug.h       |   9 +
->  8 files changed, 497 insertions(+), 265 deletions(-)
-> 
+> Any reason not to simply add tools/lib/rseq.c and then expose a helper to get
+> the
+> registered rseq struct?
 
-FWIW, we tested the v2 on 5.19 and backported it to 5.15 with minimal adaption
-required (mostly unrelated context change) and now also updated that backport
-to the v3 of this patch series.
+Indeed, moving rseq.c to tools/lib/ would allow building a .so from any selftest
+which needs to use it.
 
-Our reproducer got fixed with either, but v3 now also avoids triggering logs like:
+And we could move the relevant rseq helper header files to tools/include/rseq/*
+as well.
 
- Jul 29 04:59:18 mits4 QEMU[2775]: kvm: Could not update PFLASH: Stale file handle
- Jul 29 04:59:18 mits4 QEMU[2775]: kvm: Could not update PFLASH: Stale file handle
- Jul 29 07:15:46 mits4 kernel: kvm: vcpu 1: requested 191999 ns lapic timer period limited to 200000 ns
- Jul 29 11:06:31 mits4 kernel: kvm: vcpu 1: requested 105786 ns lapic timer period limited to 200000 ns
+Thoughts ?
 
-which happened earlier (not sure how deep that correlates with the v2 vs. v3, but
-it stuck out, so mentioning for sake of completeness).
+Thanks,
 
-For the backport to 5.15 we skipped "KVM: x86: emulator/smm: number of GPRs in
-the SMRAM image depends on the image format", as that constant was there yet and
-the actual values stayed the same for our case FWICT and adapted to slight context
-changes for the others.
+Mathieu
 
-So, the approach seems to fix our issue and we are already rolling out a kernel
-to users for testing and got positive feedback there too.
-
-With above in mind:
-
-Tested-by: Thomas Lamprecht <t.lamprecht@proxmox.com>
-
-It would be also great to see this backported to still supported upstream stable kernels
-from 5.15 onwards, as there the TDP MMU got by default enabled, and that is at least
-increasing the chance of our reproducer to trigger dramatically.
-
-thx & cheers
-Thomas
-
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
