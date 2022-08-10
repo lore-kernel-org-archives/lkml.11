@@ -2,114 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE57C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 05:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2185CC25B0C
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 05:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbiHJF1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 01:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
+        id S230412AbiHJFaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 01:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230375AbiHJF1L (ORCPT
+        with ESMTP id S229693AbiHJFaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 01:27:11 -0400
-Received: from qproxy3-pub.mail.unifiedlayer.com (qproxy3-pub.mail.unifiedlayer.com [67.222.38.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1787A504
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 22:27:08 -0700 (PDT)
-Received: from gproxy1-pub.mail.unifiedlayer.com (gproxy1-pub.mail.unifiedlayer.com [69.89.25.95])
-        by qproxy3.mail.unifiedlayer.com (Postfix) with ESMTP id A743D8032D1B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 05:26:56 +0000 (UTC)
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by progateway3.mail.pro1.eigbox.com (Postfix) with ESMTP id 2090C10048173
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 05:26:29 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id LeEeo3sccWBOVLeEeof5Gg; Wed, 10 Aug 2022 05:26:29 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=cpReL30i c=1 sm=1 tr=0 ts=62f34185
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=biHskzXt2R4A:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=d9BAYtztiwhbRRZdhnnKwe4+DEmEOoBZIyTo1YGKWzE=; b=oDnXelhDZ+p/2slAmNdL9mCKun
-        OMMRi+w7+AdyR6lMkf3DL0YA5d3Zl9FSG45nhrOYNLiQ/gIUbLrRx6/4WoTrq7JqXvXbk1Awo4pA5
-        gsaH4dvJtJ6odIlAX1GfS6p2on/cfLm7x2/Cdysj9qq3TWlz8AVZiZOIJGGFIMEAWDGntcx2nsjYC
-        VwbtNhUnuY/E+oQIPFv3Fq14jkczA9/lwEt/uONyPejaRJFSdUP5w//4AQ0HHTCjLYm2tB95p673G
-        jjhuxR6mm/lIkl0G/7XgM+LrumTgNFbJkgSvfn58GPmv8zx8ie534VO6Sbk3jKsX1fAjH5MA5e2+d
-        Xat2zYTQ==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:39062 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1oLeEc-000sxp-Tm;
-        Tue, 09 Aug 2022 23:26:26 -0600
-Subject: Re: [PATCH 5.19 00/21] 5.19.1-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220809175513.345597655@linuxfoundation.org>
-In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <743851e1-1e9b-b213-f986-df8e5e5f0778@w6rz.net>
-Date:   Tue, 9 Aug 2022 22:26:24 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 10 Aug 2022 01:30:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D53C1AF06;
+        Tue,  9 Aug 2022 22:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2CE5B81A8C;
+        Wed, 10 Aug 2022 05:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 441B5C433D6;
+        Wed, 10 Aug 2022 05:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660109415;
+        bh=DAKEdeVaJXKEjwOEM9FsGCS+nd5YgZPqRRBOqMJXYf0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hQwJ/I7zaw1gg62+i/RZMdfh1oXgtlCE8wz0vwALjV0i1kOtYY/eO7nk433Hmfskc
+         DoJGsyA/edBywnMAZExNUGZTqJSAHk1pY1UommcuK/SsPfujJbtJN2bkNpLAcOrd+g
+         fcqa3pHPhLBsI6vmKsIWkPo+M8aApZ0poB+Yu/sCPd8JrkkPnZRtJ1JSJOYDpXI/un
+         AMGI+vp1T7hd3NXjxuCssmxC6lsirQPYBPBppxqPB0EuU8xoN5AuSfVG6lkgXQOicg
+         ih38KZJV7i4HSRmM/ftbxP8cSh6ZLeTwW0r0xM2BG5SVu0SjTIoStNT1jrs5WrYnpp
+         HrRF8yyHObsvA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 171ABC43141;
+        Wed, 10 Aug 2022 05:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1oLeEc-000sxp-Tm
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:39062
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 net 0/4] Do not use RT_TOS for IPv6 flowlabel
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166010941509.28354.4070205529525758568.git-patchwork-notify@kernel.org>
+Date:   Wed, 10 Aug 2022 05:30:15 +0000
+References: <20220805191906.9323-1-matthias.may@westermo.com>
+In-Reply-To: <20220805191906.9323-1-matthias.may@westermo.com>
+To:     Matthias May <matthias.may@westermo.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, roopa@nvidia.com,
+        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
+        saeedm@nvidia.com, leon@kernel.org, roid@nvidia.com,
+        maord@nvidia.com, lariel@nvidia.com, vladbu@nvidia.com,
+        cmi@nvidia.com, gnault@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nicolas.dichtel@6wind.com, eyal.birger@gmail.com, jesse@nicira.com,
+        linville@tuxdriver.com, daniel@iogearbox.net, hadarh@mellanox.com,
+        ogerlitz@mellanox.com, willemb@google.com,
+        martin.varghese@nokia.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/9/22 11:00 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.19.1 release.
-> There are 21 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.1-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hello:
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Tested-by: Ron Economos <re@w6rz.net>
+On Fri, 5 Aug 2022 21:19:02 +0200 you wrote:
+> According to Guillaume Nault RT_TOS should never be used for IPv6.
+> 
+> Quote:
+> RT_TOS() is an old macro used to interprete IPv4 TOS as described in
+> the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
+> code, although, given the current state of the code, most of the
+> existing calls have no consequence.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3,net,1/4] geneve: do not use RT_TOS for IPv6 flowlabel
+    https://git.kernel.org/netdev/net/c/ca2bb69514a8
+  - [v3,net,2/4] vxlan: do not use RT_TOS for IPv6 flowlabel
+    https://git.kernel.org/netdev/net/c/e488d4f5d6e4
+  - [v3,net,3/4] mlx5: do not use RT_TOS for IPv6 flowlabel
+    https://git.kernel.org/netdev/net/c/bcb0da7fffee
+  - [v3,net,4/4] ipv6: do not use RT_TOS for IPv6 flowlabel
+    https://git.kernel.org/netdev/net/c/ab7e2e0dfa5d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
