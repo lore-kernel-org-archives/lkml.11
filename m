@@ -2,103 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C076C25B06
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DFAC00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 07:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiHJHI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 03:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
+        id S231496AbiHJHPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 03:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbiHJHI5 (ORCPT
+        with ESMTP id S231480AbiHJHPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 03:08:57 -0400
-X-Greylist: delayed 746 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 00:08:55 PDT
-Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2986796A0;
-        Wed, 10 Aug 2022 00:08:55 -0700 (PDT)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9d:7e00:0:0:0:1])
-        (authenticated bits=0)
-        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 27A6tsd3588953
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Wed, 10 Aug 2022 07:55:56 +0100
-Received: from miraculix.mork.no ([IPv6:2a01:799:961:910a:a293:6d6e:8bbf:c204])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 27A6tlsr604953
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Wed, 10 Aug 2022 08:55:48 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1660114549; bh=jreNYZmBDW3E+iK6TgCwzCr9t13dtx1ddnlZG0dgdC8=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=iQ08mWYQIEtRxjLzdutxpMyanUUgfpzkWKbR81TWZnCNiVdSycBOgYrOxDgh/LIJp
-         AqEj6Q3NNxVRXjhdu+Cm099gPinGDml9MILsZtMJnRUJxCk3xC/ie2JF+xsqMSnnKP
-         yJtrhf0ogIe1wnnXbKE5WmA418PpzNhcRKT473w0=
-Received: (nullmailer pid 478119 invoked by uid 1000);
-        Wed, 10 Aug 2022 06:55:42 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV32
-Organization: m
-References: <20220810014521.9383-1-slark_xiao@163.com>
-Date:   Wed, 10 Aug 2022 08:55:42 +0200
-In-Reply-To: <20220810014521.9383-1-slark_xiao@163.com> (Slark Xiao's message
-        of "Wed, 10 Aug 2022 09:45:21 +0800")
-Message-ID: <8735e4mvtd.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 10 Aug 2022 03:15:03 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA8B81B3B
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 00:14:55 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id p125so9383230pfp.2
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 00:14:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=OSs5k2JzZ1v3qOKBenh3reA8UtTc/55dy3uwB9bpFyc=;
+        b=fRII53OuDbSrBGUENSJcamKT3/9cjXKT+mjl/O9p0ErgCPvk3ARW83xCI8W563pOr1
+         +Ux3sOkTb8y2WeTYBti4JzyFqBU11q7Rn/O0ynkK1/tdLUErsz1SfDn+4CMvCYV17Pf6
+         R4B62Af62kodXT2tieQEfowlHgByd2TqZYCtc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=OSs5k2JzZ1v3qOKBenh3reA8UtTc/55dy3uwB9bpFyc=;
+        b=bAZMOtLdik5dTEcnpMRcjGDuqriXlIPTxgLbGSbvdhD1J5apNZstnFnO2k7VMysimS
+         xusSoDKhU0OdwVyOhN0zpRZlhfz0ChT5DTUf/+UEtircsFVvB1oYwRxnP1MOvKCkOUSj
+         XtDFPGnb6PPbXsNqHJWeYvSwxo9HtpWA9PUdqA9zhAMpOAvURgTD7i40G/pYSHICXzXF
+         ZKz9RqUxuX2/xunY0cyDiPXjz4jpBpySzdciugEGP3rYzH0rvNTFwnRS2ia/OeK/Jys4
+         QqCDczq7KP3jtjOpAfG6X/DQR3HVhrDoxExcdSIk4nXtumZO0crV5aGcSgRuJswnJLNx
+         FFBg==
+X-Gm-Message-State: ACgBeo38MU3+Z8tLEO5Vq6ic6W6B91KLNTtllQ69FJFKv4FEwysXIu3t
+        QMw+odDEI+9OPw+TjDdVFeYwag==
+X-Google-Smtp-Source: AA6agR6SwVqLDNEUbqPEMGyYnHiPZHPaAyuG6LplTRCyy+nadhW71qzoHeLQm0fBHMameJfHF5CDrg==
+X-Received: by 2002:a05:6a00:2387:b0:52f:17a0:628c with SMTP id f7-20020a056a00238700b0052f17a0628cmr15596370pfc.17.1660115694664;
+        Wed, 10 Aug 2022 00:14:54 -0700 (PDT)
+Received: from google.com ([240f:75:7537:3187:69dc:40cc:db3b:f90e])
+        by smtp.gmail.com with ESMTPSA id m6-20020a1709026bc600b0016ee4b0bd60sm11943434plt.166.2022.08.10.00.14.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 00:14:54 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 16:14:48 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        jack@suse.com, adilger.kernel@dilger.ca, tytso@mit.edu,
+        stable@vger.kernel.org, Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Alexey Romanov <avromanov@sberdevices.ru>,
+        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Lukas Czerner <lczerner@redhat.com>,
+        Ext4 Developers List <linux-ext4@vger.kernel.org>
+Subject: Re: [PATCH] Revert "zram: remove double compression logic"
+Message-ID: <YvNa6J/neNxXNSTV@google.com>
+References: <YvJKwCXewHmuWGdh@google.com>
+ <20220810070609.14402-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.6 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810070609.14402-1-jslaby@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Slark Xiao <slark_xiao@163.com> writes:
+On (22/08/10 09:06), Jiri Slaby wrote:
+> This reverts commit e7be8d1dd983156bbdd22c0319b71119a8fbb697 as it
+> causes zram failures. It does not revert cleanly, PTR_ERR handling was
+> introduced in the meantime. This is handled by appropriate IS_ERR.
+> 
+> When under memory pressure, zs_malloc() can fail. Before the above
+> commit, the allocation was retried with direct reclaim enabled
+> (GFP_NOIO). After the commit, it is not -- only __GFP_KSWAPD_RECLAIM is
+> tried.
+> 
+> So when the failure occurs under memory pressure, the overlaying
+> filesystem such as ext2 (mounted by ext4 module in this case) can emit
+> failures, making the (file)system unusable:
+>   EXT4-fs warning (device zram0): ext4_end_bio:343: I/O error 10 writing to inode 16386 starting block 159744)
+>   Buffer I/O error on device zram0, logical block 159744
+> 
+> With direct reclaim, memory is really reclaimed and allocation succeeds,
+> eventually. In the worst case, the oom killer is invoked, which is
+> proper outcome if user sets up zram too large (in comparison to
+> available RAM).
+> 
+> This very diff doesn't apply to 5.19 (stable) cleanly (see PTR_ERR note
+> above). Use revert of e7be8d1dd983 directly.
+> 
+> Link: https://bugzilla.suse.com/show_bug.cgi?id=1202203
+> Fixes: e7be8d1dd983 ("zram: remove double compression logic")
+> Cc: stable@vger.kernel.org # 5.19
+> Cc: Minchan Kim <minchan@kernel.org>
+> Cc: Nitin Gupta <ngupta@vflare.org>
+> Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+> Cc: Alexey Romanov <avromanov@sberdevices.ru>
+> Cc: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> Cc: Lukas Czerner <lczerner@redhat.com>
+> Cc: Ext4 Developers List <linux-ext4@vger.kernel.org>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-> There are 2 models for MV32 serials. MV32-W-A is designed
-> based on Qualcomm SDX62 chip, and MV32-W-B is designed based
-> on Qualcomm SDX65 chip. So we use 2 different PID to separate it.
->
-> Test evidence as below:
-> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D02 Cnt=3D03 Dev#=3D  3 Spd=3D480 M=
-xCh=3D 0
-> D:  Ver=3D 2.10 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
-> P:  Vendor=3D1e2d ProdID=3D00f3 Rev=3D05.04
-> S:  Manufacturer=3DCinterion
-> S:  Product=3DCinterion PID 0x00F3 USB Mobile Broadband
-> S:  SerialNumber=3Dd7b4be8d
-> C:  #Ifs=3D 4 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
-> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D50 Drive=
-r=3Dqmi_wwan
-> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
-r=3Doption
-> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
-r=3Doption
-> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Drive=
-r=3Doption
-
-The patch looks nice, but I have a couple of questions since you're one
-of the first pushing one of these SDX6x modems.
-
-Is that protocol pattern fixed on this generation of Qualcomm chips?  It
-looks like an extension of what they started with the SDX55 generation,
-where the DIAG port was identified by ff/ff/30 across multiple vendors.
-
-Specifically wrt this driver and patch, I wonder if we can/should match
-on ff/ff/50 instead of interface number here?  I note that the interface
-numbers are allocated sequentionally. Probably in the order these
-function are enabled by the firmware? If so, are we sure this is static?
-Or could we risk config variants where the RMNET/QMI function have a
-different interface number for the same PIDs?
-
-And another possibility you might consider.  Assuming that ff/ff/50
-uniquely identifies RMNET/QMI functions regardless of PID, would you
-consider a VID+class match to catch all of them?  This would not only
-support both the PIDs of this patch in one go, but also any future PIDs
-without the need for further driver patches.
-
-
-Bj=C3=B8rn
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
