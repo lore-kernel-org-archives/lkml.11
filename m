@@ -2,147 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73927C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:34:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0201C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 08:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231704AbiHJIeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58962 "EHLO
+        id S231706AbiHJIfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231688AbiHJIdk (ORCPT
+        with ESMTP id S231480AbiHJIew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:33:40 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA3C5726A
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:33:34 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id n133so16946435oib.0
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:33:34 -0700 (PDT)
+        Wed, 10 Aug 2022 04:34:52 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757FB5A2C0
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:34:51 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id l22so16917017wrz.7
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 01:34:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=qng18ezuViFS4JHv1suUwHMOD3dA0ddp/TS8ruYkzxY=;
-        b=Xo7HewGoXQ93vdJ673ZkR+tcoUdDl9VfPro55Vby9VrJvIMSVQRWW+l8IzswksIecM
-         FJ23GJpiXQh/pyuvnpU5g3iQbV02xodcvNiDJwDMgL67ZXX2fNtmG9OBAvT/AJiLKz1O
-         m57OQJzScr8ptLkEC3wAZsB50Mtf/5dHx8myw=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=bkzHlR+cUvVyHpzLk2ncuYHJ7GeFDJmOxDxvociFius=;
+        b=bb8Uer18YD5FkYXGsFH+l17HcWf0wvtMHUuQ40OQ0GDH/3iYV35IU7u3drCYFcDJ+X
+         eC+d0EzzWP3dBAef3pp4oOIIcSrl0b9C5KOFPkPNJss6OEmNIh9SLFfw/4cRDutguIvO
+         bUA52P58iNkqHhvPCo+d4EWUNugr196hO12CnwkizN6Szd/dFSmCBV4dd6Gcm25AXc0L
+         XMx/GoEDkc1knFnDeYBcj6DS3rh3hi8+uFrOCRtfYdYSOSiZIE1VjMTFJKIWQXUUSFF+
+         7E/XiO9K/KtE9Ieh741lmY7ZttRjK2tUOCdu4CYZNTvLUzGPZdQM0B7kwg0m/VZhMAzq
+         i4eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=qng18ezuViFS4JHv1suUwHMOD3dA0ddp/TS8ruYkzxY=;
-        b=qkgWJeQv1/FWU1QQmlK0U/AxRqSkTku5uLgEYh1SWBjYHsi6hfusgTrJ4mu6sr2WMJ
-         gezbFYCVCpTPZq5agYob3dSeI0MQVGtCd1H1kcvkBXRKR1eyivAbdgARSNJyMyxIsiN7
-         psL4L6zxawA0zpkdxJIXNqhNzY+SiUGQCjBU2k31KZHYiXYLtu3TlFPKwpZNY91L7VBZ
-         PTZY8g0pps/e3CT1bP21+5DwX4AugD4ck0yKDW+acZQnlPk0AK0kxBSwovMjtuibcONS
-         P6Q5zcr4eb2qbWLIYSYlprLBJnO9J9iCiYpuR48T+3KJuiK7lx9egyMKknEromTRnq2U
-         9SYw==
-X-Gm-Message-State: ACgBeo2tpjdbOp1t31YIdli/o8TYXODMjODfDr2DVRR4Y5idiOOX1i2U
-        kk9o7GMDpKo3tbMM3kv9nopz7K0rhQfGGZMZfegOww==
-X-Google-Smtp-Source: AA6agR6cStCNNsa+U2EXzNpks0Z071z2RD/SJln63AZJsOezVgSlE5S5WcCDeNCK/XxqGOBfJDhs4RSMetdDlNSIpBY=
-X-Received: by 2002:a05:6808:1489:b0:33a:861c:838e with SMTP id
- e9-20020a056808148900b0033a861c838emr895072oiw.228.1660120413972; Wed, 10 Aug
- 2022 01:33:33 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=bkzHlR+cUvVyHpzLk2ncuYHJ7GeFDJmOxDxvociFius=;
+        b=wE5y9NUTnBJu0bKSbs2qBwJDE1uUYOAVvRJ0I/5lWuJyElwLGbbyzBAf7LOLlBNChn
+         GnPUGuijYswvUJCfUtk8UDXdbRNiVBRVRaWgN3PdlZ/uDQ+j9wJwGwOAToe5H4i0dOhU
+         tDzatpWlGLYwZieb3LQq1CNI1K4eexnYdKw94VKcpo32ijCK/xtyTTZZg5QrYK+sN+Wv
+         N4NleQHUbrIsh5q/NFl3ygDdMOegyi2seCbzD0EYdDPPQqHR6qG396n9AN1A0s/wY9n5
+         /4B/58xk9tBjhaxIH4YZTLVcLUOVH+HDumQJDqIU742M19paXunay1phxAvj9nHP9gbb
+         GrrA==
+X-Gm-Message-State: ACgBeo3ipqvUcl+egBThzwhy1PEMb96HH9SLP8St4isoGrXr/e7tp9EP
+        x6U8ax9GlPLmsHqgQnW3ymxsuw==
+X-Google-Smtp-Source: AA6agR6FOObBLF2ZRKKvwD+BJSywE7pEYvvMSqdtOWnXacW0tRqX3vqVzvAqQq0dwRnFGT2e0ee5MQ==
+X-Received: by 2002:a5d:5273:0:b0:220:5d3e:c50f with SMTP id l19-20020a5d5273000000b002205d3ec50fmr17189776wrc.291.1660120489914;
+        Wed, 10 Aug 2022 01:34:49 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id o4-20020a05600c4fc400b003a0375c4f73sm1504248wmq.44.2022.08.10.01.34.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 01:34:49 -0700 (PDT)
+Message-ID: <c7b3c6b3-1384-079c-fe76-dc1eca4f3ab2@linaro.org>
+Date:   Wed, 10 Aug 2022 10:34:46 +0200
 MIME-Version: 1.0
-References: <20220701090240.1896131-1-dmitry.osipenko@collabora.com>
- <20220701090240.1896131-2-dmitry.osipenko@collabora.com> <a42237c9-6304-4b06-cede-2175c7e7b87d@amd.com>
- <YvKO5r5Sr56e9vBf@phenom.ffwll.local> <e760f555-7f2d-dea9-70b2-c0881adc3afc@amd.com>
-In-Reply-To: <e760f555-7f2d-dea9-70b2-c0881adc3afc@amd.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Wed, 10 Aug 2022 10:33:22 +0200
-Message-ID: <CAKMK7uEd1xX6P4YRgYOfjvqpwVmQ0YZPkHdK=4auwrkBE9CEzQ@mail.gmail.com>
-Subject: Re: [PATCH v8 1/2] drm/gem: Properly annotate WW context on
- drm_gem_lock_reservations() error
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas_os@shipmail.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-tegra@vger.kernel.org, kernel@collabora.com,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 00/33] New thermal OF code
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Michael Walle <michael@walle.cc>
+Cc:     daniel.lezcano@linexp.org, abailon@baylibre.com,
+        anarsoul@gmail.com, baolin.wang7@gmail.com,
+        bjorn.andersson@linaro.org, broonie@kernel.org,
+        damien.lemoal@opensource.wdc.com, digetx@gmail.com,
+        f.fainelli@gmail.com, glaroque@baylibre.com,
+        hayashi.kunihiko@socionext.com, heiko@sntech.de, j-keerthy@ti.com,
+        jonathanh@nvidia.com, khilman@baylibre.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        lukasz.luba@arm.com, matthias.bgg@gmail.com,
+        mcoquelin.stm32@gmail.com, mhiramat@kernel.org,
+        miquel.raynal@bootlin.com, niklas.soderlund@ragnatech.se,
+        rafael@kernel.org, rui.zhang@intel.com, shawnguo@kernel.org,
+        talel@amazon.com, thierry.reding@gmail.com, tiny.windzz@gmail.com
+References: <20220804224349.1926752-1-daniel.lezcano@linexp.org>
+ <20220808094216.928018-1-michael@walle.cc>
+ <20220808102610.GA1969424@roeck-us.net>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220808102610.GA1969424@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 at 08:52, Christian K=C3=B6nig <christian.koenig@amd.co=
-m> wrote:
->
-> Am 09.08.22 um 18:44 schrieb Daniel Vetter:
-> > On Tue, Jul 05, 2022 at 01:33:51PM +0200, Christian K=C3=B6nig wrote:
-> >> Am 01.07.22 um 11:02 schrieb Dmitry Osipenko:
-> >>> Use ww_acquire_fini() in the error code paths. Otherwise lockdep
-> >>> thinks that lock is held when lock's memory is freed after the
-> >>> drm_gem_lock_reservations() error. The ww_acquire_context needs to be
-> >>> annotated as "released", which fixes the noisy "WARNING: held lock fr=
-eed!"
-> >>> splat of VirtIO-GPU driver with CONFIG_DEBUG_MUTEXES=3Dy and enabled =
-lockdep.
-> >>>
-> >>> Cc: stable@vger.kernel.org
-> >>> Fixes: 7edc3e3b975b5 ("drm: Add helpers for locking an array of BO re=
-servations.")
-> >>> Reviewed-by: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
-> >>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> >> Reviewed-by: Christian K=C3=B6nig <christian.koenig@amd.com>
-> > Also added this r-b tag when merging to drm-misc-next-fixes.
->
-> IIRC I've already pushed this to drm-misc-fixes with a CC stable tag
-> about 2 weeks ago.
->
-> Please double check, it probably just hasn't come down the stream again y=
-et.
 
-Hm quickly check and I didn't spot it? There's a few patches from
-Dmitry in the last few pulls, and some more stuff pending, but not
-these two afaics?
--Daniel
+Hi Guenter,
 
->
-> Christian.
->
-> > -Daniel
-> >
-> >>> ---
-> >>>    drivers/gpu/drm/drm_gem.c | 4 ++--
-> >>>    1 file changed, 2 insertions(+), 2 deletions(-)
-> >>>
-> >>> diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
-> >>> index eb0c2d041f13..86d670c71286 100644
-> >>> --- a/drivers/gpu/drm/drm_gem.c
-> >>> +++ b/drivers/gpu/drm/drm_gem.c
-> >>> @@ -1226,7 +1226,7 @@ drm_gem_lock_reservations(struct drm_gem_object=
- **objs, int count,
-> >>>             ret =3D dma_resv_lock_slow_interruptible(obj->resv,
-> >>>                                                              acquire_=
-ctx);
-> >>>             if (ret) {
-> >>> -                   ww_acquire_done(acquire_ctx);
-> >>> +                   ww_acquire_fini(acquire_ctx);
-> >>>                     return ret;
-> >>>             }
-> >>>     }
-> >>> @@ -1251,7 +1251,7 @@ drm_gem_lock_reservations(struct drm_gem_object=
- **objs, int count,
-> >>>                             goto retry;
-> >>>                     }
-> >>> -                   ww_acquire_done(acquire_ctx);
-> >>> +                   ww_acquire_fini(acquire_ctx);
-> >>>                     return ret;
-> >>>             }
-> >>>     }
->
+On 08/08/2022 12:26, Guenter Roeck wrote:
+> On Mon, Aug 08, 2022 at 11:42:16AM +0200, Michael Walle wrote:
 
+[ ... ]
 
---=20
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+> It would also mean that all hwmon drivers registering a thermal zone sensor
+> would fail to register unless such a thermal zone actually exists. This
+> would make the whole concept of having the hwmon core register thermal
+> zone sensors impossible. I have no idea how this is expected to work now,
+> but there is an apparent flaw in the logic. That means I withdraw my
+> Acked-by: for the hwmon patches in this series until it is guaranteed
+> that hwmon registration does not fail as above if there is no thermal
+> zone associated with a sensor.
+
+I tried to figure out where we are not in sync and I suspect there is a 
+misunderstanding from my side of your initial statement.
+
+I understood you meant the thermal zone can not be created with the 
+hwmon if there is no thermal zone description and that was the case before.
+
+But actually, I suspect I misunderstood and you meant if the thermal OF 
+registration fails, the hwmon creation fails for the hwmon subsystem, 
+and before the changes it was created anyway.
+
+Is that correct ?
+
+If yes, the change -EINVAL --> -ENODEV fixes the issue, shall I consider 
+in this case your Acked-by ?
+
+Thanks
+   -- Daniel
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
