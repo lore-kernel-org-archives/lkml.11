@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0109C25B0C
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 04:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1291FC25B0D
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 04:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230475AbiHJEFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 00:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
+        id S231162AbiHJEGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 00:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiHJEFN (ORCPT
+        with ESMTP id S230368AbiHJEFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 00:05:13 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FDF38BA
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 21:05:10 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-10ea9ef5838so16455014fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 21:05:10 -0700 (PDT)
+        Wed, 10 Aug 2022 00:05:18 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35014A199
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 21:05:13 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-10cf9f5b500so16470663fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 21:05:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=HzcSJs+NvWUdifTJLSaa1lWlyL4/HJWO6YyuNswmu8k=;
-        b=F+jj/+NblCgAiqI7gTvhil038xrXyct9C3al/0zb0I0AIF/Q8ANqfp/VQky13ntjWk
-         sp838B0eILlMKMNT0J9TyjsfQPZi3ltxstK4VU8OlpdHRpJQavuFO69O5H6nK5+x2BiF
-         mABLuh4eHe5gbY8bFROJcDKIPYE4SeX5yu6i2ms1ELAx0jX+R1cFUUW33zzziC5PZBz8
-         46JVLpAEpyoPRIlZ42RbUB2EXuQBa0942SHTbrsWot2LrwWiHfCdhf4Z+hJcpgIlzxeV
-         IkOMXktCOHhDU99vmycgdZUnpe336z7bJmlJzkxLVYf9aLlp2cjhPib3IambJzqy+Ddd
-         bdSA==
+        bh=Ndd7GVOJq64yRB5q+nG+1O8Ki0y0Qk32lK28P7SYTeg=;
+        b=ZICWcSO7UDTKte7hQmLufWNHbm5eqdJVlyaH3TLo+ctWq28fKrJE54I9E37Jk/KaGE
+         UotXhHPN2sdiq2ezO8M9+JMZPM4BNPIswPeXzP04u5N8NESOt0lplh3yunlPFnNj4Jhw
+         9ch3NJOKSU2FPI0BSUSJin6xrz+wEod8as13ejYGnJEP5uPfREhI86AHPOwBxjDrtMAO
+         uTRsEPM0nKzgr0+oyhXOV9QXG/cWpYLoKwVm8w51qJmHCUi8idsnucBZA39C4te+xOU8
+         dRIEIbc24LOUBYcl4mqoy4DoZAI13672TXZ8fSSbOwM8S3x1tmi4ImI1CI4piZQ17rB5
+         +u0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=HzcSJs+NvWUdifTJLSaa1lWlyL4/HJWO6YyuNswmu8k=;
-        b=GXOzvxHJkyn+YrARsXjxaRUmEHtKuEBrkElapwSSQSD3aoH9guznyOzFOkFQu59ENI
-         y4b/HZOVOhEn6uydXZzFcm/mmxUJD4oE4LYhD5PZjFXsUPFd6t3Vm3Jgh9/NOOjYjqk5
-         aj2pjkKre/Vn+iwYfSg33NMyl4jAhYzdSDm06V6GnynOyt79OCcLSsAUE9CbhG0+mc9K
-         yMyN3bAgC32qSQW23sEjBjIuaFMNcbFGDT3C0OSLiHG1qWHS3ORZ1kI8AtUXehDsdios
-         pM/0KjxIDPHomC+bmU9O1uriDw/yQAMmXBheAShwGJEzf7F4JTmnrVTMBiICRY/qbuEL
-         GOCA==
-X-Gm-Message-State: ACgBeo041X5q7l+dm362kYa2NnCLPvCuS27buWZs0pZzxF1k7iS8hJUT
-        4JLyJepMQJiRxMLKISNkJ+CDvQ==
-X-Google-Smtp-Source: AA6agR73b4wlzonVOhZjp7c4P1ifYkupQzqac6zf6QWTANNg3mP5G3KpN2C/JmlXJeOgYzK+j9Mfeg==
-X-Received: by 2002:a05:6870:2423:b0:fe:4131:6db9 with SMTP id n35-20020a056870242300b000fe41316db9mr679490oap.75.1660104310120;
-        Tue, 09 Aug 2022 21:05:10 -0700 (PDT)
+        bh=Ndd7GVOJq64yRB5q+nG+1O8Ki0y0Qk32lK28P7SYTeg=;
+        b=T4gg9KJ26fAVjiEj6nAli5YYhWLT294r7dc/wbY+pH9j926KjrqnLl63dQaiXlIua+
+         X47PimuWog3HtmZcGpmy+RaeYN6esMuta2KNKrRbcFAOSce+wCtrfYXOBYmRwYMp085Z
+         NLU5TSUfNwVsaxZryAbjyErnEGhKC/FFB1yIvIpH2+7d3w4kR7W0OOC3X/kJzxoeZ3jq
+         t+h+I5JLB9gut5tqx61Tjp36unJ9/jhPBIV9s6XxmK3pzJz41zzF9LOgblm6wO0xDUbp
+         comWmZIRTb8Nv/ieJ6fwrQK4J/ijzrN5LB3AUgZM9XmaNIGU81elYK8yod3ZBdcLZl1b
+         Ap/Q==
+X-Gm-Message-State: ACgBeo00I20SZlGiaaPH7GTZ5gGSzf4fKD7OWFsd8pWMExl8Ok4O5cwL
+        bl9n4sx8CVcN78pDokMjEsuQoMgHzDVOOA==
+X-Google-Smtp-Source: AA6agR5DLkTSzdsowisb+O8eZGxuq561vdngF37Prt7DIl5waI3gba3oSw8Fj+0kjL3Ah7KRHQvo8A==
+X-Received: by 2002:a05:6870:ec93:b0:10e:75ae:8177 with SMTP id eo19-20020a056870ec9300b0010e75ae8177mr686789oab.234.1660104312359;
+        Tue, 09 Aug 2022 21:05:12 -0700 (PDT)
 Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id q6-20020a056830440600b00616dfd2c859sm449027otv.59.2022.08.09.21.05.09
+        by smtp.gmail.com with ESMTPSA id q6-20020a056830440600b00616dfd2c859sm449027otv.59.2022.08.09.21.05.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 21:05:09 -0700 (PDT)
+        Tue, 09 Aug 2022 21:05:11 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
         Vinod Koul <vkoul@kernel.org>
@@ -55,9 +55,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/5] phy: qcom: edp: Generate unique clock names
-Date:   Tue,  9 Aug 2022 21:07:42 -0700
-Message-Id: <20220810040745.3582985-3-bjorn.andersson@linaro.org>
+Subject: [PATCH 4/5] phy: qcom: edp: Introduce support for DisplayPort
+Date:   Tue,  9 Aug 2022 21:07:44 -0700
+Message-Id: <20220810040745.3582985-5-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220810040745.3582985-1-bjorn.andersson@linaro.org>
 References: <20220810040745.3582985-1-bjorn.andersson@linaro.org>
@@ -67,45 +67,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With multiple Displayport PHYs the hard coded clock names collides,
-generate unique clock names based on the device name instead.
+The eDP phy can be used to drive either eDP or DP output, with some
+minor variations in some of the configuration and seemingly a need for
+implementing swing and pre_emphasis calibration.
+
+Introduce a config object, indicating if the phy is operating in eDP or
+DP mode and swing/pre-emphasis calibration to support this.
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/phy/qualcomm/phy-qcom-edp.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-edp.c | 80 +++++++++++++++++++++++++++--
+ 1 file changed, 76 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
-index 7e3570789845..41aa28291cea 100644
+index 32614fb838b5..301ac422d2fe 100644
 --- a/drivers/phy/qualcomm/phy-qcom-edp.c
 +++ b/drivers/phy/qualcomm/phy-qcom-edp.c
-@@ -571,21 +571,24 @@ static int qcom_edp_clks_register(struct qcom_edp *edp, struct device_node *np)
- {
- 	struct clk_hw_onecell_data *data;
- 	struct clk_init_data init = { };
-+	char name[64];
- 	int ret;
+@@ -70,8 +70,19 @@
  
- 	data = devm_kzalloc(edp->dev, struct_size(data, hws, 2), GFP_KERNEL);
- 	if (!data)
+ #define TXn_TRAN_DRVR_EMP_EN                    0x0078
+ 
++struct qcom_edp_cfg {
++	bool is_dp;
++
++	/* DP PHY swing and pre_emphasis tables */
++	const u8 (*swing_hbr_rbr)[4][4];
++	const u8 (*swing_hbr3_hbr2)[4][4];
++	const u8 (*pre_emphasis_hbr_rbr)[4][4];
++	const u8 (*pre_emphasis_hbr3_hbr2)[4][4];
++};
++
+ struct qcom_edp {
+ 	struct device *dev;
++	const struct qcom_edp_cfg *cfg;
+ 
+ 	struct phy *phy;
+ 
+@@ -92,7 +103,9 @@ struct qcom_edp {
+ static int qcom_edp_phy_init(struct phy *phy)
+ {
+ 	struct qcom_edp *edp = phy_get_drvdata(phy);
++	const struct qcom_edp_cfg *cfg = edp->cfg;
+ 	int ret;
++	u8 cfg8;
+ 
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(edp->supplies), edp->supplies);
+ 	if (ret)
+@@ -117,6 +130,13 @@ static int qcom_edp_phy_init(struct phy *phy)
+ 	       DP_PHY_PD_CTL_PLL_PWRDN | DP_PHY_PD_CTL_DP_CLAMP_EN,
+ 	       edp->edp + DP_PHY_PD_CTL);
+ 
++	if (cfg && cfg->is_dp)
++		cfg8 = 0xb7;
++	else
++		cfg8 = 0x37;
++
++	writel(0xfc, edp->edp + DP_PHY_MODE);
++
+ 	writel(0x00, edp->edp + DP_PHY_AUX_CFG0);
+ 	writel(0x13, edp->edp + DP_PHY_AUX_CFG1);
+ 	writel(0x24, edp->edp + DP_PHY_AUX_CFG2);
+@@ -125,7 +145,7 @@ static int qcom_edp_phy_init(struct phy *phy)
+ 	writel(0x26, edp->edp + DP_PHY_AUX_CFG5);
+ 	writel(0x0a, edp->edp + DP_PHY_AUX_CFG6);
+ 	writel(0x03, edp->edp + DP_PHY_AUX_CFG7);
+-	writel(0x37, edp->edp + DP_PHY_AUX_CFG8);
++	writel(cfg8, edp->edp + DP_PHY_AUX_CFG8);
+ 	writel(0x03, edp->edp + DP_PHY_AUX_CFG9);
+ 
+ 	writel(PHY_AUX_STOP_ERR_MASK | PHY_AUX_DEC_ERR_MASK |
+@@ -142,14 +162,60 @@ static int qcom_edp_phy_init(struct phy *phy)
+ 	return ret;
+ }
+ 
++static int qcom_edp_set_voltages(struct qcom_edp *edp, const struct phy_configure_opts_dp *dp_opts)
++{
++	const struct qcom_edp_cfg *cfg = edp->cfg;
++	unsigned int v_level = 0;
++	unsigned int p_level = 0;
++	u8 ldo_config;
++	u8 swing;
++	u8 emph;
++	int i;
++
++	if (!cfg)
++		return 0;
++
++	for (i = 0; i < dp_opts->lanes; i++) {
++		v_level = max(v_level, dp_opts->voltage[i]);
++		p_level = max(p_level, dp_opts->pre[i]);
++	}
++
++	if (dp_opts->link_rate <= 2700) {
++		swing = (*cfg->swing_hbr_rbr)[v_level][p_level];
++		emph = (*cfg->pre_emphasis_hbr_rbr)[v_level][p_level];
++	} else {
++		swing = (*cfg->swing_hbr3_hbr2)[v_level][p_level];
++		emph = (*cfg->pre_emphasis_hbr3_hbr2)[v_level][p_level];
++	}
++
++	if (swing == 0xff || emph == 0xff)
++		return -EINVAL;
++
++	ldo_config = (cfg && cfg->is_dp) ? 0x1 : 0x0;
++
++	writel(ldo_config, edp->tx0 + TXn_LDO_CONFIG);
++	writel(swing, edp->tx0 + TXn_TX_DRV_LVL);
++	writel(emph, edp->tx0 + TXn_TX_EMP_POST1_LVL);
++
++	writel(ldo_config, edp->tx1 + TXn_LDO_CONFIG);
++	writel(swing, edp->tx1 + TXn_TX_DRV_LVL);
++	writel(emph, edp->tx1 + TXn_TX_EMP_POST1_LVL);
++
++	return 0;
++}
++
+ static int qcom_edp_phy_configure(struct phy *phy, union phy_configure_opts *opts)
+ {
+ 	const struct phy_configure_opts_dp *dp_opts = &opts->dp;
+ 	struct qcom_edp *edp = phy_get_drvdata(phy);
++	int ret = 0;
+ 
+ 	memcpy(&edp->dp_opts, dp_opts, sizeof(*dp_opts));
+ 
+-	return 0;
++	if (dp_opts->set_voltages)
++		ret = qcom_edp_set_voltages(edp, dp_opts);
++
++	return ret;
+ }
+ 
+ static int qcom_edp_configure_ssc(const struct qcom_edp *edp)
+@@ -315,7 +381,9 @@ static int qcom_edp_set_vco_div(const struct qcom_edp *edp)
+ static int qcom_edp_phy_power_on(struct phy *phy)
+ {
+ 	const struct qcom_edp *edp = phy_get_drvdata(phy);
++	const struct qcom_edp_cfg *cfg = edp->cfg;
+ 	u32 bias0_en, drvr0_en, bias1_en, drvr1_en;
++	u8 ldo_config;
+ 	int timeout;
+ 	int ret;
+ 	u32 val;
+@@ -332,8 +400,11 @@ static int qcom_edp_phy_power_on(struct phy *phy)
+ 	if (timeout)
+ 		return timeout;
+ 
+-	writel(0x01, edp->tx0 + TXn_LDO_CONFIG);
+-	writel(0x01, edp->tx1 + TXn_LDO_CONFIG);
++
++	ldo_config = (cfg && cfg->is_dp) ? 0x1 : 0x0;
++
++	writel(ldo_config, edp->tx0 + TXn_LDO_CONFIG);
++	writel(ldo_config, edp->tx1 + TXn_LDO_CONFIG);
+ 	writel(0x00, edp->tx0 + TXn_LANE_MODE_1);
+ 	writel(0x00, edp->tx1 + TXn_LANE_MODE_1);
+ 
+@@ -635,6 +706,7 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
  		return -ENOMEM;
  
-+	snprintf(name, sizeof(name), "%s::link_clk", dev_name(edp->dev));
- 	init.ops = &qcom_edp_dp_link_clk_ops;
--	init.name = "edp_phy_pll_link_clk";
-+	init.name = name;
- 	edp->dp_link_hw.init = &init;
- 	ret = devm_clk_hw_register(edp->dev, &edp->dp_link_hw);
- 	if (ret)
- 		return ret;
+ 	edp->dev = dev;
++	edp->cfg = of_device_get_match_data(&pdev->dev);
  
-+	snprintf(name, sizeof(name), "%s::vco_div_clk", dev_name(edp->dev));
- 	init.ops = &qcom_edp_dp_pixel_clk_ops;
--	init.name = "edp_phy_pll_vco_div_clk";
-+	init.name = name;
- 	edp->dp_pixel_hw.init = &init;
- 	ret = devm_clk_hw_register(edp->dev, &edp->dp_pixel_hw);
- 	if (ret)
+ 	edp->edp = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(edp->edp))
 -- 
 2.35.1
 
