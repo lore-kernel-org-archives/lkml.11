@@ -2,125 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D76C00140
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52300C00140
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 12:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232132AbiHJMAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 08:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
+        id S232122AbiHJLkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 07:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231675AbiHJMAb (ORCPT
+        with ESMTP id S231732AbiHJLk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 08:00:31 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F02B37;
-        Wed, 10 Aug 2022 05:00:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0VLv5JNk_1660132822;
-Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VLv5JNk_1660132822)
-          by smtp.aliyun-inc.com;
-          Wed, 10 Aug 2022 20:00:23 +0800
-Subject: Re: [PATCH V5 5/6] riscv: crash_core: Export kernel vm layout,
- phys_ram_base
-To:     Conor.Dooley@microchip.com, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu, anup@brainfault.org,
-        heiko@sntech.de, guoren@kernel.org, mick@ics.forth.gr,
-        alexandre.ghiti@canonical.com, bhe@redhat.com, vgoyal@redhat.com,
-        dyoung@redhat.com, corbet@lwn.net
-Cc:     kexec@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
-        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
-        hschauhan@nulltrace.org, yixun.lan@gmail.com
-References: <20220802121818.2201268-1-xianting.tian@linux.alibaba.com>
- <20220802121818.2201268-6-xianting.tian@linux.alibaba.com>
- <cf03285d-62e7-c70a-4197-8519fe9effe0@microchip.com>
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-Message-ID: <31231d21-7d23-9412-01d4-b2d4aa73cfc9@linux.alibaba.com>
-Date:   Wed, 10 Aug 2022 20:00:22 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <cf03285d-62e7-c70a-4197-8519fe9effe0@microchip.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Wed, 10 Aug 2022 07:40:27 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1237642FE;
+        Wed, 10 Aug 2022 04:40:21 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id dc19so27122841ejb.12;
+        Wed, 10 Aug 2022 04:40:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=DdJp4UZHmlYx0A4VYaHgo2wRMc0wfMVM5lOUKK2ThO4=;
+        b=Bz3ob9RtssQY/+VrStqxVSL4x5lN7bbl61PFrrY73Et0lNuTTiOR2vflxTmV/gGAGu
+         hk/sGeRPQDy7JQQQ4fHpsGdSze1U6Hgc36NK441s5/sC+QLnyxOTos5GVqXog7HKeLgE
+         jpQffK0TfRZJATt65GZTuMXONlSdTU8y0UZpMnExkSCX9kxyit+7b3DnQ1PHeBF1K46A
+         EbO5S5s5qHaf4m8r3EVBPh6WjsxrlTWub5u5YE2BcSbS4pUqiyGWqp8L+/DJGlrWs9rj
+         88/Ta4hbjAf1paypvJz6kPFuu+mQU8DYFdsoEjGVF5TW6ebz9SQTTVqIUaPjmPPdXySn
+         iESQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=DdJp4UZHmlYx0A4VYaHgo2wRMc0wfMVM5lOUKK2ThO4=;
+        b=cTdPNDUAuvd0zZv3zeOAdikI8ovE9DKUERQVzzVzn5Rt3RMAJiXfGI0OjAUDQWGMX5
+         AQImxqOV8oUdxG8gxHhZtivIlZFk1R93chi9Yipn4Cqvz55vUZw+HjcqYxPscDbMmdJ6
+         1zOXzVzku7PvA/t0IWAMduSOV+k9BZ8nIoWLQQtL9/brUUcWnjfoUlF7F1JsFUzivgsr
+         +2ZX9ycP8U7RgEY/i8b2bxxkjCZQnTJChxJzTd2rjUD7PDDPJ0a7dRw3N1YoS3ODA2xO
+         PMIhqU2aKICr9fNPZHvMfQfl+BXrHYgqU9J970Xjqhf2kJ1hP2UyQYCFTUV7JWLNF7gt
+         hxZg==
+X-Gm-Message-State: ACgBeo2C9ufDhDmO4VyI18RfhvXYdoAb4V9l2IDFgGmjEUrtVPZJhypx
+        bvu50xrUwnfIQNpvMZWr78X9ZU/ehX0=
+X-Google-Smtp-Source: AA6agR4hTX2FKtOUU9qMLkpuVYHtU3N3YoJFjdkyuHvvYrlgWecJoyMlHenkzTFbRxSnaYNXYypt8w==
+X-Received: by 2002:a17:907:9605:b0:6f5:c66:7c13 with SMTP id gb5-20020a170907960500b006f50c667c13mr21037817ejc.66.1660131620373;
+        Wed, 10 Aug 2022 04:40:20 -0700 (PDT)
+Received: from felia.fritz.box (200116b826708900bd59055014c64746.dip.versatel-1u1.de. [2001:16b8:2670:8900:bd59:550:14c6:4746])
+        by smtp.gmail.com with ESMTPSA id ec22-20020a170906b6d600b00730560156b0sm2213435ejb.50.2022.08.10.04.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 04:40:20 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>, linux-nfs@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] NFS: clean up a needless assignment in nfs_file_write()
+Date:   Wed, 10 Aug 2022 13:40:01 +0200
+Message-Id: <20220810114001.13513-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Commit 064109db53ec ("NFS: remove redundant code in nfs_file_write()")
+identifies that filemap_fdatawait_range() will always return 0 and removes
+a dead error-handling case in nfs_file_write(). With this change however,
+assigning the return of filemap_fdatawait_range() to the result variable is
+a dead store.
 
-在 2022/8/10 上午5:20, Conor.Dooley@microchip.com 写道:
-> On 02/08/2022 13:18, Xianting Tian wrote:
->> riscv: crash_core: Export kernel vm layout, phys_ram_base
-> Can you please just use RISC-V: for the whole series, my OCD
-> hates the mix haha.
+Remove this needless assignment.
 
-Sorry, I missed it,  you ever pointed out this poblem in the comments of 
-V3, I will definitely fix the issue in V6.
+No functional change. No change in object code.
 
->
->> These infos are needed by the kdump crash tool. Since these values change
->> from time to time, it is preferable to export them via vmcoreinfo than to
->> change the crash's code frequently.
-> This commit description doesn't seem to match the patches at all.
-> I don't see any exporting happening here at all - this is documenting
-The real export code is in 2/6 patch, yes this is the document just 
-describe the exporting contents
-> the export. Maybe I am just misunderstanding, but this commit message
-> just doesn't seem to match the change. Secondly, should the subject not
-> be something like "docs: admin-guide: add riscv crash kernel yada yada"?
-the commit log for the file 
-'Documentation/admin-guide/kdump/vmcoreinfo.rst' is not unified in the 
-commit history of the file. I agree with you 'docs: admin-guide: xxx' is 
-better,  will fix it V6.
-> Maybe the current subject lime that explains the lack of a review from
-> the docs maintainer?
-yes, it is possible :)
->
-> Thanks,
-> Conor.
-For your comments for other patches, I will fix it in v6, thanks
->
->> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
->> ---
->>   .../admin-guide/kdump/vmcoreinfo.rst          | 31 +++++++++++++++++++
->>   1 file changed, 31 insertions(+)
->>
->> diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
->> index 8419019b6a88..6b76284a503c 100644
->> --- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
->> +++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
->> @@ -595,3 +595,34 @@ X2TLB
->>   -----
->>   
->>   Indicates whether the crashed kernel enabled SH extended mode.
->> +
->> +RISCV64
->> +=======
->> +
->> +VA_BITS
->> +-------
->> +
->> +The maximum number of bits for virtual addresses. Used to compute the
->> +virtual memory ranges.
->> +
->> +PAGE_OFFSET
->> +-----------
->> +
->> +Indicates the virtual kernel start address of direct-mapped RAM region.
->> +
->> +phys_ram_base
->> +-------------
->> +
->> +Indicates the start physical RAM address.
->> +
->> +MODULES_VADDR|MODULES_END|VMALLOC_START|VMALLOC_END|VMEMMAP_START|VMEMMAP_END
->> +-----------------------------------------------------------------------------
->> +KASAN_SHADOW_START|KASAN_SHADOW_END|KERNEL_LINK_ADDR|ADDRESS_SPACE_END
->> +----------------------------------------------------------------------
->> +
->> +Used to get the correct ranges:
->> +	MODULES_VADDR ~ MODULES_END : Kernel module space.
->> +	VMALLOC_START ~ VMALLOC_END : vmalloc() / ioremap() space.
->> +	VMEMMAP_START ~ VMEMMAP_END : vmemmap region, used for struct page array.
->> +	KASAN_SHADOW_START ~ KASAN_SHADOW_END : kasan shadow space.
->> +	KERNEL_LINK_ADDR ~ ADDRESS_SPACE_END : Kernel link and BPF space.
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ fs/nfs/file.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index d2bcd4834c0e..f2ad9495ee4a 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -658,9 +658,9 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 			goto out;
+ 	}
+ 	if (mntflags & NFS_MOUNT_WRITE_WAIT) {
+-		result = filemap_fdatawait_range(file->f_mapping,
+-						 iocb->ki_pos - written,
+-						 iocb->ki_pos - 1);
++		filemap_fdatawait_range(file->f_mapping,
++					iocb->ki_pos - written,
++					iocb->ki_pos - 1);
+ 	}
+ 	result = generic_write_sync(iocb, written);
+ 	if (result < 0)
+-- 
+2.17.1
+
