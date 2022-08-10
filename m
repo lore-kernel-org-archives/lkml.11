@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9BDC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE7FC25B08
+	for <linux-kernel@archiver.kernel.org>; Wed, 10 Aug 2022 10:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbiHJKlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 06:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37736 "EHLO
+        id S230164AbiHJKlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 06:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiHJKlR (ORCPT
+        with ESMTP id S229446AbiHJKlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 06:41:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC396B665;
-        Wed, 10 Aug 2022 03:41:16 -0700 (PDT)
+        Wed, 10 Aug 2022 06:41:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0660E6B66C;
+        Wed, 10 Aug 2022 03:41:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9A2A61199;
-        Wed, 10 Aug 2022 10:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7143C433C1;
-        Wed, 10 Aug 2022 10:41:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBF9611B7;
+        Wed, 10 Aug 2022 10:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA45BC433D6;
+        Wed, 10 Aug 2022 10:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660128075;
-        bh=CJ+veYLE2yi0irO1SQ0dJ19o4C5fKkXVLX0IMO8dpuI=;
+        s=korg; t=1660128108;
+        bh=UTgDPlLmDwf3UdAjiC20kp3vocuyG6ERqW53VpoUqWw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dBkxsAB8whfxkXG9rTnqrm6ZGXaJHZlv9QVSo4n5v7M9t4NMAI/JJrhYOiSMzfVBI
-         dwvbTf/RhcxkBHkZ0O2+UzCP+2pEOJDeo6O0+c6/mCu9tucgX1mztxq4HpQnOlRWfV
-         /2oFFEMiv8xOnzKB635KgaDMVwOUT5FaMMZ76ViU=
-Date:   Wed, 10 Aug 2022 12:41:12 +0200
+        b=hkUhxpdTGKBCILjzQV8Q4xOSsJzF6VT3kayFmWnEWeMlSmjVOBO/Eu4TUWAEa2mZv
+         hpCqv3KSHJ/XeT9mgXydskDbLrrzGT23Vr/b4LiUgvU1eUwjxU+mGo1itlyFaxH5pB
+         Xk8t6MzBtLtuk6rTKccMTDNQyQ/Vz1xGVVpCNn30=
+Date:   Wed, 10 Aug 2022 12:41:45 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Szuying Chen <chensiying21@gmail.com>
 Cc:     mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
@@ -38,7 +38,7 @@ Cc:     mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
         Yd_Tseng@asmedia.com.tw, Chloe_Chen@asmedia.com.tw,
         Richard_Hsu@asmedia.com.tw
 Subject: Re: [PATCH] thunderbolt: thunderbolt: add vendor's NVM formats
-Message-ID: <YvOLSH2gLz8vJS//@kroah.com>
+Message-ID: <YvOLacO4H3ObAGL3@kroah.com>
 References: <20220810101743.11214-1-chensiying21@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -64,9 +64,31 @@ On Wed, Aug 10, 2022 at 06:17:43PM +0800, Szuying Chen wrote:
 >  drivers/thunderbolt/switch.c | 19 +++++++-----
 >  drivers/thunderbolt/tb.h     | 18 +++++++----
 >  3 files changed, 46 insertions(+), 50 deletions(-)
+> 
+> diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
+> index d5f283889da8..2aae8b3fa5dc 100644
+> --- a/drivers/thunderbolt/nvm.c
+> +++ b/drivers/thunderbolt/nvm.c
+> @@ -14,6 +14,7 @@
+>  #include "tb.h"
+> 
+>  static DEFINE_IDA(nvm_ida);
+> +
+>  static int tb_switch_nvm_read(void *priv, unsigned int offset, void *val,
+>  			      size_t bytes)
+>  {
+> @@ -22,7 +23,6 @@ static int tb_switch_nvm_read(void *priv, unsigned int offset, void *val,
+>  	int ret;
+> 
+>  	pm_runtime_get_sync(&sw->dev);
+> -
+>  	if (!mutex_trylock(&sw->tb->lock)) {
+>  		ret = restart_syscall();
+>  		goto out;
 
-This patch does not apply to any tree that I work with.  Please make it
-against Linus's latest tree right now, or linux-next to be safe.
+These are odd whitespace changes that you do not discuss in your
+changelog, which means we can't take this.  Also, whitespace cleanups
+should be in a separate commit.
 
 thanks,
 
