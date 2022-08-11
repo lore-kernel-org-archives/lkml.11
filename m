@@ -2,98 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B06C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 323CEC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234662AbiHKKrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 06:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S234563AbiHKKst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234645AbiHKKrg (ORCPT
+        with ESMTP id S234584AbiHKKsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 06:47:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEB52716D;
-        Thu, 11 Aug 2022 03:47:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CD7260ED3;
-        Thu, 11 Aug 2022 10:47:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C06AC433D6;
-        Thu, 11 Aug 2022 10:47:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660214854;
-        bh=4WoU4PzTqSWaKAiYjQxMqeztaU+Fg5MuY24q8LVMV78=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aYoM1/Vt15qtgK7KyhfqAX4/Yb0rFlmcFB7dAw2aNMEox9rqxt8EMfPlcNJ0QpfcH
-         dHCDd0nEpUcjZabJF8Uwqd9dlTZnOAP4gyk5yPEihH6/EAj16MJIeG0p2jt112fxk2
-         RO/U8rFO2bu0lYH3Wpunc8Tt14++HrUbamVXLNYTjsvYq+aaLGXHAybzQwT5SJdIe/
-         fRAieTTLS/igvRrWJkjW3k65trDPyWj0axh73bKuh1TZGvD6YRy/SWjg18wHTRmY/T
-         fj7kShu035g5kp6Iy3VczUU7KQA/uqYST4dv0KTTMasskriY/QpBAsm16GjTJXlSoN
-         Tki++/bIG+qFg==
-Date:   Thu, 11 Aug 2022 12:47:27 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        linux-riscv@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: rectify entry for RISC-V/MICROCHIP
- POLARFIRE SOC SUPPORT
-Message-ID: <YvTePwvp5AigV0Ax@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        linux-riscv@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220811070506.12252-1-lukas.bulwahn@gmail.com>
+        Thu, 11 Aug 2022 06:48:47 -0400
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BEE92F44;
+        Thu, 11 Aug 2022 03:48:45 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id a7so32844160ejp.2;
+        Thu, 11 Aug 2022 03:48:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=2psXapoZ13xPQOZjFEvN9Z4DOi1cREWK0pz2T2YJtmo=;
+        b=IpaDm60Ez/kHnqKOqwLqecSOwt+TofmQl/BUc7MHOIkH+fULgLOPOjr9Aw3pYpBSBv
+         R42mufR3uBI1vhL2XhmgmHEcUOGhJgWprd7YeDkcdO7VPwITvhzUs5N9bqCJnBBY6pRX
+         TFKmzXSL1kiu7hQ1UM8NGEUUbrQqAN9KMyUZMn57TtSuFmaOzXKbG6ICXX17Yw5kpCcT
+         elrAgNcjQg16pGxgqd5BX1u9AweMno7CSdUgcZyt5ioxbgN8AlIEtvilOgwLtU+xKODg
+         osd0C5snWFdL8DWNjt8XsYm/sYoxWe9a18UN+nWiheue9WpSWe8C5dkfys8QQzNXFQP2
+         DVGA==
+X-Gm-Message-State: ACgBeo1keGsGLQTGG8T2pNsCcORl7bVTfmz427qRZ34bkA5IU8tbUDEd
+        eYXvNLOXCXmjp3BTnV0LQINQw+PsaC8=
+X-Google-Smtp-Source: AA6agR7YlDJTfvAKpbFW/hQM6n5lS76ql3UMmCt24HIKcucEnGQwv4lfDeC9lNHbbPYUxsv5aMUahQ==
+X-Received: by 2002:a17:907:2e19:b0:730:acf0:4921 with SMTP id ig25-20020a1709072e1900b00730acf04921mr21902909ejc.416.1660214924186;
+        Thu, 11 Aug 2022 03:48:44 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id f15-20020a50ee8f000000b0043bc4b28464sm9002313edr.34.2022.08.11.03.48.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Aug 2022 03:48:43 -0700 (PDT)
+Message-ID: <2fd0f4e5-8b5d-4257-4700-71e68cff29f6@kernel.org>
+Date:   Thu, 11 Aug 2022 12:48:41 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="/Fg/PWpkMsj86wcD"
-Content-Disposition: inline
-In-Reply-To: <20220811070506.12252-1-lukas.bulwahn@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH] serial: stm32: make info structs static to avoid sparse
+ warnings
+Content-Language: en-US
+To:     Ben Dooks <ben-linux@fluff.org>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     gregkh@linuxfoundation.org, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com
+References: <20220721212430.453192-1-ben-linux@fluff.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220721212430.453192-1-ben-linux@fluff.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 21. 07. 22, 23:24, Ben Dooks wrote:
+> The info structs are local only to the stm32-usart.c driver and are
+> triggering sparse warnings about being undecalred. Move these into
+> the main driver code and make them static to avoid the following
+> warnings:
+> 
+> drivers/tty/serial/stm32-usart.h:42:25: warning: symbol 'stm32f4_info' was not declared. Should it be static?
+> drivers/tty/serial/stm32-usart.h:63:25: warning: symbol 'stm32f7_info' was not declared. Should it be static?
+> drivers/tty/serial/stm32-usart.h:85:25: warning: symbol 'stm32h7_info' was not declared. Should it be static?
 
---/Fg/PWpkMsj86wcD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Right, I would go even further. There is no point in having a separate 
+header. So could you move the whole content to .c?
 
-On Thu, Aug 11, 2022 at 09:05:06AM +0200, Lukas Bulwahn wrote:
-> Commit 3cbd67384677 ("MAINTAINERS: add the Polarfire SoC's i2c driver")
-> adds the file entry for drivers/i2c/busses/i2c-microchip-core.c, but the
-> file is actually named drivers/i2c/busses/i2c-microchip-corei2c.c.
->=20
-> Repair this file reference in RISC-V/MICROCHIP POLARFIRE SOC SUPPORT.
->=20
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+> ---
+>   drivers/tty/serial/stm32-usart.c | 69 ++++++++++++++++++++++++++++++++
+>   drivers/tty/serial/stm32-usart.h | 68 -------------------------------
+>   2 files changed, 69 insertions(+), 68 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index 0973b03eeeaa..01f1ab2c18c0 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -35,6 +35,75 @@
+>   #include "serial_mctrl_gpio.h"
+>   #include "stm32-usart.h"
+>   
+> +
+> +/* Register offsets */
+> +static struct stm32_usart_info stm32f4_info = {
+> +	.ofs = {
+> +		.isr	= 0x00,
+> +		.rdr	= 0x04,
+> +		.tdr	= 0x04,
+> +		.brr	= 0x08,
+> +		.cr1	= 0x0c,
+> +		.cr2	= 0x10,
+> +		.cr3	= 0x14,
+> +		.gtpr	= 0x18,
+> +		.rtor	= UNDEF_REG,
+> +		.rqr	= UNDEF_REG,
+> +		.icr	= UNDEF_REG,
+> +	},
+> +	.cfg = {
+> +		.uart_enable_bit = 13,
+> +		.has_7bits_data = false,
+> +		.fifosize = 1,
+> +	}
+> +};
+> +
+> +static struct stm32_usart_info stm32f7_info = {
+> +	.ofs = {
+> +		.cr1	= 0x00,
+> +		.cr2	= 0x04,
+> +		.cr3	= 0x08,
+> +		.brr	= 0x0c,
+> +		.gtpr	= 0x10,
+> +		.rtor	= 0x14,
+> +		.rqr	= 0x18,
+> +		.isr	= 0x1c,
+> +		.icr	= 0x20,
+> +		.rdr	= 0x24,
+> +		.tdr	= 0x28,
+> +	},
+> +	.cfg = {
+> +		.uart_enable_bit = 0,
+> +		.has_7bits_data = true,
+> +		.has_swap = true,
+> +		.fifosize = 1,
+> +	}
+> +};
+> +
+> +static struct stm32_usart_info stm32h7_info = {
+> +	.ofs = {
+> +		.cr1	= 0x00,
+> +		.cr2	= 0x04,
+> +		.cr3	= 0x08,
+> +		.brr	= 0x0c,
+> +		.gtpr	= 0x10,
+> +		.rtor	= 0x14,
+> +		.rqr	= 0x18,
+> +		.isr	= 0x1c,
+> +		.icr	= 0x20,
+> +		.rdr	= 0x24,
+> +		.tdr	= 0x28,
+> +	},
+> +	.cfg = {
+> +		.uart_enable_bit = 0,
+> +		.has_7bits_data = true,
+> +		.has_swap = true,
+> +		.has_wakeup = true,
+> +		.has_fifo = true,
+> +		.fifosize = 16,
+> +	}
+> +};
+> +
+>   static void stm32_usart_stop_tx(struct uart_port *port);
+>   static void stm32_usart_transmit_chars(struct uart_port *port);
+>   static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch);
+> diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+> index ee69c203b926..0ec41a732c88 100644
+> --- a/drivers/tty/serial/stm32-usart.h
+> +++ b/drivers/tty/serial/stm32-usart.h
+> @@ -38,74 +38,6 @@ struct stm32_usart_info {
+>   
+>   #define UNDEF_REG 0xff
+>   
+> -/* Register offsets */
+> -struct stm32_usart_info stm32f4_info = {
+> -	.ofs = {
+> -		.isr	= 0x00,
+> -		.rdr	= 0x04,
+> -		.tdr	= 0x04,
+> -		.brr	= 0x08,
+> -		.cr1	= 0x0c,
+> -		.cr2	= 0x10,
+> -		.cr3	= 0x14,
+> -		.gtpr	= 0x18,
+> -		.rtor	= UNDEF_REG,
+> -		.rqr	= UNDEF_REG,
+> -		.icr	= UNDEF_REG,
+> -	},
+> -	.cfg = {
+> -		.uart_enable_bit = 13,
+> -		.has_7bits_data = false,
+> -		.fifosize = 1,
+> -	}
+> -};
+> -
+> -struct stm32_usart_info stm32f7_info = {
+> -	.ofs = {
+> -		.cr1	= 0x00,
+> -		.cr2	= 0x04,
+> -		.cr3	= 0x08,
+> -		.brr	= 0x0c,
+> -		.gtpr	= 0x10,
+> -		.rtor	= 0x14,
+> -		.rqr	= 0x18,
+> -		.isr	= 0x1c,
+> -		.icr	= 0x20,
+> -		.rdr	= 0x24,
+> -		.tdr	= 0x28,
+> -	},
+> -	.cfg = {
+> -		.uart_enable_bit = 0,
+> -		.has_7bits_data = true,
+> -		.has_swap = true,
+> -		.fifosize = 1,
+> -	}
+> -};
+> -
+> -struct stm32_usart_info stm32h7_info = {
+> -	.ofs = {
+> -		.cr1	= 0x00,
+> -		.cr2	= 0x04,
+> -		.cr3	= 0x08,
+> -		.brr	= 0x0c,
+> -		.gtpr	= 0x10,
+> -		.rtor	= 0x14,
+> -		.rqr	= 0x18,
+> -		.isr	= 0x1c,
+> -		.icr	= 0x20,
+> -		.rdr	= 0x24,
+> -		.tdr	= 0x28,
+> -	},
+> -	.cfg = {
+> -		.uart_enable_bit = 0,
+> -		.has_7bits_data = true,
+> -		.has_swap = true,
+> -		.has_wakeup = true,
+> -		.has_fifo = true,
+> -		.fifosize = 16,
+> -	}
+> -};
+> -
+>   /* USART_SR (F4) / USART_ISR (F7) */
+>   #define USART_SR_PE		BIT(0)
+>   #define USART_SR_FE		BIT(1)
 
-Acked-by: Wolfram Sang <wsa@kernel.org>
+thanks,
+-- 
+js
+suse labs
 
-
---/Fg/PWpkMsj86wcD
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmL03jsACgkQFA3kzBSg
-Kbb9ug//XvIqb1Vway8MBwrhbNGpzOqOcN4Q2c8JUiZ3oNXlBHxMTik8nRbX+JTq
-fpafbNe7CRZ1SUyIgKcz/bmagZj3dNS+3oeE9vBOi2fWBGb8xMGhTzNQib6Z+q8m
-N6NfsX7y5t7Z/IracHQhhTrVAd8nKRbNnQd9BqQhnGgR/ZJTX6QFzeoF6byhaa3c
-wX+SH46dADmYghkFdPRtNx72TlQElL1raj7Lqb7u9tlGF3NgbVQISjjPYbepx8u3
-LfRMAYanVCXMZO1tUOfXo2yZakquAl5S//Xmfx4nvpO7IU/hcF6LUVjxtGNPoDdQ
-M+n6ctoCtpZkblt/TyExfP7ijZ+cx6bPGsu0fnbiB9KoeU4BcXvPmCHvY8N9B320
-6hRucRjlYEHA6M1Cr7OCL7jikLlJtts3qnJoKO6bB3bfADUID4/KekJfeDB9NqYj
-oWTeKhF8Ekudd7v4W2+QK/QHuDHlTAW4rJuSp0Tk+6QqAFy9W8x55hHIAqu+8gr3
-Jzfb+3Gd+CDT2eXEaPPTBPV3WqX/pSyH9IGfUPSOaQgjVKmLfsda02ZvmBrWoI+b
-v9rSEma+xmrtiupifePbvgQcwM9k6WdxG0WblT0fwnKgZSXOya9/cZTUpy79D/ml
-f9ZkG9s5+t80w0F6KKRQ82z4s5soiVy4nlAtvbLOLx1Q2YfWAb0=
-=edpy
------END PGP SIGNATURE-----
-
---/Fg/PWpkMsj86wcD--
