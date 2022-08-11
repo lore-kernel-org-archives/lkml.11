@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D049C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AF2C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238743AbiHKQif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38284 "EHLO
+        id S238803AbiHKQik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239082AbiHKQgT (ORCPT
+        with ESMTP id S238602AbiHKQfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DC2816BB;
-        Thu, 11 Aug 2022 09:11:40 -0700 (PDT)
+        Thu, 11 Aug 2022 12:35:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39C2C2EBB;
+        Thu, 11 Aug 2022 09:11:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42E22B82164;
-        Thu, 11 Aug 2022 16:11:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F976C433B5;
-        Thu, 11 Aug 2022 16:11:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ABE2B821AC;
+        Thu, 11 Aug 2022 16:11:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6825C433C1;
+        Thu, 11 Aug 2022 16:11:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234298;
-        bh=utghrLW32ISiREkGWf4NjEJsgWU4hb+gpkwwBKIRt1c=;
+        s=k20201202; t=1660234280;
+        bh=+wEY6MyJpAk+oWZwmhBzn9A3V3W1GM+AX+a4XqCu/mI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogN8qujRzQ9XovTzY+lt86EUk+ZVheOUIWJUoZgmxfiKNkC6OYVDb0EsozBQhQiF8
-         c5Y1A3iXr1yXu5+G8DzoNOq2/wQAT/NO/7ErSggXMjNDDqYBSFsWWOomMgyK/TG8UM
-         xD9vUgiyBzmbjfkX6v5kaA427QZS9NU3TotxfqCAo95etfQGrbK6Yj8iPXsKntB4Ho
-         1NyEfewZllss/AogobOY07qqFE21wxqz9C/G9i7mNO0oBjpg5ksCr9O9+3ujc3ctn4
-         MLTg7xnT3bEB6rxqJQ+zOLvJk41sWL7ZgAVGRHJDcKCBb9MnMINHJGbavwjvnkmw9r
-         GWQgSRTHfReKQ==
+        b=rMAv2lc3f2BRszjCtt4qa0C/7D2uk04C+Psci1xZaCGRBJYET0FQAuggGi4QbkcgJ
+         OeLtd1jPViXqT8GQGnh0OypIpnmPoLm6iiu3ZdWGIYvVyYi+B8UzzAtJFjIKfTuKyC
+         /+bYwbtUoTxRqrbvhBN2DEXIFHuREY1zrUd8mBwonIYeW1eD+d5mckprlPlSPGu5kO
+         Aq6JAhj4UFQxt3uVbk1zIN5ECu/hZtfTmV2T8mVzfZDXgVtD9M+hyHvDSt1kWr62pK
+         Q4t8dqfZF0RvPMRvfwwgRFRT+Ca34qJ3MAkOqvp40sc41Y0Yqpt2LwSHgdqRZrAMWZ
+         i2+gcMXXCX29g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Oleg.Karfich@wago.com, Thomas Gleixner <tglx@linutronix.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Sasha Levin <sashal@kernel.org>, linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 14/14] fs/dcache: Disable preemption on i_dir_seq write side on PREEMPT_RT
-Date:   Thu, 11 Aug 2022 12:10:43 -0400
-Message-Id: <20220811161050.1543183-14-sashal@kernel.org>
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Dave Airlie <airlied@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kherbst@redhat.com,
+        lyude@redhat.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 09/14] drm/nouveau/nvkm: use list_add_tail() when building object tree
+Date:   Thu, 11 Aug 2022 12:10:38 -0400
+Message-Id: <20220811161050.1543183-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
 References: <20220811161050.1543183-1-sashal@kernel.org>
@@ -52,69 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit cf634d540a29018e8d69ab1befb7e08182bc6594 ]
+[ Upstream commit 61c1f340bc809a1ca1e3c8794207a91cde1a7c78 ]
 
-i_dir_seq is a sequence counter with a lock which is represented by the
-lowest bit. The writer atomically updates the counter which ensures that it
-can be modified by only one writer at a time. This requires preemption to
-be disabled across the write side critical section.
+Fixes resume from hibernate failing on (at least) TU102, where cursor
+channel init failed due to being performed before the core channel.
 
-On !PREEMPT_RT kernels this is implicit by the caller acquiring
-dentry::lock. On PREEMPT_RT kernels spin_lock() does not disable preemption
-which means that a preempting writer or reader would live lock. It's
-therefore required to disable preemption explicitly.
+Not solid idea why suspend-to-ram worked, but, presumably HW being in
+an entirely clean state has something to do with it.
 
-An alternative solution would be to replace i_dir_seq with a seqlock_t for
-PREEMPT_RT, but that comes with its own set of problems due to arbitrary
-lock nesting. A pure sequence count with an associated spinlock is not
-possible because the locks held by the caller are not necessarily related.
-
-As the critical section is small, disabling preemption is a sensible
-solution.
-
-Reported-by: Oleg.Karfich@wago.com
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lkml.kernel.org/r/20220613140712.77932-2-bigeasy@linutronix.de
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dcache.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/core/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index e12246378834..faf6ca33fd51 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -2455,7 +2455,15 @@ EXPORT_SYMBOL(d_rehash);
- 
- static inline unsigned start_dir_add(struct inode *dir)
- {
--
-+	/*
-+	 * The caller holds a spinlock (dentry::d_lock). On !PREEMPT_RT
-+	 * kernels spin_lock() implicitly disables preemption, but not on
-+	 * PREEMPT_RT.  So for RT it has to be done explicitly to protect
-+	 * the sequence count write side critical section against a reader
-+	 * or another writer preempting, which would result in a live lock.
-+	 */
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_disable();
- 	for (;;) {
- 		unsigned n = dir->i_dir_seq;
- 		if (!(n & 1) && cmpxchg(&dir->i_dir_seq, n, n + 1) == n)
-@@ -2467,6 +2475,8 @@ static inline unsigned start_dir_add(struct inode *dir)
- static inline void end_dir_add(struct inode *dir, unsigned n)
- {
- 	smp_store_release(&dir->i_dir_seq, n + 2);
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_enable();
- }
- 
- static void d_wait_lookup(struct dentry *dentry)
+diff --git a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+index be19bbe56bba..bb57df290f63 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
++++ b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+@@ -128,7 +128,7 @@ nvkm_ioctl_new(struct nvkm_client *client,
+ 	if (ret == 0) {
+ 		ret = nvkm_object_init(object);
+ 		if (ret == 0) {
+-			list_add(&object->head, &parent->tree);
++			list_add_tail(&object->head, &parent->tree);
+ 			if (nvkm_object_insert(object)) {
+ 				client->data = object;
+ 				return 0;
 -- 
 2.35.1
 
