@@ -2,75 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B35C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 638E7C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237368AbiHKQFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S236924AbiHKQGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237312AbiHKQFO (ORCPT
+        with ESMTP id S236768AbiHKQGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:05:14 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52E38286D
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:52:10 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1660233114trxafeml
-Received: from localhost.localdomain ( [110.188.55.240])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 11 Aug 2022 23:51:48 +0800 (CST)
-X-QQ-SSF: 0100000000200080H000B00A0000020
-X-QQ-FEAT: Q4gfBD3K7t8iW+F0xuDf5mMaMd6N4pAHBcC2EIS+5calpQO2x1oVsk6bfAZ7T
-        Y3M9N0LHD/A7CX2f15X93XNw2oLcl4+dZhLAAP2ybCUI9NNj3f4n/l+DdizVNlNpTHu3fBc
-        mYUCafzJUS7gAynGqW+FCRy0nwYLdgUawc7a1z5SHfqX3sgG/fDy9x7OXv7/3FngzIvwk94
-        yLKz4wG0hxRveyx09ui9CSvqw8GthCeIC2BCxpJnSmU1hgR4tJxg3SLGh88qtm4rH8CrhvA
-        xjfUyAxRm3Xs6lXZtd/ELaxtSjw/Lsba+6g8vsUUz44xycfR4JbFviwEO2Jj1h5q/XGzNID
-        hrfjjaYJDDQkXHPVSIwk02SSCkLuf06ub/BE/NiDLQMZ9i7anMhTCqA7ZH146aBjfmpmARo
-X-QQ-GoodBg: 0
-From:   min tang <tangmin@cdjrlc.com>
-To:     airlied@linux.ie, daniel@ffwll.ch
-Cc:     zackr@vmware.com, linux-graphics-maintainer@vmware.com,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        min tang <tangmin@cdjrlc.com>
-Subject: [PATCH] drm/vmwgfx: Fix comment typo
-Date:   Thu, 11 Aug 2022 23:51:36 +0800
-Message-Id: <20220811155136.13526-1-tangmin@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+        Thu, 11 Aug 2022 12:06:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4109F0C9;
+        Thu, 11 Aug 2022 08:53:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3E05B82150;
+        Thu, 11 Aug 2022 15:53:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51440C433D6;
+        Thu, 11 Aug 2022 15:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660233187;
+        bh=7ryKt3BvDv8KyfJYLeaDSvJJFnVL4177BFp4TNwqe/E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BYm4MdxaoD0bLgQ7zAJikLafEgoMKJ8POhhjGZ3JK3aqijMbUPzJs6/wlKk105W92
+         1QDAHBXl3NIw1X6SVD3ib2v8SO9ifeEr5ucW7T8NBrvh8bFFmm1lTo3LJ6TuXwJkpB
+         iFk6AjbeKft9A+XEDkiY8c6VjyoDEU29uXAnxkUijnrhc2zafl+/6uQ3OTh+GvpK+y
+         7tIrLlpol+iblkSV0ffbNGzxzyjMcM3eh2+bPDj51Imy758Wi6lEgh9wdjxxOv3BkL
+         FoqKcdT9ZmPFaUnzxbcIXZ++soizWlpmTHRGXbtqkUWqP/f7RdEzRZU2Mswx/yCS1M
+         e8jndxdGFyaAg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, charlene.liu@amd.com,
+        harry.wentland@amd.com, jun.lei@amd.com, zhan.liu@amd.com,
+        HaoPing.Liu@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 63/93] drm/amdgpu: fix file permissions on some files
+Date:   Thu, 11 Aug 2022 11:41:57 -0400
+Message-Id: <20220811154237.1531313-63-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
+References: <20220811154237.1531313-1-sashal@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `to' is duplicated in line 384, remove one,The double `to' is duplicated in line 412, remove one.
+From: Alex Deucher <alexander.deucher@amd.com>
 
-Signed-off-by: min tang <tangmin@cdjrlc.com>
+[ Upstream commit 0a94608f0f7de9b1135ffea3546afe68eafef57f ]
+
+Drop execute.
+
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2085
+Reviewed-by: Guchun Chen <guchun.chen@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_offset.h   | 0
+ drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_sh_mask.h  | 0
+ drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_offset.h    | 0
+ drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_sh_mask.h   | 0
+ drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_offset.h  | 0
+ drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_sh_mask.h | 0
+ 6 files changed, 0 insertions(+), 0 deletions(-)
+ mode change 100755 => 100644 drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_offset.h
+ mode change 100755 => 100644 drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_sh_mask.h
+ mode change 100755 => 100644 drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_offset.h
+ mode change 100755 => 100644 drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_sh_mask.h
+ mode change 100755 => 100644 drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_offset.h
+ mode change 100755 => 100644 drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_sh_mask.h
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-index d49de4905efa..82b9d33ecc84 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
-@@ -381,7 +381,7 @@ static int vmw_execbuf_res_noctx_val_add(struct vmw_sw_context *sw_context,
- }
- 
- /**
-- * vmw_view_res_val_add - Add a view and the surface it's pointing to to the
-+ * vmw_view_res_val_add - Add a view and the surface it's pointing to the
-  * validation list
-  *
-  * @sw_context: The software context holding the validation list.
-@@ -409,7 +409,7 @@ static int vmw_view_res_val_add(struct vmw_sw_context *sw_context,
- 
- /**
-  * vmw_view_id_val_add - Look up a view and add it and the surface it's pointing
-- * to to the validation list.
-+ * to the validation list.
-  *
-  * @sw_context: The software context holding the validation list.
-  * @view_type: The view type to look up.
+diff --git a/drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_offset.h b/drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_offset.h
+old mode 100755
+new mode 100644
+diff --git a/drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_sh_mask.h b/drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_1_sh_mask.h
+old mode 100755
+new mode 100644
+diff --git a/drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_offset.h b/drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_offset.h
+old mode 100755
+new mode 100644
+diff --git a/drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_sh_mask.h b/drivers/gpu/drm/amd/include/asic_reg/dcn/dcn_2_0_3_sh_mask.h
+old mode 100755
+new mode 100644
+diff --git a/drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_offset.h b/drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_offset.h
+old mode 100755
+new mode 100644
+diff --git a/drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_sh_mask.h b/drivers/gpu/drm/amd/include/asic_reg/dpcs/dpcs_2_0_3_sh_mask.h
+old mode 100755
+new mode 100644
 -- 
-2.17.1
+2.35.1
 
