@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5413C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 11:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9408DC25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 11:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234458AbiHKLbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 07:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34182 "EHLO
+        id S235000AbiHKLcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 07:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234978AbiHKLbh (ORCPT
+        with ESMTP id S234452AbiHKLbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 07:31:37 -0400
+        Thu, 11 Aug 2022 07:31:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481D394134;
-        Thu, 11 Aug 2022 04:31:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7EF95E74;
+        Thu, 11 Aug 2022 04:31:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8BB061280;
-        Thu, 11 Aug 2022 11:31:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9E7C433C1;
-        Thu, 11 Aug 2022 11:31:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04A8B61280;
+        Thu, 11 Aug 2022 11:31:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BEC8C4314B;
+        Thu, 11 Aug 2022 11:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660217470;
-        bh=FvA4PDQnlItDHwFH+IKHnrgKL2cJVt2/6hIBL0QMl6Y=;
+        s=korg; t=1660217479;
+        bh=mFABUJ0xMAazB0SCPChIQNeJ3maWJdkIE7JcCUmocrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zKgSLnDiONcoduoPe+Q3UTxyehPfJNtHsbg5CKIUiwN/hkTXBuB3XgHjEpqCBgXim
-         YWtLJF1/WtCDOhWsJhvFbQuNSv1VZYy/7CjKjRcsuV4UfK9m915CZbwkgGJprgpO1p
-         6CSsykeQutDYNZz4oyNKrVRefu/D/EtJQhgn+Dc0=
+        b=Icj3roLWdhhAxTMMPoAxtbF9KRwnDPQ66S3UYyL/cGKW9JsF0FI58m38+tZZ0j1Ul
+         Y12KGS7WuehjN0jECk2pKYYlWPa0GQ0nA8+838HJWS0vsJmKMiJqcATmArbAKjOKXc
+         rskJO0oLGmYttTRBRj76xF+GzMaZh+hH2+LPQHTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.10.136
-Date:   Thu, 11 Aug 2022 13:30:58 +0200
-Message-Id: <1660217458068@kroah.com>
+Subject: Re: Linux 5.15.60
+Date:   Thu, 11 Aug 2022 13:31:08 +0200
+Message-Id: <166021746756252@kroah.com>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <16602174580192@kroah.com>
-References: <16602174580192@kroah.com>
+In-Reply-To: <166021746711648@kroah.com>
+References: <166021746711648@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -65,21 +65,33 @@ index 6bd97cd50d62..7e061ed449aa 100644
  Full mitigation might require a microcode update from the CPU
  vendor. When the necessary microcode is not available, the kernel will
  report vulnerability.
+diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+index fbdc2083bec4..20ee96584aba 100644
+--- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+@@ -23,6 +23,7 @@ properties:
+       - brcm,bcm4345c5
+       - brcm,bcm43540-bt
+       - brcm,bcm4335a0
++      - brcm,bcm4349-bt
+ 
+   shutdown-gpios:
+     maxItems: 1
 diff --git a/Makefile b/Makefile
-index 5f4dbcb43307..1730698124c7 100644
+index 22bca3948306..4ea646f496c9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 5
- PATCHLEVEL = 10
--SUBLEVEL = 135
-+SUBLEVEL = 136
+ PATCHLEVEL = 15
+-SUBLEVEL = 59
++SUBLEVEL = 60
  EXTRAVERSION =
- NAME = Dare mighty things
+ NAME = Trick or Treat
  
 diff --git a/arch/arm64/crypto/poly1305-glue.c b/arch/arm64/crypto/poly1305-glue.c
-index 01e22fe40823..9f4599014854 100644
+index 9c3d86e397bf..1fae18ba11ed 100644
 --- a/arch/arm64/crypto/poly1305-glue.c
 +++ b/arch/arm64/crypto/poly1305-glue.c
 @@ -52,7 +52,7 @@ static void neon_poly1305_blocks(struct poly1305_desc_ctx *dctx, const u8 *src,
@@ -91,11 +103,39 @@ index 01e22fe40823..9f4599014854 100644
  			src += POLY1305_BLOCK_SIZE;
  			len -= POLY1305_BLOCK_SIZE;
  			dctx->rset = 1;
+diff --git a/arch/arm64/include/asm/kernel-pgtable.h b/arch/arm64/include/asm/kernel-pgtable.h
+index 96dc0f7da258..a971d462f531 100644
+--- a/arch/arm64/include/asm/kernel-pgtable.h
++++ b/arch/arm64/include/asm/kernel-pgtable.h
+@@ -103,8 +103,8 @@
+ /*
+  * Initial memory map attributes.
+  */
+-#define SWAPPER_PTE_FLAGS	(PTE_TYPE_PAGE | PTE_AF | PTE_SHARED)
+-#define SWAPPER_PMD_FLAGS	(PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S)
++#define SWAPPER_PTE_FLAGS	(PTE_TYPE_PAGE | PTE_AF | PTE_SHARED | PTE_UXN)
++#define SWAPPER_PMD_FLAGS	(PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S | PMD_SECT_UXN)
+ 
+ #if ARM64_KERNEL_USES_PMD_MAPS
+ #define SWAPPER_MM_MMUFLAGS	(PMD_ATTRINDX(MT_NORMAL) | SWAPPER_PMD_FLAGS)
+diff --git a/arch/arm64/kernel/head.S b/arch/arm64/kernel/head.S
+index 17962452e31d..ab6566bf1c33 100644
+--- a/arch/arm64/kernel/head.S
++++ b/arch/arm64/kernel/head.S
+@@ -285,7 +285,7 @@ SYM_FUNC_START_LOCAL(__create_page_tables)
+ 	subs	x1, x1, #64
+ 	b.ne	1b
+ 
+-	mov	x7, SWAPPER_MM_MMUFLAGS
++	mov_q	x7, SWAPPER_MM_MMUFLAGS
+ 
+ 	/*
+ 	 * Create the identity mapping.
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 16c045906b2a..159646da3c6b 100644
+index a170cfdae2a7..fe6981a38795 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -2447,7 +2447,7 @@ config RETPOLINE
+@@ -2427,7 +2427,7 @@ config RETPOLINE
  config RETHUNK
  	bool "Enable return-thunks"
  	depends on RETPOLINE && CC_HAS_RETURN_THUNK
@@ -104,7 +144,7 @@ index 16c045906b2a..159646da3c6b 100644
  	help
  	  Compile the kernel with the return-thunks compiler option to guard
  	  against kernel-to-user data leaks by avoiding return speculation.
-@@ -2456,21 +2456,21 @@ config RETHUNK
+@@ -2436,21 +2436,21 @@ config RETHUNK
  
  config CPU_UNRET_ENTRY
  	bool "Enable UNRET on kernel entry"
@@ -130,26 +170,47 @@ index 16c045906b2a..159646da3c6b 100644
  	help
  	  Compile the kernel with support for the spectre_v2=ibrs mitigation.
 diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 2a51ee2f5a0f..37ba0cdf99aa 100644
+index d370718e222b..be744fa10004 100644
 --- a/arch/x86/include/asm/cpufeatures.h
 +++ b/arch/x86/include/asm/cpufeatures.h
-@@ -299,6 +299,7 @@
+@@ -301,6 +301,7 @@
  #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
  #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */
  #define X86_FEATURE_USE_IBPB_FW		(11*32+16) /* "" Use IBPB during runtime firmware calls */
 +#define X86_FEATURE_RSB_VMEXIT_LITE	(11*32+17) /* "" Fill RSB on VM exit when EIBRS is enabled */
  
  /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
- #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
-@@ -429,5 +430,6 @@
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+@@ -446,5 +447,6 @@
  #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
  #define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
  #define X86_BUG_RETBLEED		X86_BUG(26) /* CPU is affected by RETBleed */
 +#define X86_BUG_EIBRS_PBRSB		X86_BUG(27) /* EIBRS is vulnerable to Post Barrier RSB Predictions */
  
  #endif /* _ASM_X86_CPUFEATURES_H */
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 49d814b2a341..a35f5e23fc2a 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -642,6 +642,7 @@ struct kvm_vcpu_arch {
+ 	u64 ia32_misc_enable_msr;
+ 	u64 smbase;
+ 	u64 smi_count;
++	bool at_instruction_boundary;
+ 	bool tpr_access_reporting;
+ 	bool xsaves_enabled;
+ 	u64 ia32_xss;
+@@ -1271,6 +1272,8 @@ struct kvm_vcpu_stat {
+ 	u64 nested_run;
+ 	u64 directed_yield_attempted;
+ 	u64 directed_yield_successful;
++	u64 preemption_reported;
++	u64 preemption_other;
+ 	u64 guest_mode;
+ };
+ 
 diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 407de670cd60..144dc164b759 100644
+index ec2967e7249f..8f38265bc81d 100644
 --- a/arch/x86/include/asm/msr-index.h
 +++ b/arch/x86/include/asm/msr-index.h
 @@ -148,6 +148,10 @@
@@ -164,7 +225,7 @@ index 407de670cd60..144dc164b759 100644
  #define MSR_IA32_FLUSH_CMD		0x0000010b
  #define L1D_FLUSH			BIT(0)	/*
 diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index c3e8e50633ea..0acd99329923 100644
+index 9a79b96e5521..6a59b2d58a3a 100644
 --- a/arch/x86/include/asm/nospec-branch.h
 +++ b/arch/x86/include/asm/nospec-branch.h
 @@ -60,7 +60,9 @@
@@ -209,10 +270,10 @@ index c3e8e50633ea..0acd99329923 100644
  .endm
  
 diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 2e5762faf774..859a3f59526c 100644
+index a37814c8547e..837e617f3b76 100644
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1291,6 +1291,53 @@ static void __init spec_ctrl_disable_kernel_rrsba(void)
+@@ -1328,6 +1328,53 @@ static void __init spec_ctrl_disable_kernel_rrsba(void)
  	}
  }
  
@@ -266,7 +327,7 @@ index 2e5762faf774..859a3f59526c 100644
  static void __init spectre_v2_select_mitigation(void)
  {
  	enum spectre_v2_mitigation_cmd cmd = spectre_v2_parse_cmdline();
-@@ -1441,28 +1488,7 @@ static void __init spectre_v2_select_mitigation(void)
+@@ -1478,28 +1525,7 @@ static void __init spectre_v2_select_mitigation(void)
  	setup_force_cpu_cap(X86_FEATURE_RSB_CTXSW);
  	pr_info("Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch\n");
  
@@ -296,7 +357,7 @@ index 2e5762faf774..859a3f59526c 100644
  
  	/*
  	 * Retpoline protects the kernel, but doesn't protect firmware.  IBRS
-@@ -2215,6 +2241,19 @@ static char *ibpb_state(void)
+@@ -2285,6 +2311,19 @@ static char *ibpb_state(void)
  	return "";
  }
  
@@ -316,7 +377,7 @@ index 2e5762faf774..859a3f59526c 100644
  static ssize_t spectre_v2_show_state(char *buf)
  {
  	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
-@@ -2227,12 +2266,13 @@ static ssize_t spectre_v2_show_state(char *buf)
+@@ -2297,12 +2336,13 @@ static ssize_t spectre_v2_show_state(char *buf)
  	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
  		return sprintf(buf, "Vulnerable: eIBRS+LFENCE with unprivileged eBPF and SMT\n");
  
@@ -332,10 +393,10 @@ index 2e5762faf774..859a3f59526c 100644
  }
  
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 901352bd3b42..9fc91482e85e 100644
+index 80cc41f79783..4a538ec413b8 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1024,6 +1024,7 @@ static void identify_cpu_without_cpuid(struct cpuinfo_x86 *c)
+@@ -1027,6 +1027,7 @@ static void identify_cpu_without_cpuid(struct cpuinfo_x86 *c)
  #define NO_SWAPGS		BIT(6)
  #define NO_ITLB_MULTIHIT	BIT(7)
  #define NO_SPECTRE_V2		BIT(8)
@@ -343,7 +404,7 @@ index 901352bd3b42..9fc91482e85e 100644
  
  #define VULNWL(vendor, family, model, whitelist)	\
  	X86_MATCH_VENDOR_FAM_MODEL(vendor, family, model, whitelist)
-@@ -1064,7 +1065,7 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+@@ -1067,7 +1068,7 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
  
  	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
  	VULNWL_INTEL(ATOM_GOLDMONT_D,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
@@ -352,7 +413,7 @@ index 901352bd3b42..9fc91482e85e 100644
  
  	/*
  	 * Technically, swapgs isn't serializing on AMD (despite it previously
-@@ -1074,7 +1075,9 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+@@ -1077,7 +1078,9 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
  	 * good enough for our purposes.
  	 */
  
@@ -363,7 +424,7 @@ index 901352bd3b42..9fc91482e85e 100644
  
  	/* AMD Family 0xf - 0x12 */
  	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
-@@ -1252,6 +1255,11 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+@@ -1255,6 +1258,11 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
  			setup_force_cpu_bug(X86_BUG_RETBLEED);
  	}
  
@@ -375,6 +436,41 @@ index 901352bd3b42..9fc91482e85e 100644
  	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
  		return;
  
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 4a4dc105552e..86f3096f042f 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -832,7 +832,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
+ 
+ 	/* If source buffer is not aligned then use an intermediate buffer */
+ 	if (!IS_ALIGNED((unsigned long)vaddr, 16)) {
+-		src_tpage = alloc_page(GFP_KERNEL);
++		src_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
+ 		if (!src_tpage)
+ 			return -ENOMEM;
+ 
+@@ -853,7 +853,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
+ 	if (!IS_ALIGNED((unsigned long)dst_vaddr, 16) || !IS_ALIGNED(size, 16)) {
+ 		int dst_offset;
+ 
+-		dst_tpage = alloc_page(GFP_KERNEL);
++		dst_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
+ 		if (!dst_tpage) {
+ 			ret = -ENOMEM;
+ 			goto e_free;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 26f2da1590ed..5b51156712f7 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4263,6 +4263,8 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
+ 
+ static void svm_handle_exit_irqoff(struct kvm_vcpu *vcpu)
+ {
++	if (to_svm(vcpu)->vmcb->control.exit_code == SVM_EXIT_INTR)
++		vcpu->arch.at_instruction_boundary = true;
+ }
+ 
+ static void svm_sched_in(struct kvm_vcpu *vcpu, int cpu)
 diff --git a/arch/x86/kvm/vmx/vmenter.S b/arch/x86/kvm/vmx/vmenter.S
 index 857fa0fc49fa..982138bebb70 100644
 --- a/arch/x86/kvm/vmx/vmenter.S
@@ -396,6 +492,144 @@ index 857fa0fc49fa..982138bebb70 100644
  
  	pop %_ASM_ARG2	/* @flags */
  	pop %_ASM_ARG1	/* @vmx */
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index a236104fc743..359292767e17 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -6471,6 +6471,7 @@ static void handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu)
+ 		return;
+ 
+ 	handle_interrupt_nmi_irqoff(vcpu, gate_offset(desc));
++	vcpu->arch.at_instruction_boundary = true;
+ }
+ 
+ static void vmx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index bd410926fda5..8a6ee5d8adc7 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -277,6 +277,8 @@ const struct _kvm_stats_desc kvm_vcpu_stats_desc[] = {
+ 	STATS_DESC_COUNTER(VCPU, nested_run),
+ 	STATS_DESC_COUNTER(VCPU, directed_yield_attempted),
+ 	STATS_DESC_COUNTER(VCPU, directed_yield_successful),
++	STATS_DESC_COUNTER(VCPU, preemption_reported),
++	STATS_DESC_COUNTER(VCPU, preemption_other),
+ 	STATS_DESC_ICOUNTER(VCPU, guest_mode)
+ };
+ 
+@@ -4371,6 +4373,19 @@ static void kvm_steal_time_set_preempted(struct kvm_vcpu *vcpu)
+ 	struct kvm_memslots *slots;
+ 	static const u8 preempted = KVM_VCPU_PREEMPTED;
+ 
++	/*
++	 * The vCPU can be marked preempted if and only if the VM-Exit was on
++	 * an instruction boundary and will not trigger guest emulation of any
++	 * kind (see vcpu_run).  Vendor specific code controls (conservatively)
++	 * when this is true, for example allowing the vCPU to be marked
++	 * preempted if and only if the VM-Exit was due to a host interrupt.
++	 */
++	if (!vcpu->arch.at_instruction_boundary) {
++		vcpu->stat.preemption_other++;
++		return;
++	}
++
++	vcpu->stat.preemption_reported++;
+ 	if (!(vcpu->arch.st.msr_val & KVM_MSR_ENABLED))
+ 		return;
+ 
+@@ -4400,19 +4415,21 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
+ {
+ 	int idx;
+ 
+-	if (vcpu->preempted && !vcpu->arch.guest_state_protected)
+-		vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
++	if (vcpu->preempted) {
++		if (!vcpu->arch.guest_state_protected)
++			vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
+ 
+-	/*
+-	 * Take the srcu lock as memslots will be accessed to check the gfn
+-	 * cache generation against the memslots generation.
+-	 */
+-	idx = srcu_read_lock(&vcpu->kvm->srcu);
+-	if (kvm_xen_msr_enabled(vcpu->kvm))
+-		kvm_xen_runstate_set_preempted(vcpu);
+-	else
+-		kvm_steal_time_set_preempted(vcpu);
+-	srcu_read_unlock(&vcpu->kvm->srcu, idx);
++		/*
++		 * Take the srcu lock as memslots will be accessed to check the gfn
++		 * cache generation against the memslots generation.
++		 */
++		idx = srcu_read_lock(&vcpu->kvm->srcu);
++		if (kvm_xen_msr_enabled(vcpu->kvm))
++			kvm_xen_runstate_set_preempted(vcpu);
++		else
++			kvm_steal_time_set_preempted(vcpu);
++		srcu_read_unlock(&vcpu->kvm->srcu, idx);
++	}
+ 
+ 	static_call(kvm_x86_vcpu_put)(vcpu);
+ 	vcpu->arch.last_host_tsc = rdtsc();
+@@ -9934,6 +9951,13 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
+ 	vcpu->arch.l1tf_flush_l1d = true;
+ 
+ 	for (;;) {
++		/*
++		 * If another guest vCPU requests a PV TLB flush in the middle
++		 * of instruction emulation, the rest of the emulation could
++		 * use a stale page translation. Assume that any code after
++		 * this point can start executing an instruction.
++		 */
++		vcpu->arch.at_instruction_boundary = false;
+ 		if (kvm_vcpu_running(vcpu)) {
+ 			r = vcpu_enter_guest(vcpu);
+ 		} else {
+diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
+index cc0cf5f37450..a7693a286e40 100644
+--- a/arch/x86/kvm/xen.h
++++ b/arch/x86/kvm/xen.h
+@@ -97,8 +97,10 @@ static inline void kvm_xen_runstate_set_preempted(struct kvm_vcpu *vcpu)
+ 	 * behalf of the vCPU. Only if the VMM does actually block
+ 	 * does it need to enter RUNSTATE_blocked.
+ 	 */
+-	if (vcpu->preempted)
+-		kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
++	if (WARN_ON_ONCE(!vcpu->preempted))
++		return;
++
++	kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
+ }
+ 
+ /* 32-bit compatibility definitions, also used natively in 32-bit build */
+diff --git a/block/blk-ioc.c b/block/blk-ioc.c
+index 57299f860d41..90c05971f71e 100644
+--- a/block/blk-ioc.c
++++ b/block/blk-ioc.c
+@@ -265,6 +265,7 @@ int create_task_io_context(struct task_struct *task, gfp_t gfp_flags, int node)
+ 	INIT_RADIX_TREE(&ioc->icq_tree, GFP_ATOMIC);
+ 	INIT_HLIST_HEAD(&ioc->icq_list);
+ 	INIT_WORK(&ioc->release_work, ioc_release_fn);
++	ioc->ioprio = IOPRIO_DEFAULT;
+ 
+ 	/*
+ 	 * Try to install.  ioc shouldn't be installed if someone else
+diff --git a/block/ioprio.c b/block/ioprio.c
+index 6f01d35a5145..6c830154856f 100644
+--- a/block/ioprio.c
++++ b/block/ioprio.c
+@@ -189,9 +189,9 @@ static int get_task_ioprio(struct task_struct *p)
+ int ioprio_best(unsigned short aprio, unsigned short bprio)
+ {
+ 	if (!ioprio_valid(aprio))
+-		aprio = IOPRIO_DEFAULT;
++		aprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
+ 	if (!ioprio_valid(bprio))
+-		bprio = IOPRIO_DEFAULT;
++		bprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
+ 
+ 	return min(aprio, bprio);
+ }
 diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
 index 598fd19b65fa..45973aa6e06d 100644
 --- a/drivers/acpi/apei/bert.c
@@ -580,10 +814,10 @@ index 7b9793cb55c5..e39d59ad6496 100644
  	 * Desktops which falsely report a backlight and which our heuristics
  	 * for this do not catch.
 diff --git a/drivers/bluetooth/btbcm.c b/drivers/bluetooth/btbcm.c
-index 1b9743b7f2ef..d263eac784da 100644
+index d9ceca7a7935..a18f289d7346 100644
 --- a/drivers/bluetooth/btbcm.c
 +++ b/drivers/bluetooth/btbcm.c
-@@ -401,6 +401,8 @@ static const struct bcm_subver_table bcm_uart_subver_table[] = {
+@@ -453,6 +453,8 @@ static const struct bcm_subver_table bcm_uart_subver_table[] = {
  	{ 0x6606, "BCM4345C5"	},	/* 003.006.006 */
  	{ 0x230f, "BCM4356A2"	},	/* 001.003.015 */
  	{ 0x220e, "BCM20702A1"  },	/* 001.002.014 */
@@ -593,11 +827,11 @@ index 1b9743b7f2ef..d263eac784da 100644
  	{ 0x6106, "BCM4359C0"	},	/* 003.001.006 */
  	{ 0x4106, "BCM4335A0"	},	/* 002.001.006 */
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 538232b4c42a..a699e6166aef 100644
+index a68edbc7be0f..627436329b50 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
-@@ -399,6 +399,18 @@ static const struct usb_device_id blacklist_table[] = {
- 	{ USB_DEVICE(0x0bda, 0xc822), .driver_info = BTUSB_REALTEK |
+@@ -420,6 +420,18 @@ static const struct usb_device_id blacklist_table[] = {
+ 	{ USB_DEVICE(0x04ca, 0x4006), .driver_info = BTUSB_REALTEK |
  						     BTUSB_WIDEBAND_SPEECH },
  
 +	/* Realtek 8852CE Bluetooth devices */
@@ -615,7 +849,7 @@ index 538232b4c42a..a699e6166aef 100644
  	/* Realtek Bluetooth devices */
  	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
  	  .driver_info = BTUSB_REALTEK },
-@@ -416,6 +428,9 @@ static const struct usb_device_id blacklist_table[] = {
+@@ -459,6 +471,9 @@ static const struct usb_device_id blacklist_table[] = {
  	{ USB_DEVICE(0x0489, 0xe0d9), .driver_info = BTUSB_MEDIATEK |
  						     BTUSB_WIDEBAND_SPEECH |
  						     BTUSB_VALID_LE_STATES },
@@ -626,10 +860,10 @@ index 538232b4c42a..a699e6166aef 100644
  	/* Additional Realtek 8723AE Bluetooth devices */
  	{ USB_DEVICE(0x0930, 0x021d), .driver_info = BTUSB_REALTEK },
 diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 259a643377c2..3f6e96a4e114 100644
+index 7abf99f0ee39..cf622e459605 100644
 --- a/drivers/bluetooth/hci_bcm.c
 +++ b/drivers/bluetooth/hci_bcm.c
-@@ -1489,8 +1489,10 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
+@@ -1515,8 +1515,10 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
  	{ .compatible = "brcm,bcm4345c5" },
  	{ .compatible = "brcm,bcm4330-bt" },
  	{ .compatible = "brcm,bcm43438-bt", .data = &bcm43438_device_data },
@@ -653,277 +887,175 @@ index 73b396189039..afb0942ccc29 100644
  			break;
  		mutex_lock(&adb_handler_mutex);
  		req->reply[0] = adb_handler[req->data[2]].original_address;
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index be9ff6a74ecc..a643b2f2f4de 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -220,6 +220,9 @@ struct tun_struct {
- 	struct tun_prog __rcu *steering_prog;
- 	struct tun_prog __rcu *filter_prog;
- 	struct ethtool_link_ksettings link_ksettings;
-+	/* init args */
-+	struct file *file;
-+	struct ifreq *ifr;
- };
+diff --git a/fs/btrfs/block-group.h b/fs/btrfs/block-group.h
+index 37e55ebde735..d73db0dfacb2 100644
+--- a/fs/btrfs/block-group.h
++++ b/fs/btrfs/block-group.h
+@@ -98,6 +98,7 @@ struct btrfs_block_group {
+ 	unsigned int to_copy:1;
+ 	unsigned int relocating_repair:1;
+ 	unsigned int chunk_item_inserted:1;
++	unsigned int zoned_data_reloc_ongoing:1;
  
- struct veth {
-@@ -227,6 +230,9 @@ struct veth {
- 	__be16 h_vlan_TCI;
- };
+ 	int disk_cache_state;
  
-+static void tun_flow_init(struct tun_struct *tun);
-+static void tun_flow_uninit(struct tun_struct *tun);
-+
- static int tun_napi_receive(struct napi_struct *napi, int budget)
- {
- 	struct tun_file *tfile = container_of(napi, struct tun_file, napi);
-@@ -975,6 +981,49 @@ static int check_filter(struct tap_filter *filter, const struct sk_buff *skb)
+diff --git a/fs/btrfs/extent-tree.c b/fs/btrfs/extent-tree.c
+index e3514f9a4e8d..248ea15c9734 100644
+--- a/fs/btrfs/extent-tree.c
++++ b/fs/btrfs/extent-tree.c
+@@ -3804,7 +3804,7 @@ static int do_allocation_zoned(struct btrfs_block_group *block_group,
+ 	       block_group->start == fs_info->data_reloc_bg ||
+ 	       fs_info->data_reloc_bg == 0);
  
- static const struct ethtool_ops tun_ethtool_ops;
- 
-+static int tun_net_init(struct net_device *dev)
-+{
-+	struct tun_struct *tun = netdev_priv(dev);
-+	struct ifreq *ifr = tun->ifr;
-+	int err;
-+
-+	tun->pcpu_stats = netdev_alloc_pcpu_stats(struct tun_pcpu_stats);
-+	if (!tun->pcpu_stats)
-+		return -ENOMEM;
-+
-+	spin_lock_init(&tun->lock);
-+
-+	err = security_tun_dev_alloc_security(&tun->security);
-+	if (err < 0) {
-+		free_percpu(tun->pcpu_stats);
-+		return err;
-+	}
-+
-+	tun_flow_init(tun);
-+
-+	dev->hw_features = NETIF_F_SG | NETIF_F_FRAGLIST |
-+			   TUN_USER_FEATURES | NETIF_F_HW_VLAN_CTAG_TX |
-+			   NETIF_F_HW_VLAN_STAG_TX;
-+	dev->features = dev->hw_features | NETIF_F_LLTX;
-+	dev->vlan_features = dev->features &
-+			     ~(NETIF_F_HW_VLAN_CTAG_TX |
-+			       NETIF_F_HW_VLAN_STAG_TX);
-+
-+	tun->flags = (tun->flags & ~TUN_FEATURES) |
-+		      (ifr->ifr_flags & TUN_FEATURES);
-+
-+	INIT_LIST_HEAD(&tun->disabled);
-+	err = tun_attach(tun, tun->file, false, ifr->ifr_flags & IFF_NAPI,
-+			 ifr->ifr_flags & IFF_NAPI_FRAGS, false);
-+	if (err < 0) {
-+		tun_flow_uninit(tun);
-+		security_tun_dev_free_security(tun->security);
-+		free_percpu(tun->pcpu_stats);
-+		return err;
-+	}
-+	return 0;
-+}
-+
- /* Net device detach from fd. */
- static void tun_net_uninit(struct net_device *dev)
- {
-@@ -1216,6 +1265,7 @@ static int tun_net_change_carrier(struct net_device *dev, bool new_carrier)
- }
- 
- static const struct net_device_ops tun_netdev_ops = {
-+	.ndo_init		= tun_net_init,
- 	.ndo_uninit		= tun_net_uninit,
- 	.ndo_open		= tun_net_open,
- 	.ndo_stop		= tun_net_close,
-@@ -1296,6 +1346,7 @@ static int tun_xdp_tx(struct net_device *dev, struct xdp_buff *xdp)
- }
- 
- static const struct net_device_ops tap_netdev_ops = {
-+	.ndo_init		= tun_net_init,
- 	.ndo_uninit		= tun_net_uninit,
- 	.ndo_open		= tun_net_open,
- 	.ndo_stop		= tun_net_close,
-@@ -1336,7 +1387,7 @@ static void tun_flow_uninit(struct tun_struct *tun)
- #define MAX_MTU 65535
- 
- /* Initialize net device. */
--static void tun_net_init(struct net_device *dev)
-+static void tun_net_initialize(struct net_device *dev)
- {
- 	struct tun_struct *tun = netdev_priv(dev);
- 
-@@ -2268,10 +2319,6 @@ static void tun_free_netdev(struct net_device *dev)
- 	BUG_ON(!(list_empty(&tun->disabled)));
- 
- 	free_percpu(tun->pcpu_stats);
--	/* We clear pcpu_stats so that tun_set_iff() can tell if
--	 * tun_free_netdev() has been called from register_netdevice().
--	 */
--	tun->pcpu_stats = NULL;
- 
- 	tun_flow_uninit(tun);
- 	security_tun_dev_free_security(tun->security);
-@@ -2784,41 +2831,16 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 		tun->rx_batched = 0;
- 		RCU_INIT_POINTER(tun->steering_prog, NULL);
- 
--		tun->pcpu_stats = netdev_alloc_pcpu_stats(struct tun_pcpu_stats);
--		if (!tun->pcpu_stats) {
--			err = -ENOMEM;
--			goto err_free_dev;
--		}
-+		tun->ifr = ifr;
-+		tun->file = file;
- 
--		spin_lock_init(&tun->lock);
--
--		err = security_tun_dev_alloc_security(&tun->security);
--		if (err < 0)
--			goto err_free_stat;
--
--		tun_net_init(dev);
--		tun_flow_init(tun);
--
--		dev->hw_features = NETIF_F_SG | NETIF_F_FRAGLIST |
--				   TUN_USER_FEATURES | NETIF_F_HW_VLAN_CTAG_TX |
--				   NETIF_F_HW_VLAN_STAG_TX;
--		dev->features = dev->hw_features | NETIF_F_LLTX;
--		dev->vlan_features = dev->features &
--				     ~(NETIF_F_HW_VLAN_CTAG_TX |
--				       NETIF_F_HW_VLAN_STAG_TX);
--
--		tun->flags = (tun->flags & ~TUN_FEATURES) |
--			      (ifr->ifr_flags & TUN_FEATURES);
--
--		INIT_LIST_HEAD(&tun->disabled);
--		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
--				 ifr->ifr_flags & IFF_NAPI_FRAGS, false);
--		if (err < 0)
--			goto err_free_flow;
-+		tun_net_initialize(dev);
- 
- 		err = register_netdevice(tun->dev);
--		if (err < 0)
--			goto err_detach;
-+		if (err < 0) {
-+			free_netdev(dev);
-+			return err;
-+		}
- 		/* free_netdev() won't check refcnt, to aovid race
- 		 * with dev_put() we need publish tun after registration.
- 		 */
-@@ -2835,24 +2857,6 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 
- 	strcpy(ifr->ifr_name, tun->dev->name);
- 	return 0;
--
--err_detach:
--	tun_detach_all(dev);
--	/* We are here because register_netdevice() has failed.
--	 * If register_netdevice() already called tun_free_netdev()
--	 * while dealing with the error, tun->pcpu_stats has been cleared.
--	 */
--	if (!tun->pcpu_stats)
--		goto err_free_dev;
--
--err_free_flow:
--	tun_flow_uninit(tun);
--	security_tun_dev_free_security(tun->security);
--err_free_stat:
--	free_percpu(tun->pcpu_stats);
--err_free_dev:
--	free_netdev(dev);
--	return err;
- }
- 
- static void tun_get_iff(struct tun_struct *tun, struct ifreq *ifr)
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 0a1634238e67..6b45e63fae4b 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -281,6 +281,7 @@ struct ath9k_htc_rxbuf {
- struct ath9k_htc_rx {
- 	struct list_head rxbuf;
- 	spinlock_t rxbuflock;
-+	bool initialized;
- };
- 
- #define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
-@@ -305,6 +306,7 @@ struct ath9k_htc_tx {
- 	DECLARE_BITMAP(tx_slot, MAX_TX_BUF_NUM);
- 	struct timer_list cleanup_timer;
- 	spinlock_t tx_lock;
-+	bool initialized;
- };
- 
- struct ath9k_htc_tx_ctl {
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-index 30ddf333e04d..43a743ec9d9e 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-@@ -808,6 +808,11 @@ int ath9k_tx_init(struct ath9k_htc_priv *priv)
- 	skb_queue_head_init(&priv->tx.data_vi_queue);
- 	skb_queue_head_init(&priv->tx.data_vo_queue);
- 	skb_queue_head_init(&priv->tx.tx_failed);
-+
-+	/* Allow ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID) to operate. */
-+	smp_wmb();
-+	priv->tx.initialized = true;
-+
- 	return 0;
- }
- 
-@@ -1133,6 +1138,10 @@ void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
- 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
- 	unsigned long flags;
- 
-+	/* Check if ath9k_rx_init() completed. */
-+	if (!data_race(priv->rx.initialized))
-+		goto err;
-+
- 	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
- 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
- 		if (!tmp_buf->in_process) {
-@@ -1188,6 +1197,10 @@ int ath9k_rx_init(struct ath9k_htc_priv *priv)
- 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
+-	if (block_group->ro) {
++	if (block_group->ro || block_group->zoned_data_reloc_ongoing) {
+ 		ret = 1;
+ 		goto out;
  	}
+@@ -3865,8 +3865,24 @@ static int do_allocation_zoned(struct btrfs_block_group *block_group,
+ out:
+ 	if (ret && ffe_ctl->for_treelog)
+ 		fs_info->treelog_bg = 0;
+-	if (ret && ffe_ctl->for_data_reloc)
++	if (ret && ffe_ctl->for_data_reloc &&
++	    fs_info->data_reloc_bg == block_group->start) {
++		/*
++		 * Do not allow further allocations from this block group.
++		 * Compared to increasing the ->ro, setting the
++		 * ->zoned_data_reloc_ongoing flag still allows nocow
++		 *  writers to come in. See btrfs_inc_nocow_writers().
++		 *
++		 * We need to disable an allocation to avoid an allocation of
++		 * regular (non-relocation data) extent. With mix of relocation
++		 * extents and regular extents, we can dispatch WRITE commands
++		 * (for relocation extents) and ZONE APPEND commands (for
++		 * regular extents) at the same time to the same zone, which
++		 * easily break the write pointer.
++		 */
++		block_group->zoned_data_reloc_ongoing = 1;
+ 		fs_info->data_reloc_bg = 0;
++	}
+ 	spin_unlock(&fs_info->relocation_bg_lock);
+ 	spin_unlock(&fs_info->treelog_bg_lock);
+ 	spin_unlock(&block_group->lock);
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index b791e280af0c..a90546b3107c 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -5152,13 +5152,14 @@ int extent_writepages(struct address_space *mapping,
+ 	 */
+ 	btrfs_zoned_data_reloc_lock(BTRFS_I(inode));
+ 	ret = extent_write_cache_pages(mapping, wbc, &epd);
+-	btrfs_zoned_data_reloc_unlock(BTRFS_I(inode));
+ 	ASSERT(ret <= 0);
+ 	if (ret < 0) {
++		btrfs_zoned_data_reloc_unlock(BTRFS_I(inode));
+ 		end_write_bio(&epd, ret);
+ 		return ret;
+ 	}
+ 	ret = flush_write_bio(&epd);
++	btrfs_zoned_data_reloc_unlock(BTRFS_I(inode));
+ 	return ret;
+ }
  
-+	/* Allow ath9k_htc_rxep() to operate. */
-+	smp_wmb();
-+	priv->rx.initialized = true;
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index ea7262050790..1b4fee8a2f28 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -3069,6 +3069,8 @@ static int btrfs_finish_ordered_io(struct btrfs_ordered_extent *ordered_extent)
+ 						ordered_extent->file_offset,
+ 						ordered_extent->file_offset +
+ 						logical_len);
++		btrfs_zoned_release_data_reloc_bg(fs_info, ordered_extent->disk_bytenr,
++						  ordered_extent->disk_num_bytes);
+ 	} else {
+ 		BUG_ON(root == fs_info->tree_root);
+ 		ret = insert_ordered_extent_file_extent(trans, ordered_extent);
+diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
+index 574769f921a2..fc791f7c7142 100644
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1623,3 +1623,30 @@ void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info)
+ 	}
+ 	mutex_unlock(&fs_devices->device_list_mutex);
+ }
 +
- 	return 0;
++void btrfs_zoned_release_data_reloc_bg(struct btrfs_fs_info *fs_info, u64 logical,
++				       u64 length)
++{
++	struct btrfs_block_group *block_group;
++
++	if (!btrfs_is_zoned(fs_info))
++		return;
++
++	block_group = btrfs_lookup_block_group(fs_info, logical);
++	/* It should be called on a previous data relocation block group. */
++	ASSERT(block_group && (block_group->flags & BTRFS_BLOCK_GROUP_DATA));
++
++	spin_lock(&block_group->lock);
++	if (!block_group->zoned_data_reloc_ongoing)
++		goto out;
++
++	/* All relocation extents are written. */
++	if (block_group->start + block_group->alloc_offset == logical + length) {
++		/* Now, release this block group for further allocations. */
++		block_group->zoned_data_reloc_ongoing = 0;
++	}
++
++out:
++	spin_unlock(&block_group->lock);
++	btrfs_put_block_group(block_group);
++}
+diff --git a/fs/btrfs/zoned.h b/fs/btrfs/zoned.h
+index 3a826f7c2040..574490ea2cc8 100644
+--- a/fs/btrfs/zoned.h
++++ b/fs/btrfs/zoned.h
+@@ -70,6 +70,8 @@ struct btrfs_device *btrfs_zoned_get_device(struct btrfs_fs_info *fs_info,
+ 					    u64 logical, u64 length);
+ void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg);
+ void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info);
++void btrfs_zoned_release_data_reloc_bg(struct btrfs_fs_info *fs_info, u64 logical,
++				       u64 length);
+ #else /* CONFIG_BLK_DEV_ZONED */
+ static inline int btrfs_get_dev_zone(struct btrfs_device *device, u64 pos,
+ 				     struct blk_zone *zone)
+@@ -207,6 +209,9 @@ static inline struct btrfs_device *btrfs_zoned_get_device(
+ static inline void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg) { }
  
- err:
-diff --git a/drivers/net/wireless/ath/ath9k/wmi.c b/drivers/net/wireless/ath/ath9k/wmi.c
-index fe29ad4b9023..f315c54bd3ac 100644
---- a/drivers/net/wireless/ath/ath9k/wmi.c
-+++ b/drivers/net/wireless/ath/ath9k/wmi.c
-@@ -169,6 +169,10 @@ void ath9k_wmi_event_tasklet(struct tasklet_struct *t)
- 					     &wmi->drv_priv->fatal_work);
- 			break;
- 		case WMI_TXSTATUS_EVENTID:
-+			/* Check if ath9k_tx_init() completed. */
-+			if (!data_race(priv->tx.initialized))
-+				break;
+ static inline void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info) { }
 +
- 			spin_lock_bh(&priv->tx.tx_lock);
- 			if (priv->tx.flags & ATH9K_HTC_OP_TX_DRAIN) {
- 				spin_unlock_bh(&priv->tx.tx_lock);
++static inline void btrfs_zoned_release_data_reloc_bg(struct btrfs_fs_info *fs_info,
++						     u64 logical, u64 length) { }
+ #endif
+ 
+ static inline bool btrfs_dev_is_sequential(struct btrfs_device *device, u64 pos)
+diff --git a/include/linux/ioprio.h b/include/linux/ioprio.h
+index 3f53bc27a19b..3d088a88f832 100644
+--- a/include/linux/ioprio.h
++++ b/include/linux/ioprio.h
+@@ -11,7 +11,7 @@
+ /*
+  * Default IO priority.
+  */
+-#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM)
++#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0)
+ 
+ /*
+  * Check that a priority value has a valid class.
 diff --git a/tools/arch/x86/include/asm/cpufeatures.h b/tools/arch/x86/include/asm/cpufeatures.h
-index 54ba20492ad1..ec53f52a06a5 100644
+index 3781a7f489ef..bcaedfe60572 100644
 --- a/tools/arch/x86/include/asm/cpufeatures.h
 +++ b/tools/arch/x86/include/asm/cpufeatures.h
-@@ -296,6 +296,7 @@
+@@ -300,6 +300,7 @@
  #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
  #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
  #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */
 +#define X86_FEATURE_RSB_VMEXIT_LITE	(11*32+17) /* "" Fill RSB on VM-Exit when EIBRS is enabled */
  
  /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
- #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
 diff --git a/tools/arch/x86/include/asm/msr-index.h b/tools/arch/x86/include/asm/msr-index.h
-index 407de670cd60..144dc164b759 100644
+index ec2967e7249f..8f38265bc81d 100644
 --- a/tools/arch/x86/include/asm/msr-index.h
 +++ b/tools/arch/x86/include/asm/msr-index.h
 @@ -148,6 +148,10 @@
@@ -938,10 +1070,10 @@ index 407de670cd60..144dc164b759 100644
  #define MSR_IA32_FLUSH_CMD		0x0000010b
  #define L1D_FLUSH			BIT(0)	/*
 diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index b9ee2ded381a..7943e748916d 100644
+index e2c8f946c541..8330e3ca8fbf 100644
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -4180,7 +4180,8 @@ struct bpf_sock {
+@@ -5347,7 +5347,8 @@ struct bpf_sock {
  	__u32 src_ip4;
  	__u32 src_ip6[4];
  	__u32 src_port;		/* host byte order */
@@ -952,7 +1084,7 @@ index b9ee2ded381a..7943e748916d 100644
  	__u32 dst_ip6[4];
  	__u32 state;
 diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
-index b0bf56c5f120..a1efcfbd8b9e 100755
+index 5a5bd74f55bd..9c366b3a676d 100755
 --- a/tools/kvm/kvm_stat/kvm_stat
 +++ b/tools/kvm/kvm_stat/kvm_stat
 @@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
@@ -966,7 +1098,7 @@ index b0bf56c5f120..a1efcfbd8b9e 100755
  
      argparser = argparse.ArgumentParser(description=description_text,
 diff --git a/tools/testing/selftests/bpf/prog_tests/sock_fields.c b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
-index af87118e748e..e8b5bf707cd4 100644
+index 577d619fb07e..197ec1d1b702 100644
 --- a/tools/testing/selftests/bpf/prog_tests/sock_fields.c
 +++ b/tools/testing/selftests/bpf/prog_tests/sock_fields.c
 @@ -1,9 +1,11 @@
@@ -1020,14 +1152,14 @@ index af87118e748e..e8b5bf707cd4 100644
 -				  &egress_linum);
 +	idx = EGRESS_LINUM_IDX;
 +	err = bpf_map_lookup_elem(linum_map_fd, &idx, &egress_linum);
- 	CHECK(err == -1, "bpf_map_lookup_elem(linum_map_fd)",
+ 	CHECK(err < 0, "bpf_map_lookup_elem(linum_map_fd)",
  	      "err:%d errno:%d\n", err, errno);
  
 -	err = bpf_map_lookup_elem(linum_map_fd, &ingress_linum_idx,
 -				  &ingress_linum);
 +	idx = INGRESS_LINUM_IDX;
 +	err = bpf_map_lookup_elem(linum_map_fd, &idx, &ingress_linum);
- 	CHECK(err == -1, "bpf_map_lookup_elem(linum_map_fd)",
+ 	CHECK(err < 0, "bpf_map_lookup_elem(linum_map_fd)",
  	      "err:%d errno:%d\n", err, errno);
  
 +	idx = READ_SK_DST_PORT_LINUM_IDX;
@@ -1061,14 +1193,13 @@ index af87118e748e..e8b5bf707cd4 100644
  
  	/* Create a cgroup, get fd, and join it */
  	parent_cg_fd = test__join_cgroup(PARENT_CGROUP);
-@@ -353,17 +373,20 @@ void test_sock_fields(void)
+@@ -353,15 +373,20 @@ void test_sock_fields(void)
  	if (CHECK(!skel, "test_sock_fields__open_and_load", "failed\n"))
  		goto done;
  
 -	egress_link = bpf_program__attach_cgroup(skel->progs.egress_read_sock_fields,
 -						 child_cg_fd);
--	if (CHECK(IS_ERR(egress_link), "attach_cgroup(egress)", "err:%ld\n",
--		  PTR_ERR(egress_link)))
+-	if (!ASSERT_OK_PTR(egress_link, "attach_cgroup(egress)"))
 +	link = bpf_program__attach_cgroup(skel->progs.egress_read_sock_fields, child_cg_fd);
 +	if (!ASSERT_OK_PTR(link, "attach_cgroup(egress_read_sock_fields)"))
 +		goto done;
@@ -1081,8 +1212,7 @@ index af87118e748e..e8b5bf707cd4 100644
  
 -	ingress_link = bpf_program__attach_cgroup(skel->progs.ingress_read_sock_fields,
 -						  child_cg_fd);
--	if (CHECK(IS_ERR(ingress_link), "attach_cgroup(ingress)", "err:%ld\n",
--		  PTR_ERR(ingress_link)))
+-	if (!ASSERT_OK_PTR(ingress_link, "attach_cgroup(ingress)"))
 +	link = bpf_program__attach_cgroup(skel->progs.read_sk_dst_port, child_cg_fd);
 +	if (!ASSERT_OK_PTR(link, "attach_cgroup(read_sk_dst_port"))
  		goto done;
@@ -1090,7 +1220,7 @@ index af87118e748e..e8b5bf707cd4 100644
  
  	linum_map_fd = bpf_map__fd(skel->maps.linum_map);
  	sk_pkt_out_cnt_fd = bpf_map__fd(skel->maps.sk_pkt_out_cnt);
-@@ -372,8 +395,7 @@ void test_sock_fields(void)
+@@ -370,8 +395,7 @@ void test_sock_fields(void)
  	test();
  
  done:
@@ -1098,7 +1228,7 @@ index af87118e748e..e8b5bf707cd4 100644
 -	bpf_link__destroy(ingress_link);
 +	test_sock_fields__detach(skel);
  	test_sock_fields__destroy(skel);
- 	if (child_cg_fd != -1)
+ 	if (child_cg_fd >= 0)
  		close(child_cg_fd);
 diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
 index 7967348b11af..43b31aa1fcf7 100644
@@ -1268,7 +1398,7 @@ index ce13ece08d51..8c224eac93df 100644
  	BPF_EXIT_INSN(),
  	},
 diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-index 2f37b90ee1a9..f600311fdc6a 100644
+index e0b0164e9af8..be1d9728c4ce 100644
 --- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
 +++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
 @@ -73,20 +73,19 @@ void ucall_uninit(struct kvm_vm *vm)
@@ -1296,3 +1426,98 @@ index 2f37b90ee1a9..f600311fdc6a 100644
  }
  
  uint64_t get_ucall(struct kvm_vm *vm, uint32_t vcpu_id, struct ucall *uc)
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+index e0b2bb1339b1..3330fb183c68 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+@@ -44,7 +44,7 @@ static inline void nop_loop(void)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < 1000000; i++)
++	for (i = 0; i < 100000000; i++)
+ 		asm volatile("nop");
+ }
+ 
+@@ -56,12 +56,14 @@ static inline void check_tsc_msr_rdtsc(void)
+ 	tsc_freq = rdmsr(HV_X64_MSR_TSC_FREQUENCY);
+ 	GUEST_ASSERT(tsc_freq > 0);
+ 
+-	/* First, check MSR-based clocksource */
++	/* For increased accuracy, take mean rdtsc() before and afrer rdmsr() */
+ 	r1 = rdtsc();
+ 	t1 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
++	r1 = (r1 + rdtsc()) / 2;
+ 	nop_loop();
+ 	r2 = rdtsc();
+ 	t2 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
++	r2 = (r2 + rdtsc()) / 2;
+ 
+ 	GUEST_ASSERT(r2 > r1 && t2 > t1);
+ 
+@@ -181,12 +183,14 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
+ 	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
+ 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
+ 
+-	/* First, check MSR-based clocksource */
++	/* For increased accuracy, take mean rdtsc() before and afrer ioctl */
+ 	r1 = rdtsc();
+ 	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	r1 = (r1 + rdtsc()) / 2;
+ 	nop_loop();
+ 	r2 = rdtsc();
+ 	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	r2 = (r2 + rdtsc()) / 2;
+ 
+ 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
+ 
+diff --git a/tools/vm/slabinfo.c b/tools/vm/slabinfo.c
+index 9b68658b6bb8..5b98f3ee58a5 100644
+--- a/tools/vm/slabinfo.c
++++ b/tools/vm/slabinfo.c
+@@ -233,6 +233,24 @@ static unsigned long read_slab_obj(struct slabinfo *s, const char *name)
+ 	return l;
+ }
+ 
++static unsigned long read_debug_slab_obj(struct slabinfo *s, const char *name)
++{
++	char x[128];
++	FILE *f;
++	size_t l;
++
++	snprintf(x, 128, "/sys/kernel/debug/slab/%s/%s", s->name, name);
++	f = fopen(x, "r");
++	if (!f) {
++		buffer[0] = 0;
++		l = 0;
++	} else {
++		l = fread(buffer, 1, sizeof(buffer), f);
++		buffer[l] = 0;
++		fclose(f);
++	}
++	return l;
++}
+ 
+ /*
+  * Put a size string together
+@@ -409,14 +427,18 @@ static void show_tracking(struct slabinfo *s)
+ {
+ 	printf("\n%s: Kernel object allocation\n", s->name);
+ 	printf("-----------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "alloc_calls"))
++	if (read_debug_slab_obj(s, "alloc_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "alloc_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
+ 
+ 	printf("\n%s: Kernel object freeing\n", s->name);
+ 	printf("------------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "free_calls"))
++	if (read_debug_slab_obj(s, "free_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "free_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
