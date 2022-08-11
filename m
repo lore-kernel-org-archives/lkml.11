@@ -2,77 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A02C25B0F
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DFB1C25B0F
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235682AbiHKXQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 19:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
+        id S235787AbiHKXQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 19:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHKXQQ (ORCPT
+        with ESMTP id S229524AbiHKXQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 19:16:16 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFABF5C97C;
-        Thu, 11 Aug 2022 16:16:14 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id r22so15971936pgm.5;
-        Thu, 11 Aug 2022 16:16:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=cMOKYlcYTqw4MjWpy2PHg44DkbIdHSJMfu9lefA+Tg4=;
-        b=I6p+8dV5qOBTOTFSUzQwQjQ21VUKsLNXKlvQlYBLa8lIkHhub/O+D8oBAuZ9GKOgeF
-         fG+HyE1VpO0W8Mc4ciWPTKomDH9vpy/q+kxrhvCiwoGUv6lr8uVwq/HJTibXK9fxd2zi
-         MwG0WQba2Kx4BlKQ2IONZG4o5q0/AQqnYQeCWJM7sdFGGtmPZ4ILzDCwcm+YRCZ49NFX
-         ok9iI43wozqdDwqFYFfZLdq0DEu7hEe87Fxre6k+mgCB3jxLOI2wl7yWgqwQEQDr32rh
-         mqGVyuvKIpWkjF0p4Wpg4wvIi8H7KzxAFbxN/BpTIL6s/A3nuqozT4oE0VNOO+bnPxcy
-         wngQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=cMOKYlcYTqw4MjWpy2PHg44DkbIdHSJMfu9lefA+Tg4=;
-        b=UN3R9V07An7M0cGhyiJsABF6cDKk+po+zUPmygUvKYBFQepC/63pfvE1pb1vLPHsNj
-         pr7cb+JCDQPXWx4lQ+I8R0fxq+TMCyR6UWvWVbnOA5kh2dAya3Ll0rmwVFgQvYIymVXj
-         m0dmlGg0d88wBkbRZ3nquoXDYxjpPAnNftm0yKSkvmjtxAELa04L0lM1wWOwdFo3id6G
-         WSMRjLKoa1NdrgGq5OIHxr2Ju/h04wTQJklQlAXJBBd9TA9GrcM7X00t2a2PUfhAOWCI
-         8BTnTQhf++p12/jwM3TdxzC2qjMcO4IK2rf4Kl3abQxuRF55L1nRsYExmA+UZ2FZW/DS
-         H06g==
-X-Gm-Message-State: ACgBeo2J5T3jY2KG/EIsAc3Yufmm9x2qvOjnk3nVyN+D/7xUTLz3hGZQ
-        IiyXtZIyaMyZ5MVknkOGqKUvCnnrORw=
-X-Google-Smtp-Source: AA6agR5CxOJ9QL20HMaZovY/TZhVpFFp7v8UT8RBOio+AIteD0hz5gzePzY5XWa5ljXEaR9eIJGkwQ==
-X-Received: by 2002:a05:6a00:2195:b0:52e:6157:904d with SMTP id h21-20020a056a00219500b0052e6157904dmr1071533pfi.44.1660259774160;
-        Thu, 11 Aug 2022 16:16:14 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:c348:229d:7b9:f9dd])
-        by smtp.gmail.com with ESMTPSA id w8-20020a170902a70800b0016d2540c098sm197677plq.231.2022.08.11.16.16.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 16:16:13 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 16:16:10 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] Input: bma150 - Fix a typo in some comments
-Message-ID: <YvWNuiGYfZqYG39A@google.com>
-References: <a331a6244a1dfbf34dc85f1be6995fa91500c801.1659802757.git.christophe.jaillet@wanadoo.fr>
+        Thu, 11 Aug 2022 19:16:46 -0400
+X-Greylist: delayed 542 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 11 Aug 2022 16:16:43 PDT
+Received: from gimli.rothwell.id.au (gimli.rothwell.id.au [103.230.158.156])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CA8A024C;
+        Thu, 11 Aug 2022 16:16:43 -0700 (PDT)
+Received: from authenticated.rothwell.id.au (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.rothwell.id.au (Postfix) with ESMTPSA id 4M3jBY2S2CzyZt;
+        Fri, 12 Aug 2022 09:07:33 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rothwell.id.au;
+        s=201702; t=1660259255;
+        bh=MQdGlv7/KuLvICsIqGjekw2CdHuPtmyaZo7g6m/4FjI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=adZNluClMa2RHl848Ly9cmmxaBRWrS5jN925SdAWWhmWEqgqt1j6UPqyrhqmTz7dx
+         5/OLBxkgKq0xH+1eeUdBZkuhyMZ6W33mnxSu+fPSPNXEiixZMceZ9S/ONjEGAScSWq
+         fQ34MLaIPk3soIwNg5I/x8Z5iovR/F+idT0otWFtHsiEOrN/GEpoMVrKzeniPK8foV
+         uKaaFFVdJkGqulsfxrpHZbdNDVSbIYC9eVLwOe/dzR0IjlMRiOAc2VHLSzWh3GvDQq
+         jzl/WG7CdoDbDm4z2Da/8yZnUMmvlMF3k1MY5bX7boTxbH1evSclE2TEWbk2sZQ+WQ
+         5jx5A7bpu5c+w==
+Date:   Fri, 12 Aug 2022 09:07:31 +1000
+From:   Stephen Rothwell <sfr@rothwell.id.au>
+To:     Alex Deucher <alexander.deucher@amd.com>
+Cc:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
+        Hamza Mahfooz <hamza.mahfooz@amd.com>,
+        Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: Re: build failure of next-20220811 due to b1a63a0b48ad
+ ("drm/amd/display: consider DSC pass-through during mode validation")
+Message-ID: <20220812090731.31da7d85@oak.ozlabs.ibm.com>
+In-Reply-To: <YvU4GD8HtZ1A4dhI@debian>
+References: <YvU4GD8HtZ1A4dhI@debian>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a331a6244a1dfbf34dc85f1be6995fa91500c801.1659802757.git.christophe.jaillet@wanadoo.fr>
+Content-Type: multipart/signed; boundary="Sig_/lBwBYWJZfaTJxqb/SqOb3za";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 06, 2022 at 06:20:32PM +0200, Christophe JAILLET wrote:
-> Remove some extra '0'
-> 
-> s/BMA0150_RANGE_xxx/BMA150_RANGE_xxx/
-> s/BMA0150_BW_xxx/BMA150_BW_xxx
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+--Sig_/lBwBYWJZfaTJxqb/SqOb3za
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thank you.
+Hi all,
 
--- 
-Dmitry
+On Thu, 11 Aug 2022 18:10:48 +0100 "Sudip Mukherjee (Codethink)" <sudipm.mu=
+kherjee@gmail.com> wrote:
+>
+> Not sure if it has been reported, builds of riscv, alpha, s390, arm,
+> arm64, xtensa, mips, csky allmodconfig have failed to build next-20220811
+> with the error:
+>=20
+> ERROR: modpost: "dc_dsc_compute_bandwidth_range" [drivers/gpu/drm/amd/amd=
+gpu/amdgpu.ko] undefined!
+> ERROR: modpost: "dc_dsc_get_policy_for_timing" [drivers/gpu/drm/amd/amdgp=
+u/amdgpu.ko] undefined!
+>=20
+> git bisect pointed to b1a63a0b48ad ("drm/amd/display: consider DSC pass-t=
+hrough during mode validation")
+> And, reverting that commit has fixed the build failure.
+>=20
+> I will be happy to test any patch or provide any extra log if needed.
+
+I have reverted that commit in today's linux-next.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/lBwBYWJZfaTJxqb/SqOb3za
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmL1i7MACgkQAVBC80lX
+0GzSzAf8DKPebARHzdTqD13VNr3O67jzPL8ES7pQodgFmZMSKK3Y+vrG88X3EVSk
+ix+XD73wo/KvGZwASDZf7CMKj84ihNm3re6hPjsLcHMeZ4bpwJi46enWVl+EA3zQ
+cDzSOP++Vl1dm/RNZXMVm30CIvVjX8MgDuwGqXhWvbWL2Q0yq1xg3dddCYLl9y4p
+R3MSWvVXijrkQSdsM0v6oYI80x5GpcQPk+H+fpsmkd0EwKDKG0sNste7Sbk9XfqM
+ljtDoOkgQ85wzHC8IExlgQnjDMswtlW/b78kzXfdysl8KIQrHjo5aOsds0ZeHkCZ
+tbr3b9HgZktRYDXh16COSYyVZFzJKg==
+=Mbox
+-----END PGP SIGNATURE-----
+
+--Sig_/lBwBYWJZfaTJxqb/SqOb3za--
