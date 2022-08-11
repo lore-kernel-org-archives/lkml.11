@@ -2,126 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08898C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66662C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236534AbiHKRYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 13:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S234976AbiHKR1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 13:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235079AbiHKRXt (ORCPT
+        with ESMTP id S234627AbiHKR1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 13:23:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03381261
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 10:23:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660238626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B7I5PAOOErv1ZVcauTUvvJBXgNSfohhWYbnS90qn2T8=;
-        b=Y6yXf9TzEoKWIit/fe8WWcN7/OMdbsbhB86i4gSYPTRrpdc4wF17oe+m+1ImuXv5vvtP5d
-        AAA6cK23fIxAggVNm5vPMeJ10iEN7WSCECZjnhwIrvnu+fuaedNCsD7OSAHi2NfrOO438l
-        +B15/zdub2477qZG810pSK0DqRkxsdw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-131-ltHPr13nPyKPSQAq_Ja6Kw-1; Thu, 11 Aug 2022 13:23:40 -0400
-X-MC-Unique: ltHPr13nPyKPSQAq_Ja6Kw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2C608811E81;
-        Thu, 11 Aug 2022 17:23:40 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.120])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9051C40CF8E7;
-        Thu, 11 Aug 2022 17:23:39 +0000 (UTC)
-Date:   Thu, 11 Aug 2022 13:23:37 -0400
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Shigeru Yoshida <syoshida@redhat.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, axboe@kernel.dk,
-        pbonzini@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        suwan.kim027@gmail.com
-Subject: Re: [PATCH v2] virtio-blk: Avoid use-after-free on suspend/resume
-Message-ID: <YvU7GdBMNy7NbQLe@fedora>
-References: <20220810160948.959781-1-syoshida@redhat.com>
+        Thu, 11 Aug 2022 13:27:02 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12E445071
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 10:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660238821; x=1691774821;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9sI4oxnww2fiOkHy8m67wJBameA5pi7QXPxfqb0WHaI=;
+  b=GWPXhD4QBTnr9JNlYdS81WSqST8R1qrh7wboY7+aVU0Sv91B1ZeUaeWX
+   W+Bood5SjI1AksOzeRR4V8Wh//+Wtluzr3S9+GBV1xcDNdPyZxPDT9mFP
+   BGT8BRM1847v+8htj8rd4x5VeEDU3uRsI2KxJ4bJDyWPpU2ET1ue5Ld15
+   BwyHStNJe101Ec/cmpK0c/ZEpFh+4cF0InQqdoDFtqUkwipaYbhHzxDrd
+   Fd8Hr86eIuj+/ieaZskCfweH2EN3MJTH83QTxQuBwzDNI3GYqYHgE4XHt
+   FoyW6x8IBoF5Ca4TnMX9WsXyaudJ6EvWHGEqSWL4nNBe7rnTJ8yckycYs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="353154808"
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="353154808"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 10:27:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="933406465"
+Received: from lkp-server02.sh.intel.com (HELO cfab306db114) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 11 Aug 2022 10:26:59 -0700
+Received: from kbuild by cfab306db114 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMBxS-0000SR-1J;
+        Thu, 11 Aug 2022 17:26:58 +0000
+Date:   Fri, 12 Aug 2022 01:26:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     oushixiong <oushixiong@kylinos.cn>,
+        Dave Airlie <airlied@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        oushixiong <oushixiong@kylinos.cn>
+Subject: Re: [PATCH] drm/ast: radeon amdgpu for ast add prime
+Message-ID: <202208120134.9nXiGv1Q-lkp@intel.com>
+References: <20220809114439.2063863-1-oushixiong@kylinos.cn>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="bcLkh93uF3UZp5A6"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220810160948.959781-1-syoshida@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <20220809114439.2063863-1-oushixiong@kylinos.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi oushixiong,
 
---bcLkh93uF3UZp5A6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Perhaps something to improve:
 
-On Thu, Aug 11, 2022 at 01:09:48AM +0900, Shigeru Yoshida wrote:
-> hctx->user_data is set to vq in virtblk_init_hctx().  However, vq is
-> freed on suspend and reallocated on resume.  So, hctx->user_data is
-> invalid after resume, and it will cause use-after-free accessing which
-> will result in the kernel crash something like below:
->=20
-> [   22.428391] Call Trace:
-> [   22.428899]  <TASK>
-> [   22.429339]  virtqueue_add_split+0x3eb/0x620
-> [   22.430035]  ? __blk_mq_alloc_requests+0x17f/0x2d0
-> [   22.430789]  ? kvm_clock_get_cycles+0x14/0x30
-> [   22.431496]  virtqueue_add_sgs+0xad/0xd0
-> [   22.432108]  virtblk_add_req+0xe8/0x150
-> [   22.432692]  virtio_queue_rqs+0xeb/0x210
-> [   22.433330]  blk_mq_flush_plug_list+0x1b8/0x280
-> [   22.434059]  __blk_flush_plug+0xe1/0x140
-> [   22.434853]  blk_finish_plug+0x20/0x40
-> [   22.435512]  read_pages+0x20a/0x2e0
-> [   22.436063]  ? folio_add_lru+0x62/0xa0
-> [   22.436652]  page_cache_ra_unbounded+0x112/0x160
-> [   22.437365]  filemap_get_pages+0xe1/0x5b0
-> [   22.437964]  ? context_to_sid+0x70/0x100
-> [   22.438580]  ? sidtab_context_to_sid+0x32/0x400
-> [   22.439979]  filemap_read+0xcd/0x3d0
-> [   22.440917]  xfs_file_buffered_read+0x4a/0xc0
-> [   22.441984]  xfs_file_read_iter+0x65/0xd0
-> [   22.442970]  __kernel_read+0x160/0x2e0
-> [   22.443921]  bprm_execve+0x21b/0x640
-> [   22.444809]  do_execveat_common.isra.0+0x1a8/0x220
-> [   22.446008]  __x64_sys_execve+0x2d/0x40
-> [   22.446920]  do_syscall_64+0x37/0x90
-> [   22.447773]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
->=20
-> This patch fixes this issue by getting vq from vblk, and removes
-> virtblk_init_hctx().
->=20
-> Fixes: 4e0400525691 ("virtio-blk: support polling I/O")
-> Cc: "Suwan Kim" <suwan.kim027@gmail.com>
-> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
-> ---
->  drivers/block/virtio_blk.c | 24 ++++++++++--------------
->  1 file changed, 10 insertions(+), 14 deletions(-)
+[auto build test WARNING on drm/drm-next]
+[also build test WARNING on drm-intel/for-linux-next linus/master v5.19 next-20220811]
+[cannot apply to drm-misc/drm-misc-next drm-tip/drm-tip]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+url:    https://github.com/intel-lab-lkp/linux/commits/oushixiong/drm-ast-radeon-amdgpu-for-ast-add-prime/20220811-115710
+base:   git://anongit.freedesktop.org/drm/drm drm-next
+config: arm64-randconfig-r033-20220810 (https://download.01.org/0day-ci/archive/20220812/202208120134.9nXiGv1Q-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/1b9b79a00132f2917ca66bea714a6f21fc939b0f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review oushixiong/drm-ast-radeon-amdgpu-for-ast-add-prime/20220811-115710
+        git checkout 1b9b79a00132f2917ca66bea714a6f21fc939b0f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/ast/
 
---bcLkh93uF3UZp5A6
-Content-Type: application/pgp-signature; name="signature.asc"
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
------BEGIN PGP SIGNATURE-----
+All warnings (new ones prefixed by >>):
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmL1OxkACgkQnKSrs4Gr
-c8hvGQgAqb5zIzRaOEaXZ2ivoG7O2wTwm7oCynRmDbLHG4d/ZMPYmpapXg8I9ZIu
-qmcawFnB0ebhD0RfOqPTUSKWvdc8AbT0G+zZimwgp+k+4iNxmXCSE7cLeS559TMt
-AFi2nuaOzSaEXUOy6K3QmVjvlqS+qPfWXUju8mfz9d+DoL0jhpYWUOdiq4ZWrUii
-cLHZyDYJC5yn5n26r0YWxNLwekUmcvxT/izwb+rEjFGoCxePM0+5svWnbslFg1Sl
-S9BdUDtbwpmqEcT+RGFJjlhgqemKn0w3CusuDS1Niz+F3EnoHNKUlJNojFjbgqq8
-OGfKcERg/0sOByl/McAVu9IgygYmIQ==
-=nxpY
------END PGP SIGNATURE-----
+>> drivers/gpu/drm/ast/ast_drv.c:54:24: warning: no previous prototype for function 'ast_gem_prime_import_sg_table' [-Wmissing-prototypes]
+   struct drm_gem_object *ast_gem_prime_import_sg_table(struct drm_device *dev,
+                          ^
+   drivers/gpu/drm/ast/ast_drv.c:54:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct drm_gem_object *ast_gem_prime_import_sg_table(struct drm_device *dev,
+   ^
+   static 
+   1 warning generated.
+--
+>> drivers/gpu/drm/ast/ast_mode.c:1713:5: warning: no previous prototype for function 'ast_handle_damage' [-Wmissing-prototypes]
+   int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
+       ^
+   drivers/gpu/drm/ast/ast_mode.c:1713:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
+   ^
+   static 
+>> drivers/gpu/drm/ast/ast_mode.c:1772:5: warning: no previous prototype for function 'ast_user_framebuffer_dirty' [-Wmissing-prototypes]
+   int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
+       ^
+   drivers/gpu/drm/ast/ast_mode.c:1772:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
+   ^
+   static 
+>> drivers/gpu/drm/ast/ast_mode.c:1815:1: warning: no previous prototype for function 'ast_gem_fb_create_with_dirty' [-Wmissing-prototypes]
+   ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
+   ^
+   drivers/gpu/drm/ast/ast_mode.c:1814:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct drm_framebuffer *
+   ^
+   static 
+   3 warnings generated.
 
---bcLkh93uF3UZp5A6--
 
+vim +/ast_gem_prime_import_sg_table +54 drivers/gpu/drm/ast/ast_drv.c
+
+    53	
+  > 54	struct drm_gem_object *ast_gem_prime_import_sg_table(struct drm_device *dev,
+    55						struct dma_buf_attachment *attach,
+    56						struct sg_table *sg)
+    57	{
+    58		struct drm_gem_vram_object *gbo;
+    59		struct dma_resv *resv = attach->dmabuf->resv;
+    60	
+    61		ww_mutex_lock(&resv->lock, NULL);
+    62		gbo = drm_gem_vram_create(dev, attach->dmabuf->size, 0, sg, resv);
+    63		ww_mutex_unlock(&resv->lock);
+    64	
+    65		if (IS_ERR(gbo))
+    66			return NULL;
+    67	
+    68		return &gbo->bo.base;
+    69	}
+    70	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
