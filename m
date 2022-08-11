@@ -2,141 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF807C25B0D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E1EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235356AbiHKMn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 08:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
+        id S235359AbiHKMn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 08:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235338AbiHKMnX (ORCPT
+        with ESMTP id S235349AbiHKMnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 08:43:23 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80057.outbound.protection.outlook.com [40.107.8.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926C189827;
-        Thu, 11 Aug 2022 05:43:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TMuyO6bHZDR/2CfY9c0AdnhDHihXBEzVM4rZ5xrwD/MTKfyrfTKYJZplILPTgAp1Qy/LYAhPBfBfIRdVD0eYF2OQqidP13928D2ROTlvyg7/+RxBqnk/iX1IgItsV5TtC05X20nzXCHBXEX+FMQwMefm1QzKyjCo6Q6ZHc/C3ue13YAW+U/4ETBjRZZMBOFebXHJsGO1E1lF93R8wGvNyPOxCGsMSB4ImbWNGXN017a9/KnqrY9F9Fi56CBGbxvzx0hTwQRnTdNy08ZQ47gxtRCrelAslHHWX9wGkPc3yC9eb1NisjXX+1UXljbZKgeoOmgyoCxnevAjhidXIVWNiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K1MOsxOS16NN4Po+v1WBhPXLvDhUn7P5R/wV+Nbgrrk=;
- b=ih5YvT0d0SBU86/KUGVVH0/eTfz71Bf4+TBC2h2BWhf0L85Dlj92XUqfcRqv5jFjvXG/20QSiqeFTyfA4zPK0083ppcayqY6U6gHY39m+jGKGTK2DgyOJv0vKgI+B3pkpVHOxHwZrYEFU3ekIISBjDyKsouJMvNmkMFVc2xYrorFYb/qBgIQFFvlCQg3aGtq0Wr5FPtBTBIGaGt6OqyXxzIF77hbkECqXonNleBxhZlzBWOnTpNgQW4i/oxcXQ51ClL5vwY2uJ4T/kcvdNKV76btedl3y+QQ13HybhHWF0eG81cTNQw//sZGWYlMfsubrTuLR66UgWn2U3brg5luWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K1MOsxOS16NN4Po+v1WBhPXLvDhUn7P5R/wV+Nbgrrk=;
- b=PxMJPPVdOITBYbs5emvADu9+Iotznx2gQ4NWBsY1isfxbF8/pvQdkezRGdWqTMZG6a3rWVegT2l1biT3OnIJDJpxjfJLeNlvr8lUxih389zZTsuJ7fj68/j/dwflTKh6nCe6eB+I81TvHkdUXVMq6qaXpcOSO6bb0kzl8i7I5TA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
- by VI1PR0402MB2832.eurprd04.prod.outlook.com (2603:10a6:800:b3::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.22; Thu, 11 Aug
- 2022 12:43:20 +0000
-Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
- ([fe80::747c:397f:a003:dbca]) by AM9PR04MB8274.eurprd04.prod.outlook.com
- ([fe80::747c:397f:a003:dbca%5]) with mapi id 15.20.5525.010; Thu, 11 Aug 2022
- 12:43:19 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linus.walleij@linaro.org, brgl@bgdev.pl, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        imx@lists.linux.dev, Shenwei Wang <shenwei.wang@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 2/3] dt-bindings: firmware: imx: Add imx-scu gpio node
-Date:   Thu, 11 Aug 2022 07:41:34 -0500
-Message-Id: <20220811124135.95299-3-shenwei.wang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220811124135.95299-1-shenwei.wang@nxp.com>
-References: <20220811124135.95299-1-shenwei.wang@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR05CA0042.namprd05.prod.outlook.com
- (2603:10b6:a03:33f::17) To AM9PR04MB8274.eurprd04.prod.outlook.com
- (2603:10a6:20b:3e8::23)
+        Thu, 11 Aug 2022 08:43:25 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BB38982E
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 05:43:24 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id u5-20020a6b4905000000b00681e48dbd92so9660840iob.21
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 05:43:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=N4jbo9jFiiTWtuh64UuCXIlcP86sRdsnQIPlROsB+us=;
+        b=TKtEYD9Cwm4L98qpP+HMLQRDE6Eghx7ugEEcw61MUb6hu/vFueZg5ktl010W1zzUjm
+         xP2NMNVRtpnkRFnEcu389Yvh+uVFKIyt3EjmCQ/0T351uyKIeyiaqU0SdpReLU1OdQaC
+         DLm9KM1cIjJRI6FSUrRb0IwwEm112iWsW49A5m2Jjb1yWB/Ap4o1qmgoItklKBCuzVwu
+         ej0mkStOCt/oI6DP6o9IuvWeYTMwzgcLtY0T8WvGxVpeOfcy+606MCCneON/dsqFYPtw
+         k/0tr3OhMhmzcmb/UiqMXYKv2kDMfxpPkoPCi9xhWbKKAV0eQmsYfBsStrZ0YyGgb65S
+         D3XQ==
+X-Gm-Message-State: ACgBeo2fsWIe7NB1KoZLMgUK/Yawm8WyUYxMoLetaVMPuwmj7GWgFv2V
+        UYQi6QTGONAqEJba+YjNspDheOOkLl3reVzBFSVPfyTImkZg
+X-Google-Smtp-Source: AA6agR7h/5EcbcHx98azEJNc5+fbmcmEz27gcVSe61f94SUPHSgDsaZ9H+tm5dDBzNUjwrJus9VbAPAJQX05G/QFg2ZgN63os+tK
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c2cacd12-eae8-44b7-3490-08da7b9711de
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB2832:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eCWXDNAAiHF7O0zst8sSjSNy/kqGV4148HoY/Ay4RShcwlvhQ0x0NTGDqablvOAboSwu08ry/8ELXZ42eHvyZv69wXJkk1eDX9/3gTnQjXXwshFqlA/JdwpvApMjMK9l5kCobzjmDWFBk/q2gFi+wq01ZxrdOxFPQgmhlkOF4Stmc8isUuco/u6xk2ZRP09tY6BLtalIucZt6M/DCckgnVp+mWUwyAFZi9WjEWKt3aRVq5OPEFrur2RTk2AZTbvGYOPEjPBOjznnHiHBQtp+jAExPeDutvRxJLC0KGZwGHd6Dg/eZHIBlrDLnk6WnRS0Ad1W8oOD5WbHBXsuHeYwHW4rp2LV1d4E2VhQCu5zdrSb1BfYgdbDZaS1YOlT7trBlKMf3et8iAKH6rTp4le2HemybUDt7aNyXN18o30A34ZBq1YoQaN5OrmfiXPVoctpc5t6Pa/kXrWhj74R+nKmR8Znkfp7FZXWCcNk3qj/BKP14jpg5FV8oEQui/TReYQH9OgK8zw9BkxxW+R3rApNuxl85NgdXclkghORN3YyRxGVY5Ikc7UPhyBIatKyu/nF2BS+fEQTAU6hQBi1eIOx5AcuEy0XDCfCOpJK4GwE6eQ5II3Dw4fqT2x8EbbzXdVfDhuQc4rmJYeNiIBWVlQZwbsZB5ru04vm/y+MjOV7SVwYHGUlRiQPNSfI09tUgBAUkKiXGaiW0enXe3/Vm8uBLw2J+5u0RWNB3VfaYKYHzixlMJ2LEz7h/XueEfzfQeEMsKhoUvqYcPhRy2Y/kMhpiQiFFgjAknGx04ag7fVNNxpibXB4+06GGSAGEoblBiEB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(6666004)(186003)(6636002)(41300700001)(478600001)(1076003)(83380400001)(2906002)(36756003)(316002)(26005)(7416002)(38350700002)(8936002)(6512007)(52116002)(6506007)(44832011)(2616005)(5660300002)(55236004)(4744005)(86362001)(66476007)(8676002)(66556008)(66946007)(4326008)(6486002)(54906003)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gYZkU1Zc0ChmGEnfVIgrALAYjO0YkTnAGqTKZleglH6DWCKHPmrgoKP4RBkk?=
- =?us-ascii?Q?oatTvwkdYlKhwHvmm5BfdJDWUOjtZ8K7YYh6WWD0Lls3UsFro6V63CIgdILl?=
- =?us-ascii?Q?x7t5ZmH5zeuNzNVh8cHc14OdvaOPxC3zmpUIg0sNoqRC8Ry3PBfP8Vuqz9oo?=
- =?us-ascii?Q?pppre9noFJQeCqtdv3UBov6STlmK6opYYsWIbijkOzysBQiS4q1rAzvq63Ba?=
- =?us-ascii?Q?vDnK+2p4MTV+tSWWcmrIKPaV9BhcDiKQfBvVN1L5EHdv1ECzOH2FiXdVtrGh?=
- =?us-ascii?Q?JdajopCy+GvuBIXkITx357MHKhiPscogprBLr9q0nIiLZZDGOq9Or4jINtz3?=
- =?us-ascii?Q?FhkxDEyxSE7uV2e4QP5G1YQ4qCw7C8wW4mPUmB1kos9hqUkwZlTpDowDqCiu?=
- =?us-ascii?Q?v7EwA1sebfgGXxFArMUBx7/SjWS5+y2KI/gTWhfKQemg/F2IM7yigCh+8n2m?=
- =?us-ascii?Q?kVFZ/v74fmqbHqDHPGQaklF2lleghIntr2JTen9TUpwwbmTFEhAWz+YluE9b?=
- =?us-ascii?Q?VwBsA1kViaqqHX4UFX+QSMpgF+8mOEDa6uGzG7tLyKOL3/Y+WgEwMLzFx+Gy?=
- =?us-ascii?Q?IuAyb2vuWE5PbAdTSKtOpCoMUlmXRHpycikVmXTAfKGIioLLoIr8n4p2cMIP?=
- =?us-ascii?Q?O9cSVLCmZ4BCXQVOAj6fiHeTVkTsO/b5RQPrFN8fghRFiBO3wzYTV8yHaX7+?=
- =?us-ascii?Q?6vq/d0sAynQ4Km0fymSmJkrLUcg+ji9lqHIe3ui9bdsK3Cydxk0409beDTmu?=
- =?us-ascii?Q?RBRfShOdgUbFqdVp3Y8NjwF2NjmQWTEYJyjgIRqIxB/8RGfEoJzqd1C+2szn?=
- =?us-ascii?Q?8vb4O1ROLIvX9BJD4WiIjnsyBchEqSrppAtDTvnbRDgQe0UmJroF3x9yaasq?=
- =?us-ascii?Q?gVJWNaD0lXNIpMzTKBuf3C2dL3TzKIgkcnAscRyC1z5KlCr6f2+K1n5C8xgI?=
- =?us-ascii?Q?4cNr1SFz3zIJcXbfvwt0GtVPGg9wn+0DvZCFmgwSXP+/U1HHuy9xmHA3yepj?=
- =?us-ascii?Q?MHNnVX0unIVh9O1bnWiETcYXE2Z1p+XYQSmnYhBVorEQvVLzRI08MAX/Z8sh?=
- =?us-ascii?Q?8Iz55vCU0+Yy4cwEMPKmWGuOWqR47o4YU/cO7h7mH7OJwwnTuj1I4Gy17Zxn?=
- =?us-ascii?Q?SarzXS9WB8heWCK7Odluq01vcs3RhmjsMprI5jEwuFjHK32VoYY9d/rd0cm6?=
- =?us-ascii?Q?op4rd3xKUyTH7fOVW0mD7twWfP3Ll8Yq0SK1WSqHGDqimSfu+NfGddX/yqIa?=
- =?us-ascii?Q?4gRIEHP8g1tIskQ8PEEuQm3qoGm0X5dsjsgM9thalRYHvgrdZRaxQIykTRA9?=
- =?us-ascii?Q?edS+F+tavGNAwNneI8tdDC7hc2LpRgzKPcvJw0WYBAiIbxd4b2RmaL6gWFcr?=
- =?us-ascii?Q?K9Btrmrfq/7JalRh4lYuUWBwHZtwxUoC0UVafSXvpRlAexCwNp/elp7BYXcS?=
- =?us-ascii?Q?zzQVfWZcHtlPScZTREbJd/qrMPgqx4IUgfjXhrS03j6A+XbKkSDRrS90Yt+u?=
- =?us-ascii?Q?zO4jozX28e3AEH08+QsstHx5fAUfl8RdOTLZftJcEDyAp3oKVplC3rKxShS2?=
- =?us-ascii?Q?rLcjxbgqFCR9KhjGxlWTIOr6M2nwu2mAvex8rgtqoNv95UVstg2f9YCNX0nv?=
- =?us-ascii?Q?jA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2cacd12-eae8-44b7-3490-08da7b9711de
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:43:19.8743
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X7qkGH3FM425BWBqZYQZ+wEMd1liY5e8wK/8Z/YQCCiA05MZ6VfUBwg9tI7kXjwhUlyk10GQBC2ZpWFPllA7Ag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2832
+X-Received: by 2002:a92:b106:0:b0:2dc:eebb:e6f6 with SMTP id
+ t6-20020a92b106000000b002dceebbe6f6mr14820842ilh.54.1660221803579; Thu, 11
+ Aug 2022 05:43:23 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 05:43:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d9cfcf05e5f68213@google.com>
+Subject: [syzbot] linux-next boot error: KASAN: out-of-bounds Read in rcu_cblist_dequeue
+From:   syzbot <syzbot+4f473a64b5132e9560d1@syzkaller.appspotmail.com>
+To:     Henry.Wang@arm.com, bigeasy@linutronix.de,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        longpeng2@huawei.com, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vschneid@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the description for imx-scu gpio subnode.
+Hello,
 
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+syzbot found the following issue on:
+
+HEAD commit:    40d43a7507e1 Add linux-next specific files for 20220811
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=170595fd080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a5ae8cfa8d7075d1
+dashboard link: https://syzkaller.appspot.com/bug?extid=4f473a64b5132e9560d1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4f473a64b5132e9560d1@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: out-of-bounds in rcu_cblist_dequeue+0xa4/0xe0 kernel/rcu/rcu_segcblist.c:75
+Read of size 8 at addr ffffc90004f08000 by task ksoftirqd/1/21
+
+CPU: 1 PID: 21 Comm: ksoftirqd/1 Not tainted 5.19.0-next-20220811-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x59/0x719 mm/kasan/report.c:433
+ kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
+ rcu_cblist_dequeue+0xa4/0xe0 kernel/rcu/rcu_segcblist.c:75
+ rcu_do_batch kernel/rcu/tree.c:2234 [inline]
+ rcu_core+0x735/0x1890 kernel/rcu/tree.c:2505
+ __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
+ run_ksoftirqd kernel/softirq.c:934 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:926
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+The buggy address belongs to the virtual mapping at
+ [ffffc90004f08000, ffffc90004f11000) created by:
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2675
+
+The buggy address belongs to the physical page:
+page:ffffea00007ed940 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1fb65
+flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000000 0000000000000000 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x2dc2(GFP_KERNEL|__GFP_HIGHMEM|__GFP_NOWARN|__GFP_ZERO), pid 11, tgid 11 (kworker/u4:1), ts 8261677515, free_ts 0
+ prep_new_page mm/page_alloc.c:2532 [inline]
+ get_page_from_freelist+0x109b/0x2cd0 mm/page_alloc.c:4283
+ __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5507
+ __alloc_pages_bulk+0x9fc/0x15a0 mm/page_alloc.c:5455
+ alloc_pages_bulk_array_mempolicy+0x1b3/0x360 mm/mempolicy.c:2365
+ vm_area_alloc_pages mm/vmalloc.c:2930 [inline]
+ __vmalloc_area_node mm/vmalloc.c:3026 [inline]
+ __vmalloc_node_range+0x576/0x13a0 mm/vmalloc.c:3196
+ alloc_thread_stack_node kernel/fork.c:312 [inline]
+ dup_task_struct kernel/fork.c:977 [inline]
+ copy_process+0x13cd/0x7120 kernel/fork.c:2088
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2675
+ user_mode_thread+0xad/0xe0 kernel/fork.c:2744
+ call_usermodehelper_exec_work kernel/umh.c:174 [inline]
+ call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffffc90004f07f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc90004f07f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffc90004f08000: 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                   ^
+ ffffc90004f08080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffc90004f08100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
 ---
- Documentation/devicetree/bindings/firmware/fsl,scu.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/Documentation/devicetree/bindings/firmware/fsl,scu.yaml b/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
-index b40b0ef56978..1fe61c2599e4 100644
---- a/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
-+++ b/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
-@@ -30,6 +30,11 @@ properties:
-       Clock controller node that provides the clocks controlled by the SCU
-     $ref: /schemas/clock/fsl,scu-clk.yaml
- 
-+  gpio:
-+    description:
-+      Control the GPIO PINs on SCU domain over the firmware APIs
-+    $ref: /schemas/gpio/fsl,imx-sc-gpio.yaml
-+
-   ocotp:
-     description:
-       OCOTP controller node provided by the SCU
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
