@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDCFC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CBEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235766AbiHKP3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        id S235776AbiHKP3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235721AbiHKP3S (ORCPT
+        with ESMTP id S235770AbiHKP3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:29:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A3194EF3;
-        Thu, 11 Aug 2022 08:29:15 -0700 (PDT)
+        Thu, 11 Aug 2022 11:29:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3908995687;
+        Thu, 11 Aug 2022 08:29:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF67C615BB;
-        Thu, 11 Aug 2022 15:29:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E47C433D6;
-        Thu, 11 Aug 2022 15:29:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42518B82153;
+        Thu, 11 Aug 2022 15:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D25C433C1;
+        Thu, 11 Aug 2022 15:29:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660231754;
-        bh=S+9wRYp0p0oEdN+PIYmEdODlGUmWCcf3Hu8qY0WNB1E=;
+        s=k20201202; t=1660231759;
+        bh=uhGj3sXlMWLnhbKS7l+x7ghdxc5RdmKGvX75RnpZqJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=beFc+aUBnZ4HQEc63LsqLGmIRz+tIOngEcXobVpyUsP9KFRtXaXrOVkU08b2atpr5
-         oW2mwoAnMGpK12iFnPt81dOTCNjsDSWGAfDCrJfU89+NFC0Tr+O0VX3Ves1/XR9Hok
-         a/HfDHxz00B+9+r5VPQjHylDUq6a3tPNSFl3He7UiS0KKJXe8dbfCE8gWJoImBLp9L
-         N/a1wpoNNVUKHN/sNXZAhtbImp8Tlkr1ox06tp6di0mSO/gdYI2HyoywEMzmr8IyvX
-         0aPXyu6vNF2lg7nqnKLjbf14IA3r8SGgZCVDQzfrLKUL/ugnY871YILS6ZaIBzKy5p
-         VtmaJJXtyly9A==
+        b=Jj2FAYkyBe8hSd6XKeFdwdE9YjE7ncIasbxTmoOQ36LXYLZLFz8G/vrzdF2giseTo
+         tj92r1l09CrBJ+Idsbr7m+tytC82ECEdJzSPVrbWZ5DAA2/XQNGR1AlYs8IfFF74Hn
+         +xUYE3f30PZ0TEEYI1OU/DDBnS/HpSEvvFDjD0M2G6PrF+7Iegn0bgcqPVJh07S1am
+         0QxAAOLdx1WwGzuL+Rbd3sD/PuQue5AEU76WSQa2nfmEYnB4S5ntBCM6liKqnD5t+C
+         z1xSsQhqwmfcIWHXpJ/zJlQMIEU3gEtcl4pUhPwMJoj3AWuXABfwi9kBEwWnP+6uS5
+         qCsbcwa/u8OrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Menzynski <mmenzyns@redhat.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.19 005/105] drm/nouveau: clear output poll workers before nouveau_fbcon_destroy()
-Date:   Thu, 11 Aug 2022 11:26:49 -0400
-Message-Id: <20220811152851.1520029-5-sashal@kernel.org>
+Cc:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Sasha Levin <sashal@kernel.org>, robh@kernel.org,
+        tomeu.vizoso@collabora.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 007/105] drm/panfrost: Don't set L2_MMU_CONFIG quirks
+Date:   Thu, 11 Aug 2022 11:26:51 -0400
+Message-Id: <20220811152851.1520029-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -55,59 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Menzynski <mmenzyns@redhat.com>
+From: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
 
-[ Upstream commit 6b03816f869529393b37d03e5d75b68f7365a7a4 ]
+[ Upstream commit d8e53d8a4e0ae842ef5e83e0dfb0796980f710cf ]
 
-Resources needed for output poll workers are destroyed in
-nouveau_fbcon_fini() before output poll workers are cleared in
-nouveau_display_fini(). This means there is a time between fbcon_fini()
-and display_fini(), where if output poll happens, it crashes.
+L2_MMU_CONFIG is an implementation-defined register. Different Mali GPUs
+define slightly different MAX_READS and MAX_WRITES fields, which
+throttle outstanding reads and writes when set to non-zero values. When
+left as zero, reads and writes are not throttled.
 
-This patch introduces another output poll clearing before fbcon
-resources are destroyed.
+Both kbase and panfrost always zero these registers. Per discussion with
+Steven Price, there are two reasons these quirks may be used:
 
-BUG: KASAN: use-after-free in
-__drm_fb_helper_initial_config_and_unlock.cold+0x1f3/0x291
-[drm_kms_helper]
+1. Simulating slower memory subsystems. This use case is only of
+   interest to system-on-chip designers; it is not relevant to mainline.
 
-Cc: Ben Skeggs <bskeggs@redhat.com>
-Cc: Karol Herbst <kherbst@redhat.com>
-Cc: Lyude Paul <lyude@redhat.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
-Cc: nouveau@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Mark Menzynski <mmenzyns@redhat.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220523113541.10562-1-mmenzyns@redhat.com
+2. Working around broken memory subsystems. Hopefully we never see this
+   case in mainline. If we do, we'll need to set this register based on
+   an SoC-compatible, rather than generally matching on the GPU model.
+
+To the best of our knowledge, these fields are zero at reset, so the
+write is not necessary. Let's remove the write to aid porting to new
+Mali GPUs, which have different layouts for the L2_MMU_CONFIG register.
+
+Suggested-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220525145754.25866-8-alyssa.rosenzweig@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_fbcon.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/panfrost/panfrost_gpu.c | 12 ------------
+ 1 file changed, 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-index 4f9b3aa5deda..5226323e55d3 100644
---- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-@@ -39,6 +39,7 @@
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+index 295bef27fb55..e1a6e763d0dc 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+@@ -127,18 +127,6 @@ static void panfrost_gpu_init_quirks(struct panfrost_device *pfdev)
+ 	gpu_write(pfdev, GPU_TILER_CONFIG, quirks);
  
- #include <drm/drm_crtc.h>
- #include <drm/drm_crtc_helper.h>
-+#include <drm/drm_probe_helper.h>
- #include <drm/drm_fb_helper.h>
- #include <drm/drm_fourcc.h>
- #include <drm/drm_atomic.h>
-@@ -605,6 +606,7 @@ nouveau_fbcon_fini(struct drm_device *dev)
- 	if (!drm->fbcon)
- 		return;
  
-+	drm_kms_helper_poll_fini(dev);
- 	nouveau_fbcon_accel_fini(dev);
- 	nouveau_fbcon_destroy(dev, drm->fbcon);
- 	kfree(drm->fbcon);
+-	quirks = gpu_read(pfdev, GPU_L2_MMU_CONFIG);
+-
+-	/* Limit read & write ID width for AXI */
+-	if (panfrost_has_hw_feature(pfdev, HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG))
+-		quirks &= ~(L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_READS |
+-			    L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_WRITES);
+-	else
+-		quirks &= ~(L2_MMU_CONFIG_LIMIT_EXTERNAL_READS |
+-			    L2_MMU_CONFIG_LIMIT_EXTERNAL_WRITES);
+-
+-	gpu_write(pfdev, GPU_L2_MMU_CONFIG, quirks);
+-
+ 	quirks = 0;
+ 	if ((panfrost_model_eq(pfdev, 0x860) || panfrost_model_eq(pfdev, 0x880)) &&
+ 	    pfdev->features.revision >= 0x2000)
 -- 
 2.35.1
 
