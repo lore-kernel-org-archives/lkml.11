@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0F0C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64E4C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238409AbiHKQ17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
+        id S237752AbiHKQ2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237833AbiHKQYf (ORCPT
+        with ESMTP id S238040AbiHKQ0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:24:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A638727174;
-        Thu, 11 Aug 2022 09:06:28 -0700 (PDT)
+        Thu, 11 Aug 2022 12:26:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F2A9A952;
+        Thu, 11 Aug 2022 09:07:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43C38612F4;
-        Thu, 11 Aug 2022 16:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA805C433B5;
-        Thu, 11 Aug 2022 16:06:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C82F6141C;
+        Thu, 11 Aug 2022 16:07:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 430F5C433B5;
+        Thu, 11 Aug 2022 16:07:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233987;
-        bh=/t+23DdWwxM9jyoCs76D2FiRHmzMiegWHIf2xwQUYjw=;
+        s=k20201202; t=1660234076;
+        bh=mdnpCeHlv68NdTHAHexetYHZMr80HP5Rn5SNtefedMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TyIHZyjwSlRA/L64Ob4Y9MK28rMXPkiOiFxS8TJlmocnepqDbMQTYz7VAbhZotkoZ
-         9N7wG4ypmtmnv7HhaXSG/WMWQ2Rt6IQKBU2fx+iJdtkRmAh3LWuU08iJKxsXvPC/SW
-         v/ny4qndj5k1cQpEoeBeUJz/HNyYA8nQ9sY3G6c9TB15Z6e/5tbys27x2x6+gtETQ8
-         p3uAhRngXpv5l3GUwk4S5TU8EJMiSZpzyxa9PwaFB2UkyYqFVOBb6coIDb1S6h/kke
-         gs3Sw5SO6renXmVOnZCLdoLUlCCDm75pMbyb6TAqCIXYK8fb1EeLg/s2Lcq4uhRily
-         sogJU6RqXg4Ag==
+        b=RUp2O8RiRlv5+pAG7xlVmWT+bxOVpjNjnIQ2TeiOSI29n85SKJpLAxgs1Xq6dwMUu
+         O05i5RzO7vy116W10YhDrjWGJ7XnooChoWoQrhwYj/j8iDK7aJ6ajK254lrR6c0JqE
+         BqKFob5yVVQjVAPEDpjIBpc/aP6UBUhYlTS7bA54Ot1RZmAeBk9jQ+h8FYR0rIwjyh
+         hOPbSa/7/Xw2jEhgXzH+OJa25s+2q/XUmE1dlCwb88tDkWtJRWYR5FvD6oGJ9c2jd7
+         NFqAT95Cnn3g0o45HOiMo24hLgUedj3Fd7nmU+zvJnJVwY41IcxyiVihngfuZIkCHf
+         EbmUlbelBAt3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Delyan Kratunov <delyank@fb.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, rostedt@goodmis.org,
-        mingo@redhat.com, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 23/46] uprobe: gate bpf call behind BPF_EVENTS
-Date:   Thu, 11 Aug 2022 12:03:47 -0400
-Message-Id: <20220811160421.1539956-23-sashal@kernel.org>
+Cc:     =?UTF-8?q?=C5=81ukasz=20Spintzyk?= <lukasz.spintzyk@synaptics.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 37/46] net/cdc_ncm: Increase NTB max RX/TX values to 64kb
+Date:   Thu, 11 Aug 2022 12:04:01 -0400
+Message-Id: <20220811160421.1539956-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,48 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Delyan Kratunov <delyank@fb.com>
+From: Łukasz Spintzyk <lukasz.spintzyk@synaptics.com>
 
-[ Upstream commit aca80dd95e20f1fa0daa212afc83c9fa0ad239e5 ]
+[ Upstream commit 5588d628027092e66195097bdf6835ddf64418b3 ]
 
-The call into bpf from uprobes needs to be gated now that it doesn't use
-the trace_events.h helpers.
+DisplayLink ethernet devices require NTB buffers larger then 32kb
+in order to run with highest performance.
 
-Randy found this as a randconfig build failure on linux-next [1].
+This patch is changing upper limit of the rx and tx buffers.
+Those buffers are initialized with CDC_NCM_NTB_DEF_SIZE_RX and
+CDC_NCM_NTB_DEF_SIZE_TX which is 16kb so by default no device is
+affected by increased limit.
 
-  [1]: https://lore.kernel.org/linux-next/2de99180-7d55-2fdf-134d-33198c27cc58@infradead.org/
+Rx and tx buffer is increased under two conditions:
+ - Device need to advertise that it supports higher buffer size in
+   dwNtbMaxInMaxSize and dwNtbMaxOutMaxSize.
+ - cdc_ncm/rx_max and cdc_ncm/tx_max driver parameters must be adjusted
+   with udev rule or ethtool.
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Delyan Kratunov <delyank@fb.com>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/cb8bfbbcde87ed5d811227a393ef4925f2aadb7b.camel@fb.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Summary of testing and performance results:
+Tests were performed on following devices:
+ - DisplayLink DL-3xxx family device
+ - DisplayLink DL-6xxx family device
+ - ASUS USB-C2500 2.5G USB3 ethernet adapter
+ - Plugable USB3 1G USB3 ethernet adapter
+ - EDIMAX EU-4307 USB-C ethernet adapter
+ - Dell DBQBCBC064 USB-C ethernet adapter
+
+Performance measurements were done with:
+ - iperf3 between two linux boxes
+ - http://openspeedtest.com/ instance running on local test machine
+
+Insights from tests results:
+ - All except one from third party usb adapters were not affected by
+   increased buffer size to their advertised dwNtbOutMaxSize and
+   dwNtbInMaxSize.
+   Devices were generally reaching 912-940Mbps both download and upload.
+
+   Only EDIMAX adapter experienced decreased download size from
+   929Mbps to 827Mbps with iper3, with openspeedtest decrease was from
+   968Mbps to 886Mbps.
+
+ - DisplayLink DL-3xxx family devices experienced performance increase
+   with iperf3 download from 300Mbps to 870Mbps and
+   upload from 782Mbps to 844Mbps.
+   With openspeedtest download increased from 556Mbps to 873Mbps
+   and upload from 727Mbps to 973Mbps
+
+ - DiplayLink DL-6xxx family devices are not affected by
+   increased buffer size.
+
+Signed-off-by: Łukasz Spintzyk <lukasz.spintzyk@synaptics.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220720060518.541-2-lukasz.spintzyk@synaptics.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_uprobe.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/usb/cdc_ncm.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 9900d4e3808c..4d62342ff970 100644
---- a/kernel/trace/trace_uprobe.c
-+++ b/kernel/trace/trace_uprobe.c
-@@ -1351,6 +1351,7 @@ static void __uprobe_perf_func(struct trace_uprobe *tu,
- 	int size, esize;
- 	int rctx;
+diff --git a/include/linux/usb/cdc_ncm.h b/include/linux/usb/cdc_ncm.h
+index 0ce4377545f8..20a8ab9272d8 100644
+--- a/include/linux/usb/cdc_ncm.h
++++ b/include/linux/usb/cdc_ncm.h
+@@ -53,8 +53,8 @@
+ #define USB_CDC_NCM_NDP32_LENGTH_MIN		0x20
  
-+#ifdef CONFIG_BPF_EVENTS
- 	if (bpf_prog_array_valid(call)) {
- 		u32 ret;
+ /* Maximum NTB length */
+-#define	CDC_NCM_NTB_MAX_SIZE_TX			32768	/* bytes */
+-#define	CDC_NCM_NTB_MAX_SIZE_RX			32768	/* bytes */
++#define	CDC_NCM_NTB_MAX_SIZE_TX			65536	/* bytes */
++#define	CDC_NCM_NTB_MAX_SIZE_RX			65536	/* bytes */
  
-@@ -1360,6 +1361,7 @@ static void __uprobe_perf_func(struct trace_uprobe *tu,
- 		if (!ret)
- 			return;
- 	}
-+#endif /* CONFIG_BPF_EVENTS */
- 
- 	esize = SIZEOF_TRACE_ENTRY(is_ret_probe(tu));
- 
+ /* Initial NTB length */
+ #define	CDC_NCM_NTB_DEF_SIZE_TX			16384	/* bytes */
 -- 
 2.35.1
 
