@@ -2,139 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD97C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3A4C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236076AbiHKQs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        id S235269AbiHKQvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239113AbiHKQsC (ORCPT
+        with ESMTP id S239186AbiHKQux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:48:02 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F83AAA3E6
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:21:25 -0700 (PDT)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220811162122epoutp03d2eaefc316ce4e321b055261482911ed~KVtRHmORN1461514615epoutp03E
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:21:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220811162122epoutp03d2eaefc316ce4e321b055261482911ed~KVtRHmORN1461514615epoutp03E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1660234882;
-        bh=Ne9iUaPDtu+8u7/wT0WYI6Ighrqj1RwlsWCWGL1U9iM=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=a6CtLPFyQD3IRS7UQVp5q4JzLqEl5Iuykhf3VqwFw993ZXTdjuiUbIlfyvzO88ulQ
-         x/abAtYRn12TmfQqDSWhBAyNuGHbRX7wR7tmKgENLkUEbwxs71gYMovWjiziqUl0Ti
-         xU3k+I1V5IHBm3Z6DQ8Kce12wXQ1DvSZk5NUR7zI=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220811162121epcas5p330284ed7640d1f16526cf01e4318b22e~KVtQgjO7C2852928529epcas5p32;
-        Thu, 11 Aug 2022 16:21:21 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.175]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4M3X9q2s7kz4x9Pv; Thu, 11 Aug
-        2022 16:21:19 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        4E.71.49477.F7C25F26; Fri, 12 Aug 2022 01:21:19 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220811162118epcas5p2f452b3b425953d47e60e4b29868c03c9~KVtNi-6S63124631246epcas5p2_;
-        Thu, 11 Aug 2022 16:21:18 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220811162118epsmtrp23d2eae6fb88e0ef6a10b665374365cd2~KVtNiMxnR1427614276epsmtrp22;
-        Thu, 11 Aug 2022 16:21:18 +0000 (GMT)
-X-AuditID: b6c32a49-82dff7000000c145-a1-62f52c7ff20c
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        C7.FC.08802.E7C25F26; Fri, 12 Aug 2022 01:21:18 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.109.115.6]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220811162115epsmtip187aa3b015256f5e3e01f735ade902be3~KVtKeFPLJ0691106911epsmtip1Y;
-        Thu, 11 Aug 2022 16:21:14 +0000 (GMT)
-From:   Alim Akhtar <alim.akhtar@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, avri.altman@wdc.com,
-        bvanassche@acm.org, martin.petersen@oracle.com,
-        chanho61.park@samsung.com, linux-samsung-soc@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH v2] scsi: ufs: host: ufs-exynos: staticize fsd_ufs_drvs
-Date:   Thu, 11 Aug 2022 21:40:53 +0530
-Message-Id: <20220811161053.54081-1-alim.akhtar@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFKsWRmVeSWpSXmKPExsWy7bCmum69ztckg1nThSwezNvGZvHy51U2
-        i2kffjJbXN6vbdH34iGzxabH11gtLu+aw2Yx4/w+Jovu6zvYLJYf/8fkwOVx+Yq3x51re9g8
-        Ni+p9/j49BaLR9+WVYwenzfJebQf6GYKYI/KtslITUxJLVJIzUvOT8nMS7dV8g6Od443NTMw
-        1DW0tDBXUshLzE21VXLxCdB1y8wBOk5JoSwxpxQoFJBYXKykb2dTlF9akqqQkV9cYquUWpCS
-        U2BSoFecmFtcmpeul5daYmVoYGBkClSYkJ3x5apAwVeOiq3b5jE2MC5j72Lk5JAQMJG497sb
-        zBYS2M0o8XO9WRcjF5D9iVFiXs9OZgjnM6PE3gOHGWE6fmy4zQKR2MUo0XN7DyOE08wkMePQ
-        G2aQKjYBbYm707cwgdgiAikSV/f/ZAIpYha4zCixb851sISwgLvExL53YMtZBFQlzn7fyAJi
-        8wrYSBx6/JsNYp28xOoNB8DukBA4xy6x58BVqDtcJH7tvckCYQtLvDq+BeojKYnP7/YCNXMA
-        2R4Si/5IQYQzJN4uXw/Vai9x4MocFpASZgFNifW79EHCzAJ8Er2/nzBBdPJKdLQJQVSrSjS/
-        uwq1SFpiYnc3K8zwt+cKICEXKzFz2wPGCYwysxBmLmBkXMUomVpQnJueWmxaYJiXWg6PmeT8
-        3E2M4ESm5bmD8e6DD3qHGJk4GA8xSnAwK4nwli36nCTEm5JYWZValB9fVJqTWnyI0RQYSBOZ
-        pUST84GpNK8k3tDE0sDEzMzMxNLYzFBJnNfr6qYkIYH0xJLU7NTUgtQimD4mDk6pBqatDJOW
-        VYe2XTd8d0GJddOGexd491ima824eqrW7ceMndtOHLHpOZtUzbQ23V5t6ivlzdbVJvYzD0pN
-        3yeg99mD6d3P/mt57D4W8x87Vc05//mOp0HjH/cNZiz37/3synRLKVohMlci+caF2bNicpd0
-        LEuelCFz7OvxeZv2xOV2bur9FGg8rYLNU1ax+tyfJ9uyp+47fUd0SYvKVd7LPHl2NUf8DURK
-        Fq3hFzS77RWzszeu7Xv9iu8nlAzCDMqXi87leC8UN5s/uzPKbr7vU33BX6wWi6cG7HxdcCa6
-        4Afzkm8b/a+5ePTkLTF/EHr1uM7MO3tcrVdcDOj4YlK55WRzvjRvkY2Kt9WSz0oc5beVWIoz
-        Eg21mIuKEwFaLycs7QMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprCLMWRmVeSWpSXmKPExsWy7bCSnG6dztckgzcbpSwezNvGZvHy51U2
-        i2kffjJbXN6vbdH34iGzxabH11gtLu+aw2Yx4/w+Jovu6zvYLJYf/8fkwOVx+Yq3x51re9g8
-        Ni+p9/j49BaLR9+WVYwenzfJebQf6GYKYI/isklJzcksSy3St0vgyvhyVaDgK0fF1m3zGBsY
-        l7F3MXJySAiYSPzYcJuli5GLQ0hgB6PErsaPLBAJaYnrGydAFQlLrPz3nB2iqJFJYvKJv0wg
-        CTYBbYm707cA2RwcIgJpEt9OqoDUMAvcZpRY9+ETG0iNsIC7xMS+d2CDWARUJc5+3wi2gFfA
-        RuLQ499sEAvkJVZvOMA8gZFnASPDKkbJ1ILi3PTcYsMCo7zUcr3ixNzi0rx0veT83E2M4IDT
-        0trBuGfVB71DjEwcjIcYJTiYlUR4yxZ9ThLiTUmsrEotyo8vKs1JLT7EKM3BoiTOe6HrZLyQ
-        QHpiSWp2ampBahFMlomDU6qBqborfBljctaTCTdzq9wVBCK7+5K/7prn8yHWc7n4PJGvaVLm
-        rHJVX03NHWctmmPI4eJb/o1RZikDQ/KCJ8ZHvqw72bDJ8673KVvflF2TApuZPQ97dAafChKf
-        vHFa2X+TLv3rr8+anFCvFPIK0zdk+Mr6bLL078u3TBwuRG17fKHKadEt4WDHecdY1zT+n+6e
-        OVfBd8PHtenr165m/Vmx9K3SOd3UTTWLZERU1s4P/P+w/MSVeSr7OaqzIvZt2GuacPmYhMa9
-        YOlH5pOXR2elTJ21M7N85oauBfOka6vWZTvtu3bs1yyrx3ZBt37fXLP9XlOO9Orv652m+bEt
-        cmst9mrV3fRY0KZAon/+n40vTJVYijMSDbWYi4oTAU7q3YinAgAA
-X-CMS-MailID: 20220811162118epcas5p2f452b3b425953d47e60e4b29868c03c9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220811162118epcas5p2f452b3b425953d47e60e4b29868c03c9
-References: <CGME20220811162118epcas5p2f452b3b425953d47e60e4b29868c03c9@epcas5p2.samsung.com>
+        Thu, 11 Aug 2022 12:50:53 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2062.outbound.protection.outlook.com [40.107.102.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D74A260C
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:24:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gYR1HOE1CS/yChqO1nk1qUEI5GkMni4/4hyH8oZpDlHWmjbM50xS1NBt0ACwlFQAicYj/wIakiTSEEGBEeZQ6Wdl+DUqYdjJImkwb8UQkusDtXGtjzksMWHIuiXQchu8X0kCRrwdAsvEfVMdoa5GtdaYVCmIFy6zhXG8oYaKUhZBB51yBjQD6nSx/TbbVJzQDtQR2mroVrO+8g11gRZWn2At0i0yD4p8oVjljEW61uwnnC+mMhmzxpBBRy6FDVjR83nNnDS/3YNV9OoZh5gkf8dArJcSOvMR/1wVZGt+9tGYe2NqavHwVvCd9eaMPk+SQhl7K90GtDCYvzNPDSNZCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=08O0Lgt/6qG7zz+CVZEcuC5Mr+62j1ha2DulHnxSeUU=;
+ b=Z4KKXOxSFZGPfjD9EjgcANP6gIcc35rfsiPXeH8/u6yibbzvCh2zhpx4Fks8yAziM/09LlRStJ+T7CeRm5/gUfUmF7xK13kKhK7KAHFE1UTUn+y0EbXGGlopdQhYZfxmbQ9YUBRRVVvHL4NIBMf+jX7Zdf5eDAVmSDRoZZAWPBR9MCzyt8WInGyXQiVN2KSGo4u5TALFYO22P6IRp2lJ5mykK1Xp2r1p4ArPmMvkVxndRpa6My7FKVO+pmqVMgfNngzQOYxPVc8uuvowV4TY2EmGC0e8Erh49Ef8Vh5IymEtkATDI9wCM5H7B+g1ge5dEMh4exeRlUMW9UkxpB+VeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=08O0Lgt/6qG7zz+CVZEcuC5Mr+62j1ha2DulHnxSeUU=;
+ b=JqwS+JpkrbW099b8D/CFKcYQwWFsPOcVsPCKo+wlfsEbhuODYG9Go9UetNKyvksztPcp3S6m58VeM3LMq8l+5tDsFUZSrrTdUg20laRg8SfPoAYSDaNpTUF7FsqHhQfG65hbVAWH0hO0ekbK8sr/uJKLFHzwYd59zKvD4DwsbIg=
+Received: from BN0PR07CA0010.namprd07.prod.outlook.com (2603:10b6:408:141::10)
+ by CO6PR12MB5491.namprd12.prod.outlook.com (2603:10b6:303:13b::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Thu, 11 Aug
+ 2022 16:24:20 +0000
+Received: from BN8NAM11FT043.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:141:cafe::cd) by BN0PR07CA0010.outlook.office365.com
+ (2603:10b6:408:141::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.12 via Frontend
+ Transport; Thu, 11 Aug 2022 16:24:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT043.mail.protection.outlook.com (10.13.177.218) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5525.11 via Frontend Transport; Thu, 11 Aug 2022 16:24:19 +0000
+Received: from hamza-pc.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 11 Aug
+ 2022 11:24:05 -0500
+From:   Hamza Mahfooz <hamza.mahfooz@amd.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Hamza Mahfooz <hamza.mahfooz@amd.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        "Alex Deucher" <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        hersen wu <hersenxs.wu@amd.com>, Wayne Lin <Wayne.Lin@amd.com>,
+        Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        "Roman Li" <Roman.Li@amd.com>, <amd-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>
+Subject: [PATCH] drm/amd/display: fix DSC related non-x86/PPC64 compilation issue
+Date:   Thu, 11 Aug 2022 12:23:07 -0400
+Message-ID: <20220811162307.1384962-1-hamza.mahfooz@amd.com>
+X-Mailer: git-send-email 2.37.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cae2537d-af5f-40f2-40a5-08da7bb5f17a
+X-MS-TrafficTypeDiagnostic: CO6PR12MB5491:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: //lcgFveT3XjMUAWPXCbQk4CJwH7t1thlvr+v6rTnzS+/FThQwfUya+yNzeGVChTb2sQahsoUOeLQPwue17WnmNWg99WWZc/waYr9AbrdjUSW8YffUilA2unM9neBVuUjGoa6bBvXH3oBG5DuuVnrYpDPWEKU8ZHw4tUotm+F1TPvfYQjrtgbMKLedWyD2Lr0LplbT/lIYwYLnd0/q3tZl7xhqAdl5EmnocqCzjcLMQBS8+b2ObVFH9h7d6/zeLqQxs2Sq9qzW4JFL+w4g2guLe6QoatDA51rpGrbMXamas5UdN0jvwc37ChtlwUYV+K+PA7g68SpS8ztQ1fXlm/O3yeT0hh49De8LWPwiDpIRKELzcwAxjjO7P9WpY0nVEvDLFKh6affaSUc5w+GKNiyRGhcX4ZkNjNs7zfFrW+S2NgBcgFNymLRrEkYH3YcngBowpXwZ7LDFV6hoD1fM6I6vZQEzFkImQ0DjhI/Yahz0RLMai3oT24rE4oaFwUZerysT8Y8ra4/TCuXTmXDlpppGykhza1W/T3Wrb9stWHm58mWyZqpghUJC9WCHKwyq+nEnV9LT4jMnm40+8q833PKc24hoQiTLkZqMIynzXzcGQOcmyOHulCmAa78LKfvD+InqAUwBmlW1Hmtpkp22PRDa2/Idij55bSAgESbAklKztMQaZFUQn/kD1fpgrwxbLKBLMnD1a7lS2592w7P074A69BY+4siv530uUGZ2nc08DJhpYRQ4osdX7p/RebCT7y5JKWjWivnhW3Yhy2qb4XYLf2hWn8gbOjO1q8+Iad5sofcCv+B6Ii+PjeI4iZleb+SdWeJ67KU9grLgV44IamSuNrWS81o/d/79y8wCI3stpxUI8R8RXFXNc9EoeNviSj
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(39860400002)(396003)(40470700004)(46966006)(36840700001)(7696005)(41300700001)(26005)(40460700003)(426003)(2616005)(1076003)(336012)(47076005)(40480700001)(82310400005)(16526019)(186003)(83380400001)(8676002)(70206006)(70586007)(4326008)(2906002)(8936002)(5660300002)(44832011)(478600001)(54906003)(316002)(6916009)(81166007)(356005)(36756003)(86362001)(36860700001)(82740400003)(16060500005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 16:24:19.5558
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cae2537d-af5f-40f2-40a5-08da7bb5f17a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT043.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5491
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-struct fsd_ufs_drvs is not used outside this file, so made it static.
-This fixes sparse warning:
+Need to protect DSC code with CONFIG_DRM_AMD_DC_DCN.
+Fixes the following build errors on arm64:
+ERROR: modpost: "dc_dsc_get_policy_for_timing" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
+ERROR: modpost: "dc_dsc_compute_bandwidth_range" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
 
-drivers/ufs/host/ufs-exynos.c:1721:28: sparse: sparse:
-symbol 'fsd_ufs_drvs' was not declared. Should it be static?
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 216f74e8059a ("scsi: ufs: host: ufs-exynos: Add support for FSD UFS HCI")
-Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+Fixes: 0087990a9f57 ("drm/amd/display: consider DSC pass-through during mode validation")
+Reported-by: Anders Roxell <anders.roxell@linaro.org>
+Signed-off-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
 ---
-* Changes since v1
-	- Addressed Krzysztof's  review comment
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c    | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
- drivers/ufs/host/ufs-exynos.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/ufs/host/ufs-exynos.c b/drivers/ufs/host/ufs-exynos.c
-index eced97538082..c3628a8645a5 100644
---- a/drivers/ufs/host/ufs-exynos.c
-+++ b/drivers/ufs/host/ufs-exynos.c
-@@ -1711,7 +1711,7 @@ static struct exynos_ufs_uic_attr fsd_uic_attr = {
- 	.pa_dbg_option_suite		= 0x2E820183,
- };
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
+index ef6c94cd852b..0c52c0867211 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
+@@ -1387,8 +1387,6 @@ bool pre_validate_dsc(struct drm_atomic_state *state,
+ 	return (ret == 0);
+ }
  
--struct exynos_ufs_drv_data fsd_ufs_drvs = {
-+static const struct exynos_ufs_drv_data fsd_ufs_drvs = {
- 	.uic_attr               = &fsd_uic_attr,
- 	.quirks                 = UFSHCD_QUIRK_PRDT_BYTE_GRAN |
- 				  UFSHCI_QUIRK_BROKEN_REQ_LIST_CLR |
+-#endif
+-
+ static unsigned int kbps_from_pbn(unsigned int pbn)
+ {
+ 	unsigned int kbps = pbn;
+@@ -1416,6 +1414,7 @@ static bool is_dsc_common_config_possible(struct dc_stream_state *stream,
+ 
+ 	return bw_range->max_target_bpp_x16 && bw_range->min_target_bpp_x16;
+ }
++#endif /* CONFIG_DRM_AMD_DC_DCN */
+ 
+ enum dc_status dm_dp_mst_is_port_support_mode(
+ 	struct amdgpu_dm_connector *aconnector,
+@@ -1428,6 +1427,7 @@ enum dc_status dm_dp_mst_is_port_support_mode(
+ 	struct dc_dsc_bw_range bw_range = {0};
+ 	int bpp, pbn, branch_max_throughput_mps = 0;
+ 
++#if defined(CONFIG_DRM_AMD_DC_DCN)
+ 	/*
+ 	 * check if the mode could be supported if DSC pass-through is supported
+ 	 * AND check if there enough bandwidth available to support the mode
+@@ -1461,13 +1461,16 @@ enum dc_status dm_dp_mst_is_port_support_mode(
+ 			return DC_FAIL_BANDWIDTH_VALIDATE;
+ 		}
+ 	} else {
++#endif
+ 		/* check if mode could be supported within full_pbn */
+ 		bpp = convert_dc_color_depth_into_bpc(stream->timing.display_color_depth) * 3;
+ 		pbn = drm_dp_calc_pbn_mode(stream->timing.pix_clk_100hz / 10, bpp, false);
+ 
+ 		if (pbn > aconnector->port->full_pbn)
+ 			return DC_FAIL_BANDWIDTH_VALIDATE;
++#if defined(CONFIG_DRM_AMD_DC_DCN)
+ 	}
++#endif
+ 
+ 	/* check is mst dsc output bandwidth branch_overall_throughput_0_mps */
+ 	switch (stream->timing.pixel_encoding) {
 -- 
-2.25.1
+2.37.1
 
