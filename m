@@ -2,76 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEB1C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 09:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 687FDC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 09:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234915AbiHKJlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 05:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
+        id S234928AbiHKJnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 05:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232585AbiHKJlm (ORCPT
+        with ESMTP id S232585AbiHKJnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 05:41:42 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82A62D1FC
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:41:40 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M3MJf6BgNz4x1K;
-        Thu, 11 Aug 2022 19:41:38 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1660210899;
-        bh=QvU3Ii0mNqZHfLnF6Zfdgva2T6Ppk7BMjH3eteu8YK0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=kEbdDLRB31+agt8BJ/TeC6VhWX4NEHL3dNzlAAHEaVglBt/IPlWyXaQbYxPzDNupK
-         VN/OxNUYdRcFRQDTumj6IpYsWApJkiEfNpC+xnmIW800GnzemkKLeC69T1tQDdt8VF
-         N7ZCOmwhsPZ/rEPktpKlVXB8XRLL1+e3e8xvPPtbPYv8B1cuKUJqti67ADjcR04r7/
-         Y1outOTSoXOrmVjpBPII2/A3K4LG5K8L611udCZY904nczWqIKDMpdnIh2o61ChM2Z
-         faTpKkkrkJqfZLzfaY+uD9NVhnVPIC956S7DAIQ5p6oSzyY80OGjQKaLQxpqU42AnZ
-         LMao+0e4mYQHQ==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Anders Roxell <anders.roxell@linaro.org>, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     llvm@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCHv3, resend] powerpc: mm: radix_tlb: rearrange the if-else
- block
-In-Reply-To: <20220810114318.3220630-1-anders.roxell@linaro.org>
-References: <20220810114318.3220630-1-anders.roxell@linaro.org>
-Date:   Thu, 11 Aug 2022 19:41:35 +1000
-Message-ID: <87fsi3ce28.fsf@mpe.ellerman.id.au>
+        Thu, 11 Aug 2022 05:43:01 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71D693503
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:42:59 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27B5YQUh014676;
+        Thu, 11 Aug 2022 04:42:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
+ mime-version : from : subject : to : references : in-reply-to :
+ content-type : content-transfer-encoding; s=PODMain02222019;
+ bh=4hB4VqJ9D2x+F7YMOyUoVMiAiQyBxRswQNLToL9PR6c=;
+ b=Kz7lnxctZc9xy4nWB6XwLNI9jDbm0FNKmtfsLS9thaBxbTAmkKOlHkQi8g4zxhvYeVzU
+ QPQBKAan5hcDNP33zg3w2i960NMGajpU/b9V/+PMPHvgxSRJ4AbRg4IjjojUBjRMX3Bc
+ HVcnRsHZBWMj482ZyqiFDJuQDIxImGKF2zepcQk5014ZpZDpBstJvtighNnAwBvbLyyI
+ fMtgF/Co8E1MCbWNPa7g1QSvHq6oqMGIbW4GOBF1hI8thk5c8ijyQEaM8GYZoUZw6aRo
+ cYB199q9JSwxG0ptmJD3K9f8fXz1kyRMkvupSw8/JP0ckR0RfE8X0K3k9ASVWq67ajMc xQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3huwqpa6q6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Aug 2022 04:42:47 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Thu, 11 Aug
+ 2022 04:42:46 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
+ Transport; Thu, 11 Aug 2022 04:42:46 -0500
+Received: from [198.90.202.47] (unknown [198.90.202.47])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 137002C5;
+        Thu, 11 Aug 2022 09:42:45 +0000 (UTC)
+Message-ID: <c671ad96-e1aa-4cda-eef1-fd8fe906ec36@opensource.cirrus.com>
+Date:   Thu, 11 Aug 2022 10:42:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+From:   Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: Re: [PATCH] Sound: pci/hda: Add quirk for HP Envy x360 ey0xxx
+To:     Fae <faenkhauser@gmail.com>,
+        James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
+References: <20220811053950.11810-1-faenkhauser@gmail.com>
+Content-Language: en-US
+In-Reply-To: <20220811053950.11810-1-faenkhauser@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: t_fb2mJxYa0FJGf6QW3832kMA_NpcEl6
+X-Proofpoint-ORIG-GUID: t_fb2mJxYa0FJGf6QW3832kMA_NpcEl6
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Anders Roxell <anders.roxell@linaro.org> writes:
-> Clang warns:
+On 8/11/22 06:39, Fae wrote:
+> This patch fixes speaker output on the HP Envy x360 ey0xxx
+> The mic/speaker mute LEDs are still non-functional but they aren't required for basic funtionality
 >
-> arch/powerpc/mm/book3s64/radix_tlb.c:1191:23: error: variable 'hstart' is uninitialized when used here [-Werror,-Wuninitialized]
->                                 __tlbiel_va_range(hstart, hend, pid,
->                                                   ^~~~~~
-> arch/powerpc/mm/book3s64/radix_tlb.c:1175:23: note: initialize the variable 'hstart' to silence this warning
->                 unsigned long hstart, hend;
->                                     ^
->                                      = 0
-> arch/powerpc/mm/book3s64/radix_tlb.c:1191:31: error: variable 'hend' is uninitialized when used here [-Werror,-Wuninitialized]
->                                 __tlbiel_va_range(hstart, hend, pid,
->                                                           ^~~~
-> arch/powerpc/mm/book3s64/radix_tlb.c:1175:29: note: initialize the variable 'hend' to silence this warning
->                 unsigned long hstart, hend;
->                                           ^
->                                            = 0
-> 2 errors generated.
+> Also the quirk is labeled ALC287_FIXUP_CS35L41_I2C_2 however it does not only apply to ALC287
+> Its function is the generic cs35l41 fixup telling the driver that there's 2 i2c speakers. It isn't actually specific to ALC287
+>
+> I did have a bit of luck getting the mic mute LED to work but it was to finicky to submit ( I used the ALC245_FIXUP_HP_GPIO_LED quirk )
+> I had no luck getting the speaker mute LED to work
+>
+> Signed-off-by: Fae<faenkhauser@gmail.com>
+> ---
+>   sound/pci/hda/cs35l41_hda.c   | 3 ++-
+>   sound/pci/hda/patch_realtek.c | 1 +
+>   2 files changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+> index 129bffb431c22..21d8c2de128ff 100644
+> --- a/sound/pci/hda/cs35l41_hda.c
+> +++ b/sound/pci/hda/cs35l41_hda.c
+> @@ -1156,7 +1156,8 @@ static int cs35l41_no_acpi_dsd(struct cs35l41_hda *cs35l41, struct device *physd
+>   	hw_cfg->valid = true;
+>   	put_device(physdev);
+>   
+> -	if (strncmp(hid, "CLSA0100", 8) == 0) {
+> +	if ((strncmp(hid, "CLSA0100", 8) == 0) ||
+> +	    (strncmp(hid, "CSC3551", 7) == 0)) {
 
-Which version & config are you building?
+Sorry, but we can't accept this. The HID CSC3551 was created for a whole 
+range of laptops, with all types of Boost.
 
-I don't see this warning in my test builds.
+With this HID the driver expects to read configurations from the BIOS.
 
-cheers
+
+>   		hw_cfg->bst_type = CS35L41_EXT_BOOST_NO_VSPK_SWITCH;
+>   	} else if (strncmp(hid, "CLSA0101", 8) == 0) {
+>   		hw_cfg->bst_type = CS35L41_EXT_BOOST;
+> diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+> index 8a57636f622e9..e7053cbc6bb6e 100644
+> --- a/sound/pci/hda/patch_realtek.c
+> +++ b/sound/pci/hda/patch_realtek.c
+> @@ -9179,6 +9179,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+>   	SND_PCI_QUIRK(0x103c, 0x83b9, "HP Spectre x360", ALC269_FIXUP_HP_MUTE_LED_MIC3),
+>   	SND_PCI_QUIRK(0x103c, 0x841c, "HP Pavilion 15-CK0xx", ALC269_FIXUP_HP_MUTE_LED_MIC3),
+>   	SND_PCI_QUIRK(0x103c, 0x8497, "HP Envy x360", ALC269_FIXUP_HP_MUTE_LED_MIC3),
+> +	SND_PCI_QUIRK(0x103c, 0x8a31, "HP ENVY x360 2-in-1 Laptop 15-ey0xxx", ALC287_FIXUP_CS35L41_I2C_2),
+>   	SND_PCI_QUIRK(0x103c, 0x84da, "HP OMEN dc0019-ur", ALC295_FIXUP_HP_OMEN),
+>   	SND_PCI_QUIRK(0x103c, 0x84e7, "HP Pavilion 15", ALC269_FIXUP_HP_MUTE_LED_MIC3),
+>   	SND_PCI_QUIRK(0x103c, 0x8519, "HP Spectre x360 15-df0xxx", ALC285_FIXUP_HP_SPECTRE_X360),
