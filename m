@@ -2,468 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D60E0C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCD9C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236618AbiHKPtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S236793AbiHKPtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236626AbiHKPrl (ORCPT
+        with ESMTP id S236648AbiHKPrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:47:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11D999244;
-        Thu, 11 Aug 2022 08:41:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 540AAB82123;
-        Thu, 11 Aug 2022 15:41:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1328FC433D6;
-        Thu, 11 Aug 2022 15:41:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232495;
-        bh=bIsUlWJqVgiF4karWSMuXP8WYJpQHJk4XE96U4GHRuc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AX6kL+aF/uYgSduhfu+ZK5TB8MC3r2d6tVGCRiZD4xe42CG8ASATqrC4zv9xkD+Bd
-         GIhcIF3gbRDSBaHybmFEuLluFrcrnWNJxM8jqYdZG2VsRjM7mwBOIg1h2c/tmiLB6R
-         dmuZn+5arrexhJRW5e+GZ+rDPDYe7s9F69DRxQ9GcSh2FV6tZkNx8aCRT7QJs9LQ3U
-         zDiL7gQg7JY56ZX2lIBTRPZds1aQ9CwdkNTNu2ymLpT7CEHsiUBvCLzTtLzymz+IOR
-         xICfQKoysS3kafGl4s4zY31YzAYGcr0eeleEb70quBcpBCpf+j3bd64mMM7ISAs4fg
-         IrP3Tc7tZMkfQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 097/105] Revert "ath11k: add support for hardware rfkill for QCA6390"
-Date:   Thu, 11 Aug 2022 11:28:21 -0400
-Message-Id: <20220811152851.1520029-97-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:47:45 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BFF9925A
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:41:40 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id t15so10140827ilm.7
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=RTT7+zmODbaYBRXOi2mBaSvbEGfH2m4oaESkivpOFK0=;
+        b=k4VcTzmJAF0QbnrcgMbHraqcamIW+G6IhTmAT4XOjdaUJIJRgqyVjAyj9cq+L0hqCv
+         4F/elIW0d0B+OsQEXI85JASEvOCoBJKvTdGPbHxZmOBHByHf9JOR1CVslBxhDbuqgRt9
+         0y7gJKaqCxd3KDak8WX894EN1nL8QtOk8leVMOuHtYvhiRCacGLraP6YGaxn8w2oCDZo
+         TGey/4rZzROzLPy5Mna3e5Rn2+Yw20KGzZPNSmMX6Wc7rFsvtrIxj4W8/RY4GcPuvBAw
+         w51+C/sKcLFo9QQo/dHE5nDPPj1b7vK/y0jZ0SK7Q4cWad/sHTHGPpTIb5g/+ykhCFJ7
+         VhyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=RTT7+zmODbaYBRXOi2mBaSvbEGfH2m4oaESkivpOFK0=;
+        b=v2pfQEgjy3q1H3E+Pin/++SMceGXlHg3v8n+iF24SsB1NJYdFAFCSLYJ8imFYNUVgw
+         DB4VuIGblI0QjMDoDXg8KFYuuQrAzvnE56Eu6wL4ZwOpJFXuhS6x01RLuv1MPO44g9bt
+         4aejEVQHkG4d3iLx2PffjKWA5AToUcuiDEeylUjJ1LogE38sVT/sSlh1ZH1PkyN3nfxO
+         qML5kUm4nAqJb3wyTwZsyKU6pOxDJvG0v8dVIjVe9rN8v1kNRdFORttev3vCefBQYK0i
+         Q8IptmcrU1+eq2g8bpD2gA73geMx/6Tl6KMes1wAS0LV6+P657LFZt5RmEbRKqTOH7tL
+         XvJQ==
+X-Gm-Message-State: ACgBeo03JBw/j9qriYBbjZ8pqFsDNvb0RY5dOPpwYOTFVVs50PeglJ2Y
+        lWUNqUrEWWd6Nlex/9RZW4VCvg==
+X-Google-Smtp-Source: AA6agR4FZsdtqkq3Ho6PTNYBe3yE06cxzSBqfyXK1oz0gKpICAgWMmTtexNviq+rdefhaAChwkzqig==
+X-Received: by 2002:a05:6e02:180a:b0:2de:533a:dcb6 with SMTP id a10-20020a056e02180a00b002de533adcb6mr15284519ilv.277.1660232500162;
+        Thu, 11 Aug 2022 08:41:40 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id l16-20020a92d950000000b002df5a4c59f5sm3420813ilq.7.2022.08.11.08.41.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Aug 2022 08:41:39 -0700 (PDT)
+Message-ID: <8f3d1bf5-48f6-411d-674e-1568e3841d75@kernel.dk>
+Date:   Thu, 11 Aug 2022 09:41:38 -0600
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] Modify the return value ret to EOPNOTSUPP when
+ initialized to reduce repeated assignment of errno
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        Zhang chunchao <chunchao@nfschina.com>
+Cc:     asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@nfschina.com
+References: <20220811075638.36450-1-chunchao@nfschina.com>
+ <20220811150242.giygjmy4vimxtrzg@sgarzare-redhat>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220811150242.giygjmy4vimxtrzg@sgarzare-redhat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kalle Valo <quic_kvalo@quicinc.com>
+On 8/11/22 9:02 AM, Stefano Garzarella wrote:
+> On Thu, Aug 11, 2022 at 03:56:38PM +0800, Zhang chunchao wrote:
+>> Remove unnecessary initialization assignments.
+>>
+>> Signed-off-by: Zhang chunchao <chunchao@nfschina.com>
+>> ---
+>> io_uring/io_uring.c | 3 +--
+>> 1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+>> index b54218da075c..8c267af06401 100644
+>> --- a/io_uring/io_uring.c
+>> +++ b/io_uring/io_uring.c
+>> @@ -3859,14 +3859,13 @@ SYSCALL_DEFINE4(io_uring_register, unsigned int, fd, unsigned int, opcode,
+>>         void __user *, arg, unsigned int, nr_args)
+>> {
+>>     struct io_ring_ctx *ctx;
+>> -    long ret = -EBADF;
+>> +    long ret = -EOPNOTSUPP;
+>>     struct fd f;
+>>
+>>     f = fdget(fd);
+>>     if (!f.file)
+>>         return -EBADF;
+>>
+>> -    ret = -EOPNOTSUPP;
+>>     if (!io_is_uring_fops(f.file))
+>>         goto out_fput;
+>>
+> 
+> What about remove the initialization and assign it in the if branch?
+> I find it a bit easier to read.
+> 
+> I mean something like this:
+> 
+> --- a/io_uring/io_uring.c
+> +++ b/io_uring/io_uring.c
+> @@ -3859,16 +3859,17 @@ SYSCALL_DEFINE4(io_uring_register, unsigned int, fd, unsigned int, opcode,
+>                 void __user *, arg, unsigned int, nr_args)
+>  {
+>         struct io_ring_ctx *ctx;
+> -       long ret = -EBADF;
+> +       long ret;
+>         struct fd f;
+> 
+>         f = fdget(fd);
+>         if (!f.file)
+>                 return -EBADF;
+> 
+> -       ret = -EOPNOTSUPP;
+> -       if (!io_is_uring_fops(f.file))
+> +       if (!io_is_uring_fops(f.file)) {
+> +               ret = -EOPNOTSUPP;
+>                 goto out_fput;
+> +       }
+> 
+>         ctx = f.file->private_data;
+> 
+> 
+> Otherwise remove the initialization, but leave the assignment as it is now.
 
-[ Upstream commit 169ede1f594809d1f0f46d95c071d672dbfc0eb1 ]
+Generally the kernel likes to do:
 
-This reverts commit ec038c6127fa772d2c5604e329f22371830d5fa6. Tyler reported
-that on L390 Yoga Thinkpad with QCA6390 the suspend was failing because of this commit.
+err = -EFOO;
+if (something)
+	goto err_out;
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3.6510.9
+rather than put it inside the if clause. I guess the rationale is it
+makes it harder to forget to init the error value. I don't feel too
+strongly, I'm fine with your patch too. Can you send it as a real patch?
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215881
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220708164656.29549-1-kvalo@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath11k/core.c | 73 --------------------------
- drivers/net/wireless/ath/ath11k/core.h |  4 --
- drivers/net/wireless/ath/ath11k/hw.h   |  3 --
- drivers/net/wireless/ath/ath11k/mac.c  | 58 --------------------
- drivers/net/wireless/ath/ath11k/mac.h  |  2 -
- drivers/net/wireless/ath/ath11k/wmi.c  | 41 ---------------
- drivers/net/wireless/ath/ath11k/wmi.h  | 25 ---------
- 7 files changed, 206 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 1e98ff9ff288..79eb035fec8a 100644
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -54,9 +54,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 11,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_ipq8074,
- 		.svc_to_ce_map_len = 21,
--		.rfkill_pin = 0,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 0,
- 		.single_pdev_only = false,
- 		.rxdma1_enable = true,
- 		.num_rxmda_per_pdev = 1,
-@@ -133,9 +130,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 11,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_ipq6018,
- 		.svc_to_ce_map_len = 19,
--		.rfkill_pin = 0,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 0,
- 		.single_pdev_only = false,
- 		.rxdma1_enable = true,
- 		.num_rxmda_per_pdev = 1,
-@@ -209,9 +203,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 9,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
- 		.svc_to_ce_map_len = 14,
--		.rfkill_pin = 48,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 1,
- 		.single_pdev_only = true,
- 		.rxdma1_enable = false,
- 		.num_rxmda_per_pdev = 2,
-@@ -284,9 +275,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 9,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qcn9074,
- 		.svc_to_ce_map_len = 18,
--		.rfkill_pin = 0,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 0,
- 		.rxdma1_enable = true,
- 		.num_rxmda_per_pdev = 1,
- 		.rx_mac_buf_ring = false,
-@@ -359,9 +347,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 9,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
- 		.svc_to_ce_map_len = 14,
--		.rfkill_pin = 0,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 0,
- 		.single_pdev_only = true,
- 		.rxdma1_enable = false,
- 		.num_rxmda_per_pdev = 2,
-@@ -434,9 +419,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 9,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
- 		.svc_to_ce_map_len = 14,
--		.rfkill_pin = 0,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 0,
- 		.single_pdev_only = true,
- 		.rxdma1_enable = false,
- 		.num_rxmda_per_pdev = 2,
-@@ -508,9 +490,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.target_ce_count = 9,
- 		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
- 		.svc_to_ce_map_len = 14,
--		.rfkill_pin = 0,
--		.rfkill_cfg = 0,
--		.rfkill_on_level = 0,
- 		.single_pdev_only = true,
- 		.rxdma1_enable = false,
- 		.num_rxmda_per_pdev = 1,
-@@ -1402,27 +1381,6 @@ static int ath11k_core_start_firmware(struct ath11k_base *ab,
- 	return ret;
- }
- 
--static int ath11k_core_rfkill_config(struct ath11k_base *ab)
--{
--	struct ath11k *ar;
--	int ret = 0, i;
--
--	if (!(ab->target_caps.sys_cap_info & WMI_SYS_CAP_INFO_RFKILL))
--		return 0;
--
--	for (i = 0; i < ab->num_radios; i++) {
--		ar = ab->pdevs[i].ar;
--
--		ret = ath11k_mac_rfkill_config(ar);
--		if (ret && ret != -EOPNOTSUPP) {
--			ath11k_warn(ab, "failed to configure rfkill: %d", ret);
--			return ret;
--		}
--	}
--
--	return ret;
--}
--
- int ath11k_core_qmi_firmware_ready(struct ath11k_base *ab)
- {
- 	int ret;
-@@ -1475,13 +1433,6 @@ int ath11k_core_qmi_firmware_ready(struct ath11k_base *ab)
- 		goto err_core_stop;
- 	}
- 	ath11k_hif_irq_enable(ab);
--
--	ret = ath11k_core_rfkill_config(ab);
--	if (ret && ret != -EOPNOTSUPP) {
--		ath11k_err(ab, "failed to config rfkill: %d\n", ret);
--		goto err_core_stop;
--	}
--
- 	mutex_unlock(&ab->core_lock);
- 
- 	return 0;
-@@ -1550,7 +1501,6 @@ void ath11k_core_halt(struct ath11k *ar)
- 	cancel_delayed_work_sync(&ar->scan.timeout);
- 	cancel_work_sync(&ar->regd_update_work);
- 	cancel_work_sync(&ab->update_11d_work);
--	cancel_work_sync(&ab->rfkill_work);
- 
- 	rcu_assign_pointer(ab->pdevs_active[ar->pdev_idx], NULL);
- 	synchronize_rcu();
-@@ -1558,28 +1508,6 @@ void ath11k_core_halt(struct ath11k *ar)
- 	idr_init(&ar->txmgmt_idr);
- }
- 
--static void ath11k_rfkill_work(struct work_struct *work)
--{
--	struct ath11k_base *ab = container_of(work, struct ath11k_base, rfkill_work);
--	struct ath11k *ar;
--	bool rfkill_radio_on;
--	int i;
--
--	spin_lock_bh(&ab->base_lock);
--	rfkill_radio_on = ab->rfkill_radio_on;
--	spin_unlock_bh(&ab->base_lock);
--
--	for (i = 0; i < ab->num_radios; i++) {
--		ar = ab->pdevs[i].ar;
--		if (!ar)
--			continue;
--
--		/* notify cfg80211 radio state change */
--		ath11k_mac_rfkill_enable_radio(ar, rfkill_radio_on);
--		wiphy_rfkill_set_hw_state(ar->hw->wiphy, !rfkill_radio_on);
--	}
--}
--
- static void ath11k_update_11d(struct work_struct *work)
- {
- 	struct ath11k_base *ab = container_of(work, struct ath11k_base, update_11d_work);
-@@ -1891,7 +1819,6 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
- 	init_waitqueue_head(&ab->qmi.cold_boot_waitq);
- 	INIT_WORK(&ab->restart_work, ath11k_core_restart);
- 	INIT_WORK(&ab->update_11d_work, ath11k_update_11d);
--	INIT_WORK(&ab->rfkill_work, ath11k_rfkill_work);
- 	INIT_WORK(&ab->reset_work, ath11k_core_reset);
- 	timer_setup(&ab->rx_replenish_retry, ath11k_ce_rx_replenish_retry, 0);
- 	init_completion(&ab->htc_suspend);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 95bca0b078b1..ae0651ded608 100644
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -927,10 +927,6 @@ struct ath11k_base {
- 
- 	struct ath11k_dbring_cap *db_caps;
- 	u32 num_db_cap;
--	struct work_struct rfkill_work;
--
--	/* true means radio is on */
--	bool rfkill_radio_on;
- 
- 	/* To synchronize 11d scan vdev id */
- 	struct mutex vdev_id_11d_lock;
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 77dc5c851c9b..14c6d092fcdd 100644
---- a/drivers/net/wireless/ath/ath11k/hw.h
-+++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -153,9 +153,6 @@ struct ath11k_hw_params {
- 	u32 svc_to_ce_map_len;
- 
- 	bool single_pdev_only;
--	u32 rfkill_pin;
--	u32 rfkill_cfg;
--	u32 rfkill_on_level;
- 
- 	bool rxdma1_enable;
- 	int num_rxmda_per_pdev;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index ee1590b16eff..47f6127e8736 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5606,63 +5606,6 @@ static int ath11k_mac_mgmt_tx(struct ath11k *ar, struct sk_buff *skb,
- 	return 0;
- }
- 
--int ath11k_mac_rfkill_config(struct ath11k *ar)
--{
--	struct ath11k_base *ab = ar->ab;
--	u32 param;
--	int ret;
--
--	if (ab->hw_params.rfkill_pin == 0)
--		return -EOPNOTSUPP;
--
--	ath11k_dbg(ab, ATH11K_DBG_MAC,
--		   "mac rfkill_pin %d rfkill_cfg %d rfkill_on_level %d",
--		   ab->hw_params.rfkill_pin, ab->hw_params.rfkill_cfg,
--		   ab->hw_params.rfkill_on_level);
--
--	param = FIELD_PREP(WMI_RFKILL_CFG_RADIO_LEVEL,
--			   ab->hw_params.rfkill_on_level) |
--		FIELD_PREP(WMI_RFKILL_CFG_GPIO_PIN_NUM,
--			   ab->hw_params.rfkill_pin) |
--		FIELD_PREP(WMI_RFKILL_CFG_PIN_AS_GPIO,
--			   ab->hw_params.rfkill_cfg);
--
--	ret = ath11k_wmi_pdev_set_param(ar, WMI_PDEV_PARAM_HW_RFKILL_CONFIG,
--					param, ar->pdev->pdev_id);
--	if (ret) {
--		ath11k_warn(ab,
--			    "failed to set rfkill config 0x%x: %d\n",
--			    param, ret);
--		return ret;
--	}
--
--	return 0;
--}
--
--int ath11k_mac_rfkill_enable_radio(struct ath11k *ar, bool enable)
--{
--	enum wmi_rfkill_enable_radio param;
--	int ret;
--
--	if (enable)
--		param = WMI_RFKILL_ENABLE_RADIO_ON;
--	else
--		param = WMI_RFKILL_ENABLE_RADIO_OFF;
--
--	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac %d rfkill enable %d",
--		   ar->pdev_idx, param);
--
--	ret = ath11k_wmi_pdev_set_param(ar, WMI_PDEV_PARAM_RFKILL_ENABLE,
--					param, ar->pdev->pdev_id);
--	if (ret) {
--		ath11k_warn(ar->ab, "failed to set rfkill enable param %d: %d\n",
--			    param, ret);
--		return ret;
--	}
--
--	return 0;
--}
--
- static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
- 			     struct ieee80211_tx_control *control,
- 			     struct sk_buff *skb)
-@@ -5917,7 +5860,6 @@ static void ath11k_mac_op_stop(struct ieee80211_hw *hw)
- 	cancel_delayed_work_sync(&ar->scan.timeout);
- 	cancel_work_sync(&ar->regd_update_work);
- 	cancel_work_sync(&ar->ab->update_11d_work);
--	cancel_work_sync(&ar->ab->rfkill_work);
- 
- 	if (ar->state_11d == ATH11K_11D_PREPARING) {
- 		ar->state_11d = ATH11K_11D_IDLE;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
-index 57ebfc592b00..2a0d3afb0c99 100644
---- a/drivers/net/wireless/ath/ath11k/mac.h
-+++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -148,8 +148,6 @@ u8 ath11k_mac_hw_rate_to_idx(const struct ieee80211_supported_band *sband,
- 
- void __ath11k_mac_scan_finish(struct ath11k *ar);
- void ath11k_mac_scan_finish(struct ath11k *ar);
--int ath11k_mac_rfkill_enable_radio(struct ath11k *ar, bool enable);
--int ath11k_mac_rfkill_config(struct ath11k *ar);
- 
- struct ath11k_vif *ath11k_mac_get_arvif(struct ath11k *ar, u32 vdev_id);
- struct ath11k_vif *ath11k_mac_get_arvif_by_vdev_id(struct ath11k_base *ab,
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 7b1dc19c565e..53389a083606 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -129,8 +129,6 @@ static const struct wmi_tlv_policy wmi_tlv_policies[] = {
- 		= { .min_len = sizeof(struct wmi_peer_assoc_conf_event) },
- 	[WMI_TAG_STATS_EVENT]
- 		= { .min_len = sizeof(struct wmi_stats_event) },
--	[WMI_TAG_RFKILL_EVENT] = {
--		.min_len = sizeof(struct wmi_rfkill_state_change_ev) },
- 	[WMI_TAG_PDEV_CTL_FAILSAFE_CHECK_EVENT]
- 		= { .min_len = sizeof(struct wmi_pdev_ctl_failsafe_chk_event) },
- 	[WMI_TAG_HOST_SWFDA_EVENT] = {
-@@ -533,8 +531,6 @@ static int ath11k_pull_service_ready_tlv(struct ath11k_base *ab,
- 	cap->default_dbs_hw_mode_index = ev->default_dbs_hw_mode_index;
- 	cap->num_msdu_desc = ev->num_msdu_desc;
- 
--	ath11k_dbg(ab, ATH11K_DBG_WMI, "wmi sys cap info 0x%x\n", cap->sys_cap_info);
--
- 	return 0;
- }
- 
-@@ -7566,40 +7562,6 @@ ath11k_wmi_pdev_dfs_radar_detected_event(struct ath11k_base *ab, struct sk_buff
- 	kfree(tb);
- }
- 
--static void ath11k_rfkill_state_change_event(struct ath11k_base *ab,
--					     struct sk_buff *skb)
--{
--	const struct wmi_rfkill_state_change_ev *ev;
--	const void **tb;
--	int ret;
--
--	tb = ath11k_wmi_tlv_parse_alloc(ab, skb->data, skb->len, GFP_ATOMIC);
--	if (IS_ERR(tb)) {
--		ret = PTR_ERR(tb);
--		ath11k_warn(ab, "failed to parse tlv: %d\n", ret);
--		return;
--	}
--
--	ev = tb[WMI_TAG_RFKILL_EVENT];
--	if (!ev) {
--		kfree(tb);
--		return;
--	}
--
--	ath11k_dbg(ab, ATH11K_DBG_MAC,
--		   "wmi tlv rfkill state change gpio %d type %d radio_state %d\n",
--		   ev->gpio_pin_num,
--		   ev->int_type,
--		   ev->radio_state);
--
--	spin_lock_bh(&ab->base_lock);
--	ab->rfkill_radio_on = (ev->radio_state == WMI_RFKILL_RADIO_STATE_ON);
--	spin_unlock_bh(&ab->base_lock);
--
--	queue_work(ab->workqueue, &ab->rfkill_work);
--	kfree(tb);
--}
--
- static void
- ath11k_wmi_pdev_temperature_event(struct ath11k_base *ab,
- 				  struct sk_buff *skb)
-@@ -7995,9 +7957,6 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
- 	case WMI_11D_NEW_COUNTRY_EVENTID:
- 		ath11k_reg_11d_new_cc_event(ab, skb);
- 		break;
--	case WMI_RFKILL_STATE_CHANGE_EVENTID:
--		ath11k_rfkill_state_change_event(ab, skb);
--		break;
- 	case WMI_DIAG_EVENTID:
- 		ath11k_wmi_diag_event(ab, skb);
- 		break;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index b1fad4707dc6..4da248ffa318 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.h
-+++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -5328,31 +5328,6 @@ struct target_resource_config {
- 	u32 twt_ap_sta_count;
- };
- 
--enum wmi_sys_cap_info_flags {
--	WMI_SYS_CAP_INFO_RXTX_LED	= BIT(0),
--	WMI_SYS_CAP_INFO_RFKILL	= BIT(1),
--};
--
--#define WMI_RFKILL_CFG_GPIO_PIN_NUM		GENMASK(5, 0)
--#define WMI_RFKILL_CFG_RADIO_LEVEL		BIT(6)
--#define WMI_RFKILL_CFG_PIN_AS_GPIO		GENMASK(10, 7)
--
--enum wmi_rfkill_enable_radio {
--	WMI_RFKILL_ENABLE_RADIO_ON	= 0,
--	WMI_RFKILL_ENABLE_RADIO_OFF	= 1,
--};
--
--enum wmi_rfkill_radio_state {
--	WMI_RFKILL_RADIO_STATE_OFF	= 1,
--	WMI_RFKILL_RADIO_STATE_ON	= 2,
--};
--
--struct wmi_rfkill_state_change_ev {
--	u32 gpio_pin_num;
--	u32 int_type;
--	u32 radio_state;
--} __packed;
--
- enum wmi_debug_log_param {
- 	WMI_DEBUG_LOG_PARAM_LOG_LEVEL = 0x1,
- 	WMI_DEBUG_LOG_PARAM_VDEV_ENABLE,
 -- 
-2.35.1
+Jens Axboe
 
