@@ -2,104 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B99F9C25B0E
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2862C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234238AbiHKGjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 02:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
+        id S234081AbiHKGle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 02:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234226AbiHKGis (ORCPT
+        with ESMTP id S233400AbiHKGla (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 02:38:48 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2775A8B993
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:38:45 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z25so24339990lfr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:38:45 -0700 (PDT)
+        Thu, 11 Aug 2022 02:41:30 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199EF625C
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:41:29 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id f28so15739019pfk.1
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:41:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=AGEywKGeoHQ0FbmdJ6X1DklF8N9Blk35YsMIqDrQ5Mw=;
-        b=QDLGAXXBsgC04gfJKOEdrkRdt7sHC5ZTFaNm25Y4iwXxALrOoH45XuzuBmlG5JpolA
-         TqXKykAgXPC01T8cFQQwtgcC2K410aXDsoXaMBJnbvVyfentYv2dbO7+q9UQUEtplti9
-         jUBIYkji138JeXwjl4H42p8ncNvpyyTAGDHs5hoYnfLVEZD7Da5BThWeJhkifdnoT7p8
-         ejaBsT9TFFNO6YWOu5W1puCR6a4WH2VUiROY2Woj+MAxjFDhdJvFVn581Zq+E1Qey/On
-         qpZdMYJGCrW2sbcjULBpZO9pAfxPDcKbsIfpmhppTl+q0MMiR21tAUPdBgV1xefOQznE
-         D9GQ==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=8Ls4pFvfLJMWwcmLhID1I6I1DLBX05K+UJVFFV9Za6M=;
+        b=vMy0JbabQGaviBO27so/kcHKd/6i1tm8ma6oUqJlmeqnvqIleBB4FN3SZyCTA9oApz
+         JNVMSIbKSiyvqVgKfgwtyb7g072G8H4fScIPRFqpkddCUr04cYfniC5FZ1r/9h4gNa2L
+         jzK2fZVX+eu34dd7p4EjUOlm5GbRQcgAAQ8f5LBgVzVpJ4Bh9OeBEURXBlffgwIDTfC/
+         0sbZdEnh3BbofV/dOE/NiLP+0HCBB2k64zNG2AC8CoNKbNMDue3Cjiv6TLFTXVa9duFf
+         VNksgovC8IjiE8CV/i16v4GLtLX4rDL0Cag7P0M/ZTCyRzizPlGJeTmgPEFZHw2Vhnwi
+         4cOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=AGEywKGeoHQ0FbmdJ6X1DklF8N9Blk35YsMIqDrQ5Mw=;
-        b=giLw8YuEAk//llDMM9hmGTvWczp6Io+WEZRqkbH0wmw13wS1jEcqrXpBB5EiWE8TRj
-         sQbAzCY2kGkK+uWZ26BFrAwGf9o/pGFl85jKcufy7szqi9XaoVp/qtI/GvYVYqU3o1Vk
-         q+1Pq1WrkOq1/9wzFuIFBKnEKJwuCqk5AjsBLGzmU0jXu2zaW2OcRxcIJcrZAGZq4xnZ
-         kvL88ApjWGRQTgfbYTJ1rvI0jGic5FWvXba0yHe7z7AdnGbS/kSFFBGW3KlF+AMukV5h
-         F+eOmEgDy85jllDP1yAyxdjfTMTd2zD3CnMKv/9jD3yTx7tuGIKFNmC/JOCqZj6HzLyz
-         /Wog==
-X-Gm-Message-State: ACgBeo0J8ILpYQeugqSXq1mvAaYRR2XZFe+MnDZP2B8W6nXJJnzEI5it
-        9I4sM8Q22ZGOXXCi+mhm3Erd+g==
-X-Google-Smtp-Source: AA6agR4ugZV+KRC/fxXYtcxvD9OkFiF6TJixcJtRQF4gWRmYwTQnRaC2c4lhLhI+rf8d4aFDAojiEQ==
-X-Received: by 2002:a05:6512:3583:b0:48a:e811:3d89 with SMTP id m3-20020a056512358300b0048ae8113d89mr11627782lfr.371.1660199923566;
-        Wed, 10 Aug 2022 23:38:43 -0700 (PDT)
-Received: from localhost.localdomain ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id c15-20020a056512324f00b0048ac33f34d8sm585537lfr.289.2022.08.10.23.38.42
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=8Ls4pFvfLJMWwcmLhID1I6I1DLBX05K+UJVFFV9Za6M=;
+        b=Asx9/ukk9COJpnRboyC/rZfDXTiUkz6f6XiV2PUhfk2Nf++YuhBXkLds+D1l+fuGh7
+         bAUmTHGxlVcFvcVqY0RaSeBpUU9hNIrWANN8PmV87GkF57vsG6DJ/DJ+CIEw8mG2UhBH
+         vOSoVWizQDwthFNnvw2pN96BVmS4kppGO1Q5Az0gwGSrkPwQY9mi2EFyx5J+N0bJ4B5F
+         apfMgXVY4vQNuaCOGv6yFgT1nECpiFCZ6CtQpOu1nAfAX4Shc68YwEpfVCke3Z5O2Vu5
+         7SuRye+Bz2LZRBNxodu2XbzTw9IBpaci6BfCSXJFDZ+Icr+eVKm7+GsEmZuXjCinvoAo
+         COxQ==
+X-Gm-Message-State: ACgBeo1rsXuAFN4TULGCjZzxl7QdY3REUwiHaV2lQp32Coifk9cvTegx
+        XAaJqXvQzg16TK9P+IG6RwvS3g==
+X-Google-Smtp-Source: AA6agR7nKY/UN1mSywz2fbtTnLwsfY0AOBEbt40itndC5bJz8PmSiqPAd8PaShPIGIhT3T81iZYDEw==
+X-Received: by 2002:a63:4566:0:b0:41d:353:46b4 with SMTP id u38-20020a634566000000b0041d035346b4mr23099189pgk.316.1660200088455;
+        Wed, 10 Aug 2022 23:41:28 -0700 (PDT)
+Received: from leoy-huanghe.lan (n058152077182.netvigator.com. [58.152.77.182])
+        by smtp.gmail.com with ESMTPSA id q1-20020a17090a2dc100b001f21f5c81a5sm2795643pjm.19.2022.08.10.23.41.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 23:38:42 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: phy: Drop Pratyush Yadav
-Date:   Thu, 11 Aug 2022 09:38:40 +0300
-Message-Id: <20220811063840.7670-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 10 Aug 2022 23:41:28 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 14:41:22 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Ali Saidi <alisaidi@amazon.com>, Joe Mario <jmario@redhat.com>,
+        Adam Li <adam.li@amperecomputing.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 00/17] perf c2c: Support data source and display for
+ Arm64
+Message-ID: <20220811064122.GA860078@leoy-huanghe.lan>
+References: <20220604042820.2270916-1-leo.yan@linaro.org>
+ <YvO0nAZ1znppjKjZ@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YvO0nAZ1znppjKjZ@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Emails to Pratyush Yadav bounce ("550 Invalid recipient").
+Hi Arnaldo,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml | 2 +-
- Documentation/devicetree/bindings/phy/cdns,dphy.yaml    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On Wed, Aug 10, 2022 at 10:37:32AM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Sat, Jun 04, 2022 at 12:28:03PM +0800, Leo Yan escreveu:
+> > Arm64 Neoverse CPUs supports data source in Arm SPE trace, this allows
+> > us to detect cache line contention and transfers.
+> > 
+> > This patch set includes Ali's patch set v9 "perf: arm-spe: Decode SPE
+> > source and use for perf c2c" [1] and rebased on the latest perf core
+> > banch with latest commit 1bcca2b1bd67 ("perf vendor events intel:
+> > Update metrics for Alderlake").
+> > 
+> > Patches 01-05 comes from Ali's patch set to support data source for Arm
+> > SPE for neoverse cores.
+> 
+> Leo, please remove touching the kernel perf_event.h on the first patch,
+> I see it doesn't affect the kernel right now as it is done just from
+> synthesizing perf records from hw trace data, and we haven't received
+> any review comment from Peter Zijlstra (I think he is in vacations).
 
-diff --git a/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml b/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
-index 07be031d82e6..834f65636819 100644
---- a/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
-+++ b/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Cadence DPHY Rx Device Tree Bindings
- 
- maintainers:
--  - Pratyush Yadav <p.yadav@ti.com>
-+  - Kishon Vijay Abraham I <kishon@ti.com>
- 
- properties:
-   compatible:
-diff --git a/Documentation/devicetree/bindings/phy/cdns,dphy.yaml b/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
-index f0e9ca8427bb..37bc20493fd0 100644
---- a/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
-+++ b/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Cadence DPHY Device Tree Bindings
- 
- maintainers:
--  - Pratyush Yadav <p.yadav@ti.com>
-+  - Kishon Vijay Abraham I <kishon@ti.com>
- 
- properties:
-   compatible:
--- 
-2.34.1
+Done!  The new patch set іs in below link, which dropped the patch for
+kernel perf_event.h:
+https://lore.kernel.org/lkml/20220811062451.435810-1-leo.yan@linaro.org/
 
+One question: should I later continue to upstream the first patch for
+syncing the kernel header perf_event.h after Peter.Z comes back?
+
+
+> Also please refresh it:
+> 
+> ⬢[acme@toolbox perf]$        git am ./v5_20220604_leo_yan_perf_c2c_support_data_source_and_display_for_arm64.mbx
+> Applying: perf: Add SNOOP_PEER flag to perf mem data struct
+> Applying: perf tools: sync addition of PERF_MEM_SNOOPX_PEER
+> Applying: perf mem: Print snoop peer flag
+> Applying: perf arm-spe: Don't set data source if it's not a memory operation
+> error: patch failed: tools/perf/util/arm-spe.c:387
+> error: tools/perf/util/arm-spe.c: patch does not apply
+> Patch failed at 0004 perf arm-spe: Don't set data source if it's not a memory operation
+> hint: Use 'git am --show-current-patch=diff' to see the failed patch
+> When you have resolved this problem, run "git am --continue".
+> If you prefer to skip this patch, run "git am --skip" instead.
+> To restore the original branch and stop patching, run "git am --abort".
+> ⬢[acme@toolbox perf]$
+
+To fix the merging conflict in the new patch set, I also dropped the
+patch "perf arm-spe: Don't set data source if it's not a memory
+operation", since this patch has been merged into the mainline kernel.
+
+Note, when verified the patch set, I found a compilation error, so I
+sent a separate patch to fix it:
+https://lore.kernel.org/lkml/20220811044341.426796-1-leo.yan@linaro.org/
+
+Thanks a lot for continuous tracking this series.
+
+Leo
