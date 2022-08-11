@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 686D1C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2FCC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239055AbiHKQj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
+        id S239062AbiHKQjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239072AbiHKQgS (ORCPT
+        with ESMTP id S238900AbiHKQd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:18 -0400
+        Thu, 11 Aug 2022 12:33:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3D372EF9;
-        Thu, 11 Aug 2022 09:11:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7102777560;
+        Thu, 11 Aug 2022 09:11:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C24F0B82123;
-        Thu, 11 Aug 2022 16:11:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFDE1C433D6;
-        Thu, 11 Aug 2022 16:11:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8B72B821B0;
+        Thu, 11 Aug 2022 16:11:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41ECFC433D7;
+        Thu, 11 Aug 2022 16:11:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234296;
-        bh=fVCa7m+quxhQcodAzLQC4U6N1eBE9FmPjgrkcEVUb5E=;
+        s=k20201202; t=1660234264;
+        bh=OO8x2+4a0MfU5R0wgHThLSWrI2dTRD1AshgT6xMLU4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m97kBlluPMYDIy3n+ulkvXyMBi1juB8YUK8kJZAl8RjXrcXmRnz/R8T4YywhjMb6d
-         LdTvSi0LeoMLEgEFu++SWAnajgmujdQns/33DiZ+y9zBBqfHu2gDzEmrw8m0r+nPi0
-         ucB7XJf37RBqx7xif/sS8zGITzsbL2cDqle5hbCLZrU+1QaglQ2bXUlqlr9OxjarIW
-         j+S3Yxo0Vv+cGoaZH7Dad5QrDGZukmzoyMSeC0w0ajOoxBn0yzm5VSZeyWwc7FGWQ5
-         dBQ1g0jXi8K0c1iH3pSGvp+4Nr3vCLb5kx7bzdOI+PNqVyCIZ9kudiLwVntWKGhYXn
-         flWENHoOrImMw==
+        b=qVGaNIRhDk8juL8OwnowrMCi3U+tsQg+VQza0eENgHsCsblclCXD18UVuPTgKIr8+
+         ZGOFDZBxubpWgvZJ78kNFmUtm1IovGymaZFsixsPIlDXcU4wQz6EarnP03cqf0Uk5/
+         bHx2sQ0fsqL3EXhzJdW6RgrmGfw8p+1dhfV9oej6qdJ6We4Zn9/ZFzGPmdSQDJz5VR
+         zgX2+rpXN6v1u2LTTD0WgAwTf2hy+r+Le+M6Lp58mL87n16cZS/y9LuluJnE6jpUo6
+         f+5npj4C8VlAobbaTLxDfYbwleYrXRp8MUTSb73Gf1lrqUKqfWkpktpIfmap+5oxY+
+         Q7d+gwjjFEpCg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Al Viro <viro@zeniv.linux.org.uk>, Sasha Levin <sashal@kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 13/14] d_add_ci(): make sure we don't miss d_lookup_done()
-Date:   Thu, 11 Aug 2022 12:10:42 -0400
-Message-Id: <20220811161050.1543183-13-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, johan@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        laurent.pinchart@ideasonboard.com, cai.huoqing@linux.dev,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 04/14] media: davinci: vpif: add missing of_node_put() in vpif_probe()
+Date:   Thu, 11 Aug 2022 12:10:33 -0400
+Message-Id: <20220811161050.1543183-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
 References: <20220811161050.1543183-1-sashal@kernel.org>
@@ -50,37 +56,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 40a3cb0d2314a41975aa385a74643878454f6eac ]
+[ Upstream commit bb45f5433f23cf103ba29c9692ee553e061f2cb4 ]
 
-All callers of d_alloc_parallel() must make sure that resulting
-in-lookup dentry (if any) will encounter __d_lookup_done() before
-the final dput().  d_add_ci() might end up creating in-lookup
-dentries; they are fed to d_splice_alias(), which will normally
-make sure they meet __d_lookup_done().  However, it is possible
-to end up with d_splice_alias() failing with ERR_PTR(-ELOOP)
-without having done so.  It takes a corrupted ntfs or case-insensitive
-xfs image, but neither should end up with memory corruption...
+of_graph_get_next_endpoint() returns an 'endpoint' node pointer
+with refcount incremented. The refcount should be decremented
+before returning from vpif_probe().
 
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dcache.c | 1 +
+ drivers/media/platform/davinci/vpif.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index 9ac1290ae44f..e12246378834 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -2119,6 +2119,7 @@ struct dentry *d_add_ci(struct dentry *dentry, struct inode *inode,
- 	}
- 	res = d_splice_alias(inode, found);
- 	if (res) {
-+		d_lookup_done(found);
- 		dput(found);
- 		return res;
- 	}
+diff --git a/drivers/media/platform/davinci/vpif.c b/drivers/media/platform/davinci/vpif.c
+index 4ac0893282f5..a46316f5467b 100644
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -449,6 +449,7 @@ static int vpif_probe(struct platform_device *pdev)
+ 					      endpoint);
+ 	if (!endpoint)
+ 		return 0;
++	of_node_put(endpoint);
+ 
+ 	/*
+ 	 * For DT platforms, manually create platform_devices for
 -- 
 2.35.1
 
