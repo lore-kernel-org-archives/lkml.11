@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8019DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D44CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238537AbiHKQab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50120 "EHLO
+        id S238544AbiHKQag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238318AbiHKQ3H (ORCPT
+        with ESMTP id S238424AbiHKQ3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:29:07 -0400
+        Thu, 11 Aug 2022 12:29:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3740A0274;
-        Thu, 11 Aug 2022 09:08:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5ECAA0255;
+        Thu, 11 Aug 2022 09:09:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61E6961387;
-        Thu, 11 Aug 2022 16:08:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6C82C4347C;
-        Thu, 11 Aug 2022 16:08:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B356144B;
+        Thu, 11 Aug 2022 16:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAB6C433C1;
+        Thu, 11 Aug 2022 16:09:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234135;
-        bh=Qx+jzvtlK8DzpdoUViq1Gbkdtw2PnWDV8WXlS3mdriE=;
+        s=k20201202; t=1660234143;
+        bh=BlKBMOH6o2j7WE88oomjY+BnlOaiVoPJIpUyChZ8a3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LFcuGphYw+n3Yfeiu+xGb2WEMlbdEi99sg0219zGKJn73gXpIPMOPsgLMDUesHTsi
-         pZbQTt3K1w/B3YFAfsWoIqYluisKGTttdyKGsRXL3wZYYZCjQ2sBDTDa+9mzZwq67m
-         hUVPu+JWgtMhnGj7MjlpjvpcK+wqBnHVck9u0zI/zZ0Spu7wrcePD9wMJzd7KUbyZz
-         97rlJI3nvJ+D5HReN7+4G1WO4RlP8alOnbUD+VscYnBnXadpJ/2Z/e/aa6HMLV828o
-         d6TK4/YKpMBk1y5/dpfc23dAloeq63Mo3YpPmRci5F9ZFD/C0waXbRnsZ+kAlSiwYv
-         zStRKqrc5Yo4g==
+        b=Vwj5zc422+HgIR24zlz4AZyx1A0EbgOnosyvilDO8C+YeU12B3DlutDDj8nTLAt8C
+         9W1E0cMyrXJR2i73DpjPI1fR4hh8G/9RbXrhbmH2x4WXxPuNbRc/oLbf+dhXSjIele
+         IFlbJe3EgAM3pD8/Ml1boqTRxTCVc7jFqIJoUDvZuR+YbYHKam6VgQC6WjvNJpZ+gZ
+         Lh+kpMpvEXIb2jxAKBMvgJmyYPmmwhC2BehKuB7n1/8WV9+63Q3L9TWt5uF8GcmUDi
+         QwnF0vnQWtKLDrH1yGY0g92yooy2oWNzkNXiHPNclaUy2Vy2Pxegddb9ZZP2eUf17n
+         LXr7M3G+BPM5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 14/25] mlxsw: cmd: Increase 'config_profile.flood_mode' length
-Date:   Thu, 11 Aug 2022 12:08:09 -0400
-Message-Id: <20220811160826.1541971-14-sashal@kernel.org>
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Dave Airlie <airlied@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kherbst@redhat.com,
+        lyude@redhat.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 16/25] drm/nouveau/nvkm: use list_add_tail() when building object tree
+Date:   Thu, 11 Aug 2022 12:08:11 -0400
+Message-Id: <20220811160826.1541971-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160826.1541971-1-sashal@kernel.org>
 References: <20220811160826.1541971-1-sashal@kernel.org>
@@ -53,37 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit 89df3c6261f271c550f120b5ccf4d9c5132e870c ]
+[ Upstream commit 61c1f340bc809a1ca1e3c8794207a91cde1a7c78 ]
 
-Currently, the length of 'config_profile.flood_mode' is defined as 2
-bits, while the correct length is 3 bits.
+Fixes resume from hibernate failing on (at least) TU102, where cursor
+channel init failed due to being performed before the core channel.
 
-As preparation for unified bridge model, which will use the whole field
-length, fix it and increase the field to the correct size.
+Not solid idea why suspend-to-ram worked, but, presumably HW being in
+an entirely clean state has something to do with it.
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h | 2 +-
+ drivers/gpu/drm/nouveau/nvkm/core/ioctl.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 5ffdfb532cb7..b72aa4862cfd 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -722,7 +722,7 @@ MLXSW_ITEM32(cmd_mbox, config_profile, max_vid_flood_tables, 0x30, 8, 4);
-  * max_fid_offset_flood_tables indicates the number of FID-offset tables.
-  * max_fid_flood_tables indicates the number of per-FID tables.
-  */
--MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 2);
-+MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 3);
- 
- /* cmd_mbox_config_profile_max_fid_offset_flood_tables
-  * Maximum number of FID-offset flooding tables.
+diff --git a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+index d777df5a64e6..2aa0d6fed580 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
++++ b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+@@ -128,7 +128,7 @@ nvkm_ioctl_new(struct nvkm_client *client,
+ 	if (ret == 0) {
+ 		ret = nvkm_object_init(object);
+ 		if (ret == 0) {
+-			list_add(&object->head, &parent->tree);
++			list_add_tail(&object->head, &parent->tree);
+ 			if (nvkm_object_insert(object)) {
+ 				client->data = object;
+ 				return 0;
 -- 
 2.35.1
 
