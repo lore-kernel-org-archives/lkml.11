@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD278C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA4FC25B0F
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238928AbiHKQhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
+        id S238962AbiHKQhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:37:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239199AbiHKQga (ORCPT
+        with ESMTP id S239248AbiHKQgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F398981C;
-        Thu, 11 Aug 2022 09:11:51 -0700 (PDT)
+        Thu, 11 Aug 2022 12:36:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2684653D22;
+        Thu, 11 Aug 2022 09:11:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A571B821AD;
-        Thu, 11 Aug 2022 16:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E156C433D7;
-        Thu, 11 Aug 2022 16:11:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B119B61481;
+        Thu, 11 Aug 2022 16:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DB91C433D6;
+        Thu, 11 Aug 2022 16:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234309;
-        bh=yl0xHkcESV7NTyfRvJaAPC4xYMup5ytE1fDcH4xEmw4=;
+        s=k20201202; t=1660234318;
+        bh=/7Tt3mGLNqFqtvouJi8sZZB+COG859/xulJOuh6HOsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m4rR0LoC+AvxVYQLikjFdqDeSbDtu0PghQP+wXEIjWknEZcQUM/RweaGT3xjal0+x
-         mlNKhEM+2ZYMiwhhhy1wmpi1mPHwUI+OSrQaXGA1fK87+KpWxEJKAKBSWthBI9oOc3
-         lv0X9QSS4zlH1085F9xalcAE/JqlngN+ZQymD5UotfyWXQtKZbtdI/QcR6F6Cu2zUN
-         ++b8UYW1rxXk2zKNdBS2YqkmaQi8hwrZFo6TcFpGomcXLQtfemULJ+NrwwIAgo2pJg
-         X/QNqsE1KYTJgFhfBsjk/FxIQfjqjKpDgt4Juv/S6gulEwLwMHIiN8qGA97lN9W+bm
-         HCAuT7ABZib0Q==
+        b=o9XsxmKkZBeqE6tYrf5VVLEj1PSxEj1Rb8QLUssiL+Wntm1USJZE6PKm8vWzMcovX
+         ++A4Wrr65D1B1FbQTzMXdBTAwjTNYbgSkRbqP7XSZYR0o5G91lFI4x0F/MwtDn20/E
+         pWCw4e+x2L50Qv/qZMWPDNXMqSc+duFIA2XIyVwxcr+T3YEAJKCpbAOo2Lv246lBfQ
+         /4A3ttJ6xYnpIP/ZfvY31kgyxt7Vof8EEWsdIOICit1Pksb3oXc0BNcNqv8F5e3+Ad
+         ecL4Qm7ydv6bxDclqtSvd9MLKP3x/abaxXE7Q+YQmwabIAW/SYngSJv2RZO3iMmR3O
+         Nf3wsLVh0S6LQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.9 02/12] drm/radeon: Initialize fences array entries in radeon_sa_bo_next_hole
-Date:   Thu, 11 Aug 2022 12:11:28 -0400
-Message-Id: <20220811161144.1543598-2-sashal@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Breno Leitao <leitao@debian.org>,
+        Sasha Levin <sashal@kernel.org>, nayna@linux.ibm.com,
+        pfsmorigo@gmail.com, mpe@ellerman.id.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.9 07/12] crypto: vmx - Fix warning on p8_ghash_alg
+Date:   Thu, 11 Aug 2022 12:11:33 -0400
+Message-Id: <20220811161144.1543598-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
 References: <20220811161144.1543598-1-sashal@kernel.org>
@@ -53,52 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 0381ac3ca2e727d4dfb7264d9416a8ba6bb6c18b ]
+[ Upstream commit cc8166bfc829043020b5cc3b7cdba02a17d03b6d ]
 
-Similar to the handling of amdgpu_sa_bo_next_hole in commit 6a15f3ff19a8
-("drm/amdgpu: Initialize fences array entries in amdgpu_sa_bo_next_hole"),
-we thought a patch might be needed here as well.
+The compiler complains that p8_ghash_alg isn't declared which is
+because the header file aesp8-ppc.h isn't included in ghash.c.
+This patch fixes the warning.
 
-The entries were only initialized once in radeon_sa_bo_new. If a fence
-wasn't signalled yet in the first radeon_sa_bo_next_hole call, but then
-got signalled before a later radeon_sa_bo_next_hole call, it could
-destroy the fence but leave its pointer in the array, resulting in
-use-after-free in radeon_sa_bo_new.
-
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: Breno Leitao <leitao@debian.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_sa.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/crypto/vmx/ghash.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_sa.c b/drivers/gpu/drm/radeon/radeon_sa.c
-index 197b157b73d0..0cb6eeb77b5f 100644
---- a/drivers/gpu/drm/radeon/radeon_sa.c
-+++ b/drivers/gpu/drm/radeon/radeon_sa.c
-@@ -267,6 +267,8 @@ static bool radeon_sa_bo_next_hole(struct radeon_sa_manager *sa_manager,
- 	for (i = 0; i < RADEON_NUM_RINGS; ++i) {
- 		struct radeon_sa_bo *sa_bo;
+diff --git a/drivers/crypto/vmx/ghash.c b/drivers/crypto/vmx/ghash.c
+index 1bfe867c0b7b..84a293d45cc5 100644
+--- a/drivers/crypto/vmx/ghash.c
++++ b/drivers/crypto/vmx/ghash.c
+@@ -22,6 +22,7 @@
+ #include <crypto/scatterwalk.h>
+ #include <crypto/internal/hash.h>
+ #include <crypto/b128ops.h>
++#include "aesp8-ppc.h"
  
-+		fences[i] = NULL;
-+
- 		if (list_empty(&sa_manager->flist[i])) {
- 			continue;
- 		}
-@@ -332,10 +334,8 @@ int radeon_sa_bo_new(struct radeon_device *rdev,
+ #define IN_INTERRUPT in_interrupt()
  
- 	spin_lock(&sa_manager->wq.lock);
- 	do {
--		for (i = 0; i < RADEON_NUM_RINGS; ++i) {
--			fences[i] = NULL;
-+		for (i = 0; i < RADEON_NUM_RINGS; ++i)
- 			tries[i] = 0;
--		}
- 
- 		do {
- 			radeon_sa_bo_try_free(sa_manager);
 -- 
 2.35.1
 
