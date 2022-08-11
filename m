@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9199FC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73028C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236505AbiHKVGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 17:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
+        id S236291AbiHKVGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 17:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236270AbiHKVGN (ORCPT
+        with ESMTP id S236348AbiHKVGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 17:06:13 -0400
+        Thu, 11 Aug 2022 17:06:14 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7248883DD
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:06:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E43273301
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660251970;
+        s=mimecast20190719; t=1660251971;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZZBHej5wRe7xU3WBHwemoCQQEDQCEX2ZZ7C6QJ36Rgc=;
-        b=WDSUvQ+7/f5PV4gf9GYBZ7xBaJZh8gZrPloCvFr/xh8ndTWoQvETLW3MSMWGBpirxC9N++
-        NcJjZPPKthXkpqvbyJK+5omj82EkpeYlSrLbDxC3lzBLHp9yjg9fR8bPrNWKnW3b6s9yIW
-        ZIyST0kKspEbg/AwVl12d1B+h+mNiRQ=
+        bh=K+7Clrf+ZaklLBV7mgCu2JZrobw4R6ISnHeNUw2I+2o=;
+        b=Y/SPD3J74kl/JmHmeUanhAS0HCUuR+f9fym7Qn8oPZuC/H4yERCW7TQCMovq1OtpsjsFAt
+        5ZnUDP7cPMCNjmggydvYIyfl1BSADCtgMkxpum2Zt4u1qaOZ6QGlW0/AS59TwNnxTKOGL9
+        IQmUdlS2qHvBTc4qM7LukDx5VC8NuEM=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-370-hvhBoeflO764B_GN1I-8wA-1; Thu, 11 Aug 2022 17:06:07 -0400
-X-MC-Unique: hvhBoeflO764B_GN1I-8wA-1
+ us-mta-418-R3OsheUPPPSeAR4rpjP1_A-1; Thu, 11 Aug 2022 17:06:08 -0400
+X-MC-Unique: R3OsheUPPPSeAR4rpjP1_A-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7129585A599;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D441B943202;
         Thu, 11 Aug 2022 21:06:07 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4AA5A492C3B;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AE2DB403343;
         Thu, 11 Aug 2022 21:06:07 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, mlevitsk@redhat.com, vkuznets@redhat.com
-Subject: [PATCH v2 6/9] KVM: x86: make vendor code check for all nested events
-Date:   Thu, 11 Aug 2022 17:06:02 -0400
-Message-Id: <20220811210605.402337-7-pbonzini@redhat.com>
+Subject: [PATCH v2 8/9] KVM: x86: lapic does not have to process INIT if it is blocked
+Date:   Thu, 11 Aug 2022 17:06:04 -0400
+Message-Id: <20220811210605.402337-9-pbonzini@redhat.com>
 In-Reply-To: <20220811210605.402337-1-pbonzini@redhat.com>
 References: <20220811210605.402337-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,96 +54,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Interrupts, NMIs etc. sent while in guest mode are already handled
-properly by the *_interrupt_allowed callbacks, but other events can
-cause a vCPU to be runnable that are specific to guest mode.
+Do not return true from kvm_apic_has_events, and consequently from
+kvm_vcpu_has_events, if the vCPU is not going to process an INIT.
 
-In the case of VMX there are two, the preemption timer and the
-monitor trap.  The VMX preemption timer is already special cased via
-the hv_timer_pending callback, but the purpose of the callback can be
-easily extended to MTF or in fact any other event that can occur only
-in guest mode.
-
-Rename the callback and add an MTF check; kvm_arch_vcpu_runnable()
-now will return true if an MTF is pending, without relying on
-kvm_vcpu_running()'s call to kvm_check_nested_events().  Until that call
-is removed, however, the patch introduces no functional change.
-
-Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 2 +-
- arch/x86/kvm/vmx/nested.c       | 9 ++++++++-
- arch/x86/kvm/x86.c              | 8 ++++----
- 3 files changed, 13 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/i8259.c            | 2 +-
+ arch/x86/kvm/lapic.h            | 2 +-
+ arch/x86/kvm/x86.c              | 5 +++++
+ arch/x86/kvm/x86.h              | 5 -----
+ 5 files changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 5ffa578cafe1..293ff678fff5 100644
+index 293ff678fff5..1ce4ebc41118 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -1636,7 +1636,7 @@ struct kvm_x86_nested_ops {
- 	int (*check_events)(struct kvm_vcpu *vcpu);
- 	bool (*handle_page_fault_workaround)(struct kvm_vcpu *vcpu,
- 					     struct x86_exception *fault);
--	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
-+	bool (*has_events)(struct kvm_vcpu *vcpu);
- 	void (*triple_fault)(struct kvm_vcpu *vcpu);
- 	int (*get_state)(struct kvm_vcpu *vcpu,
- 			 struct kvm_nested_state __user *user_kvm_nested_state,
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index ddd4367d4826..9631cdcdd058 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3876,6 +3876,13 @@ static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
- 	       to_vmx(vcpu)->nested.preemption_timer_expired;
+@@ -2042,6 +2042,7 @@ void __user *__x86_set_memory_region(struct kvm *kvm, int id, gpa_t gpa,
+ 				     u32 size);
+ bool kvm_vcpu_is_reset_bsp(struct kvm_vcpu *vcpu);
+ bool kvm_vcpu_is_bsp(struct kvm_vcpu *vcpu);
++bool kvm_vcpu_latch_init(struct kvm_vcpu *vcpu);
+ 
+ bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
+ 			     struct kvm_vcpu **dest_vcpu);
+diff --git a/arch/x86/kvm/i8259.c b/arch/x86/kvm/i8259.c
+index e1bb6218bb96..177555eea54e 100644
+--- a/arch/x86/kvm/i8259.c
++++ b/arch/x86/kvm/i8259.c
+@@ -29,9 +29,9 @@
+ #include <linux/mm.h>
+ #include <linux/slab.h>
+ #include <linux/bitops.h>
+-#include "irq.h"
++#include <linux/kvm_host.h>
+ 
+-#include <linux/kvm_host.h>
++#include "irq.h"
+ #include "trace.h"
+ 
+ #define pr_pic_unimpl(fmt, ...)	\
+diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
+index 117a46df5cc1..12577ddccdfc 100644
+--- a/arch/x86/kvm/lapic.h
++++ b/arch/x86/kvm/lapic.h
+@@ -225,7 +225,7 @@ static inline bool kvm_vcpu_apicv_active(struct kvm_vcpu *vcpu)
+ 
+ static inline bool kvm_apic_has_events(struct kvm_vcpu *vcpu)
+ {
+-	return lapic_in_kernel(vcpu) && vcpu->arch.apic->pending_events;
++	return lapic_in_kernel(vcpu) && vcpu->arch.apic->pending_events && !kvm_vcpu_latch_init(vcpu);
  }
  
-+static bool vmx_has_nested_events(struct kvm_vcpu *vcpu)
-+{
-+	struct vcpu_vmx *vmx = to_vmx(vcpu);
-+
-+	return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
-+}
-+
- static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
-@@ -6816,7 +6823,7 @@ struct kvm_x86_nested_ops vmx_nested_ops = {
- 	.leave_nested = vmx_leave_nested,
- 	.check_events = vmx_check_nested_events,
- 	.handle_page_fault_workaround = nested_vmx_handle_page_fault_workaround,
--	.hv_timer_pending = nested_vmx_preemption_timer_pending,
-+	.has_events = vmx_has_nested_events,
- 	.triple_fault = nested_vmx_triple_fault,
- 	.get_state = vmx_get_nested_state,
- 	.set_state = vmx_set_nested_state,
+ static inline bool kvm_lowest_prio_delivery(struct kvm_lapic_irq *irq)
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 7f084613fac8..0f9f24793b8a 100644
+index 0f9f24793b8a..5e9358ea112b 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -9789,8 +9789,8 @@ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
- 	}
+@@ -12529,6 +12529,11 @@ static inline bool kvm_guest_apic_has_interrupt(struct kvm_vcpu *vcpu)
+ 		static_call(kvm_x86_guest_apic_has_interrupt)(vcpu));
+ }
  
- 	if (is_guest_mode(vcpu) &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending(vcpu))
-+	    kvm_x86_ops.nested_ops->has_events &&
-+	    kvm_x86_ops.nested_ops->has_events(vcpu))
- 		*req_immediate_exit = true;
++bool kvm_vcpu_latch_init(struct kvm_vcpu *vcpu)
++{
++	return is_smm(vcpu) || static_call(kvm_x86_apic_init_signal_blocked)(vcpu);
++}
++
+ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
+ {
+ 	if (!list_empty_careful(&vcpu->async_pf.done))
+diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
+index 1926d2cb8e79..c333e7cf933a 100644
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -267,11 +267,6 @@ static inline bool kvm_check_has_quirk(struct kvm *kvm, u64 quirk)
+ 	return !(kvm->arch.disabled_quirks & quirk);
+ }
  
- 	WARN_ON(vcpu->arch.exception.pending);
-@@ -12562,8 +12562,8 @@ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
- 		return true;
+-static inline bool kvm_vcpu_latch_init(struct kvm_vcpu *vcpu)
+-{
+-	return is_smm(vcpu) || static_call(kvm_x86_apic_init_signal_blocked)(vcpu);
+-}
+-
+ void kvm_inject_realmode_interrupt(struct kvm_vcpu *vcpu, int irq, int inc_eip);
  
- 	if (is_guest_mode(vcpu) &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending &&
--	    kvm_x86_ops.nested_ops->hv_timer_pending(vcpu))
-+	    kvm_x86_ops.nested_ops->has_events &&
-+	    kvm_x86_ops.nested_ops->has_events(vcpu))
- 		return true;
- 
- 	if (kvm_xen_has_pending_events(vcpu))
+ u64 get_kvmclock_ns(struct kvm *kvm);
 -- 
 2.31.1
 
