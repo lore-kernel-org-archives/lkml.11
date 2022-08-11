@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F64C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C87C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238963AbiHKQmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50704 "EHLO
+        id S238984AbiHKQmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239210AbiHKQlC (ORCPT
+        with ESMTP id S239162AbiHKQkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:41:02 -0400
+        Thu, 11 Aug 2022 12:40:55 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5964A5C63
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D55BA5C4E
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660234422;
+        s=mimecast20190719; t=1660234417;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3RIarNO4bl/SlYdwgU6TGCIMSMDAhYZFkoNFGsJp8ZY=;
-        b=Ve3XDgeHzhWl1vN60y2FbtItfPts8jfi6EAA2rmqQ1gwGq9VPqMZmI6sAcqNLeHTob5pkG
-        iDAd1LmFqFFnjYCbLAChj6sLqWTUMIwRseYb37zqxHfPOUPPyhaU6IymFMVG7/h+rLRy/E
-        kiJNpP6QimDI6AA1Jrgf6CmF8y4C9w4=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=nfi/Ecb+oYo1RXzYzaJhIF6aEHnKWbHUlt161URhhFA=;
+        b=GhsOGOx+UWqgdk2hLvFdA/eje74sCFQsPeRXdDNjHvzK3Otd+Mrpav1B0lpKp30PgCg2wa
+        btm7fZwBHcS040weXYswe/FFkU71n+WM5P4a7vtmKfZUZm+OaoHQgl3n8ew5BA36ineajT
+        YGPkKdNXFqkbrkRMUQfoWriJsUbg+Qo=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-28-Qg9sZUtAONSi6vCROLRXPQ-1; Thu, 11 Aug 2022 12:13:41 -0400
-X-MC-Unique: Qg9sZUtAONSi6vCROLRXPQ-1
-Received: by mail-io1-f69.google.com with SMTP id j8-20020a6b7948000000b0067c2923d1b8so9797860iop.6
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:41 -0700 (PDT)
+ us-mta-586-0DYtKXsdMQ2QSdY2jwh4QA-1; Thu, 11 Aug 2022 12:13:36 -0400
+X-MC-Unique: 0DYtKXsdMQ2QSdY2jwh4QA-1
+Received: by mail-io1-f72.google.com with SMTP id f4-20020a5d8784000000b00684f917b026so5683668ion.12
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=3RIarNO4bl/SlYdwgU6TGCIMSMDAhYZFkoNFGsJp8ZY=;
-        b=iQ+q4YCOKNlVEOVMrt0qwc3oHTyKFqITFcXBgCckhFPcJlct/bmFmotRqkF4aQmW3/
-         shkIQNiJhonnkdWfzJR8PTOWvZ7j3ZSxvu1ILYVg4yWnKVfkdZt8xVIst8Ex+gvuqVrr
-         noolZAnaFWajahyqz1AjiwQbnR3EryqpiR2fC+SDk1SbfRxge3ggXAL9akqhjYGVn2rB
-         mnDXLswuYA+ehlN3nG4jbwC++V4nTe9ayNf3N/OwTUbNsSx2iWGoxeDn3TNgTg9pdsJt
-         JkBhN/Ll9hMB6wwJXAmd6I4JkASk14AoycXaokHBRszBcklZsOzIPvKguE0DombgCmqB
-         5Ozg==
-X-Gm-Message-State: ACgBeo2IlN2qCWl7FjnF+H2ITanZL/UFOAh8Jq8YaFpGJ8ZB5MrBsmiF
-        IC1Z8P3T7hdPpS2uGTB+AUj3gokMuoSEELz+WQhPtKR4v1e4CHg1kmyLi2WIsW7ZRxIUhT5NUGn
-        CKgXSeu9MBVoE4oGNgufK+dft
-X-Received: by 2002:a6b:c343:0:b0:67c:6033:a682 with SMTP id t64-20020a6bc343000000b0067c6033a682mr25999iof.148.1660234420822;
-        Thu, 11 Aug 2022 09:13:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6oIBb2BB4Q/hh/sdEHHNGipMyiCcZTfi7mlLc8HUt82uGH8takFsvaPCiWYe/hV/AqCvZxHw==
-X-Received: by 2002:a6b:c343:0:b0:67c:6033:a682 with SMTP id t64-20020a6bc343000000b0067c6033a682mr25990iof.148.1660234420598;
-        Thu, 11 Aug 2022 09:13:40 -0700 (PDT)
+        bh=nfi/Ecb+oYo1RXzYzaJhIF6aEHnKWbHUlt161URhhFA=;
+        b=0MsanOpOrzrOYhyUyYK0EWnUi65FCAhSN4IHpM0W+Ag+kg5gF6KKNlU0Fw9FAysWeG
+         FzrYy3UpaUNRCSZ9UlBTfOq6/ekyPDkVSyS0byUdBAplyuQT/ZRu9/9YO3Vw+frRGFnJ
+         c9BJQfaKHPvzIbMWGuMTA96747U72Q65Sq6/hSx/rW7nLIvu74EeVKWcnziAOoIDMp30
+         fFiPONi9SrcVDm3nio62SvPTmUB3k4FgoyGs44z32AujcShneUimI3ysWsGJkrQrFiEo
+         yv+ZE5Ji+zSAH4tysKCfCcXh3m96sHHgQS3LuGLUnORdhuT3Oxsp3NAP93uNfTzGAg4K
+         40oA==
+X-Gm-Message-State: ACgBeo3QcOMw6hcm3vrzhY0MmsNqJKVTqK4/0SEw7utD9lG5bfgySFTd
+        i6vNVWiyx9jIu3ArzY5JxihXGbnNuoxV1H4jtH8NvigcoB5R+yxlSpbylczY152dlIFVMUXQqtJ
+        zjHCMki0m90X4oj84cKRcU3XF
+X-Received: by 2002:a05:6602:4019:b0:684:4cde:9e74 with SMTP id bk25-20020a056602401900b006844cde9e74mr16654iob.53.1660234415563;
+        Thu, 11 Aug 2022 09:13:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6aerHoxC67XZ45dRi+nnFHBgH3aaV4pC70vmG8Qq33dGhvpVJki9kiKQSL4lwRWMdaL0bZUw==
+X-Received: by 2002:a05:6602:4019:b0:684:4cde:9e74 with SMTP id bk25-20020a056602401900b006844cde9e74mr16649iob.53.1660234415385;
+        Thu, 11 Aug 2022 09:13:35 -0700 (PDT)
 Received: from localhost.localdomain (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id t1-20020a92ca81000000b002dd1c3c5c46sm3415429ilo.73.2022.08.11.09.13.39
+        by smtp.gmail.com with ESMTPSA id t1-20020a92ca81000000b002dd1c3c5c46sm3415429ilo.73.2022.08.11.09.13.33
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 11 Aug 2022 09:13:40 -0700 (PDT)
+        Thu, 11 Aug 2022 09:13:34 -0700 (PDT)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Cc:     Hugh Dickins <hughd@google.com>,
@@ -68,9 +68,9 @@ Cc:     Hugh Dickins <hughd@google.com>,
         Nadav Amit <nadav.amit@gmail.com>,
         Huang Ying <ying.huang@intel.com>,
         Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH v4 4/7] mm/thp: Carry over dirty bit when thp splits on pmd
-Date:   Thu, 11 Aug 2022 12:13:28 -0400
-Message-Id: <20220811161331.37055-5-peterx@redhat.com>
+Subject: [PATCH v4 1/7] mm/x86: Use SWP_TYPE_BITS in 3-level swap macros
+Date:   Thu, 11 Aug 2022 12:13:25 -0400
+Message-Id: <20220811161331.37055-2-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220811161331.37055-1-peterx@redhat.com>
 References: <20220811161331.37055-1-peterx@redhat.com>
@@ -81,52 +81,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Carry over the dirty bit from pmd to pte when a huge pmd splits.  It
-shouldn't be a correctness issue since when pmd_dirty() we'll have the page
-marked dirty anyway, however having dirty bit carried over helps the next
-initial writes of split ptes on some archs like x86.
+Replace all the magic "5" with the macro.
 
+Reviewed-by: David Hildenbrand <david@redhat.com>
 Reviewed-by: Huang Ying <ying.huang@intel.com>
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- mm/huge_memory.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/pgtable-3level.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 3222b40a0f6d..2f68e034ddec 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2027,7 +2027,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 	pgtable_t pgtable;
- 	pmd_t old_pmd, _pmd;
- 	bool young, write, soft_dirty, pmd_migration = false, uffd_wp = false;
--	bool anon_exclusive = false;
-+	bool anon_exclusive = false, dirty = false;
- 	unsigned long addr;
- 	int i;
+diff --git a/arch/x86/include/asm/pgtable-3level.h b/arch/x86/include/asm/pgtable-3level.h
+index e896ebef8c24..28421a887209 100644
+--- a/arch/x86/include/asm/pgtable-3level.h
++++ b/arch/x86/include/asm/pgtable-3level.h
+@@ -256,10 +256,10 @@ static inline pud_t native_pudp_get_and_clear(pud_t *pudp)
+ /* We always extract/encode the offset by shifting it all the way up, and then down again */
+ #define SWP_OFFSET_SHIFT	(SWP_OFFSET_FIRST_BIT + SWP_TYPE_BITS)
  
-@@ -2116,8 +2116,10 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		uffd_wp = pmd_swp_uffd_wp(old_pmd);
- 	} else {
- 		page = pmd_page(old_pmd);
--		if (pmd_dirty(old_pmd))
-+		if (pmd_dirty(old_pmd)) {
-+			dirty = true;
- 			SetPageDirty(page);
-+		}
- 		write = pmd_write(old_pmd);
- 		young = pmd_young(old_pmd);
- 		soft_dirty = pmd_soft_dirty(old_pmd);
-@@ -2183,6 +2185,9 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 				entry = pte_wrprotect(entry);
- 			if (!young)
- 				entry = pte_mkold(entry);
-+			/* NOTE: this may set soft-dirty too on some archs */
-+			if (dirty)
-+				entry = pte_mkdirty(entry);
- 			if (soft_dirty)
- 				entry = pte_mksoft_dirty(entry);
- 			if (uffd_wp)
+-#define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > 5)
+-#define __swp_type(x)			(((x).val) & 0x1f)
+-#define __swp_offset(x)			((x).val >> 5)
+-#define __swp_entry(type, offset)	((swp_entry_t){(type) | (offset) << 5})
++#define MAX_SWAPFILES_CHECK() BUILD_BUG_ON(MAX_SWAPFILES_SHIFT > SWP_TYPE_BITS)
++#define __swp_type(x)			(((x).val) & ((1UL << SWP_TYPE_BITS) - 1))
++#define __swp_offset(x)			((x).val >> SWP_TYPE_BITS)
++#define __swp_entry(type, offset)	((swp_entry_t){(type) | (offset) << SWP_TYPE_BITS})
+ 
+ /*
+  * Normally, __swp_entry() converts from arch-independent swp_entry_t to
 -- 
 2.32.0
 
