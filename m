@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BAAC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1315C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239041AbiHKQme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        id S239077AbiHKQmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239235AbiHKQlG (ORCPT
+        with ESMTP id S239194AbiHKQlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:41:06 -0400
+        Thu, 11 Aug 2022 12:41:01 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BA09A5C6D
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F97DA50C1
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660234424;
+        s=mimecast20190719; t=1660234421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wcBPlgoBrj0uOf3oLcjW7xdC8Px/qOVmL+drDcWQ9zU=;
-        b=ac8Gq8eGLD70CwFRaAEckItyLGHvfAz82ZcxywSOoZdsaqu7ZxHfGM/Oj3mV9p65Ow79lm
-        Jf4arGEX/ZfXa2vFdRPZ3sWg2sKOcQ6seNeuofPzg/ZrsYDiyfB2ZDxp4m+TCIKaugVdVZ
-        fWItRg8Ty3UzKG0j8Pgp4IOk634Fdfc=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=tV5La4wEOuDKwImLzug6SnOpAoLEybFChef0YUGwxZI=;
+        b=afmzxUi4OsRPgSJ5tVXhXpxC1rH3gmxQpIhSHxMdUytfPZlYlParCfqF2rx7yi0WsF4xUt
+        U4R1+yp/3dxDfCMqHalfuzDJ2yUspEU9nB+yOL9EYQBhyyMVfSoaOl31wbyscjQCu/AYUP
+        muZxEMn6CtKXkZHcB/C00f56eZnwtAg=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-445-beIqJO_QNNGC9Z3eo-WMvQ-1; Thu, 11 Aug 2022 12:13:43 -0400
-X-MC-Unique: beIqJO_QNNGC9Z3eo-WMvQ-1
-Received: by mail-il1-f198.google.com with SMTP id d6-20020a056e020c0600b002deca741bc2so12840771ile.18
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:43 -0700 (PDT)
+ us-mta-21-vGKLcBSbPXOGIcLJaddMkA-1; Thu, 11 Aug 2022 12:13:40 -0400
+X-MC-Unique: vGKLcBSbPXOGIcLJaddMkA-1
+Received: by mail-il1-f199.google.com with SMTP id n13-20020a056e02140d00b002dfa5464967so11412917ilo.19
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=wcBPlgoBrj0uOf3oLcjW7xdC8Px/qOVmL+drDcWQ9zU=;
-        b=EMyUZxJbHgyruDWOJGD5uEXLojvjpRcX2BoBuoVdWMJ/L+4B19jWeHZLTJ6JmM57+7
-         UqKQaolVB83xvXLJwTZChBvRyL6Ur9dwMkDbi8sf1S19VvAdfLNM+TPevHQva/rkQLNX
-         gpFI+6jgK8cSDcD8TKwk2KzdDmYSh3XpYpeWq1mBof89SfEqSp7b+loBGwnBgHgjWHct
-         q1UAsnENaLpQr9/vK+IOTeG1cQ0/Zxl/3GQLnXvrmKbnnOc5DdSWY/I/V9MvAOIHlm1Y
-         sapYJju3iqouZIq/f6QV4VIz4hr8CTt89np1k2jbhjhG5txCRm03hECPvOKDswpN6B5O
-         qnmQ==
-X-Gm-Message-State: ACgBeo0tFhiDuiYPUMnD1Lmz7OrTVa7wkM9ezVuq4MTDFjxB9EaqyYaF
-        v+a9UcnV7v1JS1NR2aO6mOugCk5GDtV1DQCNi5eYPkDrkq0Wb/u8JnXKnloDvF/T7gaoCQtPAfF
-        6/2MLQDKBU+csLSSRsFss6O+S
-X-Received: by 2002:a05:6602:3c8:b0:672:4e60:7294 with SMTP id g8-20020a05660203c800b006724e607294mr19032iov.17.1660234422697;
-        Thu, 11 Aug 2022 09:13:42 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4a4wc03JiaOd+Wy1g/LSTkpve80CiM3YnLVxORIPuirDVkEdT56xr6TTENWxL/H/ODMSTXkQ==
-X-Received: by 2002:a05:6602:3c8:b0:672:4e60:7294 with SMTP id g8-20020a05660203c800b006724e607294mr19017iov.17.1660234422392;
-        Thu, 11 Aug 2022 09:13:42 -0700 (PDT)
+        bh=tV5La4wEOuDKwImLzug6SnOpAoLEybFChef0YUGwxZI=;
+        b=hrc1fxSgYWO86wYpXL/v7iYu84sk0HmhSB9dNVfrIt3X1ryJol6HO4B5ZnzZJhPVD/
+         nzyVpXRzqYB/zVEKXZ4xOQ2+d91QQoMMOj05jJ57IgjTkjlUYwcgkrktVQXEkeDyH/dT
+         mrDbpKRRl/xMUZVEHBIoYx3LII/frA7XJ3+3sUD5WapGKruEnappKmIBWnARuplIwXU7
+         7enNmhH1mNhzyVWUkAOTtp+Ne78TtcOdX1r3FEq6AYIcIclIVEhdl78qBe7UTWGbpwWY
+         J0w7dOLgU5u4Aok09Psj8lrx/161poVI4DwTM61sQsU0/43wJ4aMeYy0iuQtg+Gazd1+
+         ICzA==
+X-Gm-Message-State: ACgBeo1xPehMDADvKY2NUSzFniITsQUFEZpWqBcsI606v6m5ckhvHz1R
+        nRYVKMJUdrYOM4yUV+zwfkOWKTNwbMwEQ9/irm633qbynSKhX/1HXGKFE/SbP3eE3uw1o9Qj5nv
+        R8IKeI1dJsKa15jrAm+qjx0tW
+X-Received: by 2002:a05:6602:2182:b0:684:fb55:663f with SMTP id b2-20020a056602218200b00684fb55663fmr31092iob.60.1660234419273;
+        Thu, 11 Aug 2022 09:13:39 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5jIQLvYUpX1q44iT+XDMj9ZK15CNYkE0bFGQEL63lTXbeHWM+wVqA+5wMIWo1nNzyBJbp0sw==
+X-Received: by 2002:a05:6602:2182:b0:684:fb55:663f with SMTP id b2-20020a056602218200b00684fb55663fmr31074iob.60.1660234419026;
+        Thu, 11 Aug 2022 09:13:39 -0700 (PDT)
 Received: from localhost.localdomain (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id t1-20020a92ca81000000b002dd1c3c5c46sm3415429ilo.73.2022.08.11.09.13.40
+        by smtp.gmail.com with ESMTPSA id t1-20020a92ca81000000b002dd1c3c5c46sm3415429ilo.73.2022.08.11.09.13.37
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 11 Aug 2022 09:13:41 -0700 (PDT)
+        Thu, 11 Aug 2022 09:13:38 -0700 (PDT)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Cc:     Hugh Dickins <hughd@google.com>,
@@ -68,9 +68,9 @@ Cc:     Hugh Dickins <hughd@google.com>,
         Nadav Amit <nadav.amit@gmail.com>,
         Huang Ying <ying.huang@intel.com>,
         Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH v4 5/7] mm: Remember young/dirty bit for page migrations
-Date:   Thu, 11 Aug 2022 12:13:29 -0400
-Message-Id: <20220811161331.37055-6-peterx@redhat.com>
+Subject: [PATCH v4 3/7] mm/swap: Add swp_offset_pfn() to fetch PFN from swap entry
+Date:   Thu, 11 Aug 2022 12:13:27 -0400
+Message-Id: <20220811161331.37055-4-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220811161331.37055-1-peterx@redhat.com>
 References: <20220811161331.37055-1-peterx@redhat.com>
@@ -81,281 +81,230 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When page migration happens, we always ignore the young/dirty bit settings
-in the old pgtable, and marking the page as old in the new page table using
-either pte_mkold() or pmd_mkold(), and keeping the pte clean.
+We've got a bunch of special swap entries that stores PFN inside the swap
+offset fields.  To fetch the PFN, normally the user just calls swp_offset()
+assuming that'll be the PFN.
 
-That's fine from functional-wise, but that's not friendly to page reclaim
-because the moving page can be actively accessed within the procedure.  Not
-to mention hardware setting the young bit can bring quite some overhead on
-some systems, e.g. x86_64 needs a few hundreds nanoseconds to set the bit.
-The same slowdown problem to dirty bits when the memory is first written
-after page migration happened.
+Add a helper swp_offset_pfn() to fetch the PFN instead, fetching only the
+max possible length of a PFN on the host, meanwhile doing proper check with
+MAX_PHYSMEM_BITS to make sure the swap offsets can actually store the PFNs
+properly always using the BUILD_BUG_ON() in is_pfn_swap_entry().
 
-Actually we can easily remember the A/D bit configuration and recover the
-information after the page is migrated.  To achieve it, define a new set of
-bits in the migration swap offset field to cache the A/D bits for old pte.
-Then when removing/recovering the migration entry, we can recover the A/D
-bits even if the page changed.
+One reason to do so is we never tried to sanitize whether swap offset can
+really fit for storing PFN.  At the meantime, this patch also prepares us
+with the future possibility to store more information inside the swp offset
+field, so assuming "swp_offset(entry)" to be the PFN will not stand any
+more very soon.
 
-One thing to mention is that here we used max_swapfile_size() to detect how
-many swp offset bits we have, and we'll only enable this feature if we know
-the swp offset is big enough to store both the PFN value and the A/D bits.
-Otherwise the A/D bits are dropped like before.
+Replace many of the swp_offset() callers to use swp_offset_pfn() where
+proper.  Note that many of the existing users are not candidates for the
+replacement, e.g.:
+
+  (1) When the swap entry is not a pfn swap entry at all, or,
+  (2) when we wanna keep the whole swp_offset but only change the swp type.
+
+For the latter, it can happen when fork() triggered on a write-migration
+swap entry pte, we may want to only change the migration type from
+write->read but keep the rest, so it's not "fetching PFN" but "changing
+swap type only".  They're left aside so that when there're more information
+within the swp offset they'll be carried over naturally in those cases.
+
+Since at it, dropping hwpoison_entry_to_pfn() because that's exactly what
+the new swp_offset_pfn() is about.
 
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- include/linux/swapops.h | 99 +++++++++++++++++++++++++++++++++++++++++
- mm/huge_memory.c        | 18 +++++++-
- mm/migrate.c            |  6 ++-
- mm/migrate_device.c     |  6 +++
- mm/rmap.c               |  5 ++-
- 5 files changed, 130 insertions(+), 4 deletions(-)
+ arch/arm64/mm/hugetlbpage.c |  2 +-
+ fs/proc/task_mmu.c          | 20 +++++++++++++++++---
+ include/linux/swapops.h     | 35 +++++++++++++++++++++++++++++------
+ mm/hmm.c                    |  2 +-
+ mm/memory-failure.c         |  2 +-
+ mm/page_vma_mapped.c        |  6 +++---
+ 6 files changed, 52 insertions(+), 15 deletions(-)
 
+diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+index 0795028f017c..35e9a468d13e 100644
+--- a/arch/arm64/mm/hugetlbpage.c
++++ b/arch/arm64/mm/hugetlbpage.c
+@@ -245,7 +245,7 @@ static inline struct folio *hugetlb_swap_entry_to_folio(swp_entry_t entry)
+ {
+ 	VM_BUG_ON(!is_migration_entry(entry) && !is_hwpoison_entry(entry));
+ 
+-	return page_folio(pfn_to_page(swp_offset(entry)));
++	return page_folio(pfn_to_page(swp_offset_pfn(entry)));
+ }
+ 
+ void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index d56c65f98d00..b3e79128fca0 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -1419,9 +1419,19 @@ static pagemap_entry_t pte_to_pagemap_entry(struct pagemapread *pm,
+ 		if (pte_swp_uffd_wp(pte))
+ 			flags |= PM_UFFD_WP;
+ 		entry = pte_to_swp_entry(pte);
+-		if (pm->show_pfn)
++		if (pm->show_pfn) {
++			pgoff_t offset;
++			/*
++			 * For PFN swap offsets, keeping the offset field
++			 * to be PFN only to be compatible with old smaps.
++			 */
++			if (is_pfn_swap_entry(entry))
++				offset = swp_offset_pfn(entry);
++			else
++				offset = swp_offset(entry);
+ 			frame = swp_type(entry) |
+-				(swp_offset(entry) << MAX_SWAPFILES_SHIFT);
++			    (offset << MAX_SWAPFILES_SHIFT);
++		}
+ 		flags |= PM_SWAP;
+ 		migration = is_migration_entry(entry);
+ 		if (is_pfn_swap_entry(entry))
+@@ -1478,7 +1488,11 @@ static int pagemap_pmd_range(pmd_t *pmdp, unsigned long addr, unsigned long end,
+ 			unsigned long offset;
+ 
+ 			if (pm->show_pfn) {
+-				offset = swp_offset(entry) +
++				if (is_pfn_swap_entry(entry))
++					offset = swp_offset_pfn(entry);
++				else
++					offset = swp_offset(entry);
++				offset = offset +
+ 					((addr & ~PMD_MASK) >> PAGE_SHIFT);
+ 				frame = swp_type(entry) |
+ 					(offset << MAX_SWAPFILES_SHIFT);
 diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-index bd4c6f0c2103..36e462e116af 100644
+index 3a2901ff4f1e..bd4c6f0c2103 100644
 --- a/include/linux/swapops.h
 +++ b/include/linux/swapops.h
-@@ -8,6 +8,10 @@
+@@ -23,6 +23,20 @@
+ #define SWP_TYPE_SHIFT	(BITS_PER_XA_VALUE - MAX_SWAPFILES_SHIFT)
+ #define SWP_OFFSET_MASK	((1UL << SWP_TYPE_SHIFT) - 1)
  
- #ifdef CONFIG_MMU
- 
-+#ifdef CONFIG_SWAP
-+#include <linux/swapfile.h>
-+#endif	/* CONFIG_SWAP */
-+
- /*
-  * swapcache pages are stored in the swapper_space radix tree.  We want to
-  * get good packing density in that tree, so the index should be dense in
-@@ -35,6 +39,31 @@
- #endif	/* MAX_PHYSMEM_BITS */
- #define SWP_PFN_MASK			(BIT(SWP_PFN_BITS) - 1)
- 
-+/**
-+ * Migration swap entry specific bitfield definitions.  Layout:
-+ *
-+ *   |----------+--------------------|
-+ *   | swp_type | swp_offset         |
-+ *   |----------+--------+-+-+-------|
-+ *   |          | resv   |D|A|  PFN  |
-+ *   |----------+--------+-+-+-------|
-+ *
-+ * @SWP_MIG_YOUNG_BIT: Whether the page used to have young bit set (bit A)
-+ * @SWP_MIG_DIRTY_BIT: Whether the page used to have dirty bit set (bit D)
-+ *
-+ * Note: A/D bits will be stored in migration entries iff there're enough
-+ * free bits in arch specific swp offset.  By default we'll ignore A/D bits
-+ * when migrating a page.  Please refer to migration_entry_supports_ad()
-+ * for more information.  If there're more bits besides PFN and A/D bits,
-+ * they should be reserved and always be zeros.
++/*
++ * Definitions only for PFN swap entries (see is_pfn_swap_entry()).  To
++ * store PFN, we only need SWP_PFN_BITS bits.  Each of the pfn swap entries
++ * can use the extra bits to store other information besides PFN.
 + */
-+#define SWP_MIG_YOUNG_BIT		(SWP_PFN_BITS)
-+#define SWP_MIG_DIRTY_BIT		(SWP_PFN_BITS + 1)
-+#define SWP_MIG_TOTAL_BITS		(SWP_PFN_BITS + 2)
++#ifdef MAX_PHYSMEM_BITS
++#define SWP_PFN_BITS			(MAX_PHYSMEM_BITS - PAGE_SHIFT)
++#else  /* MAX_PHYSMEM_BITS */
++#define SWP_PFN_BITS			(BITS_PER_LONG - PAGE_SHIFT)
++#endif	/* MAX_PHYSMEM_BITS */
++#define SWP_PFN_MASK			(BIT(SWP_PFN_BITS) - 1)
 +
-+#define SWP_MIG_YOUNG			BIT(SWP_MIG_YOUNG_BIT)
-+#define SWP_MIG_DIRTY			BIT(SWP_MIG_DIRTY_BIT)
++static inline bool is_pfn_swap_entry(swp_entry_t entry);
 +
- static inline bool is_pfn_swap_entry(swp_entry_t entry);
- 
  /* Clear all flags but only keep swp_entry_t related information */
-@@ -265,6 +294,57 @@ static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
- 	return swp_entry(SWP_MIGRATION_WRITE, offset);
+ static inline pte_t pte_swp_clear_flags(pte_t pte)
+ {
+@@ -64,6 +78,17 @@ static inline pgoff_t swp_offset(swp_entry_t entry)
+ 	return entry.val & SWP_OFFSET_MASK;
  }
  
 +/*
-+ * Returns whether the host has large enough swap offset field to support
-+ * carrying over pgtable A/D bits for page migrations.  The result is
-+ * pretty much arch specific.
++ * This should only be called upon a pfn swap entry to get the PFN stored
++ * in the swap entry.  Please refers to is_pfn_swap_entry() for definition
++ * of pfn swap entry.
 + */
-+static inline bool migration_entry_supports_ad(void)
++static inline unsigned long swp_offset_pfn(swp_entry_t entry)
 +{
-+	/*
-+	 * max_swapfile_size() returns the max supported swp-offset plus 1.
-+	 * We can support the migration A/D bits iff the pfn swap entry has
-+	 * the offset large enough to cover all of them (PFN, A & D bits).
-+	 */
-+#ifdef CONFIG_SWAP
-+	return max_swapfile_size() >= (1UL << SWP_MIG_TOTAL_BITS);
-+#else  /* CONFIG_SWAP */
-+	return false;
-+#endif	/* CONFIG_SWAP */
++	VM_BUG_ON(!is_pfn_swap_entry(entry));
++	return swp_offset(entry) & SWP_PFN_MASK;
 +}
 +
-+static inline swp_entry_t make_migration_entry_young(swp_entry_t entry)
-+{
-+	if (migration_entry_supports_ad())
-+		return swp_entry(swp_type(entry),
-+				 swp_offset(entry) | SWP_MIG_YOUNG);
-+	return entry;
-+}
+ /* check whether a pte points to a swap entry */
+ static inline int is_swap_pte(pte_t pte)
+ {
+@@ -369,7 +394,7 @@ static inline int pte_none_mostly(pte_t pte)
+ 
+ static inline struct page *pfn_swap_entry_to_page(swp_entry_t entry)
+ {
+-	struct page *p = pfn_to_page(swp_offset(entry));
++	struct page *p = pfn_to_page(swp_offset_pfn(entry));
+ 
+ 	/*
+ 	 * Any use of migration entries may only occur while the
+@@ -387,6 +412,9 @@ static inline struct page *pfn_swap_entry_to_page(swp_entry_t entry)
+  */
+ static inline bool is_pfn_swap_entry(swp_entry_t entry)
+ {
++	/* Make sure the swp offset can always store the needed fields */
++	BUILD_BUG_ON(SWP_TYPE_SHIFT < SWP_PFN_BITS);
 +
-+static inline bool is_migration_entry_young(swp_entry_t entry)
-+{
-+	if (migration_entry_supports_ad())
-+		return swp_offset(entry) & SWP_MIG_YOUNG;
-+	/* Keep the old behavior of aging page after migration */
-+	return false;
-+}
-+
-+static inline swp_entry_t make_migration_entry_dirty(swp_entry_t entry)
-+{
-+	if (migration_entry_supports_ad())
-+		return swp_entry(swp_type(entry),
-+				 swp_offset(entry) | SWP_MIG_DIRTY);
-+	return entry;
-+}
-+
-+static inline bool is_migration_entry_dirty(swp_entry_t entry)
-+{
-+	if (migration_entry_supports_ad())
-+		return swp_offset(entry) & SWP_MIG_DIRTY;
-+	/* Keep the old behavior of clean page after migration */
-+	return false;
-+}
-+
- extern void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
- 					spinlock_t *ptl);
- extern void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
-@@ -311,6 +391,25 @@ static inline int is_readable_migration_entry(swp_entry_t entry)
- 	return 0;
+ 	return is_migration_entry(entry) || is_device_private_entry(entry) ||
+ 	       is_device_exclusive_entry(entry);
+ }
+@@ -475,11 +503,6 @@ static inline int is_hwpoison_entry(swp_entry_t entry)
+ 	return swp_type(entry) == SWP_HWPOISON;
  }
  
-+static inline swp_entry_t make_migration_entry_young(swp_entry_t entry)
-+{
-+	return entry;
-+}
-+
-+static inline bool is_migration_entry_young(swp_entry_t entry)
-+{
-+	return false;
-+}
-+
-+static inline swp_entry_t make_migration_entry_dirty(swp_entry_t entry)
-+{
-+	return entry;
-+}
-+
-+static inline bool is_migration_entry_dirty(swp_entry_t entry)
-+{
-+	return false;
-+}
- #endif	/* CONFIG_MIGRATION */
- 
- typedef unsigned long pte_marker;
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 2f68e034ddec..ac858fd9c1f1 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2111,7 +2111,8 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		write = is_writable_migration_entry(entry);
- 		if (PageAnon(page))
- 			anon_exclusive = is_readable_exclusive_migration_entry(entry);
--		young = false;
-+		young = is_migration_entry_young(entry);
-+		dirty = is_migration_entry_dirty(entry);
- 		soft_dirty = pmd_swp_soft_dirty(old_pmd);
- 		uffd_wp = pmd_swp_uffd_wp(old_pmd);
- 	} else {
-@@ -2171,6 +2172,10 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 			else
- 				swp_entry = make_readable_migration_entry(
- 							page_to_pfn(page + i));
-+			if (young)
-+				swp_entry = make_migration_entry_young(swp_entry);
-+			if (dirty)
-+				swp_entry = make_migration_entry_dirty(swp_entry);
- 			entry = swp_entry_to_pte(swp_entry);
- 			if (soft_dirty)
- 				entry = pte_swp_mksoft_dirty(entry);
-@@ -3180,6 +3185,10 @@ int set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
- 		entry = make_readable_exclusive_migration_entry(page_to_pfn(page));
- 	else
- 		entry = make_readable_migration_entry(page_to_pfn(page));
-+	if (pmd_young(pmdval))
-+		entry = make_migration_entry_young(entry);
-+	if (pmd_dirty(pmdval))
-+		entry = make_migration_entry_dirty(entry);
- 	pmdswp = swp_entry_to_pmd(entry);
- 	if (pmd_soft_dirty(pmdval))
- 		pmdswp = pmd_swp_mksoft_dirty(pmdswp);
-@@ -3205,13 +3214,18 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
- 
- 	entry = pmd_to_swp_entry(*pvmw->pmd);
- 	get_page(new);
--	pmde = pmd_mkold(mk_huge_pmd(new, READ_ONCE(vma->vm_page_prot)));
-+	pmde = mk_huge_pmd(new, READ_ONCE(vma->vm_page_prot));
- 	if (pmd_swp_soft_dirty(*pvmw->pmd))
- 		pmde = pmd_mksoft_dirty(pmde);
- 	if (is_writable_migration_entry(entry))
- 		pmde = maybe_pmd_mkwrite(pmde, vma);
- 	if (pmd_swp_uffd_wp(*pvmw->pmd))
- 		pmde = pmd_wrprotect(pmd_mkuffd_wp(pmde));
-+	if (!is_migration_entry_young(entry))
-+		pmde = pmd_mkold(pmde);
-+	/* NOTE: this may contain setting soft-dirty on some archs */
-+	if (PageDirty(new) && is_migration_entry_dirty(entry))
-+		pmde = pmd_mkdirty(pmde);
- 
- 	if (PageAnon(new)) {
- 		rmap_t rmap_flags = RMAP_COMPOUND;
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 6a1597c92261..0433a71d2bee 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -198,7 +198,7 @@ static bool remove_migration_pte(struct folio *folio,
- #endif
- 
- 		folio_get(folio);
--		pte = pte_mkold(mk_pte(new, READ_ONCE(vma->vm_page_prot)));
-+		pte = mk_pte(new, READ_ONCE(vma->vm_page_prot));
- 		if (pte_swp_soft_dirty(*pvmw.pte))
- 			pte = pte_mksoft_dirty(pte);
- 
-@@ -206,6 +206,10 @@ static bool remove_migration_pte(struct folio *folio,
- 		 * Recheck VMA as permissions can change since migration started
- 		 */
- 		entry = pte_to_swp_entry(*pvmw.pte);
-+		if (!is_migration_entry_young(entry))
-+			pte = pte_mkold(pte);
-+		if (folio_test_dirty(folio) && is_migration_entry_dirty(entry))
-+			pte = pte_mkdirty(pte);
- 		if (is_writable_migration_entry(entry))
- 			pte = maybe_mkwrite(pte, vma);
- 		else if (pte_swp_uffd_wp(*pvmw.pte))
-diff --git a/mm/migrate_device.c b/mm/migrate_device.c
-index 27fb37d65476..e450b318b01b 100644
---- a/mm/migrate_device.c
-+++ b/mm/migrate_device.c
-@@ -221,6 +221,12 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
- 			else
- 				entry = make_readable_migration_entry(
- 							page_to_pfn(page));
-+			if (pte_present(pte)) {
-+				if (pte_young(pte))
-+					entry = make_migration_entry_young(entry);
-+				if (pte_dirty(pte))
-+					entry = make_migration_entry_dirty(entry);
-+			}
- 			swp_pte = swp_entry_to_pte(entry);
- 			if (pte_present(pte)) {
- 				if (pte_soft_dirty(pte))
-diff --git a/mm/rmap.c b/mm/rmap.c
-index af775855e58f..28aef434ea41 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -2065,7 +2065,10 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 			else
- 				entry = make_readable_migration_entry(
- 							page_to_pfn(subpage));
+-static inline unsigned long hwpoison_entry_to_pfn(swp_entry_t entry)
+-{
+-	return swp_offset(entry);
+-}
 -
-+			if (pte_young(pteval))
-+				entry = make_migration_entry_young(entry);
-+			if (pte_dirty(pteval))
-+				entry = make_migration_entry_dirty(entry);
- 			swp_pte = swp_entry_to_pte(entry);
- 			if (pte_soft_dirty(pteval))
- 				swp_pte = pte_swp_mksoft_dirty(swp_pte);
+ static inline void num_poisoned_pages_inc(void)
+ {
+ 	atomic_long_inc(&num_poisoned_pages);
+diff --git a/mm/hmm.c b/mm/hmm.c
+index f2aa63b94d9b..3850fb625dda 100644
+--- a/mm/hmm.c
++++ b/mm/hmm.c
+@@ -253,7 +253,7 @@ static int hmm_vma_handle_pte(struct mm_walk *walk, unsigned long addr,
+ 			cpu_flags = HMM_PFN_VALID;
+ 			if (is_writable_device_private_entry(entry))
+ 				cpu_flags |= HMM_PFN_WRITE;
+-			*hmm_pfn = swp_offset(entry) | cpu_flags;
++			*hmm_pfn = swp_offset_pfn(entry) | cpu_flags;
+ 			return 0;
+ 		}
+ 
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 0dfed9d7b273..e48f6f6a259d 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -632,7 +632,7 @@ static int check_hwpoisoned_entry(pte_t pte, unsigned long addr, short shift,
+ 		swp_entry_t swp = pte_to_swp_entry(pte);
+ 
+ 		if (is_hwpoison_entry(swp))
+-			pfn = hwpoison_entry_to_pfn(swp);
++			pfn = swp_offset_pfn(swp);
+ 	}
+ 
+ 	if (!pfn || pfn != poisoned_pfn)
+diff --git a/mm/page_vma_mapped.c b/mm/page_vma_mapped.c
+index 8e9e574d535a..93e13fc17d3c 100644
+--- a/mm/page_vma_mapped.c
++++ b/mm/page_vma_mapped.c
+@@ -86,7 +86,7 @@ static bool check_pte(struct page_vma_mapped_walk *pvmw)
+ 		    !is_device_exclusive_entry(entry))
+ 			return false;
+ 
+-		pfn = swp_offset(entry);
++		pfn = swp_offset_pfn(entry);
+ 	} else if (is_swap_pte(*pvmw->pte)) {
+ 		swp_entry_t entry;
+ 
+@@ -96,7 +96,7 @@ static bool check_pte(struct page_vma_mapped_walk *pvmw)
+ 		    !is_device_exclusive_entry(entry))
+ 			return false;
+ 
+-		pfn = swp_offset(entry);
++		pfn = swp_offset_pfn(entry);
+ 	} else {
+ 		if (!pte_present(*pvmw->pte))
+ 			return false;
+@@ -221,7 +221,7 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ 					return not_found(pvmw);
+ 				entry = pmd_to_swp_entry(pmde);
+ 				if (!is_migration_entry(entry) ||
+-				    !check_pmd(swp_offset(entry), pvmw))
++				    !check_pmd(swp_offset_pfn(entry), pvmw))
+ 					return not_found(pvmw);
+ 				return true;
+ 			}
 -- 
 2.32.0
 
