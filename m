@@ -2,229 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E9BC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A148C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234064AbiHKKMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 06:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
+        id S234376AbiHKKOu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbiHKKMv (ORCPT
+        with ESMTP id S229655AbiHKKOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 06:12:51 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5194D13F95;
-        Thu, 11 Aug 2022 03:12:50 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id DB0085C00DC;
-        Thu, 11 Aug 2022 06:12:47 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 11 Aug 2022 06:12:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1660212767; x=1660299167; bh=mMS4E3mqOTH7Zvgf4rLhChkDS
-        DL/NPafGJ3IH/CpISU=; b=mulhKIlx3oKssza3LcaRu+tNLTT/dx7ry/BeC9Ldu
-        7uJ9t3hg12HE5EwaOv8nlQ2ehWsx/+pJmgityjikL5DW9KTIt4fNF8Qt30Bf3rGb
-        bl3K3hswYC8+EwC/Z1gw5UCg/rPO7GICq2wPtEp9gso3qu+qiQiC1bOx6F4v2UlY
-        2THESXLyfCU7sPX3H5MJ5QcMqijWP31iAJ1dQbJqq2kMFKwT8Fmgy4nn4kMxwmvT
-        50EIcdDxznNvgsmbzMZNMUL+1++03c9NvGsUXviWMNWWX3MZxQIL4S5UFeX7mos/
-        FRsUP1X8vNhT0pHo0TKzuszDHohvRZVvbHO9rkRIyiwTQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660212767; x=1660299167; bh=mMS4E3mqOTH7Zvgf4rLhChkDSDL/NPafGJ3
-        IH/CpISU=; b=q5TyV+pyZIpzZENBOZAjvIz+0M67h5Sz5eaMC7RpZHr+Jj5qum0
-        1BfhjSiQsXRk70i3pgensy/vuKNEU86WXz1KJQ5eI6BymeOsMP56No88F9/jDutl
-        RTlQG//DmXvx+c4/3uCMRrb8mDSy0djRFR4oDqmnfaMLnK3yyKPweCKiH2QlrECv
-        SonO04a1dPWc9eEAeNmPmCYGhSq+t48j15U0PX9+z5VS1T4Fu9ztl8IJPcFwfGE4
-        0eRRUPBuEaRAH18lVAMnsIKThCwo/n2S1IEeITVuID83EY73ZzeLW3+ZFnO9+Mdn
-        ots8pMXpyVxy8OYjD2ox5yhfNSrE0kVAXDQ==
-X-ME-Sender: <xms:H9b0YpPfHfWuTqVftNX6_dgqe17ZXGEL3EGULhZ_TniV6-elaN7AKg>
-    <xme:H9b0Yr9fEBJ3mG_ur0xF0uG3M2KSvckkle-OVSnPP_KC_3T1vwj1JX-0pj-ratEK6
-    f8oFv7Gn0oDHVub9Ok>
-X-ME-Received: <xmr:H9b0YoS2ckT8sNcO1dDwIVYINhirlOp8JE-F1l7Zv6AOiIDrtgCJMcumep1EcY_SAP6KgZwOrHgKNlSYpolvsKseHc8_zUEjeciOqY1i1QP1mURD_ve8khGK>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeggedgvdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghnghes
-    fhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhephfetuddtudevieeljeejte
-    ffheeujeduhefgffejudfhueelleduffefgfffveeknecuvehluhhsthgvrhfuihiivgep
-    tdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgoh
-    grthdrtghomh
-X-ME-Proxy: <xmx:H9b0Ylu6ZTP0uo3Rx-kjCqyFzZKSOz7UeWJ7HxbiW62qRty2M6UiWg>
-    <xmx:H9b0Yhff5TmWvYQjBLsRpT0cKEXeuEJMnWV74VMC3gJwHTlf7bA3eg>
-    <xmx:H9b0Yh1DaUnzYVaKzdVp5H4ZzIf3asSPdwV2g1uU-Y1P9sCc7n102Q>
-    <xmx:H9b0Yl4PGnM7HxNEgGbbsHa9oTlw5AZX_VL-vfnJa-fZk8GFuSF8Rg>
-Feedback-ID: ifd894703:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 11 Aug 2022 06:12:45 -0400 (EDT)
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-To:     linux-mips@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, tsbogend@alpha.franken.de,
-        linux-api@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
-Subject: [PATCH v2] MIPS: Expose prid and globalnumber to sysfs
-Date:   Thu, 11 Aug 2022 10:12:36 +0000
-Message-Id: <20220811101236.1925-1-jiaxun.yang@flygoat.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 11 Aug 2022 06:14:47 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E89C14028
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:14:46 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id i14so32677964ejg.6
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=UpvdQiXiaoWE7lmdI46FMRRQoH8NCO0q4oDKow84fM0=;
+        b=UMK/Hou07kBp+Xwl3DSQCFMY2dhZk3AM02CB+Y/hkhC9tRM4tNcdrdtrheQxQTs+nV
+         bTbKOcgpLsq3iXo1nfrWs75vuxP3NhqbDotrKZb6Mg3gY8zrBrvAyM16Cw9cTD5Na1KH
+         /7KCdEwvErJFkCgG/yvinPxkkkX/UR6rqSYOThIhRm1CsWJ2HJQ08tB7P2kV+aySQg3n
+         dhFEkWsSRRUQl4bgHrgUs1uyfDYsG7Rlfi5n/jBtATPNk3lMuBF1ePQfj8CrH5tkPABj
+         3rxhuPzhvuj14cmrZtz1QEDjEw0+SobtvG5u4Eopx2CRN9lg89Tz2gKB5xgoriu2dSwx
+         gKaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=UpvdQiXiaoWE7lmdI46FMRRQoH8NCO0q4oDKow84fM0=;
+        b=WWQlfwWvXoa9gU9mVULsxYWQtQ955p5LF22CNcV7s2wb6H3SfFxdhLKZ+TlF3Zmv+C
+         SX4kyh6EqmyAJtjUkAwpPeNyAkP0vVBCyF9No1TgVyPQ85Ad8umFFOnYqQU+ZrgpEfCm
+         oQRZGFEkz1zNfEWKR39HjdFz3chUnF1J3wyqz9aAnGtHIm1VVOhzmSOEtwpzyATFsDqA
+         y3pVA9oT+mcTqsmbjsbsJwR4yoXgiMz8jySHAFgRndMwBpIkdNSZRwyn5iJYfOEdE3Gg
+         HPXV999tX5csYl7VJKX78xNDXh7gUgXbQpbUZ0ALOp0J7pRNEN1Sl7S2N3J5k5wnrjNM
+         RzwQ==
+X-Gm-Message-State: ACgBeo1LumtDuGLgpxyc1PIx3qgt3FCh+i+gdNht9SIFND1dQ/8EaMSu
+        BMH37Q7kpKy1w8ghIsREFbCaXg==
+X-Google-Smtp-Source: AA6agR5L2wWzNcCPE7/bJF3PDQb95PoMLxtTDASXrh6z5KvVlnXynNFIDpNjNBO239jdMWu9vzaw7Q==
+X-Received: by 2002:a17:907:209c:b0:731:27bb:da8c with SMTP id pv28-20020a170907209c00b0073127bbda8cmr16525790ejb.555.1660212884692;
+        Thu, 11 Aug 2022 03:14:44 -0700 (PDT)
+Received: from blmsp ([2001:4090:a243:8036:200c:a862:4253:884])
+        by smtp.gmail.com with ESMTPSA id x17-20020a1709060ef100b0072b6d91b056sm3386837eji.142.2022.08.11.03.14.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 03:14:44 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 12:14:43 +0200
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        Fabien Parent <parent.f@gmail.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: power: Add MT8365 power domains
+Message-ID: <20220811101443.eevyf5xnctmo5y4f@blmsp>
+References: <20220725081853.1636444-1-msp@baylibre.com>
+ <20220725081853.1636444-2-msp@baylibre.com>
+ <bbdde7ce-4512-2e61-5e1a-e22e5cb91184@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <bbdde7ce-4512-2e61-5e1a-e22e5cb91184@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some application would like to know precise model and rev of processor
-to do errata workaround or optimization.
+Hi Angelo,
 
-Expose them in sysfs as:
-/sys/devices/system/cpu/cpuX/regs/identification/prid
-/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
+On Mon, Jul 25, 2022 at 10:54:58AM +0200, AngeloGioacchino Del Regno wrote:
+> Il 25/07/22 10:18, Markus Schneider-Pargmann ha scritto:
+> > From: Fabien Parent <fparent@baylibre.com>
+> > 
+> > Add power domains dt-bindings for MT8365.
+> > 
+> > Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> > ---
+> > 
+> > Notes:
+> >      Changes in v2:
+> >      - Made include/dt-bindings/power/mt8365-power.h dual-license.
+> > 
+> >   .../power/mediatek,power-controller.yaml      |  2 ++
+> >   include/dt-bindings/power/mt8365-power.h      | 19 +++++++++++++++++++
+> >   2 files changed, 21 insertions(+)
+> >   create mode 100644 include/dt-bindings/power/mt8365-power.h
+> > 
+> > diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > index 135c6f722091..2c6d3e4246b2 100644
+> > --- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > +++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > @@ -29,6 +29,7 @@ properties:
+> >         - mediatek,mt8186-power-controller
+> >         - mediatek,mt8192-power-controller
+> >         - mediatek,mt8195-power-controller
+> > +      - mediatek,mt8365-power-controller
+> >     '#power-domain-cells':
+> >       const: 1
+> > @@ -67,6 +68,7 @@ patternProperties:
+> >                 "include/dt-bindings/power/mt8183-power.h" - for MT8183 type power domain.
+> >                 "include/dt-bindings/power/mt8192-power.h" - for MT8192 type power domain.
+> >                 "include/dt-bindings/power/mt8195-power.h" - for MT8195 type power domain.
+> > +              "include/dt-bindings/power/mt8365-power.h" - for MT8365 type power domain.
+> >           maxItems: 1
+> >         clocks:
+> > diff --git a/include/dt-bindings/power/mt8365-power.h b/include/dt-bindings/power/mt8365-power.h
+> > new file mode 100644
+> > index 000000000000..e6cfd0ec7871
+> > --- /dev/null
+> > +++ b/include/dt-bindings/power/mt8365-power.h
+> 
+> Please rename this file to add the vendor prefix.
+> 
+> mediatek,mt8365-power.h
 
-Reusing AArch64 CPU registers directory.
+Thank you for your feedback.
 
-Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
----
-v2: Drop static qualifier for kobj (gregkh)
----
- .../ABI/testing/sysfs-devices-system-cpu      | 11 +++
- arch/mips/kernel/topology.c                   | 96 +++++++++++++++++++
- 2 files changed, 107 insertions(+)
+There are currently 12 'mt*-power.h' files without vendor prefix in that
+directory. I can change it, but it seems very inconsistent.
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-index 5bf61881f012..adf855e7bb9b 100644
---- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-+++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -512,6 +512,17 @@ Description:	information about CPUs heterogeneity.
- 
- 		cpu_capacity: capacity of cpuX.
- 
-+What:		/sys/devices/system/cpu/cpuX/regs/
-+		/sys/devices/system/cpu/cpuX/regs/identification/
-+		/sys/devices/system/cpu/cpuX/regs/identification/prid
-+		/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
-+Date:		Augest 2022
-+Contact:	Linux MIPS Kernel Mailing list <linux-mips@vger.kernel.org>
-+Description:	MIPS CPU registers
-+
-+		'identification' directory exposes the Processor ID and Global Number
-+		registers for identifying model and revision of the CPU.
-+
- What:		/sys/devices/system/cpu/vulnerabilities
- 		/sys/devices/system/cpu/vulnerabilities/meltdown
- 		/sys/devices/system/cpu/vulnerabilities/spectre_v1
-diff --git a/arch/mips/kernel/topology.c b/arch/mips/kernel/topology.c
-index 9429d85a4703..0e3730f3c00f 100644
---- a/arch/mips/kernel/topology.c
-+++ b/arch/mips/kernel/topology.c
-@@ -5,6 +5,8 @@
- #include <linux/node.h>
- #include <linux/nodemask.h>
- #include <linux/percpu.h>
-+#include <linux/seq_file.h>
-+#include <linux/smp.h>
- 
- static DEFINE_PER_CPU(struct cpu, cpu_devices);
- 
-@@ -26,3 +28,97 @@ static int __init topology_init(void)
- }
- 
- subsys_initcall(topology_init);
-+
-+static struct kobj_type cpuregs_kobj_type = {
-+	.sysfs_ops = &kobj_sysfs_ops,
-+};
-+
-+struct cpureg {
-+	struct kobject kobj;
-+	struct cpuinfo_mips *info;
-+};
-+DEFINE_PER_CPU(struct cpureg, cpuregs);
-+
-+#define kobj_to_cpureg(kobj)	container_of(kobj, struct cpureg, kobj)
-+#define CPUREGS_ATTR_RO(_name, _field)						\
-+	static ssize_t _name##_show(struct kobject *kobj,			\
-+			struct kobj_attribute *attr, char *buf)			\
-+	{									\
-+		struct cpuinfo_mips *info = kobj_to_cpureg(kobj)->info;		\
-+										\
-+		return sprintf(buf, "0x%08x\n", info->_field);	\
-+	}									\
-+	static struct kobj_attribute cpuregs_attr_##_name = __ATTR_RO(_name)
-+
-+CPUREGS_ATTR_RO(prid, processor_id);
-+CPUREGS_ATTR_RO(globalnumber, globalnumber);
-+
-+static struct attribute *cpuregs_id_attrs[] = {
-+	&cpuregs_attr_prid.attr,
-+	&cpuregs_attr_globalnumber.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group cpuregs_attr_group = {
-+	.attrs = cpuregs_id_attrs,
-+	.name = "identification"
-+};
-+
-+static int cpuregs_cpu_online(unsigned int cpu)
-+{
-+	int rc;
-+	struct device *dev;
-+	struct cpureg *reg = &per_cpu(cpuregs, cpu);
-+
-+	dev = get_cpu_device(cpu);
-+	if (!dev) {
-+		rc = -ENODEV;
-+		goto out;
-+	}
-+	rc = kobject_add(&reg->kobj, &dev->kobj, "regs");
-+	if (rc)
-+		goto out;
-+	rc = sysfs_create_group(&reg->kobj, &cpuregs_attr_group);
-+	if (rc)
-+		kobject_del(&reg->kobj);
-+out:
-+	return rc;
-+}
-+
-+static int cpuregs_cpu_offline(unsigned int cpu)
-+{
-+	struct device *dev;
-+	struct cpureg *reg = &per_cpu(cpuregs, cpu);
-+
-+	dev = get_cpu_device(cpu);
-+	if (!dev)
-+		return -ENODEV;
-+	if (reg->kobj.parent) {
-+		sysfs_remove_group(&reg->kobj, &cpuregs_attr_group);
-+		kobject_del(&reg->kobj);
-+	}
-+
-+	return 0;
-+}
-+
-+static int __init cpuinfo_regs_init(void)
-+{
-+	int cpu, ret;
-+
-+	for_each_possible_cpu(cpu) {
-+		struct cpureg *reg = &per_cpu(cpuregs, cpu);
-+
-+		reg->info = &cpu_data[cpu];
-+		kobject_init(&reg->kobj, &cpuregs_kobj_type);
-+	}
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "mips/topology:online",
-+				cpuregs_cpu_online, cpuregs_cpu_offline);
-+	if (ret < 0) {
-+		pr_err("cpuinfo: failed to register hotplug callbacks.\n");
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+device_initcall(cpuinfo_regs_init);
--- 
-2.34.1
-
+Best,
+Markus
