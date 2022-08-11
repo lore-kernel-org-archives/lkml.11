@@ -2,331 +2,373 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF419C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 03:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8AAC282E7
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 03:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233986AbiHKDyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 23:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S233654AbiHKD6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 23:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiHKDym (ORCPT
+        with ESMTP id S233753AbiHKD6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 23:54:42 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9D283BD0
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 20:54:37 -0700 (PDT)
-X-UUID: 328f09c9b7304a3a8d9a50012db37c3f-20220809
-X-GW-Reason: 11109
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 104
-        audit/email.address 1
-        dict/adv 1
-        dict/contack 1
-        dict/notice 2
-        dict/operate 1
-        meta/cnt.alert 1
-X-UUID: 328f09c9b7304a3a8d9a50012db37c3f-20220809
-X-User: oushixiong@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <oushixiong@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 20370262; Tue, 09 Aug 2022 19:44:41 +0800
-From:   oushixiong <oushixiong@kylinos.cn>
-To:     Dave Airlie <airlied@redhat.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        oushixiong <oushixiong@kylinos.cn>
-Subject: [PATCH] drm/ast: radeon amdgpu for ast add prime
-Date:   Tue,  9 Aug 2022 19:44:39 +0800
-Message-Id: <20220809114439.2063863-1-oushixiong@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 10 Aug 2022 23:58:50 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEF383F27
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 20:58:47 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id q184so20044937oif.1
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 20:58:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=W/Ddv3FILaw5kcUD3MzHcpXXotpPc2TE/jad5ETUSuM=;
+        b=cUwl8twTqYs/ew9sdT3ULDGEmiDGjv97A+o5Dp3uk3glhVxXP5H7+tiQJel2pQbBzY
+         +eIHdQUDm/Fk01osvE2rIePFAwIVLN6NQENxUMm1P410V7p6/MIQb0X1cOC8x2nfGkX1
+         u5ouO+IccIFz/MfaE1gZTp2ly1+oMAiRCZVLWdjQa4J7gxrCBLwpeCtd96jqtz2yc6Yt
+         A2J3vg/WlVtcvF9Bg8bwvaAEw4y+JJE+k8CFX91QuqzGlRz+LZh/5ovk1U0lS5uryQBf
+         yvt2XVgmcV7367e14/bcpm7J+Uw70eFaTq8YI995sPZhq8D7C1dHu8hXmqhly3Mv19y1
+         4AeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=W/Ddv3FILaw5kcUD3MzHcpXXotpPc2TE/jad5ETUSuM=;
+        b=xUKg9NP0Hk/cdU68GjsA12ZEK0SDkmbRuWSupM5JfROon3z56WhGMtdKJ4A2AJgZEw
+         yISk6I72wj3nvX5fwYB71jBa90ik6iy53q0R4+YF4kn2YFL70TOv/bzG6Mt2y/c12a5Y
+         L20aiS8jeYtXMBNxlWFb+6wZwC1Roi2rGpgk4QGaZ+9bgDXLcoJgBbFlkzrVqzppTZ/e
+         Yol1rQxoH1T3lIyBCTTIRhj+j8Txt7tC2PqnE83iIpnVEN4DZTU34xepgFdHMzLg65OQ
+         mS1Ogj7Avs7L00XL9rUvBGaExx1ZpfwJB3XutWIi4kRzC4S7XO9XUADHSrqa2b90+qUr
+         t8sQ==
+X-Gm-Message-State: ACgBeo3AquX43MVeLUzY2HXxVeQMZR2cNwAg77ZVwhGqceHaUvjxeg7z
+        zK3/ykKD8CEvpoyXqgH4y+FPaA==
+X-Google-Smtp-Source: AA6agR4Bivj+6SyN7gYcv9JGlrUXaDqXqgBvYMIom0ezxOmJPpuIcHoZGl3zZJaCiacFxTRvdVAV/w==
+X-Received: by 2002:a05:6808:30a8:b0:343:538c:33ef with SMTP id bl40-20020a05680830a800b00343538c33efmr228693oib.91.1660190326462;
+        Wed, 10 Aug 2022 20:58:46 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id w22-20020a056808141600b00338869042fdsm891443oiv.32.2022.08.10.20.58.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 20:58:45 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] dt-bindings: display/msm: Add binding for SC8280XP MDSS
+Date:   Wed, 10 Aug 2022 21:01:19 -0700
+Message-Id: <20220811040121.3775613-2-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811040121.3775613-1-bjorn.andersson@linaro.org>
+References: <20220811040121.3775613-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds ast specific codes for DRM prime feature.
-Add the prime function to solve the xorg conflict problem when AST
-and AMD are in place at the same time, so that both can be displayed.
+Add binding for the display subsystem and display processing unit in the
+Qualcomm SC8280XP platform.
 
-Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/gpu/drm/ast/ast_drv.c                |  22 ++++
- drivers/gpu/drm/ast/ast_mode.c               | 115 ++++++++++++++++++-
- drivers/gpu/drm/drm_gem_framebuffer_helper.c |   1 -
- drivers/gpu/drm/drm_gem_vram_helper.c        |  16 ++-
- include/drm/drm_gem_vram_helper.h            |   4 +-
- 5 files changed, 150 insertions(+), 8 deletions(-)
+ .../bindings/display/msm/dpu-sc8280xp.yaml    | 284 ++++++++++++++++++
+ 1 file changed, 284 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.yaml
 
-diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
-index 7465c4f0156a..3650462a8734 100644
---- a/drivers/gpu/drm/ast/ast_drv.c
-+++ b/drivers/gpu/drm/ast/ast_drv.c
-@@ -28,6 +28,7 @@
- 
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/dma-buf.h>
- 
- #include <drm/drm_aperture.h>
- #include <drm/drm_atomic_helper.h>
-@@ -50,6 +51,23 @@ module_param_named(modeset, ast_modeset, int, 0400);
- 
- DEFINE_DRM_GEM_FOPS(ast_fops);
- 
-+struct drm_gem_object *ast_gem_prime_import_sg_table(struct drm_device *dev,
-+					struct dma_buf_attachment *attach,
-+					struct sg_table *sg)
-+{
-+	struct drm_gem_vram_object *gbo;
-+	struct dma_resv *resv = attach->dmabuf->resv;
+diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.yaml
+new file mode 100644
+index 000000000000..6c25943e639c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.yaml
+@@ -0,0 +1,284 @@
++# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/msm/dpu-sc8280xp.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	ww_mutex_lock(&resv->lock, NULL);
-+	gbo = drm_gem_vram_create(dev, attach->dmabuf->size, 0, sg, resv);
-+	ww_mutex_unlock(&resv->lock);
++title: Qualcomm Display Processing Unit for SC8280XP
 +
-+	if (IS_ERR(gbo))
-+		return NULL;
++maintainers:
++  - Bjorn Andersson <bjorn.andersson@linaro.org>
 +
-+	return &gbo->bo.base;
-+}
++description:
++  Device tree bindings for MSM Mobile Display Subsystem (MDSS) that encapsulates
++  sub-blocks like DPU display controller, DSI and DP interfaces etc. Device tree
++  bindings of MDSS and DPU are mentioned for SC8280XP.
 +
- static const struct drm_driver ast_driver = {
- 	.driver_features = DRIVER_ATOMIC |
- 			   DRIVER_GEM |
-@@ -63,6 +81,10 @@ static const struct drm_driver ast_driver = {
- 	.minor = DRIVER_MINOR,
- 	.patchlevel = DRIVER_PATCHLEVEL,
- 
-+	.prime_handle_to_fd = drm_gem_prime_handle_to_fd,
-+	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
-+	.gem_prime_import_sg_table = ast_gem_prime_import_sg_table,
++properties:
++  compatible:
++    const: qcom,sc8280xp-mdss
 +
- 	DRM_GEM_VRAM_DRIVER
- };
- 
-diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
-index 45b56b39ad47..f059faa8c35a 100644
---- a/drivers/gpu/drm/ast/ast_mode.c
-+++ b/drivers/gpu/drm/ast/ast_mode.c
-@@ -48,6 +48,8 @@
- #include "ast_drv.h"
- #include "ast_tables.h"
- 
-+MODULE_IMPORT_NS(DMA_BUF);
++  reg:
++    maxItems: 1
 +
- static inline void ast_load_palette_index(struct ast_private *ast,
- 				     u8 index, u8 red, u8 green,
- 				     u8 blue)
-@@ -926,7 +928,7 @@ static int ast_cursor_plane_init(struct ast_private *ast)
- 	size = roundup(AST_HWC_SIZE + AST_HWC_SIGNATURE_SIZE, PAGE_SIZE);
- 
- 	for (i = 0; i < ARRAY_SIZE(ast_cursor_plane->hwc); ++i) {
--		gbo = drm_gem_vram_create(dev, size, 0);
-+		gbo = drm_gem_vram_create(dev, size, 0, NULL, NULL);
- 		if (IS_ERR(gbo)) {
- 			ret = PTR_ERR(gbo);
- 			goto err_hwc;
-@@ -1535,8 +1537,117 @@ static const struct drm_mode_config_helper_funcs ast_mode_config_helper_funcs =
- 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
- };
- 
-+int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
-+					int width, int height)
-+{
-+	struct drm_gem_vram_object *dst_bo = NULL;
-+	void *dst = NULL;
-+	int ret = 0, i;
-+	unsigned long offset = 0;
-+	bool unmap = false;
-+	unsigned int bytesPerPixel;
-+	struct iosys_map map;
-+	struct iosys_map dmabuf_map;
++  reg-names:
++    const: mdss
 +
-+	bytesPerPixel = fb->format->cpp[0];
++  power-domains:
++    maxItems: 1
 +
-+	if (!fb->obj[0]->import_attach)
-+		return -EINVAL;
++  clocks:
++    items:
++      - description: Display AHB clock from gcc
++      - description: Display AHB clock from dispcc
++      - description: Display core clock
 +
-+	if (!fb->obj[0]->import_attach->dmabuf->vmap_ptr.vaddr) {
-+		ret = dma_buf_vmap(fb->obj[0]->import_attach->dmabuf, &dmabuf_map);
-+		if (ret)
-+			return 0;
-+	} else {
-+		dmabuf_map.vaddr = fb->obj[0]->import_attach->dmabuf->vmap_ptr.vaddr;
-+	}
++  clock-names:
++    items:
++      - const: iface
++      - const: ahb
++      - const: core
 +
-+	dst_bo = drm_gem_vram_of_gem(fb->obj[0]);
++  interrupts:
++    maxItems: 1
 +
-+	ret = drm_gem_vram_pin(dst_bo, 0);
-+	if (ret) {
-+		DRM_ERROR("ast_bo_pin failed\n");
-+		goto error;
-+	}
++  interrupt-controller: true
 +
-+	if (!dst_bo->map.vaddr) {
-+		ret = drm_gem_vram_vmap(dst_bo, &map);
-+		if (ret) {
-+			DRM_ERROR("failed to vmap fbcon\n");
-+			drm_gem_vram_unpin(dst_bo);
-+			goto error;
-+		}
-+		unmap = true;
-+	}
-+	dst = dst_bo->map.vaddr;
++  "#address-cells": true
 +
-+	for (i = y; i < y + height; i++) {
-+		offset = i * fb->pitches[0] + (x * bytesPerPixel);
-+		memcpy_toio(dst + offset, dmabuf_map.vaddr + offset,
-+			width * bytesPerPixel);
-+	}
++  "#size-cells": true
 +
-+	if (unmap)
-+		drm_gem_vram_vunmap(dst_bo, &map);
++  "#interrupt-cells":
++    const: 1
 +
-+	drm_gem_vram_unpin(dst_bo);
-+error:
-+	return 0;
-+}
++  iommus:
++    items:
++      - description: Phandle to apps_smmu node with SID mask for Hard-Fail port0
 +
++  ranges: true
 +
-+int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
-+				struct drm_file *file,
-+				unsigned int flags,
-+				unsigned int color,
-+				struct drm_clip_rect *clips,
-+				unsigned int num_clips)
-+{
-+	int i, ret = 0;
++  interconnects:
++    minItems: 2
++    maxItems: 2
 +
-+	drm_modeset_lock_all(fb->dev);
-+	if (fb->obj[0]->import_attach) {
-+		ret = dma_buf_begin_cpu_access(fb->obj[0]->import_attach->dmabuf,
-+				DMA_FROM_DEVICE);
-+		if (ret)
-+			goto unlock;
-+	}
++  interconnect-names:
++    items:
++      - const: mdp0-mem
++      - const: mdp1-mem
 +
-+	for (i = 0; i < num_clips; i++) {
-+		ret = ast_handle_damage(fb, clips[i].x1, clips[i].y1,
-+				clips[i].x2 - clips[i].x1, clips[i].y2 - clips[i].y1);
-+		if (ret)
-+			break;
-+	}
++  resets:
++    items:
++      - description: MDSS_CORE reset
 +
-+	if (fb->obj[0]->import_attach) {
-+		dma_buf_end_cpu_access(fb->obj[0]->import_attach->dmabuf,
-+				DMA_FROM_DEVICE);
-+	}
++patternProperties:
++  "^display-controller@[0-9a-f]+$":
++    type: object
++    description: Node containing the properties of DPU.
 +
-+unlock:
-+	drm_modeset_unlock_all(fb->dev);
++    properties:
++      compatible:
++        const: qcom,sc8280xp-dpu
 +
-+	return ret;
-+}
-+EXPORT_SYMBOL(ast_user_framebuffer_dirty);
++      reg:
++        items:
++          - description: Address offset and size for mdp register set
++          - description: Address offset and size for vbif register set
 +
-+static const struct drm_framebuffer_funcs ast_gem_fb_funcs_dirtyfb = {
-+	.destroy	= drm_gem_fb_destroy,
-+	.create_handle	= drm_gem_fb_create_handle,
-+	.dirty		= ast_user_framebuffer_dirty,
-+};
++      reg-names:
++        items:
++          - const: mdp
++          - const: vbif
 +
-+struct drm_framebuffer *
-+ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
-+				const struct drm_mode_fb_cmd2 *mode_cmd)
-+{
-+	return drm_gem_fb_create_with_funcs(dev, file, mode_cmd,
-+					&ast_gem_fb_funcs_dirtyfb);
-+}
++      clocks:
++        items:
++          - description: Display hf axi clock
++          - description: Display sf axi clock
++          - description: Display ahb clock
++          - description: Display lut clock
++          - description: Display core clock
++          - description: Display vsync clock
 +
- static const struct drm_mode_config_funcs ast_mode_config_funcs = {
--	.fb_create = drm_gem_fb_create,
-+	.fb_create = ast_gem_fb_create_with_dirty,
- 	.mode_valid = drm_vram_helper_mode_valid,
- 	.atomic_check = drm_atomic_helper_check,
- 	.atomic_commit = drm_atomic_helper_commit,
-diff --git a/drivers/gpu/drm/drm_gem_framebuffer_helper.c b/drivers/gpu/drm/drm_gem_framebuffer_helper.c
-index f4619803acd0..f65165d5e86c 100644
---- a/drivers/gpu/drm/drm_gem_framebuffer_helper.c
-+++ b/drivers/gpu/drm/drm_gem_framebuffer_helper.c
-@@ -15,7 +15,6 @@
- #include <drm/drm_gem.h>
- #include <drm/drm_gem_framebuffer_helper.h>
- #include <drm/drm_modeset_helper.h>
--
- #include "drm_internal.h"
- 
- MODULE_IMPORT_NS(DMA_BUF);
-diff --git a/drivers/gpu/drm/drm_gem_vram_helper.c b/drivers/gpu/drm/drm_gem_vram_helper.c
-index dc7f938bfff2..a31adb3c546d 100644
---- a/drivers/gpu/drm/drm_gem_vram_helper.c
-+++ b/drivers/gpu/drm/drm_gem_vram_helper.c
-@@ -184,14 +184,22 @@ static void drm_gem_vram_placement(struct drm_gem_vram_object *gbo,
-  */
- struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 						size_t size,
--						unsigned long pg_align)
-+						unsigned long pg_align,
-+						struct sg_table *sg,
-+						struct dma_resv *resv)
- {
- 	struct drm_gem_vram_object *gbo;
- 	struct drm_gem_object *gem;
- 	struct drm_vram_mm *vmm = dev->vram_mm;
- 	struct ttm_device *bdev;
-+	enum ttm_bo_type type;
- 	int ret;
- 
-+	if (sg)
-+		type = ttm_bo_type_sg;
-+	else
-+		type = ttm_bo_type_device;
++      clock-names:
++        items:
++          - const: bus
++          - const: nrt_bus
++          - const: iface
++          - const: lut
++          - const: core
++          - const: vsync
 +
- 	if (WARN_ONCE(!vmm, "VRAM MM not initialized"))
- 		return ERR_PTR(-EINVAL);
- 
-@@ -225,8 +233,8 @@ struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 	 * A failing ttm_bo_init will call ttm_buffer_object_destroy
- 	 * to release gbo->bo.base and kfree gbo.
- 	 */
--	ret = ttm_bo_init(bdev, &gbo->bo, size, ttm_bo_type_device,
--			  &gbo->placement, pg_align, false, NULL, NULL,
-+	ret = ttm_bo_init(bdev, &gbo->bo, size, type,
-+			  &gbo->placement, pg_align, false, sg, resv,
- 			  ttm_buffer_object_destroy);
- 	if (ret)
- 		return ERR_PTR(ret);
-@@ -521,7 +529,7 @@ int drm_gem_vram_fill_create_dumb(struct drm_file *file,
- 	if (!size)
- 		return -EINVAL;
- 
--	gbo = drm_gem_vram_create(dev, size, pg_align);
-+	gbo = drm_gem_vram_create(dev, size, pg_align, NULL, NULL);
- 	if (IS_ERR(gbo))
- 		return PTR_ERR(gbo);
- 
-diff --git a/include/drm/drm_gem_vram_helper.h b/include/drm/drm_gem_vram_helper.h
-index c083a1d71cf4..42c8f181cbd7 100644
---- a/include/drm/drm_gem_vram_helper.h
-+++ b/include/drm/drm_gem_vram_helper.h
-@@ -92,7 +92,9 @@ static inline struct drm_gem_vram_object *drm_gem_vram_of_gem(
- 
- struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 						size_t size,
--						unsigned long pg_align);
-+						unsigned long pg_align,
-+						struct sg_table *sg,
-+						struct dma_resv *resv);
- void drm_gem_vram_put(struct drm_gem_vram_object *gbo);
- s64 drm_gem_vram_offset(struct drm_gem_vram_object *gbo);
- int drm_gem_vram_pin(struct drm_gem_vram_object *gbo, unsigned long pl_flag);
++      interrupts:
++        maxItems: 1
++
++      power-domains:
++        maxItems: 1
++
++      operating-points-v2: true
++
++      ports:
++        $ref: /schemas/graph.yaml#/properties/ports
++        description: |
++          Contains the list of output ports from DPU device. These ports
++          connect to interfaces that are external to the DPU hardware,
++          such as DSI, DP etc. Each output port contains an endpoint that
++          describes how it is connected to an external interface.
++
++        patternProperties:
++          '^port@[0-8]$':
++            $ref: /schemas/graph.yaml#/properties/port
++            description: DPU interfaces
++
++    required:
++      - compatible
++      - reg
++      - reg-names
++      - clocks
++      - interrupts
++      - power-domains
++      - operating-points-v2
++      - ports
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - power-domains
++  - clocks
++  - interrupts
++  - interrupt-controller
++  - iommus
++  - ranges
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,dispcc-sc8280xp.h>
++    #include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interconnect/qcom,sc8280xp.h>
++    #include <dt-bindings/power/qcom-rpmpd.h>
++
++    display-subsystem@ae00000 {
++      compatible = "qcom,sc8280xp-mdss";
++      reg = <0x0ae00000 0x1000>;
++      reg-names = "mdss";
++
++      power-domains = <&dispcc0 MDSS_GDSC>;
++
++      clocks = <&gcc GCC_DISP_AHB_CLK>,
++               <&dispcc0 DISP_CC_MDSS_AHB_CLK>,
++               <&dispcc0 DISP_CC_MDSS_MDP_CLK>;
++      clock-names = "iface",
++                    "ahb",
++                    "core";
++
++      assigned-clocks = <&dispcc0 DISP_CC_MDSS_MDP_CLK>;
++      assigned-clock-rates = <460000000>;
++
++      resets = <&dispcc0 DISP_CC_MDSS_CORE_BCR>;
++
++      interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
++      interrupt-controller;
++      #interrupt-cells = <1>;
++
++      interconnects = <&mmss_noc MASTER_MDP0 0 &mc_virt SLAVE_EBI1 0>,
++                      <&mmss_noc MASTER_MDP1 0 &mc_virt SLAVE_EBI1 0>;
++      interconnect-names = "mdp0-mem", "mdp1-mem";
++
++      iommus = <&apps_smmu 0x1000 0x402>;
++
++      #address-cells = <1>;
++      #size-cells = <1>;
++      ranges;
++
++      display-controller@ae01000 {
++        compatible = "qcom,sc8280xp-dpu";
++        reg = <0x0ae01000 0x8f000>,
++              <0x0aeb0000 0x2008>;
++        reg-names = "mdp", "vbif";
++
++        clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
++                 <&gcc GCC_DISP_SF_AXI_CLK>,
++                 <&dispcc0 DISP_CC_MDSS_AHB_CLK>,
++                 <&dispcc0 DISP_CC_MDSS_MDP_LUT_CLK>,
++                 <&dispcc0 DISP_CC_MDSS_MDP_CLK>,
++                 <&dispcc0 DISP_CC_MDSS_VSYNC_CLK>;
++        clock-names = "bus",
++                      "nrt_bus",
++                      "iface",
++                      "lut",
++                      "core",
++                      "vsync";
++
++        assigned-clocks = <&dispcc0 DISP_CC_MDSS_MDP_CLK>,
++                          <&dispcc0 DISP_CC_MDSS_VSYNC_CLK>;
++        assigned-clock-rates = <460000000>,
++                               <19200000>;
++
++        operating-points-v2 = <&mdss0_mdp_opp_table>;
++        power-domains = <&rpmhpd SC8280XP_MMCX>;
++
++        interrupt-parent = <&mdss0>;
++        interrupts = <0>;
++
++        ports {
++          #address-cells = <1>;
++          #size-cells = <0>;
++
++          port@0 {
++            reg = <0>;
++              endpoint {
++                remote-endpoint = <&mdss0_dp0_in>;
++              };
++          };
++
++          port@4 {
++            reg = <4>;
++            endpoint {
++              remote-endpoint = <&mdss0_dp1_in>;
++            };
++          };
++
++          port@5 {
++            reg = <5>;
++              endpoint {
++                remote-endpoint = <&mdss0_dp3_in>;
++              };
++          };
++
++          port@6 {
++            reg = <6>;
++              endpoint {
++                remote-endpoint = <&mdss0_dp2_in>;
++              };
++          };
++        };
++
++        mdss0_mdp_opp_table: opp-table {
++          compatible = "operating-points-v2";
++
++          opp-200000000 {
++            opp-hz = /bits/ 64 <200000000>;
++            required-opps = <&rpmhpd_opp_low_svs>;
++          };
++
++          opp-300000000 {
++            opp-hz = /bits/ 64 <300000000>;
++            required-opps = <&rpmhpd_opp_svs>;
++          };
++
++          opp-345000000 {
++            opp-hz = /bits/ 64 <345000000>;
++            required-opps = <&rpmhpd_opp_svs_l1>;
++          };
++
++          opp-460000000 {
++            opp-hz = /bits/ 64 <460000000>;
++            required-opps = <&rpmhpd_opp_nom>;
++          };
++        };
++      };
++    };
++...
++
 -- 
-2.17.1
+2.35.1
 
-
-No virus found
-		Checked by Hillstone Network AntiVirus
