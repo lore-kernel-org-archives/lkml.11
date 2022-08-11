@@ -2,103 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 274F6C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7495C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239018AbiHKQfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S238690AbiHKQfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238711AbiHKQdS (ORCPT
+        with ESMTP id S238732AbiHKQdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:33:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86696BB02C;
-        Thu, 11 Aug 2022 09:11:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B281FB821BA;
-        Thu, 11 Aug 2022 16:10:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45026C433C1;
-        Thu, 11 Aug 2022 16:10:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234257;
-        bh=yl0xHkcESV7NTyfRvJaAPC4xYMup5ytE1fDcH4xEmw4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PZsf+Qk+S666bLuy3lmVFklbYDSuDLX2nbmrWGEW3xTu5+Uqcp/p/2whe4DT+od0c
-         u71u8T0sCZyKTkTPWBo8SIiLvbD07/+q6xRDPBulthKhi4KEFnbCM/aR4K2DQvajdR
-         OOo1UJ5Os7/UxWzbS44b2xVSfi8MfxuDoodHCI2TXfPbu2IkpQInjCyftnrHWLr9M5
-         CyY0qZdjEPtALbGL0/jUZRtlEiYyvKhkD36wV4pQnIsRYWHwQclcEOIycTlYcMpDPN
-         mH87JMTFDdieA0t0ww8W5wL2/33aPfPDwLAyVKRk3/te6NJq0sCXMwtg5GDPRRlk9n
-         /lC9PPbGoe1eA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 03/14] drm/radeon: Initialize fences array entries in radeon_sa_bo_next_hole
-Date:   Thu, 11 Aug 2022 12:10:32 -0400
-Message-Id: <20220811161050.1543183-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
-References: <20220811161050.1543183-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 12:33:19 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB509C511
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:10:59 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id s9so19790219ljs.6
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:10:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=WadkdhIBGjyW48KVPQS6VOJJuHOgD7hkCQHU3CrW5r4=;
+        b=C3xCsbJZiYMmFeHCimrB0ZWTrddOEX+yAAsE4dxCE9yo0bLODW7wRrPXo30JVEOom5
+         lZNHHqS9Q9ZZ669V5YZig1BRGrMPtMWWBG/QlFeCS/lJtKLT0apW87uqtOtVWkOkY4Qs
+         WmeqEqf0E1gwcAUa9HPdI/7tIXjdRDf1iNeBWrLwjPTPjzDbIrOzzECQFjQ4RbzKs6Qh
+         zxSvxiLroFNglqXDtciMH1rPnme3UJxqWowBe/vLiHBv7564PAdavmXdSnKgG4wmLmnQ
+         gXezuPik4TtYzLWaEZwNHJ+kdFBdTq+8rJciBrJYcoQnTCtygDRGanwmf8HwMjtZDpQ1
+         O1Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=WadkdhIBGjyW48KVPQS6VOJJuHOgD7hkCQHU3CrW5r4=;
+        b=NYEYrYZ25TuzsowSthHwZbigNIHF0RzMHMX8LrMsZ9VZ8zXbw7KxaXT3ZOBwSAvGJM
+         cAEaJWFYJJAdWNLtkGm9p2oR5bzggdtAiDhfZMc7dvJUY5XujVGFwddL/7aHLdN1W+XC
+         jcVDslaJFOlk5Ahxr4TdGzagXpBDvSzpFfxUnoUEs6+J9f6YNrB8jUd1QosRnYaRaO7t
+         rPVvdObzPCDUB+eV5mb5BotJI1DaIyCxC95HMLy/PAs+GFJW9hTjp7ulW0uYMpkXqa4O
+         5NlB15/CiavLddX1gCcgfiw5TK6lGy7IMs3/asuZYi0oLSNt+J8s7SUVQ2l4rJnfueWP
+         LUlw==
+X-Gm-Message-State: ACgBeo2Y1dnJe0ODw5i2KoSfg8YnTiEJ0WsDnqQGJ/zngSB8dAkq1Ta+
+        09iXWReOppFsaykGW2jwMiLL3tIvKPkHpOCmKe8ZbFbjnwpNuQ==
+X-Google-Smtp-Source: AA6agR74xNZCd6uAl/bb54mBPt8npYozN6IsBpDIaMgTRAEyfH6PecKixBxiPmO3DJQF+NYupvkuQvAHxJ/MOHbC5PU=
+X-Received: by 2002:a05:651c:881:b0:25d:4865:f6b0 with SMTP id
+ d1-20020a05651c088100b0025d4865f6b0mr9904673ljq.418.1660234257438; Thu, 11
+ Aug 2022 09:10:57 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220728145256.2985298-1-carsten.haitzler@foss.arm.com>
+In-Reply-To: <20220728145256.2985298-1-carsten.haitzler@foss.arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Thu, 11 Aug 2022 17:10:46 +0100
+Message-ID: <CAJ9a7VhV3mXr4pGi2UZYkfCZzB6=trnE_U8vKytupWXB00cCCw@mail.gmail.com>
+Subject: Re: [PATCH v5 00/14] A patch series improving data quality of perf
+ test for CoreSight
+To:     carsten.haitzler@foss.arm.com
+Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
+        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
+        leo.yan@linaro.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Hi Carsten,
 
-[ Upstream commit 0381ac3ca2e727d4dfb7264d9416a8ba6bb6c18b ]
+Been running the tests on my Dragonboard DB410 and see the following:-
 
-Similar to the handling of amdgpu_sa_bo_next_hole in commit 6a15f3ff19a8
-("drm/amdgpu: Initialize fences array entries in amdgpu_sa_bo_next_hole"),
-we thought a patch might be needed here as well.
+1) for every test I get a warning of the form:-
+[ 4167.796633] cma: cma_alloc: reserved: alloc failed, req-size: 4096
+pages, ret: -12
+meaning the initial allocation for teh perf buffer has failed.
+is the allocation size for the perf buffer mmap fixed or can it be set
+for the individual target?
+Not sure if this is a worry - as far as I recall, if the ETR driver
+cannot set a buffer size it reduces till it can.
 
-The entries were only initialized once in radeon_sa_bo_new. If a fence
-wasn't signalled yet in the first radeon_sa_bo_next_hole call, but then
-got signalled before a later radeon_sa_bo_next_hole call, it could
-destroy the fence but leave its pointer in the array, resulting in
-use-after-free in radeon_sa_bo_new.
+2) A couple of the TID tests fail in my case, but the interesting
+output I get if I use -v is=>
 
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/radeon/radeon_sa.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_sa.c b/drivers/gpu/drm/radeon/radeon_sa.c
-index 197b157b73d0..0cb6eeb77b5f 100644
---- a/drivers/gpu/drm/radeon/radeon_sa.c
-+++ b/drivers/gpu/drm/radeon/radeon_sa.c
-@@ -267,6 +267,8 @@ static bool radeon_sa_bo_next_hole(struct radeon_sa_manager *sa_manager,
- 	for (i = 0; i < RADEON_NUM_RINGS; ++i) {
- 		struct radeon_sa_bo *sa_bo;
- 
-+		fences[i] = NULL;
-+
- 		if (list_empty(&sa_manager->flist[i])) {
- 			continue;
- 		}
-@@ -332,10 +334,8 @@ int radeon_sa_bo_new(struct radeon_device *rdev,
- 
- 	spin_lock(&sa_manager->wq.lock);
- 	do {
--		for (i = 0; i < RADEON_NUM_RINGS; ++i) {
--			fences[i] = NULL;
-+		for (i = 0; i < RADEON_NUM_RINGS; ++i)
- 			tries[i] = 0;
--		}
- 
- 		do {
- 			radeon_sa_bo_try_free(sa_manager);
--- 
-2.35.1
+ 77: CoreSight / Thread Loop 10 Threads - Check TID                  :
+--- start ---
+test child forked, pid 4646
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 2.005 MB
+./perf-thread_loop-check-tid-10th.data ]
+Warning:
+Please install libunwind or libdw development packages during the perf build.
+Warning:
+AUX data lost 2 times out of 2!
 
+Thread IDs  4662 4662 4662 4662 4662 4662 4662 4662 not found in perf AUX data
+test child finished with -1
+---- end ----
+CoreSight / Thread Loop 10 Threads - Check TID: FAILED!
+ 78: CoreSight / Thread Loop 2 Threads - Check TID                   :
+--- start ---
+test child forked, pid 4693
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.005 MB
+./perf-thread_loop-check-tid-2th.data ]
+Warning:
+Please install libunwind or libdw development packages during the perf build.
+Thread IDs  4699 4699 not found in perf AUX data
+test child finished with -1
+---- end ----
+
+Are we expecting the same TID to be repeated in that way?
+
+Regards
+
+Mike
+
+
+
+On Thu, 28 Jul 2022 at 15:53, <carsten.haitzler@foss.arm.com> wrote:
+>
+> From: "Carsten Haitzler (Rasterman)" <raster@rasterman.com>
+>
+> This is a prelude to adding more tests to shell tests and in order to
+> support putting those tests into subdirectories, I need to change the
+> test code that scans/finds and runs them.
+>
+> To support subdirs I have to recurse so it's time to refactor the code to
+> allow this and centralize the shell script finding into one location and
+> only one single scan that builds a list of all the found tests in memory
+> instead of it being duplicated in 3 places.
+>
+> This code also optimizes things like knowing the max width of desciption
+> strings (as we can do that while we scan instead of a whole new pass
+> of opening files). It also more cleanly filters scripts to see only
+> *.sh files thus skipping random other files in directories like *~
+> backup files, other random junk/data files that may appear and the
+> scripts must be executable to make the cut (this ensures the script
+> lib dir is not seen as scripts to run). This avoids perf test running
+> previous older versions of test scripts that are editor backup files
+> as well as skipping perf.data files that may appear and so on.
+>
+> Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
+>
+> Carsten Haitzler (Rasterman) (14):
+>   perf test: Refactor shell tests allowing subdirs
+>   perf test: Add CoreSight shell lib shared code for future tests
+>   perf test: Add build infra for perf test tools for CoreSight tests
+>   perf test: Add asm pureloop test tool
+>   perf test: Add asm pureloop test shell script
+>   perf test: Add git ignore for perf data generated by the CoreSight
+>     tests
+>   perf test: Add memcpy thread test tool
+>   perf test: Add memcpy thread test shell script
+>   perf test: Add thread loop test tool
+>   perf test: Add thread loop test shell scripts
+>   perf test: Add unroll thread test tool
+>   perf test: Add unroll thread test shell script
+>   perf test: Add git ignore for tmp and output files of CoreSight tests
+>   perf test: Add relevant documentation about CoreSight testing
+>
+>  .../trace/coresight/coresight-perf.rst        | 160 ++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  tools/perf/.gitignore                         |   6 +-
+>  tools/perf/Documentation/arm-coresight.txt    |   5 +
+>  tools/perf/Makefile.perf                      |  18 +-
+>  tools/perf/tests/Build                        |   1 +
+>  tools/perf/tests/builtin-test-list.c          | 207 ++++++++++++++++++
+>  tools/perf/tests/builtin-test-list.h          |  12 +
+>  tools/perf/tests/builtin-test.c               | 152 ++-----------
+>  tools/perf/tests/shell/coresight/Makefile     |  30 +++
+>  .../tests/shell/coresight/Makefile.miniconfig |  24 ++
+>  .../tests/shell/coresight/asm_pure_loop.sh    |  18 ++
+>  .../shell/coresight/asm_pure_loop/.gitignore  |   1 +
+>  .../shell/coresight/asm_pure_loop/Makefile    |  34 +++
+>  .../coresight/asm_pure_loop/asm_pure_loop.S   |  28 +++
+>  .../shell/coresight/memcpy_thread/.gitignore  |   1 +
+>  .../shell/coresight/memcpy_thread/Makefile    |  33 +++
+>  .../coresight/memcpy_thread/memcpy_thread.c   |  79 +++++++
+>  .../shell/coresight/memcpy_thread_16k_10.sh   |  18 ++
+>  .../shell/coresight/thread_loop/.gitignore    |   1 +
+>  .../shell/coresight/thread_loop/Makefile      |  33 +++
+>  .../shell/coresight/thread_loop/thread_loop.c |  86 ++++++++
+>  .../coresight/thread_loop_check_tid_10.sh     |  19 ++
+>  .../coresight/thread_loop_check_tid_2.sh      |  19 ++
+>  .../coresight/unroll_loop_thread/.gitignore   |   1 +
+>  .../coresight/unroll_loop_thread/Makefile     |  33 +++
+>  .../unroll_loop_thread/unroll_loop_thread.c   |  74 +++++++
+>  .../shell/coresight/unroll_loop_thread_10.sh  |  18 ++
+>  tools/perf/tests/shell/lib/coresight.sh       | 132 +++++++++++
+>  29 files changed, 1105 insertions(+), 139 deletions(-)
+>  create mode 100644 Documentation/trace/coresight/coresight-perf.rst
+>  create mode 100644 tools/perf/Documentation/arm-coresight.txt
+>  create mode 100644 tools/perf/tests/builtin-test-list.c
+>  create mode 100644 tools/perf/tests/builtin-test-list.h
+>  create mode 100644 tools/perf/tests/shell/coresight/Makefile
+>  create mode 100644 tools/perf/tests/shell/coresight/Makefile.miniconfig
+>  create mode 100755 tools/perf/tests/shell/coresight/asm_pure_loop.sh
+>  create mode 100644 tools/perf/tests/shell/coresight/asm_pure_loop/.gitignore
+>  create mode 100644 tools/perf/tests/shell/coresight/asm_pure_loop/Makefile
+>  create mode 100644 tools/perf/tests/shell/coresight/asm_pure_loop/asm_pure_loop.S
+>  create mode 100644 tools/perf/tests/shell/coresight/memcpy_thread/.gitignore
+>  create mode 100644 tools/perf/tests/shell/coresight/memcpy_thread/Makefile
+>  create mode 100644 tools/perf/tests/shell/coresight/memcpy_thread/memcpy_thread.c
+>  create mode 100755 tools/perf/tests/shell/coresight/memcpy_thread_16k_10.sh
+>  create mode 100644 tools/perf/tests/shell/coresight/thread_loop/.gitignore
+>  create mode 100644 tools/perf/tests/shell/coresight/thread_loop/Makefile
+>  create mode 100644 tools/perf/tests/shell/coresight/thread_loop/thread_loop.c
+>  create mode 100755 tools/perf/tests/shell/coresight/thread_loop_check_tid_10.sh
+>  create mode 100755 tools/perf/tests/shell/coresight/thread_loop_check_tid_2.sh
+>  create mode 100644 tools/perf/tests/shell/coresight/unroll_loop_thread/.gitignore
+>  create mode 100644 tools/perf/tests/shell/coresight/unroll_loop_thread/Makefile
+>  create mode 100644 tools/perf/tests/shell/coresight/unroll_loop_thread/unroll_loop_thread.c
+>  create mode 100755 tools/perf/tests/shell/coresight/unroll_loop_thread_10.sh
+>  create mode 100644 tools/perf/tests/shell/lib/coresight.sh
+>
+> --
+> 2.32.0
+>
+
+
+--
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
