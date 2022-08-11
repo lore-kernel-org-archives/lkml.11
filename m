@@ -2,178 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086F4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 18:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC6FC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 18:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235820AbiHKSjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 14:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
+        id S235903AbiHKSku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 14:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235721AbiHKSjb (ORCPT
+        with ESMTP id S235890AbiHKSkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 14:39:31 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9602594EF7
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 11:39:28 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id z20so20176801ljq.3
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 11:39:28 -0700 (PDT)
+        Thu, 11 Aug 2022 14:40:46 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93992AE09
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 11:40:44 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id jx17-20020a17090b46d100b001f33b230098so8954452pjb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 11:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=uknUURtTflTbQ0gGtXa6dIUydyF1mi0HrKwpU5X0dRk=;
-        b=YXoXLAzBSz8OdrWcHCDDkhCNBRWKN5NiX8gPHmU+9yseVsP5YoszwIF1rg0pbrQ5xf
-         peyfnkEKdmld8A3zk6kBFlMgaOKYe0DyBgVIMjvj2HgW3jREWU5T3u6ri8aGmF2yyWPp
-         tOWubduW5HGIsenv44TykOYICvcA3O99J1vNlBlh0tzsDyZYBUAdR6y8VWZJ8IyWy3a2
-         Y6XqDr85iUvT1UPpsh9/M2hYA7bJO5ueruWL2v7dWANn84+1W8kxg//M03Y/Df7EkXnB
-         smtD4NdOgDF3QwzhzoLZhfbFhL16YL011jcxfSZecBJ08PvXnqhg8Whu5WpopdkZSNjF
-         yCsw==
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=mtBgBOU+VmnH7pWxeMXp2NFGHFR9AtO9bHxsGX8CxYk=;
+        b=aRrfZ3uIY2oExMKgXew+0/7DIVuyZEv0YCRdFmB0rrJs5NDlschOTM6h1hgPROBEGq
+         pIRHTvmopk31k8omZuKbWsoWYCtPlJIuqACoiRNuC69/HSXuly/9QaHTOHVZP5A7mEqf
+         6n9l6MAY/tD3etm8n+FjxQ4jZo1OG3gq+Loty0+SBt+K6MymY2gBfaK7vpJUVtnGMxzk
+         RfW0nOxmNbuFLGLjjGizR3+bb4i/EWOEnqK/TsDnW1NsRMeJw9QupQ6DYzyAUEGxR+O7
+         tqkMMh5yd2cEsYEHzRqoz0IfyUUxqqkJ27/lS7W/6ufiaSwetUzI6byqkCQubKcanwcv
+         FWbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=uknUURtTflTbQ0gGtXa6dIUydyF1mi0HrKwpU5X0dRk=;
-        b=CAN8B3vuSgKdkCB1tMyAq2XW3gxmLOA6VL9Hxr8cFRttdv8XAkfx7/fcVwlUv0MAHp
-         le9uz6h5KGUOTYjVJFrXW21nh+ePUTP+DPNSfXImnzqWNc8pVPLQwXjVcn+tdzf3JYfx
-         6Fmry3fC514XVXzHpTxMruzmhXvEVHnZOVLULqgUXfbdxDdIgv/YFHsYLH/LuN4Xgj/X
-         vgMcxchEOpoj4Rh5a8eEsVx2bAwr4o4VurcUXg916eSuxSNct5K7oNM6FtcyhzFr/W+e
-         HrmG9BHQEfsKdM6CqHbkhdVm4zINtLmkMgdNr5lfk8VjmgpFDe8MiJU7oi3W2qS/0RIu
-         i81Q==
-X-Gm-Message-State: ACgBeo0kt9mgX13dFg6Z4Qxy2BSILxTEfVcY3Av5Z8unFBX8Ech1jdGk
-        GNKQwssqGqlwNyOK/0/eCP7/gqiwjJrLpGnsJ2E7uw==
-X-Google-Smtp-Source: AA6agR7XTTaYi8RLnWWf+Naws8X6HS7OihvdTEknJwY4+WIdMldKbmojcTo1NXA7a4F4Z7AsGY1sMmTBAZ9HtrhSm/4=
-X-Received: by 2002:a2e:b5aa:0:b0:261:70f3:fd58 with SMTP id
- f10-20020a2eb5aa000000b0026170f3fd58mr138561ljn.295.1660243166694; Thu, 11
- Aug 2022 11:39:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <YvSxeDkmwxcJL+Z0@debian> <YvUZ+9kJ/AvUMxzO@dev-arch.thelio-3990X> <CAHk-=wivP4zipYnwNWCLF5cd24GLs3m8=Sp7M-CmmPva_UC+3Q@mail.gmail.com>
-In-Reply-To: <CAHk-=wivP4zipYnwNWCLF5cd24GLs3m8=Sp7M-CmmPva_UC+3Q@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 11 Aug 2022 11:39:15 -0700
-Message-ID: <CAKwvOdnQjgtwqFXLv+QtWPfpHosM5fxE5oqbX0VUD53F8L6bRg@mail.gmail.com>
-Subject: Re: mainline build failure for arm64 allmodconfig with clang
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Justin Stitt <justinstitt@google.com>
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=mtBgBOU+VmnH7pWxeMXp2NFGHFR9AtO9bHxsGX8CxYk=;
+        b=KR1UVoivHjOJQCSiyUT8ifsWloL/JMFEssEuCql/17MSvfy6EyDoxxHc0L+Jeusee4
+         W08Z5dkX1msV52AGq/PRUgW+LTK/y+wCITK8+mG/+OJPVzzTTDmx7hRksxl74CHYQ7bq
+         Aj+td3PHikrybeEWbR3r8GqjNEuByecGLjDp1uh4eXgUzvXEaG7u+sXf82EQwzpj6mb7
+         EhRkN36ul/vYHDAeUN0/3Al5Fsx4VJUP6tuZRQ13sMJSUcIlqKTEE53fcmsTLxCzvdXy
+         ZBhJLMfO2alG4lZNWuW4MNZtJm/Hiv69H7JvRxevM1Zw5tkrZdVUBmaTYoB8hlsZ4efs
+         n1wQ==
+X-Gm-Message-State: ACgBeo0/b6huVF42hBbQw5llr3RqqDEdvoJ0T+u/05UeYb93KiX9tuXo
+        DdXsx1pP3GQM6WswP167jBgYMZHP3wSYjOzKtwE=
+X-Google-Smtp-Source: AA6agR761TkfSRWps8RSK2h035rykG9I4qj4f0+lF0QXQpT2kRQxZC4YFJt+a9+PCKXcOUZKSwK2UdCAV4otpCx8Hjs=
+X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
+ (user=willmcvicker job=sendgmr) by 2002:a17:903:2286:b0:16e:ef47:4013 with
+ SMTP id b6-20020a170903228600b0016eef474013mr531363plh.120.1660243244311;
+ Thu, 11 Aug 2022 11:40:44 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 18:40:01 +0000
+Message-Id: <20220811184001.2512121-1-willmcvicker@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [PATCH v1] PCI/PM: Switch D3Hot delay to use usleep_range
+From:   Will McVicker <willmcvicker@google.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     kernel-team@android.com, Sajid Dalvi <sdalvi@google.com>,
+        Will McVicker <willmcvicker@google.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 8:39 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Thu, Aug 11, 2022 at 8:05 AM Nathan Chancellor <nathan@kernel.org> wro=
-te:
-> >
-> > Right, these are exposed by commit 258fafcd0683 ("Makefile.extrawarn:
-> > re-enable -Wformat for clang").
->
-> Christ. Why is clang's format warning SO COMPLETELY BROKEN?
->
-> The warning is *WRONG*, for chrissake. Printing an 'int' with '%hhu'
-> is perfectly fine, and has well-defined semantics, and is what you
-> *want* to do in some cases.
+From: Sajid Dalvi <sdalvi@google.com>
 
-Generally, printing an int with %hhu may truncate depending on the
-value of the int.
+Since the PCI spec requires a 10ms D3Hot delay (defined by
+PCI_PM_D3HOT_WAIT) and a few of the PCI quirks update the D3Hot delay up
+to 20ms, let's switch from msleep to usleep_range to improve the delay
+accuracy.
 
-Perhaps there's something different we can be doing for literals though.
+This patch came from Sajid Dalvi <sdalvi@google.com> in the Pixel 6
+kernel tree [1]. Testing on a Pixel 6, found that the 10ms delay for
+the Exynos PCIe device was on average delaying for 19ms when the spec
+requires 10ms. Switching from msleep to uslseep_delay therefore
+decreases the resume time on a Pixel 6 on average by 9ms.
 
-> I'm going to turn it off again, because honestly, this is a clang bug.
-> I don't care one whit if there are pending "fixes" for this clang bug,
-> until those fixes are in *clang*, not in the correct kernel code.
->
-> For chrissake, the value it is trying to print out as a char is '3'.
+[1] https://android.googlesource.com/kernel/gs/+/18a8cad68d8e6d50f339a716a18295e6d987cee3
 
-If your referring to SOF_ABI_MAJOR from
+Signed-off-by: Sajid Dalvi <sdalvi@google.com>
+Signed-off-by: Will McVicker <willmcvicker@google.com>
+---
+ drivers/pci/pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-commit b7bf23c0865f ("ASoC: SOF: ipc3-topology: Fix clang -Wformat warning"=
-)
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 95bc329e74c0..5ae5b3c4dc9b 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -72,7 +72,8 @@ static void pci_dev_d3_sleep(struct pci_dev *dev)
+ 		delay = pci_pm_d3hot_delay;
+ 
+ 	if (delay)
+-		msleep(delay);
++		usleep_range(delay * USEC_PER_MSEC,
++			     (delay + 2) * USEC_PER_MSEC);
+ }
+ 
+ bool pci_reset_supported(struct pci_dev *dev)
 
-in -next, 3 is an int literal.  No truncation occurs, sure, but just
-use the correct format flag!
+base-commit: 2ae08b36c06ea8df73a79f6b80ff7964e006e9e3
+-- 
+2.37.1.559.g78731f0fdb-goog
 
-Otherwise please also considering reverting
-commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
-unnecessary %h[xudi] and %hh[xudi]")
-since for the past 3 years, we've been recommending that kernel
-developers not use %h or %hh.  You allude to this in your "Admittedly,
-" note in
-commit 21f9c8a13bb2 ("Revert "Makefile.extrawarn: re-enable -Wformat
-for clang"")
-. Otherwise, please reinstate this patch.
-
-I don't care which you pick, but let's be consistent?
-
-Because having explicit documented practices then reverting things
-when those are followed is quite obnoxious.
-
-> But even if it wasn't, and even if you wanted to print out "0xf365" as
-> a "char" value, then that is how C varargs *work*. It's an "int".
-
-This is a different case than using a literal value in which no
-truncation would occur.  (Your points about 3 and 'a' (no truncation)
-are distinct from 0xf365 (truncation)).
-
-It would be anomolous to the compiler whether the truncation in such a
-case was intentional vs accidental.
-
-printf("%hhx\n", 0xf365); // -Wformat: warning: format specifies type
-'unsigned char' but the argument has type 'int'
-
-should be
-
-printf("%hhx\n", (unsigned char)0xf365); // intentional truncation, no warn=
-ing
-
-A cast in that case helps inform the compiler that "I know what I'm
-doing," and a comment helps code reviewers & maintainers.
-
-> In fact, even a *character* is an "int". This program:
->
->         #include <stdio.h>
->
->         int main(int argc, char **argv)
->         {
->                 printf("%hhu\n", 'a');
->         }
->
-> generates a warning with "clang -Wformat", and dammit, if you are a
-> clang developer and you see no problem with that warning, then I don't
-> know what to say.
-
-Yeah, that is noisy.  I think if we had an argument that is a literal,
-we should be able to tell then and there whether that value would
-result in truncation (and avoiding diagnosing if no truncation occurs,
-or split that into -Wformat-me-harder so that we could set
--Wno-format-me-harder).
-
-printf("%hhu\n", 256); // should this produce a warning? Which
-compilers do so? ;)
-
-Though, isn't %c the correct format flag for characters?
-
->
-> Nathan, please make clang people see some sense.
->
-> Because no, I'm not in the least interested in getting kernel "fixes"
-> for this issue. -Wformat for clang goes away until people have gotten
-> their heads extracted from their derri=C3=A8res.
->
-> This is ridiculous.
->
->               Linus
-
-
-
---
-Thanks,
-~Nick Desaulniers
