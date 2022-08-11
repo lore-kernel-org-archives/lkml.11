@@ -2,182 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74ECCC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBE8C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbiHKKey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 06:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
+        id S234022AbiHKKfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234515AbiHKKeq (ORCPT
+        with ESMTP id S233931AbiHKKfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 06:34:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B20808A6CF
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:34:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660214084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vnJ3hIrhlUvmgozrk415dIs5anEG1zRHWbqm5YKgJfQ=;
-        b=ITBKYC+h/3ALMqsYVBLK1AJXt1fno7Lqzbhak6OXZW/QHazJy3A88UupAg/7YE8p8VLCcG
-        XwuWxr5i4y59xYRlDx7qbZw+AkTFbO2iFpOB+1+v/IdPgC7YeV3iokSjaBVx9byAXcJZrO
-        aP1RhOLSfn3/5z45qdVNEs4vmgsHwNU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-349-uxdEYGyGNVyQkUNT35dlPA-1; Thu, 11 Aug 2022 06:34:39 -0400
-X-MC-Unique: uxdEYGyGNVyQkUNT35dlPA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5E80D811E84;
-        Thu, 11 Aug 2022 10:34:39 +0000 (UTC)
-Received: from t480s.fritz.box (unknown [10.39.193.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2435C492C3B;
-        Thu, 11 Aug 2022 10:34:37 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v2 1/2] mm/hugetlb: fix hugetlb not supporting softdirty tracking
-Date:   Thu, 11 Aug 2022 12:34:34 +0200
-Message-Id: <20220811103435.188481-2-david@redhat.com>
-In-Reply-To: <20220811103435.188481-1-david@redhat.com>
-References: <20220811103435.188481-1-david@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+        Thu, 11 Aug 2022 06:35:30 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F9B26AD7;
+        Thu, 11 Aug 2022 03:35:29 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27B7um7t008941;
+        Thu, 11 Aug 2022 10:35:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references; s=qcppdkim1;
+ bh=sJmwoWJdyH94Hft/N6niNsaDqqw+f822cVnLfxeyonM=;
+ b=o1sTFgjgpiXdiSZt5Ayq2+daSp3gCzaAgz9bdXhBtkACW7ZC3cgX1fPGvVP+8Icg+csy
+ xHG8ErpHYdC1jkiz6HgGTjokoRFcK4UyLM29aRrYNiLKipi1MneuMGs7t+tuBlJO2rZk
+ o2hKENQEaXvaJhKyhws2VuxDNop7P/ij6Qt9LHZWr+CyzMKbgZsavN0GGJyGzBDmhHk6
+ boB2yZ4vx5h5mggv5rLZtMcT9SxQAWDwNmY2WdmaCcWR1JAFZrOSUTIxomlNbmnv4DpQ
+ 9dK3ZeTSLfTC9AFUJfFZedWjY9iQd6ZVWpqVfgc5I19y/XGPKjnWrkuTHgG9xhxfmfpQ Nw== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hvh25tfwv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Aug 2022 10:35:15 +0000
+Received: from pps.filterd (NASANPPMTA01.qualcomm.com [127.0.0.1])
+        by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27BAXb7t021435;
+        Thu, 11 Aug 2022 10:35:14 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NASANPPMTA01.qualcomm.com (PPS) with ESMTPS id 3hshckskhf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 11 Aug 2022 10:35:14 +0000
+Received: from NASANPPMTA01.qualcomm.com (NASANPPMTA01.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27BAW9Yv019796;
+        Thu, 11 Aug 2022 10:35:13 GMT
+Received: from stor-presley.qualcomm.com (stor-presley.qualcomm.com [192.168.140.85])
+        by NASANPPMTA01.qualcomm.com (PPS) with ESMTP id 27BAZDLu023821;
+        Thu, 11 Aug 2022 10:35:13 +0000
+Received: by stor-presley.qualcomm.com (Postfix, from userid 359480)
+        id 7320F22752; Thu, 11 Aug 2022 03:35:13 -0700 (PDT)
+From:   Can Guo <quic_cang@quicinc.com>
+To:     quic_asutoshd@quicinc.com, quic_nguyenb@quicinc.com,
+        quic_xiaosenh@quicinc.com, stanley.chu@mediatek.com,
+        adrian.hunter@intel.com, bvanassche@acm.org, beanhuo@micron.com,
+        avri.altman@wdc.com, mani@kernel.org, linux-scsi@vger.kernel.org,
+        kernel-team@android.com, quic_cang@quicinc.com
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-arm-msm@vger.kernel.org (open list:ARM/QUALCOMM SUPPORT),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC PATCH v2 2/2] scsi: ufs-qcom: Add MCQ support
+Date:   Thu, 11 Aug 2022 03:33:04 -0700
+Message-Id: <1660213984-37793-3-git-send-email-quic_cang@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1660213984-37793-1-git-send-email-quic_cang@quicinc.com>
+References: <1660213984-37793-1-git-send-email-quic_cang@quicinc.com>
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: nuV-Gpnb1tNzBa42ykar5-x7th82x1iL
+X-Proofpoint-ORIG-GUID: nuV-Gpnb1tNzBa42ykar5-x7th82x1iL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-11_05,2022-08-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 malwarescore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 impostorscore=0 clxscore=1011
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208110030
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Staring at hugetlb_wp(), one might wonder where all the logic for shared
-mappings is when stumbling over a write-protected page in a shared
-mapping. In fact, there is none, and so far we thought we could get
-away with that because e.g., mprotect() should always do the right thing
-and map all pages directly writable.
+Use ESI and define Runtime and Operation definitions for MCQ.
 
-Looks like we were wrong:
-
---------------------------------------------------------------------------
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <fcntl.h>
- #include <unistd.h>
- #include <errno.h>
- #include <sys/mman.h>
-
- #define HUGETLB_SIZE (2 * 1024 * 1024u)
-
- static void clear_softdirty(void)
- {
-         int fd = open("/proc/self/clear_refs", O_WRONLY);
-         const char *ctrl = "4";
-         int ret;
-
-         if (fd < 0) {
-                 fprintf(stderr, "open(clear_refs) failed\n");
-                 exit(1);
-         }
-         ret = write(fd, ctrl, strlen(ctrl));
-         if (ret != strlen(ctrl)) {
-                 fprintf(stderr, "write(clear_refs) failed\n");
-                 exit(1);
-         }
-         close(fd);
- }
-
- int main(int argc, char **argv)
- {
-         char *map;
-         int fd;
-
-         fd = open("/dev/hugepages/tmp", O_RDWR | O_CREAT);
-         if (!fd) {
-                 fprintf(stderr, "open() failed\n");
-                 return -errno;
-         }
-         if (ftruncate(fd, HUGETLB_SIZE)) {
-                 fprintf(stderr, "ftruncate() failed\n");
-                 return -errno;
-         }
-
-         map = mmap(NULL, HUGETLB_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
-         if (map == MAP_FAILED) {
-                 fprintf(stderr, "mmap() failed\n");
-                 return -errno;
-         }
-
-         *map = 0;
-
-         if (mprotect(map, HUGETLB_SIZE, PROT_READ)) {
-                 fprintf(stderr, "mmprotect() failed\n");
-                 return -errno;
-         }
-
-         clear_softdirty();
-
-         if (mprotect(map, HUGETLB_SIZE, PROT_READ|PROT_WRITE)) {
-                 fprintf(stderr, "mmprotect() failed\n");
-                 return -errno;
-         }
-
-         *map = 0;
-
-         return 0;
- }
---------------------------------------------------------------------------
-
-Above test fails with SIGBUS when there is only a single free hugetlb page.
- # echo 1 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- # ./test
- Bus error (core dumped)
-
-And worse, with sufficient free hugetlb pages it will map an anonymous page
-into a shared mapping, for example, messing up accounting during unmap
-and breaking MAP_SHARED semantics:
- # echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- # ./test
- # cat /proc/meminfo | grep HugePages_
- HugePages_Total:       2
- HugePages_Free:        1
- HugePages_Rsvd:    18446744073709551615
- HugePages_Surp:        0
-
-Reason in this particular case is that vma_wants_writenotify() will
-return "true", removing VM_SHARED in vma_set_page_prot() to map pages
-write-protected. Let's teach vma_wants_writenotify() that hugetlb does not
-support softdirty tracking.
-
-Fixes: 64e455079e1b ("mm: softdirty: enable write notifications on VMAs after VM_SOFTDIRTY cleared")
-Cc: <stable@vger.kernel.org> # v3.18+
-Signed-off-by: David Hildenbrand <david@redhat.com>
+Co-developed-by: Asutosh Das <quic_asutoshd@quicinc.com>
+Signed-off-by: Can Guo <quic_cang@quicinc.com>
+Signed-off-by: Asutosh Das <quic_asutoshd@quicinc.com>
 ---
- mm/mmap.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/ufs/host/ufs-qcom.c | 125 ++++++++++++++++++++++++++++++++++++++++++++
+ drivers/ufs/host/ufs-qcom.h |   4 ++
+ 2 files changed, 129 insertions(+)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index c035020d0c89..9d780f415be3 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1646,8 +1646,11 @@ int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot)
- 	    pgprot_val(vm_pgprot_modify(vm_page_prot, vm_flags)))
- 		return 0;
+diff --git a/drivers/ufs/host/ufs-qcom.c b/drivers/ufs/host/ufs-qcom.c
+index 473fad8..1e25d8d 100644
+--- a/drivers/ufs/host/ufs-qcom.c
++++ b/drivers/ufs/host/ufs-qcom.c
+@@ -25,6 +25,8 @@
+ #define UFS_QCOM_DEFAULT_DBG_PRINT_EN	\
+ 	(UFS_QCOM_DBG_PRINT_REGS_EN | UFS_QCOM_DBG_PRINT_TEST_BUS_EN)
  
--	/* Do we need to track softdirty? */
--	if (vma_soft_dirty_enabled(vma))
++#define	MAX_SUPP_MAC	63
++
+ enum {
+ 	TSTBUS_UAWM,
+ 	TSTBUS_UARM,
+@@ -1424,6 +1426,125 @@ static void ufs_qcom_config_scaling_param(struct ufs_hba *hba,
+ }
+ #endif
+ 
++static int ufs_qcom_get_outstanding_cqs(struct ufs_hba *hba,
++					unsigned long *ocqs)
++{
++	return -EINVAL;
++}
++
++static int ufs_qcom_config_mcq_rop(struct ufs_hba *hba)
++{
++	struct ufshcd_mcq_rop_info_t *rop;
++	struct ufshcd_res_info_t *mem_res, *sqdao_res;
++	int i;
++
++	mem_res = &hba->res[RES_MEM];
++	sqdao_res = &hba->res[RES_MCQ_SQD];
++
++	if (!mem_res->base || !sqdao_res->base)
++		return -EINVAL;
++
++	for (i = 0; i < ROP_MAX; i++) {
++		rop = &hba->mcq_rop[i];
++		rop->offset = sqdao_res->resource->start -
++			      mem_res->resource->start + 0x40 * i;
++		rop->stride = 0x100;
++		rop->base = sqdao_res->base + 0x40 * i;
++	}
++
++	return 0;
++}
++
++#ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
++static void ufs_qcom_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
++{
++	struct device *dev = msi_desc_to_dev(desc);
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	ufshcd_mcq_config_esi(hba, msg);
++}
++
++static irqreturn_t ufs_qcom_mcq_esi_handler(int irq, void *__hba)
++{
++	struct ufs_hba *hba = __hba;
++	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
++	u32 event_id = irq - host->esi_base;
++	struct ufs_hw_queue *hwq = &hba->uhq[event_id];
++
++	ufshcd_mcq_poll_cqe_nolock(hba, hwq);
++
++	return IRQ_HANDLED;
++}
++
++static int ufs_qcom_config_mcq_esi(struct ufs_hba *hba)
++{
++	struct ufs_qcom_host *host = ufshcd_get_variant(hba);
++	struct msi_desc *desc;
++	struct msi_desc *failed_desc = NULL;
++	u32 reg;
++	int nr_irqs, ret;
++
 +	/*
-+	 * Do we need to track softdirty? hugetlb does not support softdirty
-+	 * tracking yet.
++	 * 1. We only handle CQs as of now.
++	 * 2. Poll queues do not need ESI.
 +	 */
-+	if (vma_soft_dirty_enabled(vma) && !is_vm_hugetlb_page(vma))
- 		return 1;
++	nr_irqs = hba->nr_hw_queues - hba->nr_queues[HCTX_TYPE_POLL];
++	ret = platform_msi_domain_alloc_irqs(hba->dev, nr_irqs,
++					     ufs_qcom_write_msi_msg);
++	if (ret)
++		goto out;
++
++	msi_for_each_desc(desc, hba->dev, MSI_DESC_ALL) {
++		if (!desc->msi_index)
++			host->esi_base = desc->irq;
++
++		ret = devm_request_irq(hba->dev, desc->irq,
++				       ufs_qcom_mcq_esi_handler,
++				       0, "qcom-mcq-esi", hba);
++		if (ret) {
++			dev_err(hba->dev, "%s: Fail to request IRQ for %d, err = %d\n",
++				__func__, desc->irq, ret);
++			failed_desc = desc;
++			break;
++		}
++	}
++
++	if (ret) {
++		/* Rewind */
++		msi_for_each_desc(desc, hba->dev, MSI_DESC_ALL) {
++			if (desc == failed_desc)
++				break;
++			devm_free_irq(hba->dev, desc->irq, hba);
++		}
++	} else {
++		if (host->hw_ver.major == 6 && host->hw_ver.minor == 0 &&
++		    host->hw_ver.step == 0) {
++			reg = ufshcd_readl(hba, REG_UFS_CFG3);
++			reg |= 0x1F000;
++			ufshcd_writel(hba, reg, REG_UFS_CFG3);
++			reg = ufshcd_readl(hba, REG_UFS_CFG3);
++		}
++		ufshcd_mcq_enable_esi(hba);
++	}
++
++out:
++	if (ret)
++		dev_warn(hba->dev, "Failed to request Platform MSI %d\n", ret);
++	return ret;
++}
++
++#else
++static int ufs_qcom_config_mcq_esi(struct ufs_hba *hba)
++{
++	return -EOPNOTSUPP;
++}
++#endif
++
++static int ufs_qcom_get_hba_mac(struct ufs_hba *hba)
++{
++	return MAX_SUPP_MAC;
++}
++
+ /*
+  * struct ufs_hba_qcom_vops - UFS QCOM specific variant operations
+  *
+@@ -1447,6 +1568,10 @@ static const struct ufs_hba_variant_ops ufs_hba_qcom_vops = {
+ 	.device_reset		= ufs_qcom_device_reset,
+ 	.config_scaling_param = ufs_qcom_config_scaling_param,
+ 	.program_key		= ufs_qcom_ice_program_key,
++	.get_outstanding_cqs	= ufs_qcom_get_outstanding_cqs,
++	.config_mcq_rop		= ufs_qcom_config_mcq_rop,
++	.config_mcq_esi		= ufs_qcom_config_mcq_esi,
++	.get_hba_mac		= ufs_qcom_get_hba_mac,
+ };
  
- 	/* Specialty mapping? */
+ /**
+diff --git a/drivers/ufs/host/ufs-qcom.h b/drivers/ufs/host/ufs-qcom.h
+index 44466a3..17c052e 100644
+--- a/drivers/ufs/host/ufs-qcom.h
++++ b/drivers/ufs/host/ufs-qcom.h
+@@ -53,6 +53,8 @@ enum {
+ 	 * added in HW Version 3.0.0
+ 	 */
+ 	UFS_AH8_CFG				= 0xFC,
++
++	REG_UFS_CFG3				= 0x271C,
+ };
+ 
+ /* QCOM UFS host controller vendor specific debug registers */
+@@ -221,6 +223,8 @@ struct ufs_qcom_host {
+ 	struct reset_controller_dev rcdev;
+ 
+ 	struct gpio_desc *device_reset;
++
++	int esi_base;
+ };
+ 
+ static inline u32
 -- 
-2.35.3
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, a Linux Foundation Collaborative Project.
 
