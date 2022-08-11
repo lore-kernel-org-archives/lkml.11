@@ -2,91 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B775DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B195C25B0D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238784AbiHKQdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
+        id S238806AbiHKQd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238927AbiHKQbh (ORCPT
+        with ESMTP id S238944AbiHKQbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:31:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2085F6611E;
-        Thu, 11 Aug 2022 09:10:10 -0700 (PDT)
+        Thu, 11 Aug 2022 12:31:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DC329C;
+        Thu, 11 Aug 2022 09:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C7EDB821A0;
-        Thu, 11 Aug 2022 16:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DC42C433C1;
-        Thu, 11 Aug 2022 16:10:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB6236141C;
+        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C481C433D7;
+        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234207;
-        bh=V0lH4Q1ukIGTbgk/dHF2fHp7g/bWrJQXitNDcr0sry8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZcbNVQj/3xYRAiWGDwnag1WghUjRhV+1iqDLTiv2N8YobAmq6JRqMkEwKJ59zofAO
-         4a8o50GopjujIR6rv1jVLNbx1RJf9TEgSNQYqOkXoLypJbP5uO9kduR+BKl+DTnFJh
-         4ecrs9SrLSPne7jlZ/qL4xwoIeIQKpls+inQQuC+oR4fo+uaGn0zwzsfDX8orzThkX
-         x1hcwogUKz2lxAndHfK6MUlamU1rpP2bjNrZoNELmWkeAY1SSp3iDpuHVIbwNOpqwA
-         zQLCOh6Q+KPDxAIIfUupyvXYl2ohzeP+AiDKMT9CDumyUHFpVH9cb+gv8lwPvR2yUc
-         vbIXSa3E4EvEQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, isely@pobox.com,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/14] media: pvrusb2: fix memory leak in pvr_probe
-Date:   Thu, 11 Aug 2022 12:09:34 -0400
-Message-Id: <20220811160948.1542842-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811160948.1542842-1-sashal@kernel.org>
-References: <20220811160948.1542842-1-sashal@kernel.org>
+        s=k20201202; t=1660234215;
+        bh=HXAbDfVeXmIO5DEFlIxEcJYO7aeSrFuwHUb0hgRFnoA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uv3O1Kt1q6z/eN1cEL2/BHFpyxBdegNZvreMLJr/KyXa+ZRT/eHBGb4xi3jdEOOtR
+         Wm0+pHPzrqQm81UjWFJFyqGeF9kvdIUeGm3HJ7t8rsM/L2TGpgR9HpA+GiBmhiJwd/
+         PAwCPS6TxrCXAVfkYXyxSpyHeu7C2DP5w+fESSp0RW0yYHyN60BO8SViml1wLOgQKd
+         G43la+Af9BoRscgBqnv8VVhQskvczXqpeGhWliEXyD2y5wTHdYKhn0monw3dYLM4NQ
+         NKdux0pc2CDi+e/kSK4mkGWTt8onL3a3GM2gz3ryynukA7TclWg9JK4ixYKXunS0Ks
+         8t9s3BYFoSF9Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C2F0C43143;
+        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] bonding: fix reference count leak in balance-alb mode
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166023421511.9507.3349317019551791684.git-patchwork-notify@kernel.org>
+Date:   Thu, 11 Aug 2022 16:10:15 +0000
+References: <26758.1660194413@famine>
+In-Reply-To: <26758.1660194413@famine>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org, sunshouxin@chinatelecom.cn,
+        vfalico@gmail.com, andy@greyhouse.net, razor@blackwall.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+Hello:
 
-[ Upstream commit 945a9a8e448b65bec055d37eba58f711b39f66f0 ]
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-The error handling code in pvr2_hdw_create forgets to unregister the
-v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
-it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
-which leads to that pvr2_hdw_destroy directly returns.
+On Wed, 10 Aug 2022 22:06:53 -0700 you wrote:
+> Commit d5410ac7b0ba ("net:bonding:support balance-alb interface
+> with vlan to bridge") introduced a reference count leak by not releasing
+> the reference acquired by ip_dev_find().  Remedy this by insuring the
+> reference is released.
+> 
+> Fixes: d5410ac7b0ba ("net:bonding:support balance-alb interface with vlan to bridge")
+> Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> 
+> [...]
 
-Fix this by adding v4l2_device_unregister to decrease the refcount of
-usb interface.
+Here is the summary with links:
+  - [net] bonding: fix reference count leak in balance-alb mode
+    https://git.kernel.org/netdev/net/c/4f5d33f4f798
 
-Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-index bbb5ff16abd6..4cbb39bfb7da 100644
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -2602,6 +2602,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
- 		del_timer_sync(&hdw->encoder_run_timer);
- 		del_timer_sync(&hdw->encoder_wait_timer);
- 		flush_work(&hdw->workpoll);
-+		v4l2_device_unregister(&hdw->v4l2_dev);
- 		usb_free_urb(hdw->ctl_read_urb);
- 		usb_free_urb(hdw->ctl_write_urb);
- 		kfree(hdw->ctl_read_buffer);
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
