@@ -2,245 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A15C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 09:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4FDC25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 09:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234253AbiHKJnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 05:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
+        id S234406AbiHKJqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 05:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234138AbiHKJnW (ORCPT
+        with ESMTP id S233918AbiHKJqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 05:43:22 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457A181697
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:43:21 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso4595039pjl.4
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:43:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=F5DxS0pA74UlPDuN8Qz9kJijHmaiEeefe4AsfGooW68=;
-        b=y6GyMKBIUT8zJ/MMaMSjghBm021AhVAoU4oIwUR8zeRVR16Y+67FdgS9F5AxSl5KjJ
-         LagRoE3XVxyah4z6sM3kBeerZCK8xCv/2czkDRdyMMjW5dEsb0f4vbpBfWha7G/g/MSg
-         763r2rplXBcg6ptEQZ3gVwSnUFBsZ7222foOBaWiOzJHWn5I7YY4qD+a3tnm7Fkfsm7j
-         9uhxptoPWzPGYvHD5BLcSOxq7C8W2otI/RA6BNTgQIl1XiAbb2QKzrqAlpPPHHPuzCVW
-         sNxVbtfO79HOUGTKbB2WJQsj2jGqNF+rnHJG+23kLvFNjwPtiLOHid0udtIX5XuQOaZn
-         HfZQ==
+        Thu, 11 Aug 2022 05:46:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8607C79A4D
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660211193;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wpGpSji8gBrXT5CEn6I+LR4cIjiEl5zj4ICp8/ctfA0=;
+        b=HttTp4amC18yr1DAs7OrKM1hd7X0+Kw4RtfytX7Yy8gnh4Jg/Dy7GBwFiEYvccVbfpqi0J
+        2zXHxTkMx+RtSwFQ7pFsh94HSEaJjMoXRNPX1WGu8xbWH/YN/Rflt93l/+WEtfgwZoQbzi
+        h2oyE2mYn+S//STkcEc/D0WId02Uow4=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-183-mkI8FCJ_OWiW4uDCYJF2eQ-1; Thu, 11 Aug 2022 05:46:32 -0400
+X-MC-Unique: mkI8FCJ_OWiW4uDCYJF2eQ-1
+Received: by mail-ej1-f72.google.com with SMTP id g18-20020a1709065d1200b0073082300e1fso5287317ejt.12
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:46:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=F5DxS0pA74UlPDuN8Qz9kJijHmaiEeefe4AsfGooW68=;
-        b=lrZx6RDRAGWtW2+Ne0sRqBC3UYAThJOCZXWHWrV+q5HoaX+Ey4rmtmQanLsPvQHPHX
-         2arbkc0PPQ8Rbbol511os2nm/JzJcC3d0FK3uxm1UarVRyVLm0ELQHA1lM9AD4Xta0Jp
-         NdkvMjx0RiMqmlJrHJTfrW4u7I3DQ5f14MA0qFFo8BD8k0k/PrXMni2/blzBFb5fg/o2
-         /fMeiRaZS+AMavYYsPpf9BcW3xxioaNZlKAEL463Cs4mQZ73UDj3zN97Pxrt5z4Rkchm
-         Q2/pLYWm5iaQBGhHRIglu55IEVPttOxxo9d4C2vGW9KBcgD087JUcczVZzbW9jygaLQN
-         IRPg==
-X-Gm-Message-State: ACgBeo3Oi1v8C2slYkwjisUju9Vc0DVjp4MLfWohlXrjW5zfdw1gOvS+
-        R23+g6ytWtBWegXmlIOPEokJ
-X-Google-Smtp-Source: AA6agR5SACUm3dq6gpunYuni2ojL/+7AkWvoClch8BRRaro5aySTuRg6TuaMHSymrRsYFQp3cHt/Kw==
-X-Received: by 2002:a17:90a:db0d:b0:1f3:a48e:46b3 with SMTP id g13-20020a17090adb0d00b001f3a48e46b3mr8184317pjv.72.1660211000763;
-        Thu, 11 Aug 2022 02:43:20 -0700 (PDT)
-Received: from localhost.localdomain ([59.92.103.103])
-        by smtp.gmail.com with ESMTPSA id s5-20020a625e05000000b0052e6d5ee183sm3553931pfb.129.2022.08.11.02.43.17
+        h=content-transfer-encoding:content-disposition:mime-version
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=wpGpSji8gBrXT5CEn6I+LR4cIjiEl5zj4ICp8/ctfA0=;
+        b=o/fr1apEw+HHven50HP8DLpk3grAXu7fORDee37z/qAroJH2K61foherdYkd2B9rvz
+         ZwLI4xZ8oPHm+Awh3i0/xqVYvOsujU5cxajFbhIAXJ7CN6uSksHoEOGJMcaVk0QbkCb4
+         veXmK6fWfr/yIXRbTPpDhG3xi2YXAz7kVlT06tzGAoFsjAXcbxRG3sc8KfjxvvwoctqS
+         54jsENWkvsNtd3fnb7e5ZfR7O7xKVgANoD/loiWxhsybOfb7NXidUBDNBhYsaheiLH+j
+         evU6cxVulZhzwBCXqyr5P5BemomD67rUjIslVRLLsgjdHlRZvNoJJ3n8ALr2/3EPMic0
+         Lwmw==
+X-Gm-Message-State: ACgBeo33IhZp+SUYcqCtNGa0Own2tZDxP5u6YJJ53zK2QOtRu+gsaVoV
+        yq+CaiqsiODGyUo7ExqQZDusWDynZEwHxNSCs94zpfE00sAp2KAFhUDyafKLvue+v4XiXjZPMip
+        p2zuYaYRhT2TZRCkuzMM+jLbioGGK1tkZyoFyuhFLsj8mjd6geMWynJNiXQnX7Zdo+0Owhw==
+X-Received: by 2002:a17:907:2c44:b0:731:85d9:786e with SMTP id hf4-20020a1709072c4400b0073185d9786emr10100028ejc.102.1660211191118;
+        Thu, 11 Aug 2022 02:46:31 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7Fl6YqVMzFLUemyPIKrf7zMCiGLb3O/b0wMQ73HM1yz3tBhozOm4xiI4edvCjGj00XMZ76Aw==
+X-Received: by 2002:a17:907:2c44:b0:731:85d9:786e with SMTP id hf4-20020a1709072c4400b0073185d9786emr10100013ejc.102.1660211190868;
+        Thu, 11 Aug 2022 02:46:30 -0700 (PDT)
+Received: from redhat.com ([2.52.152.113])
+        by smtp.gmail.com with ESMTPSA id y2-20020aa7d502000000b00440ced0e117sm5334992edq.58.2022.08.11.02.46.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 02:43:20 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     kishon@ti.com, lpieralisi@kernel.org, bhelgaas@google.com
-Cc:     kw@linux.com, robh@kernel.org, vidyas@nvidia.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 2/2] PCI: endpoint: Use link_up() callback in place of LINK_UP notifier
-Date:   Thu, 11 Aug 2022 15:12:37 +0530
-Message-Id: <20220811094237.77632-3-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220811094237.77632-1-manivannan.sadhasivam@linaro.org>
-References: <20220811094237.77632-1-manivannan.sadhasivam@linaro.org>
+        Thu, 11 Aug 2022 02:46:30 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 05:46:27 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Subject: [PATCH v3] Bluetooth: virtio_bt: fix device removal
+Message-ID: <20220811094542.268519-1-mst@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As a part of the transition towards callback mechanism for signalling the
-events from EPC to EPF, let's use the link_up() callback in the place of
-the LINK_UP notifier. This also removes the notifier support completely
-from the PCI endpoint framework.
+Device removal is clearly out of virtio spec: it attempts to remove
+unused buffers from a VQ before invoking device reset. To fix, make
+open/close NOPs and do all cleanup/setup in probe/remove.
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+NB: This is a hacky way to handle this - virtbt_{open,close} as NOP is
+not really what a driver is supposed to be doing. These are transport
+enable/disable callbacks from the BT core towards the driver. It maps to
+a device being enabled/disabled by something like bluetoothd for
+example. So if disabled, users expect that no resources/queues are in
+use.  It does work with all other transports like USB, SDIO, UART etc.
+There should be no buffer used if the device is powered off. We also
+don’t have any USB URBs in-flight if the transport is not active.
+
+The way to implement a proper fix would be using vq reset if supported,
+or even using a full device reset.
+
+The cost of the hack is a single skb wasted on an unused bt device.
+
+NB2: with this fix in place driver still suffers from a race condition
+if an interrupt triggers while device is being reset.  To fix, in the
+virtbt_close() callback we should deactivate all interrupts.  To be
+fixed.
+
+squashed fixup: bluetooth: virtio_bt: fix an error code in probe()
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Message-Id: <20220811080943.198245-1-mst@redhat.com>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 33 ++++++-------------
- drivers/pci/endpoint/pci-epc-core.c           |  8 +++--
- include/linux/pci-epc.h                       |  8 -----
- include/linux/pci-epf.h                       |  8 ++---
- 4 files changed, 18 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index 069943b57029..37454538c000 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -731,30 +731,21 @@ static int pci_epf_test_core_init(struct pci_epf *epf)
- 	return 0;
- }
+changes from v2:
+	tkeaked commit log to make lines shorter
+changes from v1:
+	fixed error handling
+
+ drivers/bluetooth/virtio_bt.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_bt.c
+index 67c21263f9e0..f6d699fed139 100644
+--- a/drivers/bluetooth/virtio_bt.c
++++ b/drivers/bluetooth/virtio_bt.c
+@@ -50,8 +50,11 @@ static int virtbt_add_inbuf(struct virtio_bluetooth *vbt)
  
--static const struct pci_epc_event_ops pci_epf_test_event_ops = {
--	.core_init = pci_epf_test_core_init,
--};
--
--static int pci_epf_test_notifier(struct notifier_block *nb, unsigned long val,
--				 void *data)
-+int pci_epf_test_link_up(struct pci_epf *epf)
+ static int virtbt_open(struct hci_dev *hdev)
  {
--	struct pci_epf *epf = container_of(nb, struct pci_epf, nb);
- 	struct pci_epf_test *epf_test = epf_get_drvdata(epf);
- 
--	switch (val) {
--	case LINK_UP:
--		queue_delayed_work(kpcitest_workqueue, &epf_test->cmd_handler,
--				   msecs_to_jiffies(1));
--		break;
--
--	default:
--		dev_err(&epf->dev, "Invalid EPF test notifier event\n");
--		return NOTIFY_BAD;
--	}
-+	queue_delayed_work(kpcitest_workqueue, &epf_test->cmd_handler,
-+			   msecs_to_jiffies(1));
- 
--	return NOTIFY_OK;
+-	struct virtio_bluetooth *vbt = hci_get_drvdata(hdev);
 +	return 0;
- }
++}
  
-+static const struct pci_epc_event_ops pci_epf_test_event_ops = {
-+	.core_init = pci_epf_test_core_init,
-+	.link_up = pci_epf_test_link_up,
-+};
-+
- static int pci_epf_test_alloc_space(struct pci_epf *epf)
++static int virtbt_open_vdev(struct virtio_bluetooth *vbt)
++{
+ 	if (virtbt_add_inbuf(vbt) < 0)
+ 		return -EIO;
+ 
+@@ -61,7 +64,11 @@ static int virtbt_open(struct hci_dev *hdev)
+ 
+ static int virtbt_close(struct hci_dev *hdev)
  {
- 	struct pci_epf_test *epf_test = epf_get_drvdata(epf);
-@@ -881,12 +872,8 @@ static int pci_epf_test_bind(struct pci_epf *epf)
- 	if (ret)
- 		epf_test->dma_supported = false;
+-	struct virtio_bluetooth *vbt = hci_get_drvdata(hdev);
++	return 0;
++}
++
++static int virtbt_close_vdev(struct virtio_bluetooth *vbt)
++{
+ 	int i;
  
--	if (linkup_notifier || core_init_notifier) {
--		epf->nb.notifier_call = pci_epf_test_notifier;
--		pci_epc_register_notifier(epc, &epf->nb);
--	} else {
-+	if (!linkup_notifier && !core_init_notifier)
- 		queue_work(kpcitest_workqueue, &epf_test->cmd_handler.work);
--	}
+ 	cancel_work_sync(&vbt->rx);
+@@ -354,8 +361,15 @@ static int virtbt_probe(struct virtio_device *vdev)
+ 		goto failed;
+ 	}
  
++	virtio_device_ready(vdev);
++	err = virtbt_open_vdev(vbt);
++	if (err)
++		goto open_failed;
++
  	return 0;
- }
-diff --git a/drivers/pci/endpoint/pci-epc-core.c b/drivers/pci/endpoint/pci-epc-core.c
-index 805f3d64f93b..a51ba9f158c3 100644
---- a/drivers/pci/endpoint/pci-epc-core.c
-+++ b/drivers/pci/endpoint/pci-epc-core.c
-@@ -690,10 +690,15 @@ EXPORT_SYMBOL_GPL(pci_epc_remove_epf);
-  */
- void pci_epc_linkup(struct pci_epc *epc)
- {
-+	struct pci_epf *epf;
-+
- 	if (!epc || IS_ERR(epc))
- 		return;
  
--	atomic_notifier_call_chain(&epc->notifier, LINK_UP, NULL);
-+	list_for_each_entry(epf, &epc->pci_epf, list) {
-+		if (epf->event_ops->link_up)
-+			epf->event_ops->link_up(epf);
-+	}
- }
- EXPORT_SYMBOL_GPL(pci_epc_linkup);
++open_failed:
++	hci_free_dev(hdev);
+ failed:
+ 	vdev->config->del_vqs(vdev);
+ 	return err;
+@@ -368,6 +382,7 @@ static void virtbt_remove(struct virtio_device *vdev)
  
-@@ -779,7 +784,6 @@ __pci_epc_create(struct device *dev, const struct pci_epc_ops *ops,
+ 	hci_unregister_dev(hdev);
+ 	virtio_reset_device(vdev);
++	virtbt_close_vdev(vbt);
  
- 	mutex_init(&epc->lock);
- 	INIT_LIST_HEAD(&epc->pci_epf);
--	ATOMIC_INIT_NOTIFIER_HEAD(&epc->notifier);
- 
- 	device_initialize(&epc->dev);
- 	epc->dev.class = pci_epc_class;
-diff --git a/include/linux/pci-epc.h b/include/linux/pci-epc.h
-index a48778e1a4ee..05604fe0ede0 100644
---- a/include/linux/pci-epc.h
-+++ b/include/linux/pci-epc.h
-@@ -134,7 +134,6 @@ struct pci_epc_mem {
-  * @group: configfs group representing the PCI EPC device
-  * @lock: mutex to protect pci_epc ops
-  * @function_num_map: bitmap to manage physical function number
-- * @notifier: used to notify EPF of any EPC events (like linkup)
-  */
- struct pci_epc {
- 	struct device			dev;
-@@ -149,7 +148,6 @@ struct pci_epc {
- 	/* mutex to protect against concurrent access of EP controller */
- 	struct mutex			lock;
- 	unsigned long			function_num_map;
--	struct atomic_notifier_head	notifier;
- };
- 
- /**
-@@ -192,12 +190,6 @@ static inline void *epc_get_drvdata(struct pci_epc *epc)
- 	return dev_get_drvdata(&epc->dev);
- }
- 
--static inline int
--pci_epc_register_notifier(struct pci_epc *epc, struct notifier_block *nb)
--{
--	return atomic_notifier_chain_register(&epc->notifier, nb);
--}
--
- struct pci_epc *
- __devm_pci_epc_create(struct device *dev, const struct pci_epc_ops *ops,
- 		      struct module *owner);
-diff --git a/include/linux/pci-epf.h b/include/linux/pci-epf.h
-index a06f3b4c8bee..bc613f0df7e3 100644
---- a/include/linux/pci-epf.h
-+++ b/include/linux/pci-epf.h
-@@ -17,10 +17,6 @@
- struct pci_epf;
- enum pci_epc_interface_type;
- 
--enum pci_notify_event {
--	LINK_UP,
--};
--
- enum pci_barno {
- 	NO_BAR = -1,
- 	BAR_0,
-@@ -74,9 +70,11 @@ struct pci_epf_ops {
- /**
-  * struct pci_epf_event_ops - Callbacks for capturing the EPC events
-  * @core_init: Callback for the EPC initialization complete event
-+ * @link_up: Callback for the EPC link up event
-  */
- struct pci_epc_event_ops {
- 	int (*core_init)(struct pci_epf *epf);
-+	int (*link_up)(struct pci_epf *epf);
- };
- 
- /**
-@@ -135,7 +133,6 @@ struct pci_epf_bar {
-  * @driver: the EPF driver to which this EPF device is bound
-  * @id: Pointer to the EPF device ID
-  * @list: to add pci_epf as a list of PCI endpoint functions to pci_epc
-- * @nb: notifier block to notify EPF of any EPC events (like linkup)
-  * @lock: mutex to protect pci_epf_ops
-  * @sec_epc: the secondary EPC device to which this EPF device is bound
-  * @sec_epc_list: to add pci_epf as list of PCI endpoint functions to secondary
-@@ -164,7 +161,6 @@ struct pci_epf {
- 	struct pci_epf_driver	*driver;
- 	const struct pci_epf_device_id *id;
- 	struct list_head	list;
--	struct notifier_block   nb;
- 	/* mutex to protect against concurrent access of pci_epf_ops */
- 	struct mutex		lock;
- 
+ 	hci_free_dev(hdev);
+ 	vbt->hdev = NULL;
 -- 
-2.25.1
+MST
 
