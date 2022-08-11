@@ -2,134 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D21BC25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 11:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A47C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 11:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234042AbiHKLX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 07:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
+        id S234793AbiHKLYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 07:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233983AbiHKLX4 (ORCPT
+        with ESMTP id S234776AbiHKLYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 07:23:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78E8C11A0A
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 04:23:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660217034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QDxPkPA/Vk3OxCoIfjmUcXBTKk9JZQyuU+Qz9bpxhDI=;
-        b=ZskuBdCe8c0Mx7lmRJ7qzlKvk0+fkCOi9gRDg9VSn3HoMNd5OdxQIv2EwGSpuc/wyhvpbl
-        Dn2DRjfPw++SsGEa21NRBkiVY9nljregeKRFmHskJ5/buQi9AGdU79UYYMtoGoTVVP44yl
-        wNP5TIrPdULgn06H0c0JV1yBKNZXlO8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-599-TVWAOce9OHSkOgQ6CU_waw-1; Thu, 11 Aug 2022 07:23:53 -0400
-X-MC-Unique: TVWAOce9OHSkOgQ6CU_waw-1
-Received: by mail-wm1-f72.google.com with SMTP id v24-20020a7bcb58000000b003a37681b861so1531661wmj.9
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 04:23:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=QDxPkPA/Vk3OxCoIfjmUcXBTKk9JZQyuU+Qz9bpxhDI=;
-        b=C/XIxHGDMc8H/rJuhMHnoR0LcvC69fR7Q5nKrljJjlTBnd9wFjjGbXy6TfzfyJh29J
-         j09xwPOipxmEvrLt6lV5x2d6w6lgCRvgPTgn4Bkt54CuFxNvE+63mxjzgl4YVXJ+R7jL
-         ts0/7ec8RVXt5EfBcfMFWa6A8ZzDB+tBt+Vej+T2xjWy4goBmsDb3nE+m9jMO9/4qhku
-         JiBGHkeUeuh9xpHNxf0o/6mBqPX/xdYEBFkSth5TUQ6HHMwmN//6EXLjd6DcbjLjwIh5
-         Zpa3k/0kJ0Y8b0lM3A2wt29EXpvE4N23UAsudTFqBOGA3MI0LYdYO61WXQUtNGjtcMWl
-         pO6Q==
-X-Gm-Message-State: ACgBeo2kCx+BXnL9tUHkefQxy0ibdm9Nm7fjX7cRsm+YPlHizXHWi+6z
-        5z+sbZuN8toLyqzWkF5Tfyj67m7scFhCER8MHmCPkCNHf1LzKEEnYj2pVjemfV5W/JSgEstiZ3V
-        XiA7EC3qSb6nqTZpe8vF6ebuE
-X-Received: by 2002:a5d:6d49:0:b0:21b:a3ba:30b5 with SMTP id k9-20020a5d6d49000000b0021ba3ba30b5mr20332444wri.513.1660217032222;
-        Thu, 11 Aug 2022 04:23:52 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR77S6dIzOGsnWQiMM//cWa1GSRI2vnhXId8PTMJGmuNW0RZNb5joCOLTnulYlpkcuj3mY6sIw==
-X-Received: by 2002:a5d:6d49:0:b0:21b:a3ba:30b5 with SMTP id k9-20020a5d6d49000000b0021ba3ba30b5mr20332411wri.513.1660217031983;
-        Thu, 11 Aug 2022 04:23:51 -0700 (PDT)
-Received: from redhat.com ([2.52.152.113])
-        by smtp.gmail.com with ESMTPSA id n33-20020a05600c502100b003a5c21c543dsm1192075wmr.7.2022.08.11.04.23.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 04:23:51 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 07:23:44 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dinang@xilinx.com, martinpo@xilinx.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Piotr.Uminski@intel.com, gautam.dawar@amd.com,
-        ecree.xilinx@gmail.com, martinh@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>, pabloc@xilinx.com,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
-        Longpeng <longpeng2@huawei.com>, lulu@redhat.com,
-        hanand@xilinx.com, Parav Pandit <parav@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v7 1/4] vdpa: Add suspend operation
-Message-ID: <20220811072125-mutt-send-email-mst@kernel.org>
-References: <20220810171512.2343333-1-eperezma@redhat.com>
- <20220810171512.2343333-2-eperezma@redhat.com>
- <20220811042717-mutt-send-email-mst@kernel.org>
- <20220811101507.GU3460@kadam>
+        Thu, 11 Aug 2022 07:24:51 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2051.outbound.protection.outlook.com [40.107.96.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577FF13DCF;
+        Thu, 11 Aug 2022 04:24:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GjWkaUWrLf3gG9n32Te+7O7e42+iCg4dfVATcd2f/1iEYRxTacZ+vvik9ntA8u9beMUQGwG3f7HK1tndCKKeGRQZxbjoqJJaiHGcUFw4bYFEni2CRQpHdi30oxIm8mlTET/rfsumyPNSPsUbGsyiTQVZr+4z73RVzq3gg7FC5VzuaPFiXJfu+nFJCn0FgdIvPXf8jPqAzvn0a7ZlCPCPxdoxQZCvzeiEiq+F0YHLJwsZAtx+X7PKF1TAU/fo983DA3lnT9QB+m/2UPeiT+jQg2rM8fHxyGGpoU+E4LlAJ2JzLB8DTOJWojB/9YGr8QoBvoEUuGOeA3XnlexISMiopw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JdMRY4ZfLJhFCAqgBxOAe6TNUxEnOYzMdVpj5r5aHfg=;
+ b=SoekFG0i7rGeBObZdoXM4GhWkB/zbJs/peTqP3SYLj5jW2VwQMLor+cU8XC/+iBSLyZt2muAkIyLWlhgbATqt66Wl34gpE8tPtP7Zt1IOh5yPY+JvkUJ+hkFG5mnw/p8MI+1T77MkkmfIb+IXc/kl04TxovQKv+w6K+QBNsQGmoFN4kKAzbH0Hzw67ntrhNonoja5PmM5bfPbnnToQIOiPV8apjkJKdBkbEKja4/flL2Gd1olZFn/hInIJNZcum/aZzfm/MXDy+x8Zfxk5NkZoG/CSCle65pZ438ZODF6uu1RPCy+1bQPHO+Sf3uu1HzM1A+bVMo/10w9IJEHMmWeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JdMRY4ZfLJhFCAqgBxOAe6TNUxEnOYzMdVpj5r5aHfg=;
+ b=ShAtZy8/OtIrY7UKWVnxmURQwrMijb24HE9N6H2/r3irh9ZORuV8XJ+N/mkFaq5AHlX+YCnf9akGUyBY/gvv6iwT60MShOPp33nSFGbAk/m4joiVID50XbjVTL8NazQ94uzq/SY2Ry0g9fNQkMnX6Qu7rtKmN+u29ZAwc6XAaTTSyQDsX/L75wh75IR4A5R/lVnnoZULJGujf8Ucqikj2NSRNtuwVvvCVJaznBSCTzfQ9ThDjDQqb5Gd5kz12nGg2K35Mm1SijPep/AwmppS7OHnzvr5nKBC0oqLnM7JJQ4Y0HUZCzOLeJSWJ0nZjiFJl4JrWtqEkEBxyUsh8mHBlw==
+Received: from BN9PR03CA0861.namprd03.prod.outlook.com (2603:10b6:408:13d::26)
+ by DM6PR12MB4810.namprd12.prod.outlook.com (2603:10b6:5:1f7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Thu, 11 Aug
+ 2022 11:24:48 +0000
+Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13d:cafe::e) by BN9PR03CA0861.outlook.office365.com
+ (2603:10b6:408:13d::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
+ Transport; Thu, 11 Aug 2022 11:24:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5525.11 via Frontend Transport; Thu, 11 Aug 2022 11:24:47 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 11 Aug
+ 2022 11:24:47 +0000
+Received: from yaviefel.vdiclient.nvidia.com (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Thu, 11 Aug 2022 04:24:44 -0700
+From:   Petr Machata <petrm@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Petr Machata <petrm@nvidia.com>,
+        "Vadim Pasternak" <vadimp@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] mlxsw: minimal: Fix deadlock in ports creation
+Date:   Thu, 11 Aug 2022 11:57:36 +0200
+Message-ID: <f4afce5ab0318617f3866b85274be52542d59b32.1660211614.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220811101507.GU3460@kadam>
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 853ec161-3c91-4e72-4958-08da7b8c1990
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4810:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2UY8RJGnB8MOrPLKqlMIdC7oAEH5+iFkeX0zRg5yjGcUNfR1A19u81MkvFaKVNqrqXfI0BMLDIdSlALX8rCb2mmLGSo8+zPyldTbppY7QDun9cPuEhItfoxWSlb7Dew4JSz5LUFAAi/+SXqk6xzqYNn+uHXFTalsOHODImPUqt/ufWSwvAx38cHWJ3/T5cMMCaBneroJ+9Otn388w+5xlxpDFf7Ij/jOnqJmeelWUYdtw6cxAnq/oyZQNu7rsLgaLT96sjfjteqDWlV4G99kEokFhUSWBVLuhN8JykiPpoMlxYZHpWMWFDfLYV/lkSG9Qkh+Ghq/7IvpK+pbgtr1TPw9T1LeDQOdnChnRac2hE28a23jPrRNVKGSvE9IgfQsQRq/nIVmt8pcYVuniPhq7Pcb+pL7hijV6mzWvNkiYxnNZLjVVQTZTAWViZzVT4vu/z0hnt8NkozOxDyKMaIiGDpmaagQIThI+WsRLh11eQaGTQ576REkl1+sDJDsDAgpQ0g4ZU3ze2vA+cAqlv1cl44dzWDLRdqMtNRSKI1Idu/R2pEa3wlNjAWzSRFoqCbc//zLR+hvp2+koxvxCZ8ImhWyOSplETGYfP92H9w9bQqfu7ua+PnWMj7rQqJg0zlUY5r2tw6bqo5GPBAJPk6Qb4uT3j0fA1hiOjirYy6JYwO4pLG4GEnux64BK4tYdV3vblltX9X7nIk0Qtbpv1nDvSFDKPMe8krmScfWZAkWI15oYz4MPg1T3MfJBwVRclv57T372H8PuCI7aCaT3AUMYwuhjSesLvtG6QcuueSbTFBh5bYyHnG5acjRpkd/ChjotW0Pm7d6l3dpGc2n3vMgVA==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(136003)(396003)(40470700004)(36840700001)(46966006)(81166007)(356005)(82740400003)(16526019)(186003)(2616005)(41300700001)(26005)(47076005)(6666004)(107886003)(7696005)(36860700001)(40480700001)(110136005)(86362001)(426003)(40460700003)(8676002)(70206006)(478600001)(336012)(70586007)(82310400005)(4326008)(54906003)(316002)(5660300002)(36756003)(83380400001)(8936002)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 11:24:47.8995
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 853ec161-3c91-4e72-4958-08da7b8c1990
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4810
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 01:15:08PM +0300, Dan Carpenter wrote:
-> On Thu, Aug 11, 2022 at 04:27:32AM -0400, Michael S. Tsirkin wrote:
-> > On Wed, Aug 10, 2022 at 07:15:09PM +0200, Eugenio Pérez wrote:
-> > > This operation is optional: It it's not implemented, backend feature bit
-> > > will not be exposed.
-> > > 
-> > > Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-> > > Message-Id: <20220623160738.632852-2-eperezma@redhat.com>
-> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > 
-> > What is this message id doing here?
-> > 
-> 
-> I like the Message-Id tag.  It means you can `b4 mbox <mesg-id>` and get
-> the thread.
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-Yes it makes sense in git. But I don't see what it does in this patch
-posted to the list. It seems to refer to the previous version of the
-patch here. Which is ok I guess but better called out e.g.
+Drop devl_lock() / devl_unlock() from ports creation and removal flows
+since the devlink instance lock is now taken by mlxsw_core.
 
-Previous-version: <20220623160738.632852-2-eperezma@redhat.com>
+Fixes: 72a4c8c94efa ("mlxsw: convert driver to use unlocked devlink API during init/fini")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-
-> Linus has complained (rough remembering) that everyone is using the
-> Link: tag for links to the patch itself.  It's supposed to be for Links
-> to bugzilla or to the spec or whatever.  Extra information, too much to
-> put in the commit message.  Now the Link tag is useless because it either
-> points to the patch or to a bugzilla.  Depend on what you want it to do,
-> it *always* points to the opposite thing.
-> 
-> But I can't remember what people settled on as the alternative to use
-> to link to lore...
-> 
-> In theory, we should be able to figure out the link to lore automatically
-> and there have been a couple projects which tried to do this but they
-> can't make it work 100%.  Maintainers massage and reformat the patches
-> too much before applying them.
-> 
-> regards,
-> dan carpenter
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index d9bf584234a6..bb1cd4bae82e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -328,7 +328,6 @@ static void mlxsw_m_port_module_unmap(struct mlxsw_m *mlxsw_m, u8 module)
+ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
+ {
+ 	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_m->core);
+-	struct devlink *devlink = priv_to_devlink(mlxsw_m->core);
+ 	u8 last_module = max_ports;
+ 	int i;
+ 	int err;
+@@ -357,7 +356,6 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
+ 	}
+ 
+ 	/* Create port objects for each valid entry */
+-	devl_lock(devlink);
+ 	for (i = 0; i < mlxsw_m->max_ports; i++) {
+ 		if (mlxsw_m->module_to_port[i] > 0) {
+ 			err = mlxsw_m_port_create(mlxsw_m,
+@@ -367,7 +365,6 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
+ 				goto err_module_to_port_create;
+ 		}
+ 	}
+-	devl_unlock(devlink);
+ 
+ 	return 0;
+ 
+@@ -377,7 +374,6 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
+ 			mlxsw_m_port_remove(mlxsw_m,
+ 					    mlxsw_m->module_to_port[i]);
+ 	}
+-	devl_unlock(devlink);
+ 	i = max_ports;
+ err_module_to_port_map:
+ 	for (i--; i > 0; i--)
+@@ -390,10 +386,8 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
+ 
+ static void mlxsw_m_ports_remove(struct mlxsw_m *mlxsw_m)
+ {
+-	struct devlink *devlink = priv_to_devlink(mlxsw_m->core);
+ 	int i;
+ 
+-	devl_lock(devlink);
+ 	for (i = 0; i < mlxsw_m->max_ports; i++) {
+ 		if (mlxsw_m->module_to_port[i] > 0) {
+ 			mlxsw_m_port_remove(mlxsw_m,
+@@ -401,7 +395,6 @@ static void mlxsw_m_ports_remove(struct mlxsw_m *mlxsw_m)
+ 			mlxsw_m_port_module_unmap(mlxsw_m, i);
+ 		}
+ 	}
+-	devl_unlock(devlink);
+ 
+ 	kfree(mlxsw_m->module_to_port);
+ 	kfree(mlxsw_m->ports);
+-- 
+2.35.3
 
