@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D44CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D23C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238544AbiHKQag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
+        id S238571AbiHKQak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238424AbiHKQ3W (ORCPT
+        with ESMTP id S237410AbiHKQ3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:29:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5ECAA0255;
-        Thu, 11 Aug 2022 09:09:04 -0700 (PDT)
+        Thu, 11 Aug 2022 12:29:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D78A0263;
+        Thu, 11 Aug 2022 09:08:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B356144B;
-        Thu, 11 Aug 2022 16:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAB6C433C1;
-        Thu, 11 Aug 2022 16:09:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D3776144D;
+        Thu, 11 Aug 2022 16:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A6CC433B5;
+        Thu, 11 Aug 2022 16:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234143;
-        bh=BlKBMOH6o2j7WE88oomjY+BnlOaiVoPJIpUyChZ8a3s=;
+        s=k20201202; t=1660234132;
+        bh=Kj5q74Qy2aZX54PmtScsZ+Zvch9i/A7Kp8Bi2wcTWjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vwj5zc422+HgIR24zlz4AZyx1A0EbgOnosyvilDO8C+YeU12B3DlutDDj8nTLAt8C
-         9W1E0cMyrXJR2i73DpjPI1fR4hh8G/9RbXrhbmH2x4WXxPuNbRc/oLbf+dhXSjIele
-         IFlbJe3EgAM3pD8/Ml1boqTRxTCVc7jFqIJoUDvZuR+YbYHKam6VgQC6WjvNJpZ+gZ
-         Lh+kpMpvEXIb2jxAKBMvgJmyYPmmwhC2BehKuB7n1/8WV9+63Q3L9TWt5uF8GcmUDi
-         QwnF0vnQWtKLDrH1yGY0g92yooy2oWNzkNXiHPNclaUy2Vy2Pxegddb9ZZP2eUf17n
-         LXr7M3G+BPM5w==
+        b=pElhgtjjay5S1YJOdgZZWRmIW5G7uBPqIpavngwfS4vuP40O8xgbZy8BGw7pYDf1d
+         GnjP23CTovieRhjrI7s7fIkxGkhAxeAyyAvalmHrYzuJqc/9X7V8yZRQljCIcYrPYS
+         Z4GEfYq0zMSQV9VWHFGI3yYjrfJxjf0odUhOsNNhp3k+AT/BKDPgQQWOvbLQKgRA/B
+         /IxpIxyfE+JCro49/rM3iSgP64L8j9VTrYvMtPK6DE2UsWtbgjdtLUVP0V9TgJ9qWy
+         HBteAGH+BxRh/q8X9HxLKgvBPWANF8pMul4QXeFu3hbx0m455VzSKA6hvfqd/phlyO
+         xcmjeuWCF5oTg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Skeggs <bskeggs@redhat.com>, Dave Airlie <airlied@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kherbst@redhat.com,
-        lyude@redhat.com, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 16/25] drm/nouveau/nvkm: use list_add_tail() when building object tree
-Date:   Thu, 11 Aug 2022 12:08:11 -0400
-Message-Id: <20220811160826.1541971-16-sashal@kernel.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, crope@iki.fi,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 12/25] media: airspy: respect the DMA coherency rules
+Date:   Thu, 11 Aug 2022 12:08:07 -0400
+Message-Id: <20220811160826.1541971-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160826.1541971-1-sashal@kernel.org>
 References: <20220811160826.1541971-1-sashal@kernel.org>
@@ -52,37 +53,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Skeggs <bskeggs@redhat.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit 61c1f340bc809a1ca1e3c8794207a91cde1a7c78 ]
+[ Upstream commit ca9dc8d06ab64543a6a31adac5003349c5671218 ]
 
-Fixes resume from hibernate failing on (at least) TU102, where cursor
-channel init failed due to being performed before the core channel.
+If we want to avoid memory corruption
+on incoherent architectures, buffers for DMA
+must not reside
+- on the stack
+- embedded within other structures
 
-Not solid idea why suspend-to-ram worked, but, presumably HW being in
-an entirely clean state has something to do with it.
+Allocate them separately.
 
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
+v2: fix uninitialized return value
+
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/core/ioctl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/airspy/airspy.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
-index d777df5a64e6..2aa0d6fed580 100644
---- a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
-@@ -128,7 +128,7 @@ nvkm_ioctl_new(struct nvkm_client *client,
- 	if (ret == 0) {
- 		ret = nvkm_object_init(object);
- 		if (ret == 0) {
--			list_add(&object->head, &parent->tree);
-+			list_add_tail(&object->head, &parent->tree);
- 			if (nvkm_object_insert(object)) {
- 				client->data = object;
- 				return 0;
+diff --git a/drivers/media/usb/airspy/airspy.c b/drivers/media/usb/airspy/airspy.c
+index 751703db06f5..c7499787bffe 100644
+--- a/drivers/media/usb/airspy/airspy.c
++++ b/drivers/media/usb/airspy/airspy.c
+@@ -123,7 +123,7 @@ struct airspy {
+ 
+ 	/* USB control message buffer */
+ 	#define BUF_SIZE 128
+-	u8 buf[BUF_SIZE];
++	u8 *buf;
+ 
+ 	/* Current configuration */
+ 	unsigned int f_adc;
+@@ -856,6 +856,7 @@ static void airspy_video_release(struct v4l2_device *v)
+ 
+ 	v4l2_ctrl_handler_free(&s->hdl);
+ 	v4l2_device_unregister(&s->v4l2_dev);
++	kfree(s->buf);
+ 	kfree(s);
+ }
+ 
+@@ -963,7 +964,10 @@ static int airspy_probe(struct usb_interface *intf,
+ {
+ 	struct airspy *s;
+ 	int ret;
+-	u8 u8tmp, buf[BUF_SIZE];
++	u8 u8tmp, *buf;
++
++	buf = NULL;
++	ret = -ENOMEM;
+ 
+ 	s = kzalloc(sizeof(struct airspy), GFP_KERNEL);
+ 	if (s == NULL) {
+@@ -971,6 +975,13 @@ static int airspy_probe(struct usb_interface *intf,
+ 		return -ENOMEM;
+ 	}
+ 
++	s->buf = kzalloc(BUF_SIZE, GFP_KERNEL);
++	if (!s->buf)
++		goto err_free_mem;
++	buf = kzalloc(BUF_SIZE, GFP_KERNEL);
++	if (!buf)
++		goto err_free_mem;
++
+ 	mutex_init(&s->v4l2_lock);
+ 	mutex_init(&s->vb_queue_lock);
+ 	spin_lock_init(&s->queued_bufs_lock);
+@@ -1068,6 +1079,8 @@ static int airspy_probe(struct usb_interface *intf,
+ 	v4l2_ctrl_handler_free(&s->hdl);
+ 	v4l2_device_unregister(&s->v4l2_dev);
+ err_free_mem:
++	kfree(buf);
++	kfree(s->buf);
+ 	kfree(s);
+ 	return ret;
+ }
 -- 
 2.35.1
 
