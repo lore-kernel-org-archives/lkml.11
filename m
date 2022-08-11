@@ -2,182 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A528C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FB9C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbiHKMrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 08:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        id S235411AbiHKMrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 08:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiHKMq6 (ORCPT
+        with ESMTP id S235410AbiHKMrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 08:46:58 -0400
-Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5FF2558F
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 05:46:57 -0700 (PDT)
-Received: from [192.168.1.101] (abxh187.neoplus.adsl.tpnet.pl [83.9.1.187])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 103193F64F;
-        Thu, 11 Aug 2022 14:46:55 +0200 (CEST)
-Message-ID: <3ad241c6-3b94-2c4e-8e17-ba526383cecf@somainline.org>
-Date:   Thu, 11 Aug 2022 14:46:54 +0200
+        Thu, 11 Aug 2022 08:47:09 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2051.outbound.protection.outlook.com [40.107.101.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B44357FF;
+        Thu, 11 Aug 2022 05:47:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bl1Bd6RihGHAoc89txNCHB7KdyPCuiY02jknVasnROwH4eNwobAMT75lsAqjyZhP5eQ52oQ2VzzlvCSjkSCis4eRIhwh+Vs4f1/pA/duGnFZsyRwYPmRsHpxOiJWIsTEt363KnHAdr92TAxPWfg+ce841HEAJtRS+cuv2h6ScDa4pITVmY1XxdcUoATBaa8tkMCMrBfPHnrgLrEVVn+EYRXHWphuhQ2q6g8qZ+lIE6JqdqPuKwQ5ymx10EejwDiIyGYXqIPi3CFxrxEZqeHeo7K6Seuh+wdSwf5A0dh4sLSD1InsFWMYWRREzuCeL+/ZRAz7vd1uLgHTxcwCHToYyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rA+s12UHgbxDU/zAiZWYtelFFILYjkNXPofU91p00oI=;
+ b=gSf2AQncT7CWhxHremXuLFDsLXXbWrOrghv/gVaH6+NzWXwK/uF0rvCDR++mB6E0WQV0NfG+Mm9jJdCL1MZKeH/K+Q91BcR6d0/H+amPisSDeL+2LeXC7oaoKF+gj+n30HzrDoVynCQviCkbta3BTLeYxfqnTs0bI4bfLjaNLylNRjXv/30Cs6jBiMJdTMY/mQmm1I67yF/QTuydewg3UJN2qlysJIerbHSY2GoUBZ81BBN9kqTg8iLeaMyQtJh3IEHyszA9iG6zhc+C53XX1Lh9qJumAr0uTzPbQJ/YRA4XnICr6qJkDM+cz4LXDjwKgM5udOpcmHYTN5m/mitLBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rA+s12UHgbxDU/zAiZWYtelFFILYjkNXPofU91p00oI=;
+ b=FgjEYjFv+WobEhl+5Hh/IjHlboeX2ZDBgHcFPFT6lY3l3ZIa9CiLVqos6WgaUxl6d3Pjz2CBAxKqtujmJiNbw2u+bc8olyNjbZl2uAZrxCdHFQXpv0H5hzUahlQX8mJwo01DKgia1QgQ8uCRYNU2OMYC1j6YK1PaKUGpTaydiBY=
+Received: from DM6PR12CA0036.namprd12.prod.outlook.com (2603:10b6:5:1c0::49)
+ by PH8PR12MB7025.namprd12.prod.outlook.com (2603:10b6:510:1bc::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Thu, 11 Aug
+ 2022 12:47:04 +0000
+Received: from DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1c0:cafe::48) by DM6PR12CA0036.outlook.office365.com
+ (2603:10b6:5:1c0::49) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
+ Transport; Thu, 11 Aug 2022 12:47:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT042.mail.protection.outlook.com (10.13.173.165) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5525.11 via Frontend Transport; Thu, 11 Aug 2022 12:47:03 +0000
+Received: from sindhu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 11 Aug
+ 2022 07:46:57 -0500
+From:   Sandipan Das <sandipan.das@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <x86@kernel.org>
+CC:     <peterz@infradead.org>, <bp@alien8.de>, <acme@kernel.org>,
+        <namhyung@kernel.org>, <jolsa@kernel.org>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>,
+        <dave.hansen@linux.intel.com>, <like.xu.linux@gmail.com>,
+        <eranian@google.com>, <ananth.narayan@amd.com>,
+        <ravi.bangoria@amd.com>, <santosh.shukla@amd.com>,
+        <sandipan.das@amd.com>
+Subject: [PATCH 0/4] tools perf: Add branch speculation info
+Date:   Thu, 11 Aug 2022 18:16:45 +0530
+Message-ID: <cover.1660217326.git.sandipan.das@amd.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 2/2] clk: qcom: Add SC8280XP GPU clock controller
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220811042855.3867774-1-bjorn.andersson@linaro.org>
- <20220811042855.3867774-3-bjorn.andersson@linaro.org>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220811042855.3867774-3-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4be5cef8-fca4-4504-11d9-08da7b9797a3
+X-MS-TrafficTypeDiagnostic: PH8PR12MB7025:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HzT2/kPWx4c8V8RHeT4GXmFQLoCdw0lYKuNuXnjz+A7IZk7Tsg/m/xdEcN9kjc0o9fYjTAYtG2Y2yZcKgQA9LszKeJ8cuK9S1Gr2NLXBaWPbMW5GHmAa+WOMnVqj3IgOpcGY2gyqBTybZbKeQo6wM7aSr0EZbA6VNBbrluB1Y9V+OFdhoVpTdR+U0pF44Dq0ZF+ETqpW6murPf77ToQ4btohiHQdPFRJ9EJbV99IVu6eEngomIzs6lt/4IFi91Pt6m+ZYq64NP/fwuurDxLKXLedVujBQIDIDnRrJUPHR//V7jS65b8HjNCI5qUDCtkV1Re6Mv8ZkBCjHzfvih6ptjccYnt4yni6nOKPXuWYaMco0d4OwMJjtpXjbeMzniWT8BxRXN+WnPpW2Pxbpy60RvwZEdYgUPrGftbBmE78i6QapUMuL+V+JbYVd9nUUiw5lQGsDyoDYx3GVGjUA5oT4tJ7oaw3ybAZ9qWPWQB9vnyTZ9lfLFoWcI0yTPh4VtLmJ5cuT59xYMqFsF5uFVlgS5RlbSiqPUIeNkxeg1dv3Uwcuj/Td/q9Xzbq/jpgradCatsOCD2ljkklye2wGK2VDTk2iD0M2HDQuU8ri4VlLqa32WtwhPxqKvR0ixVrGmXfq/oQjL9b36GLcH2jvUJHjOl5pri3iDVnEloswHUP1BB0QUt4TCfDwzOOLk67csXYmnzJDi9OMYHNIKJNragRztkEfjggzjYKblAvxTmHZzHSMtO3j1Tnubd321okm8wfqNAmHmK6dXBikn36wss7Q6ba5ms0YcHJZdN3MxGoyCb7nzzsPN+zy/n+gRRaMx5VoZy1xA1TOiXXCKZxWqKFtDR17QWYzD/KvyanRyyWwz7EQqzOPY8AjaEu9AV9SBt8
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(39860400002)(376002)(36840700001)(40470700004)(46966006)(2906002)(40460700003)(8936002)(356005)(7416002)(5660300002)(4744005)(44832011)(26005)(40480700001)(86362001)(81166007)(82310400005)(336012)(2616005)(426003)(186003)(16526019)(47076005)(41300700001)(6666004)(7696005)(36860700001)(83380400001)(478600001)(316002)(4326008)(8676002)(82740400003)(70206006)(70586007)(54906003)(966005)(110136005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:47:03.9733
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4be5cef8-fca4-4504-11d9-08da7b9797a3
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7025
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+AMD Last Branch Record Extension Version 2 (LbrExtV2) provides branch
+speculation information and the perf UAPI is extended to provide this in a
+generic manner. Update the tools headers and perf tool to be able to show
+this additional information.
 
+The LbrExtV2 enablement and UAPI changes can be found at:
+https://lore.kernel.org/all/cover.1660211399.git.sandipan.das@amd.com/
 
-On 11.08.2022 06:28, Bjorn Andersson wrote:
-> Add driver for the GPU clock controller in the Qualcomm SC8280XP
-> platform.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  drivers/clk/qcom/Kconfig          |   8 +
->  drivers/clk/qcom/Makefile         |   1 +
->  drivers/clk/qcom/gpucc-sc8280xp.c | 460 ++++++++++++++++++++++++++++++
->  3 files changed, 469 insertions(+)
->  create mode 100644 drivers/clk/qcom/gpucc-sc8280xp.c
-> 
-> diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
-> index 7ea5c2208a86..64a9cf245295 100644
-> --- a/drivers/clk/qcom/Kconfig
-> +++ b/drivers/clk/qcom/Kconfig
-> @@ -454,6 +454,14 @@ config SC_GPUCC_7280
->  	  Say Y if you want to support graphics controller devices and
->  	  functionality such as 3D graphics.
->  
-> +config SC_GPUCC_8280XP
-> +	tristate "SC8280XP Graphics Clock Controller"
-> +	select SC_GCC_8280XP
-> +	help
-> +	  Support for the graphics clock controller on SC8280XP devices.
-> +	  Say Y if you want to support graphics controller devices and
-> +	  functionality such as 3D graphics.
-> +
->  config SC_LPASSCC_7280
->  	tristate "SC7280 Low Power Audio Subsystem (LPASS) Clock Controller"
->  	select SC_GCC_7280
-> diff --git a/drivers/clk/qcom/Makefile b/drivers/clk/qcom/Makefile
-> index 4fd88ee7679b..6cdb05152548 100644
-> --- a/drivers/clk/qcom/Makefile
-> +++ b/drivers/clk/qcom/Makefile
-> @@ -72,6 +72,7 @@ obj-$(CONFIG_SC_GCC_8180X) += gcc-sc8180x.o
->  obj-$(CONFIG_SC_GCC_8280XP) += gcc-sc8280xp.o
->  obj-$(CONFIG_SC_GPUCC_7180) += gpucc-sc7180.o
->  obj-$(CONFIG_SC_GPUCC_7280) += gpucc-sc7280.o
-> +obj-$(CONFIG_SC_GPUCC_8280XP) += gpucc-sc8280xp.o
->  obj-$(CONFIG_SC_LPASSCC_7280) += lpasscc-sc7280.o
->  obj-$(CONFIG_SC_LPASS_CORECC_7180) += lpasscorecc-sc7180.o
->  obj-$(CONFIG_SC_LPASS_CORECC_7280) += lpasscorecc-sc7280.o lpassaudiocc-sc7280.o
-> diff --git a/drivers/clk/qcom/gpucc-sc8280xp.c b/drivers/clk/qcom/gpucc-sc8280xp.c
-> new file mode 100644
-> index 000000000000..555fd4ff58ab
-> --- /dev/null
-> +++ b/drivers/clk/qcom/gpucc-sc8280xp.c
-> @@ -0,0 +1,460 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#include <linux/clk-provider.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
-> +#include <dt-bindings/clock/qcom,gpucc-sc8280xp.h>
-> +
-> +#include "clk-alpha-pll.h"
-> +#include "clk-branch.h"
-> +#include "clk-rcg.h"
-> +#include "clk-regmap-divider.h"
-> +#include "common.h"
-> +#include "reset.h"
-> +#include "gdsc.h"
-> +
-> +/* Need to match the order of clocks in DT binding */
-> +enum {
-> +	DT_BI_TCXO,
-> +	DT_GCC_GPU_GPLL0_CLK_SRC,
-> +	DT_GCC_GPU_GPLL0_DIV_CLK_SRC,
-> +};
-> +
-> +enum {
-> +	P_BI_TCXO,
-> +	P_GCC_GPU_GPLL0_CLK_SRC,
-> +	P_GCC_GPU_GPLL0_DIV_CLK_SRC,
-> +	P_GPU_CC_PLL0_OUT_MAIN,
-> +	P_GPU_CC_PLL1_OUT_MAIN,
-> +};
-> +
-> +static const struct clk_parent_data parent_data_tcxo = { .index = DT_BI_TCXO };
-> +
-> +static const struct pll_vco lucid_5lpe_vco[] = {
-> +	{ 249600000, 1800000000, 0 },
-> +};
-> +
-> +static struct alpha_pll_config gpu_cc_pll0_config = {
-> +	.l = 0x1c,
-> +	.alpha = 0xa555,
-> +	.config_ctl_val = 0x20485699,
-> +	.config_ctl_hi_val = 0x00002261,
-> +	.config_ctl_hi1_val = 0x2a9a699c,
-> +	.test_ctl_val = 0x00000000,
-> +	.test_ctl_hi_val = 0x00000000,
-> +	.test_ctl_hi1_val = 0x01800000,
-> +	.user_ctl_val = 0x00000000,
-> +	.user_ctl_hi_val = 0x00000805,
-> +	.user_ctl_hi1_val = 0x00000000,
-> +};
-> +
-> +static struct clk_alpha_pll gpu_cc_pll0 = {
-> +	.offset = 0x0,
-> +	.vco_table = lucid_5lpe_vco,
-> +	.num_vco = ARRAY_SIZE(lucid_5lpe_vco),
-> +	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID],
-> +	.clkr = {
-> +		.hw.init = &(struct clk_init_data){
-> +			.name = "gpu_cc_pll0",
-> +			.parent_data = &parent_data_tcxo,
-> +			.num_parents = 1,
-> +			.ops = &clk_alpha_pll_lucid_5lpe_ops,
-> +		},
-> +	},
-> +};
-> +
-> +static struct alpha_pll_config gpu_cc_pll1_config = {
-> +	.l = 0x1A,
-> +	.alpha = 0xAAA,
-> +	.config_ctl_val = 0x20485699,
-> +	.config_ctl_hi_val = 0x00002261,
-> +	.config_ctl_hi1_val = 0x2A9A699C,
-Lowercase hex, please.
+Sandipan Das (4):
+  tools headers uapi: Sync perf_event.h with kernel sources
+  tools headers x86: Sync msr-index.h with kernel sources
+  perf script: Show branch speculation info
+  perf session: Show branch speculation info in raw dump
 
-Otherwise, this looks nice:
+ tools/arch/x86/include/asm/msr-index.h |  5 +++++
+ tools/include/uapi/linux/perf_event.h  | 15 ++++++++++++++-
+ tools/perf/builtin-script.c            |  5 +++--
+ tools/perf/util/branch.c               | 15 +++++++++++++++
+ tools/perf/util/branch.h               |  5 ++++-
+ tools/perf/util/evsel.c                |  9 ++++++---
+ tools/perf/util/session.c              |  5 +++--
+ 7 files changed, 50 insertions(+), 9 deletions(-)
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+-- 
+2.34.1
 
-Konrad
