@@ -2,121 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B176C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:22:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6436CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234994AbiHKNW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 09:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
+        id S235547AbiHKNWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 09:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232321AbiHKNW0 (ORCPT
+        with ESMTP id S235108AbiHKNWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 09:22:26 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6D181696
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:22:25 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id g5so28143771ybg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Eb3rnYYvtIKOzVfVgbxd4mjo9Ht+qE4u6mbe1XaOMUQ=;
-        b=bqqg6BYyIOZ+h3ZXDwmc1lPC+7zZ8KZPrW8UMe1KSZnMVQwVGPH83VQznwGbQMsPQ9
-         J/3yQt9Ic1sYAuWcEt9l2/nrJRihNOWq62cn9NjGKGBF/9uZDOHFqVzyxqvQwPwlruLK
-         jYTU0YZvCk0WsDLY8mEElC6obFA6qFIk8EJn3iZC53PmNEx/Nc2tD80cMlirKBaDOhqi
-         6JdYmtFJVr1AioB69OvBOLuth+Qyyye6xTZLri+QP5m4b/ODp7QmNs5sw/VRiL4e/QRV
-         2zPn0ZfzKxi3876GjtpQjVDQfOrgqnbJdwS2fvF15LFcAnyzyoTcB40sKWl4XJ82lKhs
-         ZM0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Eb3rnYYvtIKOzVfVgbxd4mjo9Ht+qE4u6mbe1XaOMUQ=;
-        b=PYk4fcLJA05Z6swp71P5Au2M3Ci76xbA35CwiC3bz2T/roo9veWsqpT62N8nelvKHT
-         zh5uQgQ7CL2YyKVPRVV3EaeB1hkKC2F7hbS2oU5X0wAPAGqVMHs7Wyn+SmItq/KPs8Lm
-         HJnyHXFEKAmfRmzJcgTE8Z9pjVvG/yf/PN4Rpr8yyx05aKbjtr9000yANyX2Hbz1zK9X
-         GHZmi8nMtXX8CJSIPufpzmzK5olB2B+fZjIftxSPNBKZFSH4u6t1vOqOPzPj1Y2BvMEK
-         vhydNO0Mn6xrm9rWH/R01n3/tny3E4hQRtdGm1vFtvQi9vFoUndsZBqr0SoCGKQ4F65t
-         NAqA==
-X-Gm-Message-State: ACgBeo07kWnrv/YpmuCt0HrpVbMDNvwI8d0/I98IDkmSUAoN/re6HIzE
-        OMRiUV/GfamrU4U9MLU5xg8hUyxhJMgiykAlsqcvTQ==
-X-Google-Smtp-Source: AA6agR6zVaiHK/kIrAry6AatC6jYuU0aS2xrWFmXfwvuQwVa//jF132uNnBuKNJYM9vd5ehlbi0mN76VRryf7Tb1eqA=
-X-Received: by 2002:a25:ad16:0:b0:671:75d9:6aad with SMTP id
- y22-20020a25ad16000000b0067175d96aadmr28012031ybi.143.1660224144897; Thu, 11
- Aug 2022 06:22:24 -0700 (PDT)
+        Thu, 11 Aug 2022 09:22:35 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1864816AE;
+        Thu, 11 Aug 2022 06:22:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660224153; x=1691760153;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=TXGp2l7srz7CG/35HC62yaH3SzOuZ/KTY0IN1dEpGAI=;
+  b=T5Vzi5QzJt1rxP32GUX/mrs4MWVVTlwuxjMi9Y89Am1NkOMIJGTnmTNd
+   Zdg6TTt9BernHTVXvKdFu70eG2bDgOCyY2Tj7pJqxNSBByrt4YQuF1DVh
+   ySRvMMo6Bqi+PwOJXo7qFkt5EZjjljg1mMZ+4DyR5NxOPWuVZ3vmWA90X
+   L2+DuVmzXchnKnjwWqaCWWg+M0nfRWTXBNSMoHgoSYhOU7qUQeUr1XeCs
+   0Mz38l6tm5lLClygUQcHARxAM0uo6S45FtDw0Zaf0syOJvBHvIxgh3eHU
+   qIR8fakSdWch+/EOw1YROjUJuDqi1vAnIEBsIraZu7CQtL4STibM3njJg
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="292602176"
+X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
+   d="scan'208";a="292602176"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 06:22:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
+   d="scan'208";a="608920719"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga007.fm.intel.com with ESMTP; 11 Aug 2022 06:22:23 -0700
+Date:   Thu, 11 Aug 2022 21:17:38 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 05/14] mm/memfd: Introduce MFD_INACCESSIBLE flag
+Message-ID: <20220811131738.GA916119@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-6-chao.p.peng@linux.intel.com>
+ <203c752f-9439-b5ae-056c-27b2631dcb81@redhat.com>
+ <20220810093741.GE862421@chaop.bj.intel.com>
+ <64ab9678-c72d-b6d9-8532-346cc9c06814@redhat.com>
 MIME-Version: 1.0
-References: <20220811085938.2506536-1-imran.f.khan@oracle.com>
- <d3cd0f34-b30b-9a1d-8715-439ffb818539@suse.cz> <CANpmjNMYwxbkOc+LxLfZ--163yfXpQj69oOfEFkSwq7JZurbdA@mail.gmail.com>
- <6b41bb2c-6305-2bf4-1949-84ba08fdbd72@suse.cz>
-In-Reply-To: <6b41bb2c-6305-2bf4-1949-84ba08fdbd72@suse.cz>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 11 Aug 2022 15:21:48 +0200
-Message-ID: <CANpmjNNC3F88_Jr24DuFyubvQR2Huz6i3BGXgDgi5o_Gs0Znmg@mail.gmail.com>
-Subject: Re: [PATCH v2] Introduce sysfs interface to disable kfence for
- selected slabs.
-To:     vbabka@suse.cz
-Cc:     Imran Khan <imran.f.khan@oracle.com>, glider@google.com,
-        dvyukov@google.com, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com,
-        akpm@linux-foundation.org, roman.gushchin@linux.dev,
-        42.hyeyoo@gmail.com, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <64ab9678-c72d-b6d9-8532-346cc9c06814@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 11 Aug 2022 at 12:07, <vbabka@suse.cz> wrote:
-[...]
-> > new flag SLAB_SKIP_KFENCE, it also can serve a dual purpose, where
-> > someone might want to explicitly opt out by default and pass it to
-> > kmem_cache_create() (for whatever reason; not that we'd encourage
-> > that).
->
-> Right, not be able to do that would be a downside (although it should be
-> possible even with opt-in to add an opt-out cache flag that would just make
-> sure the opt-in flag is not set even if eligible by global defaults).
+On Wed, Aug 10, 2022 at 11:55:19AM +0200, David Hildenbrand wrote:
+> On 10.08.22 11:37, Chao Peng wrote:
+> > On Fri, Aug 05, 2022 at 03:28:50PM +0200, David Hildenbrand wrote:
+> >> On 06.07.22 10:20, Chao Peng wrote:
+> >>> Introduce a new memfd_create() flag indicating the content of the
+> >>> created memfd is inaccessible from userspace through ordinary MMU
+> >>> access (e.g., read/write/mmap). However, the file content can be
+> >>> accessed via a different mechanism (e.g. KVM MMU) indirectly.
+> >>>
+> >>> It provides semantics required for KVM guest private memory support
+> >>> that a file descriptor with this flag set is going to be used as the
+> >>> source of guest memory in confidential computing environments such
+> >>> as Intel TDX/AMD SEV but may not be accessible from host userspace.
+> >>>
+> >>> The flag can not coexist with MFD_ALLOW_SEALING, future sealing is
+> >>> also impossible for a memfd created with this flag.
+> >>
+> >> It's kind of weird to have it that way. Why should the user have to
+> >> care? It's the notifier requirement to have that, no?
+> >>
+> >> Why can't we handle that when register a notifier? If anything is
+> >> already mapped, fail registering the notifier if the notifier has these
+> >> demands. If registering succeeds, block it internally.
+> >>
+> >> Or what am I missing? We might not need the memfile set flag semantics
+> >> eventually and would not have to expose such a flag to user space.
+> > 
+> > This makes sense if doable. The major concern was: is there a reliable
+> > way to detect this (already mapped) at the time of memslot registering.
+> 
+> If too complicated, we could simplify to "was this ever mapped" and fail
+> for now. Hooking into shmem_mmap() might be sufficient for that to get
+> notified about the first mmap.
+> 
+> As an alternative, mapping_mapped() or similar *might* do what we want.
 
-True, but I'd avoid all this unnecessary complexity if possible.
-
-> > I feel that the real use cases for selectively enabling caches for
-> > KFENCE are very narrow, and a design that introduces lots of
-> > complexity elsewhere, just to support this feature cannot be justified
-> > (which is why I suggested the simpler design here back in
-> > https://lore.kernel.org/lkml/CANpmjNNmD9z7oRqSaP72m90kWL7jYH+cxNAZEGpJP8oLrDV-vw@mail.gmail.com/
-> > )
->
-> I don't mind strongly either way, just a suggestion to consider.
-
-While switching the semantics of the flag from opt-out to opt-in is
-just as valid, I'm more comfortable with the opt-out flag: the rest of
-the logic can stay the same, and we're aware of the fact that changing
-cache coverage by KFENCE shouldn't be something that needs to be done
-manually.
-
-My main point is that opting out or in to only a few select caches
-should be a rarely used feature, and accordingly it should be as
-simple as possible. Honestly, I still don't quite see the point of it,
-and my solution would be to just increase the KFENCE pool, increase
-sample rate, or decrease the "skip covered threshold%". But in the
-case described by Imran, perhaps a running machine is having trouble
-and limiting the caches to be analyzed by KFENCE might be worthwhile
-if a more aggressive configuration doesn't yield anything (and then
-there's of course KASAN, but I recognize it's not always possible to
-switch kernel and run the same workload with it).
-
-The use case for the proposed change is definitely when an admin or
-kernel dev is starting to debug a problem. KFENCE wasn't designed for
-that (vs. deployment at scale, discovery of bugs). As such I'm having
-a hard time admitting how useful this feature will really be, but
-given the current implementation is simple, having it might actually
-help a few people.
-
-Imran, just to make sure my assumptions here are right, have you had
-success debugging an issue in this way? Can you elaborate on what
-"certain debugging scenarios" you mean (admin debugging something, or
-a kernel dev, production fleet, or test machine)?
+mapping_mapped() sounds the right one, I remember SEV people want first
+map then unmap. "was this ever mapped" may not work for them.
 
 Thanks,
--- Marco
+Chao
+> 
+> 
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
