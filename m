@@ -2,141 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9EAC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86329C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238063AbiHKQYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
+        id S238069AbiHKQYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237919AbiHKQXq (ORCPT
+        with ESMTP id S237850AbiHKQXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 12:23:46 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D4B1117F
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:05:19 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id 130so16824002pfv.13
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:05:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc;
-        bh=d0u1p8R8Qde2ve36Abm6cDksJ4xjEyO5Zx7tA20Gdo4=;
-        b=72hpLRYS883vixroIwg3mFYuCWRng9p0gc9YWN4NGkrCEVdvrpuBZ+zFhXTx7lBsGt
-         jnYtHZnyAQCyUMyaXxk4n97h+3rx4La1veaOtjQ+rUT0YNDNn3XBlPXFPTVehYcv1r7m
-         KZ7V7di0uamozJzVU5PJgBMx20NCjFQ9K+zG8euY9/7J1+LLyKW4JE6TsbNOAN3gOSLY
-         GXcZ1vRV+LAkwt/oC3IcvKMpxXNaoTYVbYBGz1Carcd4E8bFRUqPN+V1aEVLzFWrBOrv
-         m/8RktYKvyDwdKiXmOVA52v5IVqzpvkztYaJYwGwr9Ywr/0lIYrSIHl4m/bK3Y3kCPmI
-         NMTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc;
-        bh=d0u1p8R8Qde2ve36Abm6cDksJ4xjEyO5Zx7tA20Gdo4=;
-        b=VES6LHaqPBoydm81RgkcUrJULCCNPnu1v3dloW8LafoBdRhQYP+ejrZOcHJo/s7e1x
-         Nhccc9tA8bDb4HF3K+pQgeQDRaF+Eo8sYLcMohKTEoPy83Y0YMUHNIv++UvaGNX793Qa
-         86EFuRmE+B5Q8dWCtkc3zHtLE6/mOylqQYb5AAKt1tsZQeFI2jinSzFxhTmFIInG3nHB
-         gu+N1gigIjrAGMShgiE+CRXKgIobt0Ti+8gZlrJTXRD5j1afzMiiaoydo/QI71WepgOd
-         Kyfgzl/WScT0CjdFoO7XOrfKGYGlR8hRu3KIs48+UZdnzUAFJBGa+J8DZ4+iWotyudZs
-         nwUA==
-X-Gm-Message-State: ACgBeo3DibDF8h1UG7lHXpk1gwMeTYGTQYMroRO+Gg3+i8nVJ4F0d9IO
-        AR9P18n5vDysNwMqI3c9/Rma/g==
-X-Google-Smtp-Source: AA6agR6isMDGVMr7bmbSvX20FFwxSxUuQ6z8kvqSth7ginkx17kOTN5fQHEz08/ycUABZvTvf+rhqA==
-X-Received: by 2002:a63:905:0:b0:415:fcde:2423 with SMTP id 5-20020a630905000000b00415fcde2423mr27906416pgj.374.1660233918463;
-        Thu, 11 Aug 2022 09:05:18 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id f20-20020a635554000000b0041a716cec9esm11458346pgm.62.2022.08.11.09.05.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 09:05:18 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 09:05:18 -0700 (PDT)
-X-Google-Original-Date: Thu, 11 Aug 2022 09:05:16 PDT (-0700)
-Subject:     Re: [PATCH] RISC-V: use __smp_processor_id() instead of smp_processor_id()
-In-Reply-To: <mhng-34326299-6545-4626-b804-0b2bcf02ba4a@palmer-mbp2014>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        alex@ghiti.fr, liaochang1@huawei.com, mick@ics.forth.gr,
-        guoren@kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, xianting.tian@linux.alibaba.com
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     xianting.tian@linux.alibaba.com
-Message-ID: <mhng-3d40a456-c1da-41c8-9234-0ea16a2c7d09@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1133BF61;
+        Thu, 11 Aug 2022 09:05:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C7AA6133D;
+        Thu, 11 Aug 2022 16:05:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93B1EC433D6;
+        Thu, 11 Aug 2022 16:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660233914;
+        bh=5ZvjbRte3VvvlAB6e6K1G9H+gGULctHSXiMEJolGyMA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=G1kiAUfwyt61q3LtSHJH22Le2GQULMRvcUyKxmRHbHyy5kU+TO0eH3iRtv1aTAFqA
+         QyzCxNmy7hL7mJk747nJw1kAc6M2qLbDzJwXvlinyTxILgvJWPQ2aHzA0trkEXNOgq
+         MqE0VnTnmV/dJN6q8vrA/Sx+q5PBZZq2aygJ/b3sxSQGI0s2Fd+HIEEPF2gjmggkXh
+         iBNOO54/O4yxi++vGXqjju3cs2WCh9TA0BBAeV+qC1Oxj4gMUXhmfUytiaUhRi1YGb
+         IxW0CXq9hkNYzX+abwIWcqZvVzIV+pHPWgaTK7q1feacnvHw9Z82sB49mafaaCmexo
+         Nhtpz0Edv7dSg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Vivek Kasireddy <vivek.kasireddy@intel.com>,
+        syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, sumit.semwal@linaro.org,
+        christian.koenig@amd.com, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: [PATCH AUTOSEL 5.10 12/46] udmabuf: Set the DMA mask for the udmabuf device (v2)
+Date:   Thu, 11 Aug 2022 12:03:36 -0400
+Message-Id: <20220811160421.1539956-12-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
+References: <20220811160421.1539956-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 11 Aug 2022 08:45:18 PDT (-0700), Palmer Dabbelt wrote:
-> On Thu, 23 Jun 2022 00:43:15 PDT (-0700), xianting.tian@linux.alibaba.com wrote:
->> Use __smp_processor_id() to avoid check the preemption context when
->> CONFIG_DEBUG_PREEMPT enabled, as we will enter crash kernel and no
->> return.
->>
->> Without the patch,
->> [  103.781044] sysrq: Trigger a crash
->> [  103.784625] Kernel panic - not syncing: sysrq triggered crash
->> [  103.837634] CPU1: off
->> [  103.889668] CPU2: off
->> [  103.933479] CPU3: off
->> [  103.939424] Starting crashdump kernel...
->> [  103.943442] BUG: using smp_processor_id() in preemptible [00000000] code: sh/346
->> [  103.950884] caller is debug_smp_processor_id+0x1c/0x26
->> [  103.956051] CPU: 0 PID: 346 Comm: sh Kdump: loaded Not tainted 5.10.113-00002-gce03f03bf4ec-dirty #149
->> [  103.965355] Call Trace:
->> [  103.967805] [<ffffffe00020372a>] walk_stackframe+0x0/0xa2
->> [  103.973206] [<ffffffe000bcf1f4>] show_stack+0x32/0x3e
->> [  103.978258] [<ffffffe000bd382a>] dump_stack_lvl+0x72/0x8e
->> [  103.983655] [<ffffffe000bd385a>] dump_stack+0x14/0x1c
->> [  103.988705] [<ffffffe000bdc8fe>] check_preemption_disabled+0x9e/0xaa
->> [  103.995057] [<ffffffe000bdc926>] debug_smp_processor_id+0x1c/0x26
->> [  104.001150] [<ffffffe000206c64>] machine_kexec+0x22/0xd0
->> [  104.006463] [<ffffffe000291a7e>] __crash_kexec+0x6a/0xa4
->> [  104.011774] [<ffffffe000bcf3fa>] panic+0xfc/0x2b0
->> [  104.016480] [<ffffffe000656ca4>] sysrq_reset_seq_param_set+0x0/0x70
->> [  104.022745] [<ffffffe000657310>] __handle_sysrq+0x8c/0x154
->> [  104.028229] [<ffffffe0006577e8>] write_sysrq_trigger+0x5a/0x6a
->> [  104.034061] [<ffffffe0003d90e0>] proc_reg_write+0x58/0xd4
->> [  104.039459] [<ffffffe00036cff4>] vfs_write+0x7e/0x254
->> [  104.044509] [<ffffffe00036d2f6>] ksys_write+0x58/0xbe
->> [  104.049558] [<ffffffe00036d36a>] sys_write+0xe/0x16
->> [  104.054434] [<ffffffe000201b9a>] ret_from_syscall+0x0/0x2
->> [  104.067863] Will call new kernel at ecc00000 from hart id 0
->> [  104.074939] FDT image at fc5ee000
->> [  104.079523] Bye...
->>
->> With the patch we can got clear output,
->> [   67.740553] sysrq: Trigger a crash
->> [   67.744166] Kernel panic - not syncing: sysrq triggered crash
->> [   67.809123] CPU1: off
->> [   67.865210] CPU2: off
->> [   67.909075] CPU3: off
->> [   67.919123] Starting crashdump kernel...
->> [   67.924900] Will call new kernel at ecc00000 from hart id 0
->> [   67.932045] FDT image at fc5ee000
->> [   67.935560] Bye...
->>
->> Fixes: 0e105f1d0037 ("riscv: use hart id instead of cpu id on machine_kexec")
->> Co-developed-by: Guo Ren <guoren@kernel.org>
->> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
->> ---
->>  arch/riscv/kernel/machine_kexec.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
->> index df8e24559035..86d1b5f9dfb5 100644
->> --- a/arch/riscv/kernel/machine_kexec.c
->> +++ b/arch/riscv/kernel/machine_kexec.c
->> @@ -171,7 +171,7 @@ machine_kexec(struct kimage *image)
->>  	struct kimage_arch *internal = &image->arch;
->>  	unsigned long jump_addr = (unsigned long) image->start;
->>  	unsigned long first_ind_entry = (unsigned long) &image->head;
->> -	unsigned long this_cpu_id = smp_processor_id();
->> +	unsigned long this_cpu_id = __smp_processor_id();
->>  	unsigned long this_hart_id = cpuid_to_hartid_map(this_cpu_id);
->>  	unsigned long fdt_addr = internal->fdt_addr;
->>  	void *control_code_buffer = page_address(image->control_code_page);
->
-> Thanks, this is on for-next.
+From: Vivek Kasireddy <vivek.kasireddy@intel.com>
 
-Connor pointed out that there's a series with more fixes, so I'm going 
-to take that instead.
+[ Upstream commit 9e9fa6a9198b767b00f48160800128e83a038f9f ]
+
+If the DMA mask is not set explicitly, the following warning occurs
+when the userspace tries to access the dma-buf via the CPU as
+reported by syzbot here:
+
+WARNING: CPU: 1 PID: 3595 at kernel/dma/mapping.c:188
+__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
+Modules linked in:
+CPU: 0 PID: 3595 Comm: syz-executor249 Not tainted
+5.17.0-rc2-syzkaller-00316-g0457e5153e0e #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+Google 01/01/2011
+RIP: 0010:__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
+Code: 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00 75 71 4c 8b 3d c0
+83 b5 0d e9 db fe ff ff e8 b6 0f 13 00 0f 0b e8 af 0f 13 00 <0f> 0b 45
+   31 e4 e9 54 ff ff ff e8 a0 0f 13 00 49 8d 7f 50 48 b8 00
+RSP: 0018:ffffc90002a07d68 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88807e25e2c0 RSI: ffffffff81649e91 RDI: ffff88801b848408
+RBP: ffff88801b848000 R08: 0000000000000002 R09: ffff88801d86c74f
+R10: ffffffff81649d72 R11: 0000000000000001 R12: 0000000000000002
+R13: ffff88801d86c680 R14: 0000000000000001 R15: 0000000000000000
+FS:  0000555556e30300(0000) GS:ffff8880b9d00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200000cc CR3: 000000001d74a000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ dma_map_sgtable+0x70/0xf0 kernel/dma/mapping.c:264
+ get_sg_table.isra.0+0xe0/0x160 drivers/dma-buf/udmabuf.c:72
+ begin_cpu_udmabuf+0x130/0x1d0 drivers/dma-buf/udmabuf.c:126
+ dma_buf_begin_cpu_access+0xfd/0x1d0 drivers/dma-buf/dma-buf.c:1164
+ dma_buf_ioctl+0x259/0x2b0 drivers/dma-buf/dma-buf.c:363
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f62fcf530f9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89
+f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe3edab9b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f62fcf530f9
+RDX: 0000000020000200 RSI: 0000000040086200 RDI: 0000000000000006
+RBP: 00007f62fcf170e0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f62fcf17170
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+v2: Dont't forget to deregister if DMA mask setup fails.
+
+Reported-by: syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com
+Cc: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220520205235.3687336-1-vivek.kasireddy@intel.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/dma-buf/udmabuf.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
+index 2e3b76519b49..b624f3d8f0e6 100644
+--- a/drivers/dma-buf/udmabuf.c
++++ b/drivers/dma-buf/udmabuf.c
+@@ -327,7 +327,23 @@ static struct miscdevice udmabuf_misc = {
+ 
+ static int __init udmabuf_dev_init(void)
+ {
+-	return misc_register(&udmabuf_misc);
++	int ret;
++
++	ret = misc_register(&udmabuf_misc);
++	if (ret < 0) {
++		pr_err("Could not initialize udmabuf device\n");
++		return ret;
++	}
++
++	ret = dma_coerce_mask_and_coherent(udmabuf_misc.this_device,
++					   DMA_BIT_MASK(64));
++	if (ret < 0) {
++		pr_err("Could not setup DMA mask for udmabuf device\n");
++		misc_deregister(&udmabuf_misc);
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ static void __exit udmabuf_dev_exit(void)
+-- 
+2.35.1
+
