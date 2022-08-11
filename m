@@ -2,120 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835F4C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 08:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5E3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 08:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234283AbiHKIRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 04:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        id S234130AbiHKIUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 04:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234320AbiHKIRK (ORCPT
+        with ESMTP id S233839AbiHKIUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 04:17:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC2B61DB4;
-        Thu, 11 Aug 2022 01:17:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 11 Aug 2022 04:20:46 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E2931939
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 01:20:45 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2050661541;
-        Thu, 11 Aug 2022 08:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82CB6C43149;
-        Thu, 11 Aug 2022 08:17:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660205827;
-        bh=SWqReYFq/QtMkn1WkoyKVT8HJ02O10COqLcZPEesbgQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JjG4ZQiEYfLperzvxK3ZDoo/PbAC6M+atROAwh4lwaR35iPMwxXfG5Hnt7kRoHL9K
-         pH01FfH5MGr5EsOs477czDsj3rFHKV1BtydRg5Gx55Nb9cj49+wbL5BPXKJahC9M9u
-         JSDheXUkDdQzSj9eMjrHv4xrGPI2PwrRTLnuJFlvFQxrMLDcPvbdYwLFEHcWpfTYPh
-         sqivLzh4h4eGarkkZej9ht7x1tOn5sIWR6qByI8KN4AN4DxQsFTQoF2+aIKepFHDFV
-         QivfX983CRdo+5be+jXeGKLVJrd2myd04PG/28dGeVWClRdg2XCDHn62J39vZmzhiX
-         r09b8fU47GP6A==
-Received: by mail-wr1-f49.google.com with SMTP id bv3so20445948wrb.5;
-        Thu, 11 Aug 2022 01:17:07 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3n/yka5FYYp8LuDJmJXQYtXGEpdr2+43V/u6ijx1RZh9vNz3sg
-        zutLmqmeMIbfcxxKDrLrz/e2XnwFkTwm8BwXpPY=
-X-Google-Smtp-Source: AA6agR6qZvmthof16QLhprS3Jl4HmQGtReowEcFD8kWNfLAJkn6JgRhDScSRpy4eSPyeos7EgC+YS+5NXetTMKZVEkE=
-X-Received: by 2002:a5d:5a9d:0:b0:21b:8247:7ec4 with SMTP id
- bp29-20020a5d5a9d000000b0021b82477ec4mr18320750wrb.561.1660205825684; Thu, 11
- Aug 2022 01:17:05 -0700 (PDT)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1CF8F34BA4;
+        Thu, 11 Aug 2022 08:20:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660206044; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YZetXLpzcTKbFkMzOEX40sJUJiI9GurrJooi8cd7cfI=;
+        b=ZbKokfQ94V88OnI61JcgxJpcxehiN9Tqlhr3kLftXjPI6l/O0rtQCZSIg2KKd2/Z3C7ylx
+        5PfKLsHLxNc04AjnczLXW9L4kOQ5FCLifu28fIWLOE2eImHRrTZn3I2xeBW0+ao4FKFv7d
+        wHVA7R+O+AVIaU5iUATiJuL1hvPizgk=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D904413A9B;
+        Thu, 11 Aug 2022 08:20:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hHDXMNu79GJGTwAAMHmgww
+        (envelope-from <mhocko@suse.com>); Thu, 11 Aug 2022 08:20:43 +0000
+Date:   Thu, 11 Aug 2022 10:20:43 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Baoquan He <bhe@redhat.com>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
+Message-ID: <YvS727RgUrpR4ueT@dhcp22.suse.cz>
+References: <20220325122559.14251-1-mhocko@kernel.org>
+ <Yj28gjonUa9+0yae@dhcp22.suse.cz>
+ <20220325164856.GA16800@lst.de>
+ <Yj3zyLs4f+ba6UqF@dhcp22.suse.cz>
+ <YupFSpXOrcfXJNya@dhcp22.suse.cz>
+ <20220811072817.GB13886@lst.de>
 MIME-Version: 1.0
-References: <20220811063105.2553381-1-quanyang.wang@windriver.com>
-In-Reply-To: <20220811063105.2553381-1-quanyang.wang@windriver.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 11 Aug 2022 10:16:54 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHxeGjbYXhXpgRBM60Hobo+0K2JkjEtm+7kzDOYobSmNA@mail.gmail.com>
-Message-ID: <CAMj1kXHxeGjbYXhXpgRBM60Hobo+0K2JkjEtm+7kzDOYobSmNA@mail.gmail.com>
-Subject: Re: [PATCH] asm/sections: fix the determination of the end of the
- memory region
-To:     quanyang.wang@windriver.com
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thierry Reding <treding@nvidia.com>,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220811072817.GB13886@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 11 Aug 2022 at 08:31, <quanyang.wang@windriver.com> wrote:
->
-> From: Quanyang Wang <quanyang.wang@windriver.com>
->
-> If using "vend >= begin" to judge if two memory regions intersects, vend
-> should be the end of the memory region, so it should be "virt + size -1"
-> instead of "virt + size".
-> The wrong determination of the end triggers the misreporting as below when
-> the dma debug function "check_for_illegal_area" calls memory_intersects to
-> check if the dma region intersects with stext region.
->
-> Calltrace (stext is at 0x80100000):
->  WARNING: CPU: 0 PID: 77 at kernel/dma/debug.c:1073 check_for_illegal_area+0x130/0x168
->  DMA-API: chipidea-usb2 e0002000.usb: device driver maps memory from kernel text or rodata [addr=800f0000] [len=65536]
->  Modules linked in:
->  CPU: 1 PID: 77 Comm: usb-storage Not tainted 5.19.0-yocto-standard #5
->  Hardware name: Xilinx Zynq Platform
->   unwind_backtrace from show_stack+0x18/0x1c
->   show_stack from dump_stack_lvl+0x58/0x70
->   dump_stack_lvl from __warn+0xb0/0x198
->   __warn from warn_slowpath_fmt+0x80/0xb4
->   warn_slowpath_fmt from check_for_illegal_area+0x130/0x168
->   check_for_illegal_area from debug_dma_map_sg+0x94/0x368
->   debug_dma_map_sg from __dma_map_sg_attrs+0x114/0x128
->   __dma_map_sg_attrs from dma_map_sg_attrs+0x18/0x24
->   dma_map_sg_attrs from usb_hcd_map_urb_for_dma+0x250/0x3b4
->   usb_hcd_map_urb_for_dma from usb_hcd_submit_urb+0x194/0x214
->   usb_hcd_submit_urb from usb_sg_wait+0xa4/0x118
->   usb_sg_wait from usb_stor_bulk_transfer_sglist+0xa0/0xec
->   usb_stor_bulk_transfer_sglist from usb_stor_bulk_srb+0x38/0x70
->   usb_stor_bulk_srb from usb_stor_Bulk_transport+0x150/0x360
->   usb_stor_Bulk_transport from usb_stor_invoke_transport+0x38/0x440
->   usb_stor_invoke_transport from usb_stor_control_thread+0x1e0/0x238
->   usb_stor_control_thread from kthread+0xf8/0x104
->   kthread from ret_from_fork+0x14/0x2c
->
-> Fixes: 979559362516 ("asm/sections: add helpers to check for section data")
-> Signed-off-by: Quanyang Wang <quanyang.wang@windriver.com>
-> ---
->  include/asm-generic/sections.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/asm-generic/sections.h b/include/asm-generic/sections.h
-> index d0f7bdd2fdf2..f7171b4f5bfd 100644
-> --- a/include/asm-generic/sections.h
-> +++ b/include/asm-generic/sections.h
-> @@ -108,7 +108,7 @@ static inline bool memory_contains(void *begin, void *end, void *virt,
->  static inline bool memory_intersects(void *begin, void *end, void *virt,
->                                      size_t size)
->  {
-> -       void *vend = virt + size;
-> +       void *vend = virt + size - 1;
->
->         return (virt >= begin && virt < end) || (vend >= begin && vend < end);
+On Thu 11-08-22 09:28:17, Christoph Hellwig wrote:
+> On Wed, Aug 03, 2022 at 11:52:10AM +0200, Michal Hocko wrote:
+> > OK, so I have another machine spewing this warning. Still on an older
+> > kernel but I do not think the current upstream would be any different in
+> > that regards. This time the DMA zone is populated and consumed from
+> > large part and the pool size request is just too large for it:
+> 
+> I can't really parse the last sentence.  What does "consumed from large
+> part" mean here?
 
-This test looks flawed to me for another reason as well: it only
-checks whether the start /or/ the end of (virt, virt+size) falls
-inside the area, so if the area is covered completely (in which case
-the intersection of the two will be equal to the area), this will
-return false erroneously.
+Meminfo part says
+Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+
+So the zone has 15MB of managed memory (by the page allocator), yet only
+160kB is free early boot during the allocation. So it is mostly consumed
+by somebody. I haven't really checked by whom.
+
+Does that exaplain the above better?
+-- 
+Michal Hocko
+SUSE Labs
