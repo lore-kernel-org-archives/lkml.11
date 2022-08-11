@@ -2,48 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D976BC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 07:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB7CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 07:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234062AbiHKHis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 03:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
+        id S234392AbiHKHks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 03:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbiHKHip (ORCPT
+        with ESMTP id S231336AbiHKHkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 03:38:45 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B012091D1A
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 00:38:44 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 32A3768AA6; Thu, 11 Aug 2022 09:38:41 +0200 (CEST)
-Date:   Thu, 11 Aug 2022 09:38:40 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
-Message-ID: <20220811073840.GE13886@lst.de>
-References: <YupFSpXOrcfXJNya@dhcp22.suse.cz> <YuqNToCACD8kKBG+@MiWiFi-R3L-srv> <YuqOrJKcgfamdXkk@dhcp22.suse.cz> <YuqU87SDwP0zg+c7@MiWiFi-R3L-srv> <YuqX0OAItlMDfRUV@dhcp22.suse.cz> <YuunCO2lsLDWTGw+@MiWiFi-R3L-srv> <Yuu1EyC95XL98XNI@dhcp22.suse.cz> <Yu0OWLbzLxCkSGVJ@MiWiFi-R3L-srv> <Yu1VTAxd9/jP/iEk@dhcp22.suse.cz> <YvJ/V2bor9Q3P6ov@dhcp22.suse.cz>
+        Thu, 11 Aug 2022 03:40:46 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFD37B7B9;
+        Thu, 11 Aug 2022 00:40:42 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9870329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9870:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 0FCA51EC04DF;
+        Thu, 11 Aug 2022 09:40:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660203637;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=IpisQAcpLwKm5/YV4D7g0u8+6Gpd+NBEfNOOTqDSHYU=;
+        b=Qeu3PX9QILrc+fCZi2MaaQdWTcEGfGbw7TikaXiXd90Hoy9taNA0ZkFZ0HPsap/Chwc3xS
+        KXIIgmNXX97gW1Sfw/BXDyOnGTcXyAwAjo2lYtT3ucne3Y0N/pPafwr+IAdg53kVrJZklx
+        984VT/vKwSvuKMH6/43gsPCH+BoTTQg=
+Date:   Thu, 11 Aug 2022 09:40:32 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Justin He <Justin.He@arm.com>
+Cc:     "Kani, Toshi" <toshi.kani@hpe.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>, nd <nd@arm.com>
+Subject: Re: =?utf-8?B?5Zue5aSNOiBbUEFUQ0hdIEFDUEk=?= =?utf-8?Q?=3A?= APEI:
+ move edac_init ahead of ghes platform drv register
+Message-ID: <YvSycPr+co+G5j+K@zn.tnic>
+References: <PH7PR84MB1838492812F5ABAA4BB54D9982639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF+J/dfyOEVSbSQ@zn.tnic>
+ <PH7PR84MB1838BF4F8B56EF1E24FCF1DC82639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvIPf/m3hU46S9Ik@zn.tnic>
+ <DBBPR08MB4538A5C080B09A96A77CCDA9F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <YvJB5cxSldpigw1g@zn.tnic>
+ <DBBPR08MB453870FA5C5D26AADFDF05C7F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <YvKWP2BcAh/+YKXM@zn.tnic>
+ <YvKrfqAsVLUqW5PN@zn.tnic>
+ <DBBPR08MB4538CB7A96F4C8CA42C29243F7649@DBBPR08MB4538.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YvJ/V2bor9Q3P6ov@dhcp22.suse.cz>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <DBBPR08MB4538CB7A96F4C8CA42C29243F7649@DBBPR08MB4538.eurprd08.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 05:37:59PM +0200, Michal Hocko wrote:
-> Here we go again.
+On Thu, Aug 11, 2022 at 12:39:10AM +0000, Justin He wrote:
+> > +static int __init ghes_edac_init(void)
+> > +{
+> > +	struct ghes *g, *g_tmp;
+> > +
+> > +	ghes_devs = ghes_get_devices(force_load);
+> > +	if (ghes_devs)
+> Should it be changed to if(!ghes_devs) ?
+> Otherwise, this ghes_edac_init() on Arm will always return with ENODEV
+> because ! ghes_get_devices().
 
-And just as last time I think this is the wrong thing to do.
-IFF we actually need the pool and we can't allocate it we want this
-warning.
+Yes, of course, sorry about that.
 
-But order-10 seems very larger for the 31-bit ISA DMA zone, so we might
-want to look into calculating the pool size based on the zone size
-instead.
+I mean, for a lack of a better idea, it returns a list of devices... ;-\
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
