@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A70CC25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686D1C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238982AbiHKQjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
+        id S239055AbiHKQj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239020AbiHKQgL (ORCPT
+        with ESMTP id S239072AbiHKQgS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:11 -0400
+        Thu, 11 Aug 2022 12:36:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44442760FF;
-        Thu, 11 Aug 2022 09:11:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3D372EF9;
+        Thu, 11 Aug 2022 09:11:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1735B82123;
-        Thu, 11 Aug 2022 16:11:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FDD1C433C1;
-        Thu, 11 Aug 2022 16:11:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C24F0B82123;
+        Thu, 11 Aug 2022 16:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFDE1C433D6;
+        Thu, 11 Aug 2022 16:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234291;
-        bh=O9KBh+JEHKvSn8aaofSPCI6UL1Cfbf9hwmI6B2XVZeQ=;
+        s=k20201202; t=1660234296;
+        bh=fVCa7m+quxhQcodAzLQC4U6N1eBE9FmPjgrkcEVUb5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h7/O9stSUAF9XNaPnv8PGc5ltbCBsnLa5QkEhz7yMWU3PQrK12VClpy/40W72Et0x
-         eEH743JBApwd+Amb/zBVoJjRaf8ZQ6er+iEuC+hiG0N/xT0pIBvMexVjIsBpa0abv5
-         EQyTXFS5TiIbo6MrNwxuBkIdeL8TGXqJT99HPqTSQIvA0MKUpn3tKAr9Z9pkg0660k
-         w7YXGPZcIdY4yCk5u1eIB9d/B2aqoH8um5cMpeU/W/A07NcWzvMdPXV+mqkzibQyLl
-         zfavYa7u32Nby7VvfwY4mMGnhqNm/vWTtckVMIEtVcUTMNvY41nOk5soaMZ/ERx8In
-         1ZwWMLvjmxt/g==
+        b=m97kBlluPMYDIy3n+ulkvXyMBi1juB8YUK8kJZAl8RjXrcXmRnz/R8T4YywhjMb6d
+         LdTvSi0LeoMLEgEFu++SWAnajgmujdQns/33DiZ+y9zBBqfHu2gDzEmrw8m0r+nPi0
+         ucB7XJf37RBqx7xif/sS8zGITzsbL2cDqle5hbCLZrU+1QaglQ2bXUlqlr9OxjarIW
+         j+S3Yxo0Vv+cGoaZH7Dad5QrDGZukmzoyMSeC0w0ajOoxBn0yzm5VSZeyWwc7FGWQ5
+         dBQ1g0jXi8K0c1iH3pSGvp+4Nr3vCLb5kx7bzdOI+PNqVyCIZ9kudiLwVntWKGhYXn
+         flWENHoOrImMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mailhol.vincent@wanadoo.fr,
-        stefan.maetje@esd.eu, socketcan@hartkopp.net,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 10/14] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
-Date:   Thu, 11 Aug 2022 12:10:39 -0400
-Message-Id: <20220811161050.1543183-10-sashal@kernel.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>, Sasha Levin <sashal@kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/14] d_add_ci(): make sure we don't miss d_lookup_done()
+Date:   Thu, 11 Aug 2022 12:10:42 -0400
+Message-Id: <20220811161050.1543183-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
 References: <20220811161050.1543183-1-sashal@kernel.org>
@@ -55,65 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit 2d99bfbf3386962692dcccd73931cb0db07a1a43 ]
+[ Upstream commit 40a3cb0d2314a41975aa385a74643878454f6eac ]
 
-As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
-CAN controller does not support Clock Divider Register compared to
-the reference Philips SJA1000 device.
+All callers of d_alloc_parallel() must make sure that resulting
+in-lookup dentry (if any) will encounter __d_lookup_done() before
+the final dput().  d_add_ci() might end up creating in-lookup
+dentries; they are fed to d_splice_alias(), which will normally
+make sure they meet __d_lookup_done().  However, it is possible
+to end up with d_splice_alias() failing with ERR_PTR(-ELOOP)
+without having done so.  It takes a corrupted ntfs or case-insensitive
+xfs image, but neither should end up with memory corruption...
 
-This patch adds a device quirk to handle this difference.
-
-Link: https://lore.kernel.org/all/20220710115248.190280-4-biju.das.jz@bp.renesas.com
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/sja1000/sja1000.c | 8 +++++---
- drivers/net/can/sja1000/sja1000.h | 3 ++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ fs/dcache.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 9f107798f904..ae0ca0ab371f 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -184,8 +184,9 @@ static void chipset_init(struct net_device *dev)
- {
- 	struct sja1000_priv *priv = netdev_priv(dev);
- 
--	/* set clock divider and output control register */
--	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
-+		/* set clock divider and output control register */
-+		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
- 
- 	/* set acceptance filter (accept all) */
- 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
-@@ -210,7 +211,8 @@ static void sja1000_start(struct net_device *dev)
- 		set_reset_mode(dev);
- 
- 	/* Initialize chip if uninitialized at this stage */
--	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
-+	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
- 		chipset_init(dev);
- 
- 	/* Clear error counters and error code capture */
-diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
-index 9d46398f8154..7f736f1df547 100644
---- a/drivers/net/can/sja1000/sja1000.h
-+++ b/drivers/net/can/sja1000/sja1000.h
-@@ -145,7 +145,8 @@
- /*
-  * Flags for sja1000priv.flags
-  */
--#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
-+#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
-+#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
- 
- /*
-  * SJA1000 private data structure
+diff --git a/fs/dcache.c b/fs/dcache.c
+index 9ac1290ae44f..e12246378834 100644
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -2119,6 +2119,7 @@ struct dentry *d_add_ci(struct dentry *dentry, struct inode *inode,
+ 	}
+ 	res = d_splice_alias(inode, found);
+ 	if (res) {
++		d_lookup_done(found);
+ 		dput(found);
+ 		return res;
+ 	}
 -- 
 2.35.1
 
