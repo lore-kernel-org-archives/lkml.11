@@ -2,114 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44127C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99521C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236930AbiHKPxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
+        id S236935AbiHKPxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236797AbiHKPwt (ORCPT
+        with ESMTP id S235451AbiHKPwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:52:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4557997D6F;
-        Thu, 11 Aug 2022 08:44:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7587616DE;
-        Thu, 11 Aug 2022 15:44:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E2BC433C1;
-        Thu, 11 Aug 2022 15:44:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232662;
-        bh=lNmtDLIAAiL3OFFYkzeWZzx9f+FhqJ2Knhh21WF6OUM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UuN7KA5ay2FrIrO5TcUDrpAWmHzJO/bhZY2VbMMf3JRnLhFY8WkTa384OgWXX2oMp
-         ea8qp9sRAUkG3+3QKBwbUGYIErDm+yFzZM+shBg5IcqAORjnWZQo0evgAYturhzFMP
-         c+Io8L6fuX3AKd4vohWX9o8zDwgAUgZTxzjz1mem0mpjljdLpfv1f2UN3Cm5PzRGEC
-         emnjtFGN8VhVxwQ4ACr81ovTiBLXRjx62jKYRKuoAQOnRSG/OtVSrQ2efwn1MJzcbt
-         BaqExrvCLpIAXg7dHAwzYXGmetRhgGbERRLx+T8uF7f4a3Mh/6gWnvtHC2GFkDKLdc
-         eBsYkilhQvw+A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duncan Ma <duncan.ma@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Hansen Dsouza <Hansen.Dsouza@amd.com>,
-        Hamza Mahfooz <hamza.mahfooz@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Aric.Cyr@amd.com, Jun.Lei@amd.com,
-        mwen@igalia.com, wenjing.liu@amd.com, Yi-Ling.Chen2@amd.com,
-        Jimmy.Kizito@amd.com, Jerry.Zuo@amd.com, gabe.teeger@amd.com,
-        Sungjoon.Kim@amd.com, isabbasso@riseup.net,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 16/93] drm/amd/display: Fix dpp dto for disabled pipes
-Date:   Thu, 11 Aug 2022 11:41:10 -0400
-Message-Id: <20220811154237.1531313-16-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:52:51 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5046697D6D;
+        Thu, 11 Aug 2022 08:44:20 -0700 (PDT)
+X-QQ-mid: bizesmtp85t1660232644t32ggu42
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 11 Aug 2022 23:43:58 +0800 (CST)
+X-QQ-SSF: 0100000000200060B000B00A0000000
+X-QQ-FEAT: +ynUkgUhZJnrSkfX6RUwLa8u1PVPLcBhzKhvmXohh2NQnAafqJHCfP7Mxp7ik
+        FgXQAul39KCZcROczGqRjIbAqbzkpwaaEdHkTJIZ4n9o58eq8rbHoE+f7upYJjBLSHegfE2
+        RI4YzLI0FZm8TzEVqCMXxzJCLa2afUrCrxlaIYCnc8vQ7o3mMc5J0ho7Cm3uk3BpJlbwT8E
+        2+HTVJ10p0bygADOcIMl6QTKaXB0S9WFqOStnxqP3LoL46Z0lLL3qe7Tf3yofgE/7jXIv7M
+        Lux1v8y5ZBEMM58NoqXBy0Q4M0PKDUrlQjFXLzPvnlgGrMzjTW+rD8DDga9DGNvlPXZAxns
+        7u8WzkHa0hmwXigMl70ohkdpH3VQDzylM0Z2lmj0uyfP2PTVwYBANeAvru7d40QJrRQRFNz
+X-QQ-GoodBg: 0
+From:   Shaomin Deng <dengshaomin@cdjrlc.com>
+To:     robert.moore@intel.com, rafael.j.wysocki@intel.com,
+        lenb@kernel.org, linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-kernel@vger.kernel.org
+Cc:     Shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] ACPICA: Fix typo in comments
+Date:   Thu, 11 Aug 2022 11:43:57 -0400
+Message-Id: <20220811154357.18674-1-dengshaomin@cdjrlc.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
-References: <20220811154237.1531313-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duncan Ma <duncan.ma@amd.com>
+Delete the repeated word "method" in comments.
 
-[ Upstream commit d4965c53b95d7533dfc2309d2fc25838bd33220e ]
-
-[Why]
-When switching from 1 pipe to 4to1 mpc combine,
-DppDtoClk aren't enabled for the disabled pipes
-pior to programming the pipes. Upon optimizing
-bandwidth, DppDto are enabled causing intermittent
-underflow.
-
-[How]
-Update dppclk dto whenever pipe are flagged to
-enable.
-
-Reviewed-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
-Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Reviewed-by: Hansen Dsouza <Hansen.Dsouza@amd.com>
-Acked-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
-Signed-off-by: Duncan Ma <duncan.ma@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
 ---
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/acpi/acpica/psparse.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-index b627c41713cc..76decaed5acd 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-@@ -1412,11 +1412,15 @@ static void dcn20_update_dchubp_dpp(
- 	struct hubp *hubp = pipe_ctx->plane_res.hubp;
- 	struct dpp *dpp = pipe_ctx->plane_res.dpp;
- 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
-+	struct dccg *dccg = dc->res_pool->dccg;
- 	bool viewport_changed = false;
+diff --git a/drivers/acpi/acpica/psparse.c b/drivers/acpi/acpica/psparse.c
+index ba93f359760a..b0faab1e6d3f 100644
+--- a/drivers/acpi/acpica/psparse.c
++++ b/drivers/acpi/acpica/psparse.c
+@@ -508,7 +508,7 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
+ 			}
  
- 	if (pipe_ctx->update_flags.bits.dppclk)
- 		dpp->funcs->dpp_dppclk_control(dpp, false, true);
- 
-+	if (pipe_ctx->update_flags.bits.enable)
-+		dccg->funcs->update_dpp_dto(dccg, dpp->inst, pipe_ctx->plane_res.bw.dppclk_khz);
-+
- 	/* TODO: Need input parameter to tell current DCHUB pipe tie to which OTG
- 	 * VTG is within DCHUBBUB which is commond block share by each pipe HUBP.
- 	 * VTG is 1:1 mapping with OTG. Each pipe HUBP will select which VTG
+ 			/*
+-			 * If the transfer to the new method method call worked,
++			 * If the transfer to the new method call worked,
+ 			 * a new walk state was created -- get it
+ 			 */
+ 			walk_state = acpi_ds_get_current_walk_state(thread);
 -- 
 2.35.1
 
