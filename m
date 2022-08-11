@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079E2C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A764AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236738AbiHKPsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        id S236518AbiHKPs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236837AbiHKPqY (ORCPT
+        with ESMTP id S236464AbiHKPqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:46:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AC28E9A0;
-        Thu, 11 Aug 2022 08:41:07 -0700 (PDT)
+        Thu, 11 Aug 2022 11:46:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109A795680;
+        Thu, 11 Aug 2022 08:41:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B63361634;
-        Thu, 11 Aug 2022 15:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75040C433C1;
-        Thu, 11 Aug 2022 15:41:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33763616C2;
+        Thu, 11 Aug 2022 15:41:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 404C1C433C1;
+        Thu, 11 Aug 2022 15:41:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232466;
-        bh=i8R9VijbNzVWBx/aqyo9yN5DjOdpVElqOOBOgB7dA8g=;
+        s=k20201202; t=1660232472;
+        bh=cCJEPUGUvO4paSYjxQDWD/ssxVHCzVHv9U/2ahl0g/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ebao8mUQ7NmEDjjrBaH1BicoSCfP/hqj6SUGWGBjRtgiWS5UFKvcX1ooF2sBRc0Sz
-         VdQUz5v1QvQX8R/bsEUgTiU0PLYqhpPZgBSQt1LEIdJwHARmj3Z5E2ofv4pCY63X7m
-         EiL7nU3gDlgbgBb04qK/zTlt1fElPVp/6xxeyeMgNgdRY+ralldCCEpNAr73ZZ5OSt
-         d0UgmZzaCjiZAWtIhGVFp7j8M/Qi3hhx5gOcJVFLdmTXh/r1zf/0knJ7Vtdt0n8CdP
-         G5wupniwm7rkdI0kjZS+Y4oZJVKBuWkVhTsn0mkMhXSgXJQPUk2jBu1Q9IHpc+owpQ
-         QhbbWDdWmde6A==
+        b=c+GaXZpuzq51Jz4Ay/iOtzIhH4AAuWouDQa5+/ZaQNtNkUv9HIHGawjg2JwNdRH5U
+         6JHcZCRqTYsRimboAM8lzIE39M4e+rw84EWLHzwN3JcitLU4umLjABnRJfEi/hwj9F
+         xw98Qtt7PC/iF5u9UsRJuZx3IwxX/utlZ0SrGVnWHwAQNb5wEM+6pzdOdB5n0DGS0c
+         kzZFBjYK9rRewMG+x8wNfGgvZELYWliQeQmMyoH4YYwNF+9tVtt3yThg1J7jAxd2bA
+         mujvgpaL8l9rEL4D+qTM38oyPc7t4QIRYDMdI8Y/J9n0mD9XWzca66zJpfXszPu3P9
+         BDRzneQLrT2sQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 089/105] Bluetooth: mgmt: Fix using hci_conn_abort
-Date:   Thu, 11 Aug 2022 11:28:13 -0400
-Message-Id: <20220811152851.1520029-89-sashal@kernel.org>
+Cc:     Philip Yang <Philip.Yang@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 091/105] drm/amdkfd: Correct mmu_notifier_get failure handling
+Date:   Thu, 11 Aug 2022 11:28:15 -0400
+Message-Id: <20220811152851.1520029-91-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -53,109 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit 1f7435c8f6558a94f75b408a74140bdcbd0f6dd1 ]
+[ Upstream commit 0593ad215359d51514c1e6c81ce28ea598efed6b ]
 
-This fixes using hci_conn_abort instead of using hci_conn_abort_sync.
+If process has signal pending, mmu_notifier_get_locked fails and calls
+ops->free_notifier, kfd_process_free_notifier will schedule
+kfd_process_wq_release as process refcount is 1, but process structure
+is already freed. This use after free bug causes system crash with
+different backtrace.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+The fix is to increase process refcount and then decrease the refcount
+after mmu_notifier_get success.
+
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci_sync.h |  2 ++
- net/bluetooth/hci_sync.c         |  3 +--
- net/bluetooth/mgmt.c             | 38 +++++++++++++++++++++++++++++---
- 3 files changed, 38 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_process.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/net/bluetooth/hci_sync.h b/include/net/bluetooth/hci_sync.h
-index 2492e3b46a8f..544e949b5dbf 100644
---- a/include/net/bluetooth/hci_sync.h
-+++ b/include/net/bluetooth/hci_sync.h
-@@ -105,4 +105,6 @@ int hci_resume_sync(struct hci_dev *hdev);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process.c b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
+index e3d64ec8c353..b8b185e242d3 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_process.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
+@@ -1404,6 +1404,11 @@ static struct kfd_process *create_process(const struct task_struct *thread)
+ 	hash_add_rcu(kfd_processes_table, &process->kfd_processes,
+ 			(uintptr_t)process->mm);
  
- struct hci_conn;
- 
-+int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn, u8 reason);
++	/* Avoid free_notifier to start kfd_process_wq_release if
++	 * mmu_notifier_get failed because of pending signal.
++	 */
++	kref_get(&process->ref);
 +
- int hci_le_create_conn_sync(struct hci_dev *hdev, struct hci_conn *conn);
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 9a3a7cc01345..ce7573182e81 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -4432,8 +4432,7 @@ static int hci_reject_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
- 				     sizeof(cp), &cp, HCI_CMD_TIMEOUT);
- }
- 
--static int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
--			       u8 reason)
-+int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn, u8 reason)
- {
- 	int err;
- 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 2f91a8c2b678..c003a17d8814 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -2528,6 +2528,37 @@ static int device_unpaired(struct hci_dev *hdev, bdaddr_t *bdaddr,
- 			  skip_sk);
- }
- 
-+static void unpair_device_complete(struct hci_dev *hdev, void *data, int err)
-+{
-+	struct mgmt_pending_cmd *cmd = data;
-+	struct mgmt_cp_unpair_device *cp = cmd->param;
-+
-+	if (!err)
-+		device_unpaired(hdev, &cp->addr.bdaddr, cp->addr.type, cmd->sk);
-+
-+	cmd->cmd_complete(cmd, err);
-+	mgmt_pending_free(cmd);
-+}
-+
-+static int unpair_device_sync(struct hci_dev *hdev, void *data)
-+{
-+	struct mgmt_pending_cmd *cmd = data;
-+	struct mgmt_cp_unpair_device *cp = cmd->param;
-+	struct hci_conn *conn;
-+
-+	if (cp->addr.type == BDADDR_BREDR)
-+		conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK,
-+					       &cp->addr.bdaddr);
-+	else
-+		conn = hci_conn_hash_lookup_le(hdev, &cp->addr.bdaddr,
-+					       le_addr_type(cp->addr.type));
-+
-+	if (!conn)
-+		return 0;
-+
-+	return hci_abort_conn_sync(hdev, conn, HCI_ERROR_REMOTE_USER_TERM);
-+}
-+
- static int unpair_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 			 u16 len)
- {
-@@ -2638,7 +2669,7 @@ static int unpair_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 		goto unlock;
+ 	/* MMU notifier registration must be the last call that can fail
+ 	 * because after this point we cannot unwind the process creation.
+ 	 * After this point, mmu_notifier_put will trigger the cleanup by
+@@ -1416,6 +1421,7 @@ static struct kfd_process *create_process(const struct task_struct *thread)
  	}
+ 	BUG_ON(mn != &process->mmu_notifier);
  
--	cmd = mgmt_pending_add(sk, MGMT_OP_UNPAIR_DEVICE, hdev, cp,
-+	cmd = mgmt_pending_new(sk, MGMT_OP_UNPAIR_DEVICE, hdev, cp,
- 			       sizeof(*cp));
- 	if (!cmd) {
- 		err = -ENOMEM;
-@@ -2647,9 +2678,10 @@ static int unpair_device(struct sock *sk, struct hci_dev *hdev, void *data,
++	kfd_unref_process(process);
+ 	get_task_struct(process->lead_thread);
  
- 	cmd->cmd_complete = addr_cmd_complete;
- 
--	err = hci_abort_conn(conn, HCI_ERROR_REMOTE_USER_TERM);
-+	err = hci_cmd_sync_queue(hdev, unpair_device_sync, cmd,
-+				 unpair_device_complete);
- 	if (err < 0)
--		mgmt_pending_remove(cmd);
-+		mgmt_pending_free(cmd);
- 
- unlock:
- 	hci_dev_unlock(hdev);
+ 	return process;
 -- 
 2.35.1
 
