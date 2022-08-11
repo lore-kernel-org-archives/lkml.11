@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84307C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE12C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238023AbiHKQh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        id S238637AbiHKQiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239007AbiHKQea (ORCPT
+        with ESMTP id S239293AbiHKQgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:34:30 -0400
+        Thu, 11 Aug 2022 12:36:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F04BC819;
-        Thu, 11 Aug 2022 09:11:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E6165540;
+        Thu, 11 Aug 2022 09:12:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 906126145A;
-        Thu, 11 Aug 2022 16:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A14C433D6;
-        Thu, 11 Aug 2022 16:11:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9EA961470;
+        Thu, 11 Aug 2022 16:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D798FC433D6;
+        Thu, 11 Aug 2022 16:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234272;
-        bh=/7Tt3mGLNqFqtvouJi8sZZB+COG859/xulJOuh6HOsY=;
+        s=k20201202; t=1660234335;
+        bh=F7Za96Zk9fR31g27p/6/PHrEOPrA9xzIElgi9R/ZIzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a2ZzmNjToOEUqfOOn/8/jg6AFu1iEUTLGaXar8kWUf84yqSMFoOFQk24E271yglZX
-         LliMGwhR5lzGY3m1YGy9DyJ/uG6sqag6ClksGwfvgsLd7qKCD4dvSAHMJeCn6Xt33h
-         wufHdDrvVDZnj5bh7WxRDitVIKUKzBtU+L0WoyQUUgMFddNj92FFsBT911gjc4nuXu
-         pdo5MztZGBE/QGDVPoAGxMC3O6aPe1Ls8RFf7m6YRGZMulp213cSs0/R1WlQGphxGy
-         jkqhClG2OKNn52a565h825erEyDGMeCBNR/6HEmYYxfdo2ZGHvBPKabhFO1Pz8BRy0
-         gZQH2BGdN/xRw==
+        b=lgLspGvM5DbfahGo0AJzkdL6xtROKmX8ekHiB360q21AHfxW6whQDwzLodWQ9W38M
+         M+nv2uEYOqg8L0skjFI8AcxoG2ilWaYGc+xv836Kt6mzg4QXBK+GvZ6MyU4uHIbYPE
+         Y8L7iDiphyozcpoLkT5UNi3GSxsODfK7ttCwRZm3nZjsM/AZncVQz2sQTDtaLNdBuI
+         8x+KK64dbOU6723X63gFCo5wD5/wRb+0BvU1B3NXj2sI/DLvSFfQ8jdrykO3sdGq++
+         hHnokE2kqhcfQz8oAtZH4gvhm3XNbFvWGADgwKw4JYYo+oGCZM2TFCX9y64rlg4Q3H
+         sk02tj5heP06w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Breno Leitao <leitao@debian.org>,
-        Sasha Levin <sashal@kernel.org>, nayna@linux.ibm.com,
-        pfsmorigo@gmail.com, mpe@ellerman.id.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.14 08/14] crypto: vmx - Fix warning on p8_ghash_alg
-Date:   Thu, 11 Aug 2022 12:10:37 -0400
-Message-Id: <20220811161050.1543183-8-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 10/12] wifi: rtl8xxxu: Fix the error handling of the probe function
+Date:   Thu, 11 Aug 2022 12:11:36 -0400
+Message-Id: <20220811161144.1543598-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
-References: <20220811161050.1543183-1-sashal@kernel.org>
+In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
+References: <20220811161144.1543598-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,34 +53,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit cc8166bfc829043020b5cc3b7cdba02a17d03b6d ]
+[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
 
-The compiler complains that p8_ghash_alg isn't declared which is
-because the header file aesp8-ppc.h isn't included in ghash.c.
-This patch fixes the warning.
+When the driver fails at ieee80211_alloc_hw() at the probe time, the
+driver will free the 'hw' which is not allocated, causing a bug.
 
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Acked-by: Breno Leitao <leitao@debian.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+The following log can reveal it:
+
+[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
+[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
+[   15.982583] Call Trace:
+[   15.984282]  ieee80211_free_hw+0x22/0x390
+[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
+
+Fix the bug by changing the order of the error handling.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/vmx/ghash.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/crypto/vmx/ghash.c b/drivers/crypto/vmx/ghash.c
-index 1bfe867c0b7b..84a293d45cc5 100644
---- a/drivers/crypto/vmx/ghash.c
-+++ b/drivers/crypto/vmx/ghash.c
-@@ -22,6 +22,7 @@
- #include <crypto/scatterwalk.h>
- #include <crypto/internal/hash.h>
- #include <crypto/b128ops.h>
-+#include "aesp8-ppc.h"
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index e73613b9f2f5..ba9ac025d440 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -6023,7 +6023,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	if (!hw) {
+ 		ret = -ENOMEM;
+ 		priv = NULL;
+-		goto exit;
++		goto err_put_dev;
+ 	}
  
- #define IN_INTERRUPT in_interrupt()
+ 	priv = hw->priv;
+@@ -6042,24 +6042,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  
+ 	ret = rtl8xxxu_parse_usb(priv, interface);
+ 	if (ret)
+-		goto exit;
++		goto err_set_intfdata;
+ 
+ 	ret = rtl8xxxu_identify_chip(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = rtl8xxxu_read_efuse(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = priv->fops->parse_efuse(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	rtl8xxxu_print_chipinfo(priv);
+@@ -6067,12 +6067,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	ret = priv->fops->load_firmware(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = rtl8xxxu_init_device(hw);
+ 	if (ret)
+-		goto exit;
++		goto err_set_intfdata;
+ 
+ 	hw->wiphy->max_scan_ssids = 1;
+ 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
+@@ -6120,12 +6120,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	if (ret) {
+ 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
+ 			__func__, ret);
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	return 0;
+ 
+-exit:
++err_set_intfdata:
+ 	usb_set_intfdata(interface, NULL);
+ 
+ 	if (priv) {
+@@ -6133,9 +6133,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 		mutex_destroy(&priv->usb_buf_mutex);
+ 		mutex_destroy(&priv->h2c_mutex);
+ 	}
+-	usb_put_dev(udev);
+ 
+ 	ieee80211_free_hw(hw);
++err_put_dev:
++	usb_put_dev(udev);
+ 
+ 	return ret;
+ }
 -- 
 2.35.1
 
