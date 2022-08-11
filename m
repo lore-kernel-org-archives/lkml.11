@@ -2,167 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A66FC25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E57C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236732AbiHKXXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 19:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
+        id S236571AbiHKX0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 19:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236571AbiHKXXE (ORCPT
+        with ESMTP id S235176AbiHKX0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 19:23:04 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4966FA1D0A;
-        Thu, 11 Aug 2022 16:23:03 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id b16so24791240edd.4;
-        Thu, 11 Aug 2022 16:23:03 -0700 (PDT)
+        Thu, 11 Aug 2022 19:26:01 -0400
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0598F941;
+        Thu, 11 Aug 2022 16:25:59 -0700 (PDT)
+Received: by mail-vk1-xa31.google.com with SMTP id q14so9678913vke.9;
+        Thu, 11 Aug 2022 16:25:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=/U91/4PX2cpKjtuOoFQknW+ecNHAJ1lj200SkSG5NGo=;
-        b=DxMmdBcwHWCQnmnR8aPAu/oDtYp5pG3qc9c5fkyCudxd6XbS2J65kUUJJzH6Bx2LDX
-         w04K8eTOjFSZkViAYrxQMSC0OCsdp7wO8uL1NtW2hCKi79BXG60PC8yjPiRFALDYmbbd
-         13EKw3byU8q157quq1YdfbvhBq76/eYhEHm523Ur4WqGzYGbF05zwHFkTy2BwIpGsUyL
-         ds01I74rRfICwbbH/wK4YJQniGgAuN7JkaPzEgOwSAy6VqudvNhRsOsNCA6oSeQOkbhu
-         GNZD6RLgsJIOJFb4ezUZg44un0iA3VlUNVI4I8zb6fEV2fwpneJyNaG2BG4HAxh1gQ1L
-         +v+g==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=Z/3c/f13BD6UjeEAmo6vUxRREzPPnc4YEqQv9afkgVc=;
+        b=Uy1/Wa7qyoxj3+x2u6VOkfR8q0VrissUQtRsubf7kkTf5Ntq+WSwaWFhexoWFqM/w+
+         rTDTiGJZdXD7RmYSnXxOhiLh9IHQVAWPCjKVChjiwsdudtbmYW8e3mu2ENVHAx+Dd7kG
+         ttimuBSd0PUZ/QrvMew8T/L4Y9dhnP3p5zhATaeGmg80capBbIF8ZBuSWxg0EFwcv98v
+         EbfJ69V0yvixc7tq9YZ91FuTPSk0/TH+3Nt+4lUc68HUq8jZnDubLOHMn34SuwhvIri8
+         UoX8bpTIsv0rtE4cPpXsNGxzMDBzeb+GUB8ewB53izYeVOZsrvLHiR8puT1GUYoCV0tq
+         raFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=/U91/4PX2cpKjtuOoFQknW+ecNHAJ1lj200SkSG5NGo=;
-        b=6m0vaaz1hmrYxzLDVdWHnbY1R7m4b3XkJ6QV+4/wHPAJPht//4pPK1wuPKTatkUtFB
-         gQJbXCHDGR0ubfyqyW6QBONIfzLSpSliqomp0FzrzdVsnSYaanHpt6LJW2DNEQ24uie8
-         2fvTbkCGdx3Ycmv0xkH9Z6/7BowdODKK35Q2jzdL7dGwxLAPJaq0JWEmw9a6/Zj3tWG8
-         QZFmrXh7ihIcvZfXvXCaGwW3LSYDvllN6YYSXQUkt3ejfgpVKhlnup42ttEQeRrKZJrY
-         ubbzscobn0/0BNs1+3ZW1chauXKD3IHPZdDoQVB9B5lSBXLgZX1kr3BjK48g5KjoYSGU
-         c8fw==
-X-Gm-Message-State: ACgBeo1IfFw1M/evgJh+qnaUc8EbhOAPFVdV4c4tte83w1KcjZYwc9am
-        S0MJd78AMuxs1SYj1rl7LeJ/1hcn0e90aDKW1vY=
-X-Google-Smtp-Source: AA6agR4YPEfgR/bDb/MhvLucvwWk13IzKj8Ug1hoRV4YqMmscMNCnEKauuMNQsnhnOhifR0LhNha1i1Nm6DfUguKph4=
-X-Received: by 2002:a05:6402:110a:b0:443:225c:6822 with SMTP id
- u10-20020a056402110a00b00443225c6822mr1155262edv.81.1660260181785; Thu, 11
- Aug 2022 16:23:01 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=Z/3c/f13BD6UjeEAmo6vUxRREzPPnc4YEqQv9afkgVc=;
+        b=giCM5syvNmi7gMoMj/Pasp0s76bfDbIezqNzltolY8XB8eLWjGhmeZa5uXSZQkqPJ+
+         Fk5zm1arc36PVMqgSwXhYRg2EUbtyyATefq7dcZ5YTmO75mqcQmbyrDho3E8kR9DYDk5
+         DJksY96WDXhS2fQ+75QOMP/42DeUmvgFOAn1O0KwdXdQG1cgPfyHQ5n3e9c3P4uMtUfW
+         eKyb5m7xY1RpasffM8xqIdUfxPqxLOzSr3Hb6J0/HpwvMm/yuCr37Cv3kxVWPG1easT9
+         iwgB4re7lqZ4y4wyZt9LelIQdHjH4kiatQ7V1Vrxm0olPCs0ljMP+O/2jMqTZ7pI/Ijc
+         hYVw==
+X-Gm-Message-State: ACgBeo0hUC2ZgzrOZhQMGeqhprJ1VHLTv5ChUnE5Ef8IkM/k6ihwYu82
+        t95ldfqquSFHPpGGfA+kIis=
+X-Google-Smtp-Source: AA6agR7Xd9nIhNp3jx0UJrnrQCfSISfHh2FtRwIg12f5DR7H9eKiurWK8PGYvxm2WkQz5IWt/8gg0Q==
+X-Received: by 2002:a1f:c117:0:b0:377:855a:4e9f with SMTP id r23-20020a1fc117000000b00377855a4e9fmr825613vkf.16.1660260357229;
+        Thu, 11 Aug 2022 16:25:57 -0700 (PDT)
+Received: from macondo.. ([2804:431:e7cc:d33f:249:c106:90c1:7b7f])
+        by smtp.gmail.com with ESMTPSA id g128-20020a1f2086000000b00375ecb78541sm502816vkg.12.2022.08.11.16.25.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 16:25:56 -0700 (PDT)
+From:   Rafael Mendonca <rafaelmendsr@gmail.com>
+To:     Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
+Cc:     Rafael Mendonca <rafaelmendsr@gmail.com>,
+        syzbot+31c9594f6e43b9289b25@syzkaller.appspotmail.com,
+        Hillf Danton <hdanton@sina.com>, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] block: Do not call blk_put_queue() if gendisk allocation fails
+Date:   Thu, 11 Aug 2022 20:23:37 -0300
+Message-Id: <20220811232338.254673-1-rafaelmendsr@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220808155341.2479054-1-void@manifault.com> <20220808155341.2479054-2-void@manifault.com>
-In-Reply-To: <20220808155341.2479054-2-void@manifault.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 11 Aug 2022 16:22:50 -0700
-Message-ID: <CAEf4BzbGEQ9rMHBaiex2wPEB2cOMXFNydpPUutko6P7UCK-UyQ@mail.gmail.com>
-Subject: Re: [PATCH 2/5] bpf: Define new BPF_MAP_TYPE_USER_RINGBUF map type
-To:     David Vernet <void@manifault.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, john.fastabend@gmail.com, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, tj@kernel.org,
-        joannelkoong@gmail.com, linux-kernel@vger.kernel.org,
-        Kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 8:54 AM David Vernet <void@manifault.com> wrote:
->
-> We want to support a ringbuf map type where samples are published from
-> user-space to BPF programs. BPF currently supports a kernel -> user-space
-> circular ringbuffer via the BPF_MAP_TYPE_RINGBUF map type. We'll need to
-> define a new map type for user-space -> kernel, as none of the helpers
-> exported for BPF_MAP_TYPE_RINGBUF will apply to a user-space producer
-> ringbuffer, and we'll want to add one or more helper functions that would
-> not apply for a kernel-producer ringbuffer.
->
-> This patch therefore adds a new BPF_MAP_TYPE_USER_RINGBUF map type
-> definition. The map type is useless in its current form, as there is no way
-> to access or use it for anything until we add more BPF helpers. A follow-on
-> patch will therefore add a new helper function that allows BPF programs to
-> run callbacks on samples that are published to the ringbuffer.
->
-> Signed-off-by: David Vernet <void@manifault.com>
-> ---
->  include/linux/bpf_types.h      |  1 +
->  include/uapi/linux/bpf.h       |  1 +
->  kernel/bpf/ringbuf.c           | 70 +++++++++++++++++++++++++++++-----
->  kernel/bpf/verifier.c          |  3 ++
->  tools/include/uapi/linux/bpf.h |  1 +
->  tools/lib/bpf/libbpf.c         |  1 +
->  6 files changed, 68 insertions(+), 9 deletions(-)
->
+Commit 6f8191fdf41d ("block: simplify disk shutdown") removed the call
+to blk_get_queue() during gendisk allocation but missed to remove the
+corresponding cleanup code blk_put_queue() for it. Thus, if the gendisk
+allocation fails, the request_queue refcount gets decremented and
+reaches 0, causing blk_mq_release() to be called with a hctx still
+alive. That triggers a WARNING report, as found by syzkaller:
 
-[...]
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 23016 at block/blk-mq.c:3881
+blk_mq_release+0xf8/0x3e0 block/blk-mq.c:3881
+[...] stripped
+RIP: 0010:blk_mq_release+0xf8/0x3e0 block/blk-mq.c:3881
+[...] stripped
+Call Trace:
+ <TASK>
+ blk_release_queue+0x153/0x270 block/blk-sysfs.c:780
+ kobject_cleanup lib/kobject.c:673 [inline]
+ kobject_release lib/kobject.c:704 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1c8/0x540 lib/kobject.c:721
+ __alloc_disk_node+0x4f7/0x610 block/genhd.c:1388
+ __blk_mq_alloc_disk+0x13b/0x1f0 block/blk-mq.c:3961
+ loop_add+0x3e2/0xaf0 drivers/block/loop.c:1978
+ loop_control_ioctl+0x133/0x620 drivers/block/loop.c:2150
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[...] stripped
 
->
-> -static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
-> +static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma,
-> +                           bool kernel_producer)
->  {
->         struct bpf_ringbuf_map *rb_map;
->
->         rb_map = container_of(map, struct bpf_ringbuf_map, map);
->
->         if (vma->vm_flags & VM_WRITE) {
-> -               /* allow writable mapping for the consumer_pos only */
-> -               if (vma->vm_pgoff != 0 || vma->vm_end - vma->vm_start != PAGE_SIZE)
-> +               if (kernel_producer) {
-> +                       /* allow writable mapping for the consumer_pos only */
-> +                       if (vma->vm_pgoff != 0 || vma->vm_end - vma->vm_start != PAGE_SIZE)
-> +                               return -EPERM;
-> +               /* For user ringbufs, disallow writable mappings to the
-> +                * consumer pointer, and allow writable mappings to both the
-> +                * producer position, and the ring buffer data itself.
-> +                */
-> +               } else if (vma->vm_pgoff == 0)
->                         return -EPERM;
+Fixes: 6f8191fdf41d ("block: simplify disk shutdown")
+Reported-by: syzbot+31c9594f6e43b9289b25@syzkaller.appspotmail.com
+Suggested-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Rafael Mendonca <rafaelmendsr@gmail.com>
+---
+ block/genhd.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-the asymmetrical use of {} in one if branch and not using them in
-another is extremely confusing, please don't do that
+diff --git a/block/genhd.c b/block/genhd.c
+index b901fea1d55a..d36fabf0abc1 100644
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -1341,7 +1341,7 @@ struct gendisk *__alloc_disk_node(struct request_queue *q, int node_id,
+ 
+ 	disk = kzalloc_node(sizeof(struct gendisk), GFP_KERNEL, node_id);
+ 	if (!disk)
+-		goto out_put_queue;
++		return NULL;
+ 
+ 	if (bioset_init(&disk->bio_split, BIO_POOL_SIZE, 0, 0))
+ 		goto out_free_disk;
+@@ -1390,8 +1390,6 @@ struct gendisk *__alloc_disk_node(struct request_queue *q, int node_id,
+ 	bioset_exit(&disk->bio_split);
+ out_free_disk:
+ 	kfree(disk);
+-out_put_queue:
+-	blk_put_queue(q);
+ 	return NULL;
+ }
+ 
+-- 
+2.34.1
 
-the way you put big comment inside the wrong if branch also throws me
-off, maybe move it before return -EPERM instead with proper
-indentation?
-
-sorry for nitpicks, but I've been stuck for a few minutes trying to
-figure out what exactly is happening here :)
-
-
->         } else {
->                 vma->vm_flags &= ~VM_MAYWRITE;
-> @@ -242,6 +271,16 @@ static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
->                                    vma->vm_pgoff + RINGBUF_PGOFF);
->  }
->
-> +static int ringbuf_map_mmap_kern(struct bpf_map *map, struct vm_area_struct *vma)
-> +{
-> +       return ringbuf_map_mmap(map, vma, true);
-> +}
-> +
-> +static int ringbuf_map_mmap_user(struct bpf_map *map, struct vm_area_struct *vma)
-> +{
-> +       return ringbuf_map_mmap(map, vma, false);
-> +}
-
-I wouldn't mind if you just have two separate implementations of
-ringbuf_map_mmap for _kern and _user cases, tbh, probably would be
-clearer as well
-
-> +
->  static unsigned long ringbuf_avail_data_sz(struct bpf_ringbuf *rb)
->  {
->         unsigned long cons_pos, prod_pos;
-> @@ -269,7 +308,7 @@ const struct bpf_map_ops ringbuf_map_ops = {
->         .map_meta_equal = bpf_map_meta_equal,
->         .map_alloc = ringbuf_map_alloc,
->         .map_free = ringbuf_map_free,
-> -       .map_mmap = ringbuf_map_mmap,
-> +       .map_mmap = ringbuf_map_mmap_kern,
->         .map_poll = ringbuf_map_poll,
->         .map_lookup_elem = ringbuf_map_lookup_elem,
->         .map_update_elem = ringbuf_map_update_elem,
-> @@ -278,6 +317,19 @@ const struct bpf_map_ops ringbuf_map_ops = {
->         .map_btf_id = &ringbuf_map_btf_ids[0],
->  };
->
-
-[...]
