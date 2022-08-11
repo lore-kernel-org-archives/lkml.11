@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DF5C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 082AEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236409AbiHKPmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S236417AbiHKPm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236497AbiHKPkw (ORCPT
+        with ESMTP id S236647AbiHKPlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:40:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E696979DC;
-        Thu, 11 Aug 2022 08:36:25 -0700 (PDT)
+        Thu, 11 Aug 2022 11:41:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30ADAA220F;
+        Thu, 11 Aug 2022 08:36:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4815EB82150;
-        Thu, 11 Aug 2022 15:36:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8B7C43470;
-        Thu, 11 Aug 2022 15:36:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F296B82157;
+        Thu, 11 Aug 2022 15:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B72B7C433C1;
+        Thu, 11 Aug 2022 15:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232183;
-        bh=k6nO4fjfTkhtJ138HaiEUBSacWXxEDdivO/PIUq8etQ=;
+        s=k20201202; t=1660232199;
+        bh=rzdAzLrpMW9Jg5EEs7PVdTHeceWVECVmu/G0Pm4ZQys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EDtuGe1Ns6N/K10//tHoX/rQS/5qgyllJ13q8jpo7X7ISeHwjQ5GNS891StyovsCs
-         QwzHiWFom2hJugdsxn0eCg3ztNqWCcbb7OjV5h52pYz9nzP/yET7Sj3XTIXnPKyewn
-         MRfviGR9jvZO4/saa5P8UE+WeY+H9GxnC2Vl/UUUI6hCp7+ciaarJuAD9EKNqjK/Lq
-         WK++gxQiDrUDzXoJRWVNhFLGhUBv3inIn45i4n8oRjKXCSWGZDvX1eYVEs2z7VXqiA
-         C+prbR0VGgostFXApK4wz4VWTGOkEtv1Owt1pHjGmdEekpIcBE+NVZB3oDZw8sAyTS
-         V5xttWi4evFRQ==
+        b=NHCdKlaLZDol8+/Og7id1JN2+Nrq3fQWV2QSh90hYUwwRxtUIcNoJ9t0gypgBMfwa
+         N8ibRl6ItyGtauQCB9J67nD5axUrrmGkB26RXTtxStc/Oonv4RFhVDKtWKRDxBuFwL
+         D0g3ZeXbS+SDL987jvgCwI/exV6zG4MHVlZzYODGTFUwSAciwir5u5v3+xB4QlGkQi
+         oCzXEGG/MRX4wr0wkUIkO/+OvXyI0W5zW+XbBsn7KvCCeBjavgYTacska0w9Pm8LJ7
+         qs1WPNTBw5KLrm3k9U0tnciZ1Jo8I9YFx5T0+8a+WWDB4lytYPtkXcyo6twl5Gfa3U
+         cAmkTihPbB8TA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Hilliard <james.hilliard1@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 067/105] libbpf: Disable SEC pragma macro on GCC
-Date:   Thu, 11 Aug 2022 11:27:51 -0400
-Message-Id: <20220811152851.1520029-67-sashal@kernel.org>
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Dave Airlie <airlied@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kherbst@redhat.com,
+        lyude@redhat.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 069/105] drm/nouveau/nvkm: use list_add_tail() when building object tree
+Date:   Thu, 11 Aug 2022 11:27:53 -0400
+Message-Id: <20220811152851.1520029-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -52,64 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Hilliard <james.hilliard1@gmail.com>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit 18410251f66aee7e82234073ce6656ca20a732a9 ]
+[ Upstream commit 61c1f340bc809a1ca1e3c8794207a91cde1a7c78 ]
 
-It seems the gcc preprocessor breaks with pragmas when surrounding
-__attribute__.
+Fixes resume from hibernate failing on (at least) TU102, where cursor
+channel init failed due to being performed before the core channel.
 
-Disable these pragmas on GCC due to upstream bugs see:
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90400
+Not solid idea why suspend-to-ram worked, but, presumably HW being in
+an entirely clean state has something to do with it.
 
-Fixes errors like:
-error: expected identifier or '(' before '#pragma'
-  106 | SEC("cgroup/bind6")
-      | ^~~
-
-error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
-  114 | char _license[] SEC("license") = "GPL";
-      | ^~~
-
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220706111839.1247911-1-james.hilliard1@gmail.com
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/bpf_helpers.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/gpu/drm/nouveau/nvkm/core/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index fb04eaf367f1..7349b16b8e2f 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -22,12 +22,25 @@
-  * To allow use of SEC() with externs (e.g., for extern .maps declarations),
-  * make sure __attribute__((unused)) doesn't trigger compilation warning.
-  */
-+#if __GNUC__ && !__clang__
-+
-+/*
-+ * Pragma macros are broken on GCC
-+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
-+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90400
-+ */
-+#define SEC(name) __attribute__((section(name), used))
-+
-+#else
-+
- #define SEC(name) \
- 	_Pragma("GCC diagnostic push")					    \
- 	_Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")	    \
- 	__attribute__((section(name), used))				    \
- 	_Pragma("GCC diagnostic pop")					    \
- 
-+#endif
-+
- /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
- #undef __always_inline
- #define __always_inline inline __attribute__((always_inline))
+diff --git a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+index 735cb6816f10..06b2f675f5da 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
++++ b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+@@ -128,7 +128,7 @@ nvkm_ioctl_new(struct nvkm_client *client,
+ 	if (ret == 0) {
+ 		ret = nvkm_object_init(object);
+ 		if (ret == 0) {
+-			list_add(&object->head, &parent->tree);
++			list_add_tail(&object->head, &parent->tree);
+ 			if (nvkm_object_insert(object)) {
+ 				client->data = object;
+ 				return 0;
 -- 
 2.35.1
 
