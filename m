@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1315C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A274C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239077AbiHKQmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
+        id S239085AbiHKQmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239194AbiHKQlB (ORCPT
+        with ESMTP id S239146AbiHKQkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:41:01 -0400
+        Thu, 11 Aug 2022 12:40:53 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F97DA50C1
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBEB9A5C43
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660234421;
+        s=mimecast20190719; t=1660234415;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tV5La4wEOuDKwImLzug6SnOpAoLEybFChef0YUGwxZI=;
-        b=afmzxUi4OsRPgSJ5tVXhXpxC1rH3gmxQpIhSHxMdUytfPZlYlParCfqF2rx7yi0WsF4xUt
-        U4R1+yp/3dxDfCMqHalfuzDJ2yUspEU9nB+yOL9EYQBhyyMVfSoaOl31wbyscjQCu/AYUP
-        muZxEMn6CtKXkZHcB/C00f56eZnwtAg=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=o5K8D5nZ/uY08WZ/7Zkfk1bCipsWkKVnCE+5nhtZSvY=;
+        b=CPhRda2xUGIy33ZprExOIXGw/mFa5+85TNIi9QvaYEeebSxujdFPE88HQ9Ep2BhE4XAUMO
+        8hLp3V1xchcf9vE7Uft015EmYJHmBqUoUKhf8zWGZDg0uv9RWt/za6Pg96kr0lHo/b7ctE
+        wCsC8nchrEp2ljGGCNCVp/Y455ElR2I=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-21-vGKLcBSbPXOGIcLJaddMkA-1; Thu, 11 Aug 2022 12:13:40 -0400
-X-MC-Unique: vGKLcBSbPXOGIcLJaddMkA-1
-Received: by mail-il1-f199.google.com with SMTP id n13-20020a056e02140d00b002dfa5464967so11412917ilo.19
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:39 -0700 (PDT)
+ us-mta-593-5oZoINwIPVSPqLMKsF0n7Q-1; Thu, 11 Aug 2022 12:13:34 -0400
+X-MC-Unique: 5oZoINwIPVSPqLMKsF0n7Q-1
+Received: by mail-io1-f70.google.com with SMTP id g22-20020a056602249600b0067caba4f24bso9925196ioe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:13:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=tV5La4wEOuDKwImLzug6SnOpAoLEybFChef0YUGwxZI=;
-        b=hrc1fxSgYWO86wYpXL/v7iYu84sk0HmhSB9dNVfrIt3X1ryJol6HO4B5ZnzZJhPVD/
-         nzyVpXRzqYB/zVEKXZ4xOQ2+d91QQoMMOj05jJ57IgjTkjlUYwcgkrktVQXEkeDyH/dT
-         mrDbpKRRl/xMUZVEHBIoYx3LII/frA7XJ3+3sUD5WapGKruEnappKmIBWnARuplIwXU7
-         7enNmhH1mNhzyVWUkAOTtp+Ne78TtcOdX1r3FEq6AYIcIclIVEhdl78qBe7UTWGbpwWY
-         J0w7dOLgU5u4Aok09Psj8lrx/161poVI4DwTM61sQsU0/43wJ4aMeYy0iuQtg+Gazd1+
-         ICzA==
-X-Gm-Message-State: ACgBeo1xPehMDADvKY2NUSzFniITsQUFEZpWqBcsI606v6m5ckhvHz1R
-        nRYVKMJUdrYOM4yUV+zwfkOWKTNwbMwEQ9/irm633qbynSKhX/1HXGKFE/SbP3eE3uw1o9Qj5nv
-        R8IKeI1dJsKa15jrAm+qjx0tW
-X-Received: by 2002:a05:6602:2182:b0:684:fb55:663f with SMTP id b2-20020a056602218200b00684fb55663fmr31092iob.60.1660234419273;
-        Thu, 11 Aug 2022 09:13:39 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5jIQLvYUpX1q44iT+XDMj9ZK15CNYkE0bFGQEL63lTXbeHWM+wVqA+5wMIWo1nNzyBJbp0sw==
-X-Received: by 2002:a05:6602:2182:b0:684:fb55:663f with SMTP id b2-20020a056602218200b00684fb55663fmr31074iob.60.1660234419026;
-        Thu, 11 Aug 2022 09:13:39 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=o5K8D5nZ/uY08WZ/7Zkfk1bCipsWkKVnCE+5nhtZSvY=;
+        b=Ds3WsiD+lkGfXHKRp+IVVjxmPuQj0peeSg5L25u1JVj4whx5J2dFbOqpko2suyS46l
+         K38L5rKAfv+W/cQNizT+zXOBUlWWYrvXocfzUk9qDrwa48dRsgzThqyanhHLibigLOLH
+         +oatIw1X13anycjPSfQGZdQG5BoJg6L0jvWC/CmGj47KpbW8c+jqMYf4+0L6yvRZMw2o
+         iIyZAYp/qv2RQrQcQDX3UMA0/n9O0qnIOlxE82Pg+t2qbfNodaC8EG/rAe+RgW/C124l
+         FPkdkhohIeU+ztxeXiMv/m6QPr40LRro0QjTUedyavNW0XKQ3WfEoZ4x0iJSSnN+FOAg
+         3big==
+X-Gm-Message-State: ACgBeo0EM5r54YPww6JEopbrgQQRgPxAZub9FbaAKyJVN57Q/Y/Bf9Uj
+        cNpw8/Wk3G2ecuWSqMTM+TMJzClEN6uCOATtUOVUJPuKC2giJV4kTklAp+lmDIav4NZlfwenkte
+        7PoqDUWQuixM0iVyV34Dpz4tU
+X-Received: by 2002:a5d:914e:0:b0:67c:f003:935c with SMTP id y14-20020a5d914e000000b0067cf003935cmr12738ioq.99.1660234413964;
+        Thu, 11 Aug 2022 09:13:33 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6nZjgVTgupJDvURG32D4tSR9ojNEnVSF1IVXHqscfzZtFeLR56o20PGY+08G0eNBqPR0FmwA==
+X-Received: by 2002:a5d:914e:0:b0:67c:f003:935c with SMTP id y14-20020a5d914e000000b0067cf003935cmr12721ioq.99.1660234413686;
+        Thu, 11 Aug 2022 09:13:33 -0700 (PDT)
 Received: from localhost.localdomain (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id t1-20020a92ca81000000b002dd1c3c5c46sm3415429ilo.73.2022.08.11.09.13.37
+        by smtp.gmail.com with ESMTPSA id t1-20020a92ca81000000b002dd1c3c5c46sm3415429ilo.73.2022.08.11.09.13.32
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 11 Aug 2022 09:13:38 -0700 (PDT)
+        Thu, 11 Aug 2022 09:13:33 -0700 (PDT)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Cc:     Hugh Dickins <hughd@google.com>,
@@ -68,243 +67,148 @@ Cc:     Hugh Dickins <hughd@google.com>,
         Nadav Amit <nadav.amit@gmail.com>,
         Huang Ying <ying.huang@intel.com>,
         Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH v4 3/7] mm/swap: Add swp_offset_pfn() to fetch PFN from swap entry
-Date:   Thu, 11 Aug 2022 12:13:27 -0400
-Message-Id: <20220811161331.37055-4-peterx@redhat.com>
+Subject: [PATCH v4 0/7] mm: Remember a/d bits for migration entries
+Date:   Thu, 11 Aug 2022 12:13:24 -0400
+Message-Id: <20220811161331.37055-1-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220811161331.37055-1-peterx@redhat.com>
-References: <20220811161331.37055-1-peterx@redhat.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We've got a bunch of special swap entries that stores PFN inside the swap
-offset fields.  To fetch the PFN, normally the user just calls swp_offset()
-assuming that'll be the PFN.
+v4:
+- Added r-bs for Ying
+- Some cosmetic changes here and there [Ying]
+- Fix smaps to only dump PFN for pfn swap entries for both pte/pmd [Ying]
+- Remove max_swapfile_size(), export swapfile_maximum_size variable [Ying]
+- In migrate_vma_collect_pmd() only read A/D if pte_present()
 
-Add a helper swp_offset_pfn() to fetch the PFN instead, fetching only the
-max possible length of a PFN on the host, meanwhile doing proper check with
-MAX_PHYSMEM_BITS to make sure the swap offsets can actually store the PFNs
-properly always using the BUILD_BUG_ON() in is_pfn_swap_entry().
+rfc: https://lore.kernel.org/all/20220729014041.21292-1-peterx@redhat.com
+v1:  https://lore.kernel.org/all/20220803012159.36551-1-peterx@redhat.com
+v2:  https://lore.kernel.org/all/20220804203952.53665-1-peterx@redhat.com
+v3:  https://lore.kernel.org/all/20220809220100.20033-1-peterx@redhat.com
 
-One reason to do so is we never tried to sanitize whether swap offset can
-really fit for storing PFN.  At the meantime, this patch also prepares us
-with the future possibility to store more information inside the swp offset
-field, so assuming "swp_offset(entry)" to be the PFN will not stand any
-more very soon.
+Problem
+=======
 
-Replace many of the swp_offset() callers to use swp_offset_pfn() where
-proper.  Note that many of the existing users are not candidates for the
-replacement, e.g.:
+When migrate a page, right now we always mark the migrated page as old &
+clean.
 
-  (1) When the swap entry is not a pfn swap entry at all, or,
-  (2) when we wanna keep the whole swp_offset but only change the swp type.
+However that could lead to at least two problems:
 
-For the latter, it can happen when fork() triggered on a write-migration
-swap entry pte, we may want to only change the migration type from
-write->read but keep the rest, so it's not "fetching PFN" but "changing
-swap type only".  They're left aside so that when there're more information
-within the swp offset they'll be carried over naturally in those cases.
+  (1) We lost the real hot/cold information while we could have persisted.
+      That information shouldn't change even if the backing page is changed
+      after the migration,
 
-Since at it, dropping hwpoison_entry_to_pfn() because that's exactly what
-the new swp_offset_pfn() is about.
+  (2) There can be always extra overhead on the immediate next access to
+      any migrated page, because hardware MMU needs cycles to set the young
+      bit again for reads, and dirty bits for write, as long as the
+      hardware MMU supports these bits.
 
-Signed-off-by: Peter Xu <peterx@redhat.com>
----
- arch/arm64/mm/hugetlbpage.c |  2 +-
- fs/proc/task_mmu.c          | 20 +++++++++++++++++---
- include/linux/swapops.h     | 35 +++++++++++++++++++++++++++++------
- mm/hmm.c                    |  2 +-
- mm/memory-failure.c         |  2 +-
- mm/page_vma_mapped.c        |  6 +++---
- 6 files changed, 52 insertions(+), 15 deletions(-)
+Many of the recent upstream works showed that (2) is not something trivial
+and actually very measurable.  In my test case, reading 1G chunk of memory
+- jumping in page size intervals - could take 99ms just because of the
+extra setting on the young bit on a generic x86_64 system, comparing to 4ms
+if young set.
 
-diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-index 0795028f017c..35e9a468d13e 100644
---- a/arch/arm64/mm/hugetlbpage.c
-+++ b/arch/arm64/mm/hugetlbpage.c
-@@ -245,7 +245,7 @@ static inline struct folio *hugetlb_swap_entry_to_folio(swp_entry_t entry)
- {
- 	VM_BUG_ON(!is_migration_entry(entry) && !is_hwpoison_entry(entry));
- 
--	return page_folio(pfn_to_page(swp_offset(entry)));
-+	return page_folio(pfn_to_page(swp_offset_pfn(entry)));
- }
- 
- void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index d56c65f98d00..b3e79128fca0 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -1419,9 +1419,19 @@ static pagemap_entry_t pte_to_pagemap_entry(struct pagemapread *pm,
- 		if (pte_swp_uffd_wp(pte))
- 			flags |= PM_UFFD_WP;
- 		entry = pte_to_swp_entry(pte);
--		if (pm->show_pfn)
-+		if (pm->show_pfn) {
-+			pgoff_t offset;
-+			/*
-+			 * For PFN swap offsets, keeping the offset field
-+			 * to be PFN only to be compatible with old smaps.
-+			 */
-+			if (is_pfn_swap_entry(entry))
-+				offset = swp_offset_pfn(entry);
-+			else
-+				offset = swp_offset(entry);
- 			frame = swp_type(entry) |
--				(swp_offset(entry) << MAX_SWAPFILES_SHIFT);
-+			    (offset << MAX_SWAPFILES_SHIFT);
-+		}
- 		flags |= PM_SWAP;
- 		migration = is_migration_entry(entry);
- 		if (is_pfn_swap_entry(entry))
-@@ -1478,7 +1488,11 @@ static int pagemap_pmd_range(pmd_t *pmdp, unsigned long addr, unsigned long end,
- 			unsigned long offset;
- 
- 			if (pm->show_pfn) {
--				offset = swp_offset(entry) +
-+				if (is_pfn_swap_entry(entry))
-+					offset = swp_offset_pfn(entry);
-+				else
-+					offset = swp_offset(entry);
-+				offset = offset +
- 					((addr & ~PMD_MASK) >> PAGE_SHIFT);
- 				frame = swp_type(entry) |
- 					(offset << MAX_SWAPFILES_SHIFT);
-diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-index 3a2901ff4f1e..bd4c6f0c2103 100644
---- a/include/linux/swapops.h
-+++ b/include/linux/swapops.h
-@@ -23,6 +23,20 @@
- #define SWP_TYPE_SHIFT	(BITS_PER_XA_VALUE - MAX_SWAPFILES_SHIFT)
- #define SWP_OFFSET_MASK	((1UL << SWP_TYPE_SHIFT) - 1)
- 
-+/*
-+ * Definitions only for PFN swap entries (see is_pfn_swap_entry()).  To
-+ * store PFN, we only need SWP_PFN_BITS bits.  Each of the pfn swap entries
-+ * can use the extra bits to store other information besides PFN.
-+ */
-+#ifdef MAX_PHYSMEM_BITS
-+#define SWP_PFN_BITS			(MAX_PHYSMEM_BITS - PAGE_SHIFT)
-+#else  /* MAX_PHYSMEM_BITS */
-+#define SWP_PFN_BITS			(BITS_PER_LONG - PAGE_SHIFT)
-+#endif	/* MAX_PHYSMEM_BITS */
-+#define SWP_PFN_MASK			(BIT(SWP_PFN_BITS) - 1)
-+
-+static inline bool is_pfn_swap_entry(swp_entry_t entry);
-+
- /* Clear all flags but only keep swp_entry_t related information */
- static inline pte_t pte_swp_clear_flags(pte_t pte)
- {
-@@ -64,6 +78,17 @@ static inline pgoff_t swp_offset(swp_entry_t entry)
- 	return entry.val & SWP_OFFSET_MASK;
- }
- 
-+/*
-+ * This should only be called upon a pfn swap entry to get the PFN stored
-+ * in the swap entry.  Please refers to is_pfn_swap_entry() for definition
-+ * of pfn swap entry.
-+ */
-+static inline unsigned long swp_offset_pfn(swp_entry_t entry)
-+{
-+	VM_BUG_ON(!is_pfn_swap_entry(entry));
-+	return swp_offset(entry) & SWP_PFN_MASK;
-+}
-+
- /* check whether a pte points to a swap entry */
- static inline int is_swap_pte(pte_t pte)
- {
-@@ -369,7 +394,7 @@ static inline int pte_none_mostly(pte_t pte)
- 
- static inline struct page *pfn_swap_entry_to_page(swp_entry_t entry)
- {
--	struct page *p = pfn_to_page(swp_offset(entry));
-+	struct page *p = pfn_to_page(swp_offset_pfn(entry));
- 
- 	/*
- 	 * Any use of migration entries may only occur while the
-@@ -387,6 +412,9 @@ static inline struct page *pfn_swap_entry_to_page(swp_entry_t entry)
-  */
- static inline bool is_pfn_swap_entry(swp_entry_t entry)
- {
-+	/* Make sure the swp offset can always store the needed fields */
-+	BUILD_BUG_ON(SWP_TYPE_SHIFT < SWP_PFN_BITS);
-+
- 	return is_migration_entry(entry) || is_device_private_entry(entry) ||
- 	       is_device_exclusive_entry(entry);
- }
-@@ -475,11 +503,6 @@ static inline int is_hwpoison_entry(swp_entry_t entry)
- 	return swp_type(entry) == SWP_HWPOISON;
- }
- 
--static inline unsigned long hwpoison_entry_to_pfn(swp_entry_t entry)
--{
--	return swp_offset(entry);
--}
--
- static inline void num_poisoned_pages_inc(void)
- {
- 	atomic_long_inc(&num_poisoned_pages);
-diff --git a/mm/hmm.c b/mm/hmm.c
-index f2aa63b94d9b..3850fb625dda 100644
---- a/mm/hmm.c
-+++ b/mm/hmm.c
-@@ -253,7 +253,7 @@ static int hmm_vma_handle_pte(struct mm_walk *walk, unsigned long addr,
- 			cpu_flags = HMM_PFN_VALID;
- 			if (is_writable_device_private_entry(entry))
- 				cpu_flags |= HMM_PFN_WRITE;
--			*hmm_pfn = swp_offset(entry) | cpu_flags;
-+			*hmm_pfn = swp_offset_pfn(entry) | cpu_flags;
- 			return 0;
- 		}
- 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 0dfed9d7b273..e48f6f6a259d 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -632,7 +632,7 @@ static int check_hwpoisoned_entry(pte_t pte, unsigned long addr, short shift,
- 		swp_entry_t swp = pte_to_swp_entry(pte);
- 
- 		if (is_hwpoison_entry(swp))
--			pfn = hwpoison_entry_to_pfn(swp);
-+			pfn = swp_offset_pfn(swp);
- 	}
- 
- 	if (!pfn || pfn != poisoned_pfn)
-diff --git a/mm/page_vma_mapped.c b/mm/page_vma_mapped.c
-index 8e9e574d535a..93e13fc17d3c 100644
---- a/mm/page_vma_mapped.c
-+++ b/mm/page_vma_mapped.c
-@@ -86,7 +86,7 @@ static bool check_pte(struct page_vma_mapped_walk *pvmw)
- 		    !is_device_exclusive_entry(entry))
- 			return false;
- 
--		pfn = swp_offset(entry);
-+		pfn = swp_offset_pfn(entry);
- 	} else if (is_swap_pte(*pvmw->pte)) {
- 		swp_entry_t entry;
- 
-@@ -96,7 +96,7 @@ static bool check_pte(struct page_vma_mapped_walk *pvmw)
- 		    !is_device_exclusive_entry(entry))
- 			return false;
- 
--		pfn = swp_offset(entry);
-+		pfn = swp_offset_pfn(entry);
- 	} else {
- 		if (!pte_present(*pvmw->pte))
- 			return false;
-@@ -221,7 +221,7 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
- 					return not_found(pvmw);
- 				entry = pmd_to_swp_entry(pmde);
- 				if (!is_migration_entry(entry) ||
--				    !check_pmd(swp_offset(entry), pvmw))
-+				    !check_pmd(swp_offset_pfn(entry), pvmw))
- 					return not_found(pvmw);
- 				return true;
- 			}
+This issue is originally reported by Andrea Arcangeli.
+
+Solution
+========
+
+To solve this problem, this patchset tries to remember the young/dirty bits
+in the migration entries and carry them over when recovering the ptes.
+
+We have the chance to do so because in many systems the swap offset is not
+really fully used.  Migration entries use swp offset to store PFN only,
+while the PFN is normally not as large as swp offset and normally smaller.
+It means we do have some free bits in swp offset that we can use to store
+things like A/D bits, and that's how this series tried to approach this
+problem.
+
+max_swapfile_size() is used here to detect per-arch offset length in swp
+entries.  We'll automatically remember the A/D bits when we find that we
+have enough swp offset field to keep both the PFN and the extra bits.
+
+Since max_swapfile_size() can be slow, the last two patches cache the
+results for it and also swap_migration_ad_supported as a whole.
+
+Known Issues / TODOs
+====================
+
+We still haven't taught madvise() to recognize the new A/D bits in
+migration entries, namely MADV_COLD/MADV_FREE.  E.g. when MADV_COLD upon a
+migration entry.  It's not clear yet on whether we should clear the A bit,
+or we should just drop the entry directly.
+
+We didn't teach idle page tracking on the new migration entries, because
+it'll need larger rework on the tree on rmap pgtable walk.  However it
+should make it already better because before this patchset page will be old
+page after migration, so the series will fix potential false negative of
+idle page tracking when pages were migrated before observing.
+
+The other thing is migration A/D bits will not start to working for private
+device swap entries.  The code is there for completeness but since private
+device swap entries do not yet have fields to store A/D bits, even if we'll
+persistent A/D across present pte switching to migration entry, we'll lose
+it again when the migration entry converted to private device swap entry.
+
+Tests
+=====
+
+After the patchset applied, the immediate read access test [1] of above 1G
+chunk after migration can shrink from 99ms to 4ms.  The test is done by
+moving 1G pages from node 0->1->0 then read it in page size jumps.  The
+test is with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz.
+
+Similar effect can also be measured when writting the memory the 1st time
+after migration.
+
+After applying the patchset, both initial immediate read/write after page
+migrated will perform similarly like before migration happened.
+
+Patch Layout
+============
+
+Patch 1-2:  Cleanups from either previous versions or on swapops.h macros.
+
+Patch 3-4:  Prepare for the introduction of migration A/D bits
+
+Patch 5:    The core patch to remember young/dirty bit in swap offsets.
+
+Patch 6-7:  Cache relevant fields to make migration_entry_supports_ad() fast.
+
+Please review, thanks.
+
+[1] https://github.com/xzpeter/clibs/blob/master/misc/swap-young.c
+
+Peter Xu (7):
+  mm/x86: Use SWP_TYPE_BITS in 3-level swap macros
+  mm/swap: Comment all the ifdef in swapops.h
+  mm/swap: Add swp_offset_pfn() to fetch PFN from swap entry
+  mm/thp: Carry over dirty bit when thp splits on pmd
+  mm: Remember young/dirty bit for page migrations
+  mm/swap: Cache maximum swapfile size when init swap
+  mm/swap: Cache swap migration A/D bits support
+
+ arch/arm64/mm/hugetlbpage.c           |   2 +-
+ arch/x86/include/asm/pgtable-3level.h |   8 +-
+ arch/x86/mm/init.c                    |   2 +-
+ fs/proc/task_mmu.c                    |  20 +++-
+ include/linux/swapfile.h              |   5 +-
+ include/linux/swapops.h               | 145 +++++++++++++++++++++++---
+ mm/hmm.c                              |   2 +-
+ mm/huge_memory.c                      |  27 ++++-
+ mm/memory-failure.c                   |   2 +-
+ mm/migrate.c                          |   6 +-
+ mm/migrate_device.c                   |   6 ++
+ mm/page_vma_mapped.c                  |   6 +-
+ mm/rmap.c                             |   5 +-
+ mm/swapfile.c                         |  15 ++-
+ 14 files changed, 214 insertions(+), 37 deletions(-)
+
 -- 
 2.32.0
 
