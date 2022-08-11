@@ -2,82 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62D6C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 08:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB115C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 08:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234424AbiHKIfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 04:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
+        id S234537AbiHKIgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 04:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233535AbiHKIfC (ORCPT
+        with ESMTP id S234150AbiHKIgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 04:35:02 -0400
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A018A7F1;
-        Thu, 11 Aug 2022 01:35:00 -0700 (PDT)
-Received: from [192.168.1.103] (31.173.83.30) by msexch01.omp.ru (10.188.4.12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Thu, 11 Aug
- 2022 11:34:49 +0300
-Subject: Re: [PATCH 2/2] USB: ncevibrator: simplify tv_probe
-To:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220811025346.113199-1-dzm91@hust.edu.cn>
- <20220811025346.113199-2-dzm91@hust.edu.cn>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <e959ac7c-7e74-b84c-ffff-ea0069634eb4@omp.ru>
-Date:   Thu, 11 Aug 2022 11:34:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Thu, 11 Aug 2022 04:36:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1CEAE792D6
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 01:36:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660207002;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bxa8o9Tbfqnk5UAsXfKTjPHNDbYRHlKkIXBkapUnTe8=;
+        b=Jsx9V5UMKKzJIemgFfVG6rej/ShWav0ed0J+I53fv9XkshPwnPlFY66C/H1Uvu3gG3PDmy
+        YbBvQn3srcibT8B4Tv33OPe+s3YUIkU9oShfX3DkrWPsQh7OYKKmViuZiTtgvGNDBJB+fs
+        gpTCGHJktgpi9depi9tPWuKX+ePQFYQ=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-221-Lmnc7MFUNYq45huEabfSGA-1; Thu, 11 Aug 2022 04:36:41 -0400
+X-MC-Unique: Lmnc7MFUNYq45huEabfSGA-1
+Received: by mail-qv1-f70.google.com with SMTP id e12-20020ad4442c000000b004796bf5f82cso8166365qvt.20
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 01:36:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=bxa8o9Tbfqnk5UAsXfKTjPHNDbYRHlKkIXBkapUnTe8=;
+        b=zLr8aJRtVUwvwtUI3NuvIzEnRs9buxw61zUYGtpJVFOk2rJFm7kh8aokTcgZYF5nCH
+         PvBMyyxQrocNmbNvYLdx9mQJsVjkyGpSdIG7Ts/nDOAt5r3NmTXVlA9OX3IVrqhIX+EG
+         b6VmUOfGOUdUsDZDXTJk6QPRtyMiPZRxw8sAJwdyLTXXcoW3JNIsQ7ftOEQI5G3MaOV7
+         tGlL3KZFo2zkInsttC/wfUW0MZ2mDc5di/bY7ZvBcS5kyqvOq9z10qBAgHjsDxnPwguO
+         MRuNlMDz5WBimX6HZTktgZl5OoRzNasWpAcuL4kbE65fEttzH7SDMTgOdE2sHkVbrpr0
+         l98w==
+X-Gm-Message-State: ACgBeo18sa5fYto1WEGjaWFqAF7CNNgsrgfZFm+rqjuBbkeXdW95inTQ
+        6Cbbxi/Dvoh3l9DCXejymq0pDDrxMF9+ps91c6X2ANqKl9kFih4doZSfit3o95F4ATSAgyeAlOS
+        EkU/Q/I7CVz8u5OBQJFhLeoL+
+X-Received: by 2002:a05:620a:2615:b0:6b9:29a9:b734 with SMTP id z21-20020a05620a261500b006b929a9b734mr17656848qko.273.1660207000598;
+        Thu, 11 Aug 2022 01:36:40 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR57hP3DZIXEgM1Y5p0tV6h36y995LYZumXLSlAhdlc1snP7yqGxy4qnrXwGh6eXY8qYNOBP7A==
+X-Received: by 2002:a05:620a:2615:b0:6b9:29a9:b734 with SMTP id z21-20020a05620a261500b006b929a9b734mr17656841qko.273.1660207000404;
+        Thu, 11 Aug 2022 01:36:40 -0700 (PDT)
+Received: from step1.redhat.com (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id ga25-20020a05622a591900b0034361fb2f75sm1343083qtb.22.2022.08.11.01.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 01:36:39 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v3 1/4] vdpa_sim_blk: check if sector is 0 for commands other than read or write
+Date:   Thu, 11 Aug 2022 10:36:29 +0200
+Message-Id: <20220811083632.77525-2-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220811083632.77525-1-sgarzare@redhat.com>
+References: <20220811083632.77525-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20220811025346.113199-2-dzm91@hust.edu.cn>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [31.173.83.30]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/11/2022 08:19:12
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 172170 [Aug 11 2022]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 495 495 bb4e71e2e9e23696ab912b286436360a94c9b107
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.83.30 in (user)
- b.barracudacentral.org}
-X-KSE-AntiSpam-Info: omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.83.30
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 08/11/2022 08:22:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 8/11/2022 7:08:00 AM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+VIRTIO spec states: "The sector number indicates the offset
+(multiplied by 512) where the read or write is to occur. This field is
+unused and set to 0 for commands other than read or write."
 
-   Your subject is broken now. :-)
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-MBR, Sergey
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+index ba253f8bce32..69c9f4f36f9a 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+@@ -112,6 +112,15 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 	offset = sector << SECTOR_SHIFT;
+ 	status = VIRTIO_BLK_S_OK;
+ 
++	if (type != VIRTIO_BLK_T_IN && type != VIRTIO_BLK_T_OUT &&
++	    sector != 0) {
++		dev_dbg(&vdpasim->vdpa.dev,
++			"sector must be 0 for %u request - sector: 0x%llx\n",
++			type, sector);
++		status = VIRTIO_BLK_S_IOERR;
++		goto err_status;
++	}
++
+ 	switch (type) {
+ 	case VIRTIO_BLK_T_IN:
+ 		if (!vdpasim_blk_check_range(sector, to_push)) {
+@@ -178,6 +187,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
+ 		break;
+ 	}
+ 
++err_status:
+ 	/* If some operations fail, we need to skip the remaining bytes
+ 	 * to put the status in the last byte
+ 	 */
+-- 
+2.37.1
+
