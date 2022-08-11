@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D252BC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D432DC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238511AbiHKQaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S238522AbiHKQaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238275AbiHKQ2b (ORCPT
+        with ESMTP id S238330AbiHKQ3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:28:31 -0400
+        Thu, 11 Aug 2022 12:29:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCC745068;
-        Thu, 11 Aug 2022 09:08:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C6445F4D;
+        Thu, 11 Aug 2022 09:08:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1B6D61426;
-        Thu, 11 Aug 2022 16:08:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EB9AC433D6;
-        Thu, 11 Aug 2022 16:08:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EB2961449;
+        Thu, 11 Aug 2022 16:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B333C433D6;
+        Thu, 11 Aug 2022 16:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234131;
-        bh=SGTpKFtvpWTeRk3mipvgbkhMbS+YsOcmKS0+1nJgO9k=;
+        s=k20201202; t=1660234137;
+        bh=uKwMLGgnt8uS0p5ebOQ23qe32Pedis/Xf8xFcNBy+Dg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XC7QrVaw3DzuKXslv80NB7vkMzQTEL3/GoGeCTPRi7ib3rm2Dt2IBAmlhrqnFx/s2
-         y9fohqXzeXNM9Ws+nZ+O1t7s6z7XlULHzuWJXsvOKzKWIdkyMCfJHkfta14R3K4oEY
-         CMPh5h9ndnpvlThgoZFQgxoh16rUa83OMP8exWMJRVfyVTJX4hUmJUMfkyyuchNnya
-         PXLwYa4aNRCbPNJCmGv8O/2q27AN9K7FO7/a6PmHxsQUD/7DnYOtBzkLLVsjtP3xgW
-         uK3n0y3yZ2qsbi1lrZrokKptZNPni89i+CV/32rsi03vv7xbthnmayWElwkU2MC0IJ
-         QAsgg9zExir7g==
+        b=IYM73saQCLgTZg+Wdfs+5Flx5PCPSXXAXTs29cIGD4phuY8U3mBHO+EnKZ4NMUThh
+         qopFMLjBbcWqaxRCvEFusNyCUIT3oqnJ9cGXJr1XMBQ0we7vke6yNR2gK4AUUU1LWI
+         ZMmwTAJ939MhjjdqAlxy6BTsq3nJzNetaSLPvI3y70qGLg4+PdKkpFwn9q3DjNvDBb
+         kADHjdrMIXpLZUpH0Hs1Ukfa95tolLZaFKiqurqzHkh4wZLusxQLUCkmjMvgjKDgKT
+         KSXBmvn3i5IJUZeoS7m+wpzlearPbLARywmZ/LcsMgiYnfZkW89Qr9Sv/pRcZg04bi
+         sp3LosHsePGEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, johan@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com, cai.huoqing@linux.dev,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 11/25] media: davinci: vpif: add missing of_node_put() in vpif_probe()
-Date:   Thu, 11 Aug 2022 12:08:06 -0400
-Message-Id: <20220811160826.1541971-11-sashal@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Breno Leitao <leitao@debian.org>,
+        Sasha Levin <sashal@kernel.org>, nayna@linux.ibm.com,
+        pfsmorigo@gmail.com, mpe@ellerman.id.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.4 15/25] crypto: vmx - Fix warning on p8_ghash_alg
+Date:   Thu, 11 Aug 2022 12:08:10 -0400
+Message-Id: <20220811160826.1541971-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160826.1541971-1-sashal@kernel.org>
 References: <20220811160826.1541971-1-sashal@kernel.org>
@@ -55,35 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit bb45f5433f23cf103ba29c9692ee553e061f2cb4 ]
+[ Upstream commit cc8166bfc829043020b5cc3b7cdba02a17d03b6d ]
 
-of_graph_get_next_endpoint() returns an 'endpoint' node pointer
-with refcount incremented. The refcount should be decremented
-before returning from vpif_probe().
+The compiler complains that p8_ghash_alg isn't declared which is
+because the header file aesp8-ppc.h isn't included in ghash.c.
+This patch fixes the warning.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: Breno Leitao <leitao@debian.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/davinci/vpif.c | 1 +
+ drivers/crypto/vmx/ghash.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/platform/davinci/vpif.c b/drivers/media/platform/davinci/vpif.c
-index e7e8eba048ac..a05fbb367d3a 100644
---- a/drivers/media/platform/davinci/vpif.c
-+++ b/drivers/media/platform/davinci/vpif.c
-@@ -450,6 +450,7 @@ static int vpif_probe(struct platform_device *pdev)
- 					      endpoint);
- 	if (!endpoint)
- 		return 0;
-+	of_node_put(endpoint);
+diff --git a/drivers/crypto/vmx/ghash.c b/drivers/crypto/vmx/ghash.c
+index 14807ac2e3b9..e419be7381c9 100644
+--- a/drivers/crypto/vmx/ghash.c
++++ b/drivers/crypto/vmx/ghash.c
+@@ -23,6 +23,7 @@
+ #include <crypto/internal/hash.h>
+ #include <crypto/internal/simd.h>
+ #include <crypto/b128ops.h>
++#include "aesp8-ppc.h"
  
- 	/*
- 	 * For DT platforms, manually create platform_devices for
+ void gcm_init_p8(u128 htable[16], const u64 Xi[2]);
+ void gcm_gmult_p8(u64 Xi[2], const u128 htable[16]);
 -- 
 2.35.1
 
