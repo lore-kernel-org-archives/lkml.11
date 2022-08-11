@@ -2,68 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1FCC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 14:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D70C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 14:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235457AbiHKOFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 10:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        id S235154AbiHKOF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 10:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235570AbiHKOEe (ORCPT
+        with ESMTP id S235467AbiHKOFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 10:04:34 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BC58981D;
-        Thu, 11 Aug 2022 07:04:11 -0700 (PDT)
-X-QQ-mid: bizesmtp84t1660226625tduidwys
-Received: from localhost.localdomain ( [182.148.14.53])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 11 Aug 2022 22:03:44 +0800 (CST)
-X-QQ-SSF: 01000000002000G0V000B00A0000020
-X-QQ-FEAT: 3qOr2y8T3jHiaJBKAvQ+jpJemwwPKU50gJHjzJdX164Fbz24WSo/Wg4smglYD
-        OKfNISHknX2RIm80byjxtfGRb72Hgu+WlqMXUewRuXVFQO7D8eCWM2HKaFIwnQo8q5jOpgo
-        CcaIIQLnSDHnPGrLJkypkhe/a7T4Ul/wxpeQZUYHr0Yx8UoINRDt6nhy0i9Y7uLyBhoSH7X
-        hH+5brQ9k9VCSIJTFoInHjF9exQa74xW2pQMW9oTOzf4jGhIrqVMxnSXWX1gZjU387eCpGI
-        SOQLFHQgMikreFBvTsKJq0EdKc0qyv8v5htAk94ixfjWdz262SGCFXX9y6faJ2LT0eKjPxJ
-        tpe56vX3R8+W83cChJU0HEqSzkWSD4Ka6hqmHtf7mjDspawacI5wtBhRn/d1tHH9JYU3qUR
-        wLFJzTGuyN8=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     wangborong@cdjrlc.com
-Cc:     code@tyhicks.com, ecryptfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ecryptfs: keystore: Fix comment typo
-Date:   Thu, 11 Aug 2022 22:03:35 +0800
-Message-Id: <20220811140335.32067-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 11 Aug 2022 10:05:22 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924C190C52;
+        Thu, 11 Aug 2022 07:04:42 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id o3-20020a17090a0a0300b001f7649cd317so5528829pjo.0;
+        Thu, 11 Aug 2022 07:04:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Dj6bB22FSCprvzSCdzPnalbNqdw4+7MgbO1K3Nk4hes=;
+        b=VLNchb/CBg9rGN3HwVrnxX6MEK6WSff4Mm0bX0PnDP86xsYEFddRY3N86NLjsz4d98
+         FJVEr0KhiZHuTfS3+uTmkX24wBl+DyNQXBHarmdqVnRRVvTfcmgPyD7CXKfwR8j0w1BS
+         qMced17ziT4aHo5DJQR7wnAaRAX7IDgEj4m9QZKB/zj1z+k37blNqZPjrWfztNz/f1iu
+         oDf9+mm+Rm83ETnU8n+xNSPJSy7BpncHosHrZQxYfPllFMQ0HgqtVJ57qUYfYyF4mqXX
+         M4eUkFKfj3pqkmOFAb/7r7tUkhjQFSgC1Ith+AuFtzzDoAZKW9/6SmCh2+lO+3wQpO3d
+         1Yqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Dj6bB22FSCprvzSCdzPnalbNqdw4+7MgbO1K3Nk4hes=;
+        b=XpYsUaQ9EkV1i+ECerEFNYOT620UD0Oxz90d6ct4dE5/Ie6zOi96o34jDp+oVmGBCw
+         Db7kuVOIMIptaK8HHS5kdQETRu2z7MRAf48305nxEiGXAxL/w6A/Ba8BXvBqZAlcwUsW
+         Ux39102u1pTbHgQU6cIEyuqgge4oP+WhxpHGYHv1EctTLs5eSsE0Ot/fTg1SEu/9ohqS
+         +EqgQ1iFunD0h71Zx4Jyw0NppB/eofJlWqjEV6u3J4Aj25kkkbh39APEjdfiDaVvYh2Q
+         1SxEnRSPgptixz51D8Jiuj+5/UNgwcC5cJRk56fUj6UZVEQdo4oF4qiGLd4HSc21rCSM
+         W2Nw==
+X-Gm-Message-State: ACgBeo1hf9j8DGJE1NsuHO+BpqXN8/k1tAwMxNZ3ClaJ9uRWj/v84tFR
+        +rS+gW41QpC/+7b9dVZU4C3i1LD0lLiAn63+LHU=
+X-Google-Smtp-Source: AA6agR7hiJzcTlyuNpDaCn+bU/kYswnNN0IO9VF+n4dkqjZNU1VXaD845OUQz8aKn0Bvh0OZ7xwllsBl3t2uwC3DIXg=
+X-Received: by 2002:a17:902:e746:b0:16e:f7cf:671f with SMTP id
+ p6-20020a170902e74600b0016ef7cf671fmr32178991plf.168.1660226681760; Thu, 11
+ Aug 2022 07:04:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+References: <20220721101050.2362811-1-martyn.welch@collabora.com> <20220721101050.2362811-2-martyn.welch@collabora.com>
+In-Reply-To: <20220721101050.2362811-2-martyn.welch@collabora.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Thu, 11 Aug 2022 11:04:27 -0300
+Message-ID: <CAOMZO5CVNK-yxGAp_-yi-0nsEu3aDs9c5EsKworm_uDJiS_T7A@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] arm64: dts: imx8mp-msc-sm2s: Add device trees for
+ MSC SM2S-IMX8PLUS SoM and carrier board
+To:     Martyn Welch <martyn.welch@collabora.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>, kernel@collabora.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+On Thu, Jul 21, 2022 at 7:11 AM Martyn Welch <martyn.welch@collabora.com> wrote:
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- fs/ecryptfs/keystore.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +&eqos {
+> +       pinctrl-names = "default";
+> +       pinctrl-0 = <&pinctrl_eqos>;
+> +       phy-mode = "rgmii-id";
+> +       phy-handle = <&ethphy0>;
+> +       phy-reset-gpios = <&tca6424 16 GPIO_ACTIVE_LOW>;
+> +       phy-reset-duration = <1>;
+> +       phy-reset-post-delay = <1>;
+> +       status = "okay";
+> +
+> +       mdio {
+> +               compatible = "snps,dwmac-mdio";
+> +               #address-cells = <1>;
+> +               #size-cells = <0>;
+> +
+> +               ethphy0: ethernet-phy@1 {
+> +                       compatible = "ethernet-phy-ieee802.3-c22";
+> +                       reg = <1>;
+> +                       eee-broken-1000t;
+> +                       phy-reset-gpios = <&tca6424 16 GPIO_ACTIVE_LOW>;
 
-diff --git a/fs/ecryptfs/keystore.c b/fs/ecryptfs/keystore.c
-index 3fe41964c0d8..2452d6fd7062 100644
---- a/fs/ecryptfs/keystore.c
-+++ b/fs/ecryptfs/keystore.c
-@@ -878,7 +878,7 @@ struct ecryptfs_parse_tag_70_packet_silly_stack {
-  * @filename: This function kmalloc's the memory for the filename
-  * @filename_size: This function sets this to the amount of memory
-  *                 kmalloc'd for the filename
-- * @packet_size: This function sets this to the the number of octets
-+ * @packet_size: This function sets this to the number of octets
-  *               in the packet parsed
-  * @mount_crypt_stat: The mount-wide cryptographic context
-  * @data: The memory location containing the start of the tag 70
--- 
-2.36.1
+You have already added  phy-reset-gpios above.
 
+The phy-reset- properties are deprecated. It's better to use
+reset-gpios,reset-assert-us, etc inside the mdio node.
+
+> +&fec {
+> +       pinctrl-names = "default";
+> +       pinctrl-0 = <&pinctrl_fec>;
+> +       phy-mode = "rgmii-id";
+> +       phy-handle = <&ethphy1>;
+> +       phy-reset-gpios = <&tca6424 17 GPIO_ACTIVE_LOW>;
+> +       phy-reset-duration = <1>;
+> +       phy-reset-post-delay = <1>;
+> +       fsl,magic-packet;
+> +       status = "okay";
+> +
+> +       mdio {
+> +               #address-cells = <1>;
+> +               #size-cells = <0>;
+> +
+> +               ethphy1: ethernet-phy@1 {
+> +                       compatible = "ethernet-phy-ieee802.3-c22";
+> +                       reg = <1>;
+> +                       eee-broken-1000t;
+> +                       phy-reset-gpios = <&tca6424 17 GPIO_ACTIVE_LOW>;
+
+Same here.
+
+> +&sdma1 {
+> +       status = "okay";
+
+No need to enable it as sdma1 is not disabled in imx8mp.dtsi.
