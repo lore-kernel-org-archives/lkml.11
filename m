@@ -2,114 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3F0C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:54:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1062EC25B08
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbiHKCy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 22:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
+        id S233816AbiHKCyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 22:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233757AbiHKCyX (ORCPT
+        with ESMTP id S233821AbiHKCyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 22:54:23 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EAB883D9
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 19:54:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660186461; x=1691722461;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=ZsDMA5q5pAMYRTD9hhg3Cm+LjvS+zik+GXMkY3O0QLo=;
-  b=YLXkraHU8nf3CPv6n9WdvEaPJCYFlzLUkNSaWJYF1mv5bxfloerpGCKL
-   t6fyHlie9pVNOQ7Bm/f5eM3Hk+rMNnXMroO/iFJwJqMN4Ea5OdaofL3Rj
-   iGKkYYyAyF9hhLwrZsWZya8hModvoxVvXC9AC9OftixkYQd8wUBRa500G
-   sJIi/yP6kJe71H8XtdbEghKx2xAwKNuXSn6lT1Vzmorin2HArGgG4bE8P
-   bMavUZD1CvstYdcQgXfngBA2JMG77LLK75lOp7iCBMAIAsgZdejq5O7eX
-   1kaB9OdOy7o8ohFDfiL0pcT+ZZDL3wdpkcfiL8BpQS/UMQVmIf7S5Hrre
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="271629013"
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="asc'?scan'208";a="271629013"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 19:54:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="asc'?scan'208";a="673523936"
-Received: from zhen-hp.sh.intel.com (HELO zhen-hp) ([10.239.159.108])
-  by fmsmga004.fm.intel.com with ESMTP; 10 Aug 2022 19:54:19 -0700
-Date:   Thu, 11 Aug 2022 10:29:44 +0800
-From:   Zhenyu Wang <zhenyu.z.wang@intel.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     zhi.a.wang@intel.com, intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        tvrtko.ursulin@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] i915/gvt: Fix Comet Lake
-Message-ID: <20220811022944.GB1089@zhen-hp.sh.intel.com>
-Reply-To: Zhenyu Wang <zhenyu.z.wang@intel.com>
-References: <166016852965.780835.10366587502693016900.stgit@omen>
+        Wed, 10 Aug 2022 22:54:32 -0400
+Received: from out199-6.us.a.mail.aliyun.com (out199-6.us.a.mail.aliyun.com [47.90.199.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918BB883EC;
+        Wed, 10 Aug 2022 19:54:30 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0VLxOlmu_1660186462;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VLxOlmu_1660186462)
+          by smtp.aliyun-inc.com;
+          Thu, 11 Aug 2022 10:54:23 +0800
+Subject: Re: [PATCH V5 0/6] RISC-V fixups to work with crash tool
+To:     Conor.Dooley@microchip.com, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, anup@brainfault.org,
+        heiko@sntech.de, guoren@kernel.org, mick@ics.forth.gr,
+        alexandre.ghiti@canonical.com, bhe@redhat.com, vgoyal@redhat.com,
+        dyoung@redhat.com, corbet@lwn.net
+Cc:     kexec@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
+        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org, yixun.lan@gmail.com
+References: <20220802121818.2201268-1-xianting.tian@linux.alibaba.com>
+ <b79ab47e-a1e2-eb21-0611-bcbc8b7802c5@linux.alibaba.com>
+ <b3184653-7ef4-eec3-9ef6-a8449fe24323@microchip.com>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Message-ID: <5afbd9b6-37c5-8a8d-6fdf-bca721ebd25e@linux.alibaba.com>
+Date:   Thu, 11 Aug 2022 10:54:22 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="VYvi4N5CyHZx5xNE"
-Content-Disposition: inline
-In-Reply-To: <166016852965.780835.10366587502693016900.stgit@omen>
+In-Reply-To: <b3184653-7ef4-eec3-9ef6-a8449fe24323@microchip.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---VYvi4N5CyHZx5xNE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+在 2022/8/10 上午5:24, Conor.Dooley@microchip.com 写道:
+> On 09/08/2022 07:58, Xianting Tian wrote:
+>> Hi Palmer
+>>
+>> Could you please help review this patch set?  thanks.
+> Hey Xianting,
+>
+> Obviously I am not Palmer, but I left some comments on the
+> patchset. Sorry for the delay in getting back onto you on your
+> latest version, I got confused as to which versions I had reviewed.
 
-On 2022.08.10 15:55:48 -0600, Alex Williamson wrote:
-> Prior to the commit below the GAMT_CHKN_BIT_REG address was setup for
-> devices matching (D_KBL | D_CFL), where intel_gvt_get_device_type()
-> returns D_CFL for either Coffee Lake or Comet Lake.  Include the missed
-> platform.`
->=20
-> Link: https://lore.kernel.org/all/20220808142711.02d16782.alex.williamson=
-@redhat.com
-> Fixes: e0f74ed4634d ("i915/gvt: Separate the MMIO tracking table from GVT=
--g")
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> ---
->  drivers/gpu/drm/i915/intel_gvt_mmio_table.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/gpu/drm/i915/intel_gvt_mmio_table.c b/drivers/gpu/dr=
-m/i915/intel_gvt_mmio_table.c
-> index 157e166672d7..5595639d0033 100644
-> --- a/drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-> +++ b/drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-> @@ -1076,7 +1076,8 @@ static int iterate_skl_plus_mmio(struct intel_gvt_m=
-mio_table_iter *iter)
->  	MMIO_D(GEN8_HDC_CHICKEN1);
->  	MMIO_D(GEN9_WM_CHICKEN3);
-> =20
-> -	if (IS_KABYLAKE(dev_priv) || IS_COFFEELAKE(dev_priv))
-> +	if (IS_KABYLAKE(dev_priv) ||
-> +	    IS_COFFEELAKE(dev_priv) || IS_COMETLAKE(dev_priv))
->  		MMIO_D(GAMT_CHKN_BIT_REG);
->  	if (!IS_BROXTON(dev_priv))
->  		MMIO_D(GEN9_CTX_PREEMPT_REG);
->=20
+You ever reviewed this version patch set,
 
-Thanks for catching this!
+https://lore.kernel.org/lkml/20220725014539.1037627-1-xianting.tian@linux.alibaba.com/ 
+<https://lore.kernel.org/lkml/20220725014539.1037627-1-xianting.tian@linux.alibaba.com/>
 
-Reviewed-by: Zhenyu Wang <zhenyuw@linux.intel.com>
-
-
---VYvi4N5CyHZx5xNE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQTXuabgHDW6LPt9CICxBBozTXgYJwUCYvRpkwAKCRCxBBozTXgY
-J2gcAJ9dPJreOMASPcIJVCkUov/utI/JmQCcCEF2AsdY8g2aRrUk9EbIcdAnagk=
-=DhCn
------END PGP SIGNATURE-----
-
---VYvi4N5CyHZx5xNE--
+>
+> Conor.
+>
+>>   
+>> Crash-utility patch set is ready(acked by HAGIO KAZUHITO), now waiting the kernel patch set merged firstly.
+>>
+>> 在 2022/8/2 下午8:18, Xianting Tian 写道:
+>>> I ever sent the patch 1 in the link:
+>>> https://patchwork.kernel.org/project/linux-riscv/patch/20220708073150.352830-3-xianting.tian@linux.alibaba.com/
+>>> And patch 2,3 in the link:
+>>> https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-2-xianting.tian@linux.alibaba.com/
+>>> https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-3-xianting.tian@linux.alibaba.com/
+>>>
+>>> This patch set just put these patches together, and with three new patch 4, 5, 6.
+>>> these six patches are the fixups for machine_kexec, kernel mode PC for vmcore
+>>> and improvements for vmcoreinfo, memory layout dump and fixup chedule out issue
+>>> in machine_crash_shutdown().
+>>>
+>>> The main changes in the six patchs as below,
+>>> Patch 1: use __smp_processor_id() instead of smp_processor_id() to cleanup
+>>>            the console prints.
+>>> Patch 2: Add VM layout, va bits, ram base to vmcoreinfo, which can simplify
+>>>            the development of crash tool as ARM64 already did
+>>>            (arch/arm64/kernel/crash_core.c).
+>>> Patch 3: Add modules to virtual kernel memory layout dump.
+>>> Patch 4: Fixup to get correct kernel mode PC for vmcore.
+>>> Patch 5: Updates vmcoreinfo.rst.
+>>> Patch 6: Fixup schedule out issue in machine_crash_shutdown()
+>>>
+>>> With these six patches(patch 2 is must), crash tool can work well to analyze
+>>> a vmcore. The patches for crash tool for RISCV64 is in the link:
+>>> https://lore.kernel.org/linux-riscv/20220801043040.2003264-1-xianting.tian@linux.alibaba.com/
+>>>
+>>> ------
+>>> Changes v1 -> v2:
+>>>    1, remove the patch "Add a fast call path of crash_kexec()" from this series
+>>>    of patches, as it already applied to riscv git.
+>>>    https://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git/commit/?h=for-next&id=3f1901110a89b0e2e13adb2ac8d1a7102879ea98
+>>>    2, add 'Reviewed-by' based on the comments of v1.
+>>> Changes v2 -> v3:
+>>>    use "riscv" instead of "riscv64" in patch 5 subject line.
+>>> Changes v3 -> v4:
+>>>    use "riscv" instead of "riscv64" in the summary of patch 5 subject line.
+>>> Changes v4 -> v5:
+>>>    add a new patch "RISC-V: Fixup schedule out issue in machine_crash_shutdown()"
+>>>
+>>> Xianting Tian (6):
+>>>     RISC-V: use __smp_processor_id() instead of smp_processor_id()
+>>>     RISC-V: Add arch_crash_save_vmcoreinfo support
+>>>     riscv: Add modules to virtual kernel memory layout dump
+>>>     RISC-V: Fixup getting correct current pc
+>>>     riscv: crash_core: Export kernel vm layout, phys_ram_base
+>>>     RISC-V: Fixup schedule out issue in machine_crash_shutdown()
+>>>
+>>>    .../admin-guide/kdump/vmcoreinfo.rst          | 31 +++++++++++++++++++
+>>>    arch/riscv/kernel/Makefile                    |  1 +
+>>>    arch/riscv/kernel/crash_core.c                | 29 +++++++++++++++++
+>>>    arch/riscv/kernel/crash_save_regs.S           |  2 +-
+>>>    arch/riscv/kernel/machine_kexec.c             | 28 ++++++++++++++---
+>>>    arch/riscv/mm/init.c                          |  4 +++
+>>>    6 files changed, 89 insertions(+), 6 deletions(-)
+>>>    create mode 100644 arch/riscv/kernel/crash_core.c
+>>>
