@@ -2,102 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752C7C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93EEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:53:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234334AbiHKKwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 06:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S231651AbiHKKxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231651AbiHKKw2 (ORCPT
+        with ESMTP id S229786AbiHKKxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 06:52:28 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EA193525
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:52:27 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id r17so24977156lfm.11
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:52:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=d7iRjX2D2keNI8slfz7qoQsCGpwSEtSMwIfU6YyWGks=;
-        b=wM7xc0UlLu2qxdJx92iZEMR+Gi0HdbTzS+WEzrfl555Mbl2HEMTogGhtSMJy6Rtydv
-         AzmxJAS/bA9DsBr/rMDV35nITUAs3/EIsDf+HRJexTuYpttsVIh4wAATcFPF2zJDptPw
-         7g55dImwQd9A36IuU17wCQYcnM5mSDcSZHTM6mHl1BY7qvi4ddXegD6qwIWxw48ulZrA
-         YEtFK8CXNDspr68xzqUBcT21jF0awZF077ZUJ7wEv6shXty/euV0Wkbkz5W/Enk9ZngZ
-         tZ5qGcao76DNRWCYRXGZHhjrwUCjLyE4gX/SBtG7UdKnI9CAlR/wlYYf8qFgmQ8qAezb
-         VmuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=d7iRjX2D2keNI8slfz7qoQsCGpwSEtSMwIfU6YyWGks=;
-        b=qitvjhM3juriEj9CleDd4Lg3cqpult8Ziy06PlDNPRKGR6ivIk8UiSfHjISnxupExM
-         2WW3Uwb2bRAQkNG290svuEKvJbfuTyvm43ZQ5M4ENeC38QWyfPrebvMHDs88BWwwCJ75
-         x6J1VGzYaVj6KJNYT94thuknYWkipR+gTFAcZ33o75wCHE6r6Fz74hOrlWBVfmruPpb+
-         q5CNixi6LJxPfNyAwUENjW3eIjimKn3uheuY7c1tTO5oz5KeNlAgKI1noIhWukW7A73E
-         +BEj5+YNAoCvUtqRFwDbMkfI0PXg9hwCdyoFKl2Y2ktC522Kh8zdc+wXdC+0bjUqrUZf
-         x34A==
-X-Gm-Message-State: ACgBeo2VT6jFRPE8qlC7i/qI7h3fnnsfJhYHI/G+gSCHSHytG7JlBv6X
-        mbf1jUdUJaGo89RElNqkWUSWkg==
-X-Google-Smtp-Source: AA6agR7dL4LIkbOwC+Z4uacUEGODwrWrQ0fm3+nLjVtBLlPmq4l/QPZ4hvKbEI/PzYUR2pBShKTjIQ==
-X-Received: by 2002:a19:674a:0:b0:47f:863d:5bc2 with SMTP id e10-20020a19674a000000b0047f863d5bc2mr10519629lfj.92.1660215146230;
-        Thu, 11 Aug 2022 03:52:26 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id v9-20020a2e4809000000b0025fe2049beesm745940lja.60.2022.08.11.03.52.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 03:52:25 -0700 (PDT)
-Message-ID: <d8e512c3-2a96-0fa0-6c2a-d404a9abd8f5@linaro.org>
-Date:   Thu, 11 Aug 2022 13:52:24 +0300
+        Thu, 11 Aug 2022 06:53:36 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3AC9352A;
+        Thu, 11 Aug 2022 03:53:35 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9854329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9854:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5C5DA1EC063F;
+        Thu, 11 Aug 2022 12:53:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660215210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=hiSEN+Zh8reclUVp4OU5TllqlGYD9cAoOWRjyF0EZDE=;
+        b=ZK0kakkCQnpy8iNukkbPTl7HdPXGMUq27qOAY/pJXYIituVpxA+uCCbIT/wcAJB5qL8EDZ
+        qSfMNJwb73JAf3iU4ILpYbOk7URgBVQiGWF3jw9hl+EUzvo6G3qKEPr9QQe8WVqjkJGcFL
+        Qv345YYfhoURhe5ReKye0aV2Qeou8r0=
+Date:   Thu, 11 Aug 2022 12:53:30 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     bjorn.andersson@linaro.org, ckadabi@quicinc.com,
+        vnkgutta@quicinc.com, mchehab@kernel.org, james.morse@arm.com,
+        rric@kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Channagoud Kadabi <ckadabi@codeaurora.org>,
+        Venkata Narendra Kumar Gutta <vnkgutta@codeaurora.org>
+Subject: Re: [PATCH 0/2] Fix crash when using Qcom LLCC/EDAC drivers
+Message-ID: <YvTfqg0q/8kIMY91@zn.tnic>
+References: <20220811100924.79505-1-manivannan.sadhasivam@linaro.org>
+ <YvTehUOIqJGqXgXY@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 1/3] dt-bindings: arm: fsl: imx6ul-kontron: Update
- bindings
-Content-Language: en-US
-To:     Frieder Schrempf <frieder@fris.de>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Peng Fan <peng.fan@nxp.com>, Rob Herring <robh@kernel.org>
-References: <20220810081825.19051-1-frieder@fris.de>
- <20220810081825.19051-2-frieder@fris.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220810081825.19051-2-frieder@fris.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YvTehUOIqJGqXgXY@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/08/2022 11:18, Frieder Schrempf wrote:
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On Thu, Aug 11, 2022 at 12:48:37PM +0200, Borislav Petkov wrote:
+> On Thu, Aug 11, 2022 at 03:39:22PM +0530, Manivannan Sadhasivam wrote:
+> > Hello,
+> > 
+> > This series fixes the crash seen on the Qualcomm SM8450 chipset with the
+> > LLCC/EDAC drivers. The problem was due to the Qcom EDAC driver using the
+> > fixed LLCC register offsets for detecting the LLCC errors.
 > 
-> This updates the bindings in order to simplify the devicetree
-> structure and to add names for the boards that follow the latest
-> convention used by Kontron marketing.
+> I see you've CCed the QCOM maintainers using different email addresses:
 > 
-> It also gets rid of the N6xxx notation in the compatibles and
-> file names, as they are not really used anymore and often result
-> in confusion.
+> $ ./scripts/get_maintainer.pl -f drivers/edac/qcom_edac.c
+> Channagoud Kadabi <ckadabi@codeaurora.org> (maintainer:EDAC-QCOM)
+> Venkata Narendra Kumar Gutta <vnkgutta@codeaurora.org> (maintainer:EDAC-QCOM)
 > 
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+> Does MAINTAINERS need updating?
 
-This affects the ABI, so you should be sure that it is desired...
+No, it doesn't. The email addresses you used, bounce:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Delivery has failed to these recipients or groups:
 
-Best regards,
-Krzysztof
+vnkgutta@quicinc.com<mailto:vnkgutta@quicinc.com>
+The email address you entered couldn't be found. Please check the recipient's email address and try to resend the message. If the problem continues,
++please contact your email admin.
+
+
+ckadabi@quicinc.com<mailto:ckadabi@quicinc.com>
+The email address you entered couldn't be found. Please check the recipient's email address and try to resend the message. If the problem continues,
++please contact your email admin.
+
+In the future, when you wonder who to Cc and how,
+
+scripts/get_maintainer.pl
+
+is your friend.
+
+HTH.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
