@@ -2,102 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4EFC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F7CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236356AbiHKPjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        id S236376AbiHKPkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236245AbiHKPjP (ORCPT
+        with ESMTP id S236318AbiHKPjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:39:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B442956AB;
-        Thu, 11 Aug 2022 08:34:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FD6EB82144;
-        Thu, 11 Aug 2022 15:34:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13DA5C43470;
-        Thu, 11 Aug 2022 15:34:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232084;
-        bh=Znb4vMMUW0CvqnK5eP1hSzIzgUAQiLBAoxM54auJynM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RiCExWtXsLFysZq2w9NZpU85iiLhgxaewWZ5xcwpIOubmxXsDk9KCpX448uMd2OjW
-         K3TqSsS/Cpod2tr9DshDRUcxQioCuUjAxJudG6P9dZUiUCwliZaBVA+hg5vgyoO84U
-         ysAJkypKedcHH7HoXLuBpeBf6dnGReM5nGmhhC9Sx9gWo6+2PsoaZBppBsDATX4pKI
-         y0q8574cdMABdZ6ZWK+X01RzpCDHeZzOazV01LO2gamJMVyKndhWJEmvGv7Nh2kSG6
-         /JlA0N5ysIkG5nx8Fm4mTiAEp7qc0v2ncUSeufulv116x1glvve3hgkNz0W2GYNGQU
-         8OVnJtsd8uJBQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Michael Strauss <Michael.Strauss@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, wyatt.wood@amd.com,
-        aric.cyr@amd.com, arnd@arndb.de,
-        meenakshikumar.somasundaram@amd.com, Jing.Zhou@amd.com,
-        baihaowen@meizu.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 058/105] drm/amd/display: Guard against ddc_pin being NULL for AUX
-Date:   Thu, 11 Aug 2022 11:27:42 -0400
-Message-Id: <20220811152851.1520029-58-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:39:32 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6ED598A46
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:34:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660232097; x=1691768097;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8VA7b9zvWGpYUuv1kaUcIR4ik9uw7iIaoAG3SVmlK2k=;
+  b=LNifRE8/Z9Q2V0NM63sGbIOyWgLhLLvMboZvv+gHFp0wo+803xVpcBkQ
+   cMeXGqUOC9CbXiA1TM1zHFzLAGChbANSbghjaJ1brMGELFdP9VD3L0Jrk
+   lwGN/J2ra9Jtutsu70ZVRr3LbKQmBOzTQjdd2XoESlK2AzIxc+5G417fc
+   65wXSOCFb7Q24WEweGR/Zwvo+V163mBz3my3Diveoc+O/kLOBnRovyWCF
+   6Db0fxDpWIZ2p46xup2hVQJ+QQ86+ALirTmM3eA8EC+Qg+RXJQuAuN+DD
+   V/jmBHIDyIO21G7yrF7oIEMbFVw7ZZs90d3M6xBYRCFLdwrLPG/e5KFSd
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="271155794"
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="271155794"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 08:34:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="581715898"
+Received: from lkp-server02.sh.intel.com (HELO cfab306db114) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 11 Aug 2022 08:34:55 -0700
+Received: from kbuild by cfab306db114 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMAD0-0000Lz-2C;
+        Thu, 11 Aug 2022 15:34:54 +0000
+Date:   Thu, 11 Aug 2022 23:34:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe de Dinechin <dinechin@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [stable:linux-4.19.y 2814/3442] include/linux/nodemask.h:380:20:
+ error: comparison of unsigned expression in '>= 0' is always true
+Message-ID: <202208112328.09GkLSzy-lkp@intel.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
+head:   5c7ccbe1aade74e854fb7f9fa001dc1110a0030e
+commit: 8d8681d07fc82557d09d9cdc177f9ed529d9a4d8 [2814/3442] nodemask.h: fix compilation error with GCC12
+config: alpha-randconfig-r001-20220811 (https://download.01.org/0day-ci/archive/20220811/202208112328.09GkLSzy-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=8d8681d07fc82557d09d9cdc177f9ed529d9a4d8
+        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+        git fetch --no-tags stable linux-4.19.y
+        git checkout 8d8681d07fc82557d09d9cdc177f9ed529d9a4d8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash
 
-[ Upstream commit bc19909f19fdc8253d720d11c948935786fbfa08 ]
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-[Why]
-In the case where we don't support DMUB aux but we have DPIA links
-in the configuration we might try to message AUX using the legacy
-path - where DDC pin is NULL. This causes a NULL pointer dereference.
+All errors (new ones prefixed by >>):
 
-[How]
-Guard against NULL DDC pin, return a failure for aux engine acquire.
+   In file included from include/linux/mmzone.h:17,
+                    from include/linux/gfp.h:6,
+                    from include/linux/mm.h:10,
+                    from arch/alpha/mm/numa.c:12:
+   arch/alpha/mm/numa.c: In function 'paging_init':
+>> include/linux/nodemask.h:380:20: error: comparison of unsigned expression in '>= 0' is always true [-Werror=type-limits]
+     380 |              (node >= 0) && (node) < MAX_NUMNODES;                  \
+         |                    ^~
+   include/linux/nodemask.h:433:9: note: in expansion of macro 'for_each_node_mask'
+     433 |         for_each_node_mask((__node), node_states[__state])
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/nodemask.h:513:36: note: in expansion of macro 'for_each_node_state'
+     513 | #define for_each_online_node(node) for_each_node_state(node, N_ONLINE)
+         |                                    ^~~~~~~~~~~~~~~~~~~
+   arch/alpha/mm/numa.c:305:9: note: in expansion of macro 'for_each_online_node'
+     305 |         for_each_online_node(nid) {
+         |         ^~~~~~~~~~~~~~~~~~~~
+   cc1: all warnings being treated as errors
 
-Reviewed-by: Michael Strauss <Michael.Strauss@amd.com>
-Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/display/dc/dce/dce_aux.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c b/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
-index 9e39cd7b203e..49d3145ae8fb 100644
---- a/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
-@@ -572,6 +572,11 @@ int dce_aux_transfer_raw(struct ddc_service *ddc,
- 
- 	memset(&aux_req, 0, sizeof(aux_req));
- 
-+	if (ddc_pin == NULL) {
-+		*operation_result = AUX_RET_ERROR_ENGINE_ACQUIRE;
-+		return -1;
-+	}
-+
- 	aux_engine = ddc->ctx->dc->res_pool->engines[ddc_pin->pin_data->en];
- 	if (!acquire(aux_engine, ddc_pin)) {
- 		*operation_result = AUX_RET_ERROR_ENGINE_ACQUIRE;
+vim +380 include/linux/nodemask.h
+
+   376	
+   377	#if MAX_NUMNODES > 1
+   378	#define for_each_node_mask(node, mask)				    \
+   379		for ((node) = first_node(mask);				    \
+ > 380		     (node >= 0) && (node) < MAX_NUMNODES;		    \
+   381		     (node) = next_node((node), (mask)))
+   382	#else /* MAX_NUMNODES == 1 */
+   383	#define for_each_node_mask(node, mask)                                  \
+   384		for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
+   385	#endif /* MAX_NUMNODES */
+   386	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
