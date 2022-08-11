@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1462C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC7AC25B0E
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238319AbiHKQ3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42976 "EHLO
+        id S238410AbiHKQ3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238306AbiHKQ1F (ORCPT
+        with ESMTP id S238361AbiHKQ1U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:27:05 -0400
+        Thu, 11 Aug 2022 12:27:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663CF9F192;
-        Thu, 11 Aug 2022 09:08:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2E29F77A;
+        Thu, 11 Aug 2022 09:08:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05168612F0;
-        Thu, 11 Aug 2022 16:08:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4A9C433C1;
-        Thu, 11 Aug 2022 16:08:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D80961426;
+        Thu, 11 Aug 2022 16:08:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78ABAC433D6;
+        Thu, 11 Aug 2022 16:08:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234109;
-        bh=45+YsP0xL7+ZOaRuNdItW2YXHQez1xUpc1k9kr6omPM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=O3wmqHEbzZ2QwvMmXXyA1SDqkhoNZ+ocjNkkPs5bNwoH5GLxuBe7AeYG+Sz3bZqsf
-         9e+QxyR5gwbZk/hx1NwAPUXugUW15s3UdzkaMP70vmROx79lDv8Y6y+9aipv/kS3sc
-         Ee1jb+jmPpF1y+jEyPYo9uEjAqib87yRhAPl9H6R2oeZm9IkUewrUiZcbEqDckQwEd
-         1+dO8D8P7PctXGyBDy3ygDuEZOjZwv0ipkPwt88+kbzBhSVPZeiFGylQ4way/QQXy3
-         zqHNzYVmSxYDHc3fncCq7dMPtFlfIFdL16FkwCEywolhbVkth/YsqYontJE8Siw+P8
-         BPwIowxssd1Kw==
+        s=k20201202; t=1660234113;
+        bh=IvK5vr6DMKLGtEAo+VxNzrO/s9h7vybNjsPB5ui6Euw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KXSJpkzvqd6A6aVGtrCEalbuHwYsx5BSJNPgTX50mwcLZrrDwsqSG7MILCmz2I6j5
+         UuEzsfccFoM97nqENrZPvhEDQ/oxwW6ajBmhZ5ENMr9bukVbWDZr3PZxWZHYaeKC6p
+         Cw9Z9BOP9/FnPvhdwQXVrVtpWyEl0joLCAtz2w/YoGruQEp1fkcg3jNQ92Lmm4eoIV
+         lYlYl5x2RrpxzosbjE26MGrEXmAhYFqwL/D8de0Mhmfbc+jWCEYeo0rxOYwCbsKcu2
+         1vh1Hs2J19UGMBRWFb8Dutgs/Nqc0c8PEooBtwXC01tVCi8AmwZ+Fexa11pmCzmESy
+         XoA4gMm26HY3w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 01/25] drm/r128: Fix undefined behavior due to shift overflowing the constant
-Date:   Thu, 11 Aug 2022 12:07:56 -0400
-Message-Id: <20220811160826.1541971-1-sashal@kernel.org>
+Cc:     Maxime Bizon <mbizon@freebox.fr>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 03/25] ath10k: fix misreported tx bandwidth for 160Mhz
+Date:   Thu, 11 Aug 2022 12:07:58 -0400
+Message-Id: <20220811160826.1541971-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811160826.1541971-1-sashal@kernel.org>
+References: <20220811160826.1541971-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,51 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Maxime Bizon <mbizon@freebox.fr>
 
-[ Upstream commit 6556551f8848f98eff356c8aacae42c8dd65b2df ]
+[ Upstream commit 75a7062e533e309a9ca0812c69f3ac3cefadb8b1 ]
 
-Fix:
+Because of this missing switch case, 160Mhz transmit was reported as
+20Mhz, leading to wrong airtime calculation and AQL limiting max
+throughput.
 
-  drivers/gpu/drm/r128/r128_cce.c: In function ‘r128_do_init_cce’:
-  drivers/gpu/drm/r128/r128_cce.c:417:2: error: case label does not reduce to an integer constant
-    case R128_PM4_64BM_64VCBM_64INDBM:
-    ^~~~
-  drivers/gpu/drm/r128/r128_cce.c:418:2: error: case label does not reduce to an integer constant
-    case R128_PM4_64PIO_64VCPIO_64INDPIO:
-    ^~~~
+Tested-on: QCA9984 hw2.0 PCI 10.4-3.10-00047
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220405151517.29753-5-bp@alien8.de
+Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/cd2735a40da7f4fcc5323e3fca3775e7b5402ece.camel@freebox.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/r128/r128_drv.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/r128/r128_drv.h b/drivers/gpu/drm/r128/r128_drv.h
-index ba8c30ed91d1..9a9f2279408b 100644
---- a/drivers/gpu/drm/r128/r128_drv.h
-+++ b/drivers/gpu/drm/r128/r128_drv.h
-@@ -299,8 +299,8 @@ extern long r128_compat_ioctl(struct file *filp, unsigned int cmd,
- #	define R128_PM4_64PIO_128INDBM		(5  << 28)
- #	define R128_PM4_64BM_128INDBM		(6  << 28)
- #	define R128_PM4_64PIO_64VCBM_64INDBM	(7  << 28)
--#	define R128_PM4_64BM_64VCBM_64INDBM	(8  << 28)
--#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15 << 28)
-+#	define R128_PM4_64BM_64VCBM_64INDBM	(8U  << 28)
-+#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15U << 28)
- #	define R128_PM4_BUFFER_CNTL_NOUPDATE	(1  << 27)
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index 760d24a28f39..3aa9536b95d7 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -3748,6 +3748,10 @@ ath10k_update_per_peer_tx_stats(struct ath10k *ar,
+ 		arsta->tx_info.status.rates[0].flags |=
+ 				IEEE80211_TX_RC_80_MHZ_WIDTH;
+ 		break;
++	case RATE_INFO_BW_160:
++		arsta->tx_info.status.rates[0].flags |=
++				IEEE80211_TX_RC_160_MHZ_WIDTH;
++		break;
+ 	}
  
- #define R128_PM4_BUFFER_WM_CNTL		0x0708
+ 	if (peer_stats->succ_pkts) {
 -- 
 2.35.1
 
