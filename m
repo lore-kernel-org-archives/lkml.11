@@ -2,116 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB25C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 22:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9853C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 22:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236268AbiHKWFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 18:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        id S236384AbiHKWIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 18:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236488AbiHKWFu (ORCPT
+        with ESMTP id S230006AbiHKWIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 18:05:50 -0400
-X-Greylist: delayed 607 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 11 Aug 2022 15:05:49 PDT
-Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7036B1EEDF;
-        Thu, 11 Aug 2022 15:05:49 -0700 (PDT)
+        Thu, 11 Aug 2022 18:08:36 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674CEA0262;
+        Thu, 11 Aug 2022 15:08:35 -0700 (PDT)
 Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.west.internal (Postfix) with ESMTP id BFB892B05D1B;
-        Thu, 11 Aug 2022 17:55:40 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id C8C215C006A;
+        Thu, 11 Aug 2022 18:08:34 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 11 Aug 2022 17:55:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1660254940; x=1660262140; bh=ZgAnECcKiNINQ/nMekoYRrtEA
-        FO/LNkk2RLbQLXX3Oc=; b=vIS86Kh2zXrtYCvVOYCzWsRKom8XuVEa6HpXfxCra
-        EIctIqfcntjf8OVXYRma1/nuFkyBfXewbOo1jb1iSFJgi8594bKSqe9Q9hCQ3i87
-        0aASAw1PBw3nhZm6tJ2L9ktWvqAPmywm4Jh1BxR8tkNoHRjCTn8jNT+Uq9scl1Qs
-        uG1sHoeBCz/ZyMI1jqiuEHUvzdaIms194LGwvTtcG+2xzLjQ/k3uzI3Y7bnt2+Yc
-        oDs5svJYGA059hsCN31fI83KYApBBOWUIh85/vsQ1M6VAhQERTH1jJq4OCSTJjDd
-        XVb2a38JdhsPW1kRekHmb/AVgZ4Sr/7RIHakJp5Nj+xZQ==
+  by compute5.internal (MEProxy); Thu, 11 Aug 2022 18:08:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1660255714; x=
+        1660342114; bh=8ZCDjbDiatX8L4toFofmUz+eVA1AbAXz/oRWIKvDcSo=; b=G
+        isUhB/wN1ioUV+Ag+wZaIMzQUEoJh5uuW07ezA4iHDfaVs3xkzdGlK/ZwjjtEdHP
+        k2286GAOwybQaVszqFrXG5vvSY2awa/zhIYMCfxRt75f5ZhSUv+lQLkzOxPXtkmA
+        Ld/q5f3ZEmtujnGCfGCbbmim9zTHWwoz3d4KlDzqWYpZ7zHNDyfYwhFgippLhtto
+        KvDXSqz/Wh1z/zLktc2Ypm9LjX4IWv9GsgtKXueFssf2NPo1yNxqX++WAurm2ffT
+        Q9SOHe5x/VfHg5m6pVXmkUW3qkWCRQ4eTqT65X/OFbEJDNZn0GU8a4rnKnJDjTOP
+        bc/xTV0gXM0/4G2G/AM8w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660254940; x=1660262140; bh=ZgAnECcKiNINQ/nMekoYRrtEAFO/LNkk2RL
-        bQLXX3Oc=; b=ASUoPEXG3PHwYvWY3SPVwQ1CDMrHQ9S6NdthZQlptZrRfxUyPkm
-        92Rxw0hoUr8iRn9VRo9DgXcYDb7FgAmT6aeVKfAM/5bFFXOIc1m/WjWloMAhjcEE
-        DkrelS1no3NoV1gQ4WSAVlpsMKsa/j+5zbpdjuHtGL+dOME+oKvo1ll6UFMZkgdt
-        cbCr7u6w3q34os3ix8cVsPrKOiBL+4T24Q5NvdxHH4tzy33kstxUgb+ihhMxMc4i
-        XS6QA+lsAt7xkBDtjmQxWVO+1URgSpBzjcB9fx/wSa7IjdiegrUU1mXkJpq/RgLK
-        fn8w3BGK47Dc9Ambigh68Uozi28mNVMdb3w==
-X-ME-Sender: <xms:23r1YubqbHJ3u0qSoa4DJXrUQfZqWDFSq-wcjxKWZWCD1yEGjtEKZg>
-    <xme:23r1YhbEaNt4rqDvZQvph7P3MuS0WWF8rhpSFDyXpSjqpaD1vkRYKMLfKcHF3bwT_
-    3AGoCqxGgZEYRlKcA>
-X-ME-Received: <xmr:23r1Yo-Zb1ulSDneO6iolcO3ljq6WFv8xOMzlO_w0AprgE_RUb-hvw-S3QMe7ModH-PvHOuUAQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgtdefucetufdoteggodetrfdotf
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660255714; x=
+        1660342114; bh=8ZCDjbDiatX8L4toFofmUz+eVA1AbAXz/oRWIKvDcSo=; b=r
+        1yp9+b11KeIx+50+UEMu2jx/k+Q8BluB2l55aVCVoeSvxhsPN7NZqpIkhAAHdzVP
+        5Vsyw5VJVnlS1KbXsZA/KEbDLXCWpf9zlRT0ciWCcCK/HgRWbnTzmg2AgGx646q3
+        UEreodsPxldzb8inVCel6kuTkovlrT/eiC0Akvo6aV+b0yTdvJkLxeWYJHQTJgBD
+        MKfslJNMtYxSf6FnjpXsTo0GWBdzTzy+wxQs/mroeF9p0nOHrQjbRynAytsf21RE
+        7d6dPylElT56nBL4Y1rfn3d5ei6YbdvWfWb20/n3NhALT3aKP1ZSXuoiQAYLdalh
+        9BxXZH5G5Oqmd5Tcu2aiQ==
+X-ME-Sender: <xms:4n31Yrd0RXt_mlYkV4TnW33E6SqzwG-urNcTn5kQR0tkbwygx11DAQ>
+    <xme:4n31YhM4GXYpOKaE2XzG5ukYcmPumoWvzQ5V9i-Q5XU8xqIrAzEBroPqGJAYV1EpQ
+    uVlzyMVRzbZi5zM9QM>
+X-ME-Received: <xmr:4n31YkhKAhRB2R9UJI_oBMnw-o2eyKg6-YhxWiuBGPcjRNmL4SF3Gb2r1wmzJRMbDbseBQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgtdeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdlfeehmdenogevohgrshhtrg
-    hlqdfhgeduvddqtddvucdludehtddmnecujfgurhephffvvefufffkofgggfestdekredt
-    redttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqe
-    enucggtffrrghtthgvrhhnpeetueektdeuhfefvefggfevgeffgfekfefhkeekteffheev
-    tddvhedukeehffeltdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsth
-    gvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdr
-    giihii
-X-ME-Proxy: <xmx:23r1YgpIMgm9fSTff6UETf1xQBxZW_7i5zefq8K0v1euPdO-ESvdsA>
-    <xmx:23r1YppsnWjtVI3hs1EEsfvJWk2NAB7K1H_Ojki1vG5JgeoR8YUIOQ>
-    <xmx:23r1YuQ1eCWumr42QYffI2-ddQqlnh4IolG1rQfGt5eVF8vh6cacgg>
-    <xmx:3Hr1Yk1_8Tt381-AngQtpf7HiVpvoiSgVDPJA9JQuCE3ESDSpWkktg_eHkQ>
-Feedback-ID: i6a694271:Fastmail
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkffuhffvveffjghftgfgfgggsehtqhertddtreejnecuhfhrohhmpefnuhhk
+    vgculfhonhgvshcuoehluhhkvgeslhhjohhnvghsrdguvghvqeenucggtffrrghtthgvrh
+    hnpeekfeffueejveeujeeugeelleehtdegvdeludektddtfffhieefledvudehfeejieen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehluhhkvg
+    eslhhjohhnvghsrdguvghv
+X-ME-Proxy: <xmx:4n31Ys-8-cL9z1vg1dXBV9zMPJkcmzLaT1FKvn1C1lpP92eVzHUcqQ>
+    <xmx:4n31YnsiDzGe0IDFgAeDkea2BEn_knIdEaQ9pX_uJld_wmMtcwmikg>
+    <xmx:4n31YrHMtnDN-bpeTswx2mUnSUXyP30gohwpSR00SZaLhM9id7SgJg>
+    <xmx:4n31YnK373oLA-XbtGUsNWRHOafkC5YsKXY9jD2SFbMguqWHeeXLgg>
+Feedback-ID: i5ec1447f:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 11 Aug 2022 17:55:38 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v4 0/3] Add more bpf_*_ct_lookup() selftests
-Date:   Thu, 11 Aug 2022 15:55:24 -0600
-Message-Id: <cover.1660254747.git.dxu@dxuuu.xyz>
-X-Mailer: git-send-email 2.37.1
+ 11 Aug 2022 18:08:32 -0400 (EDT)
+Message-ID: <ef32187cf1090de6e8cda2bf0218985cd3f4c21e.camel@ljones.dev>
+Subject: Re: [PATCH v3 4/6] asus-wmi: Document previously added attributes
+From:   Luke Jones <luke@ljones.dev>
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     =?UTF-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Fri, 12 Aug 2022 10:08:25 +1200
+In-Reply-To: <a0688d90-8b20-fc50-56ec-d50a5601f468@redhat.com>
+References: <20220809025054.1626339-1-luke@ljones.dev>
+         <20220809025054.1626339-5-luke@ljones.dev>
+         <CAHp75VeLWGURdL9SK4+fLPRsM_Dc3bNvGSoWXKOWMSz=3CQUQg@mail.gmail.com>
+         <a0688d90-8b20-fc50-56ec-d50a5601f468@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (by Flathub.org) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds more bpf_*_ct_lookup() selftests. The goal is to test
-interaction with netfilter subsystem as well as reading from `struct
-nf_conn`. The first is important when migrating legacy systems towards
-bpf. The latter is important in general to take full advantage of
-connection tracking.
+Hi,
 
-I'll follow this patchset up with support for writing to `struct nf_conn`.
+On Thu, 2022-08-11 at 17:08 +0200, Hans de Goede wrote:
+> Hi,
+>=20
+> On 8/9/22 11:25, Andy Shevchenko wrote:
+> > On Tue, Aug 9, 2022 at 4:51 AM Luke D. Jones <luke@ljones.dev>
+> > wrote:
+> > >=20
+> > > Documents some previously added attributes:
+> > > - dgpu_disable
+> > > - egpu_enable
+> > > - panel_od
+> >=20
+> > Try to find a commit that introduced thouse and add the respective
+> > Fixes tag.
+> >=20
+> > ...
+> >=20
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * keyboa=
+rd - 0 or 1, unknown what effect
+> > > this really has
+> > > \ No newline at end of file
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * keyboa=
+rd - 0 or 1, unknown what effect
+> > > this really has
+> >=20
+> > Should be part of another patch.
+>=20
+> Ack to both remarks.
+>=20
+> Luke please make this patch one of the first patches in your next
+> version / patch-series and then add the doucmentation of the new
+> kbd RGB backlight attributes in the patches where you are also
+> adding those actual attributes.
 
-Past discussion:
-- v3: https://lore.kernel.org/bpf/cover.1660173222.git.dxu@dxuuu.xyz/
-- v2: https://lore.kernel.org/bpf/cover.1660062725.git.dxu@dxuuu.xyz/
-- v1: https://lore.kernel.org/bpf/cover.1659209738.git.dxu@dxuuu.xyz/
-
-Changes since v3:
-- Remove deprecated CHECK_FAIL() usage
-- cc netfilter folks
-
-Changes since v2:
-- Add bpf-ci kconfig changes
-
-Changes since v1:
-- Reword commit message / cover letter to not mention connmark writing
-
-Daniel Xu (3):
-  selftests/bpf: Add existing connection bpf_*_ct_lookup() test
-  selftests/bpf: Add connmark read test
-  selftests/bpf: Update CI kconfig
-
- tools/testing/selftests/bpf/config            |  2 +
- .../testing/selftests/bpf/prog_tests/bpf_nf.c | 60 +++++++++++++++++++
- .../testing/selftests/bpf/progs/test_bpf_nf.c | 21 +++++++
- 3 files changed, 83 insertions(+)
-
--- 
-2.37.1
-
+Yep, done. Everything is looking much cleaner too.
