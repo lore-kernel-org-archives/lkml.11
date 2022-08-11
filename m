@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6980BC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C852C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236716AbiHKPsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S236722AbiHKPsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236832AbiHKPqX (ORCPT
+        with ESMTP id S236442AbiHKPqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:46:23 -0400
+        Thu, 11 Aug 2022 11:46:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E180481689;
-        Thu, 11 Aug 2022 08:41:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F08992F57;
+        Thu, 11 Aug 2022 08:41:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96C65B82165;
-        Thu, 11 Aug 2022 15:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F28BC433D6;
-        Thu, 11 Aug 2022 15:40:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47B55B82150;
+        Thu, 11 Aug 2022 15:41:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F6B8C433B5;
+        Thu, 11 Aug 2022 15:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232458;
-        bh=ZwCCf4M4BhQG3d5wIP7toS4k0WBnqNEynTPkLh0le1k=;
+        s=k20201202; t=1660232470;
+        bh=wjXb44oYEnAlhU16rkHyBpckEauNUBNXCbEuTpPCOrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGDqm7K9Gqs/YCkzkUjZOrINuQA+EhFP+95qhT2yjx4jcKas9Nxix2oUCp+D7nJ2m
-         bhKZ572c78CGTMX5je1YNe82p080pxwspk8T6HXjUXvBlCDK5gqWsaZ+C8Jhm/Ai4k
-         z9ouUhtLva5QXH3npJoCESX1s2G1cxWhzlbOON9l7QZoOsrd8b55OG1a/HSggcMtNK
-         hWGPDpVOgATwJ2vnUT84vsLe2YRU7aPZOlPgFzcICPdKhymi5yYcR2UXIfXACSABc3
-         mmNtL2fj5v9kiQ+6QIXuDDTuRp3fR5DHNuViqj4dfR6ZetG4JEnT5RHB5b8zvslkc5
-         ATOIoQwB14GXQ==
+        b=LzKt2tPhvCpVf10VYHxv1IRRFUydo+rn3P4dpS1GM3VxxHK5Audt/OIPLzJXl/4Fo
+         6tzRP+qmWM+gQdOqZ7+nNbWCTDsU7FdZUuKlAex5mvRvTECgxL87W8OMTCWEk7W0pl
+         SIq6jvhZnXXVQNQicJ/A6JWaWW06tJ/Z43w3XgzpWZaVs42paDdAei4iseJytw6Obn
+         /y/FdHAmy12KDg8tCicPOKoC8v+wH4n0l0dLsJySuKFjkk/8I75rskfQGnngdZyc/c
+         suUGBgvDtUR4JlPbQYKEoK7UdFTSeZNcczyqJVc6s5k1P3L7EvkSaA985aKP3eUxjx
+         3Z86bfatr8peA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-bluetooth@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 086/105] Bluetooth: btusb: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
-Date:   Thu, 11 Aug 2022 11:28:10 -0400
-Message-Id: <20220811152851.1520029-86-sashal@kernel.org>
+Cc:     Jie2x Zhou <jie2x.zhou@intel.com>,
+        kernel test robot <lkp@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 090/105] bpf/selftests: Fix couldn't retrieve pinned program in xdp veth test
+Date:   Thu, 11 Aug 2022 11:28:14 -0400
+Message-Id: <20220811152851.1520029-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -53,63 +56,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zijun Hu <quic_zijuhu@quicinc.com>
+From: Jie2x Zhou <jie2x.zhou@intel.com>
 
-[ Upstream commit 1172c59f451f524a14bac5e7b047781883dfe441 ]
+[ Upstream commit f664f9c6b4a1bb9a10af812df0fbbf6aac28fcc6 ]
 
-Core driver addtionally checks LMP feature bit "Erroneous Data Reporting"
-instead of quirk HCI_QUIRK_BROKEN_ERR_DATA_REPORTING to decide if HCI
-commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken, so
-remove this unnecessary quirk for QCA controllers.
+Before change:
 
-The reason why these two HCI commands are broken for QCA controllers is
-that feature "Erroneous Data Reporting" is not enabled by their firmware
-as shown by below log:
+  selftests: bpf: test_xdp_veth.sh
+  Couldn't retrieve pinned program '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+  selftests: xdp_veth [SKIP]
+  ok 20 selftests: bpf: test_xdp_veth.sh # SKIP
 
-@ RAW Open: hcitool (privileged) version 2.22
-< HCI Command: Read Local Supported Commands (0x04|0x0002) plen 0
-> HCI Event: Command Complete (0x0e) plen 68
-  Read Local Supported Commands (0x04|0x0002) ncmd 1
-    Status: Success (0x00)
-    Commands: 288 entries
-......
-      Read Default Erroneous Data Reporting (Octet 18 - Bit 2)
-      Write Default Erroneous Data Reporting (Octet 18 - Bit 3)
-......
+After change:
 
-< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
-> HCI Event: Command Complete (0x0e) plen 4
-  Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
-    Status: Unknown HCI Command (0x01)
+  PING 10.1.1.33 (10.1.1.33) 56(84) bytes of data.
+  64 bytes from 10.1.1.33: icmp_seq=1 ttl=64 time=0.320 ms
+  --- 10.1.1.33 ping statistics ---
+  1 packets transmitted, 1 received, 0% packet loss, time 0ms
+  rtt min/avg/max/mdev = 0.320/0.320/0.320/0.000 ms
+  selftests: xdp_veth [PASS]
 
-< HCI Command: Read Local Supported Features (0x04|0x0003) plen 0
-> HCI Event: Command Complete (0x0e) plen 12
-  Read Local Supported Features (0x04|0x0003) ncmd 1
-    Status: Success (0x00)
-    Features: 0xff 0xfe 0x0f 0xfe 0xd8 0x3f 0x5b 0x87
-      3 slot packets
-......
+For the test case, the following can be found:
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+  ls /sys/fs/bpf/test_xdp_veth/progs/redirect_map_0
+  ls: cannot access '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+  ls /sys/fs/bpf/test_xdp_veth/progs/
+  xdp_redirect_map_0  xdp_redirect_map_1  xdp_redirect_map_2
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220719082430.9916-1-jie2x.zhou@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btusb.c | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/bpf/test_xdp_veth.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index d5da862fabaf..53deca7b86c9 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -3352,7 +3352,6 @@ static int btusb_setup_qca(struct hci_dev *hdev)
- 	 * work with the likes of HSP/HFP mSBC.
- 	 */
- 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
--	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+index 392d28cc4e58..49936c4c8567 100755
+--- a/tools/testing/selftests/bpf/test_xdp_veth.sh
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -106,9 +106,9 @@ bpftool prog loadall \
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 0 0 0 0 value 122 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 1 0 0 0 value 133 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 2 0 0 0 value 111 0 0 0
+-ip link set dev veth1 xdp pinned $BPF_DIR/progs/redirect_map_0
+-ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
+-ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
++ip link set dev veth1 xdp pinned $BPF_DIR/progs/xdp_redirect_map_0
++ip link set dev veth2 xdp pinned $BPF_DIR/progs/xdp_redirect_map_1
++ip link set dev veth3 xdp pinned $BPF_DIR/progs/xdp_redirect_map_2
  
- 	return 0;
- }
+ ip -n ${NS1} link set dev veth11 xdp obj xdp_dummy.o sec xdp
+ ip -n ${NS2} link set dev veth22 xdp obj xdp_tx.o sec xdp
 -- 
 2.35.1
 
