@@ -2,37 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D81C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3660C25B08
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233879AbiHKC6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 22:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S233886AbiHKC6m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 22:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233691AbiHKC62 (ORCPT
+        with ESMTP id S233680AbiHKC62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 10 Aug 2022 22:58:28 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918F088DEF;
-        Wed, 10 Aug 2022 19:58:23 -0700 (PDT)
-X-UUID: 1de8e7fd5dba4229b06c691f6f5abef4-20220811
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A8588DF1;
+        Wed, 10 Aug 2022 19:58:24 -0700 (PDT)
+X-UUID: 251845295f4c4da5aadb8887d95d0c2c-20220811
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=tp07qENg/aEQd6+WXcAJoWwWXMmWHS8mLKYukD4XvmM=;
-        b=FabPuX4gtAj8/ewe+n99A2B5YEVv6EqbmdfIdYLMG2LHslfehMsGadlbBA76arkxkPZQdwq+lm+XCX/o09sYuq6wPXRy5LpA0srEGdAAFn4DFA0/xB0Y+BOFLTxPkTXhkf8ajc7oWKTKtS+bpxIygot0Buphrf6cM6G7lnaxnZI=;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=BS18/NrdXO3GLv+rztsbHxFiw38PX6n0FyTTYmNBqK4=;
+        b=gVxcgdTloeVE4m+XSdFxT7G3EGsiPf9mMspLVKNHeHoCVtV1gUSZZpUz+d15NR/UM751NdsaAj/6MMk6x7C3HedyCFVxl9QLpUXM7gYIBYl3WKcp6hHg/dtQKIlJ0yzE9lwLiK0H+YAgbq7F+nKRyDAyDY4WLtankl4u9RCiB0k=;
+X-CID-UNFAMILIAR: 1
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:ef3f7848-6315-45a0-9e55-e91c139bf49d,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_H
-        am,ACTION:release,TS:0
-X-CID-META: VersionHash:3d8acc9,CLOUDID:aea1559c-da39-4e3b-a854-56c7d2111b46,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 1de8e7fd5dba4229b06c691f6f5abef4-20220811
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.9,REQID:37fad3f2-8df1-4b77-baa9-94cadc024dbf,OB:0,LO
+        B:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Releas
+        e_Ham,ACTION:release,TS:100
+X-CID-INFO: VERSION:1.1.9,REQID:37fad3f2-8df1-4b77-baa9-94cadc024dbf,OB:0,LOB:
+        20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS9
+        81B3D,ACTION:quarantine,TS:100
+X-CID-META: VersionHash:3d8acc9,CLOUDID:df077cae-9535-44a6-aa9b-7f62b79b6ff6,C
+        OID:6b8a0955923b,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 251845295f4c4da5aadb8887d95d0c2c-20220811
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
         (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 51462196; Thu, 11 Aug 2022 10:58:17 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 546624461; Thu, 11 Aug 2022 10:58:17 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.2.792.15; Thu, 11 Aug 2022 10:58:16 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
@@ -40,12 +44,12 @@ Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:16 +0800
 From:   Tinghan Shen <tinghan.shen@mediatek.com>
 To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
+        Will Deacon <will@kernel.org>,
         Robin Murphy <robin.murphy@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Lee Jones <lee@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
         Tinghan Shen <tinghan.shen@mediatek.com>,
@@ -53,11 +57,10 @@ To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
 CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>
-Subject: [PATCH v6 09/20] arm64: dts: mt8195: Disable I2C0 node
-Date:   Thu, 11 Aug 2022 10:58:02 +0800
-Message-ID: <20220811025813.21492-10-tinghan.shen@mediatek.com>
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v6 14/20] arm64: dts: mt8195: Add scp node
+Date:   Thu, 11 Aug 2022 10:58:07 +0800
+Message-ID: <20220811025813.21492-15-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220811025813.21492-1-tinghan.shen@mediatek.com>
 References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
@@ -68,31 +71,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@chromium.org>
+Add scp node for mt8195.
 
-The I2C0 node should not be enabled globally, as usage is board
-dependent; disable it in dtsi.
-
-Signed-off-by: Tzung-Bi Shih <tzungbi@chromium.org>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 436687ba826f4..8032b839dfe8d 100644
+index da2d976ff8441..d10db01a360aa 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -829,7 +829,7 @@
- 			clock-names = "main", "dma";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			status = "okay";
-+			status = "disabled";
+@@ -712,6 +712,16 @@
+ 			assigned-clock-parents = <&topckgen CLK_TOP_ULPOSC1_D10>;
  		};
  
- 		i2c1: i2c@11e01000 {
++		scp: scp@10500000 {
++			compatible = "mediatek,mt8195-scp";
++			reg = <0 0x10500000 0 0x100000>,
++			      <0 0x10720000 0 0xe0000>,
++			      <0 0x10700000 0 0x8000>;
++			reg-names = "sram", "cfg", "l1tcm";
++			interrupts = <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH 0>;
++			status = "disabled";
++		};
++
+ 		scp_adsp: clock-controller@10720000 {
+ 			compatible = "mediatek,mt8195-scp_adsp";
+ 			reg = <0 0x10720000 0 0x1000>;
 -- 
 2.18.0
 
