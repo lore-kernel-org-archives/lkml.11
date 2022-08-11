@@ -2,117 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 687FDC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 09:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07431C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 09:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234928AbiHKJnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 05:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
+        id S229713AbiHKJnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 05:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232585AbiHKJnB (ORCPT
+        with ESMTP id S234930AbiHKJnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 05:43:01 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71D693503
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:42:59 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27B5YQUh014676;
-        Thu, 11 Aug 2022 04:42:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
- mime-version : from : subject : to : references : in-reply-to :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=4hB4VqJ9D2x+F7YMOyUoVMiAiQyBxRswQNLToL9PR6c=;
- b=Kz7lnxctZc9xy4nWB6XwLNI9jDbm0FNKmtfsLS9thaBxbTAmkKOlHkQi8g4zxhvYeVzU
- QPQBKAan5hcDNP33zg3w2i960NMGajpU/b9V/+PMPHvgxSRJ4AbRg4IjjojUBjRMX3Bc
- HVcnRsHZBWMj482ZyqiFDJuQDIxImGKF2zepcQk5014ZpZDpBstJvtighNnAwBvbLyyI
- fMtgF/Co8E1MCbWNPa7g1QSvHq6oqMGIbW4GOBF1hI8thk5c8ijyQEaM8GYZoUZw6aRo
- cYB199q9JSwxG0ptmJD3K9f8fXz1kyRMkvupSw8/JP0ckR0RfE8X0K3k9ASVWq67ajMc xQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3huwqpa6q6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Aug 2022 04:42:47 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Thu, 11 Aug
- 2022 04:42:46 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
- Transport; Thu, 11 Aug 2022 04:42:46 -0500
-Received: from [198.90.202.47] (unknown [198.90.202.47])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 137002C5;
-        Thu, 11 Aug 2022 09:42:45 +0000 (UTC)
-Message-ID: <c671ad96-e1aa-4cda-eef1-fd8fe906ec36@opensource.cirrus.com>
-Date:   Thu, 11 Aug 2022 10:42:44 +0100
+        Thu, 11 Aug 2022 05:43:06 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388A293521
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:43:05 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id f192so16019794pfa.9
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 02:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=FuszqdVKRODgXPDBIPGNJTPfC+UbIBNSrE2E5rqs79c=;
+        b=fJ23Pfw7q7XjCwE8rrFEaFhqcq3UTo1BwAgiHzeRPDaIh6S6lj5BygfYshbiz4CCLw
+         ncxfeTUMuafgb49qrpho/dSZj6MOHZ9JA5+xznJDCekUItONEm8cAjlXWDB6GWQD+UqZ
+         OW6YsLTfgd7OsPFlaPrZXL4vL2gpySxJa9amTNv+d8syW08sH/KVTeAieVUI7umC9Ucu
+         4QJe6aSZJcXbbpx7iSz5Q8fUxa69BOsGa5ueRbySyWImpwcAKNigawKhoFddK3hMlvqp
+         4LERGlDGA7s5BcZQQPAm4sJegv61G4QY2lL/+iJuCqgBwCqmJ9hC+R9zzKv4jUCCwHFY
+         iKsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=FuszqdVKRODgXPDBIPGNJTPfC+UbIBNSrE2E5rqs79c=;
+        b=Asa5+shu2p04zHMJUziSVMqZFZ4SLE7e2WY5Eg4wk8Fgpq2gvX5wwjaWPiin8Ae0DK
+         YH3K3lIs04XQAnU8Tnf86KiX+1GAduSTXzK559tM0hgCWo6MpPphUjPwhSfcmBGTTiUy
+         iZV7t1yQe5ViWAWb0OMZiA3RWzxEDlPFyeHcfvvc/qrcyFFVMJWCfP+MVPvqXuQLxhC6
+         5nRgWL0vHclO0yX7HjoiKOncfm5gKZc7bBYMNg3j+iLi7O1u6TUeie9XrKhGkOtSsEvS
+         BnaGHWoLkYgLDNCSpbSG5aYHmUyxlqDHrtXAwompWH5QzzpA+ddW774HzE/7Y4mL53Ss
+         Jgmw==
+X-Gm-Message-State: ACgBeo3Sc53e/uHTAezlTaTD/csUamYwBGQ0HGUxrTsmLtCCjmV7aBJq
+        0bLGyP5QxTPvqRl4PJmsZ8Pf
+X-Google-Smtp-Source: AA6agR6xiEFTBP/qAlhkDSvvx4xirmbjWieT5tFAl0ao96Lx8X4mb+ZZ6FagKnkqP2ix0s4EN4HjZA==
+X-Received: by 2002:a65:6cc4:0:b0:412:35fa:5bce with SMTP id g4-20020a656cc4000000b0041235fa5bcemr25512326pgw.466.1660210984659;
+        Thu, 11 Aug 2022 02:43:04 -0700 (PDT)
+Received: from localhost.localdomain ([59.92.103.103])
+        by smtp.gmail.com with ESMTPSA id s5-20020a625e05000000b0052e6d5ee183sm3553931pfb.129.2022.08.11.02.43.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 02:43:04 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     kishon@ti.com, lpieralisi@kernel.org, bhelgaas@google.com
+Cc:     kw@linux.com, robh@kernel.org, vidyas@nvidia.com,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 0/2] PCI: endpoint: Rework the EPC to EPF notification
+Date:   Thu, 11 Aug 2022 15:12:35 +0530
+Message-Id: <20220811094237.77632-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-From:   Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: Re: [PATCH] Sound: pci/hda: Add quirk for HP Envy x360 ey0xxx
-To:     Fae <faenkhauser@gmail.com>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-References: <20220811053950.11810-1-faenkhauser@gmail.com>
-Content-Language: en-US
-In-Reply-To: <20220811053950.11810-1-faenkhauser@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: t_fb2mJxYa0FJGf6QW3832kMA_NpcEl6
-X-Proofpoint-ORIG-GUID: t_fb2mJxYa0FJGf6QW3832kMA_NpcEl6
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/11/22 06:39, Fae wrote:
-> This patch fixes speaker output on the HP Envy x360 ey0xxx
-> The mic/speaker mute LEDs are still non-functional but they aren't required for basic funtionality
->
-> Also the quirk is labeled ALC287_FIXUP_CS35L41_I2C_2 however it does not only apply to ALC287
-> Its function is the generic cs35l41 fixup telling the driver that there's 2 i2c speakers. It isn't actually specific to ALC287
->
-> I did have a bit of luck getting the mic mute LED to work but it was to finicky to submit ( I used the ALC245_FIXUP_HP_GPIO_LED quirk )
-> I had no luck getting the speaker mute LED to work
->
-> Signed-off-by: Fae<faenkhauser@gmail.com>
-> ---
->   sound/pci/hda/cs35l41_hda.c   | 3 ++-
->   sound/pci/hda/patch_realtek.c | 1 +
->   2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-> index 129bffb431c22..21d8c2de128ff 100644
-> --- a/sound/pci/hda/cs35l41_hda.c
-> +++ b/sound/pci/hda/cs35l41_hda.c
-> @@ -1156,7 +1156,8 @@ static int cs35l41_no_acpi_dsd(struct cs35l41_hda *cs35l41, struct device *physd
->   	hw_cfg->valid = true;
->   	put_device(physdev);
->   
-> -	if (strncmp(hid, "CLSA0100", 8) == 0) {
-> +	if ((strncmp(hid, "CLSA0100", 8) == 0) ||
-> +	    (strncmp(hid, "CSC3551", 7) == 0)) {
+Hello,
 
-Sorry, but we can't accept this. The HID CSC3551 was created for a whole 
-range of laptops, with all types of Boost.
+During the review of the patch that fixes DBI access in PCI EP, Rob
+suggested [1] using a fixed interface for passing the events from EPC to
+EPF instead of the in-kernel notifiers.
 
-With this HID the driver expects to read configurations from the BIOS.
+This series introduces a simple callback based mechanism for passing the
+events from EPC to EPF. This interface is chosen for satisfying the below
+requirements:
 
+1. The notification has to reach the EPF drivers without any additional
+latency.
+2. The context of the caller (EPC) needs to be preserved while passing the
+notifications.
 
->   		hw_cfg->bst_type = CS35L41_EXT_BOOST_NO_VSPK_SWITCH;
->   	} else if (strncmp(hid, "CLSA0101", 8) == 0) {
->   		hw_cfg->bst_type = CS35L41_EXT_BOOST;
-> diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-> index 8a57636f622e9..e7053cbc6bb6e 100644
-> --- a/sound/pci/hda/patch_realtek.c
-> +++ b/sound/pci/hda/patch_realtek.c
-> @@ -9179,6 +9179,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
->   	SND_PCI_QUIRK(0x103c, 0x83b9, "HP Spectre x360", ALC269_FIXUP_HP_MUTE_LED_MIC3),
->   	SND_PCI_QUIRK(0x103c, 0x841c, "HP Pavilion 15-CK0xx", ALC269_FIXUP_HP_MUTE_LED_MIC3),
->   	SND_PCI_QUIRK(0x103c, 0x8497, "HP Envy x360", ALC269_FIXUP_HP_MUTE_LED_MIC3),
-> +	SND_PCI_QUIRK(0x103c, 0x8a31, "HP ENVY x360 2-in-1 Laptop 15-ey0xxx", ALC287_FIXUP_CS35L41_I2C_2),
->   	SND_PCI_QUIRK(0x103c, 0x84da, "HP OMEN dc0019-ur", ALC295_FIXUP_HP_OMEN),
->   	SND_PCI_QUIRK(0x103c, 0x84e7, "HP Pavilion 15", ALC269_FIXUP_HP_MUTE_LED_MIC3),
->   	SND_PCI_QUIRK(0x103c, 0x8519, "HP Spectre x360 15-df0xxx", ALC285_FIXUP_HP_SPECTRE_X360),
+With the existing notifier mechanism, the 1st case can be satisfied since
+notifiers aren't adding any huge overhead. But the 2nd case is clearly not
+satisfied, because the current atomic notifiers forces the EPF
+notification context to be atomic even though the caller (EPC) may not be
+in atomic context. In the notification function, the EPF drivers are
+required to call several EPC APIs that might sleep and this triggers a
+sleeping in atomic bug during runtime.
+
+The above issue could be fixed by using a blocking notifier instead of
+atomic, but that proposal was not accepted either [2].
+
+So instead of working around the issues within the notifiers, let's get rid
+of it and use the callback mechanism.
+
+Thanks,
+Mani
+
+[1] https://lore.kernel.org/all/20220802072426.GA2494@thinkpad/T/#mfa3a5b3a9694798a562c36b228f595b6a571477d 
+[2] https://lore.kernel.org/all/20220228055240.24774-1-manivannan.sadhasivam@linaro.org
+
+Manivannan Sadhasivam (2):
+  PCI: endpoint: Use callback mechanism for passing events from EPC to
+    EPF
+  PCI: endpoint: Use link_up() callback in place of LINK_UP notifier
+
+ drivers/pci/endpoint/functions/pci-epf-test.c | 38 ++++++-------------
+ drivers/pci/endpoint/pci-epc-core.c           | 15 ++++++--
+ include/linux/pci-epc.h                       |  8 ----
+ include/linux/pci-epf.h                       | 19 ++++++----
+ 4 files changed, 36 insertions(+), 44 deletions(-)
+
+-- 
+2.25.1
+
