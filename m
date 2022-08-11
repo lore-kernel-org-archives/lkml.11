@@ -2,107 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4273DC25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37498C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235703AbiHKPc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48302 "EHLO
+        id S235942AbiHKPcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235862AbiHKPb5 (ORCPT
+        with ESMTP id S235869AbiHKPb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:31:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512D185A89;
-        Thu, 11 Aug 2022 08:30:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5108615FE;
-        Thu, 11 Aug 2022 15:30:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65334C433D6;
-        Thu, 11 Aug 2022 15:30:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660231846;
-        bh=fryF2K+6C57uC+nNGZ3xhsVa5xsK6PpfOvIDAELGqu8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E47K3/OKz1q6iZNPcwjuahy9UxFJuNeG4qNLKIm5y9QPIF2W2qkC0SxZD52nDKvaD
-         XU3hbGXIDbeOFDLSwIOYoJzULFI8QMsE2RKDt2SfxWD46MDstEx80t++cpldIeKEhb
-         FcJz8T/jD/oBadBb1mlQn7RpLoQTCDA/TsLIvFI+AGGhO8QZ5mTbn82SKFglEH8Txr
-         uTph1Q+NN2YS8+IJ9KAroa3tuqt+XxIEGCtKANxDY/u4cENXnZDAMr5Z8hTxKuz5m5
-         XXavMNcxFn4LytLgdxajddaQBxj5ExA912aNXmgRUC50mr/sQ8POiguxUkSNT+lJvQ
-         EM5vxNIpx0ncQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duncan Ma <duncan.ma@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Hamza Mahfooz <hamza.mahfooz@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, alex.hung@amd.com, mwen@igalia.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 016/105] drm/amd/display: Correct min comp buffer size
-Date:   Thu, 11 Aug 2022 11:27:00 -0400
-Message-Id: <20220811152851.1520029-16-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:31:58 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C779B85A9F
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:30:51 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id bs25so3303643wrb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:30:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=lsxU9RpxEtZA+Mk40O6yVmrf9Fu1AMs9ElIAZHptX+c=;
+        b=p8TKVMzq5DwZ3OnqS3RJd818yoMLzy+vFjFcKzlWiosox7p8z1M/5PW/gBrz2e7ZOq
+         RcCm2WazhJYvmqLcaMpSIbJowOeXPTikATddJwIFDDcXMr8NuVwx2A/6WmqWRNmnnSPW
+         kxyxTRS7cc3d9M84ZexCGh/qOj90dgR3qwfhD8P+cNePNgofGMJMpOeMNCzRj9fwiUjR
+         gxwLTFlId5B58kby9P2uQkwS5i9TlF/0qS/Y07//QrDxQYLLlxxo8q2Bi2H14qK4iLZX
+         RABxL/E2v0VJN6Xq/qw/FBepYmww8/tuh6n+VQg0D9qaCoReL5dJ8aBFnN8BWFtXqIYK
+         4nGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=lsxU9RpxEtZA+Mk40O6yVmrf9Fu1AMs9ElIAZHptX+c=;
+        b=x1wTMI+a3BVLGOm6ST05Pwskecj7jkFDRPone+eNWnoVLr+IhjvmVigMqHiTheOGfM
+         M+++um5rOsB3gK1iEcRhaDPAU1eJYnXGYtwogo1wKDl4vKlnXIH4LxNMKwArrsdBdrCH
+         hOXAG1UoGhsQvmHj7QSaEy1oJeQ1C+VRd1R3/vrcgFD0RdmPVDsbLnS2TKkUeAaRPvgo
+         LiCYHr3XT0MpLsYIJ5ygwh1FJVNdtdy4pXiAPUnHWsS1uOnNbzOnK3kp2PsNPhTIE9PY
+         cLynlu6c0vMm8v+o9AHCeLek7yZqRwed4N3zeDUFRgO6RV1mKXYyZAsZyyoDUmeE4LRR
+         zJww==
+X-Gm-Message-State: ACgBeo0dDlh9YUobrDdRI+crkOJdj0Vb2gK94PCyZ2r4vwEKlvsalxYz
+        PKZ6JpqrjuTA78R3YEtkAhUUBUd/En0ECw==
+X-Google-Smtp-Source: AA6agR6B9bizQz9J53uYxM4sZolnfx+nbRLl41mveZTi8oUUOyyvs7b1h0H6QspWO+C/SmNj2BgX/A==
+X-Received: by 2002:adf:ea0a:0:b0:220:6222:ee48 with SMTP id q10-20020adfea0a000000b002206222ee48mr19221413wrm.243.1660231850215;
+        Thu, 11 Aug 2022 08:30:50 -0700 (PDT)
+Received: from localhost.localdomain (host-79-27-108-198.retail.telecomitalia.it. [79.27.108.198])
+        by smtp.gmail.com with ESMTPSA id m7-20020a056000008700b00222ed7ea203sm9805502wrx.100.2022.08.11.08.30.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 08:30:48 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        John Harrison <John.C.Harrison@Intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH 1/3] drm/i915: Replace kmap() with kmap_local_page()
+Date:   Thu, 11 Aug 2022 17:30:39 +0200
+Message-Id: <20220811153041.12795-2-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220811153041.12795-1-fmdefrancesco@gmail.com>
+References: <20220811153041.12795-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duncan Ma <duncan.ma@amd.com>
+kmap() is being deprecated in favor of kmap_local_page().
 
-[ Upstream commit 0c56705d8aae9696348cc320b71d531ede001b79 ]
+There are two main problems with kmap(): (1) It comes with an overhead as
+mapping space is restricted and protected by a global lock for
+synchronization and (2) it also requires global TLB invalidation when the
+kmap’s pool wraps and it might block when the mapping space is fully
+utilized until a slot becomes available.
 
-[Why]
-In 3-way mpo pipes, there is a case that we
-overbook the CRB buffer size. At rare instances,
-overbooking the crb will cause underflow. This only
-happens when det_size changes dynamically
-based on pipe_cnt.
+With kmap_local_page() the mappings are per thread, CPU local, can take
+page faults, and can be called from any context (including interrupts).
+It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+the tasks can be preempted and, when they are scheduled to run again, the
+kernel virtual addresses are restored and are still valid.
 
-[How]
-Set min compbuff size to 1 segment when preparing BW.
+Since its use in i915_gem.c is safe everywhere, it should be preferred.
 
-Reviewed-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
-Acked-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
-Signed-off-by: Duncan Ma <duncan.ma@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Therefore, replace kmap() with kmap_local_page() in i915_gem.c
+
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/i915_gem.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c
-index 54db2eca9e6b..1b02f0ebe957 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c
-@@ -201,7 +201,7 @@ struct _vcs_dpi_ip_params_st dcn3_15_ip = {
- 	.hostvm_max_page_table_levels = 2,
- 	.rob_buffer_size_kbytes = 64,
- 	.det_buffer_size_kbytes = DCN3_15_DEFAULT_DET_SIZE,
--	.min_comp_buffer_size_kbytes = DCN3_15_MIN_COMPBUF_SIZE_KB,
-+	.min_comp_buffer_size_kbytes = 64,
- 	.config_return_buffer_size_in_kbytes = 1024,
- 	.compressed_buffer_segment_size_in_kbytes = 64,
- 	.meta_fifo_size_in_kentries = 32,
-@@ -297,6 +297,7 @@ struct _vcs_dpi_ip_params_st dcn3_16_ip = {
- 	.hostvm_max_page_table_levels = 2,
- 	.rob_buffer_size_kbytes = 64,
- 	.det_buffer_size_kbytes = DCN3_16_DEFAULT_DET_SIZE,
-+	.min_comp_buffer_size_kbytes = 64,
- 	.config_return_buffer_size_in_kbytes = 1024,
- 	.compressed_buffer_segment_size_in_kbytes = 64,
- 	.meta_fifo_size_in_kentries = 32,
+diff --git a/drivers/gpu/drm/i915/i915_gem.c b/drivers/gpu/drm/i915/i915_gem.c
+index 702e5b89be22..43effce60e1b 100644
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -212,14 +212,14 @@ shmem_pread(struct page *page, int offset, int len, char __user *user_data,
+ 	char *vaddr;
+ 	int ret;
+ 
+-	vaddr = kmap(page);
++	vaddr = kmap_local_page(page);
+ 
+ 	if (needs_clflush)
+ 		drm_clflush_virt_range(vaddr + offset, len);
+ 
+ 	ret = __copy_to_user(user_data, vaddr + offset, len);
+ 
+-	kunmap(page);
++	kunmap_local(vaddr);
+ 
+ 	return ret ? -EFAULT : 0;
+ }
+@@ -634,7 +634,7 @@ shmem_pwrite(struct page *page, int offset, int len, char __user *user_data,
+ 	char *vaddr;
+ 	int ret;
+ 
+-	vaddr = kmap(page);
++	vaddr = kmap_local_page(page);
+ 
+ 	if (needs_clflush_before)
+ 		drm_clflush_virt_range(vaddr + offset, len);
+@@ -643,7 +643,7 @@ shmem_pwrite(struct page *page, int offset, int len, char __user *user_data,
+ 	if (!ret && needs_clflush_after)
+ 		drm_clflush_virt_range(vaddr + offset, len);
+ 
+-	kunmap(page);
++	kunmap_local(vaddr);
+ 
+ 	return ret ? -EFAULT : 0;
+ }
 -- 
-2.35.1
+2.37.1
 
