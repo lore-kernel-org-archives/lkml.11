@@ -2,91 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5E5C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A7FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237465AbiHKQMp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:12:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        id S235812AbiHKQMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235864AbiHKQME (ORCPT
+        with ESMTP id S235371AbiHKQMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:12:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5397798D05;
-        Thu, 11 Aug 2022 08:57:01 -0700 (PDT)
+        Thu, 11 Aug 2022 12:12:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A7098D04;
+        Thu, 11 Aug 2022 08:56:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E505361314;
-        Thu, 11 Aug 2022 15:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7114CC433C1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80C58B8214A;
         Thu, 11 Aug 2022 15:56:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC8AC43470;
+        Thu, 11 Aug 2022 15:56:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233420;
-        bh=6ZWUFGHzj3t1dR5Jc/nh1Z2SbkQ3ZS2lBDADQz965o4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tQYpOuAILVmhw5xOzjPNYEgMLB7Ad9VRKnYMRewQTfWGu+LSmu+250596rwuj7kUS
-         ihpog0V1FfNljQdezMxG5VgDWgMjjlpNDyvgEQiJ2d4lQQ/RCbck2pu7+SGlCD0Vmx
-         oeQTCbclWrwXHQwymG9CiUtBgtbhGoegNSKrFg9t4autMr0ek/9oIf0DXuo6kTWhXm
-         rKaRrLZ5tI++5yHcGusxLRWJN6bWjfFTqRiDgeblYM2F0EnYvLw5hbYFjnfojo2fMl
-         fjDRQcmFp6FgJRebw9/ka1piXqRvcJBQwWTarM7WkJl74WUjMOwJbXxbp2/ikxr6JV
-         rDPRxYXL+HIXQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Bizon <mbizon@freebox.fr>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 04/69] ath10k: fix misreported tx bandwidth for 160Mhz
-Date:   Thu, 11 Aug 2022 11:55:13 -0400
-Message-Id: <20220811155632.1536867-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
-References: <20220811155632.1536867-1-sashal@kernel.org>
+        s=k20201202; t=1660233417;
+        bh=ZnvyI0mIDZodC4vJ4wFlk3LaRrrpcSAdA/qWbSvK0Ww=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VyTG+PqH1Ss6lWD9+43NRO+a8Zc9sDT5QCM1yCT0VHmH5KHToaawkMLHjbNRGY2d4
+         oLJTtmvzXEmqHhJv3ujJXyyheP/cLFOcfZ2QTlUfobFk22UNQjxaqWK4SLOybqdGyc
+         2vRz5S9aT43mFmp3CZHTRFjqYEicpk/P/nfPVPUjsBKxbCzRizt4hGgKlQiwzCJTAL
+         nkDHujCTcl1pJ0Bemc8Pzs5Nj5MxxaaWAcAjQekmWIBhnjtviXcLwmK+DhHoM3X9qw
+         YHH5vDvzB2aP9lQIoacCx19LjwtUikeVVME2cCIuJI+MVHjmVVW9y9q6KXHhP+tN8K
+         6seOBjZe/JW/w==
+Date:   Thu, 11 Aug 2022 08:56:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Moshe Shemesh <moshe@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.19 076/105] net: devlink: avoid false DEADLOCK
+ warning reported by lockdep
+Message-ID: <20220811085648.33664dda@kernel.org>
+In-Reply-To: <20220811152851.1520029-76-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
+        <20220811152851.1520029-76-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Bizon <mbizon@freebox.fr>
+On Thu, 11 Aug 2022 11:28:00 -0400 Sasha Levin wrote:
+> From: Moshe Shemesh <moshe@nvidia.com>
+> 
+> [ Upstream commit e26fde2f5befad0951fe6345403616bf51e901be ]
+> 
+> Add a lock_class_key per devlink instance to avoid DEADLOCK warning by
+> lockdep, while locking more than one devlink instance in driver code,
+> for example in opening VFs flow.
 
-[ Upstream commit 75a7062e533e309a9ca0812c69f3ac3cefadb8b1 ]
-
-Because of this missing switch case, 160Mhz transmit was reported as
-20Mhz, leading to wrong airtime calculation and AQL limiting max
-throughput.
-
-Tested-on: QCA9984 hw2.0 PCI 10.4-3.10-00047
-
-Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/cd2735a40da7f4fcc5323e3fca3775e7b5402ece.camel@freebox.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath10k/htt_rx.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index adbaeb67eedf..59595001e2d9 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -3759,6 +3759,10 @@ ath10k_update_per_peer_tx_stats(struct ath10k *ar,
- 		arsta->tx_info.status.rates[0].flags |=
- 				IEEE80211_TX_RC_80_MHZ_WIDTH;
- 		break;
-+	case RATE_INFO_BW_160:
-+		arsta->tx_info.status.rates[0].flags |=
-+				IEEE80211_TX_RC_160_MHZ_WIDTH;
-+		break;
- 	}
- 
- 	if (peer_stats->succ_pkts) {
--- 
-2.35.1
-
+I think we can drop this one, no driver locks multiple instances 
+in 5.19. The whole infra for that stuff is new. Not that adding 
+a lockdep key can hurt in any way..
