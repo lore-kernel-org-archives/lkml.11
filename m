@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7074EC25B0F
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77538C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbiHKXQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 19:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
+        id S235727AbiHKXRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 19:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHKXQs (ORCPT
+        with ESMTP id S235896AbiHKXQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 19:16:48 -0400
+        Thu, 11 Aug 2022 19:16:50 -0400
 Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80A9A024C
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:16:47 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2E5035C004F;
-        Thu, 11 Aug 2022 19:16:46 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AEE5A1A43
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:16:48 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8266E5C0159;
+        Thu, 11 Aug 2022 19:16:47 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 11 Aug 2022 19:16:46 -0400
+  by compute4.internal (MEProxy); Thu, 11 Aug 2022 19:16:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
         :cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660259806; x=
-        1660346206; bh=1iLo5zKcUaFVcj26pwobGK4S6KcUcul00ec8KXKkfvE=; b=I
-        LfFZ7EK8wNAD6rgcb9Em1maoqbdivA0EFJX6GFXH667iTwmNcK2WjlYTLlUYKpWt
-        RbAeVk//2Aj2ANVrzYwNyJz48qklTFNZBQ7RnxGQow6Ei724RZtAoI8sjlJ1wSDc
-        FzIKJ8kGKjn0rHBfipvWrxo6xi5B/03CbsxdaNJfwS3saBum+K9IWcjyC2RM5UvB
-        TVo6lPuuMfYRBavwMi2LQPvnYNArwCLSmR7PUp9qhHVtN1wzmND/rFFrcXH0tkaO
-        1s0oqWtrh2LduSgaoqEoEK1WEmcXaEP7zoALmh0x6r4HrrTAunjRMP9BgBeSYNTN
-        FU4SoetDn+E/5iYfA079Q==
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660259807; x=
+        1660346207; bh=F4b6XOChwbbk0OQUqouspJ2OncV1W77wbWPpJfolhW8=; b=R
+        ax/+SLx/5j0yVaVVzeq4qdsZ9YVPYkfsUtBya8pPZB8tMczKeHa51Bh0gqndh/Dx
+        OiloKGcYDd8T6rgWZA1d+K1XqdSl8z2WKAfPcHDsYAjDYzhNBIJI1xt1r0rCTnfj
+        48gYZ2ped0DjQPdBUegeNo2+SeqrKYsrGoE3IU0VBiKdbbXQ9Si4Wfi45tyRaczi
+        cYeTtxfHFFxyYJV+M95Gd1/ZolnsZrODhlQdano1PugnXJvhX1pG/bvf6LYfEWnY
+        qhBxsvo6kmNP3avp/hurzNwf/LcMNT7SCS9SyUMz3UZkUqh4Ml2X4zAP9aU2GYoz
+        nMCPMvj0lmwkMHg/tJH/Q==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:reply-to:sender
         :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; t=1660259806; x=1660346206; bh=1
-        iLo5zKcUaFVcj26pwobGK4S6KcUcul00ec8KXKkfvE=; b=rDnRDXgdmH2ZrihjB
-        9dIuR8vN0BEwvcUHNcMXNGIvK8MfPbkqen4fsiZDCKPqHG4hnMrTp42Ht9/Dl/yu
-        ClEAh0aiDLxMBYGdJ7Sqfzjd3SuUf58uFJ0qP1CFcaH9e1AQNDxBW29blXOit5X8
-        w5WY6K02A709cr9geAUK/o7zOdhElJfOhkgzp+3FC+sNyiRxKjahFgfM2OY61O45
-        yRRxaMbnbV6+qOs0Ic6cwIIcQFW+vdfboyPVjJKMZQQfs58UisFyIEI5PT2o78Cq
-        jRYg79eNZ45jaqkR+So9spFeUCqLpDkvMI0rycAZ1dsjqQOSTic/7lp5KrKVN9Qn
-        KLULg==
-X-ME-Sender: <xms:3Y31Yj2zvAGY4SC8CjJL60O5K30qgMSNACNE2VHvWMYeVG8uQF6BfA>
-    <xme:3Y31YiE7k7A2luJ_TuCVrRZMZ_CwXPrPtOXg-WRln-cVEoeNd9kwMCPGnBY_Q9xhH
-    aTMQZXWiV7wpayZCA>
-X-ME-Received: <xmr:3Y31Yj4rnI2CK6Km75Ybcw6axTpe5lEX7HjYDM92QW0liAuivtntvYiz2tTc7sbSNPcNhUDdZqsBPzn9og>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgvddtucetufdoteggodetrfdotf
+        :x-me-sender:x-sasl-enc; s=fm1; t=1660259807; x=1660346207; bh=F
+        4b6XOChwbbk0OQUqouspJ2OncV1W77wbWPpJfolhW8=; b=uuc2ktM7EJN+rdOHv
+        QyLhN0lOHI2Q5rBH2peroXIbn3yIaXMt0Bj8hfXnUF1hIXlQmjp8vVLWQ06yY4rp
+        VMr71I1vGgRIEiizgpzlYwsvpU1+BVTQMOdNrJKOK8bWkjxZXmn/FaucGjWNSTiF
+        xzeF2VBk3C0WLto7frJkNI3GQDoTOvYn5vueJmWxwnAlRa09mzZ8LtwYdMnfp6V+
+        75LkEvtId5OgHaHhqih69uruO3mdjj/AAWZuB0xMB+C/mV9SeCnJG3bHLZZJTv/3
+        bzLKpqWslAqiv0qKMqeV8Ql2TakLXHyBtnYNYDAYKhTkniyNeTLjxehbyRao+dbK
+        LNuOQ==
+X-ME-Sender: <xms:3431Ymz9zqvFkYc5fgJbmOqWUsPndYUOMZZslx3C0h7mU1pubosuFg>
+    <xme:3431YiQLV67F1BVpAhpRqySA3togaD9Kiz4ejEhJIDk-QCg_KD-jd-sY5fmOTs3C_
+    C02IzueC6coYbi3fw>
+X-ME-Received: <xmr:3431YoVuouMmrAbnPp_5KMdLASSbny2Ghs4QIxhQUDyuW0CMUBSqLMysAo5yeM3mCG6HBz-6vQY-wMP57g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgudelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvvefufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcu
@@ -56,13 +56,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgvddtucetufdoteggod
     ehudfgudduvdelheehteegledtteeiveeuhfffveekhfevueefieeijeegvdenucevlhhu
     shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
     gvnhhtrdgtohhm
-X-ME-Proxy: <xmx:3Y31Yo2JY4BilY8xvNNO6fIPoZQ5ReZl--dBSJFnTiP1wGEOz6wf-g>
-    <xmx:3Y31YmEDNmikJoBCMHCEthXWu4-yUVQUMg2omlNBySoFMj8F3fAoOw>
-    <xmx:3Y31Yp8yW6KNfN72OmPflgwanG6clDNVYKTAUDOuOd45xVp_FaZfnQ>
-    <xmx:3o31Yu8vGFpyQNNsn8b4NLEw5zLlCVa8uFUglUQq--iLqQynsmnblQ>
+X-ME-Proxy: <xmx:3431Ysj481j0gqyCmkAfhMT2RNw_9fYld3LCxSDclMmRC7umQVYSeA>
+    <xmx:3431YoBhCBa0_rKV11kxvmDKMmsnKFtCNdKFtMv2dDDQ7qnqkObUbg>
+    <xmx:3431YtIfEUzvqJWLJJ5GLr1I60t8m-jdr6ROGBRgJFTLeKeseU6WZA>
+    <xmx:3431Ys5TSmcEsatQz7yErKLC0KxlyPdWZy1iacCs3FosOplSjzWOgA>
 Feedback-ID: iccd040f4:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 11 Aug 2022 19:16:45 -0400 (EDT)
+ 11 Aug 2022 19:16:46 -0400 (EDT)
 From:   Zi Yan <zi.yan@sent.com>
 To:     linux-mm@kvack.org
 Cc:     David Hildenbrand <david@redhat.com>,
@@ -75,9 +75,9 @@ Cc:     David Hildenbrand <david@redhat.com>,
         David Rientjes <rientjes@google.com>,
         James Houghton <jthoughton@google.com>,
         Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 01/12] arch: mm: rename FORCE_MAX_ZONEORDER to ARCH_FORCE_MAX_ORDER
-Date:   Thu, 11 Aug 2022 19:16:32 -0400
-Message-Id: <20220811231643.1012912-2-zi.yan@sent.com>
+Subject: [RFC PATCH v2 03/12] mm: replace MAX_ORDER when it is used to indicate max physical contiguity.
+Date:   Thu, 11 Aug 2022 19:16:34 -0400
+Message-Id: <20220811231643.1012912-4-zi.yan@sent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811231643.1012912-1-zi.yan@sent.com>
 References: <20220811231643.1012912-1-zi.yan@sent.com>
@@ -90,348 +90,269 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zi Yan <ziy@nvidia.com>
 
-This Kconfig option is used by individual arch to set its desired
-MAX_ORDER. Rename it to reflect its actual use.
+MAX_ORDER is limited at a memory section size, thus widely used as
+a variable to indicate maximum physically contiguous page size. But this
+limitation is no longer necessary as kernel only supports sparse memory
+model. Add a new variable MAX_PHYS_CONTIG_ORDER to replace such uses of
+MAX_ORDER.
 
 Signed-off-by: Zi Yan <ziy@nvidia.com>
-Cc: Vineet Gupta <vgupta@synopsys.com>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Guo Ren <guoren@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Ley Foon Tan <ley.foon.tan@intel.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Chris Zankel <chris@zankel.net>
-Cc: linux-snps-arc@lists.infradead.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-oxnas@groups.io
-Cc: linux-csky@vger.kernel.org
-Cc: linux-ia64@vger.kernel.org
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: linux-mips@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-sh@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
-Cc: linux-xtensa@linux-xtensa.org
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
 ---
- arch/arc/Kconfig                             | 2 +-
- arch/arm/Kconfig                             | 2 +-
- arch/arm/configs/imx_v6_v7_defconfig         | 2 +-
- arch/arm/configs/milbeaut_m10v_defconfig     | 2 +-
- arch/arm/configs/oxnas_v6_defconfig          | 2 +-
- arch/arm/configs/sama7_defconfig             | 2 +-
- arch/arm64/Kconfig                           | 2 +-
- arch/csky/Kconfig                            | 2 +-
- arch/ia64/Kconfig                            | 2 +-
- arch/ia64/include/asm/sparsemem.h            | 6 +++---
- arch/m68k/Kconfig.cpu                        | 2 +-
- arch/mips/Kconfig                            | 2 +-
- arch/nios2/Kconfig                           | 2 +-
- arch/powerpc/Kconfig                         | 2 +-
- arch/powerpc/configs/85xx/ge_imp3a_defconfig | 2 +-
- arch/powerpc/configs/fsl-emb-nonhw.config    | 2 +-
- arch/sh/configs/ecovec24_defconfig           | 2 +-
- arch/sh/mm/Kconfig                           | 2 +-
- arch/sparc/Kconfig                           | 2 +-
- arch/xtensa/Kconfig                          | 2 +-
- include/linux/mmzone.h                       | 4 ++--
- 21 files changed, 24 insertions(+), 24 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |  2 +-
+ arch/sparc/mm/tsb.c                             |  4 ++--
+ arch/um/kernel/um_arch.c                        |  4 ++--
+ include/linux/pageblock-flags.h                 | 12 ++++++++++++
+ kernel/dma/pool.c                               |  8 ++++----
+ mm/hugetlb.c                                    |  2 +-
+ mm/internal.h                                   |  8 ++++----
+ mm/memory.c                                     |  4 ++--
+ mm/memory_hotplug.c                             |  6 +++---
+ mm/page_isolation.c                             |  2 +-
+ mm/page_reporting.c                             |  4 ++--
+ 11 files changed, 34 insertions(+), 22 deletions(-)
 
-diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-index 9e3653253ef2..d9a13ccf89a3 100644
---- a/arch/arc/Kconfig
-+++ b/arch/arc/Kconfig
-@@ -554,7 +554,7 @@ config ARC_BUILTIN_DTB_NAME
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentatio=
+n/admin-guide/kernel-parameters.txt
+index ff33971e1630..ec519225b671 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3899,7 +3899,7 @@
+ 			[KNL] Minimal page reporting order
+ 			Format: <integer>
+ 			Adjust the minimal page reporting order. The page
+-			reporting is disabled when it exceeds MAX_ORDER.
++			reporting is disabled when it exceeds MAX_PHYS_CONTIG_ORDER.
 =20
- endmenu	 # "ARC Architecture Configuration"
+ 	panic=3D		[KNL] Kernel behaviour on panic: delay <timeout>
+ 			timeout > 0: seconds before rebooting
+diff --git a/arch/sparc/mm/tsb.c b/arch/sparc/mm/tsb.c
+index 912205787161..15c31d050dab 100644
+--- a/arch/sparc/mm/tsb.c
++++ b/arch/sparc/mm/tsb.c
+@@ -402,8 +402,8 @@ void tsb_grow(struct mm_struct *mm, unsigned long tsb_i=
+ndex, unsigned long rss)
+ 	unsigned long new_rss_limit;
+ 	gfp_t gfp_flags;
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	default "12" if ARC_HUGEPAGE_16M
- 	default "11"
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 87badeae3181..e6c8ee56ac52 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1434,7 +1434,7 @@ config ARM_MODULE_PLTS
- 	  Disabling this is usually safe for small single-platform
- 	  configurations. If unsure, say y.
+-	if (max_tsb_size > (PAGE_SIZE << MAX_ORDER))
+-		max_tsb_size =3D (PAGE_SIZE << MAX_ORDER);
++	if (max_tsb_size > (PAGE_SIZE << MAX_PHYS_CONTIG_ORDER))
++		max_tsb_size =3D (PAGE_SIZE << MAX_PHYS_CONTIG_ORDER);
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	default "12" if SOC_AM33XX
- 	default "9" if SA1111
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6=
-_v7_defconfig
-index 01012537a9b9..fb283059daa0 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -31,7 +31,7 @@ CONFIG_SOC_VF610=3Dy
- CONFIG_SMP=3Dy
- CONFIG_ARM_PSCI=3Dy
- CONFIG_HIGHMEM=3Dy
--CONFIG_FORCE_MAX_ZONEORDER=3D14
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D14
- CONFIG_CMDLINE=3D"noinitrd console=3Dttymxc0,115200"
- CONFIG_KEXEC=3Dy
- CONFIG_CPU_FREQ=3Dy
-diff --git a/arch/arm/configs/milbeaut_m10v_defconfig b/arch/arm/configs/mi=
-lbeaut_m10v_defconfig
-index 58810e98de3d..8620061e19a8 100644
---- a/arch/arm/configs/milbeaut_m10v_defconfig
-+++ b/arch/arm/configs/milbeaut_m10v_defconfig
-@@ -26,7 +26,7 @@ CONFIG_THUMB2_KERNEL=3Dy
- # CONFIG_THUMB2_AVOID_R_ARM_THM_JUMP11 is not set
- # CONFIG_ARM_PATCH_IDIV is not set
- CONFIG_HIGHMEM=3Dy
--CONFIG_FORCE_MAX_ZONEORDER=3D12
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D12
- CONFIG_SECCOMP=3Dy
- CONFIG_KEXEC=3Dy
- CONFIG_EFI=3Dy
-diff --git a/arch/arm/configs/oxnas_v6_defconfig b/arch/arm/configs/oxnas_v=
-6_defconfig
-index 600f78b363dd..5c163a9d1429 100644
---- a/arch/arm/configs/oxnas_v6_defconfig
-+++ b/arch/arm/configs/oxnas_v6_defconfig
-@@ -12,7 +12,7 @@ CONFIG_ARCH_OXNAS=3Dy
- CONFIG_MACH_OX820=3Dy
- CONFIG_SMP=3Dy
- CONFIG_NR_CPUS=3D16
--CONFIG_FORCE_MAX_ZONEORDER=3D12
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D12
- CONFIG_SECCOMP=3Dy
- CONFIG_ARM_APPENDED_DTB=3Dy
- CONFIG_ARM_ATAG_DTB_COMPAT=3Dy
-diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defc=
-onfig
-index 0384030d8b25..8b2cf6ddd568 100644
---- a/arch/arm/configs/sama7_defconfig
-+++ b/arch/arm/configs/sama7_defconfig
-@@ -19,7 +19,7 @@ CONFIG_ATMEL_CLOCKSOURCE_TCB=3Dy
- # CONFIG_CACHE_L2X0 is not set
- # CONFIG_ARM_PATCH_IDIV is not set
- # CONFIG_CPU_SW_DOMAIN_PAN is not set
--CONFIG_FORCE_MAX_ZONEORDER=3D15
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D15
- CONFIG_UACCESS_WITH_MEMCPY=3Dy
- # CONFIG_ATAGS is not set
- CONFIG_CMDLINE=3D"console=3DttyS0,115200 earlyprintk ignore_loglevel"
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 571cc234d0b3..c6fcd8746f60 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -1401,7 +1401,7 @@ config XEN
- 	help
- 	  Say Y if you want to run Linux in a Virtual Machine on Xen on ARM64.
+ 	new_cache_index =3D 0;
+ 	for (new_size =3D 8192; new_size < max_tsb_size; new_size <<=3D 1UL) {
+diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
+index e0de60e503b9..52a474f4f1c7 100644
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -368,10 +368,10 @@ int __init linux_main(int argc, char **argv)
+ 	max_physmem =3D TASK_SIZE - uml_physmem - iomem_size - MIN_VMALLOC;
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int
- 	default "14" if ARM64_64K_PAGES
- 	default "12" if ARM64_16K_PAGES
-diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-index 3cbc2dc62baf..adee6ab36862 100644
---- a/arch/csky/Kconfig
-+++ b/arch/csky/Kconfig
-@@ -332,7 +332,7 @@ config HIGHMEM
- 	select KMAP_LOCAL
- 	default y
+ 	/*
+-	 * Zones have to begin on a 1 << MAX_ORDER page boundary,
++	 * Zones have to begin on a 1 << MAX_PHYS_CONTIG_ORDER page boundary,
+ 	 * so this makes sure that's true for highmem
+ 	 */
+-	max_physmem &=3D ~((1 << (PAGE_SHIFT + MAX_ORDER)) - 1);
++	max_physmem &=3D ~((1 << (PAGE_SHIFT + MAX_PHYS_CONTIG_ORDER)) - 1);
+ 	if (physmem_size + iomem_size > max_physmem) {
+ 		highmem =3D physmem_size + iomem_size - max_physmem;
+ 		physmem_size -=3D highmem;
+diff --git a/include/linux/pageblock-flags.h b/include/linux/pageblock-flag=
+s.h
+index 940efcffd374..358b871b07ca 100644
+--- a/include/linux/pageblock-flags.h
++++ b/include/linux/pageblock-flags.h
+@@ -54,6 +54,18 @@ extern unsigned int pageblock_order;
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	default "11"
+ #define pageblock_nr_pages	(1UL << pageblock_order)
 =20
-diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-index 26ac8ea15a9e..c6e06cdc738f 100644
---- a/arch/ia64/Kconfig
-+++ b/arch/ia64/Kconfig
-@@ -200,7 +200,7 @@ config IA64_CYCLONE
- 	  Say Y here to enable support for IBM EXA Cyclone time source.
- 	  If you're unsure, answer N.
++/*
++ * memory section is only defined in sparsemem and in flatmem, pages are a=
+lways
++ * physically contiguous, but we use MAX_ORDER since all users assume so.
++ */
++#ifdef CONFIG_FLATMEM
++#define MAX_PHYS_CONTIG_ORDER	MAX_ORDER
++#else /* SPARSEMEM */
++#define MAX_PHYS_CONTIG_ORDER	(min(PFN_SECTION_SHIFT, MAX_ORDER))
++#endif /* CONFIG_FLATMEM */
++
++#define MAX_PHYS_CONTIG_NR_PAGES	(1UL << MAX_PHYS_CONTIG_ORDER)
++
+ /* Forward declaration */
+ struct page;
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "MAX_ORDER (11 - 17)"  if !HUGETLB_PAGE
- 	range 11 17  if !HUGETLB_PAGE
- 	default "17" if HUGETLB_PAGE
-diff --git a/arch/ia64/include/asm/sparsemem.h b/arch/ia64/include/asm/spar=
-semem.h
-index 42ed5248fae9..84e8ce387b69 100644
---- a/arch/ia64/include/asm/sparsemem.h
-+++ b/arch/ia64/include/asm/sparsemem.h
-@@ -11,10 +11,10 @@
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index e20f168a34c7..b10f1dd52871 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -84,8 +84,8 @@ static int atomic_pool_expand(struct gen_pool *pool, size=
+_t pool_size,
+ 	void *addr;
+ 	int ret =3D -ENOMEM;
 =20
- #define SECTION_SIZE_BITS	(30)
- #define MAX_PHYSMEM_BITS	(50)
--#ifdef CONFIG_FORCE_MAX_ZONEORDER
--#if ((CONFIG_FORCE_MAX_ZONEORDER - 1 + PAGE_SHIFT) > SECTION_SIZE_BITS)
-+#ifdef CONFIG_ARCH_FORCE_MAX_ORDER
-+#if ((CONFIG_ARCH_FORCE_MAX_ORDER - 1 + PAGE_SHIFT) > SECTION_SIZE_BITS)
- #undef SECTION_SIZE_BITS
--#define SECTION_SIZE_BITS (CONFIG_FORCE_MAX_ZONEORDER - 1 + PAGE_SHIFT)
-+#define SECTION_SIZE_BITS (CONFIG_ARCH_FORCE_MAX_ORDER - 1 + PAGE_SHIFT)
- #endif
- #endif
+-	/* Cannot allocate larger than MAX_ORDER */
+-	order =3D min(get_order(pool_size), MAX_ORDER);
++	/* Cannot allocate larger than MAX_PHYS_CONTIG_ORDER */
++	order =3D min(get_order(pool_size), MAX_PHYS_CONTIG_ORDER);
 =20
-diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
-index e0e9e31339c1..3b2f39508524 100644
---- a/arch/m68k/Kconfig.cpu
-+++ b/arch/m68k/Kconfig.cpu
-@@ -399,7 +399,7 @@ config SINGLE_MEMORY_CHUNK
- 	  order" to save memory that could be wasted for unused memory map.
- 	  Say N if not sure.
+ 	do {
+ 		pool_size =3D 1 << (PAGE_SHIFT + order);
+@@ -190,11 +190,11 @@ static int __init dma_atomic_pool_init(void)
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order" if ADVANCED
- 	depends on !SINGLE_MEMORY_CHUNK
- 	default "11"
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index ec21f8999249..70d28976a40d 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -2140,7 +2140,7 @@ config PAGE_SIZE_64KB
+ 	/*
+ 	 * If coherent_pool was not used on the command line, default the pool
+-	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER.
++	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_PHYS_CONTIG_ORDER.
+ 	 */
+ 	if (!atomic_pool_size) {
+ 		unsigned long pages =3D totalram_pages() / (SZ_1G / SZ_128K);
+-		pages =3D min_t(unsigned long, pages, MAX_ORDER_NR_PAGES);
++		pages =3D min_t(unsigned long, pages, MAX_PHYS_CONTIG_NR_PAGES);
+ 		atomic_pool_size =3D max_t(size_t, pages << PAGE_SHIFT, SZ_128K);
+ 	}
+ 	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 15ff582687a3..36eedeed1b22 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -1903,7 +1903,7 @@ pgoff_t hugetlb_basepage_index(struct page *page)
+ 	pgoff_t index =3D page_index(page_head);
+ 	unsigned long compound_idx;
 =20
- endchoice
+-	if (compound_order(page_head) > MAX_ORDER)
++	if (compound_order(page_head) > MAX_PHYS_CONTIG_ORDER)
+ 		compound_idx =3D page_to_pfn(page) - page_to_pfn(page_head);
+ 	else
+ 		compound_idx =3D page - page_head;
+diff --git a/mm/internal.h b/mm/internal.h
+index 4df67b6b8cce..1433e3a6fdd0 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -302,7 +302,7 @@ static inline bool page_is_buddy(struct page *page, str=
+uct page *buddy,
+  * satisfies the following equation:
+  *     P =3D B & ~(1 << O)
+  *
+- * Assumption: *_mem_map is contiguous at least up to MAX_ORDER
++ * Assumption: *_mem_map is contiguous at least up to MAX_PHYS_CONTIG_ORDER
+  */
+ static inline unsigned long
+ __find_buddy_pfn(unsigned long page_pfn, unsigned int order)
+@@ -642,11 +642,11 @@ static inline void vunmap_range_noflush(unsigned long=
+ start, unsigned long end)
+ /*
+  * Return the mem_map entry representing the 'offset' subpage within
+  * the maximally aligned gigantic page 'base'.  Handle any discontiguity
+- * in the mem_map at MAX_ORDER_NR_PAGES boundaries.
++ * in the mem_map at MAX_PHYS_CONTIG_NR_PAGES boundaries.
+  */
+ static inline struct page *mem_map_offset(struct page *base, int offset)
+ {
+-	if (unlikely(offset >=3D MAX_ORDER_NR_PAGES))
++	if (unlikely(offset >=3D MAX_PHYS_CONTIG_NR_PAGES))
+ 		return nth_page(base, offset);
+ 	return base + offset;
+ }
+@@ -658,7 +658,7 @@ static inline struct page *mem_map_offset(struct page *=
+base, int offset)
+ static inline struct page *mem_map_next(struct page *iter,
+ 						struct page *base, int offset)
+ {
+-	if (unlikely((offset & (MAX_ORDER_NR_PAGES - 1)) =3D=3D 0)) {
++	if (unlikely((offset & (MAX_PHYS_CONTIG_NR_PAGES - 1)) =3D=3D 0)) {
+ 		unsigned long pfn =3D page_to_pfn(base) + offset;
+ 		if (!pfn_valid(pfn))
+ 			return NULL;
+diff --git a/mm/memory.c b/mm/memory.c
+index bd8e7e79be99..3b82945aaa3d 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -5660,7 +5660,7 @@ void clear_huge_page(struct page *page,
+ 	unsigned long addr =3D addr_hint &
+ 		~(((unsigned long)pages_per_huge_page << PAGE_SHIFT) - 1);
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	range 14 64 if MIPS_HUGE_TLB_SUPPORT && PAGE_SIZE_64KB
- 	default "14" if MIPS_HUGE_TLB_SUPPORT && PAGE_SIZE_64KB
-diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
-index 4167f1eb4cd8..a582f72104f3 100644
---- a/arch/nios2/Kconfig
-+++ b/arch/nios2/Kconfig
-@@ -44,7 +44,7 @@ menu "Kernel features"
+-	if (unlikely(pages_per_huge_page > MAX_ORDER_NR_PAGES)) {
++	if (unlikely(pages_per_huge_page > MAX_PHYS_CONTIG_NR_PAGES)) {
+ 		clear_gigantic_page(page, addr, pages_per_huge_page);
+ 		return;
+ 	}
+@@ -5713,7 +5713,7 @@ void copy_user_huge_page(struct page *dst, struct pag=
+e *src,
+ 		.vma =3D vma,
+ 	};
 =20
- source "kernel/Kconfig.hz"
+-	if (unlikely(pages_per_huge_page > MAX_ORDER_NR_PAGES)) {
++	if (unlikely(pages_per_huge_page > MAX_PHYS_CONTIG_NR_PAGES)) {
+ 		copy_user_gigantic_page(dst, src, addr, vma,
+ 					pages_per_huge_page);
+ 		return;
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index 5540499007ae..8930823e5067 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -596,16 +596,16 @@ static void online_pages_range(unsigned long start_pf=
+n, unsigned long nr_pages)
+ 	unsigned long pfn;
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	range 9 20
- 	default "11"
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 4c466acdc70d..39d71d7701bd 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -845,7 +845,7 @@ config DATA_SHIFT
- 	  in that case. If PIN_TLB is selected, it must be aligned to 8M as
- 	  8M pages will be pinned.
+ 	/*
+-	 * Online the pages in MAX_ORDER aligned chunks. The callback might
++	 * Online the pages in MAX_PHYS_CONTIG_ORDER aligned chunks. The callback=
+ might
+ 	 * decide to not expose all pages to the buddy (e.g., expose them
+ 	 * later). We account all pages as being online and belonging to this
+ 	 * zone ("present").
+ 	 * When using memmap_on_memory, the range might not be aligned to
+-	 * MAX_ORDER_NR_PAGES - 1, but pageblock aligned. __ffs() will detect
++	 * MAX_PHYS_CONTIG_NR_PAGES - 1, but pageblock aligned. __ffs() will dete=
+ct
+ 	 * this and the first chunk to online will be pageblock_nr_pages.
+ 	 */
+ 	for (pfn =3D start_pfn; pfn < end_pfn;) {
+-		int order =3D min_t(unsigned long, MAX_ORDER, __ffs(pfn));
++		int order =3D min_t(unsigned long, MAX_PHYS_CONTIG_ORDER, __ffs(pfn));
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	range 8 9 if PPC64 && PPC_64K_PAGES
- 	default "9" if PPC64 && PPC_64K_PAGES
-diff --git a/arch/powerpc/configs/85xx/ge_imp3a_defconfig b/arch/powerpc/co=
-nfigs/85xx/ge_imp3a_defconfig
-index f29c166998af..e7672c186325 100644
---- a/arch/powerpc/configs/85xx/ge_imp3a_defconfig
-+++ b/arch/powerpc/configs/85xx/ge_imp3a_defconfig
-@@ -30,7 +30,7 @@ CONFIG_PREEMPT=3Dy
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
- CONFIG_BINFMT_MISC=3Dm
- CONFIG_MATH_EMULATION=3Dy
--CONFIG_FORCE_MAX_ZONEORDER=3D17
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D17
- CONFIG_PCI=3Dy
- CONFIG_PCIEPORTBUS=3Dy
- CONFIG_PCI_MSI=3Dy
-diff --git a/arch/powerpc/configs/fsl-emb-nonhw.config b/arch/powerpc/confi=
-gs/fsl-emb-nonhw.config
-index f14c6dbd7346..ab8a8c4530d9 100644
---- a/arch/powerpc/configs/fsl-emb-nonhw.config
-+++ b/arch/powerpc/configs/fsl-emb-nonhw.config
-@@ -41,7 +41,7 @@ CONFIG_FIXED_PHY=3Dy
- CONFIG_FONT_8x16=3Dy
- CONFIG_FONT_8x8=3Dy
- CONFIG_FONTS=3Dy
--CONFIG_FORCE_MAX_ZONEORDER=3D13
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D13
- CONFIG_FRAMEBUFFER_CONSOLE=3Dy
- CONFIG_FRAME_WARN=3D1024
- CONFIG_FTL=3Dy
-diff --git a/arch/sh/configs/ecovec24_defconfig b/arch/sh/configs/ecovec24_=
-defconfig
-index e699e2e04128..b52e14ccb450 100644
---- a/arch/sh/configs/ecovec24_defconfig
-+++ b/arch/sh/configs/ecovec24_defconfig
-@@ -8,7 +8,7 @@ CONFIG_MODULES=3Dy
- CONFIG_MODULE_UNLOAD=3Dy
- # CONFIG_BLK_DEV_BSG is not set
- CONFIG_CPU_SUBTYPE_SH7724=3Dy
--CONFIG_FORCE_MAX_ZONEORDER=3D12
-+CONFIG_ARCH_FORCE_MAX_ORDER=3D12
- CONFIG_MEMORY_SIZE=3D0x10000000
- CONFIG_FLATMEM_MANUAL=3Dy
- CONFIG_SH_ECOVEC=3Dy
-diff --git a/arch/sh/mm/Kconfig b/arch/sh/mm/Kconfig
-index ba569cfb4368..411fdc0901f7 100644
---- a/arch/sh/mm/Kconfig
-+++ b/arch/sh/mm/Kconfig
-@@ -18,7 +18,7 @@ config PAGE_OFFSET
- 	default "0x80000000" if MMU
- 	default "0x00000000"
+ 		(*online_page_callback)(pfn_to_page(pfn), order);
+ 		pfn +=3D (1UL << order);
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index 8d33120a81b2..801835f91c44 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -226,7 +226,7 @@ static void unset_migratetype_isolate(struct page *page=
+, int migratetype)
+ 	 */
+ 	if (PageBuddy(page)) {
+ 		order =3D buddy_order(page);
+-		if (order >=3D pageblock_order && order <=3D MAX_ORDER) {
++		if (order >=3D pageblock_order && order <=3D MAX_PHYS_CONTIG_ORDER) {
+ 			buddy =3D find_buddy_page_pfn(page, page_to_pfn(page),
+ 						    order, NULL);
+ 			if (buddy && !is_migrate_isolate_page(buddy)) {
+diff --git a/mm/page_reporting.c b/mm/page_reporting.c
+index d52a55bca6d5..b48d6ad82998 100644
+--- a/mm/page_reporting.c
++++ b/mm/page_reporting.c
+@@ -11,7 +11,7 @@
+ #include "page_reporting.h"
+ #include "internal.h"
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	range 9 64 if PAGE_SIZE_16KB
- 	default "9" if PAGE_SIZE_16KB
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index 1c852bb530ec..4d3d1af90d52 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -269,7 +269,7 @@ config ARCH_SPARSEMEM_ENABLE
- config ARCH_SPARSEMEM_DEFAULT
- 	def_bool y if SPARC64
+-unsigned int page_reporting_order =3D MAX_ORDER + 1;
++unsigned int page_reporting_order =3D MAX_PHYS_CONTIG_ORDER + 1;
+ module_param(page_reporting_order, uint, 0644);
+ MODULE_PARM_DESC(page_reporting_order, "Set page reporting order");
 =20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	default "13"
- 	help
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 12ac277282ba..bcb0c5d2abc2 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -771,7 +771,7 @@ config HIGHMEM
+@@ -244,7 +244,7 @@ page_reporting_process_zone(struct page_reporting_dev_i=
+nfo *prdev,
+ 		return err;
 =20
- 	  If unsure, say Y.
-=20
--config FORCE_MAX_ZONEORDER
-+config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order"
- 	default "11"
- 	help
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 8f571dc7c524..ca285ed3c6e0 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -24,10 +24,10 @@
- #include <asm/page.h>
-=20
- /* Free memory management - zoned buddy allocator.  */
--#ifndef CONFIG_FORCE_MAX_ZONEORDER
-+#ifndef CONFIG_ARCH_FORCE_MAX_ORDER
- #define MAX_ORDER 11
- #else
--#define MAX_ORDER CONFIG_FORCE_MAX_ZONEORDER
-+#define MAX_ORDER CONFIG_ARCH_FORCE_MAX_ORDER
- #endif
- #define MAX_ORDER_NR_PAGES (1 << (MAX_ORDER - 1))
-=20
+ 	/* Process each free list starting from lowest order/mt */
+-	for (order =3D page_reporting_order; order <=3D MAX_ORDER; order++) {
++	for (order =3D page_reporting_order; order <=3D MAX_PHYS_CONTIG_ORDER; or=
+der++) {
+ 		for (mt =3D 0; mt < MIGRATE_TYPES; mt++) {
+ 			/* We do not pull pages from the isolate free list */
+ 			if (is_migrate_isolate(mt))
 --=20
 2.35.1
 
