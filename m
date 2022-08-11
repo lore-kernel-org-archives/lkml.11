@@ -2,170 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA794C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68216C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235313AbiHKMjH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 08:39:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S235326AbiHKMja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 08:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235314AbiHKMjB (ORCPT
+        with ESMTP id S235311AbiHKMj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 08:39:01 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED8B10A0;
-        Thu, 11 Aug 2022 05:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660221539; x=1691757539;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version;
-  bh=bE0qzrIObsI+BtUiF3tzgzIbyUq1Er8KrNkIhEWyvsQ=;
-  b=QstXJm8BGUieKKIL/a48e5w3oX4m5d4nRZpvlj1tg1OAG7SLrJmGX7/b
-   FoPcL32r8a5XrHR/jwEQKWwR0dWh0ohgy08GrIIV59lwWWv05Zgx4EgmO
-   QiMMIwn0HV9/VGOGAZJgdjN2WAb5vpz+mBUuv6UxzvoMKZFvZVKy6G8wg
-   6tjLZeBdtQ4dmsdZlh2jkB8zMpBjUm0pnBRrXXrgpI+uIRfaOUVPtuHrp
-   Z/aLrzfN/8v9d7EgCjzLu37bckFAkJ4o4jLR6jLeEHfP4QJSXhjQN+EPO
-   lHqPIsndN2iiuT5gGTNAG28MNyFqyIAynpHYowAA6pVoI/qG3ljsuZ53r
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="175982234"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Aug 2022 05:38:58 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 11 Aug 2022 05:38:57 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Thu, 11 Aug 2022 05:38:57 -0700
+        Thu, 11 Aug 2022 08:39:27 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060a.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::60a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017392F668;
+        Thu, 11 Aug 2022 05:39:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fexl94dGVboKXu5Fl9RwRMaqlcWdayZRIBMhVG6i7evtdJ7YndN7c/2V4i5Sj/zq1oaLiESvUmE4XwdbNogUrK62Vy2NwCHMVwYj40pBvD+F13L9Kfk1p9WblUnnBH0G9Gq7fte3dtxJL6D28vmaO+AeM1HNz5xP3Az67rhKdKaUAf9TOt3YCqNwDbuWrHh2ha9u4adsQx7Gnw9U0XdPyLRIxk3pjs7t2J//q8A27aqW3zdsVhWqvBU7aGQ9yROHNGTPSY5aw7kwh78rCQTCMzgScomR5LouOtAmQoF6XhZG46egv2S3E5bw8RLintcflMy3C+EufzIS14XNsSbpog==
+ b=cjrpt2Q99gHdLGO6qySJB9FdmdSY+RQfCM6rp+gqvzxLy+TOUyJ8CvDd8WkHOvzff5qNIFo3X5HvHqWfvLwKFCpLxtJuWrG4CxNHxvpDVLnUfHO+zqoKz35+JCy2WGxRG152X/bOJOXqik6msCbmlwzS/ihVWRCo89cBQLIto7yaS3fqy56NSd0d9FTSePhyMD+nlftG1U6JhlFOsoKG5ZtXShpscqZ8MbpNTUMwfQM7SC0b6s7iOBavBhB4KCRkjFctDzzhJEljuDN0Q4VGZdPSWm8JeUcn3TZ1iMSa7fRkV78lKgl2c5SVafkkKT2kxQWDifb3B3LXUeXUv6aDQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bE0qzrIObsI+BtUiF3tzgzIbyUq1Er8KrNkIhEWyvsQ=;
- b=NY+FCSY6/cyiNR1y2RMkzk8sd4lISkpesjN9VAOAuT3Wzw2v15imtjqFwFwy25EVWJXersX+BbA2uK4UQHl4NMNxDQX2ymU88zRqFL6tfPtuqH+VuFdVpLJ7OMDMQ6idbULMruNB+HsiWE26BY6n42EHNEqh8oA7zWCc1TkSDAOoVeYFvbCB0XkRruLXb9solqXBIvH2FlnNzeL9FpF4YgkkSxH9PNUehNX+iawr6R4aC8GmVpBoeNjC9LE394TL4407gQV+jzc6YKW2FOk8OAfHXS4bH9mResQSvVBl5n5ScJ/Z9+qAS2+eswN20JmT3Xu3RTUu04Hqvm+ppv24Ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
+ bh=C2+iFOgVS7l5nXc91WMm2jx5sfefUwgDb5VFh4qcR9E=;
+ b=oZUMeVb3xtuzMnW8dLhDAdeFs3edQXkwEG8cQlehPmiNaoYRMT6l/53nBw1AFidTGOLa/ccmlv5gwkBzZMXmQAX6ND6FLntfVXiCLOFxSkb/Wb9HUQ0LQDJ5YqjF2vT7aKjcQBj+lp8YGB3B4SMJ/NRDEkkKX17i8mWLLbSsugLHM+4GfE2g8CvGD7n7FJXsBTp7ko2QbuBIXhQ12nkzwJieAlz0o7lCzsbzpfiOsrdyKH+KzbKBsh1XsVzfjgyOIF9I1o7vY71Xnd5+R++Fg46oXh6Tip3AJjSaT5eUfhdb/XRJyySVXEYj8PLi1gxFT5uRRZcEdb/zWgO+XaZ5Zg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bE0qzrIObsI+BtUiF3tzgzIbyUq1Er8KrNkIhEWyvsQ=;
- b=cReRVv81sSQlDQ1kb253662USmBX2undpGkdrSSUpwSKjf1dBn2w0RsH3tDjrCiU1m7eHJMzuRmkwepvWBmauDF/jhm4SI1XL7nUXhqoIhCysmQbR8khNuEddeE6meT6oFrAyBqf/bfw/dz5Ki09ohTLSrBCPeZZ0/iB0UY7IGM=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by LV2PR11MB6047.namprd11.prod.outlook.com (2603:10b6:408:179::16) with
+ bh=C2+iFOgVS7l5nXc91WMm2jx5sfefUwgDb5VFh4qcR9E=;
+ b=AX1P7kRyAngFBy+Yja74l5VU1FWk+ol2Q614SSBuC6YqlblUpN79NU1jp+gXPAFoaObj5zOe+ViigbrmI41AVajdnuhdq0Cie7d9dMN9hVCZDgZbXlULHWUTfuZIRvC5e8KCXRzxneRNCS3Mpu6uhB/4abyZOb0AI8sj+ZplTdM=
+Received: from MW4PR03CA0256.namprd03.prod.outlook.com (2603:10b6:303:b4::21)
+ by MN2PR12MB4253.namprd12.prod.outlook.com (2603:10b6:208:1de::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Thu, 11 Aug
- 2022 12:38:52 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::ac89:75cd:26e0:51c3%8]) with mapi id 15.20.5525.011; Thu, 11 Aug 2022
- 12:38:51 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <wsa@kernel.org>, <Daire.McNamara@microchip.com>,
-        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andreas.buerkler@enclustra.com>, <Lewis.Hanly@microchip.com>
-Subject: Re: [PATCH] i2c: microchip-core: fix erroneous late ack send
-Thread-Topic: [PATCH] i2c: microchip-core: fix erroneous late ack send
-Thread-Index: AQHYqJ8aiQaoH2WqLkSz/xb60fnlCq2pqowAgAACwYA=
-Date:   Thu, 11 Aug 2022 12:38:51 +0000
-Message-ID: <a79262e2-a190-677f-034b-56757a085280@microchip.com>
-References: <20220805074346.4123650-1-conor.dooley@microchip.com>
- <YvT1/LOr4udX+jhP@shikoro>
-In-Reply-To: <YvT1/LOr4udX+jhP@shikoro>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3c5bfa52-5840-4dbf-627e-08da7b9671f4
-x-ms-traffictypediagnostic: LV2PR11MB6047:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: g3p7WbMa/t/rtqwePE5kRCk6odOy2pXycwxnF68JFNWPD3MAr0ZyOvLRwU5BA0mcpBNnRV4s1ylXj1lzm8xYOLULlsdVUODvliruxHSAwesv+GVhK4PHYfMsvweUATq+ryDsJnnPSOTsKENvLUUMMly7dmtpmA9kzcjvYXDLDBqkMRfSNK7rElKFL98hkFlrTxQkMOrBaW0FCzXGER6FgVq7om5RnA0RSU1QZNQ69h6QExJzikAHsqssNIZOpOK5al8GmN2sJzhGq5XtBKjkAlL3sc4IUsAndNutH4ogcPq1KomygDsPOuQ8pmJexILJKmWmzTuAZFyiu4WojGv1gOK9dsNr4EPfOfLIMEL8PBdk559XXhlyDrDIqW/ENInmLy8Odo+7ZMjn5QPH3q2H4dBIseLapirM11GCuKxSeg6DocaEt22CvRvri5RQAdXtZSKxq7nUJKMDrybwf0BZN1Lkf+lb36QJc2wITehrAyXg2Q5aidYVRBIYVx76JbMcE/CVL/cKFrA0sH18Qy1pP4EXXypEB5YtLSOgW8Guzqercxp/U3yY6SbE1PxktWYiBhUoczXIRArA5jC1MfQhjloGuybHUqvEBQHuSDA7vUzJHQefC3MbmkiZeTY+E+gA2TtDio6raW8AvhDdSUOxdG0WtXMQfuiyGzrvkl1wACBVWSq5aRv2Iel926ZdiS3elhBohRlDMMALoRaUWN63rexHOlbVs4iDLYyP3YwCYILH9a8JDdJ6a9hZ94EEMW0CZD/BUeLDpVSqxTyFvMORWHkLdqSUZtTscPUVLoSxlAJU3RKgCs3t3thQJlvzM5tLWuqn7iKSCCwF1o16Qe9lBv3rwxz1pvwidF1a6tG3w/tnfAxYAFk3T94eJM0S6hTA
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(346002)(396003)(136003)(366004)(376002)(316002)(122000001)(71200400001)(76116006)(38070700005)(41300700001)(66946007)(66476007)(8676002)(2906002)(66556008)(66446008)(64756008)(91956017)(26005)(6506007)(53546011)(38100700002)(6512007)(5660300002)(186003)(36756003)(31686004)(31696002)(83380400001)(86362001)(478600001)(8936002)(110136005)(6636002)(6486002)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZWdtU2JUMXZoYWtqaFVKK0JVVVZmYzZBaEZsS1FVQ0s1cGU0V05iUUhudEMz?=
- =?utf-8?B?ODFGK215OGhTZWsvTlhmWHlYN1RBZWpNaUgxOXg3eTc3ckQrbXQ2dUo0Vktj?=
- =?utf-8?B?OGhmRlgrcWFEbmx2U0p1NDkzTTltSnJXTmpMVUI2VXpxZERsM3lTelFuWjRW?=
- =?utf-8?B?T0taZCs4YmVyU3FJQWR2Q2pCM2QySkd4elA5dFczWS8zVEV5RDJqdEZ6cDNY?=
- =?utf-8?B?Mjh5MnVUcXhFajlBS2puMzlNalN3aENzQnlyNDd6eEZqZFZkTklaUVpKRU4r?=
- =?utf-8?B?Q1pqV2U1L09jNHE1UU1PTmkvcFdUcTRpc2xZakdRWDdJTFlxQlhDc0x2dHk0?=
- =?utf-8?B?Z2ljcmt4TXY4YjdMSFl3WTVvNzBsdy9NNzBmTDliS2h6ZkV1eVJFUzlPTFB6?=
- =?utf-8?B?STBmZTZobUlrVVkxQ0hEVVFSWmxqOUQ0bVFnVGxLaEZpeWZnSTA1aGN5WDh6?=
- =?utf-8?B?RlZMUnhobHZOa1NPS0p6aG51Mng4Q0xyMjFRLzZSZThKNWIwSHhjMzhmVWlI?=
- =?utf-8?B?WndNSmk1UGtVZlJkMnFSSy9JRFZyREVvWUtvajRVdmJXb25kVytJeCtja050?=
- =?utf-8?B?WDlaR2xRM0w5d0R0VEFnbW1sVHVqdnVmWVNJdTdhOGp4VW10NGRJS2R4OE9V?=
- =?utf-8?B?bUxZWktrdzVXYlJ3ZktCcjBMdnlZN3hrMGJYQjZxbnZ1RjMvVWxpakpPWW91?=
- =?utf-8?B?THhucld4REU3Sy9XV2VEVXE3SWVocUI0U0VXQ2pUdEdrNWt0bm5VV3FLRGJw?=
- =?utf-8?B?QURHcS9WODlpUkJudzdEeTVkdzAwa0JLSmtDbEhWR2oxaWVidFVTZkIzSFJO?=
- =?utf-8?B?Mk9ESjBxcDRSRHVvcGpSZkV2UXV2UXBubGhmWFJqNmVQSlNIOGJqdGdFSUJL?=
- =?utf-8?B?aVIxZWlQaDgvcHlZd0lvU0xWUElsM0tRQTl0UnBNOVByYWczZlpBRDgwVTd6?=
- =?utf-8?B?MHo0MVd6aFA3OWs4N2pKcjBiSDkrdmxMZEpRWUtreGIzM3lvdVYzMDIxOXhw?=
- =?utf-8?B?cngwd09WZW1jckZVUk9jRjhaWUpzSGZweW5nMXFyY2RwUHlmZHJJcW9yemF0?=
- =?utf-8?B?c1FFL3lVYUNOeThIWUxockNiWGhaK3dHSnJwajFVb2lRVmttWC9VQXd1eFNz?=
- =?utf-8?B?SXhsMldaaVhYQVFkNnYvTHRYcnlVZFRkOGV3UGFwWHc3VUdxbWhPMDROWE1n?=
- =?utf-8?B?c1RCZVA0emZETEp2SFZBSHFCaXRZR0paMTl5NHVYdjJxQTA2QWpuelpqalVi?=
- =?utf-8?B?UlJlSG90ZnF5VXFWTUVDK203OGR4KytMaGl5SFQycmxHZlJqbHdiU3pwcUNG?=
- =?utf-8?B?VmpDUGd2RHFNU0M1aTRIekZkTkFlQWZjbEF3M01sZTZuRzlwcFpkdXQwTUFM?=
- =?utf-8?B?MWdIczBBVzZ3b1l4WVpXc0k2L1ZQVWF4UHJLY01ETkxSaUsyMGxhQjM4cC9s?=
- =?utf-8?B?VDNPYzZsMWdrc2ViWXBhQ09LVU94RzVwVWs0WUpyQnJFKzlhQjhPSDlWdGJl?=
- =?utf-8?B?Tys4b0lXVCt2TEN0bWRwQTA0ejJjajgxM3ord3o0R01jNjRjVGhBTFU5R3Fw?=
- =?utf-8?B?RVM5U200UmNTQno2alRQeXNwc0JOK3RPUXFoVGJZQVZ1VXNmZUZEektFWDlm?=
- =?utf-8?B?Rk9DUCtQMnkweWswY2l4Q0o0L0xRTno2cWc2QUE3ZWJKdWlOUUU1Sjh1RUpn?=
- =?utf-8?B?YjBUemFWaXM4cVZNdHhibVRVbHo4R1FsaEdUNkU1U1V2OGdmdm8yTW1VVFpk?=
- =?utf-8?B?TTFiNjRqVURqT2hCVmZZTWk4N0M3ZWhHREdEMWJoSnUzU2JvT3BuL3RRaFJn?=
- =?utf-8?B?RWpua3pNYXh3REwyYWEzaGYrSndEYXp3UUZJS2swTC9Rb214ZU92dzQzcUNy?=
- =?utf-8?B?SjFKaVNpZXpPZERXZ1dEenByek5mS3IyL2NTcm84ekZIU2E4dWxJRUh4TUJU?=
- =?utf-8?B?V3BlNS9sa0dVRGYxS3l6YXhBTFo4aVVSRFRIcjFWdjQyemsvMXgvcDhGRHA3?=
- =?utf-8?B?SmxXWVhRaGh5WStWYnJZSkZlOUJUb0pDWHJjSjBHRExjb0o5R3pidlpVejl6?=
- =?utf-8?B?V0Jtdml0b0VhNDBpbzlMejl4VG81VGNKNUlIcmdDZGZKd08veEJncmtSNXZt?=
- =?utf-8?Q?NJ4lyzBLGNnpwhpZG5ExOGuEQ?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0BAFEE531D7CE0419B0AE7BAF167628D@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ 2022 12:39:23 +0000
+Received: from CO1NAM11FT015.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b4:cafe::1a) by MW4PR03CA0256.outlook.office365.com
+ (2603:10b6:303:b4::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17 via Frontend
+ Transport; Thu, 11 Aug 2022 12:39:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT015.mail.protection.outlook.com (10.13.175.130) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5525.11 via Frontend Transport; Thu, 11 Aug 2022 12:39:22 +0000
+Received: from sindhu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 11 Aug
+ 2022 07:39:16 -0500
+From:   Sandipan Das <sandipan.das@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <x86@kernel.org>
+CC:     <peterz@infradead.org>, <bp@alien8.de>, <acme@kernel.org>,
+        <namhyung@kernel.org>, <jolsa@kernel.org>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>,
+        <dave.hansen@linux.intel.com>, <like.xu.linux@gmail.com>,
+        <eranian@google.com>, <ananth.narayan@amd.com>,
+        <ravi.bangoria@amd.com>, <santosh.shukla@amd.com>,
+        <sandipan.das@amd.com>
+Subject: [PATCH 12/13] perf/core: Add speculation info to branch entries
+Date:   Thu, 11 Aug 2022 18:00:00 +0530
+Message-ID: <834088c302faf21c7b665031dd111f424e509a64.1660211399.git.sandipan.das@amd.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1660211399.git.sandipan.das@amd.com>
+References: <cover.1660211399.git.sandipan.das@amd.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c5bfa52-5840-4dbf-627e-08da7b9671f4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Aug 2022 12:38:51.3186
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9d9348ed-25f7-4f04-5d67-08da7b9684a4
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4253:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tIxpKGAMdgC/aCY2RS2HRUfAXiY/5y/UsHCre3eJn97EW7+ZuNDyIR71u4ChFsUgxHR789kljMsaPH8IhmAYfI8CYTsrvCH2zbMTIJd6j/NReQr2qFK79psyAaW2QZ33/pW08zerkWwQf6ijjEcDgAv/ktXryxtCSwJuBbOeidJiYV2z+BWmstH2vkkHkteG4PhA3dp9KIteBg6H3D7P5OJrBezQWRlU1xSfS41WicU6t8y2ffnDIl4O1cEj+iVmiZ3TyBeVlbKlf+CcxaXTs/S6JcbDwBfS9JQpsT+8ENMcf73GH87NOyZ+dLw2LNUXVpNmamlefmIWw3664WaX6rLoeitDhFFnpRsX5lMpOEFDrucAMo/gfW4g9rDHxTOllXdYxPbNZksCZMRRAP34mLwiLT+d9sOy7U6nRQlVWq8jFIGUmkKWcmh1eumScyN5zW34vcocU9iXjcP18JwKg1XE6mLjKja1vR9Ng/K3pHgkmQMaS4ebglKxQJ4Llk7Ep0TtHW/YzaRKeZ/uh41srS7uQoZZRp41XPnHJtDuyE6Pr9/2dN0G7ppCQzJmX6uvwI0XoT8ruO1Pv/7zVfY2o/rGT7IjZpiUtu8H3XGPszJm0fIgHrIJZK1wr9u24Osxz7yu2KvQUHDnhsZzhvw+O38yfhVFesdke7FcW5beglGfotfS1tBjiwudT0SHRctkMXQ/Kg4Pqj/zIFauwAwIPqq7HnpvU8mJq4s9Ldb+QTLuIEZBFka8hmARz5vQj6eIHQBzeOHm/cYg0WzALLkk0+hOw4I9cGdocnY/Ylzb15i/Ph081+Am3o/av5SHn1YlJwY57cbL7siSUHNJG4tdWQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(396003)(136003)(46966006)(36840700001)(40470700004)(26005)(356005)(81166007)(82310400005)(82740400003)(7416002)(44832011)(5660300002)(40460700003)(8936002)(86362001)(7696005)(478600001)(83380400001)(8676002)(6666004)(41300700001)(4326008)(70586007)(2906002)(70206006)(40480700001)(36756003)(16526019)(110136005)(2616005)(47076005)(54906003)(186003)(426003)(336012)(36860700001)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:39:22.5302
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qPS4Gsa3aNPbtHGl2UbUvxK8W8PW6SlpPxWMyhMi8yO3IbZWsIEkipdn49edUSLEu4BwJru880Sr6DExenR6SFCMG1kGoTU+kDN38PxYtCY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR11MB6047
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d9348ed-25f7-4f04-5d67-08da7b9684a4
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT015.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4253
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMTEvMDgvMjAyMiAxMzoyOCwgV29sZnJhbSBTYW5nIHdyb3RlOg0KPiBFWFRFUk5BTCBFTUFJ
-TDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93
-IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gT24gRnJpLCBBdWcgMDUsIDIwMjIgYXQgMDg6NDM6NDZB
-TSArMDEwMCwgQ29ub3IgRG9vbGV5IHdyb3RlOg0KPj4gQSBsYXRlIGFjayBpcyBjdXJyZW50bHkg
-YmVpbmcgc2VudCBhdCB0aGUgZW5kIG9mIGEgdHJhbnNmZXIgZHVlIHRvDQo+PiBpbmNvcnJlY3Qg
-bG9naWMgaW4gbWNocF9jb3JlaTJjX2VtcHR5X3J4KCkuIEN1cnJlbnRseSB0aGUgQXNzZXJ0IEFj
-aw0KPj4gYml0IGlzIGJlaW5nIHdyaXR0ZW4gdG8gdGhlIGNvbnRyb2xsZXIncyBjb250cm9sIHJl
-ZyBhZnRlciB0aGUgbGFzdA0KPj4gYnl0ZSBoYXMgYmVlbiByZWNlaXZlZCwgY2F1c2luZyBpdCB0
-byBzZW50IGFub3RoZXIgYnl0ZSB3aXRoIHRoZSBhY2suDQo+PiBJbnN0ZWFkLCB0aGUgQUEgZmxh
-ZyBzaG91bGQgYmUgd3JpdHRlbiB0byB0byB0aGUgY29udG9sIHJlZ2lzdGVyIHdoZW4NCj4+IHRo
-ZSBwZW51bHRpbWF0ZSBieXRlIGlzIHJlYWQgc28gaXQgaXMgc2VudCBvdXQgZm9yIHRoZSBsYXN0
-IGJ5dGUuDQo+Pg0KPj4gUmVwb3J0ZWQtYnk6IEFuZHJlYXMgQnVlcmtsZXIgPGFuZHJlYXMuYnVl
-cmtsZXJAZW5jbHVzdHJhLmNvbT4NCj4+IEZpeGVzOiA2NGE2ZjFjNDk4N2UgKCJpMmM6IGFkZCBz
-dXBwb3J0IGZvciBtaWNyb2NoaXAgZnBnYSBpMmMgY29udHJvbGxlcnMiKQ0KPj4gVGVzdGVkLWJ5
-OiBMZXdpcyBIYW5seSA8bGV3aXMuaGFubHlAbWljcm9jaGlwLmNvbT4NCj4+IFNpZ25lZC1vZmYt
-Ynk6IENvbm9yIERvb2xleSA8Y29ub3IuZG9vbGV5QG1pY3JvY2hpcC5jb20+DQo+DQo+IEZpeGVk
-IHRoZXNlIGNoZWNrcGF0Y2ggd2FybmluZ3M6DQo+DQo+IFdBUk5JTkc6ICdjb250b2wnIG1heSBi
-ZSBtaXNzcGVsbGVkIC0gcGVyaGFwcyAnY29udHJvbCc/DQo+IFdBUk5JTkc6IFBvc3NpYmxlIHJl
-cGVhdGVkIHdvcmQ6ICd0bycNCg0KSGVoLCB0aGF0J3Mgd2hhdCBJIGdldCBmb3IgZWRpdGluZyB0
-aGUgY29tbWl0IGluIHNlbmQtZW1haWwuLg0KDQo+DQo+IGFuZCBhcHBsaWVkIHRvIGZvci1jdXJy
-ZW50LCB0aGFua3MhDQoNClRoYW5rcyA6KQ0KDQo+DQo+DQo=
+Add a new "spec" bitfield to branch entries for providing speculation
+information. This will be populated using hints provided by branch sampling
+features on supported hardware. The following cases are covered:
+
+  * No branch speculation information is available
+  * Branch is speculative but taken on the wrong path
+  * Branch is non-speculative but taken on the correct path
+  * Branch is speculative and taken on the correct path
+
+Suggested-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+---
+ include/linux/perf_event.h      |  1 +
+ include/uapi/linux/perf_event.h | 15 ++++++++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index ee8b9ecdc03b..ae30c61957d2 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -1078,6 +1078,7 @@ static inline void perf_clear_branch_entry_bitfields(struct perf_branch_entry *b
+ 	br->abort = 0;
+ 	br->cycles = 0;
+ 	br->type = 0;
++	br->spec = PERF_BR_SPEC_NA;
+ 	br->reserved = 0;
+ }
+ 
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index 0474ee362151..9656733a95a5 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -256,6 +256,17 @@ enum {
+ 	PERF_BR_MAX,
+ };
+ 
++/*
++ * Common branch speculation outcome classification
++ */
++enum {
++	PERF_BR_SPEC_NA			= 0,	/* Not available */
++	PERF_BR_SPEC_WRONG_PATH		= 1,	/* Speculative but on wrong path */
++	PERF_BR_NON_SPEC_CORRECT_PATH	= 2,	/* Non-speculative but on correct path */
++	PERF_BR_SPEC_CORRECT_PATH	= 3,	/* Speculative and on correct path */
++	PERF_BR_SPEC_MAX,
++};
++
+ #define PERF_SAMPLE_BRANCH_PLM_ALL \
+ 	(PERF_SAMPLE_BRANCH_USER|\
+ 	 PERF_SAMPLE_BRANCH_KERNEL|\
+@@ -1363,6 +1374,7 @@ union perf_mem_data_src {
+  *     abort: aborting a hardware transaction
+  *    cycles: cycles from last branch (or 0 if not supported)
+  *      type: branch type
++ *      spec: branch speculation info (or 0 if not supported)
+  */
+ struct perf_branch_entry {
+ 	__u64	from;
+@@ -1373,7 +1385,8 @@ struct perf_branch_entry {
+ 		abort:1,    /* transaction abort */
+ 		cycles:16,  /* cycle count to last branch */
+ 		type:4,     /* branch type */
+-		reserved:40;
++		spec:2,     /* branch speculation info */
++		reserved:38;
+ };
+ 
+ union perf_sample_weight {
+-- 
+2.34.1
+
