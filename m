@@ -2,79 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2917C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02151C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234907AbiHKRkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 13:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
+        id S235373AbiHKRnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 13:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235662AbiHKRkX (ORCPT
+        with ESMTP id S230095AbiHKRnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 13:40:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2035BC24;
-        Thu, 11 Aug 2022 10:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE5A561745;
-        Thu, 11 Aug 2022 17:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4FCADC43470;
-        Thu, 11 Aug 2022 17:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660239614;
-        bh=rARQNLKYFyAdqTCjtmqdIJOSM4W78mV48IVgZTjCUwo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iJeh4vJeWErGl/Jtyuae8qW5IfEhNQEcMee0irpqYXER9JWrtdD5kdwhn+EtM/XKV
-         8/Ah2iDNU/0WQnY7sV/B96TLMz9F4CnJ5YLbY/DXbg9Yu1csCJ+H9RkdC+rYkjgzaD
-         VkAqMOgxVIDO76TI8d42UNTw/0dnHlQvC0+55zyvuHbptEKi04vPr2M8SREZ7HQbbJ
-         Ee7cNy4XXca2EOEhcr5v6TzmL0phxPXvdADYjlbiT5VHfYGWSjhuvu8v3s7tgzkD3K
-         1fyHOu6hF5a9j4N9AUtplivhHj5wi7yyYUn4MolAQIiQo/SPF1U79/XOd4V+bML/Cq
-         tRioWb5hfgDZQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3065AC43143;
-        Thu, 11 Aug 2022 17:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 11 Aug 2022 13:43:40 -0400
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A11C844F8;
+        Thu, 11 Aug 2022 10:43:39 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-32868f43dd6so180140257b3.8;
+        Thu, 11 Aug 2022 10:43:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=52kaS5zi69zPVsumf70MYG0Kaej7AEwB3wMdTH4bz1s=;
+        b=QdcjS/vPZ2pB208Uvc3KKZq59Kd29+nSamj9J5Tlrq9lSOHJ+w6BSEnf3WE83/SG5S
+         IuSrZ6Kuqpo7zZD87tXO0o2OinSyhN+iYx9ngwqH1UoyPKgFUw3hg5g83tT89vDQdBy5
+         JZBpTtfBQ1mdSDwV66Rzo92hYPYtksunKuUhrpp4Vat9qL5eocpM++WgmfkbtJw6Iu1y
+         1i/i0N+7p3iFh+8BVG7SLRigtKp7UT68bd82aRh69dm2AM0dqxa922JtmrgChitp/z8g
+         AVH5N/jvRkkg4RkOK5Bvj3SpbVSpcPjRBfj1wrpsHzJs7wJkUjvb4xgmy46cEbdGdI2g
+         NwOQ==
+X-Gm-Message-State: ACgBeo0JdzMvC9nDfdGeKotBSsA+9DV6Cr2N2z94jUTERppDFsCiASCg
+        KqiXt16V0YZRmGfNNIpMJjN+FGuOgbpZag9oPaNWkaOEHeE=
+X-Google-Smtp-Source: AA6agR6w+TremIqN7YSZcgR9Dx9cgHPfXASqT0jzXAj8WtNY/VVM4TpIChillkxC1MQl7mSXbfAaKXvP7lFs7jBkJPk=
+X-Received: by 2002:a0d:d694:0:b0:325:1881:6a52 with SMTP id
+ y142-20020a0dd694000000b0032518816a52mr318697ywd.149.1660239818725; Thu, 11
+ Aug 2022 10:43:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] dpaa2-eth: trace the allocated address instead of page
- struct
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166023961419.31756.16594052173444905202.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Aug 2022 17:40:14 +0000
-References: <20220811151651.3327-1-chen45464546@163.com>
-In-Reply-To: <20220811151651.3327-1-chen45464546@163.com>
-To:     Chen Lin <chen45464546@163.com>
-Cc:     ioana.ciornei@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.liu@nxp.com, chen.lin5@zte.com.cn
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 11 Aug 2022 19:43:27 +0200
+Message-ID: <CAJZ5v0hu2y0jwZ4DFxOaZzArPuaoSEH-iKHakHWRpW3e7i9x7Q@mail.gmail.com>
+Subject: [GIT PULL] More ACPI updates for v5.20-rc1
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Linus,
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Please pull from the tag
 
-On Thu, 11 Aug 2022 23:16:51 +0800 you wrote:
-> We should trace the allocated address instead of page struct.
-> 
-> Fixes: 27c874867c4 ("dpaa2-eth: Use a single page per Rx buffer")
-> Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
-> Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+ git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+ acpi-5.20-rc1-2
 
-Here is the summary with links:
-  - [v2] dpaa2-eth: trace the allocated address instead of page struct
-    https://git.kernel.org/netdev/net/c/e34f49348f8b
+with top-most commit da2679f26bd6ae20b06d49e53eedc2880cf5e65e
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ Merge branch 'acpi-properties'
+
+on top of commit 8fa0db3a9b8ef310eb40cf91481141ece084f584
+
+ Merge tag 'acpi-5.20-rc1' of
+git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
+
+to receive more ACPI updates for 5.20-rc1.
+
+These fix up direct references to the fwnode field in struct
+device and extend ACPI device properties support.
+
+Specifics:
+
+ - Replace direct references to the fwnode field in struct device with
+   dev_fwnode() and device_match_fwnode() (Andy Shevchenko).
+
+ - Make the ACPI code handling device properties support properties
+   with buffer values (Sakari Ailus).
+
+Thanks!
 
 
+---------------
+
+Andy Shevchenko (1):
+      ACPI: VIOT: Do not dereference fwnode in struct device
+
+Sakari Ailus (9):
+      ACPI: property: Return type of acpi_add_nondev_subnodes() should be bool
+      ACPI: property: Tie data nodes to acpi handles
+      ACPI: property: Use acpi_object_type consistently in property ref parsing
+      ACPI: property: Move property ref argument parsing into a new function
+      ACPI: property: Switch node property referencing from ifs to a switch
+      ACPI: property: Unify integer value reading functions
+      ACPI: property: Add support for parsing buffer property UUID
+      ACPI: property: Read buffer properties as integers
+      ACPI: property: Fix error handling in acpi_init_properties()
+
+---------------
+
+ drivers/acpi/property.c | 464 ++++++++++++++++++++++++++++++++----------------
+ drivers/acpi/viot.c     |   6 +-
+ include/acpi/acpi_bus.h |   3 +-
+ include/linux/acpi.h    |   2 +-
+ 4 files changed, 321 insertions(+), 154 deletions(-)
