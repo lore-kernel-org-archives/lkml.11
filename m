@@ -2,160 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAA6C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2B7C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238744AbiHKQiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        id S238767AbiHKQiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239113AbiHKQgX (ORCPT
+        with ESMTP id S239185AbiHKQg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:23 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5760D844EC
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:11:44 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id tl27so34355776ejc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:11:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc;
-        bh=LEZOE0Zt4s9PCFiKFwKYRDr114AmkBBPDRdQoJzg3yY=;
-        b=LoZkUtf5xb8gMd6GN3/nO/n1py2Og5JC5zdDRm8vx7llsnHr+1KIC171liULEbmot5
-         VBfKEU1S/2YtzlEkYUoZYafjv2UsYl0vFEKeRj3essa3WmKld/4ZAFVCpyozdfroy2ql
-         z7CCAVaTuWDBXLuznzbB4azxbiwFfC0QaA35U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=LEZOE0Zt4s9PCFiKFwKYRDr114AmkBBPDRdQoJzg3yY=;
-        b=76EPe6vKxrndt+lcBT9jVHRAfDo1u2WHhzzE4vn4YXit2cAaJ+80JLctMgFjfeRwlb
-         ZP/mmENW5gbjy5/dgP+sVEQzo3AZCa+PYp3rAEaNV+HGFUBdObUROcsnfNyJF5/U80Tg
-         Tf8/A4rdzprdPy89WwFMPLMFJ/Yh7uX6lazbWHvl9lU9fBn2QCfZ9jf2ofAAnUevQFEp
-         NGEW7TI0axNbDDsWKkbVjSFrLu4XmTp3UtD9gu7Jgwew1GYuKHGNE+ERUA0hn5I/ryTS
-         x0nbmVnJZU9twEHEx1qo3q5KdlVOReF+18gz8zTAYArbfSrOYTr/TU8wM63leYduNRFt
-         8BoA==
-X-Gm-Message-State: ACgBeo21P8Fv5GCJTZat4rkR/XBhF9PXcxqFhNO9R3iVRW3lNUM3TNNl
-        2qEgnkBBC8q1dykZR4pco2RFIw==
-X-Google-Smtp-Source: AA6agR66L82QusO6KrB9+U3SJWdVMGMWDY+DvWnD4qEGwK4ex8vWC3yUtjD00Z3O76kxXxSBatkgMg==
-X-Received: by 2002:a17:907:2d2b:b0:731:2179:5ba with SMTP id gs43-20020a1709072d2b00b00731217905bamr19660655ejc.207.1660234302668;
-        Thu, 11 Aug 2022 09:11:42 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id u10-20020a17090626ca00b0072ed9efc9dfsm3679678ejc.48.2022.08.11.09.11.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 09:11:41 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 18:11:40 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        Thu, 11 Aug 2022 12:36:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A349AFEE;
+        Thu, 11 Aug 2022 09:11:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E06CBCE22BD;
+        Thu, 11 Aug 2022 16:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4886DC433D6;
+        Thu, 11 Aug 2022 16:11:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660234307;
+        bh=hNnG/QF449VVgko0ZeoXmHgr1IPIPHXrWVvntaAq3ww=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PzIvCj4HqBp1jS7EUWfWuySFGm50cox/A+WSth4svMReKh8U2DqgQz5FiS6xOqFA4
+         M67J6gt8tNM2UXXBBu68QIvDJ/ad+pj/6EA3FbnB6MSSZAwZtmK62efzP/mG66KXpa
+         KWarhoch0jI7ICTWopVHYKMJhJ1iHQhbIL4c2UqozbdeGD2rPKWHDiKjm8Z+A66RSa
+         /xE0NDawDiwDUHIg/NHSz577eWzrIR0f/DNeVgwM1zWJ3FdOinBtps2xAE6mWBp1A9
+         3xgp+nR57DMMxJQL8eiBjKb3e9QMi37gHFAtNxOOlA2fSZUfGZWxxaB+ocWOYrInVx
+         MRGaRA+q/zLkQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
         David Airlie <airlied@linux.ie>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux/m68k <linux-m68k@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: Re: [PATCH v3 01/10] drm/fourcc: Add drm_format_info_bpp() helper
-Message-ID: <YvUqPL5l8/+XbvaQ@phenom.ffwll.local>
-Mail-Followup-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux/m68k <linux-m68k@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
-References: <cover.1657294931.git.geert@linux-m68k.org>
- <1cae5ebc28513ec1c91c66b00647ce3ca23bfba7.1657294931.git.geert@linux-m68k.org>
- <YvPVxy4kYKdzWgT8@phenom.ffwll.local>
- <CAMuHMdVMuuXgYW-AkyB+G77Wsjkm715u1ifDvaY=5DufXjryRA@mail.gmail.com>
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 01/12] drm/r128: Fix undefined behavior due to shift overflowing the constant
+Date:   Thu, 11 Aug 2022 12:11:27 -0400
+Message-Id: <20220811161144.1543598-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdVMuuXgYW-AkyB+G77Wsjkm715u1ifDvaY=5DufXjryRA@mail.gmail.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 09:59:39AM +0200, Geert Uytterhoeven wrote:
-> Hi Daniel,
-> 
-> On Wed, Aug 10, 2022 at 5:59 PM Daniel Vetter <daniel@ffwll.ch> wrote:
-> > On Fri, Jul 08, 2022 at 08:20:46PM +0200, Geert Uytterhoeven wrote:
-> > > Add a helper to retrieve the actual number of bits per pixel for a
-> > > plane, taking into account the number of characters and pixels per
-> > > block for tiled formats.
-> > >
-> > > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-> 
-> > > --- a/drivers/gpu/drm/drm_fourcc.c
-> > > +++ b/drivers/gpu/drm/drm_fourcc.c
-> > > @@ -370,6 +370,25 @@ unsigned int drm_format_info_block_height(const struct drm_format_info *info,
-> > >  }
-> > >  EXPORT_SYMBOL(drm_format_info_block_height);
-> > >
-> > > +/**
-> > > + * drm_format_info_bpp - number of bits per pixel
-> > > + * @info: pixel format info
-> > > + * @plane: plane index
-> > > + *
-> > > + * Returns:
-> > > + * The actual number of bits per pixel, depending on the plane index.
-> > > + */
-> > > +unsigned int drm_format_info_bpp(const struct drm_format_info *info, int plane)
-> > > +{
-> > > +     if (!info || plane < 0 || plane >= info->num_planes)
-> > > +             return 0;
-> > > +
-> > > +     return info->char_per_block[plane] * 8 /
-> > > +            (drm_format_info_block_width(info, plane) *
-> > > +             drm_format_info_block_height(info, plane));
-> >
-> > Do we really needs this for blocky formats where this is potentially
-> > ill-defined? I think if there's no need then this should also return 0
-> > when block_width/height != 1, it doesn't make much sense to compute bpp
-> > when it's not really bits per _pixel_.
-> 
-> Yes, we do need this.  For low-color formats, the number of bits
-> per pixel is less than eight, and block_width is larger than one.
-> That is actually the point of this patch.
+From: Borislav Petkov <bp@suse.de>
 
-Hm right, I didn't realize that this is how we have to describe the
-formats with less than 8 bpp.
+[ Upstream commit 6556551f8848f98eff356c8aacae42c8dd65b2df ]
 
-I think we can include them easily with a check for char_per_block == 1
-and then making sure that the division does not have a reminder (just in
-case someone does something really funny, it could e.g. be a 332 layout or
-something like that for 3 pixels).
+Fix:
 
-> > Minimally this needs to check whether the division actually makes sense or
-> > whether there's a reminder, and if there's  reminder, then fail. But that
-> > feels like a bad hack and I think we should avoid it if it's not
-> > absolutely necessary.
-> 
-> Looking at drivers/gpu/drm/drm_fourcc.c, the only supported format
-> where there can be a remainder is P030, which has 2 spare bits per
-> 32-bit word, and thus is special anyway.
-> Still, 4 * 8 / 3 = 10, so you get the correct numbers of bits for
-> the first plane.  For the second plane, you get 8 * 8 / 3 = 21,
-> but as .is_yuv = true, you have to divide that result by two again,
-> so you get 10 again.
+  drivers/gpu/drm/r128/r128_cce.c: In function ‘r128_do_init_cce’:
+  drivers/gpu/drm/r128/r128_cce.c:417:2: error: case label does not reduce to an integer constant
+    case R128_PM4_64BM_64VCBM_64INDBM:
+    ^~~~
+  drivers/gpu/drm/r128/r128_cce.c:418:2: error: case label does not reduce to an integer constant
+    case R128_PM4_64PIO_64VCPIO_64INDPIO:
+    ^~~~
 
-Yeah I don't think we should describe these with bpp or cpp or anything
-like that. bpp < 8 makes sense since that's how this has been done since
-decades, but trying to extend these to funny new formats is a bad idea.
-This is also why cpp and depth refuse to compute these (or at least
-should).
--Daniel
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220405151517.29753-5-bp@alien8.de
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/r128/r128_drv.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/r128/r128_drv.h b/drivers/gpu/drm/r128/r128_drv.h
+index 09143b840482..6553a855a176 100644
+--- a/drivers/gpu/drm/r128/r128_drv.h
++++ b/drivers/gpu/drm/r128/r128_drv.h
+@@ -289,8 +289,8 @@ extern long r128_compat_ioctl(struct file *filp, unsigned int cmd,
+ #	define R128_PM4_64PIO_128INDBM		(5  << 28)
+ #	define R128_PM4_64BM_128INDBM		(6  << 28)
+ #	define R128_PM4_64PIO_64VCBM_64INDBM	(7  << 28)
+-#	define R128_PM4_64BM_64VCBM_64INDBM	(8  << 28)
+-#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15 << 28)
++#	define R128_PM4_64BM_64VCBM_64INDBM	(8U  << 28)
++#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15U << 28)
+ #	define R128_PM4_BUFFER_CNTL_NOUPDATE	(1  << 27)
+ 
+ #define R128_PM4_BUFFER_WM_CNTL		0x0708
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+2.35.1
+
