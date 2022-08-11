@@ -2,74 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9042DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAACC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234594AbiHKKnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 06:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48968 "EHLO
+        id S234631AbiHKKpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234521AbiHKKnO (ORCPT
+        with ESMTP id S234602AbiHKKpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 06:43:14 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF388E993;
-        Thu, 11 Aug 2022 03:43:13 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B90186601CE3;
-        Thu, 11 Aug 2022 11:43:11 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1660214592;
-        bh=c783+yyvK/ZDieM0jMu1355LQscFY0xjpTvoVFq/DrI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Mm2wwWfOj2Tvnrkww/urAzpSz54KnWYXb7GcMDbbXDZRf2yLSZkYqQMEd2WawcdW8
-         2i05kUTvE+QYNtckgD8EnHJxRElt2GIkcIfdEdV3K1Rdr2ZEvB5ghNlAD/XXTWPM/g
-         C5UdskwnNIJ1zWo7R9x4JZvWEGvKbtHTrAdX4fkyLiiZWo7GY6+WO3oxnwkbigbRko
-         50FnzVLUn2VHLji7iFxJD+vnNcoevtqg5KPXV3HQh/W6+DcN/TfdDSCvSb8hJQmmxG
-         kirw5RLlo0hsllnJ7KUDuuz0sHEC9YwZt8dnwgC2FvQI3CFdL1ewSb37AqVq+GnALV
-         +qBHNI7fyZlRg==
-Message-ID: <e8b99943-d930-2d92-67ba-62ae17f7cd56@collabora.com>
-Date:   Thu, 11 Aug 2022 13:43:09 +0300
+        Thu, 11 Aug 2022 06:45:10 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B8B901A4
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:45:09 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id u6so13525491ljk.8
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=eslh2ICT1A2pYV00+C3KHTnl2CWed4tgcm8YDqRAs9U=;
+        b=GqnLYktSFa5SwXk0/8vV6Z6fF55KrRJLLAny9/RxRKMgNQLH9cJeyQYeM9C8ItPACh
+         rkLKgHS4OkUrUBB03XS4SXfK74r0S0L9DXA+7uwuqcD9Vxn3idOoWMApFysXOnHV4VKQ
+         tYWShlbn1sIO8oNggNyhnHVLEP4cgishdHssrlGlA3+EzliXuLMJCqsRAdV3mX7QkpYH
+         A+QSnsfmLk+VwOgYvmddzqu9dl0bpCs6cB+26tuCuPw+lbB7Kf4my+gKi9qoFGO9DOGx
+         oJcSviaYy8+V6lsyVpTIySfzGxMxm21UalGfzC5tN2ZiePgDnLKmBPzvXQ08HpSmEj2j
+         k5CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=eslh2ICT1A2pYV00+C3KHTnl2CWed4tgcm8YDqRAs9U=;
+        b=qBVSz0wtXOxFdkTNNal/n8k8OIolAtVL0Fy72ZBvEy01MQaabtZ47kwGCIG1WckLv0
+         bFcrpxnzeROc5P+bF+kR3bXaOxJN+0amzF9eQ6zS/2JIf+8cKs2rdw4wb+rTO9qUkAJ2
+         ppwKxTFTEfA8UwU2o7loxgFG5b85iqPOT7C45N7kescUXlk41nlUrpfU8h+WFpLpdDOS
+         gLj/JgHLCE3Ug0Ya9AAtTyg+1gW1Jn1hiYT/5m6vbOqATtPeE5UWqHSq7uKQUmkHLbu8
+         ser2a9S2ROwaHtgyD1Q8hgq3mGt7dTXxDvEId9U/U66Pa5OVRcqZZMqp8jadcQ5rOB2E
+         KGhw==
+X-Gm-Message-State: ACgBeo14cZvjFqI0OdAUK/0PojeLroRAaOueg/35rcXE6WBWWXaE2Y2v
+        uYTd9yj9kpw9vgbdMAUUCgc6oA==
+X-Google-Smtp-Source: AA6agR5phn8uFnKNoEM0rjbJ3VEqU9sWyXPAGlcDWFEIJMFGBG9IfV5Tiu82kg5VwaTIVoHboTfXdw==
+X-Received: by 2002:a2e:6101:0:b0:25d:eb9d:4c79 with SMTP id v1-20020a2e6101000000b0025deb9d4c79mr10374539ljb.354.1660214707390;
+        Thu, 11 Aug 2022 03:45:07 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id f10-20020a056512360a00b0048b27215fb3sm669556lfs.41.2022.08.11.03.45.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Aug 2022 03:45:06 -0700 (PDT)
+Message-ID: <918f80ba-d138-1c56-648e-60ad84eee3c1@linaro.org>
+Date:   Thu, 11 Aug 2022 13:45:05 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH] iio: light: Add raw attribute
+Subject: Re: [PATCH v2 1/4] dt-bindings: power: Add MT8365 power domains
 Content-Language: en-US
-To:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
-        lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krisman@collabora.com, kernel@collabora.com,
-        alvaro.soliverez@collabora.com
-References: <20220811101443.499761-1-shreeya.patel@collabora.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <20220811101443.499761-1-shreeya.patel@collabora.com>
+To:     Markus Schneider-Pargmann <msp@baylibre.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        Fabien Parent <parent.f@gmail.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>
+References: <20220725081853.1636444-1-msp@baylibre.com>
+ <20220725081853.1636444-2-msp@baylibre.com>
+ <bbdde7ce-4512-2e61-5e1a-e22e5cb91184@collabora.com>
+ <20220811101443.eevyf5xnctmo5y4f@blmsp>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220811101443.eevyf5xnctmo5y4f@blmsp>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/11/22 13:14, Shreeya Patel wrote:
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = ltrf216a_set_power_state(data, true);
-> +		if (ret)
-> +			return ret;
-> +		mutex_lock(&data->lock);
-> +		ret = ltrf216a_read_data(data, LTRF216A_ALS_DATA_0);
-> +		mutex_unlock(&data->lock);
+On 11/08/2022 13:14, Markus Schneider-Pargmann wrote:
+>>> +++ b/include/dt-bindings/power/mt8365-power.h
+>>
+>> Please rename this file to add the vendor prefix.
+>>
+>> mediatek,mt8365-power.h
+> 
+> Thank you for your feedback.
+> 
+> There are currently 12 'mt*-power.h' files without vendor prefix in that
+> directory. I can change it, but it seems very inconsistent.
 
-ltrf216a_set_power_state(data, false) should be called before return.
+Which is not really argument to keep old style instead of preferred
+vendor,device.h.
 
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		ltrf216a_set_power_state(data, false);
-
-
--- 
 Best regards,
-Dmitry
+Krzysztof
