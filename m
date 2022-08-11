@@ -2,47 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EC3C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6867FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237513AbiHKQRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
+        id S235522AbiHKQRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237329AbiHKQJ7 (ORCPT
+        with ESMTP id S237997AbiHKQQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:09:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12558169C;
-        Thu, 11 Aug 2022 08:55:10 -0700 (PDT)
+        Thu, 11 Aug 2022 12:16:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10802C2EB0;
+        Thu, 11 Aug 2022 08:59:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FA5CB82160;
-        Thu, 11 Aug 2022 15:55:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5FB9C43140;
-        Thu, 11 Aug 2022 15:55:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33AD161341;
+        Thu, 11 Aug 2022 15:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F6B7C433D6;
+        Thu, 11 Aug 2022 15:59:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233307;
-        bh=bqPGJ5Dm4D36jRvAbgbottlTKaFNf2a47HkQBsJcex0=;
+        s=k20201202; t=1660233588;
+        bh=61HETrOWiV+nAOKQLT0ew2bzYevhgS2U+oCmiRYnM1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NoCbGOVluZCFW6VlKo649GnwdcNUceBP032LhzPnriz1GYB6TE3UB3oVPyhdUMtdG
-         jxy3vbDNdzCDG4d1QkEFZxILVFlVkLYc0L0pFGGhubOxXaRkhiBUbpa4KVtkPdXkuj
-         E8im6SZJEJaH3emncp6hEORY7RxoK0IYhTeuuni0evrYGTl3bAjCHAJQ+yl0ICI2uy
-         p4ejrKtrggfI/4N/ndj/qR9A0taS80ekTHt8hMoGGrM4vJ8PfmkFX9AOJw+fPtCI+W
-         02Sf8jgAwlkvM/AQ4qQx3de3gfku9AiRWkU1+PouaxaxYgHWr9KZI5gTkG8KVu6fOQ
-         1PSGjrCTkae4Q==
+        b=QG5kYELXiBr6amSV2hbOSR7zgzU1FdelXO051EiEqPzTDPHW3Q6DJmhDnP5m+omBg
+         Skf0W4jqUvpZw7bN+6fE/FiQJ5PG4GfaSkrjY/D+3rxI/+QiSFnWOE3ljK5B1gFmvm
+         j+CtOnUw5hDX9afehlIw6VhLvECm4L3a/XIveLNyN/mGgtTyLGOSfjBmRO/khunhG2
+         A42WECkY3Pg+6/iZI7w/+IcTLx/UK2bKxwv5DCKSrqO60m5sK07dIHj0me7taHBGib
+         6VqcaX5Qalihalt5LnYwNpoiCC8SGB7g17WcQVuHsVmi+b/vGbGfcAEx2f2qgIMpQc
+         t6FKOLa6p0XBA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 84/93] btrfs: output mirror number for bad metadata
-Date:   Thu, 11 Aug 2022 11:42:18 -0400
-Message-Id: <20220811154237.1531313-84-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        prabhakar.mahadev-lad.rj@bp.renesas.com, johan@kernel.org,
+        laurent.pinchart@ideasonboard.com, cai.huoqing@linux.dev,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 25/69] media: davinci: vpif: add missing of_node_put() in vpif_probe()
+Date:   Thu, 11 Aug 2022 11:55:34 -0400
+Message-Id: <20220811155632.1536867-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
-References: <20220811154237.1531313-1-sashal@kernel.org>
+In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
+References: <20220811155632.1536867-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,106 +56,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 8f0ed7d4e7bd87c9207a59d6d887777f632a5ed5 ]
+[ Upstream commit bb45f5433f23cf103ba29c9692ee553e061f2cb4 ]
 
-When handling a real world transid mismatch image, it's hard to know
-which copy is corrupted, as the error messages just look like this:
+of_graph_get_next_endpoint() returns an 'endpoint' node pointer
+with refcount incremented. The refcount should be decremented
+before returning from vpif_probe().
 
-  BTRFS warning (device dm-3): checksum verify failed on 30408704 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-  BTRFS warning (device dm-3): checksum verify failed on 30408704 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-  BTRFS warning (device dm-3): checksum verify failed on 30408704 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-  BTRFS warning (device dm-3): checksum verify failed on 30408704 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-
-We don't even know if the retry is caused by btrfs or the VFS retry.
-
-To make things a little easier to read, add mirror number for all
-related tree block read errors.
-
-So the above messages would look like this:
-
-  BTRFS warning (device dm-3): checksum verify failed on logical 30408704 mirror 1 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-  BTRFS warning (device dm-3): checksum verify failed on logical 30408704 mirror 2 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-  BTRFS warning (device dm-3): checksum verify failed on logical 30408704 mirror 1 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-  BTRFS warning (device dm-3): checksum verify failed on logical 30408704 mirror 2 wanted 0xcdcdcdcd found 0x3c0adc8e level 0
-
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-[ update messages, add "logical" ]
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ drivers/media/platform/davinci/vpif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
-index 6f30413ed9a9..1f2eef5d1a08 100644
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -256,8 +256,8 @@ static int verify_parent_transid(struct extent_io_tree *io_tree,
- 		goto out;
- 	}
- 	btrfs_err_rl(eb->fs_info,
--		"parent transid verify failed on %llu wanted %llu found %llu",
--			eb->start,
-+"parent transid verify failed on logical %llu mirror %u wanted %llu found %llu",
-+			eb->start, eb->read_mirror,
- 			parent_transid, btrfs_header_generation(eb));
- 	ret = 1;
- 	clear_extent_buffer_uptodate(eb);
-@@ -587,21 +587,23 @@ static int validate_extent_buffer(struct extent_buffer *eb)
+diff --git a/drivers/media/platform/davinci/vpif.c b/drivers/media/platform/davinci/vpif.c
+index 8ffc01c606d0..b4c78dce4d41 100644
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -469,6 +469,7 @@ static int vpif_probe(struct platform_device *pdev)
+ 					      endpoint);
+ 	if (!endpoint)
+ 		return 0;
++	of_node_put(endpoint);
  
- 	found_start = btrfs_header_bytenr(eb);
- 	if (found_start != eb->start) {
--		btrfs_err_rl(fs_info, "bad tree block start, want %llu have %llu",
--			     eb->start, found_start);
-+		btrfs_err_rl(fs_info,
-+			"bad tree block start, mirror %u want %llu have %llu",
-+			     eb->read_mirror, eb->start, found_start);
- 		ret = -EIO;
- 		goto out;
- 	}
- 	if (check_tree_block_fsid(eb)) {
--		btrfs_err_rl(fs_info, "bad fsid on block %llu",
--			     eb->start);
-+		btrfs_err_rl(fs_info, "bad fsid on logical %llu mirror %u",
-+			     eb->start, eb->read_mirror);
- 		ret = -EIO;
- 		goto out;
- 	}
- 	found_level = btrfs_header_level(eb);
- 	if (found_level >= BTRFS_MAX_LEVEL) {
--		btrfs_err(fs_info, "bad tree block level %d on %llu",
--			  (int)btrfs_header_level(eb), eb->start);
-+		btrfs_err(fs_info,
-+			"bad tree block level, mirror %u level %d on logical %llu",
-+			eb->read_mirror, btrfs_header_level(eb), eb->start);
- 		ret = -EIO;
- 		goto out;
- 	}
-@@ -612,8 +614,8 @@ static int validate_extent_buffer(struct extent_buffer *eb)
- 
- 	if (memcmp(result, header_csum, csum_size) != 0) {
- 		btrfs_warn_rl(fs_info,
--	"checksum verify failed on %llu wanted " CSUM_FMT " found " CSUM_FMT " level %d",
--			      eb->start,
-+"checksum verify failed on logical %llu mirror %u wanted " CSUM_FMT " found " CSUM_FMT " level %d",
-+			      eb->start, eb->read_mirror,
- 			      CSUM_FMT_VALUE(csum_size, header_csum),
- 			      CSUM_FMT_VALUE(csum_size, result),
- 			      btrfs_header_level(eb));
-@@ -638,8 +640,8 @@ static int validate_extent_buffer(struct extent_buffer *eb)
- 		set_extent_buffer_uptodate(eb);
- 	else
- 		btrfs_err(fs_info,
--			  "block=%llu read time tree block corruption detected",
--			  eb->start);
-+		"read time tree block corruption detected on logical %llu mirror %u",
-+			  eb->start, eb->read_mirror);
- out:
- 	return ret;
- }
+ 	/*
+ 	 * For DT platforms, manually create platform_devices for
 -- 
 2.35.1
 
