@@ -2,193 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFF4C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 710FCC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235700AbiHKP2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
+        id S235712AbiHKP3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235063AbiHKP2t (ORCPT
+        with ESMTP id S235703AbiHKP26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:28:49 -0400
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271B492F57
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:28:48 -0700 (PDT)
-Received: by mail-ua1-x929.google.com with SMTP id t21so7079550uaq.3
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=c/nuhX7+RYdmqtLyvc2oaaVrK9PE6Uvqqdw/nzrLb/Q=;
-        b=WfOxla24MB9Jh3O9QDZHpGBtdFiHvvRlriHR1dXKr2QRQS9m+oTPIxRo7Fw0VWgbOi
-         xf9bL7U7MBR2FJ2pE4NpekGVgdhL8yTqR2JRLEYFt4g4/tWTgBOIUtt3/pyWqWMyJ5EB
-         stm3l6995LnAU9ZrhEmFcs/sr9+67vlaFhNZ2mZdzk16BOIMfKFff3laiiKy4wWmRODp
-         GKgWlEAnVDqNPiLfQ8sKEaCM7uyx+E2Td5wQlALoytDYyjhdV7YEHDV9T7L1h7QucQZh
-         q10Hrge8L+lP3s46trs91HPx0+KqGknWIXfGt1C3jZM+P3imvcn0mZzW5hl724YJgNwW
-         Y/hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=c/nuhX7+RYdmqtLyvc2oaaVrK9PE6Uvqqdw/nzrLb/Q=;
-        b=WybnNq7FTTLkghVl9EbLKjm/nQJj7cl7bCFee5ZLetK0kW14tqXJEpTqwLhdhgg3FF
-         ZAlRsg6iOAYzsHqhJc0KEzHlk7JBIJ4MkRvkbiYWi+Se8AnLA7vBD0klEvFCScpuoCGV
-         Xv1gVX2z5jXQbyFuUxddDo5yjqZy2jGZVkuzzPrwkModEnHp7EgIxncYJDePTuDQFgvi
-         lkGgHBXnUJygbRvRq5ePC7XLW110jFQbudaQieCrUKyirDFnp/rxvXCTOzCV3h3bdiIo
-         0EEOGbfnXP6bIsseSO2MSmNP+G4Zrjtp9XUHdOo+h5cPJSmFRDZ/Vl9sLHPcoJgQLGXl
-         tuaw==
-X-Gm-Message-State: ACgBeo2zYBRjzd5l3muVRPVCkyEJ2tf9XXzlr/E1mIS+NIyoEYRRhvC8
-        7kEHDDJL2ZxnErNr2HD/RJU38vmmOb1Ucj2aGPettA==
-X-Google-Smtp-Source: AA6agR7KXCXTj1b+jmngAPB9jrl2AWzJNaa0NAtJSzdNpg0afNC5eCpW+aqX22jfxFfZK4UhFsA/Y3v+Y6l3E1jBeu8=
-X-Received: by 2002:ab0:3cc:0:b0:384:defe:ff2 with SMTP id 70-20020ab003cc000000b00384defe0ff2mr13612320uau.71.1660231727143;
- Thu, 11 Aug 2022 08:28:47 -0700 (PDT)
+        Thu, 11 Aug 2022 11:28:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2793194EDD;
+        Thu, 11 Aug 2022 08:28:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCDE615EA;
+        Thu, 11 Aug 2022 15:28:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5B4C433C1;
+        Thu, 11 Aug 2022 15:28:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660231736;
+        bh=Kuyb0A29QQO2MIKHDKDd+XCxrACH1RMYPQpyZfuGt4w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HebTJaE+/frms7yIBEPuchuGnJjL+louVGMYP/0VSEpcL32XcyG6I1FcUnuFxCUsg
+         5MSmnWIK6khGdxCNOZuupIsYJ06LL2Wkl0QHusD255ekbb6dgtsSZ/uK8nRIe4fjHt
+         TPWvaC7c7izvBvxLjx/5ofKIlH71SumOu0LIqAtENPEQ/1SKE4obeyb7R9F4LbNyVp
+         Y4Rng8mCtVEblthmBX50ubS/5350t6H5/cbNOgceUyHveC9b5i5s4WoiThFmCAxPRl
+         NnnWLeY4/fRfuWfuYQn6/mDjMAX0jQeGAlXbzMgvF54bfWb16tvApII5+dMHBvUZ32
+         JfQGhSpiMbkuA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
+        deller@gmx.de, tzimmermann@suse.de, sam@ravnborg.org,
+        alexander.deucher@amd.com, deng.changcheng@zte.com.cn,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 001/105] fbdev: Restart conflicting fb removal loop when unregistering devices
+Date:   Thu, 11 Aug 2022 11:26:45 -0400
+Message-Id: <20220811152851.1520029-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220810210656.2799243-1-eranian@google.com> <0267c94e-7989-ca92-4175-d820d1d63a0c@linux.intel.com>
- <CABPqkBSD5xg=sEkWU01RQ5+aj1X1dtzt2e7FbZBzrcE8dxqM=A@mail.gmail.com> <48297c1e-6e44-53f1-da7d-4437ed87cf6f@linux.intel.com>
-In-Reply-To: <48297c1e-6e44-53f1-da7d-4437ed87cf6f@linux.intel.com>
-From:   Stephane Eranian <eranian@google.com>
-Date:   Thu, 11 Aug 2022 18:28:35 +0300
-Message-ID: <CABPqkBSUkUTXxS4PwDXYwvTCZ-abY41qyedRGFVoWE9ERtmwsQ@mail.gmail.com>
-Subject: Re: [PATCH] perf/x86/intel/lbr: fix branch type encoding
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        kan.liang@intel.com, ak@linux.intel.com, acme@redhat.com,
-        namhyung@kernel.org, irogers@google.com
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 5:42 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
->
->
->
-> On 2022-08-11 10:17 a.m., Stephane Eranian wrote:
-> > On Thu, Aug 11, 2022 at 3:23 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
-> >>
-> >>
-> >>
-> >> On 2022-08-10 5:06 p.m., Stephane Eranian wrote:
-> >>> With architected LBR, the procesosr can record the type of each sampled taken
-> >>> branch. The type is encoded in 4-bit field in the LBR_INFO MSR of each entry.
-> >>>
-> >>> The branch type must then extracted and saved in the perf_branch_entry in the
-> >>> perf_events sampling buffer. With the current code, the raw Intel encoding of
-> >>> the branch is exported to user tools.
-> >>
-> >> In the intel_pmu_lbr_filter(), the raw encoding will be converted into
-> >> the X86_BR_* format via arch_lbr_br_type_map[]. Then the
-> >> common_branch_type() will convert the X86_BR_* format to the generic
-> >> PERF_BR_* type and expose to user tools.
-> >>
-> >> I double check the existing arch_lbr_br_type_map[] and branch_map[].
-> >> They should generate the same PERF_BR_* type as your arch_lbr_type_map[].
-> >>
-> >> Is there a test case which I can use to reproduce the problem?
-> >>
-> > I was doing a simple:
-> > $ perf record -b -e cpu/event=0xc4/ ....
-> > $ perf report -D
-> > Looking at the LBR information and the BR type, many entries has no branch type.
-> > What I see is a function where you do: e->type = get_lbr_br_type() and
-> > that is what
-> > is then saved in the buffer. Unless I am missing a later patch.
-> >
->
-> To get the LBR type, the save_type filter option must be applied. See
-> 60f83fa6341d ("perf record: Create a new option save_type in
-> --branch-filter").
->
-That seems overly complicated. I don't recall having to pass a new option
-to get the LBR latency. It showed up automatically. So why for branch_type?
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-> The -b only include the ANY option. Maybe we should extend the -b option
-> to ANY|SAVE_TYPE.
->
-Ok, that explains it then. I think we need to simplify.
+[ Upstream commit 3367aa7d74d240261de2543ddb35531ccad9d884 ]
 
+Drivers that want to remove registered conflicting framebuffers prior to
+register their own framebuffer, call to remove_conflicting_framebuffers().
 
-> Thanks,
-> Kan
->
-> >
-> >> Thanks,
-> >> Kan
-> >>
-> >>> Yet tools, such as perf, expected the
-> >>> branch type to be encoded using perf_events branch type enum
-> >>> (see tools/perf/util/branch.c). As a result of the discrepancy, the output of
-> >>> perf report -D shows bogus branch types.
-> >>>
-> >>> Fix the problem by converting the Intel raw encoding into the perf_events
-> >>> branch type enum values. With that in place and with no changes to the tools,
-> >>> the branch types are now reported properly.
-> >>>
-> >>> Signed-off-by: Stephane Eranian <eranian@google.com>
-> >>> ---
-> >>>  arch/x86/events/intel/lbr.c | 35 ++++++++++++++++++++++++++++++++---
-> >>>  1 file changed, 32 insertions(+), 3 deletions(-)
-> >>>
-> >>> diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-> >>> index 4f70fb6c2c1e..ef63d4d46b50 100644
-> >>> --- a/arch/x86/events/intel/lbr.c
-> >>> +++ b/arch/x86/events/intel/lbr.c
-> >>> @@ -894,9 +894,23 @@ static DEFINE_STATIC_KEY_FALSE(x86_lbr_mispred);
-> >>>  static DEFINE_STATIC_KEY_FALSE(x86_lbr_cycles);
-> >>>  static DEFINE_STATIC_KEY_FALSE(x86_lbr_type);
-> >>>
-> >>> -static __always_inline int get_lbr_br_type(u64 info)
-> >>> +/*
-> >>> + * Array index encodes IA32_LBR_x_INFO Branch Type Encodings
-> >>> + * as per Intel SDM Vol3b Branch Types section
-> >>> + */
-> >>> +static const int arch_lbr_type_map[]={
-> >>> +     [0] = PERF_BR_COND,
-> >>> +     [1] = PERF_BR_IND,
-> >>> +     [2] = PERF_BR_UNCOND,
-> >>> +     [3] = PERF_BR_IND_CALL,
-> >>> +     [4] = PERF_BR_CALL,
-> >>> +     [5] = PERF_BR_RET,
-> >>> +};
-> >>> +#define ARCH_LBR_TYPE_COUNT ARRAY_SIZE(arch_lbr_type_map)
-> >>> +
-> >>> +static __always_inline u16 get_lbr_br_type(u64 info)
-> >>>  {
-> >>> -     int type = 0;
-> >>> +     u16 type = 0;
-> >>>
-> >>>       if (static_branch_likely(&x86_lbr_type))
-> >>>               type = (info & LBR_INFO_BR_TYPE) >> LBR_INFO_BR_TYPE_OFFSET;
-> >>> @@ -904,6 +918,21 @@ static __always_inline int get_lbr_br_type(u64 info)
-> >>>       return type;
-> >>>  }
-> >>>
-> >>> +/*
-> >>> + * The kernel cannot expose raw Intel branch type encodings because they are
-> >>> + * not generic. Instead, the function below  maps the encoding to the
-> >>> + * perf_events user visible branch types.
-> >>> + */
-> >>> +static __always_inline int get_lbr_br_type_mapping(u64 info)
-> >>> +{
-> >>> +     if (static_branch_likely(&x86_lbr_type)) {
-> >>> +             u16 raw_type = get_lbr_br_type(info);
-> >>> +             if (raw_type < ARCH_LBR_TYPE_COUNT)
-> >>> +                     return arch_lbr_type_map[raw_type];
-> >>> +     }
-> >>> +     return PERF_BR_UNKNOWN;
-> >>> +}
-> >>> +
-> >>>  static __always_inline bool get_lbr_mispred(u64 info)
-> >>>  {
-> >>>       bool mispred = 0;
-> >>> @@ -957,7 +986,7 @@ static void intel_pmu_store_lbr(struct cpu_hw_events *cpuc,
-> >>>               e->in_tx        = !!(info & LBR_INFO_IN_TX);
-> >>>               e->abort        = !!(info & LBR_INFO_ABORT);
-> >>>               e->cycles       = get_lbr_cycles(info);
-> >>> -             e->type         = get_lbr_br_type(info);
-> >>> +             e->type         = get_lbr_br_type_mapping(info);
-> >>>       }
-> >>>
-> >>>       cpuc->lbr_stack.nr = i;
+This function takes the registration_lock mutex, to prevent a race when
+drivers register framebuffer devices. But if a conflicting framebuffer
+device is found, the underlaying platform device is unregistered and this
+will lead to the platform driver .remove callback to be called. Which in
+turn will call to unregister_framebuffer() that takes the same lock.
+
+To prevent this, a struct fb_info.forced_out field was used as indication
+to unregister_framebuffer() whether the mutex has to be grabbed or not.
+
+But this could be unsafe, since the fbdev core is making assumptions about
+what drivers may or may not do in their .remove callbacks. Allowing to run
+these callbacks with the registration_lock held can cause deadlocks, since
+the fbdev core has no control over what drivers do in their removal path.
+
+A better solution is to drop the lock before platform_device_unregister(),
+so unregister_framebuffer() can take it when called from the fbdev driver.
+The lock is acquired again after the device has been unregistered and at
+this point the removal loop can be restarted.
+
+Since the conflicting framebuffer device has already been removed, the
+loop would just finish when no more conflicting framebuffers are found.
+
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511113039.1252432-1-javierm@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/core/fbmem.c | 22 +++++++++++++++-------
+ include/linux/fb.h               |  1 -
+ 2 files changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 7ee6eb2fa715..02b0cf2cfafe 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1568,6 +1568,7 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ {
+ 	int i;
+ 
++restart_removal:
+ 	/* check all firmware fbs and kick off if the base addr overlaps */
+ 	for_each_registered_fb(i) {
+ 		struct apertures_struct *gen_aper;
+@@ -1600,12 +1601,23 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ 				pr_warn("fb%d: no device set\n", i);
+ 				do_unregister_framebuffer(registered_fb[i]);
+ 			} else if (dev_is_platform(device)) {
+-				registered_fb[i]->forced_out = true;
++				/*
++				 * Drop the lock because if the device is unregistered, its
++				 * driver will call to unregister_framebuffer(), that takes
++				 * this lock.
++				 */
++				mutex_unlock(&registration_lock);
+ 				platform_device_unregister(to_platform_device(device));
++				mutex_lock(&registration_lock);
+ 			} else {
+ 				pr_warn("fb%d: cannot remove device\n", i);
+ 				do_unregister_framebuffer(registered_fb[i]);
+ 			}
++			/*
++			 * Restart the removal loop now that the device has been
++			 * unregistered and its associated framebuffer gone.
++			 */
++			goto restart_removal;
+ 		}
+ 	}
+ }
+@@ -1876,13 +1888,9 @@ EXPORT_SYMBOL(register_framebuffer);
+ void
+ unregister_framebuffer(struct fb_info *fb_info)
+ {
+-	bool forced_out = fb_info->forced_out;
+-
+-	if (!forced_out)
+-		mutex_lock(&registration_lock);
++	mutex_lock(&registration_lock);
+ 	do_unregister_framebuffer(fb_info);
+-	if (!forced_out)
+-		mutex_unlock(&registration_lock);
++	mutex_unlock(&registration_lock);
+ }
+ EXPORT_SYMBOL(unregister_framebuffer);
+ 
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index 2892145468c9..07fcd0e56682 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -511,7 +511,6 @@ struct fb_info {
+ 	} *apertures;
+ 
+ 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
+-	bool forced_out; /* set when being removed by another driver */
+ };
+ 
+ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
+-- 
+2.35.1
+
