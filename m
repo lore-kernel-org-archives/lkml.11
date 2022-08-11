@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC00C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C25C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238794AbiHKQiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        id S238850AbiHKQi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239190AbiHKQga (ORCPT
+        with ESMTP id S239284AbiHKQgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09633140F5;
-        Thu, 11 Aug 2022 09:11:51 -0700 (PDT)
+        Thu, 11 Aug 2022 12:36:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3714374E1C;
+        Thu, 11 Aug 2022 09:12:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EE006145A;
-        Thu, 11 Aug 2022 16:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C7A4C433B5;
-        Thu, 11 Aug 2022 16:11:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD026B82164;
+        Thu, 11 Aug 2022 16:12:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11852C433D6;
+        Thu, 11 Aug 2022 16:12:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234310;
-        bh=hYfF9x6Llkv5mlZDQyklaZZ77hbqhuh9/NJbJaFW1tA=;
+        s=k20201202; t=1660234331;
+        bh=O9KBh+JEHKvSn8aaofSPCI6UL1Cfbf9hwmI6B2XVZeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uhFkDAdx8Xeg3sbU0zC3ybEsPVU7/wCt/+pl7Fmr63u7ZOFSYEF31eN+eWTciEt1M
-         R/VQPSHib/taa0M+QXwxegjPVm4z2ftPJWhptv1WRV0ogCwKWZSSpuJlq4d0H+t6i2
-         yIo6yjglAxCtNEYmNc5tGC1AphuPdj/7ZQkTNTo3in1/441CuJiwbFLiCW2OfmWSj5
-         +TtAH+rrAp8k82swZkSctB45t/8ZxrvgpJ/GGUpzaVS4eRC7TjM7662ANT2j+P7Bxd
-         s+zpm5hRPuXQ8IhXQqdC47MBmAhYcyKWGlYtmZS/tkiqDRNlw3Y9RIzuYjM00rmx73
-         iYkt2q5cmDv6A==
+        b=OcoxwFtZlfkwYglgwi2B5lS1+CEQ85q3f+hC2bKlMrGTN2QfsoRKksWGzIWLZ4JdU
+         L8edqLYTBBStb0YWoqsy8d3fQhF4kozkcDBquY5lgkgdqG0NECrcHlQ+InVcETnkE8
+         ZOHQN0KFcWiy83Nza6006rboGfIF8PW6v8ezgIBE012JnY+Lpiw8n1ay/x3fdqUUTY
+         kIfROC2DGBy7KJWImmTzUb2NGNjzbEM44lt/sajnMFhAc6rN0tyDMeHWlUWjrXbdzy
+         kucgEv6TXUe4mRQi1ZzFto0eGQTH2MZd9OuIR++lxJ+F3Ui1nQiLyv1bxwfNh9+wfu
+         Am0Hu5EDo1+ow==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, crope@iki.fi,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 03/12] media: airspy: respect the DMA coherency rules
-Date:   Thu, 11 Aug 2022 12:11:29 -0400
-Message-Id: <20220811161144.1543598-3-sashal@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mailhol.vincent@wanadoo.fr,
+        stefan.maetje@esd.eu, socketcan@hartkopp.net,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/12] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
+Date:   Thu, 11 Aug 2022 12:11:34 -0400
+Message-Id: <20220811161144.1543598-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
 References: <20220811161144.1543598-1-sashal@kernel.org>
@@ -53,84 +55,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit ca9dc8d06ab64543a6a31adac5003349c5671218 ]
+[ Upstream commit 2d99bfbf3386962692dcccd73931cb0db07a1a43 ]
 
-If we want to avoid memory corruption
-on incoherent architectures, buffers for DMA
-must not reside
-- on the stack
-- embedded within other structures
+As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
+CAN controller does not support Clock Divider Register compared to
+the reference Philips SJA1000 device.
 
-Allocate them separately.
+This patch adds a device quirk to handle this difference.
 
-v2: fix uninitialized return value
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Link: https://lore.kernel.org/all/20220710115248.190280-4-biju.das.jz@bp.renesas.com
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/airspy/airspy.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ drivers/net/can/sja1000/sja1000.c | 8 +++++---
+ drivers/net/can/sja1000/sja1000.h | 3 ++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/usb/airspy/airspy.c b/drivers/media/usb/airspy/airspy.c
-index 8251942bcd12..1c549ad60195 100644
---- a/drivers/media/usb/airspy/airspy.c
-+++ b/drivers/media/usb/airspy/airspy.c
-@@ -134,7 +134,7 @@ struct airspy {
- 
- 	/* USB control message buffer */
- 	#define BUF_SIZE 128
--	u8 buf[BUF_SIZE];
-+	u8 *buf;
- 
- 	/* Current configuration */
- 	unsigned int f_adc;
-@@ -872,6 +872,7 @@ static void airspy_video_release(struct v4l2_device *v)
- 
- 	v4l2_ctrl_handler_free(&s->hdl);
- 	v4l2_device_unregister(&s->v4l2_dev);
-+	kfree(s->buf);
- 	kfree(s);
- }
- 
-@@ -979,7 +980,10 @@ static int airspy_probe(struct usb_interface *intf,
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index 9f107798f904..ae0ca0ab371f 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -184,8 +184,9 @@ static void chipset_init(struct net_device *dev)
  {
- 	struct airspy *s;
- 	int ret;
--	u8 u8tmp, buf[BUF_SIZE];
-+	u8 u8tmp, *buf;
-+
-+	buf = NULL;
-+	ret = -ENOMEM;
+ 	struct sja1000_priv *priv = netdev_priv(dev);
  
- 	s = kzalloc(sizeof(struct airspy), GFP_KERNEL);
- 	if (s == NULL) {
-@@ -987,6 +991,13 @@ static int airspy_probe(struct usb_interface *intf,
- 		return -ENOMEM;
- 	}
+-	/* set clock divider and output control register */
+-	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
++	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
++		/* set clock divider and output control register */
++		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
  
-+	s->buf = kzalloc(BUF_SIZE, GFP_KERNEL);
-+	if (!s->buf)
-+		goto err_free_mem;
-+	buf = kzalloc(BUF_SIZE, GFP_KERNEL);
-+	if (!buf)
-+		goto err_free_mem;
-+
- 	mutex_init(&s->v4l2_lock);
- 	mutex_init(&s->vb_queue_lock);
- 	spin_lock_init(&s->queued_bufs_lock);
-@@ -1082,6 +1093,8 @@ static int airspy_probe(struct usb_interface *intf,
- 	v4l2_ctrl_handler_free(&s->hdl);
- 	v4l2_device_unregister(&s->v4l2_dev);
- err_free_mem:
-+	kfree(buf);
-+	kfree(s->buf);
- 	kfree(s);
- 	return ret;
- }
+ 	/* set acceptance filter (accept all) */
+ 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
+@@ -210,7 +211,8 @@ static void sja1000_start(struct net_device *dev)
+ 		set_reset_mode(dev);
+ 
+ 	/* Initialize chip if uninitialized at this stage */
+-	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
++	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
++	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
+ 		chipset_init(dev);
+ 
+ 	/* Clear error counters and error code capture */
+diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
+index 9d46398f8154..7f736f1df547 100644
+--- a/drivers/net/can/sja1000/sja1000.h
++++ b/drivers/net/can/sja1000/sja1000.h
+@@ -145,7 +145,8 @@
+ /*
+  * Flags for sja1000priv.flags
+  */
+-#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
++#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
++#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
+ 
+ /*
+  * SJA1000 private data structure
 -- 
 2.35.1
 
