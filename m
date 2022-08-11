@@ -2,170 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9269DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C01C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235961AbiHKPcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
+        id S235911AbiHKPc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235882AbiHKPcA (ORCPT
+        with ESMTP id S235889AbiHKPcJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:32:00 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D64E99276
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:30:58 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id bv3so21734810wrb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:30:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=9LdlmQyOWQmNUkI2XSzFvRVcY0yH+3vXNaOXUWwwOG4=;
-        b=eV6FwIVuQpB9dHkFnLwSKjT4FEK0Dhbo6bQOrKzw9FkfJkh5Oa/iuWccmmSpSzWe97
-         42QbvmI8RqNNXVaHyDhu7vGFqpBEV+2F2HRrL2nr1elvXGTuS9XooJwD3YJ5E94OV8Tx
-         MJkOkq6sZcpSukalpkstesF6L8viUq+OGxS5No+nWxyhPkC1EaMvRFwSnwZhfpx2HNQ6
-         pF1bm0WsUfnBUf7xNmroMUFR9I7rg4M+ynn/WE/selpTONdzHKxccsUsCXJBd7xBz8Ap
-         l+jAyYMMVg/OTe3TxF5I+9x9UR/flsUnsTz7D297O2Mh2UtG5HB3xzLO8t2t8ayyPy2i
-         G22w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=9LdlmQyOWQmNUkI2XSzFvRVcY0yH+3vXNaOXUWwwOG4=;
-        b=UbrtcquS0bmA44mjubx+C3lyKdyKbLszHzML4xqfYnp8p3+6RC9uoWHe3nXkvJ0JxU
-         rPCmsiNF734sco467yPpcIqoYwRnV9fDU0aWRLs+n6BBSxRxiP9dq2wr1kwVAqXPLAAv
-         NcVETt9lge97gn8uy88UsF0OQfG2pZgIM1X56QPY0Z1EX9qgoFY3eOLqU97+3JzUTHiD
-         SISV8pOwVQUmEVjbFX/cyQNJgrrai2dyutDmHn/UATTj32yjftbL/5iXlvvzETsrWEoy
-         Vfl8TJXjzbtv6gEh/9WkB/Vv0da9HcdOBFpeHVaC5iSVklXp/8sAqaj8VC1ohyjIpYn6
-         n0tw==
-X-Gm-Message-State: ACgBeo1SC+vV9+yVeh9bSiM/xX0Etlri4MlglW+yBU6feUO0xEBsQ9k0
-        Pws1xKiegIf77Y+decMVMNg=
-X-Google-Smtp-Source: AA6agR5M9utedSYDnsS5LO6FAtzaxLGA2AV5HP+vrf8nPzln6D1eAiA97OrCyHA9QEQ+h+6JgnjaQA==
-X-Received: by 2002:a5d:5989:0:b0:221:7c34:3943 with SMTP id n9-20020a5d5989000000b002217c343943mr15731861wri.441.1660231856621;
-        Thu, 11 Aug 2022 08:30:56 -0700 (PDT)
-Received: from localhost.localdomain (host-79-27-108-198.retail.telecomitalia.it. [79.27.108.198])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056000008700b00222ed7ea203sm9805502wrx.100.2022.08.11.08.30.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:30:55 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH 3/3] drm/i915/gem: Replace kmap() with kmap_local_page()
-Date:   Thu, 11 Aug 2022 17:30:41 +0200
-Message-Id: <20220811153041.12795-4-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220811153041.12795-1-fmdefrancesco@gmail.com>
-References: <20220811153041.12795-1-fmdefrancesco@gmail.com>
+        Thu, 11 Aug 2022 11:32:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACED46C752;
+        Thu, 11 Aug 2022 08:31:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B59661620;
+        Thu, 11 Aug 2022 15:31:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75DCFC433B5;
+        Thu, 11 Aug 2022 15:31:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660231875;
+        bh=k93vBGoDb8sFYgeVHyFBYv0jNZOn3630SDaP8Xq6Was=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lcF9qzqxQXtv/x+0Ke70zzPJym+oppf1+EVqrffEAQo9IkG3HICBRaDANMSIddTVS
+         tNn8M9UKjnM8KEfsz9skiLJ8x1jRtlZLbPAGdObkm3T/dCml9msd3LXg7Ou/5vxaaI
+         sYaHXk9YrzXgmhD5HiGWsv5a+tB8h//tLonvhQHydhM/PAQyhkXKlqck+DpeVaGKd4
+         sD01C36CfNn1cZ2Hvvg9LfiDavkFzUDeyFzZeWt9UTGUcKg93rbOxWtWcwVCszU2bk
+         ucf+MLOprQf6niCNnx405ynMWAJHpdZI2gQlO6veQidTkXCJNGMIjPnv8rAm+azOTI
+         uj+tzYGeEK84Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Hamza Mahfooz <hamza.mahfooz@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, sunpeng.li@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, mwen@igalia.com, HaoPing.Liu@amd.com,
+        Nicholas.Kazlauskas@amd.com, qingqing.zhuo@amd.com,
+        gabe.teeger@amd.com, Eric.Yang2@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 018/105] drm/amd/display: Reduce frame size in the bouding box for DCN20
+Date:   Thu, 11 Aug 2022 11:27:02 -0400
+Message-Id: <20220811152851.1520029-18-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmap() is being deprecated in favor of kmap_local_page().
+From: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
 
-There are two main problems with kmap(): (1) It comes with an overhead as
-mapping space is restricted and protected by a global lock for
-synchronization and (2) it also requires global TLB invalidation when the
-kmap’s pool wraps and it might block when the mapping space is fully
-utilized until a slot becomes available.
+[ Upstream commit c55300ad4a1814bac9191a4d2c7b0d74273aec7c ]
 
-With kmap_local_page() the mappings are per thread, CPU local, can take
-page faults, and can be called from any context (including interrupts).
-It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
-the tasks can be preempted and, when they are scheduled to run again, the
-kernel virtual addresses are restored and are still valid.
+GCC throw warnings for the function dcn20_update_bounding_box due to its
+frame size that looks like this:
 
-Since its use in i915/gem is safe everywhere, it should be preferred.
+ error: the frame size of 1936 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
 
-Therefore, replace kmap() with kmap_local_page() in i915/gem.
+This commit fixes this issue by eliminating an intermediary variable
+that creates a large array.
 
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Hamza Mahfooz <hamza.mahfooz@amd.com>
+Cc: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c          | 6 ++----
- drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 8 ++++----
- 2 files changed, 6 insertions(+), 8 deletions(-)
+ .../drm/amd/display/dc/dml/dcn20/dcn20_fpu.c  | 38 +++++++++----------
+ 1 file changed, 18 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index 4eed3dd90ba8..2bc6ab9964ff 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -640,16 +640,14 @@ i915_gem_object_create_shmem_from_data(struct drm_i915_private *dev_priv,
- 	do {
- 		unsigned int len = min_t(typeof(size), size, PAGE_SIZE);
- 		struct page *page;
--		void *pgdata, *vaddr;
-+		void *pgdata;
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+index f79dd40f8d81..48df4f225ac7 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+@@ -1428,21 +1428,20 @@ void dcn20_calculate_wm(
+ void dcn20_update_bounding_box(struct dc *dc, struct _vcs_dpi_soc_bounding_box_st *bb,
+ 		struct pp_smu_nv_clock_table *max_clocks, unsigned int *uclk_states, unsigned int num_states)
+ {
+-	struct _vcs_dpi_voltage_scaling_st calculated_states[DC__VOLTAGE_STATES];
+-	int i;
+ 	int num_calculated_states = 0;
+ 	int min_dcfclk = 0;
++	int i;
  
- 		err = aops->write_begin(file, file->f_mapping, offset, len,
- 					&page, &pgdata);
- 		if (err < 0)
- 			goto fail;
+ 	dc_assert_fp_enabled();
  
--		vaddr = kmap(page);
--		memcpy(vaddr, data, len);
--		kunmap(page);
-+		memcpy_to_page(page, 0, data, len);
+ 	if (num_states == 0)
+ 		return;
  
- 		err = aops->write_end(file, file->f_mapping, offset, len, len,
- 				      page, pgdata);
-diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-index 3ced9948a331..bb25b50b5688 100644
---- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-@@ -153,7 +153,7 @@ static int check_partial_mapping(struct drm_i915_gem_object *obj,
- 	intel_gt_flush_ggtt_writes(to_gt(i915));
+-	memset(calculated_states, 0, sizeof(calculated_states));
++	memset(bb->clock_limits, 0, sizeof(bb->clock_limits));
  
- 	p = i915_gem_object_get_page(obj, offset >> PAGE_SHIFT);
--	cpu = kmap(p) + offset_in_page(offset);
-+	cpu = kmap_local_page(p) + offset_in_page(offset);
- 	drm_clflush_virt_range(cpu, sizeof(*cpu));
- 	if (*cpu != (u32)page) {
- 		pr_err("Partial view for %lu [%u] (offset=%llu, size=%u [%llu, row size %u], fence=%d, tiling=%d, stride=%d) misalignment, expected write to page (%llu + %u [0x%llx]) of 0x%x, found 0x%x\n",
-@@ -171,7 +171,7 @@ static int check_partial_mapping(struct drm_i915_gem_object *obj,
+-	if (dc->bb_overrides.min_dcfclk_mhz > 0)
++	if (dc->bb_overrides.min_dcfclk_mhz > 0) {
+ 		min_dcfclk = dc->bb_overrides.min_dcfclk_mhz;
+-	else {
++	} else {
+ 		if (ASICREV_IS_NAVI12_P(dc->ctx->asic_id.hw_internal_rev))
+ 			min_dcfclk = 310;
+ 		else
+@@ -1453,36 +1452,35 @@ void dcn20_update_bounding_box(struct dc *dc, struct _vcs_dpi_soc_bounding_box_s
+ 
+ 	for (i = 0; i < num_states; i++) {
+ 		int min_fclk_required_by_uclk;
+-		calculated_states[i].state = i;
+-		calculated_states[i].dram_speed_mts = uclk_states[i] * 16 / 1000;
++		bb->clock_limits[i].state = i;
++		bb->clock_limits[i].dram_speed_mts = uclk_states[i] * 16 / 1000;
+ 
+ 		// FCLK:UCLK ratio is 1.08
+ 		min_fclk_required_by_uclk = div_u64(((unsigned long long)uclk_states[i]) * 1080,
+ 			1000000);
+ 
+-		calculated_states[i].fabricclk_mhz = (min_fclk_required_by_uclk < min_dcfclk) ?
++		bb->clock_limits[i].fabricclk_mhz = (min_fclk_required_by_uclk < min_dcfclk) ?
+ 				min_dcfclk : min_fclk_required_by_uclk;
+ 
+-		calculated_states[i].socclk_mhz = (calculated_states[i].fabricclk_mhz > max_clocks->socClockInKhz / 1000) ?
+-				max_clocks->socClockInKhz / 1000 : calculated_states[i].fabricclk_mhz;
++		bb->clock_limits[i].socclk_mhz = (bb->clock_limits[i].fabricclk_mhz > max_clocks->socClockInKhz / 1000) ?
++				max_clocks->socClockInKhz / 1000 : bb->clock_limits[i].fabricclk_mhz;
+ 
+-		calculated_states[i].dcfclk_mhz = (calculated_states[i].fabricclk_mhz > max_clocks->dcfClockInKhz / 1000) ?
+-				max_clocks->dcfClockInKhz / 1000 : calculated_states[i].fabricclk_mhz;
++		bb->clock_limits[i].dcfclk_mhz = (bb->clock_limits[i].fabricclk_mhz > max_clocks->dcfClockInKhz / 1000) ?
++				max_clocks->dcfClockInKhz / 1000 : bb->clock_limits[i].fabricclk_mhz;
+ 
+-		calculated_states[i].dispclk_mhz = max_clocks->displayClockInKhz / 1000;
+-		calculated_states[i].dppclk_mhz = max_clocks->displayClockInKhz / 1000;
+-		calculated_states[i].dscclk_mhz = max_clocks->displayClockInKhz / (1000 * 3);
++		bb->clock_limits[i].dispclk_mhz = max_clocks->displayClockInKhz / 1000;
++		bb->clock_limits[i].dppclk_mhz = max_clocks->displayClockInKhz / 1000;
++		bb->clock_limits[i].dscclk_mhz = max_clocks->displayClockInKhz / (1000 * 3);
+ 
+-		calculated_states[i].phyclk_mhz = max_clocks->phyClockInKhz / 1000;
++		bb->clock_limits[i].phyclk_mhz = max_clocks->phyClockInKhz / 1000;
+ 
+ 		num_calculated_states++;
  	}
- 	*cpu = 0;
- 	drm_clflush_virt_range(cpu, sizeof(*cpu));
--	kunmap(p);
-+	kunmap_local(cpu);
  
- out:
- 	i915_gem_object_lock(obj, NULL);
-@@ -249,7 +249,7 @@ static int check_partial_mappings(struct drm_i915_gem_object *obj,
- 		intel_gt_flush_ggtt_writes(to_gt(i915));
+-	calculated_states[num_calculated_states - 1].socclk_mhz = max_clocks->socClockInKhz / 1000;
+-	calculated_states[num_calculated_states - 1].fabricclk_mhz = max_clocks->socClockInKhz / 1000;
+-	calculated_states[num_calculated_states - 1].dcfclk_mhz = max_clocks->dcfClockInKhz / 1000;
++	bb->clock_limits[num_calculated_states - 1].socclk_mhz = max_clocks->socClockInKhz / 1000;
++	bb->clock_limits[num_calculated_states - 1].fabricclk_mhz = max_clocks->socClockInKhz / 1000;
++	bb->clock_limits[num_calculated_states - 1].dcfclk_mhz = max_clocks->dcfClockInKhz / 1000;
  
- 		p = i915_gem_object_get_page(obj, offset >> PAGE_SHIFT);
--		cpu = kmap(p) + offset_in_page(offset);
-+		cpu = kmap_local_page(p) + offset_in_page(offset);
- 		drm_clflush_virt_range(cpu, sizeof(*cpu));
- 		if (*cpu != (u32)page) {
- 			pr_err("Partial view for %lu [%u] (offset=%llu, size=%u [%llu, row size %u], fence=%d, tiling=%d, stride=%d) misalignment, expected write to page (%llu + %u [0x%llx]) of 0x%x, found 0x%x\n",
-@@ -267,7 +267,7 @@ static int check_partial_mappings(struct drm_i915_gem_object *obj,
- 		}
- 		*cpu = 0;
- 		drm_clflush_virt_range(cpu, sizeof(*cpu));
--		kunmap(p);
-+		kunmap_local(cpu);
- 		if (err)
- 			return err;
+-	memcpy(bb->clock_limits, calculated_states, sizeof(bb->clock_limits));
+ 	bb->num_states = num_calculated_states;
  
+ 	// Duplicate the last state, DML always an extra state identical to max state to work
 -- 
-2.37.1
+2.35.1
 
