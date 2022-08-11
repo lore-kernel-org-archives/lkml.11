@@ -2,190 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 030A8C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35608C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiHKMtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 08:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34992 "EHLO
+        id S234870AbiHKMuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 08:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235480AbiHKMtD (ORCPT
+        with ESMTP id S234179AbiHKMuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 08:49:03 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D73F90C7A;
-        Thu, 11 Aug 2022 05:49:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c23tGYEufZ8VII+Z437WH5L7lbQ9By9U8pqz9rUEIYqwwPPnU29i2O8qAGBdqAxkhpewMktklaK53QNwIa1Kp2eY+FrCd+pZZUWrFYOnCU0Texnk1oR4cXMm/0AHZUe+A2zBo/FBctyPzYKmz2TuOLkFLMfaoxrRo2LRVvKXzUggGNByKwTbVnV/mlzp/IB0vKVU2VRjRVryAkipV6Z5juHKSr8b7rVTqRnBQ6CvGSUBp/+qWk+eJNYmvcwb7EArn1f+NAef0a/zIF4bjm/tEe0vWxzi4lhRRjQptrVjQh+zUN1F/b1zQOT8GF/VJkjhiho1BThCRveICbfzEnkKAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lJkb4zZ6v/xGwPLK7YyD4jii5d461pZFtjNUvdB5twg=;
- b=Wq5Hricz+kBnvWYZp3lqLWIGXX7rTYzBOcXQEEyFQVtNWzJ0dUiTioeHLUQSCzospXeedKwuHj7nkyp+oqDmHmY9kmEZCV/Hw/wTXHaW4ZC+ahmg9lYSqMDXooFkCfQTHRe/b/HxgOLQ5ALqCrdwn9h293ghppgTVCxV2+EmFlKGe4tTTJoEoCuPqbdUNDP2gvC/INd53m03hpWFhiLW9LFk9BljFSfs9Ty2YiCucpznlmOWM7N2hxOqQ/Oz/0LhFw323u0wqzNPsltBp2Ga+E9iMyoR1CEBaXPM9CBKueN/j5EoWiTg8olT4u7z1DeLib7eN9ucVpSF3+w09NdysA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lJkb4zZ6v/xGwPLK7YyD4jii5d461pZFtjNUvdB5twg=;
- b=Qq6PZWvf0ZW7F00RmpNKULIywFQ4coxMT/baiuGpi0HW6siQwZJ3wmYQ+EISPWuvM80kMUixcub7NXk543pehruTYE8/i90fQMYTgUOI/08PTgTqUbvNtsGAN7crfXI4fFc2o8hWKoNedNSjpz8xOmz6HlEoxzlkFYbZcpG4YEo=
-Received: from MW4PR03CA0246.namprd03.prod.outlook.com (2603:10b6:303:b4::11)
- by CH2PR12MB4937.namprd12.prod.outlook.com (2603:10b6:610:64::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Thu, 11 Aug
- 2022 12:49:00 +0000
-Received: from CO1NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b4:cafe::fc) by MW4PR03CA0246.outlook.office365.com
- (2603:10b6:303:b4::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23 via Frontend
- Transport; Thu, 11 Aug 2022 12:48:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT024.mail.protection.outlook.com (10.13.174.162) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5525.11 via Frontend Transport; Thu, 11 Aug 2022 12:48:59 +0000
-Received: from sindhu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 11 Aug
- 2022 07:48:52 -0500
-From:   Sandipan Das <sandipan.das@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <x86@kernel.org>
-CC:     <peterz@infradead.org>, <bp@alien8.de>, <acme@kernel.org>,
-        <namhyung@kernel.org>, <jolsa@kernel.org>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>,
-        <dave.hansen@linux.intel.com>, <like.xu.linux@gmail.com>,
-        <eranian@google.com>, <ananth.narayan@amd.com>,
-        <ravi.bangoria@amd.com>, <santosh.shukla@amd.com>,
-        <sandipan.das@amd.com>
-Subject: [PATCH 4/4] perf session: Show branch speculation info in raw dump
-Date:   Thu, 11 Aug 2022 18:16:49 +0530
-Message-ID: <1b95e0aaedfb167c6780761aaecd08ce93c1c765.1660217326.git.sandipan.das@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1660217326.git.sandipan.das@amd.com>
-References: <cover.1660217326.git.sandipan.das@amd.com>
+        Thu, 11 Aug 2022 08:50:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E5A47BB5
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 05:50:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64AA961495
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 12:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72078C433D6;
+        Thu, 11 Aug 2022 12:50:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660222200;
+        bh=75eCyKtjIhT/qSC4hpjr7K7Hl8Xt5mApzeksN3tsmXg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bC7zMeXWbx+Bjb1MMAs5mD/ZJFZQjVo4NqZqi7BoN07TryJK6Ye5K3Ds+25OKW0y5
+         ajO9I0S6PAZLQ3MWcqtVN3nVMa7UzDjgcp71q0+1WdHABNo9MRvUUz+PxKHLTbApIt
+         09XhXm6SjQ0TKQMZ9HIjsAQdq/x6fFmwXm0Ww4PkFmqr+QlvdIKaGqmlNK0RGgTzbT
+         PR+gBXU6R3qQbttCkuhGFgXfzPDt3YGNDJEkX+ZTQIk4ckyRM2kFzjXLKEq8+ka845
+         4RPR55XewDX2AyMj0G8l2UDw3CuzEm05Zz8nPVNdpV/SSFkTJaRn+jAU3wlC6ma5FC
+         CE/6nKEJs2UJA==
+Date:   Thu, 11 Aug 2022 14:49:58 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Lihua (lihua, ran)" <hucool.lihua@huawei.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "open list:SCHEDULER" <linux-kernel@vger.kernel.org>
+Subject: Re: [Question] Reading /proc/stat has a time backward issue
+Message-ID: <20220811124958.GB3284884@lothringen>
+References: <85d5087b-450c-351f-270d-c61303cf3187@huawei.com>
+ <1f1f625a-148d-0398-f840-1f9b4e964189@huawei.com>
+ <7b2586c0-c380-c856-7d63-b7bff6f3a640@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0942bbe3-33b1-4d1c-4aac-08da7b97dc85
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4937:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JT37nxO1owwImY2160AGc0rvcS+xWw84v71GUMjqeFuSkLSIez5e2kxp4t5a1RObCpYxFFeIfWgrK8swLrhh6+8ELpyzTIILV5DjvnlJVY2zdDElenj8tgP4ssAFXhdfaVL73+NsH/5qJVbaRIz9DNcq2d5j74TzDRtZAkqEvZPQO2zTmWxq8yks5ofw9GFXyYdR/Yot/P/kEQ76QYZqHu5vM9ZRMjrD2apWHTuFZjhwZEKLP0NZKIxqs/H/TZJna/rDvDyGeKAiyCVF1VDLBut2eRMboZyE9FpAv+xriCEj5y5l+aauL+5NJuRSWncLep7TajuEImQppDf+3i3c9nuI5FZEjes7hPqec2XQZI0Drqkxs5LLkZvTEP5Ckne4v5rZirK3Fvs5zCdA8F08rfsYiVZiY77hRIU5kFeMgHexTEjBc/eqYfVJBkpD4N1bcHttmzwaLb0AqryfhFdpl8v77Rq1rQ/drLtRMIl6xQRLJxn7NQf6L/L+vXpjaPNDLf+sWgiKbWr6gruy+6X0zb89kGsuM4U91TQyCndu+5mNum2TZynIMf6KoCPpv5SFAbEpzUIJ2FJ8mBzGqDdlM0FFAwWoLe5LX/TCyIwbdMOwz2qr8ftp1l/ZeE/3z1Sr3wk5+xpMiiVjdTwgATBVTXA0TjNhXIf0NrWdeZ8ii87HfYNBZWM34zKvbKG0F83kIMgmajuGl47sbOTUTrYhHVfOe03nKk1K3O9SvyKGpfqfVFmFHjkyrB078H7oVynWVDQLKGhawIAmGYP0/sA4PoVIum4YUy4u8wQZgGJUyuLZ6upePYbXfBTekPReUwVdlRkFBvcI+GIqbgZTs/fx7w==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(396003)(376002)(346002)(40470700004)(36840700001)(46966006)(7696005)(44832011)(2906002)(7416002)(336012)(6666004)(41300700001)(426003)(47076005)(16526019)(186003)(82310400005)(82740400003)(83380400001)(356005)(81166007)(26005)(2616005)(8936002)(4326008)(36756003)(70206006)(40460700003)(70586007)(110136005)(54906003)(316002)(478600001)(8676002)(40480700001)(36860700001)(5660300002)(86362001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:48:59.4628
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0942bbe3-33b1-4d1c-4aac-08da7b97dc85
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4937
+In-Reply-To: <7b2586c0-c380-c856-7d63-b7bff6f3a640@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Show the branch speculation info if provided by the branch recording
-hardware feature. This can be useful for optimizing code further.
+On Mon, Aug 08, 2022 at 08:23:46PM +0800, Lihua (lihua, ran) wrote:
+> ping...
+> 
+> Your suggestions are valuable, I don't have a good way to fix this.
+> 
+> thanks all.
+> 
+> 在 2022/8/4 15:44, Lihua (lihua, ran) 写道:
+> > ping...
+> > 
+> > Any good suggestions?
+> > 
+> > thanks all.
+> > 
+> > 在 2022/7/27 12:02, Lihua (lihua, ran) 写道:
+> > > Hi all,
+> > > 
+> > > I found a problem that the statistical time goes backward, the value read first is 319, and the value read again is 318. As follows：
+> > > first：
+> > > cat /proc/stat |  grep cpu1
+> > > cpu1    319    0    496    41665    0    0    0    0    0    0
+> > > then：
+> > > cat /proc/stat |  grep cpu1
+> > > cpu1    318    0    497    41674    0    0    0    0    0    0
+> > > 
+> > > Time goes back, which is counterintuitive.
+> > > 
+> > > After debug this, I found that the problem is caused by the implementation of kcpustat_cpu_fetch_vtime. As follows：
+> > > 
+> > >                                CPU0                                                                          CPU1
+> > > First:
+> > > show_stat():
+> > >      ->kcpustat_cpu_fetch()
+> > >          ->kcpustat_cpu_fetch_vtime()
+> > >              ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu) + vtime->utime + delta;              rq->curr is in user mod
+> > >               ---> When CPU1 rq->curr running on userspace, need add utime and delta
+> > >                                                                                               --->  rq->curr->vtime->utime is less than 1 tick
+> > > Then:
+> > > show_stat():
+> > >      ->kcpustat_cpu_fetch()
+> > >          ->kcpustat_cpu_fetch_vtime()
+> > >              ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu);                                     rq->curr is in kernel mod
+> > >              ---> When CPU1 rq->curr running on kernel space, just got kcpustat
+> > > 
+> > > Because the values ​​of utime、 stime and delta are temporarily written to cpustat. Therefore, there are two problems  read from /proc/stat:
+> > > 1. There may be a regression phenomenon;
+> > > 2. When there are many tasks, the statistics are not accurate enough when utime and stime do not exceed one TICK.
+> > > The time goes back is counterintuitive, and I want to discuss whether there is a good solution without compromising performance.
 
-E.g.
+I see...
 
-  $ perf record -j any,u ./test_branch
-  $ perf report --dump-raw-trace
+Does the following help? (only built tested)
 
-Before:
-
-  [...]
-  8380958377610 0x40b178 [0x1b0]: PERF_RECORD_SAMPLE(IP, 0x2): 7952/7952: 0x4f851a period: 48973 addr: 0
-  ... branch stack: nr:16
-  .....  0: 00000000004b52fd -> 00000000004f82c0 0 cycles  P   0
-  .....  1: ffffffff8220137c -> 00000000004b52f0 0 cycles M    0
-  .....  2: 000000000041d1c4 -> 00000000004b52f0 0 cycles  P   0
-  .....  3: 00000000004e7ead -> 000000000041d1b0 0 cycles M    0
-  .....  4: 00000000004e7f91 -> 00000000004e7ead 0 cycles  P   0
-  .....  5: 00000000004e7ea8 -> 00000000004e7f70 0 cycles  P   0
-  .....  6: 00000000004e7e52 -> 00000000004e7e98 0 cycles M    0
-  .....  7: 00000000004e7e1f -> 00000000004e7e40 0 cycles M    0
-  .....  8: 00000000004e7f60 -> 00000000004e7df0 0 cycles  P   0
-  .....  9: 00000000004e7f58 -> 00000000004e7f60 0 cycles M    0
-  ..... 10: 000000000041d85d -> 00000000004e7f50 0 cycles  P   0
-  ..... 11: 000000000043306a -> 000000000041d840 0 cycles  P   0
-  ..... 12: ffffffff8220137c -> 0000000000433040 0 cycles M    0
-  ..... 13: 000000000041e4a1 -> 0000000000433040 0 cycles  P   0
-  ..... 14: ffffffff8220137c -> 000000000041e490 0 cycles M    0
-  ..... 15: 000000000041d89b -> 000000000041e487 0 cycles  P   0
-   ... thread: test_branch:7952
-   ...... dso: /data/sandipan/test_branch
-  [...]
-
-After:
-
-  [...]
-  8380958377610 0x40b178 [0x1b0]: PERF_RECORD_SAMPLE(IP, 0x2): 7952/7952: 0x4f851a period: 48973 addr: 0
-  ... branch stack: nr:16
-  .....  0: 00000000004b52fd -> 00000000004f82c0 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  .....  1: ffffffff8220137c -> 00000000004b52f0 0 cycles M    0  NON_SPEC_CORRECT_PATH
-  .....  2: 000000000041d1c4 -> 00000000004b52f0 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  .....  3: 00000000004e7ead -> 000000000041d1b0 0 cycles M    0  NON_SPEC_CORRECT_PATH
-  .....  4: 00000000004e7f91 -> 00000000004e7ead 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  .....  5: 00000000004e7ea8 -> 00000000004e7f70 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  .....  6: 00000000004e7e52 -> 00000000004e7e98 0 cycles M    0  SPEC_CORRECT_PATH
-  .....  7: 00000000004e7e1f -> 00000000004e7e40 0 cycles M    0  NON_SPEC_CORRECT_PATH
-  .....  8: 00000000004e7f60 -> 00000000004e7df0 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  .....  9: 00000000004e7f58 -> 00000000004e7f60 0 cycles M    0  NON_SPEC_CORRECT_PATH
-  ..... 10: 000000000041d85d -> 00000000004e7f50 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  ..... 11: 000000000043306a -> 000000000041d840 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  ..... 12: ffffffff8220137c -> 0000000000433040 0 cycles M    0  NON_SPEC_CORRECT_PATH
-  ..... 13: 000000000041e4a1 -> 0000000000433040 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-  ..... 14: ffffffff8220137c -> 000000000041e490 0 cycles M    0  NON_SPEC_CORRECT_PATH
-  ..... 15: 000000000041d89b -> 000000000041e487 0 cycles  P   0  NON_SPEC_CORRECT_PATH
-   ... thread: test_branch:7952
-   ...... dso: /data/sandipan/test_branch
-  [...]
-
-Signed-off-by: Sandipan Das <sandipan.das@amd.com>
----
- tools/perf/util/session.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index 98e16659a149..39ba4a21aa42 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -1172,7 +1172,7 @@ static void branch_stack__printf(struct perf_sample *sample, bool callstack)
- 		struct branch_entry *e = &entries[i];
+diff --git a/kernel/sched/cputime.c b/kernel/sched/cputime.c
+index 78a233d43757..410e35e178ac 100644
+--- a/kernel/sched/cputime.c
++++ b/kernel/sched/cputime.c
+@@ -802,6 +802,16 @@ void vtime_init_idle(struct task_struct *t, int cpu)
+ 	local_irq_restore(flags);
+ }
  
- 		if (!callstack) {
--			printf("..... %2"PRIu64": %016" PRIx64 " -> %016" PRIx64 " %hu cycles %s%s%s%s %x %s\n",
-+			printf("..... %2"PRIu64": %016" PRIx64 " -> %016" PRIx64 " %hu cycles %s%s%s%s %x %s %s\n",
- 				i, e->from, e->to,
- 				(unsigned short)e->flags.cycles,
- 				e->flags.mispred ? "M" : " ",
-@@ -1180,7 +1180,8 @@ static void branch_stack__printf(struct perf_sample *sample, bool callstack)
- 				e->flags.abort ? "A" : " ",
- 				e->flags.in_tx ? "T" : " ",
- 				(unsigned)e->flags.reserved,
--				e->flags.type ? branch_type_name(e->flags.type) : "");
-+				e->flags.type ? branch_type_name(e->flags.type) : "",
-+				e->flags.spec ? branch_spec_desc(e->flags.spec) : "");
++u64 static vtime_delta_filtered(u64 val, struct vtime *vtime)
++{
++	u64 delta = val + vtime_delta(vtime);
++
++	if (delta >= TICK_NSEC)
++		return delta;
++	else
++		return 0;
++}
++
+ u64 task_gtime(struct task_struct *t)
+ {
+ 	struct vtime *vtime = &t->vtime;
+@@ -816,7 +826,7 @@ u64 task_gtime(struct task_struct *t)
+ 
+ 		gtime = t->gtime;
+ 		if (vtime->state == VTIME_GUEST)
+-			gtime += vtime->gtime + vtime_delta(vtime);
++			gtime += vtime_delta_filtered(vtime->gtime, vtime);
+ 
+ 	} while (read_seqcount_retry(&vtime->seqcount, seq));
+ 
+@@ -832,7 +842,6 @@ bool task_cputime(struct task_struct *t, u64 *utime, u64 *stime)
+ {
+ 	struct vtime *vtime = &t->vtime;
+ 	unsigned int seq;
+-	u64 delta;
+ 	int ret;
+ 
+ 	if (!vtime_accounting_enabled()) {
+@@ -853,16 +862,15 @@ bool task_cputime(struct task_struct *t, u64 *utime, u64 *stime)
+ 			continue;
+ 
+ 		ret = true;
+-		delta = vtime_delta(vtime);
+ 
+ 		/*
+ 		 * Task runs either in user (including guest) or kernel space,
+ 		 * add pending nohz time to the right place.
+ 		 */
+ 		if (vtime->state == VTIME_SYS)
+-			*stime += vtime->stime + delta;
++			*stime += vtime_delta_filtered(vtime->stime, vtime);
+ 		else
+-			*utime += vtime->utime + delta;
++			*utime += vtime_delta_filtered(vtime->utime, vtime);
+ 	} while (read_seqcount_retry(&vtime->seqcount, seq));
+ 
+ 	return ret;
+@@ -897,9 +905,9 @@ static int vtime_state_fetch(struct vtime *vtime, int cpu)
+ static u64 kcpustat_user_vtime(struct vtime *vtime)
+ {
+ 	if (vtime->state == VTIME_USER)
+-		return vtime->utime + vtime_delta(vtime);
++		return vtime_delta_filtered(vtime->utime, vtime);
+ 	else if (vtime->state == VTIME_GUEST)
+-		return vtime->gtime + vtime_delta(vtime);
++		return vtime_delta_filtered(vtime->gtime, vtime);
+ 	return 0;
+ }
+ 
+@@ -932,7 +940,7 @@ static int kcpustat_field_vtime(u64 *cpustat,
+ 		switch (usage) {
+ 		case CPUTIME_SYSTEM:
+ 			if (state == VTIME_SYS)
+-				*val += vtime->stime + vtime_delta(vtime);
++				*val += vtime_delta_filtered(vtime->stime, vtime);
+ 			break;
+ 		case CPUTIME_USER:
+ 			if (task_nice(tsk) <= 0)
+@@ -944,11 +952,11 @@ static int kcpustat_field_vtime(u64 *cpustat,
+ 			break;
+ 		case CPUTIME_GUEST:
+ 			if (state == VTIME_GUEST && task_nice(tsk) <= 0)
+-				*val += vtime->gtime + vtime_delta(vtime);
++				*val += vtime_delta_filtered(vtime->gtime, vtime);
+ 			break;
+ 		case CPUTIME_GUEST_NICE:
+ 			if (state == VTIME_GUEST && task_nice(tsk) > 0)
+-				*val += vtime->gtime + vtime_delta(vtime);
++				*val += vtime_delta_filtered(vtime->gtime, vtime);
+ 			break;
+ 		default:
+ 			break;
+@@ -1001,7 +1009,6 @@ static int kcpustat_cpu_fetch_vtime(struct kernel_cpustat *dst,
+ 
+ 	do {
+ 		u64 *cpustat;
+-		u64 delta;
+ 		int state;
+ 
+ 		seq = read_seqcount_begin(&vtime->seqcount);
+@@ -1017,27 +1024,25 @@ static int kcpustat_cpu_fetch_vtime(struct kernel_cpustat *dst,
+ 		if (state < VTIME_SYS)
+ 			continue;
+ 
+-		delta = vtime_delta(vtime);
+-
+ 		/*
+ 		 * Task runs either in user (including guest) or kernel space,
+ 		 * add pending nohz time to the right place.
+ 		 */
+ 		if (state == VTIME_SYS) {
+-			cpustat[CPUTIME_SYSTEM] += vtime->stime + delta;
++			cpustat[CPUTIME_SYSTEM] += vtime_delta_filtered(vtime->stime, vtime);
+ 		} else if (state == VTIME_USER) {
+ 			if (task_nice(tsk) > 0)
+-				cpustat[CPUTIME_NICE] += vtime->utime + delta;
++				cpustat[CPUTIME_NICE] += vtime_delta_filtered(vtime->utime, vtime);
+ 			else
+-				cpustat[CPUTIME_USER] += vtime->utime + delta;
++				cpustat[CPUTIME_USER] += vtime_delta_filtered(vtime->utime, vtime);
  		} else {
- 			if (i == 0) {
- 				printf("..... %2"PRIu64": %016" PRIx64 "\n"
--- 
-2.34.1
+ 			WARN_ON_ONCE(state != VTIME_GUEST);
+ 			if (task_nice(tsk) > 0) {
+-				cpustat[CPUTIME_GUEST_NICE] += vtime->gtime + delta;
+-				cpustat[CPUTIME_NICE] += vtime->gtime + delta;
++				cpustat[CPUTIME_GUEST_NICE] += vtime_delta_filtered(vtime->gtime, vtime);
++				cpustat[CPUTIME_NICE] += vtime_delta_filtered(vtime->gtime, vtime);
+ 			} else {
+-				cpustat[CPUTIME_GUEST] += vtime->gtime + delta;
+-				cpustat[CPUTIME_USER] += vtime->gtime + delta;
++				cpustat[CPUTIME_GUEST] += vtime_delta_filtered(vtime->gtime, vtime);
++				cpustat[CPUTIME_USER] += vtime_delta_filtered(vtime->gtime, vtime);
+ 			}
+ 		}
+ 	} while (read_seqcount_retry(&vtime->seqcount, seq));
 
