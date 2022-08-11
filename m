@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E50E8C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6BCC25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237667AbiHKQTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        id S237676AbiHKQTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237080AbiHKQSS (ORCPT
+        with ESMTP id S237504AbiHKQSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:18:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14F8C1D;
-        Thu, 11 Aug 2022 09:00:28 -0700 (PDT)
+        Thu, 11 Aug 2022 12:18:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D282AE0;
+        Thu, 11 Aug 2022 09:00:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 697B9CE225E;
-        Thu, 11 Aug 2022 16:00:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71ABC433D6;
-        Thu, 11 Aug 2022 16:00:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8E9BECE225D;
+        Thu, 11 Aug 2022 16:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96AB4C433D6;
+        Thu, 11 Aug 2022 16:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233625;
-        bh=4QmpI4qXA65WsI0ZVZEmYC1OS2A/n4gD6a1KNLj1fdM=;
+        s=k20201202; t=1660233639;
+        bh=id/+ZTd9+Vg7mlteQAlUJbibewSF+8p4GBZGenOOAkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bPMOOwvsIM0WcQb+JrPK9AZUCUmLN/zykbFHjV5TKXXVJoehW/nDl4gqKkeReOMH2
-         WT9GP+/wK760E4bsaJvAvVkoFtp6g402GYFNc0T74677piuIWIbRL/E4QXE88f1AqN
-         Y65PxYXvbgxcEmf+HElTOaQPvc/sNTTp/OC2D1EwuCRs/gv4rOeHhAgUZsRSlXenpF
-         T/touhYbiffcNsrEvldfmM6GLfLdLZmJzeAKyq+E7STs/Kbi5EpkLHcwSgSBaAaG+n
-         avl8NgkNfSLNNtbwT+rM/Y/odm2D7scLNjMVtvkLwHC1lmVEYmqlT2v2lS9CzbgiF/
-         u8NfVwgmdd4sg==
+        b=buQpnOa3B26n1GtiAPS+2LWWAJwqpPYMBfKoM9d6fm+66rvK8LWf9d1cThGjEMsnq
+         hSJdehZF9RLUfesoTqm5jJtqF+1owthUGqUZL23d3afLaLxzJQoM1fFklzr6J5Nrzh
+         83oO1JZ1lbHJCeTUc7RQm8rV8ZPwG5t/O167Rf3MiFpih+7oAOa3jpnoappNGsThb7
+         dnTODiLSecC/Q3WwiHa6bhTHipBDVEXx0+v2a41b6Hnjvp1mi0tDZWjzQ7CqiOdD5m
+         wk0AzTknUhds79jBhCojhb2uU9YT+V6WJ7TmnAVGhLCjjo1IIuALUPYoMt/UWYIwtu
+         cpYH8qvO+FyGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zqiang <qiang1.zhang@intel.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, dave@stgolabs.net,
-        josh@joshtriplett.org, frederic@kernel.org,
-        quic_neeraju@quicinc.com, rcu@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 34/69] refscale: Convert test_lock spinlock to raw_spinlock
-Date:   Thu, 11 Aug 2022 11:55:43 -0400
-Message-Id: <20220811155632.1536867-34-sashal@kernel.org>
+Cc:     Darren Powell <darren.powell@amd.com>,
+        Kenneth Feng <kenneth.feng@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, lijo.lazar@amd.com, Hawking.Zhang@amd.com,
+        luben.tuikov@amd.com, kevin1.wang@amd.com, kent.russell@amd.com,
+        Stanley.Yang@amd.com, tao.zhou1@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 36/69] amdgpu/pm: Fix possible array out-of-bounds if SCLK levels != 2
+Date:   Thu, 11 Aug 2022 11:55:45 -0400
+Message-Id: <20220811155632.1536867-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -53,102 +57,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+From: Darren Powell <darren.powell@amd.com>
 
-[ Upstream commit 7bf336fb8dac718febb7bf4fe79e1be0c5e4a631 ]
+[ Upstream commit ceb180361e3851007547c55035cd1de03f108f75 ]
 
-In kernels built with CONFIG_PREEMPT_RT=y, spinlocks are replaced by
-rt_mutex, which can sleep.  This means that acquiring a non-raw spinlock
-in a critical section where preemption is disabled can trigger the
-following BUG:
+ [v2]
+simplified fix after Lijo's feedback
+ removed clocks.num_levels from calculation of loop count
+   removed unsafe accesses to shim table freq_values
+ retained corner case output only min,now if
+   clocks.num_levels == 1 && now > min
 
-BUG: scheduling while atomic: ref_scale_reade/76/0x00000002
-Preemption disabled at:
-ref_lock_section+0x16/0x80
-Call Trace:
-<TASK>
-dump_stack_lvl+0x5b/0x82
-dump_stack+0x10/0x12
-__schedule_bug.cold+0x9c/0xad
-__schedule+0x839/0xc00
-schedule_rtlock+0x22/0x40
-rtlock_slowlock_locked+0x460/0x1350
-rt_spin_lock+0x61/0xe0
-ref_lock_section+0x29/0x80
-rcu_scale_one_reader+0x52/0x60
-ref_scale_reader+0x28d/0x490
-kthread+0x128/0x150
-ret_from_fork+0x22/0x30
-</TASK>
+ [v1]
+added a check to populate and use SCLK shim table freq_values only
+   if using dpm_level == AMD_DPM_FORCED_LEVEL_MANUAL or
+                         AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM
+removed clocks.num_levels from calculation of shim table size
+removed unsafe accesses to shim table freq_values
+   output gfx_table values if using other dpm levels
+added check for freq_match when using freq_values for when now == min_clk
 
-This commit therefore converts spinlock to raw_spinlock.
+== Test ==
+LOGFILE=aldebaran-sclk.test.log
+AMDGPU_PCI_ADDR=`lspci -nn | grep "VGA\|Display" | cut -d " " -f 1`
+AMDGPU_HWMON=`ls -la /sys/class/hwmon | grep $AMDGPU_PCI_ADDR | awk '{print $9}'`
+HWMON_DIR=/sys/class/hwmon/${AMDGPU_HWMON}
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+lspci -nn | grep "VGA\|Display"  > $LOGFILE
+FILES="pp_od_clk_voltage
+pp_dpm_sclk"
+
+for f in $FILES
+do
+  echo === $f === >> $LOGFILE
+  cat $HWMON_DIR/device/$f >> $LOGFILE
+done
+cat $LOGFILE
+
+Signed-off-by: Darren Powell <darren.powell@amd.com>
+Reviewed-by: Kenneth Feng <kenneth.feng@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/refscale.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ .../drm/amd/pm/swsmu/smu13/aldebaran_ppt.c    | 34 +++++++------------
+ 1 file changed, 12 insertions(+), 22 deletions(-)
 
-diff --git a/kernel/rcu/refscale.c b/kernel/rcu/refscale.c
-index 66dc14cf5687..f72ddca5180f 100644
---- a/kernel/rcu/refscale.c
-+++ b/kernel/rcu/refscale.c
-@@ -363,7 +363,7 @@ static struct ref_scale_ops rwsem_ops = {
- };
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+index d0c6b864d00a..b82ef1e10018 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+@@ -729,7 +729,7 @@ static int aldebaran_print_clk_levels(struct smu_context *smu,
+ 	struct smu_13_0_dpm_table *single_dpm_table;
+ 	struct smu_dpm_context *smu_dpm = &smu->smu_dpm;
+ 	struct smu_13_0_dpm_context *dpm_context = NULL;
+-	uint32_t display_levels;
++	int display_levels;
+ 	uint32_t freq_values[3] = {0};
+ 	uint32_t min_clk, max_clk;
  
- // Definitions for global spinlock
--static DEFINE_SPINLOCK(test_lock);
-+static DEFINE_RAW_SPINLOCK(test_lock);
+@@ -761,7 +761,7 @@ static int aldebaran_print_clk_levels(struct smu_context *smu,
+ 			return ret;
+ 		}
  
- static void ref_lock_section(const int nloops)
- {
-@@ -371,8 +371,8 @@ static void ref_lock_section(const int nloops)
+-		display_levels = clocks.num_levels;
++		display_levels = (clocks.num_levels == 1) ? 1 : 2;
  
- 	preempt_disable();
- 	for (i = nloops; i >= 0; i--) {
--		spin_lock(&test_lock);
--		spin_unlock(&test_lock);
-+		raw_spin_lock(&test_lock);
-+		raw_spin_unlock(&test_lock);
- 	}
- 	preempt_enable();
- }
-@@ -383,9 +383,9 @@ static void ref_lock_delay_section(const int nloops, const int udl, const int nd
+ 		min_clk = pstate_table->gfxclk_pstate.curr.min;
+ 		max_clk = pstate_table->gfxclk_pstate.curr.max;
+@@ -771,30 +771,20 @@ static int aldebaran_print_clk_levels(struct smu_context *smu,
  
- 	preempt_disable();
- 	for (i = nloops; i >= 0; i--) {
--		spin_lock(&test_lock);
-+		raw_spin_lock(&test_lock);
- 		un_delay(udl, ndl);
--		spin_unlock(&test_lock);
-+		raw_spin_unlock(&test_lock);
- 	}
- 	preempt_enable();
- }
-@@ -405,8 +405,8 @@ static void ref_lock_irq_section(const int nloops)
+ 		/* fine-grained dpm has only 2 levels */
+ 		if (now > min_clk && now < max_clk) {
+-			display_levels = clocks.num_levels + 1;
++			display_levels++;
+ 			freq_values[2] = max_clk;
+ 			freq_values[1] = now;
+ 		}
  
- 	preempt_disable();
- 	for (i = nloops; i >= 0; i--) {
--		spin_lock_irqsave(&test_lock, flags);
--		spin_unlock_irqrestore(&test_lock, flags);
-+		raw_spin_lock_irqsave(&test_lock, flags);
-+		raw_spin_unlock_irqrestore(&test_lock, flags);
- 	}
- 	preempt_enable();
- }
-@@ -418,9 +418,9 @@ static void ref_lock_irq_delay_section(const int nloops, const int udl, const in
+-		/*
+-		 * For DPM disabled case, there will be only one clock level.
+-		 * And it's safe to assume that is always the current clock.
+-		 */
+-		if (display_levels == clocks.num_levels) {
+-			for (i = 0; i < clocks.num_levels; i++)
+-				size += sysfs_emit_at(buf, size, "%d: %uMhz %s\n", i,
+-					freq_values[i],
+-					(clocks.num_levels == 1) ?
+-						"*" :
+-						(aldebaran_freqs_in_same_level(
+-							 freq_values[i], now) ?
+-							 "*" :
+-							 ""));
+-		} else {
+-			for (i = 0; i < display_levels; i++)
+-				size += sysfs_emit_at(buf, size, "%d: %uMhz %s\n", i,
+-						freq_values[i], i == 1 ? "*" : "");
+-		}
++		for (i = 0; i < display_levels; i++)
++			size += sysfs_emit_at(buf, size, "%d: %uMhz %s\n", i,
++				freq_values[i],
++				(display_levels == 1) ?
++					"*" :
++					(aldebaran_freqs_in_same_level(
++						 freq_values[i], now) ?
++						 "*" :
++						 ""));
  
- 	preempt_disable();
- 	for (i = nloops; i >= 0; i--) {
--		spin_lock_irqsave(&test_lock, flags);
-+		raw_spin_lock_irqsave(&test_lock, flags);
- 		un_delay(udl, ndl);
--		spin_unlock_irqrestore(&test_lock, flags);
-+		raw_spin_unlock_irqrestore(&test_lock, flags);
- 	}
- 	preempt_enable();
- }
+ 		break;
+ 
 -- 
 2.35.1
 
