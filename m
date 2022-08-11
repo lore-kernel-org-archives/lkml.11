@@ -2,174 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15BEC25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C58C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236126AbiHKPhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        id S236231AbiHKPh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236071AbiHKPgT (ORCPT
+        with ESMTP id S236153AbiHKPg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:36:19 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C769DF9D
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:33:19 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id y141so16781264pfb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:33:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=sGProeHom9fEq63o7Ycx3Nip30ePXZJ0gg0Exlq4IDI=;
-        b=UMWdbwOjt2wwwtmQmLKCxuxZoFP3P+Kg+NZEMPhle2UxLYNCN6r3p6U/q91ejgdpgO
-         CcUAw61fWjwB7OkJVP+7zU8FtK6AR5mbcNGJ+/4yoLmXV694kCngxiAKxViCcEu3Awed
-         gqWbkxyvPlgPMgYg3EB8cBaSS1czINm1JHFPY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=sGProeHom9fEq63o7Ycx3Nip30ePXZJ0gg0Exlq4IDI=;
-        b=Dh3b6EGzpIohHcqMVSL7nikJnSlt0pZyj9uFtoAmQ1YXzgYWC7m4tdIJgL8TIZWBdS
-         4E5gfECVXttVAIubY34hqJXwlYLDlRX/NMclqCGz12mlR902ijKvdjTWPkivR8l7Oy1B
-         /VXq6VR14jpa4+VUzpvDUgJe/I3p1JTHt89kg0YZqv0naSrIFQwgpPkFF0LYe0UaZz3n
-         86O7/vVQFaOgDNasYW5+8zzLL+OR+HgWZAwb4lPgEANlj0h+77VOVDz1qP5dtzjmZ/NZ
-         CUmi55BBcbcIkOcjDaIwScmQFftiyBDXcuIMnN5h6Q4qsSX/v0KgRkM9r9TKi+3TYNkX
-         D85Q==
-X-Gm-Message-State: ACgBeo34xY0VuZYX3kGrur+C/XEcnlkpEa7DPaXGLACT4CbTHBtDpzn8
-        26RBiZRqmW5ySSyd3QUEituz6g==
-X-Google-Smtp-Source: AA6agR4pxsxSK4xz4ubUfvq9BeOZLm6V+TodQzH/llWgScehFC+RV76gVNLXyA1gZQZcrMvvoubtTA==
-X-Received: by 2002:a63:eb4d:0:b0:41b:db07:8b33 with SMTP id b13-20020a63eb4d000000b0041bdb078b33mr26791093pgk.89.1660231998253;
-        Thu, 11 Aug 2022 08:33:18 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170902654600b0016a3f9e4865sm15086863pln.148.2022.08.11.08.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:33:17 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 08:33:16 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     ebiederm@xmission.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-next@vger.kernel.org, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        syzbot <syzbot+3250d9c8925ef29e975f@syzkaller.appspotmail.com>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [syzbot] linux-next boot error: BUG: unable to handle kernel
- paging request in kernel_execve
-Message-ID: <202208110830.8F528D6737@keescook>
-References: <0000000000008c0ba505e5f22066@google.com>
+        Thu, 11 Aug 2022 11:36:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FEBB85AAE;
+        Thu, 11 Aug 2022 08:33:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF551B82160;
+        Thu, 11 Aug 2022 15:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC002C433D6;
+        Thu, 11 Aug 2022 15:33:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660231996;
+        bh=KfQaVgWres62C/86ChqTdJmTDD2+hCoGEybwHudOPAo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tO7kdzDLI0d7eO6JX2e/Mam1XVrjida4tVtZa4htXSTiVHRsFzVgQv2W5GPUBzUXm
+         yNuMHJCNaK57ybv7ZFoRXMFz5h4qO0ruFRC1VgUTIFHzqEq59E8k4Iclz8lJ7CYHQB
+         CqDRld619MuDKDtqFzrnmfVnejEUwoJLeJyahaBbbeBB9ifxjnpypU0r+CZwhOxswO
+         mHONbVDK+21byFthODXzVj2ICFE35rb08Jb8R8+ViCioqj0UQhUnYb0HBi3nqR7XW5
+         tBLv6rIOl9ULGVcc65/ntAVsd4NjfocBEsPOmaCwIDBQt/0uqtx9Nk6y5BBt9E/qI6
+         r6Gug+64aAMNg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Philip Yang <Philip.Yang@amd.com>,
+        Graham Sider <Graham.Sider@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Felix.Kuehling@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 044/105] drm/amdkfd: Free queue after unmap queue success
+Date:   Thu, 11 Aug 2022 11:27:28 -0400
+Message-Id: <20220811152851.1520029-44-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000008c0ba505e5f22066@google.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio,
+From: Philip Yang <Philip.Yang@amd.com>
 
-It seems likely that the kmap change[1] might be causing this crash. Is
-there a boot-time setup race between kmap being available and early umh
-usage?
+[ Upstream commit ab8529b0cdb271d9b222cbbddb2641f3fca5df8f ]
 
--Kees
+After queue unmap or remove from MES successfully, free queue sysfs
+entries, doorbell and remove from queue list. Otherwise, application may
+destroy queue again, cause below kernel warning or crash backtrace.
 
-[1] https://git.kernel.org/linus/c6e8e36c6ae4b11bed5643317afb66b6c3cadba8
+For outstanding queues, either application forget to destroy or failed
+to destroy, kfd_process_notifier_release will remove queue sysfs
+entries, kfd_process_wq_release will free queue doorbell.
 
-On Thu, Aug 11, 2022 at 12:29:34AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    bc6c6584ffb2 Add linux-next specific files for 20220810
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=115034c3080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=5784be4315a4403b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3250d9c8925ef29e975f
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+3250d9c8925ef29e975f@syzkaller.appspotmail.com
-> 
-> BUG: unable to handle page fault for address: ffffdc0000000000
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> PGD 11826067 P4D 11826067 PUD 0 
-> Oops: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 1100 Comm: kworker/u4:5 Not tainted 5.19.0-next-20220810-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-> RIP: 0010:strnlen+0x3b/0x70 lib/string.c:504
-> Code: 74 3c 48 bb 00 00 00 00 00 fc ff df 49 89 fc 48 89 f8 eb 09 48 83 c0 01 48 39 e8 74 1e 48 89 c2 48 89 c1 48 c1 ea 03 83 e1 07 <0f> b6 14 1a 38 ca 7f 04 84 d2 75 11 80 38 00 75 d9 4c 29 e0 48 83
-> RSP: 0000:ffffc90005c5fe10 EFLAGS: 00010246
-> RAX: ffff000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-> RDX: 1fffe00000000000 RSI: 0000000000020000 RDI: ffff000000000000
-> RBP: ffff000000020000 R08: 0000000000000005 R09: 0000000000000000
-> R10: 0000000000000006 R11: 0000000000000000 R12: ffff000000000000
-> R13: ffff88814764cc00 R14: ffff000000000000 R15: ffff88814764cc00
-> FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  strnlen include/linux/fortify-string.h:119 [inline]
->  copy_string_kernel+0x26/0x250 fs/exec.c:616
->  copy_strings_kernel+0xb3/0x190 fs/exec.c:655
->  kernel_execve+0x377/0x500 fs/exec.c:1998
->  call_usermodehelper_exec_async+0x2e3/0x580 kernel/umh.c:112
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
->  </TASK>
-> Modules linked in:
-> CR2: ffffdc0000000000
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:strnlen+0x3b/0x70 lib/string.c:504
-> Code: 74 3c 48 bb 00 00 00 00 00 fc ff df 49 89 fc 48 89 f8 eb 09 48 83 c0 01 48 39 e8 74 1e 48 89 c2 48 89 c1 48 c1 ea 03 83 e1 07 <0f> b6 14 1a 38 ca 7f 04 84 d2 75 11 80 38 00 75 d9 4c 29 e0 48 83
-> RSP: 0000:ffffc90005c5fe10 EFLAGS: 00010246
-> RAX: ffff000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-> RDX: 1fffe00000000000 RSI: 0000000000020000 RDI: ffff000000000000
-> RBP: ffff000000020000 R08: 0000000000000005 R09: 0000000000000000
-> R10: 0000000000000006 R11: 0000000000000000 R12: ffff000000000000
-> R13: ffff88814764cc00 R14: ffff000000000000 R15: ffff88814764cc00
-> FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffdc0000000000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> ----------------
-> Code disassembly (best guess):
->    0:	74 3c                	je     0x3e
->    2:	48 bb 00 00 00 00 00 	movabs $0xdffffc0000000000,%rbx
->    9:	fc ff df
->    c:	49 89 fc             	mov    %rdi,%r12
->    f:	48 89 f8             	mov    %rdi,%rax
->   12:	eb 09                	jmp    0x1d
->   14:	48 83 c0 01          	add    $0x1,%rax
->   18:	48 39 e8             	cmp    %rbp,%rax
->   1b:	74 1e                	je     0x3b
->   1d:	48 89 c2             	mov    %rax,%rdx
->   20:	48 89 c1             	mov    %rax,%rcx
->   23:	48 c1 ea 03          	shr    $0x3,%rdx
->   27:	83 e1 07             	and    $0x7,%ecx
-> * 2a:	0f b6 14 1a          	movzbl (%rdx,%rbx,1),%edx <-- trapping instruction
->   2e:	38 ca                	cmp    %cl,%dl
->   30:	7f 04                	jg     0x36
->   32:	84 d2                	test   %dl,%dl
->   34:	75 11                	jne    0x47
->   36:	80 38 00             	cmpb   $0x0,(%rax)
->   39:	75 d9                	jne    0x14
->   3b:	4c 29 e0             	sub    %r12,%rax
->   3e:	48                   	rex.W
->   3f:	83                   	.byte 0x83
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+v2: decrement_queue_count for MES queue
 
+ refcount_t: underflow; use-after-free.
+ WARNING: CPU: 7 PID: 3053 at lib/refcount.c:28
+  Call Trace:
+   kobject_put+0xd6/0x1a0
+   kfd_procfs_del_queue+0x27/0x30 [amdgpu]
+   pqm_destroy_queue+0xeb/0x240 [amdgpu]
+   kfd_ioctl_destroy_queue+0x32/0x70 [amdgpu]
+   kfd_ioctl+0x27d/0x500 [amdgpu]
+   do_syscall_64+0x35/0x80
+
+ WARNING: CPU: 2 PID: 3053 at drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_device_queue_manager.c:400
+  Call Trace:
+   deallocate_doorbell.isra.0+0x39/0x40 [amdgpu]
+   destroy_queue_cpsch+0xb3/0x270 [amdgpu]
+   pqm_destroy_queue+0x108/0x240 [amdgpu]
+   kfd_ioctl_destroy_queue+0x32/0x70 [amdgpu]
+   kfd_ioctl+0x27d/0x500 [amdgpu]
+
+ general protection fault, probably for non-canonical address
+0xdead000000000108:
+ Call Trace:
+  pqm_destroy_queue+0xf0/0x200 [amdgpu]
+  kfd_ioctl_destroy_queue+0x2f/0x60 [amdgpu]
+  kfd_ioctl+0x19b/0x600 [amdgpu]
+
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Graham Sider <Graham.Sider@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../drm/amd/amdkfd/kfd_device_queue_manager.c | 28 +++++++++++--------
+ .../amd/amdkfd/kfd_process_queue_manager.c    |  2 +-
+ 2 files changed, 18 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+index e1797657b04c..e017b4240472 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device_queue_manager.c
+@@ -1873,6 +1873,22 @@ static int destroy_queue_cpsch(struct device_queue_manager *dqm,
+ 
+ 	}
+ 
++	if (q->properties.is_active) {
++		if (!dqm->dev->shared_resources.enable_mes) {
++			retval = execute_queues_cpsch(dqm,
++						      KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
++			if (retval == -ETIME)
++				qpd->reset_wavefronts = true;
++		} else {
++			retval = remove_queue_mes(dqm, q, qpd);
++		}
++
++		if (retval)
++			goto failed_unmap_queue;
++
++		decrement_queue_count(dqm, qpd, q);
++	}
++
+ 	mqd_mgr = dqm->mqd_mgrs[get_mqd_type_from_queue_type(
+ 			q->properties.type)];
+ 
+@@ -1886,17 +1902,6 @@ static int destroy_queue_cpsch(struct device_queue_manager *dqm,
+ 
+ 	list_del(&q->list);
+ 	qpd->queue_count--;
+-	if (q->properties.is_active) {
+-		if (!dqm->dev->shared_resources.enable_mes) {
+-			decrement_queue_count(dqm, qpd, q);
+-			retval = execute_queues_cpsch(dqm,
+-						      KFD_UNMAP_QUEUES_FILTER_DYNAMIC_QUEUES, 0);
+-			if (retval == -ETIME)
+-				qpd->reset_wavefronts = true;
+-		} else {
+-			retval = remove_queue_mes(dqm, q, qpd);
+-		}
+-	}
+ 
+ 	/*
+ 	 * Unconditionally decrement this counter, regardless of the queue's
+@@ -1913,6 +1918,7 @@ static int destroy_queue_cpsch(struct device_queue_manager *dqm,
+ 
+ 	return retval;
+ 
++failed_unmap_queue:
+ failed_try_destroy_debugged_queue:
+ 
+ 	dqm_unlock(dqm);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c b/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
+index dc00484ff484..99f2a6412201 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_process_queue_manager.c
+@@ -419,7 +419,6 @@ int pqm_destroy_queue(struct process_queue_manager *pqm, unsigned int qid)
+ 	}
+ 
+ 	if (pqn->q) {
+-		kfd_procfs_del_queue(pqn->q);
+ 		dqm = pqn->q->device->dqm;
+ 		retval = dqm->ops.destroy_queue(dqm, &pdd->qpd, pqn->q);
+ 		if (retval) {
+@@ -439,6 +438,7 @@ int pqm_destroy_queue(struct process_queue_manager *pqm, unsigned int qid)
+ 		if (dev->shared_resources.enable_mes)
+ 			amdgpu_amdkfd_free_gtt_mem(dev->adev,
+ 						   pqn->q->gang_ctx_bo);
++		kfd_procfs_del_queue(pqn->q);
+ 		uninit_queue(pqn->q);
+ 	}
+ 
 -- 
-Kees Cook
+2.35.1
+
