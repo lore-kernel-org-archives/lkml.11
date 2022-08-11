@@ -2,80 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A772C25B08
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A1A1C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233837AbiHKC5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 22:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
+        id S233797AbiHKC62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 22:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231707AbiHKC5f (ORCPT
+        with ESMTP id S231707AbiHKC60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 22:57:35 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61418883FB;
-        Wed, 10 Aug 2022 19:57:34 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gk3so31149620ejb.8;
-        Wed, 10 Aug 2022 19:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=G86Am7xGIToyaZgK/6Sab+lZR8ERmbEP88Zj48JSJOo=;
-        b=e401BypWBb9Uj3fapfDvFSIF9O4yrz1yM46IqgdveWnBegztl3dY7vk23S19OA8aIg
-         dr/xV/5wqXXJdPpmXbPXNtiIskbqasRaSXQbXy48KFT5atvPF47rtykTDh9kVNjW6XIi
-         kVXhuqJYvcuabql2Tj2JxAkdtrQQDMQxp8mTXkioiflvGknaORONFp0VgR8dNG+oC+kD
-         74nNDESYPOu5RhPHETyd0UX29ynnwe5+nzIKvGbFFaoeWHfRPYtBeJ3J1vRZPcx0bab9
-         pw/Ja7pYHsgbqAaZ/U4c7+p1LBhO96mBtxMVXkUK2sEDIuEhZfGVDA/GghsO2NXqtOOU
-         CWSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=G86Am7xGIToyaZgK/6Sab+lZR8ERmbEP88Zj48JSJOo=;
-        b=QlyFYkpT8MniWcDKV4AmeKJxIzHI4VPAcS+gdHdehP3SDI/G1jRpJ4Jp/Pm4LhOM1S
-         t8dcKAShB0SRatHyLvBJQgMo3Ywp9ZjPk4W855uwa6svVtFOrVm5Q2mgK9ZVJXY8CTAU
-         6Nrt0q53AQya5/LEr6KimU7KrFOIqW9wIQNEKM2iLPthF5QKT/r37HxmdPnTYAympCPQ
-         fuzeKmwp/CZHlM0ZZUuJ7Sm9b24Ook9iv+eBiw1FGmkKo4MgqqeBMegr2d0osdDCOzMW
-         vMezUssvclbCnbnUTbcX4/IzkooaMqFb6iM4mfNx/SzNkU7VXsOuDVCwJwObMbtI4abH
-         H7lQ==
-X-Gm-Message-State: ACgBeo1vi+5nHRwOsuX5vo7ekhOjuAip0jrpxC7P6XzZ/0SFRwDWFFMi
-        VsoVs2tP+FysuIa5mkC2kCtR1oYwdi5+YiBvSfI=
-X-Google-Smtp-Source: AA6agR43pYyUGN3beZhMeBiH2MZK8M8Mau0iR54OijLEETUOWNJm2EneLyt0CY6xYmlioMoJtjF3gx2sYBhrBEpDnDk=
-X-Received: by 2002:a17:907:28c9:b0:730:c053:986f with SMTP id
- en9-20020a17090728c900b00730c053986fmr22195591ejc.194.1660186652989; Wed, 10
- Aug 2022 19:57:32 -0700 (PDT)
+        Wed, 10 Aug 2022 22:58:26 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBA488DE5;
+        Wed, 10 Aug 2022 19:58:21 -0700 (PDT)
+X-UUID: 1bb47b5347474144b9463c99e3298857-20220811
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=/TzAQBhHFvAwj4SZDXvO3m+6p+7tUyPoJbBgU9gTz9U=;
+        b=uH0u1TcQszn79DB05Lbe369tWwC/9WqNByXxJSiAJQizSfuKQOA0EgMgJgv+lxqCwOs3GGZheN6WWE7x2C7QrzGb29Uz/HbkOPgu94emfpBaJiJRrpK9Xjslm3fW5m1QbbRowBOzuAheDKMtwXNJlgNerHAAveR7kXnjVtF4aAg=;
+X-CID-UNFAMILIAR: 1
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.9,REQID:8bed2460-51ed-4cbb-a2fc-0d8136917c4f,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:51,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_G
+        S6885AD,ACTION:quarantine,TS:151
+X-CID-INFO: VERSION:1.1.9,REQID:8bed2460-51ed-4cbb-a2fc-0d8136917c4f,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:51,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_US6
+        5DF41,ACTION:quarantine,TS:151
+X-CID-META: VersionHash:3d8acc9,CLOUDID:aba1559c-da39-4e3b-a854-56c7d2111b46,C
+        OID:26a0113b1745,Recheck:0,SF:28|16|19|48|801,TC:nil,Content:3,EDM:-3,IP:n
+        il,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 1bb47b5347474144b9463c99e3298857-20220811
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 137493137; Thu, 11 Aug 2022 10:58:17 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 11 Aug 2022 10:58:16 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:16 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        MandyJH Liu <mandyjh.liu@mediatek.com>
+CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Fengquan Chen <fengquan.chen@mediatek.com>
+Subject: [PATCH v6 08/20] arm64: dts: mt8195: Disable watchdog external reset signal
+Date:   Thu, 11 Aug 2022 10:58:01 +0800
+Message-ID: <20220811025813.21492-9-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220811025813.21492-1-tinghan.shen@mediatek.com>
+References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
-References: <20220720072346.33511-1-dzm91@hust.edu.cn> <YuEu3mqTRCN9A5ig@kroah.com>
-In-Reply-To: <YuEu3mqTRCN9A5ig@kroah.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Thu, 11 Aug 2022 10:56:17 +0800
-Message-ID: <CAD-N9QXsQpFmLk-dfx6Y=Agtt1=7=Z5eP1RZTcTpgU9XK8NEDA@mail.gmail.com>
-Subject: Re: [PATCH] usb: trancevibrator: simplify tv_probe
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>, USB <linux-usb@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 8:26 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Jul 20, 2022 at 03:23:43PM +0800, Dongliang Mu wrote:
-> > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >
-> > The function tv_probe does not need to invoke kfree when the
-> > allocation fails. So let's simplify the code of tv_probe.
-> > Another change is to remove a redundant space.
->
-> Those are two different things, please resend as a patch series of 2
-> different patches.
+Disable the external output reset signal of watchdog reset to avoid losing
+the reset reason stored in the watchdog registers.
 
-Sure, I have sent the patch series.
+Signed-off-by: Fengquan Chen <fengquan.chen@mediatek.com>
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
->
-> thanks,
->
-> greg k-h
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+index 066c14989708a..436687ba826f4 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+@@ -327,6 +327,7 @@
+ 		watchdog: watchdog@10007000 {
+ 			compatible = "mediatek,mt8195-wdt",
+ 				     "mediatek,mt6589-wdt";
++			mediatek,disable-extrst;
+ 			reg = <0 0x10007000 0 0x100>;
+ 		};
+ 
+-- 
+2.18.0
+
