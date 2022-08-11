@@ -2,158 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3EBC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A3FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236753AbiHKPsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        id S236305AbiHKPsj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236487AbiHKPqb (ORCPT
+        with ESMTP id S236509AbiHKPqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:46:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2625B7E82A;
-        Thu, 11 Aug 2022 08:41:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B248861634;
-        Thu, 11 Aug 2022 15:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D10DDC433B5;
-        Thu, 11 Aug 2022 15:41:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232475;
-        bh=WVuZfz8VgtoHhI8op1ASuHj/Mtm0UN0UEcjFv78yres=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sF8a8kSDVfOUnyIQY8ryOskxhbAtvZlJkcaA484LSlgnSEkSsLfgKfcMdeLfdz3NP
-         rHxMbD0nv0VM9CfUeQbhKt8DCkd6VHeV11ues8+PjsN5/uQ9hTFHY4GKYPLh3LIXEh
-         3PFmpHuJplaf79dNNKVTqcteIhsuz02GZA0893Y4LmO59xDtJNJyVx7xcwZGlJ9ILI
-         8xZuZVI/T4KT5nvWKjgw98a2udvfenNb2fcFWg4BrBvlPBBBtsVWSas2oRgq0TPTuF
-         eq6k643N1kWgXxE4nsE1dli9ImbmVpHXVeEq/EyF0WIIL6IjSHqLNLZV4lU4+/0xhD
-         Nk1dAdRM1Q4/g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philip Yang <Philip.Yang@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 092/105] drm/amdkfd: Process notifier release callback don't take mutex
-Date:   Thu, 11 Aug 2022 11:28:16 -0400
-Message-Id: <20220811152851.1520029-92-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        Thu, 11 Aug 2022 11:46:32 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A499569F
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:41:15 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1660232445tagimrxj
+Received: from localhost.localdomain ( [110.188.55.240])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 11 Aug 2022 23:40:38 +0800 (CST)
+X-QQ-SSF: 0100000000200080H000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4k+qoMOMkngQMFfaswYNNllHQQVEKKmAclLFKgIFdLtvLu3tIlt1
+        swnJmVUFjT65gS14WkrxESJiYdzgD0WBRbkbZIw6fD3fMgFoPIeRY9kY9VQGULZ49sVcLKn
+        H4dCXS8CVx/djqhj08RJDrZ3nCRPWkKidfKce7P0IvzBfCbeaMTPhLxq9h1oWZxCHlAWBVe
+        Y3aJ4OiNN8od0hgN17aby6xXDTdJDgK1gsBhLYPypfjn74p3iSEC37Uvv6dLMxKFwxm6G8/
+        w8X/ejb/u/wpnq+8C1qeYiCI9BkXdv6fSpcmQcwuDga02/mXdM4wfZDZwq/hlnOW/pt6O/2
+        X/XBaEdM7cKPIo8L+LUY3ZS0gsxwFp4NeDDE5rm0XO6hGEa0jtlK6X81ilo2ln421RVnk5x
+X-QQ-GoodBg: 0
+From:   min tang <tangmin@cdjrlc.com>
+To:     airlied@linux.ie, daniel@ffwll.ch
+Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, min tang <tangmin@cdjrlc.com>
+Subject: [PATCH] drm/i915: Fix comment typo
+Date:   Thu, 11 Aug 2022 23:40:27 +0800
+Message-Id: <20220811154027.13255-1-tangmin@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+The double `for' is duplicated in line 2537, remove one.
 
-[ Upstream commit 74097f9fd2f5ebdae04fcba59da345386415cbf3 ]
-
-Move process queues cleanup to deferred work kfd_process_wq_release, to
-avoid potential deadlock circular locking warning:
-
- WARNING: possible circular locking dependency detected
-               the existing dependency chain (in reverse order) is:
-      -> #2
-        ((work_completion)(&svms->deferred_list_work)){+.+.}-{0:0}:
-        __flush_work+0x343/0x4a0
-        svm_range_list_lock_and_flush_work+0x39/0xc0
-        svm_range_set_attr+0xe8/0x1080 [amdgpu]
-        kfd_ioctl+0x19b/0x600 [amdgpu]
-        __x64_sys_ioctl+0x81/0xb0
-        do_syscall_64+0x34/0x80
-        entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-      -> #1 (&info->lock#2){+.+.}-{3:3}:
-        __mutex_lock+0xa4/0x940
-        amdgpu_amdkfd_gpuvm_acquire_process_vm+0x2e3/0x590
-        kfd_process_device_init_vm+0x61/0x200 [amdgpu]
-        kfd_ioctl_acquire_vm+0x83/0xb0 [amdgpu]
-        kfd_ioctl+0x19b/0x600 [amdgpu]
-        __x64_sys_ioctl+0x81/0xb0
-        do_syscall_64+0x34/0x80
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-      -> #0 (&process->mutex){+.+.}-{3:3}:
-        __lock_acquire+0x1365/0x23d0
-        lock_acquire+0xc9/0x2e0
-        __mutex_lock+0xa4/0x940
-        kfd_process_notifier_release+0x96/0xe0 [amdgpu]
-        __mmu_notifier_release+0x94/0x210
-        exit_mmap+0x35/0x1f0
-        mmput+0x63/0x120
-        svm_range_deferred_list_work+0x177/0x2c0 [amdgpu]
-        process_one_work+0x2a4/0x600
-        worker_thread+0x39/0x3e0
-        kthread+0x16d/0x1a0
-
-  Possible unsafe locking scenario:
-
-      CPU0                    CPU1
-        ----                    ----
-   lock((work_completion)(&svms->deferred_list_work));
-                                lock(&info->lock#2);
-             lock((work_completion)(&svms->deferred_list_work));
-   lock(&process->mutex);
-
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: min tang <tangmin@cdjrlc.com>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_process.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/i915/i915_reg.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process.c b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
-index b8b185e242d3..9ad293fb95af 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_process.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
-@@ -1114,6 +1114,15 @@ static void kfd_process_wq_release(struct work_struct *work)
- 	struct kfd_process *p = container_of(work, struct kfd_process,
- 					     release_work);
- 
-+	kfd_process_dequeue_from_all_devices(p);
-+	pqm_uninit(&p->pqm);
-+
-+	/* Signal the eviction fence after user mode queues are
-+	 * destroyed. This allows any BOs to be freed without
-+	 * triggering pointless evictions or waiting for fences.
-+	 */
-+	dma_fence_signal(p->ef);
-+
- 	kfd_process_remove_sysfs(p);
- 	kfd_iommu_unbind_process(p);
- 
-@@ -1178,20 +1187,8 @@ static void kfd_process_notifier_release(struct mmu_notifier *mn,
- 	cancel_delayed_work_sync(&p->eviction_work);
- 	cancel_delayed_work_sync(&p->restore_work);
- 
--	mutex_lock(&p->mutex);
--
--	kfd_process_dequeue_from_all_devices(p);
--	pqm_uninit(&p->pqm);
--
- 	/* Indicate to other users that MM is no longer valid */
- 	p->mm = NULL;
--	/* Signal the eviction fence after user mode queues are
--	 * destroyed. This allows any BOs to be freed without
--	 * triggering pointless evictions or waiting for fences.
--	 */
--	dma_fence_signal(p->ef);
--
--	mutex_unlock(&p->mutex);
- 
- 	mmu_notifier_put(&p->mmu_notifier);
- }
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index 9ccb67eec1bd..617a33e4bbb6 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -2534,7 +2534,7 @@
+  * HDMI/DP bits are g4x+
+  *
+  * WARNING: Bspec for hpd status bits on gen4 seems to be completely confused.
+- * Please check the detailed lore in the commit message for for experimental
++ * Please check the detailed lore in the commit message for experimental
+  * evidence.
+  */
+ /* Bspec says GM45 should match G4X/VLV/CHV, but reality disagrees */
 -- 
-2.35.1
+2.17.1
 
