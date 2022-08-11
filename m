@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F43C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E442CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237838AbiHKQVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S237870AbiHKQVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237515AbiHKQUT (ORCPT
+        with ESMTP id S237521AbiHKQUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:20:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945FAAEDAE;
-        Thu, 11 Aug 2022 09:02:14 -0700 (PDT)
+        Thu, 11 Aug 2022 12:20:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C27CAEDB4;
+        Thu, 11 Aug 2022 09:02:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F9F6137B;
-        Thu, 11 Aug 2022 16:02:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BEEC433C1;
-        Thu, 11 Aug 2022 16:02:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3868E61380;
+        Thu, 11 Aug 2022 16:02:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C2CC433B5;
+        Thu, 11 Aug 2022 16:02:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233733;
-        bh=rzdAzLrpMW9Jg5EEs7PVdTHeceWVECVmu/G0Pm4ZQys=;
+        s=k20201202; t=1660233738;
+        bh=Zu6ijkkJgaNWsevWxt6/GR63axzBMS3cxG1chMQKBkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHvTKGfMpySWi8ryWhZOTQlGwVeWna+zwzLCVJCWzuqVOOD7BHoEmLltJt9GEBsNQ
-         EOzQmQDtAnFoEg3TbQjj3/7lBNj31oX4EDaVbacMCEjSXdyjDSDU8kO0X/MQcG678D
-         EzL7YvFhP62Ox4dfZIP9Ht8BcIE73sbUJQ/52Ch2uL8XmksHGqeFsWWAnaRAS/Aa8j
-         UAmweXZP5lBdictYwpnBjrri1ypG/1GCRb0m+sYEQ5WP9ethoY3DKh/6Lcs4giUrFr
-         OwuQOBLK+XWlHnmPGUhhMtj7VWfoFRoBEx7g97v1RcR7pUwtbEzH000e3/3NFY4P5S
-         5+encPizWfj8A==
+        b=p/lGnwCokrdINPmu5iUKXYA2EIoNYCYNd4bpHXjvN/hk+iVCS6uTy+qE2eK/Vc8tj
+         O71jAgHUJuSNWfQjG4weqK6iQFiJSaud2BjXQnhPtcZ7BZweAyrFv9hFWuTqJVMhyx
+         MTNDGDq+JRYzINTuIR1Cpq2HaiCpw8sh46S2BQqJ/f1asTt7Lv7bpwK+TNzrHtAXZY
+         qe/LMrNzMWgqOuzW7G2ZErg+/wea/AxtRJB8uK31uPrXGsfVWMD13ZMrIcP9k3+Ljr
+         UsQWGZMOsS6fYsTsFcwf95iQeDKVO+DEIIlY8Ra3rgVnyhqAyqS0qSOdIreWDuTf1t
+         LdRwDspnEoYjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Skeggs <bskeggs@redhat.com>, Dave Airlie <airlied@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kherbst@redhat.com,
-        lyude@redhat.com, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 50/69] drm/nouveau/nvkm: use list_add_tail() when building object tree
-Date:   Thu, 11 Aug 2022 11:55:59 -0400
-Message-Id: <20220811155632.1536867-50-sashal@kernel.org>
+Cc:     Ben Dooks <ben.dooks@sifive.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 52/69] bpf: Fix check against plain integer v 'NULL'
+Date:   Thu, 11 Aug 2022 11:56:01 -0400
+Message-Id: <20220811155632.1536867-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -52,37 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Skeggs <bskeggs@redhat.com>
+From: Ben Dooks <ben.dooks@sifive.com>
 
-[ Upstream commit 61c1f340bc809a1ca1e3c8794207a91cde1a7c78 ]
+[ Upstream commit a2a5580fcbf808e7c2310e4959b62f9d2157fdb6 ]
 
-Fixes resume from hibernate failing on (at least) TU102, where cursor
-channel init failed due to being performed before the core channel.
+When checking with sparse, btf_show_type_value() is causing a
+warning about checking integer vs NULL when the macro is passed
+a pointer, due to the 'value != 0' check. Stop sparse complaining
+about any type-casting by adding a cast to the typeof(value).
 
-Not solid idea why suspend-to-ram worked, but, presumably HW being in
-an entirely clean state has something to do with it.
+This fixes the following sparse warnings:
 
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
+kernel/bpf/btf.c:2579:17: warning: Using plain integer as NULL pointer
+kernel/bpf/btf.c:2581:17: warning: Using plain integer as NULL pointer
+kernel/bpf/btf.c:3407:17: warning: Using plain integer as NULL pointer
+kernel/bpf/btf.c:3758:9: warning: Using plain integer as NULL pointer
+
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220714100322.260467-1-ben.dooks@sifive.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/core/ioctl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/btf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
-index 735cb6816f10..06b2f675f5da 100644
---- a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
-@@ -128,7 +128,7 @@ nvkm_ioctl_new(struct nvkm_client *client,
- 	if (ret == 0) {
- 		ret = nvkm_object_init(object);
- 		if (ret == 0) {
--			list_add(&object->head, &parent->tree);
-+			list_add_tail(&object->head, &parent->tree);
- 			if (nvkm_object_insert(object)) {
- 				client->data = object;
- 				return 0;
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 3cfba41a0829..cf89c99d4f28 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -1013,7 +1013,8 @@ __printf(2, 3) static void btf_show(struct btf_show *show, const char *fmt, ...)
+  */
+ #define btf_show_type_value(show, fmt, value)				       \
+ 	do {								       \
+-		if ((value) != 0 || (show->flags & BTF_SHOW_ZERO) ||	       \
++		if ((value) != (__typeof__(value))0 ||			       \
++		    (show->flags & BTF_SHOW_ZERO) ||			       \
+ 		    show->state.depth == 0) {				       \
+ 			btf_show(show, "%s%s" fmt "%s%s",		       \
+ 				 btf_show_indent(show),			       \
 -- 
 2.35.1
 
