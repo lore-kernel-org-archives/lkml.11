@@ -2,57 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02459C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 19:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30452C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 19:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235869AbiHKTlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 15:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
+        id S235761AbiHKTls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 15:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234698AbiHKTlL (ORCPT
+        with ESMTP id S234698AbiHKTlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 15:41:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7577022BEE;
-        Thu, 11 Aug 2022 12:41:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27651B82206;
-        Thu, 11 Aug 2022 19:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67AD8C433D6;
-        Thu, 11 Aug 2022 19:41:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660246867;
-        bh=gAAxfoPHl8OGvR/WyakgVLVnHoxFCjBGaBzbS0GzPPQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Pa4ZLUijYuGHlF8LVBOOVXP5HWaVei8WAojWrNOIIhDYGqlNr2bolJ3JINqRgRCjQ
-         kWGcwnCQEiKFRQaKosgDUZ1r+yHVQXarC45LmwVxVe4Lx67yFPOfp7voQYLfNo93nq
-         LM+qQsipnVb+UPwpLyzCjT6beAvmkfZi06LSgTClOgooWBefaxqlWimnzlLaTzZqJV
-         y+ifV+H2roPEkQMK8ded8e62t3Tmvu8USq1S2OdPy3kYqIZLVyZvd4zvybOaz/V8xE
-         oL9p4nLQYprXoRgnTMANcqIrQw0qAlWDCrOxvkMj16OTodvKyi38/iIniEU+Ocgo8H
-         jb1nKNF7KpBdA==
-Date:   Thu, 11 Aug 2022 12:41:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com
-Subject: Re: [PULL] Networking for 6.0-rc1
-Message-ID: <20220811124106.703917f8@kernel.org>
-In-Reply-To: <20220811120902.7e82826a@kernel.org>
-References: <20220811185102.3253045-1-kuba@kernel.org>
-        <20220811120902.7e82826a@kernel.org>
+        Thu, 11 Aug 2022 15:41:46 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4341B95AD1
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 12:41:45 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id w14so17769364plp.9
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 12:41:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=FTvV+r4SxFTcnoWh01bKEFwjf+Gpnp38zT+sxZWWUUM=;
+        b=kvYz6HUUDvbG0h7v8a4t4DEYCK7c5eq9K3pXYJCLg9Ny64+dzzVhzf8tyZEEoQlCQE
+         fn3m1TAVzJcw+3oCn/C9AXuJW5wUby8TRE2ssPQ2MbiyLxl2vpWxQzz1Ew78hWs7cnVG
+         LoPbkfS7d6PwjOybPfjUF24h7tdPmD2MBuwtjkBrtfw33ShzqljOhJTfedZkjUiNL1uk
+         4MuX2izHAVRz0p6cawvIqvu48X2huz9jyJDOJFjJhHRJgENcgElE5ztflFHmTgOYHTS9
+         /QhLWkED1JW896elvU2ufc7BVClks1I8iPpPGbBugLLcgmBDhkqThkDWRxLPZWWM7SN3
+         VUWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=FTvV+r4SxFTcnoWh01bKEFwjf+Gpnp38zT+sxZWWUUM=;
+        b=uD58sf6335npeQcuO50G48VFuRZma7bCrrvZKS/+UPaB578cYO3Z4w+vSy2m3xCU11
+         l++hruU7Hwns7tYMOP67fymgIdyeqEq4MCFv1h9z2wbLe6KcFQc1QylogpAXGGZKbvJR
+         v2KOgliQ5w78pWKZmh9WakB4scYqAE4fY1KWlmxIr+tjr2JRrMD3t3H5SvQjUUKrTvX6
+         JEpA3FXXYueJzBcEE6+ckeP1XUeHvDzGzHIlLLKQLs7NT7veXOatfSQAV1RvDZanYXzY
+         hP80hDMqBYzeBbgA0ZJZt7C/dEfLszwdDp0spyhwVi2qUG0c490h6TGKNeXrKfZYix16
+         x6qg==
+X-Gm-Message-State: ACgBeo3AVleBqfanlUm7ArqtR/0sp5wzaA8f8TUfTZIpEYj7TSVjPiLq
+        l3DEDpFo0/KgiWty9Uz71z5WYg==
+X-Google-Smtp-Source: AA6agR4ZzMi8yCe2GmWkNjY/xLNXCNUJi+1T7JQUYJfvWciCxoXZ+4zfVV7IB6MVrEFiaUWsM0x3WQ==
+X-Received: by 2002:a17:903:2309:b0:16f:784:ea5c with SMTP id d9-20020a170903230900b0016f0784ea5cmr736811plh.100.1660246904618;
+        Thu, 11 Aug 2022 12:41:44 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id i128-20020a626d86000000b005281d926733sm50192pfc.199.2022.08.11.12.41.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 12:41:44 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 19:41:40 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Xu <peterx@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Linux MM Mailing List <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: Re: [PATCH v2 2/3] kvm: Add new pfn error KVM_PFN_ERR_SIGPENDING
+Message-ID: <YvVbdFEhNKJUXVDB@google.com>
+References: <20220721000318.93522-1-peterx@redhat.com>
+ <20220721000318.93522-3-peterx@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721000318.93522-3-peterx@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 11 Aug 2022 12:09:02 -0700 Jakub Kicinski wrote:
-> Let's put this one on hold, sorry. We got a report 2 minutes after
-> sending that one of the BT patches broke mips and csky builds :S
-> I'll try to get hold of Luiz and fix that up quickly.
+On Wed, Jul 20, 2022, Peter Xu wrote:
+> Add one new PFN error type to show when we got interrupted when fetching
 
-Can I take that back? I can't repro with the cross compiler 
-from kernel.org. I'll follow up with the reported separately.
+s/we/KVM
+
+> the PFN due to signal pending.
+> 
+> This prepares KVM to be able to respond to SIGUSR1 (for QEMU that's the
+> SIGIPI) even during e.g. handling an userfaultfd page fault.
+> 
+> Signed-off-by: Peter Xu <peterx@redhat.com>
+> ---
+>  include/linux/kvm_host.h | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index 83cf7fd842e0..06a5b17d3679 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -96,6 +96,7 @@
+>  #define KVM_PFN_ERR_FAULT	(KVM_PFN_ERR_MASK)
+>  #define KVM_PFN_ERR_HWPOISON	(KVM_PFN_ERR_MASK + 1)
+>  #define KVM_PFN_ERR_RO_FAULT	(KVM_PFN_ERR_MASK + 2)
+> +#define KVM_PFN_ERR_SIGPENDING	(KVM_PFN_ERR_MASK + 3)
+>  
+>  /*
+>   * error pfns indicate that the gfn is in slot but faild to
+> @@ -106,6 +107,16 @@ static inline bool is_error_pfn(kvm_pfn_t pfn)
+>  	return !!(pfn & KVM_PFN_ERR_MASK);
+>  }
+>  
+> +/*
+> + * When KVM_PFN_ERR_SIGPENDING returned, it means we're interrupted during
+> + * fetching the PFN (a signal might have arrived), we may want to retry at
+
+Please avoid "we".  Tthe first "we're" can refer to KVM and/or the kernel,
+whereas the second is a weird mix of KVM and userspace (KVM exits to userspace,
+but it's userspace's decision whether or not to retry).
+
+Easiest thing is to avoid the "we" entirely and not speculate on what may happen.
+E.g.
+
+ /*
+  * KVM_PFN_ERR_SIGPENDING indicates that fetching the PFN was interrupted by a
+  * pending signal.  Note, the signal may or may not be fatal.
+  */
+
+> + * some later point and kick the userspace to handle the signal.
+> + */
+> +static inline bool is_sigpending_pfn(kvm_pfn_t pfn)
+> +{
+> +	return pfn == KVM_PFN_ERR_SIGPENDING;
+> +}
+> +
+>  /*
+>   * error_noslot pfns indicate that the gfn can not be
+>   * translated to pfn - it is not in slot or failed to
+> -- 
+> 2.32.0
+> 
