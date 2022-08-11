@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D58C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9199FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236496AbiHKVGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 17:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        id S236505AbiHKVGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 17:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236331AbiHKVGO (ORCPT
+        with ESMTP id S236270AbiHKVGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 17:06:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F283D89802
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:06:12 -0700 (PDT)
+        Thu, 11 Aug 2022 17:06:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7248883DD
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:06:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660251971;
+        s=mimecast20190719; t=1660251970;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=e3seP/frNyLsAlU7K9H6qLEBTEwpcXPprkWdZzIof8M=;
-        b=QZ7i94casfweiNk+lOHDNpEaCbYaZ5ASrnvW5H3kIrM/mCe2/Jolwq1Gyy7dXkSVoK/kpo
-        HMDyBur42iPuvpOj2Jz/HtkAdrxlf1M9Wz8vFISUWqNNKazS/7wUSszKaZI9qhmm1gZP7g
-        Z6nX2XG7o7o0USLIOE2N83b95nSKRuQ=
+        bh=ZZBHej5wRe7xU3WBHwemoCQQEDQCEX2ZZ7C6QJ36Rgc=;
+        b=WDSUvQ+7/f5PV4gf9GYBZ7xBaJZh8gZrPloCvFr/xh8ndTWoQvETLW3MSMWGBpirxC9N++
+        NcJjZPPKthXkpqvbyJK+5omj82EkpeYlSrLbDxC3lzBLHp9yjg9fR8bPrNWKnW3b6s9yIW
+        ZIyST0kKspEbg/AwVl12d1B+h+mNiRQ=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-HKzmCSrrPo6qeeTQL5u-fg-1; Thu, 11 Aug 2022 17:06:08 -0400
-X-MC-Unique: HKzmCSrrPo6qeeTQL5u-fg-1
+ us-mta-370-hvhBoeflO764B_GN1I-8wA-1; Thu, 11 Aug 2022 17:06:07 -0400
+X-MC-Unique: hvhBoeflO764B_GN1I-8wA-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0ED9D943206;
-        Thu, 11 Aug 2022 21:06:08 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7129585A599;
+        Thu, 11 Aug 2022 21:06:07 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DCB3C492C3B;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4AA5A492C3B;
         Thu, 11 Aug 2022 21:06:07 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, mlevitsk@redhat.com, vkuznets@redhat.com
-Subject: [PATCH v2 9/9] KVM: x86: never write to memory from kvm_vcpu_check_block
-Date:   Thu, 11 Aug 2022 17:06:05 -0400
-Message-Id: <20220811210605.402337-10-pbonzini@redhat.com>
+Subject: [PATCH v2 6/9] KVM: x86: make vendor code check for all nested events
+Date:   Thu, 11 Aug 2022 17:06:02 -0400
+Message-Id: <20220811210605.402337-7-pbonzini@redhat.com>
 In-Reply-To: <20220811210605.402337-1-pbonzini@redhat.com>
 References: <20220811210605.402337-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,52 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kvm_vcpu_check_block() is called while not in TASK_RUNNING, and therefore
-it cannot sleep.  Writing to guest memory is therefore forbidden, but it
-can happen on AMD processors if kvm_check_nested_events() causes a vmexit.
+Interrupts, NMIs etc. sent while in guest mode are already handled
+properly by the *_interrupt_allowed callbacks, but other events can
+cause a vCPU to be runnable that are specific to guest mode.
 
-Fortunately, all events that are caught by kvm_check_nested_events() are
-also recognized by kvm_vcpu_has_events() through vendor callbacks such as
-kvm_x86_interrupt_allowed() or kvm_x86_ops.nested_ops->has_events(), so
-remove the call and postpone the actual processing to vcpu_block().
+In the case of VMX there are two, the preemption timer and the
+monitor trap.  The VMX preemption timer is already special cased via
+the hv_timer_pending callback, but the purpose of the callback can be
+easily extended to MTF or in fact any other event that can occur only
+in guest mode.
 
+Rename the callback and add an MTF check; kvm_arch_vcpu_runnable()
+now will return true if an MTF is pending, without relying on
+kvm_vcpu_running()'s call to kvm_check_nested_events().  Until that call
+is removed, however, the patch introduces no functional change.
+
+Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/x86.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 2 +-
+ arch/x86/kvm/vmx/nested.c       | 9 ++++++++-
+ arch/x86/kvm/x86.c              | 8 ++++----
+ 3 files changed, 13 insertions(+), 6 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 5ffa578cafe1..293ff678fff5 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1636,7 +1636,7 @@ struct kvm_x86_nested_ops {
+ 	int (*check_events)(struct kvm_vcpu *vcpu);
+ 	bool (*handle_page_fault_workaround)(struct kvm_vcpu *vcpu,
+ 					     struct x86_exception *fault);
+-	bool (*hv_timer_pending)(struct kvm_vcpu *vcpu);
++	bool (*has_events)(struct kvm_vcpu *vcpu);
+ 	void (*triple_fault)(struct kvm_vcpu *vcpu);
+ 	int (*get_state)(struct kvm_vcpu *vcpu,
+ 			 struct kvm_nested_state __user *user_kvm_nested_state,
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index ddd4367d4826..9631cdcdd058 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3876,6 +3876,13 @@ static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
+ 	       to_vmx(vcpu)->nested.preemption_timer_expired;
+ }
+ 
++static bool vmx_has_nested_events(struct kvm_vcpu *vcpu)
++{
++	struct vcpu_vmx *vmx = to_vmx(vcpu);
++
++	return nested_vmx_preemption_timer_pending(vcpu) || vmx->nested.mtf_pending;
++}
++
+ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+@@ -6816,7 +6823,7 @@ struct kvm_x86_nested_ops vmx_nested_ops = {
+ 	.leave_nested = vmx_leave_nested,
+ 	.check_events = vmx_check_nested_events,
+ 	.handle_page_fault_workaround = nested_vmx_handle_page_fault_workaround,
+-	.hv_timer_pending = nested_vmx_preemption_timer_pending,
++	.has_events = vmx_has_nested_events,
+ 	.triple_fault = nested_vmx_triple_fault,
+ 	.get_state = vmx_get_nested_state,
+ 	.set_state = vmx_set_nested_state,
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 5e9358ea112b..9226fd536783 100644
+index 7f084613fac8..0f9f24793b8a 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -10639,6 +10639,17 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
- 			return 1;
+@@ -9789,8 +9789,8 @@ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
  	}
  
-+	if (is_guest_mode(vcpu)) {
-+		/*
-+		 * Evaluate nested events before exiting the halted state.
-+		 * This allows the halt state to be recorded properly in
-+		 * the VMCS12's activity state field (AMD does not have
-+		 * a similar field and a vmexit always causes a spurious
-+		 * wakeup from HLT).
-+		 */
-+		kvm_check_nested_events(vcpu);
-+	}
-+
- 	if (kvm_apic_accept_events(vcpu) < 0)
- 		return 0;
- 	switch(vcpu->arch.mp_state) {
-@@ -10662,9 +10673,6 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
+ 	if (is_guest_mode(vcpu) &&
+-	    kvm_x86_ops.nested_ops->hv_timer_pending &&
+-	    kvm_x86_ops.nested_ops->hv_timer_pending(vcpu))
++	    kvm_x86_ops.nested_ops->has_events &&
++	    kvm_x86_ops.nested_ops->has_events(vcpu))
+ 		*req_immediate_exit = true;
  
- static inline bool kvm_vcpu_running(struct kvm_vcpu *vcpu)
- {
--	if (is_guest_mode(vcpu))
--		kvm_check_nested_events(vcpu);
--
- 	return (vcpu->arch.mp_state == KVM_MP_STATE_RUNNABLE &&
- 		!vcpu->arch.apf.halted);
- }
+ 	WARN_ON(vcpu->arch.exception.pending);
+@@ -12562,8 +12562,8 @@ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
+ 		return true;
+ 
+ 	if (is_guest_mode(vcpu) &&
+-	    kvm_x86_ops.nested_ops->hv_timer_pending &&
+-	    kvm_x86_ops.nested_ops->hv_timer_pending(vcpu))
++	    kvm_x86_ops.nested_ops->has_events &&
++	    kvm_x86_ops.nested_ops->has_events(vcpu))
+ 		return true;
+ 
+ 	if (kvm_xen_has_pending_events(vcpu))
 -- 
 2.31.1
+
 
