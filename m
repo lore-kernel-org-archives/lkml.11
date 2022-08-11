@@ -2,181 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3794C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 05:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75AC1C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 05:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234020AbiHKFgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 01:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54650 "EHLO
+        id S233847AbiHKFmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 01:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233517AbiHKFgB (ORCPT
+        with ESMTP id S232987AbiHKFmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 01:36:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B778165AB
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 22:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660196159;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Thu, 11 Aug 2022 01:42:33 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0B865563
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 22:42:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5C588386FE;
+        Thu, 11 Aug 2022 05:42:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1660196551; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=1PCUDSqmLKN2Mlp7gJOvD0wMAFZjw97KA+2ssjA/d5A=;
-        b=AKETq6hRC+MpzLUhdZkgVgmGYxQ79LTtqDJXRP/ATanl06xhVGnVZZyEyL/pNJ9rlDqxUU
-        p2mwvqWSd0v3iKp1H9CVSh8N590w7b4rO0GB9ETgtR/cIOoX/2bkMO87wsmhdPFv7lGOsP
-        miqzZvxccd7SSbY5ap8lhooiop/klNY=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-576-WW4Yj7rsONCFpBi4EMTIrA-1; Thu, 11 Aug 2022 01:35:58 -0400
-X-MC-Unique: WW4Yj7rsONCFpBi4EMTIrA-1
-Received: by mail-qk1-f198.google.com with SMTP id ay44-20020a05620a17ac00b006b9945fe7c8so4090519qkb.10
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 22:35:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=1PCUDSqmLKN2Mlp7gJOvD0wMAFZjw97KA+2ssjA/d5A=;
-        b=At8laXNqIcUUyTnani4QkDm1gLN2ehpGo1PNGbMmdYpCdLbeIEhX+oyYZAPYCFDc7O
-         atxc9+sgtxQVpgb2XxHUGM8IahW4mRxfpS9WTObjqTtZYa5+Bm7Un3evbVm/Hg9AEsw5
-         rKbIZmr/trkvwzT9bdxlDhphPT2q7Jv2SVHamZHznjxtbv3LCxp15DybW8Fmd/uCOC58
-         RQdLFJpEHyKjf755TEWVCDApqZ1bjGwmrQKgIEu+2OzJMxH7D/QKW8fg0jNZV4HI+LjI
-         zWsHRI5fkuBndPoPjd34VHdGAl9Xzk8u392nFLResLBcDCu+hOwdCsnw1d73f4GDcTc9
-         W/hw==
-X-Gm-Message-State: ACgBeo3JASsbsMNLc0Q/nefTWSp7KAf1ZpTdmq6xZo/+67i3ElfWa8vr
-        Kn/jH6te/O53yxWYmRZZ0lkLsK8Rq+gmHT+JkGIt+3IeHQOx1ZfTTk1Hp48qvyvCeEOXOecNsmt
-        DK7647gmszqzE9LmEzr3a/VEGKQ0IRYLZD+WvnICl
-X-Received: by 2002:a37:74f:0:b0:6b9:c9ce:b86f with SMTP id 76-20020a37074f000000b006b9c9ceb86fmr575997qkh.193.1660196157674;
-        Wed, 10 Aug 2022 22:35:57 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR45v/I+FF3SnUkGenVkbLRvx2Dlfsel/4Yt8Xh4sSTFVFijLac+a/dkfGCbHEAx8EzuNsSMP06jx0ECj3Fcois=
-X-Received: by 2002:a37:74f:0:b0:6b9:c9ce:b86f with SMTP id
- 76-20020a37074f000000b006b9c9ceb86fmr575975qkh.193.1660196157457; Wed, 10 Aug
- 2022 22:35:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220810171512.2343333-1-eperezma@redhat.com> <20220810151907-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220810151907-mutt-send-email-mst@kernel.org>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 11 Aug 2022 07:35:21 +0200
-Message-ID: <CAJaqyWdyFt5tvjFQuC3pO6eXV0ogtV8DeCTCRw0y6HFeON0_+w@mail.gmail.com>
-Subject: Re: [PATCH v7 0/4] Implement vdpasim suspend operation
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        "Dawar, Gautam" <gautam.dawar@amd.com>, ecree.xilinx@gmail.com,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        habetsm.xilinx@gmail.com, Laurent Vivier <lvivier@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Longpeng <longpeng2@huawei.com>, Cindy Lu <lulu@redhat.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        bh=ZZ7n64d6BSjvSsfGjkEFwCEos9wPH9fs0blTqRRuxSg=;
+        b=UV6dTL63HySMHgTPkgrmvLX+AEkN5HLphU9+Bx4oJzcSLpwwkyBhhy5dKlCm7b9EtQ0Alh
+        Q6vndoM5jPdEf2hM+n4b06T9kvrrat1F4CFCtQED9IiyqXHnfijSI6znmjVYVT2xssGiJz
+        G4qyAWruWsyfiZ++eDlbV0N/3NpFv1M=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1660196551;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZZ7n64d6BSjvSsfGjkEFwCEos9wPH9fs0blTqRRuxSg=;
+        b=C5CelYMCHc/69dKHg/GEJvUBrHtSnOqxZ0YGJdGihlpKn8sDdnRxzquXXMw+pshIjAKSbK
+        FbNThOwVrYPdeeBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2BA5013A89;
+        Thu, 11 Aug 2022 05:42:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 4qGRCMeW9GLSDgAAMHmgww
+        (envelope-from <tiwai@suse.de>); Thu, 11 Aug 2022 05:42:31 +0000
+Date:   Thu, 11 Aug 2022 07:42:30 +0200
+Message-ID: <87a68buyih.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Allen Ballway <ballway@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH] ALSA: hda/cirrus - support for iMac 12,1 model
+In-Reply-To: <20220810152701.1.I902c2e591bbf8de9acb649d1322fa1f291849266@changeid>
+References: <20220810152701.1.I902c2e591bbf8de9acb649d1322fa1f291849266@changeid>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 9:20 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, Aug 10, 2022 at 07:15:08PM +0200, Eugenio P=C3=A9rez wrote:
-> > Implement suspend operation for vdpa_sim devices, so vhost-vdpa will of=
-fer
-> > that backend feature and userspace can effectively suspend the device.
-> >
-> > This is a must before getting virtqueue indexes (base) for live migrati=
-on,
-> > since the device could modify them after userland gets them. There are
-> > individual ways to perform that action for some devices
-> > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-> > way to perform it for any vhost device (and, in particular, vhost-vdpa)=
-.
-> >
-> > After a successful return of ioctl the device must not process more vir=
-tqueue
-> > descriptors. The device can answer to read or writes of config fields a=
-s if it
-> > were not suspended. In particular, writing to "queue_enable" with a val=
-ue of 1
-> > will not make the device start processing virtqueue buffers.
-> >
-> > In the future, we will provide features similar to
-> > VHOST_USER_GET_INFLIGHT_FD so the device can save pending operations.
-> >
-> > Applied on top of [1] branch after removing the old commits.
->
-> Except, I can't really do this without invaliding all testing.
-> Can't you post an incremental patch?
->
+On Wed, 10 Aug 2022 17:27:22 +0200,
+Allen Ballway wrote:
+> 
+> The 12,1 model requires the same configuration as the 12,2 model
+> to enable headphones but has a different codec SSID. Adds
+> 12,1 SSID for matching quirk.
+> 
+> Signed-off-by: Allen Ballway <ballway@chromium.org>
 
-Oops, sorry.
+Thanks, applied now with a minor modification to re-arrange the entry
+in the SSID order.
 
-I can send it for doc and internal code. But is it ok to remove an
-ioctl arg with incremental patches?
 
-Thanks!
-
-> > Comments are welcome.
-> >
-> > v7:
-> > * Remove ioctl leftover argument and update doc accordingly.
->
-> > v6:
-> > * Remove the resume operation, making the ioctl simpler. We can always =
-add
-> >   another ioctl for VM_STOP/VM_RESUME operation later.
-> > * s/stop/suspend/ to differentiate more from reset.
-> > * Clarify scope of the suspend operation.
-> >
-> > v5:
-> > * s/not stop/resume/ in doc.
-> >
-> > v4:
-> > * Replace VHOST_STOP to VHOST_VDPA_STOP in vhost ioctl switch case too.
-> >
-> > v3:
-> > * s/VHOST_STOP/VHOST_VDPA_STOP/
-> > * Add documentation and requirements of the ioctl above its definition.
-> >
-> > v2:
-> > * Replace raw _F_STOP with BIT_ULL(_F_STOP).
-> > * Fix obtaining of stop ioctl arg (it was not obtained but written).
-> > * Add stop to vdpa_sim_blk.
-> >
-> > [1] git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-> >
-> > Eugenio P=C3=A9rez (4):
-> >   vdpa: Add suspend operation
-> >   vhost-vdpa: introduce SUSPEND backend feature bit
-> >   vhost-vdpa: uAPI to suspend the device
-> >   vdpa_sim: Implement suspend vdpa op
-> >
-> >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 14 +++++++++++
-> >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
-> >  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
-> >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
-> >  drivers/vhost/vdpa.c                 | 35 +++++++++++++++++++++++++++-
-> >  include/linux/vdpa.h                 |  4 ++++
-> >  include/uapi/linux/vhost.h           |  9 +++++++
-> >  include/uapi/linux/vhost_types.h     |  2 ++
-> >  8 files changed, 70 insertions(+), 1 deletion(-)
-> >
-> > --
-> > 2.31.1
-> >
->
-
+Takashi
