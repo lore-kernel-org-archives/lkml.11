@@ -2,99 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93BCC25B0F
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7CCC25B0F
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236570AbiHKXEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 19:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36468 "EHLO
+        id S236585AbiHKXHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 19:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235999AbiHKXEF (ORCPT
+        with ESMTP id S236178AbiHKXHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 19:04:05 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8FC6E2DD
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:04:04 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id z19so18184089plb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=XV3d3jsQUJYVJchztvaIBQqSUAMrrh69qI/8EtCuYe4=;
-        b=tAYpw4CDkWc6eiIf/KCP+KBGnVlg8ib0fvqDt5ayrPmOQ3UDOO3arWXihLT3hSbZKj
-         1pdlYcKzB+T4+SasFbEJMHOq/hP4vIojAIE07EA0aHkak71KSWZBqg5GapGWPMtJLR+T
-         GWQhqJ6aYuIolDRFFAQSA5ibYCoyfDyxmshgkCAZsT/x/Gq39TTr0V8mlZWHQNlKK+bo
-         VtX3WQYPMJWzrLJmDLGqRrEz1l878YJIcYf9Aei5WQqWVRInY6G8UDjqe/rXnqPky2As
-         vI59jAUyB/EIs2MwGoH2eStvS3NW2P0nzF4GRBOzPfpXoAezr8zzT3N5KjemNsHcQkk4
-         GAXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=XV3d3jsQUJYVJchztvaIBQqSUAMrrh69qI/8EtCuYe4=;
-        b=EMDik8gpejwdf7CH1rDxV08ZJYUuhnUWVce0HSfRWJsfSg9gs1j0Qkh1u6EBdtczcQ
-         t4rD3NE+dXz8G6bX/7vYDaAuhnhKGqOP8yk41fgxH59iEUdFS2BSqKiha4zbhj3rGcfY
-         mLHd1HdmGPTvES2Iaf4xGyzn7Yab5z1TnsNhSZ6a3TJ9LBiE1CRqMQv312MAY3fzCDBm
-         /swFMYGOOGtQpbmkexjoQvs3C5JoeitXxclIdgzmc0UalztW5YLx1ewq1D/jNv2q2ZPL
-         7N6+F4IOrMKxmh9GkqP6rMAPOpX56sHe5uUk74gHIfCO4P/4eJvlxYHwCmeeYtPoKkuQ
-         hsgw==
-X-Gm-Message-State: ACgBeo3BLJBVR7tEuDUT7RQSdeSpKbpIqb5cT+3x5gbA1y+M7xxqW+NP
-        Izz71iitZzEFB8g0EAF+JaE1ag==
-X-Google-Smtp-Source: AA6agR7c5ZybC8xsrpjrvhBO6n0LEHYhEqXt4UG2OAj9R+Pf2rUxq/CaSStiRwn5gSOKfUmkZxXwJA==
-X-Received: by 2002:a17:90a:b00b:b0:1f1:6023:dacd with SMTP id x11-20020a17090ab00b00b001f16023dacdmr10643291pjq.184.1660259043795;
-        Thu, 11 Aug 2022 16:04:03 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id w186-20020a627bc3000000b005289ef6db79sm232168pfc.32.2022.08.11.16.04.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 16:04:03 -0700 (PDT)
-Message-ID: <05cfb9dc-c740-5764-35f9-b5636e0577cb@kernel.dk>
-Date:   Thu, 11 Aug 2022 17:04:01 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] virtio-blk: Avoid use-after-free on suspend/resume
-Content-Language: en-US
-To:     Shigeru Yoshida <syoshida@redhat.com>, mst@redhat.com,
-        jasowang@redhat.com
-Cc:     pbonzini@redhat.com, stefanha@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        suwan.kim027@gmail.com
-References: <20220810160948.959781-1-syoshida@redhat.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220810160948.959781-1-syoshida@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+        Thu, 11 Aug 2022 19:07:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9390B5C9D6
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:07:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F2BD6154D
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 23:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62743C433C1;
+        Thu, 11 Aug 2022 23:07:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1660259260;
+        bh=uM4mQsMaPWfe6CzcW2yFRtNpfqcoQtL3+z1lPfRtD5w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QdEHM1RinZmbemO81xNuEoh7PM0Hi0bocvUh+C+YJhr8TaI46JS5CdILRxXHsfE+G
+         gT7llHfMC7Wkq2+vAjlePIe9ztcJ92n1Ez4Dh0DCO5A97WW/FpUILCVqFhzkN4PIHT
+         /rqxoJA1LfnyKaTNtk6Bsv2Q4NFV+L/virFaSYBk=
+Date:   Thu, 11 Aug 2022 16:07:39 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Kairui Song <kasong@tencent.com>
+Cc:     Kairui Song <ryncsn@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH] mm/util: reduce stack usage of folio_mapcount
+Message-Id: <20220811160739.ea6b0f9c2912317c49287cda@linux-foundation.org>
+In-Reply-To: <20220801173155.92008-1-ryncsn@gmail.com>
+References: <20220801173155.92008-1-ryncsn@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/10/22 10:09 AM, Shigeru Yoshida wrote:
-> +static inline struct virtio_blk_vq *get_virtio_blk_vq(struct blk_mq_hw_ctx *hctx)
-> +{
-> +	struct virtio_blk *vblk = hctx->queue->queuedata;
-> +	struct virtio_blk_vq *vq = &vblk->vqs[hctx->queue_num];
-> +
-> +	return vq;
-> +}
+On Tue,  2 Aug 2022 01:31:55 +0800 Kairui Song <ryncsn@gmail.com> wrote:
 
-Would probably be cleaner as:
+> From: Kairui Song <kasong@tencent.com>
+> 
+> folio_entire_mapcount will call PageHeadHuge which is a function call,
+> and blocks the compiler from recognizing this redundant load.
 
-static struct virtio_blk_vq *get_virtio_blk_vq(struct blk_mq_hw_ctx *hctx)
-{
-	struct virtio_blk *vblk = hctx->queue->queuedata;
+Did you mean folio_test_hugetlb() rather than folio_entire_mapcount()?
 
-	return &vblk->vqs[hctx->queue_num];
-}
 
-dropping the 'vq' variable, and also dropping the inline as the compiler
-will work that out anyway.
-
-Apart from that minor nit, looks good to me.
-
--- 
-Jens Axboe
-
+> After rearranging the code, stack usage is dropped from 32 to 24, and
+> the function size is smaller (tested on GCC 12):
+> 
+> Before:
+> Stack usage:
+> mm/util.c:845:5:folio_mapcount  32      static
+> Size:
+> 0000000000000ea0 00000000000000c7 T folio_mapcount
+> 
+> After:
+> Stack usage:
+> mm/util.c:845:5:folio_mapcount  24      static
+> Size:
+> 0000000000000ea0 00000000000000b0 T folio_mapcount
+> 
+> ...
+>
+> @@ -850,10 +850,10 @@ int folio_mapcount(struct folio *folio)
+>  		return atomic_read(&folio->_mapcount) + 1;
+>  
+>  	compound = folio_entire_mapcount(folio);
+> -	nr = folio_nr_pages(folio);
+>  	if (folio_test_hugetlb(folio))
+>  		return compound;
+>  	ret = compound;
+> +	nr = folio_nr_pages(folio);
+>  	for (i = 0; i < nr; i++)
+>  		ret += atomic_read(&folio_page(folio, i)->_mapcount) + 1;
+>  	/* File pages has compound_mapcount included in _mapcount */
+> -- 
+> 2.35.2
