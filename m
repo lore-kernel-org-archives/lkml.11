@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B4DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2433BC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237866AbiHKQWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
+        id S237829AbiHKQWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237916AbiHKQU7 (ORCPT
+        with ESMTP id S237932AbiHKQVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:20:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA48EB02B3;
-        Thu, 11 Aug 2022 09:03:16 -0700 (PDT)
+        Thu, 11 Aug 2022 12:21:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D62DB02BB;
+        Thu, 11 Aug 2022 09:03:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BC64B82182;
-        Thu, 11 Aug 2022 16:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA56C433D6;
-        Thu, 11 Aug 2022 16:03:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 374156133A;
+        Thu, 11 Aug 2022 16:03:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD5DC433B5;
+        Thu, 11 Aug 2022 16:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233794;
-        bh=dfGDc5y7t1OJDZv5DDOhjgv3vAFicA7oBOPSO6VEFVg=;
+        s=k20201202; t=1660233800;
+        bh=vXfoFootITy+FkfYy6TFNfHiQJDgV05om3bAiEd/0iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ue5BWd73wF3zzmgULqka0NNmbdwuECVo1I59zAbslPKkD36R/z9fvEK580HnCXfmE
-         gMiWk7Y/A3JCy7svM4QFz7otUb9ydQ621cO04d7hMBaUH5GuTRdEYJnITQLZUG1ifO
-         KkQ82rYvBqF7GUy8g6ZanNwQW18p306iODEDmIL8Xl/6CVAsdzxaAFxL5Qh0HfWeMW
-         flHnKPyxGdL/0fjcFrxXdzvA0tWkso4WxnxYSdzm4rLY1MiEbRs3y1jd2tVy6t7+7l
-         vvU5/kRMrQusCwkevgFmQMJb0RFGXZmyyv6e9eZ9N68u2jrBAmLBQcda4pY0MD7lgh
-         PpkkJBW4BoY/w==
+        b=OZP/dmANU5QZwZvd/joT2YZFRQVgB3lJbqvwjLgJXsLpDVa/X69nU9bEuvoXzQnMb
+         SDSP01MS0oJ58fg+Nwxlw1h4EGp87mzreppVWKzmgcaQiypprNAOASqE5UN4uMxpnP
+         lXvna7qeTOpfedg5zu+ekD+iJrNtzt8Nu2REQpi8p/Xe4XbP3iF5Mq7JZXJAo0YHwp
+         KRzabf/2r5VOxenFPk90/y9JxqVpd69mFRvgrNoXs+ZHNX7mnnic8svKzUBLuUIrO9
+         DbkUyrINXcZMDW9qey/X7aLsOhRqZt3Bu7NbmjwMQP3xlltGKBiNqoPCG5RqRit8O4
+         3gjteKigoNqQg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?=C5=81ukasz=20Spintzyk?= <lukasz.spintzyk@synaptics.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 56/69] net/cdc_ncm: Increase NTB max RX/TX values to 64kb
-Date:   Thu, 11 Aug 2022 11:56:05 -0400
-Message-Id: <20220811155632.1536867-56-sashal@kernel.org>
+Cc:     Tamas Koczka <poprdi@google.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 58/69] Bluetooth: Collect kcov coverage from hci_rx_work
+Date:   Thu, 11 Aug 2022 11:56:07 -0400
+Message-Id: <20220811155632.1536867-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,80 +56,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Łukasz Spintzyk <lukasz.spintzyk@synaptics.com>
+From: Tamas Koczka <poprdi@google.com>
 
-[ Upstream commit 5588d628027092e66195097bdf6835ddf64418b3 ]
+[ Upstream commit 9f30de9e0343da05ac621b5817e9b1ce303c6310 ]
 
-DisplayLink ethernet devices require NTB buffers larger then 32kb
-in order to run with highest performance.
+Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
+calls, so remote KCOV coverage is collected while processing the rx_q
+queue which is the main incoming Bluetooth packet queue.
 
-This patch is changing upper limit of the rx and tx buffers.
-Those buffers are initialized with CDC_NCM_NTB_DEF_SIZE_RX and
-CDC_NCM_NTB_DEF_SIZE_TX which is 16kb so by default no device is
-affected by increased limit.
+Coverage is associated with the thread which created the packet skb.
 
-Rx and tx buffer is increased under two conditions:
- - Device need to advertise that it supports higher buffer size in
-   dwNtbMaxInMaxSize and dwNtbMaxOutMaxSize.
- - cdc_ncm/rx_max and cdc_ncm/tx_max driver parameters must be adjusted
-   with udev rule or ethtool.
+The collected extra coverage helps kernel fuzzing efforts in finding
+vulnerabilities.
 
-Summary of testing and performance results:
-Tests were performed on following devices:
- - DisplayLink DL-3xxx family device
- - DisplayLink DL-6xxx family device
- - ASUS USB-C2500 2.5G USB3 ethernet adapter
- - Plugable USB3 1G USB3 ethernet adapter
- - EDIMAX EU-4307 USB-C ethernet adapter
- - Dell DBQBCBC064 USB-C ethernet adapter
+This change only has effect if the kernel is compiled with CONFIG_KCOV,
+otherwise kcov_ functions don't do anything.
 
-Performance measurements were done with:
- - iperf3 between two linux boxes
- - http://openspeedtest.com/ instance running on local test machine
-
-Insights from tests results:
- - All except one from third party usb adapters were not affected by
-   increased buffer size to their advertised dwNtbOutMaxSize and
-   dwNtbInMaxSize.
-   Devices were generally reaching 912-940Mbps both download and upload.
-
-   Only EDIMAX adapter experienced decreased download size from
-   929Mbps to 827Mbps with iper3, with openspeedtest decrease was from
-   968Mbps to 886Mbps.
-
- - DisplayLink DL-3xxx family devices experienced performance increase
-   with iperf3 download from 300Mbps to 870Mbps and
-   upload from 782Mbps to 844Mbps.
-   With openspeedtest download increased from 556Mbps to 873Mbps
-   and upload from 727Mbps to 973Mbps
-
- - DiplayLink DL-6xxx family devices are not affected by
-   increased buffer size.
-
-Signed-off-by: Łukasz Spintzyk <lukasz.spintzyk@synaptics.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220720060518.541-2-lukasz.spintzyk@synaptics.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Tamas Koczka <poprdi@google.com>
+Tested-by: Aleksandr Nogikh <nogikh@google.com>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/usb/cdc_ncm.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/bluetooth/hci_core.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/usb/cdc_ncm.h b/include/linux/usb/cdc_ncm.h
-index f7cb3ddce7fb..2d207cb4837d 100644
---- a/include/linux/usb/cdc_ncm.h
-+++ b/include/linux/usb/cdc_ncm.h
-@@ -53,8 +53,8 @@
- #define USB_CDC_NCM_NDP32_LENGTH_MIN		0x20
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index cdca53732304..f4ce6efe3b72 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -29,6 +29,7 @@
+ #include <linux/rfkill.h>
+ #include <linux/debugfs.h>
+ #include <linux/crypto.h>
++#include <linux/kcov.h>
+ #include <linux/property.h>
+ #include <linux/suspend.h>
+ #include <linux/wait.h>
+@@ -5100,7 +5101,14 @@ static void hci_rx_work(struct work_struct *work)
  
- /* Maximum NTB length */
--#define	CDC_NCM_NTB_MAX_SIZE_TX			32768	/* bytes */
--#define	CDC_NCM_NTB_MAX_SIZE_RX			32768	/* bytes */
-+#define	CDC_NCM_NTB_MAX_SIZE_TX			65536	/* bytes */
-+#define	CDC_NCM_NTB_MAX_SIZE_RX			65536	/* bytes */
+ 	BT_DBG("%s", hdev->name);
  
- /* Initial NTB length */
- #define	CDC_NCM_NTB_DEF_SIZE_TX			16384	/* bytes */
+-	while ((skb = skb_dequeue(&hdev->rx_q))) {
++	/* The kcov_remote functions used for collecting packet parsing
++	 * coverage information from this background thread and associate
++	 * the coverage with the syscall's thread which originally injected
++	 * the packet. This helps fuzzing the kernel.
++	 */
++	for (; (skb = skb_dequeue(&hdev->rx_q)); kcov_remote_stop()) {
++		kcov_remote_start_common(skb_get_kcov_handle(skb));
++
+ 		/* Send copy to monitor */
+ 		hci_send_to_monitor(hdev, skb);
+ 
 -- 
 2.35.1
 
