@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B99ACC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F63C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238235AbiHKQ0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38910 "EHLO
+        id S238252AbiHKQ07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238045AbiHKQYg (ORCPT
+        with ESMTP id S237933AbiHKQY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:24:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B76FDF;
-        Thu, 11 Aug 2022 09:06:34 -0700 (PDT)
+        Thu, 11 Aug 2022 12:24:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FE92AE1C;
+        Thu, 11 Aug 2022 09:06:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34EF0B821AD;
-        Thu, 11 Aug 2022 16:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0775C433D7;
-        Thu, 11 Aug 2022 16:06:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F22B8612F4;
+        Thu, 11 Aug 2022 16:06:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF4CC433D6;
+        Thu, 11 Aug 2022 16:06:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233992;
-        bh=Js6CxZe5xAAmHPYDIYXcrfAlQ9JuZxpTKOvwzWb2GsI=;
+        s=k20201202; t=1660233996;
+        bh=1k0g9Lhh2lfOxoM8zP7AtYUnS9VWBbR9RZcMDRlaSPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YsRbs5MinTId7JIW28nKyOxdQdkfASj3HPOufz44FLPDR0qRiQsmsyYRO+hjZwM8m
-         gElPUNxxUeE9BK1dopptjKEAJxFfcwQYVjQCF9I1d2PoxMj/MYwguIDon/8OxEof0l
-         Ewwkt3sGjLc6mdlxC1O+Ru3t6y0zkE+/vgMN3ofTrM+GkSiw4Frd38bIUNk7AR0xed
-         dAGXeMdawSs5sfSNq71i3guI9Vc6ZmHyYguej2LZT16e1Na+ottTtXop2ILXp0SZv7
-         hWeE4sYzzDeqggHugvNQxEmLIVgZcDdUXKbrdVlOfQd6kaSFoS0XrNPpaK78eJYFu7
-         XNSoVnoDb2LpA==
+        b=svyixU7en3i00Vs3MK6/eYRiduLI2pSYdH7eeTi170NddSwqQpuCSZySZBkCA6S5s
+         IsFae/tb1o8TfGCPAo91urPluXmT6LEIuopCzIwWnOhYzjPgPL28E7Ra6K6hB+l5BR
+         Sd+vWVtPWmb8JFI24BGBg8JFMMTjKdZ0n/Sy9kk9oPvXxIhoO6Xz7tv1h6RaLOODc0
+         8iaCEnYJq0OB33y1VG4XOBDKx6cMb70ZYm2URrel2gN8/slL3gVKAS9pha1JQhNEEX
+         cFRYMt2RYmRigNfuzuZj21apbNahZ3xJOueknylxemwi768YmeNxv9YVXSaE6eCc/1
+         nYwWn6CKKEDUg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 25/46] mlxsw: cmd: Increase 'config_profile.flood_mode' length
-Date:   Thu, 11 Aug 2022 12:03:49 -0400
-Message-Id: <20220811160421.1539956-25-sashal@kernel.org>
+Cc:     Gautam <gautammenghani201@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 27/46] kselftests: Enable the echo command to print newlines in Makefile
+Date:   Thu, 11 Aug 2022 12:03:51 -0400
+Message-Id: <20220811160421.1539956-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
@@ -53,37 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Gautam <gautammenghani201@gmail.com>
 
-[ Upstream commit 89df3c6261f271c550f120b5ccf4d9c5132e870c ]
+[ Upstream commit 3297a4df805d4263506b6dfec4d1bbeff8862dd8 ]
 
-Currently, the length of 'config_profile.flood_mode' is defined as 2
-bits, while the correct length is 3 bits.
+In the install section of the main Makefile of kselftests, the echo
+command is used with -n flag, which disables the printing of new line
+due to which the output contains "\n" chars as follows:
 
-As preparation for unified bridge model, which will use the whole field
-length, fix it and increase the field to the correct size.
+  Emit Tests for alsa\nSkipping non-existent dir: arm64
+  Emit Tests for breakpoints\nEmit Tests for capabilities\n
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This patch fixes the above bug by using the -e flag.
+
+Signed-off-by: Gautam <gautammenghani201@gmail.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h | 2 +-
+ tools/testing/selftests/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 91f68fb0b420..dda06a2bd294 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -722,7 +722,7 @@ MLXSW_ITEM32(cmd_mbox, config_profile, max_vid_flood_tables, 0x30, 8, 4);
-  * max_fid_offset_flood_tables indicates the number of FID-offset tables.
-  * max_fid_flood_tables indicates the number of per-FID tables.
-  */
--MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 2);
-+MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 3);
- 
- /* cmd_mbox_config_profile_max_fid_offset_flood_tables
-  * Maximum number of FID-offset flooding tables.
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index d9c283503159..a90eacec83ee 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -233,7 +233,7 @@ ifdef INSTALL_PATH
+ 	for TARGET in $(TARGETS); do \
+ 		BUILD_TARGET=$$BUILD/$$TARGET;	\
+ 		[ ! -d $(INSTALL_PATH)/$$TARGET ] && echo "Skipping non-existent dir: $$TARGET" && continue; \
+-		echo -n "Emit Tests for $$TARGET\n"; \
++		echo -ne "Emit Tests for $$TARGET\n"; \
+ 		$(MAKE) -s --no-print-directory OUTPUT=$$BUILD_TARGET COLLECTION=$$TARGET \
+ 			-C $$TARGET emit_tests >> $(TEST_LIST); \
+ 	done;
 -- 
 2.35.1
 
