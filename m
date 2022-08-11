@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD0FC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7B6C25B07
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236185AbiHKV4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 17:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
+        id S236220AbiHKV6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 17:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236042AbiHKVz4 (ORCPT
+        with ESMTP id S235835AbiHKV6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 17:55:56 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC85C20BDF;
-        Thu, 11 Aug 2022 14:55:53 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 773893200A05;
-        Thu, 11 Aug 2022 17:55:52 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 11 Aug 2022 17:55:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1660254951; x=1660341351; bh=sg
-        5b+/j0A+B7rjKnhD+KLFGAzejd8BtlBZDJhVZA0vg=; b=fR6ErGPn+X+wO5iT1T
-        dUXXFLWZ/sQcnlC68cmqmBhfz885IuO84Ct+rIpiM6QfB+rmEmcY/1ScodmNZF85
-        Xhu/QIbd+NQ4mgj0S5/puTG966TED8GCZFcblzjcWkm9PX0pzhfJWI9blfQjRaGO
-        ta9B1BAJXRhuNgkE0GX8G7OZkOfLZhDyCbEnOiomN5mIyQmEvTklHY9FAnJ25h3q
-        6ajV7wXBhwEUeNAZSpGG0vNhvpTsWWE36dZMfeiHIaK1kFC+7yTzAyF3Zpp6u6d7
-        IupjpMkkwI8TXQGcNW01H5tI/1jD1j3v9liv5osWx6Nzqk0jinhEfixdjKlB1Suj
-        QdAQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1660254951; x=1660341351; bh=sg5b+/j0A+B7r
-        jKnhD+KLFGAzejd8BtlBZDJhVZA0vg=; b=5XBVbo+Gdd8r6Uyf8BDIHlAj261E6
-        PEUq1xxSjkzeyuKjC7a9xMcq+IvOryHKRN0TnEF+DGv8NzbMFIM0g2LoHnnp1A7g
-        lwEOiYflX3TnjPuTE9rX0965OcTzKsj3iry564IKwwRq6NehUdL8zPvq07sKEpMw
-        l1Tp6K8B9XizD9Wvyszt9w/uQKeQ1/MEGI0eFDVQPJhB/w2AOAK6YAWzsakvWRCN
-        cTWmle8Xfvcn70QL7QpeyDbNLrnu2aT8n1GYDew+tAaIB8e+AaLh5v96LnLqgqOA
-        VxO5n5DM6To5jZXjkZIDw3Q4dbhgtOCf+5k5UqOy8I8j2WcJqkLxsWpfA==
-X-ME-Sender: <xms:53r1Yi7r9Ed1QVMIXSL0JcgLiSsGC8zw8BPyDnUekdrZBTc0ke93tw>
-    <xme:53r1Yr6S8ajMfSOUIkiKPZVcMIMW01aO23I7-UyT3wtU8zmxarl8jimNMaJk0wZf9
-    vKMIZjo2ZeHVhR7Fw>
-X-ME-Received: <xmr:53r1YheHOvssNFHRQwdv_Y6mO73cXZC_rQg8fbN_D7_vsn_EAF6Nm_KPj--nfWa-j45nFfRGIQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgtdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdlfeehmdenucfjughrpefhvf
-    evufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpeffrghnihgvlhcuighuuceo
-    ugiguhesugiguhhuuhdrgiihiieqnecuggftrfgrthhtvghrnhepgfefgfegjefhudeike
-    dvueetffelieefuedvhfehjeeljeejkefgffeghfdttdetnecuvehluhhsthgvrhfuihii
-    vgeptdenucfrrghrrghmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdrgiihii
-X-ME-Proxy: <xmx:53r1YvKaYU2Ba6S8qE9imCsjsuABMxLLRuX24U5Y_n3v4mQUZ8FosA>
-    <xmx:53r1YmIpIJPlzmaQV4-uWldR_Y_RwgpZ7AcCTHjtv9tHUAac8WsuyQ>
-    <xmx:53r1YgxHHi3n3kSFlSi5YS4f0Hp1c63FSj2u1DEcpOrPizB41w_uzA>
-    <xmx:53r1YjVcu3vLbwXpdu5fHm8JN9Uf-O2jRBbhfZSGSoeAMR_A3TsTDQ>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 11 Aug 2022 17:55:50 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v4 3/3] selftests/bpf: Update CI kconfig
-Date:   Thu, 11 Aug 2022 15:55:27 -0600
-Message-Id: <2c27c6ebf7a03954915f83560653752450389564.1660254747.git.dxu@dxuuu.xyz>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1660254747.git.dxu@dxuuu.xyz>
-References: <cover.1660254747.git.dxu@dxuuu.xyz>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 11 Aug 2022 17:58:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B9CA00E2;
+        Thu, 11 Aug 2022 14:58:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 372FC614FB;
+        Thu, 11 Aug 2022 21:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0524BC433C1;
+        Thu, 11 Aug 2022 21:58:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1660255109;
+        bh=49zAkC4NEbp3XZMI4LrxZVUb78dcWzxz8e4v7RDgeIs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q27mOMtgOHkMq+0kgmtbcaRxRObU+nOTFrEP3s3Ut8f37CzSWCEA6s/Kb9UWdh+3F
+         fRIqkszPmMNuonLYuYFshBoaf7QazDTnDglNiafa8nCntf8Sf6SOaD/3tXsCEWAZqp
+         /13K6MRs3Tdz4LzNdY1vIk/5U0JoDFq/2FnBHRQg=
+Date:   Thu, 11 Aug 2022 14:58:28 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
+Cc:     masahiroy@kernel.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com, nathan@kernel.org, peterz@infradead.org,
+        keescook@chromium.org, jpoimboe@kernel.org,
+        dan.j.williams@intel.com, isabbasso@riseup.net,
+        edumazet@google.com, vbabka@suse.cz, linux@rasmusvillemoes.dk,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH] kbuild: add option to set max level of debug info
+Message-Id: <20220811145828.89b64e663a18fbb8d7fdea06@linux-foundation.org>
+In-Reply-To: <20220804223504.4739-1-dmitrii.bundin.a@gmail.com>
+References: <20220804223504.4739-1-dmitrii.bundin.a@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The previous selftest changes require two kconfig changes in bpf-ci.
+On Fri,  5 Aug 2022 01:35:04 +0300 Dmitrii Bundin <dmitrii.bundin.a@gmail.com> wrote:
 
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- tools/testing/selftests/bpf/config | 2 ++
- 1 file changed, 2 insertions(+)
+> When compiling with -g3 option and debugging with gdb it provides some
+> extra abilities like macro expand, info macro etc... It's sometimes
+> useful to unerstand behavior of complicated macros.
+> 
+> --- a/lib/Kconfig.debug
+> +++ b/lib/Kconfig.debug
+> @@ -304,6 +304,15 @@ config DEBUG_INFO_REDUCED
+>  	  DEBUG_INFO build and compile times are reduced too.
+>  	  Only works with newer gcc versions.
+>  
+> +config DEBUG_INFO_MAXLEVEL
+> +	bool "Maximum debug information level"
+> +	depends on !DEBUG_INFO_REDUCED
+> +	default n
+> +	help
+> +	  Sets the maximum level of debug information compilers may generate
+> +	  (-g3). Enabling this option will require significantly more disk space
+> +	  and increase built time, but it's useful for debugging purposes.
+> +
+>  config DEBUG_INFO_COMPRESSED
+>  	bool "Compressed debugging information"
+>  	depends on $(cc-option,-gz=zlib)
+> diff --git a/scripts/Makefile.debug b/scripts/Makefile.debug
+> index 9f39b0130551..7e1d8beecfc4 100644
+> --- a/scripts/Makefile.debug
+> +++ b/scripts/Makefile.debug
+> @@ -2,6 +2,8 @@ DEBUG_CFLAGS	:=
+>  
+>  ifdef CONFIG_DEBUG_INFO_SPLIT
+>  DEBUG_CFLAGS	+= -gsplit-dwarf
+> +else ifdef CONFIG_DEBUG_INFO_MAXLEVEL
+> +DEBUG_CFLAGS	+= -g3
+>  else
+>  DEBUG_CFLAGS	+= -g
+>  endif
 
-diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
-index fabf0c014349..3fc46f9cfb22 100644
---- a/tools/testing/selftests/bpf/config
-+++ b/tools/testing/selftests/bpf/config
-@@ -50,9 +50,11 @@ CONFIG_NET_SCHED=y
- CONFIG_NETDEVSIM=m
- CONFIG_NETFILTER=y
- CONFIG_NETFILTER_SYNPROXY=y
-+CONFIG_NETFILTER_XT_CONNMARK=y
- CONFIG_NETFILTER_XT_MATCH_STATE=y
- CONFIG_NETFILTER_XT_TARGET_CT=y
- CONFIG_NF_CONNTRACK=y
-+CONFIG_NF_CONNTRACK_MARK=y
- CONFIG_NF_DEFRAG_IPV4=y
- CONFIG_NF_DEFRAG_IPV6=y
- CONFIG_RC_CORE=y
--- 
-2.37.1
+What happens when the gcc developers add -g4?  Or if a user wants -g2?
 
+In other words, can we make this a Kconfig-selectable level, with the
+default `1'?
