@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7174DC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F82C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 10:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234551AbiHKKep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 06:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40926 "EHLO
+        id S234605AbiHKKes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234514AbiHKKem (ORCPT
+        with ESMTP id S234479AbiHKKeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 06:34:42 -0400
+        Thu, 11 Aug 2022 06:34:44 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0700C8D3D8
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:34:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A57B18A6C1
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 03:34:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660214081;
+        s=mimecast20190719; t=1660214082;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=an3p2vRBCNhdQAftf25xhynVjMF4AB0RUtp1WMhr2t0=;
-        b=PeC88H/wOpXdnx4enEl96WsEucHeCCVqW8bgZo8SWdg6ufxKtfymRAFE/x5AL4POiy2GG/
-        FxssNjKnyF6ouonDHT3mpn2AwrcKtC77ud8awHm+uShhcpcNbZ2Ys5VtdUBpfUjhgf9o/L
-        v0rSuK25AkanR099YYASgTYyUHJPXlA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=puIeEE5EBQVmYFlkdO7BnHuthpubncB97aYdL9X76dA=;
+        b=QmuYYF92e+lESZ3E0IHRSKQ4QGd7aSXNXWLYbh91fqA5GUnEexAH4J80LJTq7h7LxXj3Sg
+        foz61sDcXXrGrHcekZYfvgLrHsGFgpEICpBdrfHzC8njS++pc4p6Ciyxu8q3kvTHYK3xsz
+        YK+4tJS15CyPYiro/sMGtmlrg3hco6c=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-350-plB18okxNPi5H03wVO9k6g-1; Thu, 11 Aug 2022 06:34:38 -0400
-X-MC-Unique: plB18okxNPi5H03wVO9k6g-1
+ us-mta-658-wP32eH3zPkuZKfT6rHCuMA-1; Thu, 11 Aug 2022 06:34:41 -0400
+X-MC-Unique: wP32eH3zPkuZKfT6rHCuMA-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B67F22919EA7;
-        Thu, 11 Aug 2022 10:34:37 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08E3A8039BA;
+        Thu, 11 Aug 2022 10:34:41 +0000 (UTC)
 Received: from t480s.fritz.box (unknown [10.39.193.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AEA42492C3B;
-        Thu, 11 Aug 2022 10:34:36 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BECA1492C3B;
+        Thu, 11 Aug 2022 10:34:39 +0000 (UTC)
 From:   David Hildenbrand <david@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>
-Subject: [PATCH v2 0/2] mm/hugetlb: fix write-fault handling for shared mappings
-Date:   Thu, 11 Aug 2022 12:34:33 +0200
-Message-Id: <20220811103435.188481-1-david@redhat.com>
+Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
+        stable@vger.kernel.org
+Subject: [PATCH v2 2/2] mm/hugetlb: support write-faults in shared mappings
+Date:   Thu, 11 Aug 2022 12:34:35 +0200
+Message-Id: <20220811103435.188481-3-david@redhat.com>
+In-Reply-To: <20220811103435.188481-1-david@redhat.com>
+References: <20220811103435.188481-1-david@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
@@ -50,33 +54,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I observed that hugetlb does not support/expect write-faults in shared
-mappings that would have to map the R/O-mapped page writable -- and I
-found two case where we could currently get such faults and would
-erroneously map an anon page into a shared mapping.
+If we ever get a write-fault on a write-protected page in a shared mapping,
+we'd be in trouble (again). Instead, we can simply map the page writable.
 
-Reproducers part of the patches.
+And in fact, there is even a way right now to trigger that code via
+uffd-wp ever since we stared to support it for shmem in 5.19:
 
-I propose to backport both fixes to stable trees. The first fix needs
-a small adjustment.
+--------------------------------------------------------------------------
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <errno.h>
+ #include <sys/mman.h>
+ #include <sys/syscall.h>
+ #include <sys/ioctl.h>
+ #include <linux/userfaultfd.h>
 
-v1 -> v2:
-- "mm/hugetlb: fix hugetlb not supporting softdirty tracking"
--> Restrict to softdirty tracking
-- "mm/hugetlb: support write-faults in shared mappings"
--> Add reproducer and adjust description
--> Move VM_WRITE sanity check out from MAYSHARE handling
+ #define HUGETLB_SIZE (2 * 1024 * 1024u)
 
-David Hildenbrand (2):
-  mm/hugetlb: fix hugetlb not supporting softdirty tracking
-  mm/hugetlb: support write-faults in shared mappings
+ static char *map;
+ int uffd;
 
+ static int temp_setup_uffd(void)
+ {
+ 	struct uffdio_api uffdio_api;
+ 	struct uffdio_register uffdio_register;
+ 	struct uffdio_writeprotect uffd_writeprotect;
+ 	struct uffdio_range uffd_range;
+
+ 	uffd = syscall(__NR_userfaultfd,
+ 		       O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
+ 	if (uffd < 0) {
+ 		fprintf(stderr, "syscall() failed: %d\n", errno);
+ 		return -errno;
+ 	}
+
+ 	uffdio_api.api = UFFD_API;
+ 	uffdio_api.features = UFFD_FEATURE_PAGEFAULT_FLAG_WP;
+ 	if (ioctl(uffd, UFFDIO_API, &uffdio_api) < 0) {
+ 		fprintf(stderr, "UFFDIO_API failed: %d\n", errno);
+ 		return -errno;
+ 	}
+
+ 	if (!(uffdio_api.features & UFFD_FEATURE_PAGEFAULT_FLAG_WP)) {
+ 		fprintf(stderr, "UFFD_FEATURE_WRITEPROTECT missing\n");
+ 		return -ENOSYS;
+ 	}
+
+ 	/* Register UFFD-WP */
+ 	uffdio_register.range.start = (unsigned long) map;
+ 	uffdio_register.range.len = HUGETLB_SIZE;
+ 	uffdio_register.mode = UFFDIO_REGISTER_MODE_WP;
+ 	if (ioctl(uffd, UFFDIO_REGISTER, &uffdio_register) < 0) {
+ 		fprintf(stderr, "UFFDIO_REGISTER failed: %d\n", errno);
+ 		return -errno;
+ 	}
+
+ 	/* Writeprotect a single page. */
+ 	uffd_writeprotect.range.start = (unsigned long) map;
+ 	uffd_writeprotect.range.len = HUGETLB_SIZE;
+ 	uffd_writeprotect.mode = UFFDIO_WRITEPROTECT_MODE_WP;
+ 	if (ioctl(uffd, UFFDIO_WRITEPROTECT, &uffd_writeprotect)) {
+ 		fprintf(stderr, "UFFDIO_WRITEPROTECT failed: %d\n", errno);
+ 		return -errno;
+ 	}
+
+ 	/* Unregister UFFD-WP without prior writeunprotection. */
+ 	uffd_range.start = (unsigned long) map;
+ 	uffd_range.len = HUGETLB_SIZE;
+ 	if (ioctl(uffd, UFFDIO_UNREGISTER, &uffd_range)) {
+ 		fprintf(stderr, "UFFDIO_UNREGISTER failed: %d\n", errno);
+ 		return -errno;
+ 	}
+
+ 	return 0;
+ }
+
+ int main(int argc, char **argv)
+ {
+ 	int fd;
+
+ 	fd = open("/dev/hugepages/tmp", O_RDWR | O_CREAT);
+ 	if (!fd) {
+ 		fprintf(stderr, "open() failed\n");
+ 		return -errno;
+ 	}
+ 	if (ftruncate(fd, HUGETLB_SIZE)) {
+ 		fprintf(stderr, "ftruncate() failed\n");
+ 		return -errno;
+ 	}
+
+ 	map = mmap(NULL, HUGETLB_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+ 	if (map == MAP_FAILED) {
+ 		fprintf(stderr, "mmap() failed\n");
+ 		return -errno;
+ 	}
+
+ 	*map = 0;
+
+ 	if (temp_setup_uffd())
+ 		return 1;
+
+ 	*map = 0;
+
+ 	return 0;
+ }
+--------------------------------------------------------------------------
+
+Above test fails with SIGBUS when there is only a single free hugetlb page.
+ # echo 1 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ # ./test
+ Bus error (core dumped)
+
+And worse, with sufficient free hugetlb pages it will map an anonymous page
+into a shared mapping, for example, messing up accounting during unmap
+and breaking MAP_SHARED semantics:
+ # echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ # ./test
+ # cat /proc/meminfo | grep HugePages_
+ HugePages_Total:       2
+ HugePages_Free:        1
+ HugePages_Rsvd:    18446744073709551615
+ HugePages_Surp:        0
+
+Reason is that uffd-wp doesn't clear the uffd-wp PTE bit when
+unregistering and consequently keeps the PTE writeprotected. Reason for
+this is to avoid the additional overhead when unregistering. Note
+that this is the case also for !hugetlb and that we will end up with
+writable PTEs that still have the uffd-wp PTE bit set once we return
+from hugetlb_wp(). I'm not touching the uffd-wp PTE bit for now, because it
+seems to be a generic thing -- wp_page_reuse() also doesn't clear it.
+
+VM_MAYSHARE handling in hugetlb_fault() for FAULT_FLAG_WRITE
+indicates that MAP_SHARED handling was at least envisioned, but could never
+have worked as expected.
+
+While at it, make sure that we never end up in hugetlb_wp() on write
+faults without VM_WRITE, because we don't support maybe_mkwrite()
+semantics as commonly used in the !hugetlb case -- for example, in
+wp_page_reuse().
+
+Note that there is no need to do any kind of reservation in hugetlb_fault()
+in this case ... because we already have a hugetlb page mapped R/O
+that we will simply map writable and we are not dealing with COW/unsharing.
+
+Fixes: b1f9e876862d ("mm/uffd: enable write protection for shmem & hugetlbfs")
+Cc: <stable@vger.kernel.org> # v5.19
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
  mm/hugetlb.c | 26 +++++++++++++++++++-------
- mm/mmap.c    |  7 +++++--
- 2 files changed, 24 insertions(+), 9 deletions(-)
+ 1 file changed, 19 insertions(+), 7 deletions(-)
 
-
-base-commit: ffcf9c5700e49c0aee42dcba9a12ba21338e8136
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 0aee2f3ae15c..2480ba627aa5 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5241,6 +5241,21 @@ static vm_fault_t hugetlb_wp(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	VM_BUG_ON(unshare && (flags & FOLL_WRITE));
+ 	VM_BUG_ON(!unshare && !(flags & FOLL_WRITE));
+ 
++	/*
++	 * hugetlb does not support FOLL_FORCE-style write faults that keep the
++	 * PTE mapped R/O such as maybe_mkwrite() would do.
++	 */
++	if (WARN_ON_ONCE(!unshare && !(vma->vm_flags & VM_WRITE)))
++		return VM_FAULT_SIGSEGV;
++
++	/* Let's take out MAP_SHARED mappings first. */
++	if (vma->vm_flags & VM_MAYSHARE) {
++		if (unlikely(unshare))
++			return 0;
++		set_huge_ptep_writable(vma, haddr, ptep);
++		return 0;
++	}
++
+ 	pte = huge_ptep_get(ptep);
+ 	old_page = pte_page(pte);
+ 
+@@ -5781,12 +5796,11 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	 * If we are going to COW/unshare the mapping later, we examine the
+ 	 * pending reservations for this page now. This will ensure that any
+ 	 * allocations necessary to record that reservation occur outside the
+-	 * spinlock. For private mappings, we also lookup the pagecache
+-	 * page now as it is used to determine if a reservation has been
+-	 * consumed.
++	 * spinlock. Also lookup the pagecache page now as it is used to
++	 * determine if a reservation has been consumed.
+ 	 */
+ 	if ((flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) &&
+-	    !huge_pte_write(entry)) {
++	    !(vma->vm_flags & VM_MAYSHARE) && !huge_pte_write(entry)) {
+ 		if (vma_needs_reservation(h, vma, haddr) < 0) {
+ 			ret = VM_FAULT_OOM;
+ 			goto out_mutex;
+@@ -5794,9 +5808,7 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 		/* Just decrements count, does not deallocate */
+ 		vma_end_reservation(h, vma, haddr);
+ 
+-		if (!(vma->vm_flags & VM_MAYSHARE))
+-			pagecache_page = hugetlbfs_pagecache_page(h,
+-								vma, haddr);
++		pagecache_page = hugetlbfs_pagecache_page(h, vma, haddr);
+ 	}
+ 
+ 	ptl = huge_pte_lock(h, mm, ptep);
 -- 
 2.35.3
 
