@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F41C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A52B2C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237669AbiHKQVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58362 "EHLO
+        id S237735AbiHKQV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237713AbiHKQUE (ORCPT
+        with ESMTP id S237656AbiHKQUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 12:20:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5F69C516;
-        Thu, 11 Aug 2022 09:01:57 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C4210FC7;
+        Thu, 11 Aug 2022 09:01:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D6060F39;
-        Thu, 11 Aug 2022 16:01:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 231FCC433D6;
-        Thu, 11 Aug 2022 16:01:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FAA5B82166;
+        Thu, 11 Aug 2022 16:01:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93FDBC433C1;
+        Thu, 11 Aug 2022 16:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233716;
-        bh=qsShld15yanExGZz6tj+YI1xZMgoDwaENHBqd2mx4bU=;
+        s=k20201202; t=1660233712;
+        bh=xGPcd112oX8lfCcJLqKqMEUwHG5cYMcLjULpMYNSNpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E2WANIV4ZXRQHPcyqKilcuedh5gOdoRzznHCx+Sh+VKdU/j5CWPYhRbBHIzNuSnA/
-         81RdEsuqUSlXuYxPJo/ixtWTdXL+bFopkH9SBWl2ahvGyTYZynCVUUJDesSyeu7EtS
-         /XB2yc3HCJecYqHJeaJMJd4LJg8KJyQOXInokAciO6xu5rM63vV1H9xk1xaDS52+H7
-         t1MNKFT3vfT0AYPJ/y2r+MBAcQmqH5VknzqXHRuqaQ5zyIhRNUliZm7MYkUBOKE52M
-         Ygjj4IfmGdv+HaygKixK5Prb2wwWOhPMcHAa8gGMhZLLrgLLBmAUIxQSmhjvgKNDob
-         kmMHQnn2/dDsg==
+        b=KPt5Wim+Q+7TLhPlqTS8cmg6pRmlSoYEy9k3pgpBj4UWhn9uQwHRusXdZIabWZBTW
+         FV+ll5SRpe/Jmb5vVrkCImAJt2GTI+M3+LziU4ltL8vro4xUyF6X4xUEaoYi1VZqMl
+         jsUiJO2tcJA/iMEfZVtf+lQ1VtU92gFJHzAmi/xOKjil7bJbv9QxKSe7cLnellejBN
+         9eXzfUxMGrt1esnFxbQ/zppmfG1Jg7425Up5ptwcjcszfCu5gWhDQ5dvFHR61A9wPo
+         61nI0ZzEeLWtY0eaCHQZPeZd2+uLhCP40GfksiDBwgZokRSlkzBGZIgEafreWEJStv
+         EnreHSOjjak8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sasha Levin <sashal@kernel.org>, linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 47/69] scripts: sphinx-pre-install: fix venv version check logic
-Date:   Thu, 11 Aug 2022 11:55:56 -0400
-Message-Id: <20220811155632.1536867-47-sashal@kernel.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 45/69] iov_iter_get_pages{,_alloc}(): cap the maxsize with MAX_RW_COUNT
+Date:   Thu, 11 Aug 2022 11:55:54 -0400
+Message-Id: <20220811155632.1536867-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -51,69 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab@kernel.org>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit 7c2d45a347c7933cbe0efff14fe96adeb13fd761 ]
+[ Upstream commit 7392ed1734c319150b5ddec3f192a6405728e8d0 ]
 
-The logic which checks if the venv version is good enough
-but was not activated is broken: it is checking against
-the wrong val, making it to recommend to re-create a venv
-every time. Fix it.
+All callers can and should handle iov_iter_get_pages() returning
+fewer pages than requested.  All in-kernel ones do.  And it makes
+the arithmetical overflow analysis much simpler...
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Link: https://lore.kernel.org/r/afe01b7863fd655986d84ace8948f3d7aede796d.1656756450.git.mchehab@kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/sphinx-pre-install | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ lib/iov_iter.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/scripts/sphinx-pre-install b/scripts/sphinx-pre-install
-index f126ecbb0494..ae8c49734899 100755
---- a/scripts/sphinx-pre-install
-+++ b/scripts/sphinx-pre-install
-@@ -741,7 +741,7 @@ sub recommend_sphinx_upgrade()
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 6cf2d66fb839..ce24835abe55 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1522,6 +1522,8 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
+ 		maxsize = i->count;
+ 	if (!maxsize)
+ 		return 0;
++	if (maxsize > MAX_RW_COUNT)
++		maxsize = MAX_RW_COUNT;
  
- 	# Get the highest version from sphinx_*/bin/sphinx-build and the
- 	# corresponding command to activate the venv/virtenv
--	$activate_cmd = get_virtenv();
-+	($activate_cmd, $venv_ver) = get_virtenv();
+ 	if (likely(iter_is_iovec(i))) {
+ 		unsigned int gup_flags = 0;
+@@ -1642,6 +1644,8 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
+ 		maxsize = i->count;
+ 	if (!maxsize)
+ 		return 0;
++	if (maxsize > MAX_RW_COUNT)
++		maxsize = MAX_RW_COUNT;
  
- 	# Store the highest version from Sphinx existing virtualenvs
- 	if (($activate_cmd ne "") && ($venv_ver gt $cur_version)) {
-@@ -759,10 +759,14 @@ sub recommend_sphinx_upgrade()
- 	# Either there are already a virtual env or a new one should be created
- 	$need_pip = 1;
- 
-+	return if (!$latest_avail_ver);
-+
- 	# Return if the reason is due to an upgrade or not
- 	if ($latest_avail_ver lt $rec_version) {
- 		$rec_sphinx_upgrade = 1;
- 	}
-+
-+	return $latest_avail_ver;
- }
- 
- #
-@@ -820,7 +824,7 @@ sub recommend_sphinx_version($)
- 	}
- 
- 	# Suggest newer versions if current ones are too old
--	if ($latest_avail_ver && $cur_version ge $min_version) {
-+	if ($latest_avail_ver && $latest_avail_ver ge $min_version) {
- 		# If there's a good enough version, ask the user to enable it
- 		if ($latest_avail_ver ge $rec_version) {
- 			printf "\nNeed to activate Sphinx (version $latest_avail_ver) on virtualenv with:\n";
-@@ -897,7 +901,7 @@ sub check_needs()
- 		}
- 	}
- 
--	recommend_sphinx_upgrade();
-+	my $venv_ver = recommend_sphinx_upgrade();
- 
- 	my $virtualenv_cmd;
- 
+ 	if (likely(iter_is_iovec(i))) {
+ 		unsigned int gup_flags = 0;
 -- 
 2.35.1
 
