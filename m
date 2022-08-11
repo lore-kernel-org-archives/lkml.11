@@ -2,180 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B79EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87078C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235187AbiHKMjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 08:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51542 "EHLO
+        id S234514AbiHKMle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 08:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiHKMjs (ORCPT
+        with ESMTP id S235049AbiHKMlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 08:39:48 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5046167DF;
-        Thu, 11 Aug 2022 05:39:46 -0700 (PDT)
+        Thu, 11 Aug 2022 08:41:21 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A473ED45;
+        Thu, 11 Aug 2022 05:41:19 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27BCSwK7013974;
+        Thu, 11 Aug 2022 12:40:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=corp-2022-7-12;
+ bh=7piCo0ih0EJDCS0TDbMy2kC+FWwKLGB2B1j75tZdEV8=;
+ b=ucamwd2ZRYOmcN/qTNpnA/ot7zbuEg3FgoQOq9YYa7SiZGj+LejyUMNagQ/2lPyB7+Ri
+ d7mlW5Ai+1DQ6/A6eyThAFLV5iSyPhnrqUMX9LhQc12z9eM/QPlofyCS0B7O1gH/MlMZ
+ 90YTL9v9ucbFTPLw/JZQ3YodwBu6p9TWNJS3OteSSwYUOISuujTxxkvs9D3Tmf4j8eIS
+ DWaXEIj7N/sBU2HNNCZPNRE8qYn8MhZTigbOy5OXzdP8HLaQoKyBBu8osixRO0DhRP9Z
+ A+1c11gyIOrd3uKJNSo1I73otgBrl8DjetTlB7g6ZWHZs7RnNVzBk6SUmTlRhDDGhI7r ZQ== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3huwq9mg9h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Aug 2022 12:40:48 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27B9HaqE020397;
+        Thu, 11 Aug 2022 12:40:47 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2109.outbound.protection.outlook.com [104.47.58.109])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3huwqjkbax-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Aug 2022 12:40:47 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vr4sFIjP3NzJndP1fhCO/7FRD/q5Bip7Irazvk4qAHSaBpvt/hWLGmYH/Y5/EFfZMU2XfQioNLOVd8TK7rfHR9LrH2ns//yWqq6On2Ch/ZXwSbehLmMpP78ffv46v0YGii0lLDMQg54Nsz8MqiDgYlhwkV7C84uXxG/DnbM5VroFNt0/Jny7cBZ01VreYg4hhSMt1RnzhOb0nJ6timdO3fH6djdvvnUykCZewHe9Qjpqjc7DcHzvnxvqGgWIFL6dcM7tV46ppOvEnlT5TnSXt2A9kYDqSwwL4vG7piow4bjwpPWIjBZksosnZya6ZrZtw1y/Olfqi1U8VZu438y03A==
+ b=IuxglkMk5sL53tdlC9X2y+JJ6V3YrxQ2h66PVusBPS+WmMVHjSCYcnMQivclawYRn/biOAi8647orTW650bUwge1bk1lbIEFmd1CxUfogVkmIfNHw3A7s+C/YF05/ycMn8/xsviUdQR2ByOFByuejreTbkzyAVUolEbnboDHuaD7YViA89PdLG6+JmePxwQSL6oE3jSRInmlCDYEdNtUbWV3Uz3fzK8eMfKdbfJWetRfU9SDkK9qV43TsnT4CC4Y8fHFJ90+pv1g76OI1ai5e4pNIJVaqcNynsMuu5/PCDj12hlvPEEn1dFLd1J7DfC38v4rAfQD6D7QOmHTpWYwSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qYCpHGH1VgtMWzcYYpOhNUiLopgN+3M9EpvYJtDg8Cg=;
- b=iPVbmk+i9PZQjDW+0E2WsZoJfFZMMIkRDX8LuarUIsxVT7ROmZdNaqhRBY0IOo3oZmHV4d0DYfC7aV6pv/nPfXF4dqbhTVGtt+VT3LDxJ/xhMOxBCr2ot2C17GWU9KvOyvpVAOxnfuS3dsqJJ+QGqwcq1+Z6U68K29ux9vXL6ICuctnww5GK96H5RhSuKOwnivq5/e79QsWGOS3nFmEXDnoHhnzRabxJalP7ftsNUbPAf4yQ2tBchTlmJhP+6xz/jMgi08wMLKJ0CB7mJQxkZlU0byCKdOZ7FeXNQbAwGFMZoWw4P58By3Fv0hrXN9jEggqEbb8oN/WqttjT6eGpQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=lwKNQ96yd/gDwGlqzm9oIkp3ULhBpvP1mA5HfEop8NA=;
+ b=bsJXOIDxXUaJd02YPrsfLn8yYOW6g1knDBTlAh31gwTHLiI4CGHXOg2CtRfxsSrstWT5KIRV7QeIBFnzoco+rFMSrtrVd48yESNbYf+SUlaAHkXHceCrmaXAgSZQwYfDoq/8VU+L7BGhh3gJYyJoqFV3jyTyta4GSk/Wx915RZe0eYNjkUhjyRtAz9/vVWYkLHKNBSChCAZzFQqCuFzRMeso4ZBos1/aiDIdSFlOZnzHucd0hoaZpnC0ln9kEyXoTvoEcWa+qpNlBVXUldjGxP3aVbGYA8xGM9iylqKp3ML6lJBpS6NofOeSr/y6bO1lUPDXTNUrTO2A903xzEVPEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qYCpHGH1VgtMWzcYYpOhNUiLopgN+3M9EpvYJtDg8Cg=;
- b=wQ3uejQYGjfDnTXP0YCuev1tRrfKGkQOOGTfBuXsqZGzxFQIW0RNxwIB3/TdGY+3e2U7xK9TZ7QhSkYIt/LtUwfZiXX6hqbmDAOQ9CmvJPeWbhX32zkYlkn66Mk60OUQ7ImN4ZOZuwwy9zLC9+SIa47srxsXMjFAVUdrdkdDxhQ=
-Received: from MW4PR03CA0150.namprd03.prod.outlook.com (2603:10b6:303:8c::35)
- by DM5PR12MB1418.namprd12.prod.outlook.com (2603:10b6:3:7a::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Thu, 11 Aug
- 2022 12:39:42 +0000
-Received: from CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8c:cafe::69) by MW4PR03CA0150.outlook.office365.com
- (2603:10b6:303:8c::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.12 via Frontend
- Transport; Thu, 11 Aug 2022 12:39:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT031.mail.protection.outlook.com (10.13.174.118) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5525.11 via Frontend Transport; Thu, 11 Aug 2022 12:39:41 +0000
-Received: from sindhu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 11 Aug
- 2022 07:39:35 -0500
-From:   Sandipan Das <sandipan.das@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <x86@kernel.org>
-CC:     <peterz@infradead.org>, <bp@alien8.de>, <acme@kernel.org>,
-        <namhyung@kernel.org>, <jolsa@kernel.org>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>,
-        <dave.hansen@linux.intel.com>, <like.xu.linux@gmail.com>,
-        <eranian@google.com>, <ananth.narayan@amd.com>,
-        <ravi.bangoria@amd.com>, <santosh.shukla@amd.com>,
-        <sandipan.das@amd.com>
-Subject: [PATCH 13/13] perf/x86/amd/lbr: Add LbrExtV2 branch speculation info support
-Date:   Thu, 11 Aug 2022 18:00:01 +0530
-Message-ID: <ddc02f6320464cad0e3ff5bdb2314531568a91bc.1660211399.git.sandipan.das@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1660211399.git.sandipan.das@amd.com>
-References: <cover.1660211399.git.sandipan.das@amd.com>
-MIME-Version: 1.0
+ bh=lwKNQ96yd/gDwGlqzm9oIkp3ULhBpvP1mA5HfEop8NA=;
+ b=PeP3pFJyan8tpWNU+JXNJN9y8186IFiWGCoeIgWAnFoF4krcdCTf47lkZnlGFYTNN0Fw3iHCXQNB0msKIOh1fqchu4fjP/bADK5LapLaux9B+mi/jjgYQq+tHWp+I/Vepeaw4a6NN8NGPdGx8N1l+eazyTrB+MHKNaMYK3YoyJg=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BY5PR10MB3905.namprd10.prod.outlook.com
+ (2603:10b6:a03:1fa::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Thu, 11 Aug
+ 2022 12:40:44 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5504.024; Thu, 11 Aug 2022
+ 12:40:44 +0000
+Date:   Thu, 11 Aug 2022 15:40:21 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dinang@xilinx.com, martinpo@xilinx.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Piotr.Uminski@intel.com, gautam.dawar@amd.com,
+        ecree.xilinx@gmail.com, martinh@xilinx.com,
+        Stefano Garzarella <sgarzare@redhat.com>, pabloc@xilinx.com,
+        habetsm.xilinx@gmail.com, lvivier@redhat.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
+        Longpeng <longpeng2@huawei.com>, lulu@redhat.com,
+        hanand@xilinx.com, Parav Pandit <parav@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH v7 1/4] vdpa: Add suspend operation
+Message-ID: <20220811124021.GW3460@kadam>
+References: <20220810171512.2343333-1-eperezma@redhat.com>
+ <20220810171512.2343333-2-eperezma@redhat.com>
+ <20220811042717-mutt-send-email-mst@kernel.org>
+ <20220811101507.GU3460@kadam>
+ <20220811072125-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
+In-Reply-To: <20220811072125-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MR1P264CA0099.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:50::22) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b1af6e6f-cdc9-4c5e-03bf-08da7b96900d
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1418:EE_
+X-MS-Office365-Filtering-Correlation-Id: fc6db887-389d-415c-786b-08da7b96b526
+X-MS-TrafficTypeDiagnostic: BY5PR10MB3905:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9Kba9rEMJ7OaPKD4vbD9xf6Hx2Czop5JdNQZzhW1/X5oQxrBItKbjDW3gah9BSgZ+pvvOAObtbBEgc+QZUVf0HAcxiGymfTOJxgR+svcku7Q7fAR9czhAPecK0qg3LA77X4ca3XH7INfq1T5Y2rjIGumyjBuSLs05tMrsI75+8mfbcH/KASU5XbNTBS6JyO3VdMRCR+AtdGAiUVDuwX8MGtCxTqkz4txyclonWyq+sKSKBUpB5W9NjyX2s+n5BGqgYxI+1DjElzvEPYGDKK4Am/wKr71YVWloYhtlMb7USgJc3sK43q+RoieC7Ckzy1WilVDxO75By5g7pI2sQKPjAJqmmzfiNCE7z3RgXX2q+g3sDpH3EqC7A/hEnNIRbrGTu5vZt2K/sC9r6cf2x0145YYG13A14jpbemoEsvZWIhJkPoGe5HdBsth5k8WBs1jfOCHijgbYvgywu1M4Duv0Gzbe+eBbsWg51i/mSJqcTuKceg82bFMey/fubHVKFTn40AGVJFbSZpSkPBrs+WaB5SsWGio6ljQM7kMOznbI3Sy6m1Bqc3rPIA4OXPwgAVewMdfnCxzBxQu0cB7Qy/rLX4MGEd09mejnzOT6x6RviCOGMQb3HrmFjvQTCdpphTZtOyOA/Y221phYa+5gFlibUXIMeE/Vk8e9s3C0yZWWJwrRSiX1uHrEJVPMM6CR0cfbvdJ1cF8KnXxrUR2DLZe+IT7EqnUSk4WBt46c01N0SM2acu/zkdeFGNGVHb0Vb5b3eiFnay7RwYSd/ae7hAZq4MTs8OIfWaMmNN+e/YMB+mOJwhycFiX7C9q54njjVGaODKog17ukD1ClyKuOmniPg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(136003)(39860400002)(40470700004)(46966006)(36840700001)(26005)(356005)(5660300002)(36756003)(82740400003)(336012)(41300700001)(478600001)(2906002)(7696005)(81166007)(6666004)(40480700001)(82310400005)(70206006)(83380400001)(2616005)(8676002)(110136005)(86362001)(54906003)(7416002)(4326008)(426003)(36860700001)(16526019)(316002)(40460700003)(70586007)(8936002)(44832011)(186003)(47076005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:39:41.6710
+X-Microsoft-Antispam-Message-Info: tv2szcjCC9qmvcdUxfCI1K6YY3UytXZ+AsE/FiKDE8C24NkpvHckEvXCycwpmQ750mtGfBeEMU7h2rJMU9UZqzmTUDAubosrCR5CeWy0vtmpLbAnbDzW8N7kTNKBkr+LCpsZ6tywP/mLTq1nKn79yYxmm5SY3hMAXZp9rk0Q7wkYaZRNu5nmJmfre4KApbkiVT5WtNTnhUC5vR3Vq+LRg+5L92J7Bx4X2HZOvqnZHUp1HPWl2w1tHBGn5j0SpW6NyjAw8UvVUKW++DHJfREPZrSrzXRxlhsR7tEjlPRRFI4PCLFtEgHgMeOFLp8JUm+5gQaODmgqQFtf6pGZde4QCYNicnQxpi3vJSvNTQnC+GephOy7A1yH8qs1EL0rFQXgFuRTIinGVWgfY+lgFsFEud3oOqlwihbTpeXyNg5syIStvtkjo/GfDrAEC5aNz3gTRKZsbDvUQ2mkPY/JF8WDhirE6kJDDWBvPMOK5g2KVUvWIrZPefdkSFwLd2CZO61fJ/qUugsXTokcXqRmVM8BjsyVfRhn87ssl6Us8L4xEX4wNnaRWc/N7mLe5jgaocQPUifc7WsTB2TYdkRMxH4nIf53KjMjyQMIPo+dxc5D5xQkMorOt0rC0X9zqPMaC7E0VlqBaDKtYqZutHmIKemE9ONQgJhqIOuO7E/rU40HFi3zonieoX7HlGvDNbXT45RA6Y+D9bnvT5a98Q80VUItdmYAXgAcxqiut6am6RpCl7KIgUm6jz8il+VhVrqzQjwCUvnD0Vi518GAHXM/vcKWrHb6F6lQBWW2JXDk28iE+pfha9xfisz6u2tdc8tdlmZz
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(39860400002)(346002)(396003)(376002)(136003)(366004)(5660300002)(6916009)(54906003)(26005)(66476007)(8676002)(41300700001)(7416002)(1076003)(52116002)(478600001)(86362001)(33656002)(33716001)(8936002)(66556008)(9686003)(6512007)(66946007)(316002)(4326008)(6666004)(6506007)(44832011)(38350700002)(38100700002)(2906002)(186003)(6486002)(15650500001)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?pyw49/B1gUHwowZNleKxyn67ShCLbCd7MUn3ZNHGU9nErJNEcOLsRXOun0?=
+ =?iso-8859-1?Q?JHQrFewZcIz2ZztKO9B2jOmS3ubRMPCOufbT0U2fOPWfn3btEMEa/z2ovc?=
+ =?iso-8859-1?Q?kvpOJwpoUNKCGLLPnBJIsmy3mSRhwMPd5nTYIGDLbuMe4lT7C7XhsfetbW?=
+ =?iso-8859-1?Q?BY3Nh9ZsUjI44GrfvtjGzGm7+iQIQbpCkPziqcFKQ6Y8NAvYhJcoIdcsCG?=
+ =?iso-8859-1?Q?G4czl1dPR2i7nhq7FOr3qwDCTN8bQPwL7vV+YjLhKbyVrdNMPSDGwqihbc?=
+ =?iso-8859-1?Q?94jTlExuXxV1JVMIE+xuZwyjZiBPZ5wEKtuHIdeerufkpIqnfrqIPs3peU?=
+ =?iso-8859-1?Q?BLXQaxF4JH7WJIEHdd89qs2Lk3/qyxTSsuPQ/j17V/ljLCjwO/H2qAbLiq?=
+ =?iso-8859-1?Q?gwdiPCYwRBoGGBcIIapEccvm5wrGef2qifvdnx5vQ3xknK9ia/egxbNa3A?=
+ =?iso-8859-1?Q?cYwytKSABpfkULaBLXY22WIwPh41WpQDv//R5+/W9EQ/WjV5m7Lnh7ICgP?=
+ =?iso-8859-1?Q?yHKTg0wenlSyI9lwP5iTZoGldxzPMH6wKQSeL12vOVJ8imWuDXadfAj2Ai?=
+ =?iso-8859-1?Q?QZ4bfcK4ihWGev01oOnxvJH7dtukJxkR0nKUfpbtjgE1D90YftyRxcc2bQ?=
+ =?iso-8859-1?Q?x3FG4Y84GTN1apk/GsKSqXy3cvZq45lCiV60dbFGVzSli0owrwxehU+UQs?=
+ =?iso-8859-1?Q?hwbRBzQHhYLD4oW4XJqbE2FJQ85i18DIMFbeQAxvrrTVG2aolmbuBipYIU?=
+ =?iso-8859-1?Q?Xh6UwbBnq4coaqh/xT1mVTfqSQ9AB2yo2MIiKiul2vgtS6OsmvFrxGow//?=
+ =?iso-8859-1?Q?fgAPjKdyG5veMKEJ56R2NGHKhMGWteYGxz/zJ3mdxSQ+U3QpKNL6wzQ6q/?=
+ =?iso-8859-1?Q?MzF7JAj+ypSwogQxlSfParxd8mtNJeQDrC4pvZbl10LeOYZcn+1+ENbTzR?=
+ =?iso-8859-1?Q?McAbpetOCSRODdPONBVCeXPdtt+1TZ6GAcPRXpnwRXFT5BU0wtE7+P0iYN?=
+ =?iso-8859-1?Q?yiCDJeN+lvsbOlxtWpkyjaxtt/bfJ4Y0e1v9Qp6xOGjfpKVFxxMIvA62IO?=
+ =?iso-8859-1?Q?4ehMLr5iztdq3VMuiZKOREkxuKfmfAGaeC4MCsA9omte9HNSlKwC/KEJZv?=
+ =?iso-8859-1?Q?W7KcxF6K3oFx5QXr0iaS67r4AF1V5k9t2X5e0K8OTqR6OZBPAGs5Tck9LX?=
+ =?iso-8859-1?Q?Se6T59mx7thQ6xfFYbts4o/IndAT5/UL/EfDtcz/LOi6ytHYVdpdoFYUvG?=
+ =?iso-8859-1?Q?dl/jcDNopadsLjOXIb5lCTrqimT+zTcgS4k8mlonBwc2M1YfCwRt6pF3/3?=
+ =?iso-8859-1?Q?ZjTofbN1WyVT89eoUGLzfDcQTG3VqfZOgcEbqMM+0JAgJD9LHwifVxWZ2z?=
+ =?iso-8859-1?Q?1KVeysFmfiyKS9FQBIfsvKk4OfWujj2baUOBZoXsN9hw24iWV/v2UoJCPS?=
+ =?iso-8859-1?Q?4lKOPwplwkJsVSyK5rrPB0XAMFLlYkmBZ6Q+ysTaEVKItRoU3PbMcnHVy1?=
+ =?iso-8859-1?Q?9/Guu0Zg1A+1W/e2DkhnTofyBqAo8RTAayR1Mr7uw7h1GqUUXSG6DPpVJL?=
+ =?iso-8859-1?Q?yAAPlxBdexFR3e77VwDvK6oOO97b6K85IutKJJLB6/1wNepb+WrlU+iixN?=
+ =?iso-8859-1?Q?pUEQ+M7xpHzunkHFb0/BDOnIKiSX/7ilmcJaNoE4GJW8dOtTvcvZKnFg?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc6db887-389d-415c-786b-08da7b96b526
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:40:44.2417
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1af6e6f-cdc9-4c5e-03bf-08da7b96900d
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1418
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6pmQ3IhFmFDOsep7YFVEePgWPULDiVmuMJwQ82WPd5Kp9ZoPONoKzr2PN5K732Nn41c85eM3xjVZcWOpGGDlnbB0FvDd0ZalQizDBLbKtRc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB3905
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-11_10,2022-08-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ mlxlogscore=999 spamscore=0 adultscore=0 mlxscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208110040
+X-Proofpoint-ORIG-GUID: fKVQw_IMrloLF-YAuJmS15iIF1WEPk0i
+X-Proofpoint-GUID: fKVQw_IMrloLF-YAuJmS15iIF1WEPk0i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide branch speculation information captured via AMD Last Branch Record
-Extension Version 2 (LbrExtV2) by setting the speculation info in branch
-records. The info is based on the "valid" and "spec" bits in the Branch To
-registers.
+On Thu, Aug 11, 2022 at 07:23:44AM -0400, Michael S. Tsirkin wrote:
+> On Thu, Aug 11, 2022 at 01:15:08PM +0300, Dan Carpenter wrote:
+> > On Thu, Aug 11, 2022 at 04:27:32AM -0400, Michael S. Tsirkin wrote:
+> > > On Wed, Aug 10, 2022 at 07:15:09PM +0200, Eugenio Pérez wrote:
+> > > > This operation is optional: It it's not implemented, backend feature bit
+> > > > will not be exposed.
+> > > > 
+> > > > Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+> > > > Message-Id: <20220623160738.632852-2-eperezma@redhat.com>
+> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > 
+> > > What is this message id doing here?
+> > > 
+> > 
+> > I like the Message-Id tag.  It means you can `b4 mbox <mesg-id>` and get
+> > the thread.
+> 
+> Yes it makes sense in git. But I don't see what it does in this patch
+> posted to the list.
 
-Suggested-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Sandipan Das <sandipan.das@amd.com>
----
- arch/x86/events/amd/lbr.c | 35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+Ah.  Okay.  I misunderstood.
 
-diff --git a/arch/x86/events/amd/lbr.c b/arch/x86/events/amd/lbr.c
-index 5fa985cd44cb..3fd316b6adda 100644
---- a/arch/x86/events/amd/lbr.c
-+++ b/arch/x86/events/amd/lbr.c
-@@ -146,12 +146,19 @@ static void amd_pmu_lbr_filter(void)
- 	}
- }
- 
-+static const int lbr_spec_map[PERF_BR_SPEC_MAX] = {
-+	PERF_BR_SPEC_NA,
-+	PERF_BR_SPEC_WRONG_PATH,
-+	PERF_BR_NON_SPEC_CORRECT_PATH,
-+	PERF_BR_SPEC_CORRECT_PATH,
-+};
-+
- void amd_pmu_lbr_read(void)
- {
- 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
- 	struct perf_branch_entry *br = cpuc->lbr_entries;
- 	struct branch_entry entry;
--	int out = 0, i;
-+	int out = 0, idx, i;
- 
- 	if (!cpuc->lbr_users)
- 		return;
-@@ -160,8 +167,11 @@ void amd_pmu_lbr_read(void)
- 		entry.from.full	= amd_pmu_lbr_get_from(i);
- 		entry.to.full	= amd_pmu_lbr_get_to(i);
- 
--		/* Check if a branch has been logged */
--		if (!entry.to.split.valid)
-+		/*
-+		 * Check if a branch has been logged; if valid = 0, spec = 0
-+		 * then no branch was recorded
-+		 */
-+		if (!entry.to.split.valid && !entry.to.split.spec)
- 			continue;
- 
- 		perf_clear_branch_entry_bitfields(br + out);
-@@ -170,6 +180,25 @@ void amd_pmu_lbr_read(void)
- 		br[out].to	= sign_ext_branch_ip(entry.to.split.ip);
- 		br[out].mispred	= entry.from.split.mispredict;
- 		br[out].predicted = !br[out].mispred;
-+
-+		/*
-+		 * Set branch speculation information using the status of
-+		 * the valid and spec bits.
-+		 *
-+		 * When valid = 0, spec = 0, no branch was recorded and the
-+		 * entry is discarded as seen above.
-+		 *
-+		 * When valid = 0, spec = 1, the recorded branch was
-+		 * speculative but took the wrong path.
-+		 *
-+		 * When valid = 1, spec = 0, the recorded branch was
-+		 * non-speculative but took the correct path.
-+		 *
-+		 * When valid = 1, spec = 1, the recorded branch was
-+		 * speculative and took the correct path
-+		 */
-+		idx = (entry.to.split.valid << 1) | entry.to.split.spec;
-+		br[out].spec = lbr_spec_map[idx];
- 		out++;
- 	}
- 
--- 
-2.34.1
+> It seems to refer to the previous version of the
+> patch here. Which is ok I guess but better called out e.g.
+> 
+> Previous-version: <20220623160738.632852-2-eperezma@redhat.com>
+> 
+
+Let's not go over board with storing previous threads.  That seems like
+a headache...
+
+regards,
+dan carpenter
 
