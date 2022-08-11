@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A1CC25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5356BC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 23:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbiHKXRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 19:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
+        id S236174AbiHKXSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 19:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236304AbiHKXRH (ORCPT
+        with ESMTP id S236331AbiHKXRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 19:17:07 -0400
 Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD11A1A5D
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:16:51 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 14A385C017E;
-        Thu, 11 Aug 2022 19:16:51 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDC3A1A63
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 16:16:52 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 1E2265C0181;
+        Thu, 11 Aug 2022 19:16:52 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 11 Aug 2022 19:16:51 -0400
+  by compute5.internal (MEProxy); Thu, 11 Aug 2022 19:16:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
         :cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660259811; x=
-        1660346211; bh=nROMsz3ppqqra2BzZ2pVt6LG8fK1ajXOrNIiQ4woogA=; b=H
-        GhqMn6eaMGEs9dwuksbm0QcC3P1rGK72b5S0638UqCuG1FAGndSFzv4qnD4/RbJ/
-        lbu/YQ69n7Zx0ar+GDe+0F1raAkVeAf0pPq1tsyjn0t6ZpbN+gFN7QaawTabboLd
-        r+6g520P+po+Rg8by3137hkpijb0MIM9NQ5cXMJxfjsxqt1DzLF+tdIFH3GgediS
-        gSHViQ0w+6TclsLvjXA9hkATpo8Eij7yul54/KFP1StkA/dLCC2TKkMS9wBLNoGl
-        GKStVAtIBRbe9RqfzuZ4aiAMJxxlUoV9A3gmiJPplxI1oMYnrPj1quw0WkHpYhm4
-        ilvsLH29cn6MJvcVKozDg==
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1660259812; x=
+        1660346212; bh=JJp8/WbfdgzTShpKb6EAlVBgY9k+ndflpg8+oR/k5/U=; b=a
+        VzCd2BkWTYFNhH59UG/DCqw8k/WSQRR/u3dt97Rx/Xp2zW3uPUhMloYuCEv9VLql
+        NEG0HZhwo16heeyZusiNHd7PVXiM1n/awcRkb6NwS9Sb9YxnR8q3M9GfR2pOWr8d
+        78sZ8fOk6lqn4iYSIOpwqaFR51D8tpz1EZ0I6v7yf0BCLDfutjxLR8vWWbB2FWmN
+        FXWoSvgtXWDeo6zrYpDztC9JJ/nQUzC5p0NNGjlKly4j7WmHg4jiPEZVEcNNZRlT
+        VSj+ZUnbTURnGGstbGxYV1NB9BzknroblSrEK8xVpFVfkEFBZYJbcJDyLnrSqKj6
+        aFL16VKkv4mtcwVXbFxGw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:reply-to:sender
         :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; t=1660259811; x=1660346211; bh=n
-        ROMsz3ppqqra2BzZ2pVt6LG8fK1ajXOrNIiQ4woogA=; b=f/gWE8mW8X+chpd90
-        Y/rfrDG37b2vNVgdyu5fpeAsXvdMf80MvaxJOJE5T9nhMdZ4kxVewOBntrVyoQKm
-        UJHjRyaAcKIYvpsogON+CZf5+4+c+BUavfhMDmp1CMv20uIr735Oi90POIVGv1ia
-        JextHr2gCouPaso7Kfis1Rhm+6O0ObpBeIdwpSwiKtjdPkUolSxzNl/lPl41T7np
-        1jFP2ffXKLF85ioAGiqMcARR1nwY2EOXmSSlcroFAuAnOY7eOEbtJQW3Gp4i6Gig
-        rDLv9/lvPIGfes18MppOBpEfjL0+Kp7ialY7Jx9dd3w9CBLwI/avm8pjF3whh72w
-        Yta2A==
-X-ME-Sender: <xms:4o31Ygo4yOsQX4y0_0H4N31RGYKlgSQ9FmUjR4gkiSegjIcboDryAw>
-    <xme:4o31Ymr0xuPa5A9W7SXoNulPxbZVd7Xd0wiRcpOYfzo1H6ook84gTk6V7vquqvg57
-    wLiURnXvNqPVOW3lQ>
-X-ME-Received: <xmr:4o31YlOlZfCGIpmXVceTPKPbIgwECXRIw0fy7Ni7d5huXfGkS643aU8XxbqGTbAyzyVZJRDVPaqe6qsGSQ>
+        :x-me-sender:x-sasl-enc; s=fm1; t=1660259812; x=1660346212; bh=J
+        Jp8/WbfdgzTShpKb6EAlVBgY9k+ndflpg8+oR/k5/U=; b=LdFtYcpqWUM2Q+SmN
+        b9rKag+KtCSNa5Awkn9HIwke+3Lu/DectUgGfRZymL6m4yXGqaS+/FjHa5Jpc7cE
+        WO1lStQn4KtYb68M3fOA4/nXY8smCm4bBCrtIWa46+02sXU+kQNRg2GVC6Lv/zra
+        D3axOMKaP3Z9BVOta3SV/FLqIAsxoGFUm0d1T3m7bBlSdRaWJoSN2UY9gLcy6Ebn
+        ga3Y9VXSBWZ+0ZKOAeRLAbfVxzhRppYYAL0/+HdV8kuo2Y+OJCNivzuq7wB9Hytj
+        yK0xAT6grDeibh9+v0txk898fpM6wyyXIpid4udGX/gDGmlOp6YDTAs46ezPrVtH
+        Qecyw==
+X-ME-Sender: <xms:4431YuyQ8RaADhVQJO_t-Rn4Z8DR9DZ2vo6nEYFsPyKXZgMkaii-CA>
+    <xme:4431YqTYlFaQlfhoIQ3SUCd050wbtNrmj7tv1EGHBcqOVcEKf004t3L59Lz4LXds_
+    Hr4REMLH-Ee7qCnLA>
+X-ME-Received: <xmr:4431YgXuk354WfKrOrEXReLKj6HJusDGOr_GV3obYF9tMZcEwFqpgzGACtKBZd-rPXaiwZySTchKmTG7aw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgudelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvvefufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcu
     jggrnhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeegge
     ehudfgudduvdelheehteegledtteeiveeuhfffveekhfevueefieeijeegvdenucevlhhu
-    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
+    shhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
     gvnhhtrdgtohhm
-X-ME-Proxy: <xmx:4o31Yn5iN1UnckVRAUDX3eygnMsm9Q1ol00mEk8VGUTGpFJRYNJ37A>
-    <xmx:4o31Yv7nfVf2KG6kDnv5xgs3Y19QOIPFFvcXyhSyTiJdLPCWuwVhNQ>
-    <xmx:4o31YniXGAIQ3sqZDlAUoMeT7R9jwRUYZ3LIqW5HLG5F4HGtLmSGZQ>
-    <xmx:4431Ysx1RiJUOOf8IcE3mwmQvpoGNb-NMvqH6dLn8Ok02r8tiMg4cA>
+X-ME-Proxy: <xmx:4431YkhCVNTY2_OvAlpuqd4u-tbj8FRla_-lpmoIeQ8CfHRdVtj0fQ>
+    <xmx:4431YgCtEOKwmt_dTrz6MEGJtCWlzGoDlTmghYk7vjCXqY2MkPefRg>
+    <xmx:4431YlJFbjmHowgLQHEwhuENEmvZkNPRHTki059nEG2Aw_wMs2SAUQ>
+    <xmx:5I31Yk5__HsZbu_IlgJSLqVevnr3605nRuApAOdCLnK_oKNEJUJhbQ>
 Feedback-ID: iccd040f4:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 11 Aug 2022 19:16:50 -0400 (EDT)
+ 11 Aug 2022 19:16:51 -0400 (EDT)
 From:   Zi Yan <zi.yan@sent.com>
 To:     linux-mm@kvack.org
 Cc:     David Hildenbrand <david@redhat.com>,
@@ -75,9 +75,9 @@ Cc:     David Hildenbrand <david@redhat.com>,
         David Rientjes <rientjes@google.com>,
         James Houghton <jthoughton@google.com>,
         Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 09/12] mm: Make MAX_ORDER of buddy allocator configurable via Kconfig SET_MAX_ORDER.
-Date:   Thu, 11 Aug 2022 19:16:40 -0400
-Message-Id: <20220811231643.1012912-10-zi.yan@sent.com>
+Subject: [RFC PATCH v2 11/12] mm: introduce MIN_MAX_ORDER to replace MAX_ORDER as compile time constant.
+Date:   Thu, 11 Aug 2022 19:16:42 -0400
+Message-Id: <20220811231643.1012912-12-zi.yan@sent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811231643.1012912-1-zi.yan@sent.com>
 References: <20220811231643.1012912-1-zi.yan@sent.com>
@@ -90,114 +90,157 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zi Yan <ziy@nvidia.com>
 
-With SPARSEMEM_VMEMMAP, all struct page are virtually contigous,
-thus kernel can manipulate arbitrarily large pages. By checking
-PFN validity during buddy page merging process, all free pages in buddy
-allocator's free area have their PFNs contiguous even if the system has
-several not physically contiguous memory sections. With these two
-conditions, it is OK to remove the restriction of
-MAX_ORDER + PAGE_SHIFT < SECTION_SIZE_BITS and change MAX_ORDER freely.
+For other MAX_ORDER uses (described below), there is no need or too much
+hassle to convert certain static array to dynamic ones. Add
+MIN_MAX_ORDER to serve as compile time constant in place of MAX_ORDER.
 
-Add SET_MAX_ORDER to allow MAX_ORDER adjustment when arch does not set
-its own MAX_ORDER via ARCH_FORCE_MAX_ORDER. Make it depend
-on SPARSEMEM_VMEMMAP, when MAX_ORDER is not limited by SECTION_SIZE_BITS.
+ARM64 hypervisor maintains its own free page list and does not import
+any core kernel symbols, so soon-to-be runtime variable MAX_ORDER is not
+accessible in ARM64 hypervisor code. Also there is no need to allocating
+very large pages.
+
+In SLAB/SLOB/SLUB, 2-D array kmalloc_caches uses MAX_ORDER in its second
+dimension. It is too much hassle to allocate memory for kmalloc_caches
+before any proper memory allocator is set up.
 
 Signed-off-by: Zi Yan <ziy@nvidia.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Christoph Lameter <cl@linux.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Quentin Perret <qperret@google.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: kvmarm@lists.cs.columbia.edu
 Cc: linux-mm@kvack.org
 Cc: linux-kernel@vger.kernel.org
 ---
- arch/Kconfig           |  4 ++++
- include/linux/mmzone.h | 17 ++++++++++++++---
- mm/Kconfig             | 14 ++++++++++++++
- 3 files changed, 32 insertions(+), 3 deletions(-)
+ arch/arm64/kvm/hyp/include/nvhe/gfp.h | 2 +-
+ arch/arm64/kvm/hyp/nvhe/page_alloc.c  | 2 +-
+ include/linux/mmzone.h                | 3 +++
+ include/linux/slab.h                  | 8 ++++----
+ mm/slab.c                             | 2 +-
+ mm/slub.c                             | 6 +++---
+ 6 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index f330410da63a..24baee6c3feb 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -11,6 +11,10 @@ source "arch/$(SRCARCH)/Kconfig"
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/gfp.h b/arch/arm64/kvm/hyp/inc=
+lude/nvhe/gfp.h
+index fe5472a184a3..29b92f68ab69 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/gfp.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/gfp.h
+@@ -16,7 +16,7 @@ struct hyp_pool {
+ 	 * API at EL2.
+ 	 */
+ 	hyp_spinlock_t lock;
+-	struct list_head free_area[MAX_ORDER + 1];
++	struct list_head free_area[MIN_MAX_ORDER + 1];
+ 	phys_addr_t range_start;
+ 	phys_addr_t range_end;
+ 	unsigned short max_order;
+diff --git a/arch/arm64/kvm/hyp/nvhe/page_alloc.c b/arch/arm64/kvm/hyp/nvhe=
+/page_alloc.c
+index d40f0b30b534..7ebbac3e2e76 100644
+--- a/arch/arm64/kvm/hyp/nvhe/page_alloc.c
++++ b/arch/arm64/kvm/hyp/nvhe/page_alloc.c
+@@ -241,7 +241,7 @@ int hyp_pool_init(struct hyp_pool *pool, u64 pfn, unsig=
+ned int nr_pages,
+ 	int i;
 =20
- menu "General architecture-dependent options"
-=20
-+config ARCH_FORCE_MAX_ORDER
-+    int
-+    default "0"
-+
- config CRASH_CORE
- 	bool
-=20
+ 	hyp_spin_lock_init(&pool->lock);
+-	pool->max_order =3D min(MAX_ORDER, get_order((nr_pages + 1) << PAGE_SHIFT=
+));
++	pool->max_order =3D min(MIN_MAX_ORDER, get_order((nr_pages + 1) << PAGE_S=
+HIFT));
+ 	for (i =3D 0; i < pool->max_order; i++)
+ 		INIT_LIST_HEAD(&pool->free_area[i]);
+ 	pool->range_start =3D phys;
 diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index e93faa3d7f1d..b83b481e250b 100644
+index 60d8cce2aed8..b5774e4c2700 100644
 --- a/include/linux/mmzone.h
 +++ b/include/linux/mmzone.h
-@@ -24,11 +24,14 @@
- #include <asm/page.h>
-=20
+@@ -26,10 +26,13 @@
  /* Free memory management - zoned buddy allocator.  */
--#ifndef CONFIG_ARCH_FORCE_MAX_ORDER
--#define MAX_ORDER 10
--#else
-+#ifdef CONFIG_SET_MAX_ORDER
-+#define MAX_ORDER CONFIG_SET_MAX_ORDER
-+#elif CONFIG_ARCH_FORCE_MAX_ORDER !=3D 0
+ #ifdef CONFIG_SET_MAX_ORDER
+ #define MAX_ORDER CONFIG_SET_MAX_ORDER
++#define MIN_MAX_ORDER CONFIG_SET_MAX_ORDER
+ #elif CONFIG_ARCH_FORCE_MAX_ORDER !=3D 0
  #define MAX_ORDER CONFIG_ARCH_FORCE_MAX_ORDER
-+#else
-+#define MAX_ORDER 10
++#define MIN_MAX_ORDER CONFIG_ARCH_FORCE_MAX_ORDER
+ #else
+ #define MAX_ORDER 10
++#define MIN_MAX_ORDER MAX_ORDER
  #endif
-+
+=20
  #define MAX_ORDER_NR_PAGES (1 << MAX_ORDER)
-=20
- /*
-@@ -1379,9 +1382,17 @@ static inline bool movable_only_nodes(nodemask_t *no=
-des)
- #define SECTION_BLOCKFLAGS_BITS \
- 	((1UL << (PFN_SECTION_SHIFT - pageblock_order)) * NR_PAGEBLOCK_BITS)
-=20
-+/*
-+ * The MAX_ORDER check is not necessary when CONFIG_SET_MAX_ORDER is set, =
-since
-+ * it depends on CONFIG_SPARSEMEM_VMEMMAP, where all struct page are virtu=
-ally
-+ * contiguous, thus > section size pages can be allocated and manipulated
-+ * without worrying about non-contiguous struct page.
-+ */
-+#ifndef CONFIG_SET_MAX_ORDER
- #if (MAX_ORDER + PAGE_SHIFT) > SECTION_SIZE_BITS
- #error Allocator MAX_ORDER exceeds SECTION_SIZE
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 568b5dfb3bd9..e34b2c9bda09 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -251,8 +251,8 @@ static inline unsigned int arch_slab_minalign(void)
+  * to do various tricks to work around compiler limitations in order to
+  * ensure proper constant folding.
+  */
+-#define KMALLOC_SHIFT_HIGH	((MAX_ORDER + PAGE_SHIFT) <=3D 25 ? \
+-				(MAX_ORDER + PAGE_SHIFT) : 25)
++#define KMALLOC_SHIFT_HIGH	((MIN_MAX_ORDER + PAGE_SHIFT) <=3D 25 ? \
++				(MIN_MAX_ORDER + PAGE_SHIFT) : 25)
+ #define KMALLOC_SHIFT_MAX	KMALLOC_SHIFT_HIGH
+ #ifndef KMALLOC_SHIFT_LOW
+ #define KMALLOC_SHIFT_LOW	5
+@@ -265,7 +265,7 @@ static inline unsigned int arch_slab_minalign(void)
+  * (PAGE_SIZE*2).  Larger requests are passed to the page allocator.
+  */
+ #define KMALLOC_SHIFT_HIGH	(PAGE_SHIFT + 1)
+-#define KMALLOC_SHIFT_MAX	(MAX_ORDER + PAGE_SHIFT)
++#define KMALLOC_SHIFT_MAX	(MIN_MAX_ORDER + PAGE_SHIFT)
+ #ifndef KMALLOC_SHIFT_LOW
+ #define KMALLOC_SHIFT_LOW	3
  #endif
-+#endif /* CONFIG_SET_MAX_ORDER*/
-=20
- static inline unsigned long pfn_to_section_nr(unsigned long pfn)
+@@ -278,7 +278,7 @@ static inline unsigned int arch_slab_minalign(void)
+  * be allocated from the same page.
+  */
+ #define KMALLOC_SHIFT_HIGH	PAGE_SHIFT
+-#define KMALLOC_SHIFT_MAX	(MAX_ORDER + PAGE_SHIFT)
++#define KMALLOC_SHIFT_MAX	(MIN_MAX_ORDER + PAGE_SHIFT)
+ #ifndef KMALLOC_SHIFT_LOW
+ #define KMALLOC_SHIFT_LOW	3
+ #endif
+diff --git a/mm/slab.c b/mm/slab.c
+index 530f418a4930..23798c32bb38 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -466,7 +466,7 @@ static int __init slab_max_order_setup(char *str)
  {
-diff --git a/mm/Kconfig b/mm/Kconfig
-index bbe31e85afee..e558f5679707 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -441,6 +441,20 @@ config SPARSEMEM_VMEMMAP
- 	  pfn_to_page and page_to_pfn operations.  This is the most
- 	  efficient option when sufficient kernel resources are available.
+ 	get_option(&str, &slab_max_order);
+ 	slab_max_order =3D slab_max_order < 0 ? 0 :
+-				min(slab_max_order, MAX_ORDER);
++				min(slab_max_order, MIN_MAX_ORDER);
+ 	slab_max_order_set =3D true;
 =20
-+config SET_MAX_ORDER
-+	int "Set maximum order of buddy allocator"
-+    depends on SPARSEMEM_VMEMMAP && (ARCH_FORCE_MAX_ORDER =3D 0)
-+	range 10 255
-+	default "10"
-+	help
-+	  The kernel memory allocator divides physically contiguous memory
-+	  blocks into "zones", where each zone is a power of two number of
-+	  pages.  This option selects the largest power of two that the kernel
-+	  keeps in the memory allocator.  If you need to allocate very large
-+	  blocks of physically contiguous memory, then you may need to
-+	  increase this value. A value of 10 means that the largest free memory
-+	  block is 2^10 pages.
-+
- config HAVE_MEMBLOCK_PHYS_MAP
- 	bool
+ 	return 1;
+diff --git a/mm/slub.c b/mm/slub.c
+index 5acf5407cbc6..940fe48ea298 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3876,8 +3876,8 @@ static inline int calculate_order(unsigned int size)
+ 	/*
+ 	 * Doh this slab cannot be placed using slub_max_order.
+ 	 */
+-	order =3D calc_slab_order(size, 1, MAX_ORDER, 1);
+-	if (order <=3D MAX_ORDER)
++	order =3D calc_slab_order(size, 1, MIN_MAX_ORDER, 1);
++	if (order <=3D MIN_MAX_ORDER)
+ 		return order;
+ 	return -ENOSYS;
+ }
+@@ -4388,7 +4388,7 @@ __setup("slub_min_order=3D", setup_slub_min_order);
+ static int __init setup_slub_max_order(char *str)
+ {
+ 	get_option(&str, (int *)&slub_max_order);
+-	slub_max_order =3D min_t(unsigned int, slub_max_order, MAX_ORDER);
++	slub_max_order =3D min_t(unsigned int, slub_max_order, MIN_MAX_ORDER);
 =20
+ 	return 1;
+ }
 --=20
 2.35.1
 
