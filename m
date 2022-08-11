@@ -2,135 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17816C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE97EC19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236595AbiHKVGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 17:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
+        id S236663AbiHKVID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 17:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236412AbiHKVGT (ORCPT
+        with ESMTP id S236654AbiHKVHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 17:06:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45E8B85A85
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:06:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660251977;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zssSnyjhXO8Y+VaC40NbtnI4nznRbo22yC14BgkmKUU=;
-        b=Ni3t6vO2X+VEhy22dbOFVcbqyzohcy92x/FUUJZrVZEcGsZgWN9dTfv/BeXEKYoWGjyE9R
-        WF33ig6+2QlThyhedlAGeQt6Uz3x0rax1rYyGLOTO/TE/LqrvQ3APOqvD94cLd3yxTRs2M
-        hhIwy6XkTEQl3KO88NgxywKwjwVwkZQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-n-MfIhBBM4uPTIlgrGS62Q-1; Thu, 11 Aug 2022 17:06:07 -0400
-X-MC-Unique: n-MfIhBBM4uPTIlgrGS62Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0D55A85A59A;
-        Thu, 11 Aug 2022 21:06:07 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DB67B492C3B;
-        Thu, 11 Aug 2022 21:06:06 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, mlevitsk@redhat.com, vkuznets@redhat.com
-Subject: [PATCH v2 4/9] KVM: mips, x86: do not rely on KVM_REQ_UNHALT
-Date:   Thu, 11 Aug 2022 17:06:00 -0400
-Message-Id: <20220811210605.402337-5-pbonzini@redhat.com>
-In-Reply-To: <20220811210605.402337-1-pbonzini@redhat.com>
-References: <20220811210605.402337-1-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Thu, 11 Aug 2022 17:07:44 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FEC98C98
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:07:03 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id o3-20020a17090a0a0300b001f7649cd317so6577932pjo.0
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 14:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc;
+        bh=DVb1z5kbBA1ujjv+xteyYloR7hoULhfIuEQt2vBqJwI=;
+        b=pNYmvDNysYVnE4y5bj1U2pPQKZhnczdw1WnTDfu9aNj1/nEdGinf042LPTih/OaFlE
+         V4h26+g7TJFlK35T0cyNlZpbfK3Mv0wvUrHmErAczQbmnLnnGvLm0Hdy7G2rbWhAY99N
+         7gIzo5l+Uz9j7uJ61XUPc3O1uP3nlXc4IEic3n/xnfDrqfeKp78nopWEkgHXFENdgQ10
+         17Pt9pzKV1a38XwgA1ZwNNdJR+L5JYcwLBZhYaCpHBw5j+E4XTkEUtGAaiWdYIMSE6WC
+         kcqJCw04jzdvuHwAd4Nr0qPOaknSJVD+aJ8gyRtaul0GqOGYqX8mP6LvqkV3aYssrBIU
+         W1QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc;
+        bh=DVb1z5kbBA1ujjv+xteyYloR7hoULhfIuEQt2vBqJwI=;
+        b=78rsW7uTCsegTyWOgHJwmy/qcu4kSgPVvKNFAbQcE6o8HSyC+lILzFQVC2DLSJ4yzn
+         He0phz1yrVdk3mQEGK2DxWaav76nRAmigI+9TAQM+cRepEG7sX7ulNP3kEdbzQ5+/I+B
+         H490+v1IUE5SZlFIs//cqiTssoUSJFEMoV21qfHFQWeubHPYbFHhyeMpMd0Z2hAM5qYA
+         0iEeewRHM0IgF1DmOgaZu4NZ6qTyra5fVS6PICj/Flkday5Cp5KgTZTT32Oy/ppj8qxJ
+         mFbdQQTGUJMiHZUFr0Kg5Wypu8KaqtBbj0Q8GVjONeWm4R6FBo7r2uhfORa1LrC8EZa9
+         qemA==
+X-Gm-Message-State: ACgBeo2EvEVpxN7lAnPJ5qGbFzODyijp5p4kXhQSs2MaVFE8G5jHxK8j
+        qxx+eae8zQBiCUOPkG9kHHY8K1/WtlS9bSxI
+X-Google-Smtp-Source: AA6agR721/2w32bRDonI7TCGaPitO08W/FFsdL1xIehUgwWUxXReEgXRnl8nsgo7Emy01/s6+rWZSg==
+X-Received: by 2002:a17:90a:2b42:b0:1f4:fc9a:be32 with SMTP id y2-20020a17090a2b4200b001f4fc9abe32mr10310074pjc.221.1660252015738;
+        Thu, 11 Aug 2022 14:06:55 -0700 (PDT)
+Received: from localhost ([50.221.140.186])
+        by smtp.gmail.com with ESMTPSA id y22-20020a170902b49600b0016ee4b0bd60sm107352plr.166.2022.08.11.14.06.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 14:06:55 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 14:06:55 -0700 (PDT)
+X-Google-Original-Date: Thu, 11 Aug 2022 11:35:28 PDT (-0700)
+Subject:     Re: [PATCH v1 0/4] Add HiFive Unmatched LEDs
+In-Reply-To: <20220717110249.GF14285@duo.ucw.cz>
+CC:     emil.renner.berthing@canonical.com, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        plr.vincent@gmail.com, bin.meng@windriver.com,
+        aurelien@aurel32.net, w6rz@comcast.net, qiuwenbo@kylinos.com.cn,
+        geert@linux-m68k.org, nerdboy@gentoo.org,
+        jianlong.huang@starfivetech.com, kettenis@openbsd.org,
+        sven.schwermer@disruptive-technologies.com,
+        andy.shevchenko@gmail.com, davidlt@rivosinc.com,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     pavel@ucw.cz
+Message-ID: <mhng-ac0025f9-3572-432f-9e8d-64ef87730b45@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KVM_REQ_UNHALT is now available as the return value from kvm_vcpu_halt
-or kvm_vcpu_block, so the request can be simply cleared just like all
-other architectures do.
+On Sun, 17 Jul 2022 04:02:49 PDT (-0700), pavel@ucw.cz wrote:
+> Hi!
+>
+>> This series adds support for the two LEDs on the HiFive Unmatched
+>> RISC-V board.
+>> 
+>> Emil Renner Berthing (4):
+>>   leds: pwm-multicolor: Don't show -EPROBE_DEFER as errors
+>>   dt-bindings: leds: pwm-multicolor: Add active-low property
+>>   leds: pwm-multicolor: Support active-low LEDs
+>
+> Thank you, applied. Not taking the dts change
 
-No functional change intended.
-
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/mips/kvm/emulate.c | 8 ++++----
- arch/x86/kvm/x86.c      | 8 +++++---
- 2 files changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/arch/mips/kvm/emulate.c b/arch/mips/kvm/emulate.c
-index b494d8d39290..77d760d45c48 100644
---- a/arch/mips/kvm/emulate.c
-+++ b/arch/mips/kvm/emulate.c
-@@ -944,6 +944,7 @@ enum hrtimer_restart kvm_mips_count_timeout(struct kvm_vcpu *vcpu)
- 
- enum emulation_result kvm_mips_emul_wait(struct kvm_vcpu *vcpu)
- {
-+	int r;
- 	kvm_debug("[%#lx] !!!WAIT!!! (%#lx)\n", vcpu->arch.pc,
- 		  vcpu->arch.pending_exceptions);
- 
-@@ -952,16 +953,15 @@ enum emulation_result kvm_mips_emul_wait(struct kvm_vcpu *vcpu)
- 	if (!vcpu->arch.pending_exceptions) {
- 		kvm_vz_lose_htimer(vcpu);
- 		vcpu->arch.wait = 1;
--		kvm_vcpu_halt(vcpu);
-+		r = kvm_vcpu_halt(vcpu);
- 
- 		/*
- 		 * We we are runnable, then definitely go off to user space to
- 		 * check if any I/O interrupts are pending.
- 		 */
--		if (kvm_check_request(KVM_REQ_UNHALT, vcpu)) {
--			kvm_clear_request(KVM_REQ_UNHALT, vcpu);
-+		kvm_clear_request(KVM_REQ_UNHALT, vcpu);
-+		if (r > 0)
- 			vcpu->run->exit_reason = KVM_EXIT_IRQ_WINDOW_OPEN;
--		}
- 	}
- 
- 	return EMULATE_DONE;
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index c44348bb6ef2..416df0fc7fda 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -10611,6 +10611,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- static inline int vcpu_block(struct kvm_vcpu *vcpu)
- {
- 	bool hv_timer;
-+	int r;
- 
- 	if (!kvm_arch_vcpu_runnable(vcpu)) {
- 		/*
-@@ -10626,15 +10627,16 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
- 
- 		kvm_vcpu_srcu_read_unlock(vcpu);
- 		if (vcpu->arch.mp_state == KVM_MP_STATE_HALTED)
--			kvm_vcpu_halt(vcpu);
-+			r = kvm_vcpu_halt(vcpu);
- 		else
--			kvm_vcpu_block(vcpu);
-+			r = kvm_vcpu_block(vcpu);
- 		kvm_vcpu_srcu_read_lock(vcpu);
- 
- 		if (hv_timer)
- 			kvm_lapic_switch_to_hv_timer(vcpu);
- 
--		if (!kvm_check_request(KVM_REQ_UNHALT, vcpu))
-+		kvm_clear_request(KVM_REQ_UNHALT, vcpu);
-+		if (r <= 0)
- 			return 1;
- 	}
- 
--- 
-2.31.1
-
-
+I took the DTS change (#4) on riscv/for-next.  Thanks!
