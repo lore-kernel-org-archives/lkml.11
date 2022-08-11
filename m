@@ -2,67 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7836C25B07
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26037C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234245AbiHKGlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 02:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        id S234215AbiHKGnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 02:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234167AbiHKGli (ORCPT
+        with ESMTP id S234167AbiHKGnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 02:41:38 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C246277;
-        Wed, 10 Aug 2022 23:41:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660200073; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=JIuhEtk+zC29CbNkmdOCrw+Q5z2xH1mC4BnEARSwRXYvM3ivF+ov3OHhbg+Uz/sq7kczmueyeTpvLbNf+GjamFTQG9n0ST9ufl3fAYXaerMTAFpR4K79HjTauu27QSgplrXttiR1ORBvfh7Eqz6OM7OWm9MckYroa+Cr5xHkqM0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660200073; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=qzGf/xcU2qq0loWcNErzo5p+bIrEsm6IFkASa7YpiCw=; 
-        b=RsjzwqRl5kyoQAszaa1fi/Pq/SLsnaS8X4AOvxTio0sa6W20pxrPNP1G/qEKVt2jUTgqMT5afTjCd8+U0vvPC7YMwFWfZKWw7ZIes/Owntd79EXRJNIckiSio0OxDqUadwgr4xa8FnQz4Fjmuue8unB5kA7kkPngLjKPDU6Mmf0=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660200073;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=qzGf/xcU2qq0loWcNErzo5p+bIrEsm6IFkASa7YpiCw=;
-        b=UMSq0MqTUseR1Ca9R3QbfhVoBkeMmWaW3kL9mXslNS0ht+KTczA9AXIJJvKLwmCc
-        kJD3rE3ZTwBZGw/sfIC+lN9XB+PS+nZAvysF363UNOw7aEku3XMWNZkoBiP+xfTJjSM
-        lVgHUhqDzFRrdELEHnYQTTQiy9zeXIyKgkLyW4OE=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1660200062303914.6279487087534; Thu, 11 Aug 2022 12:11:02 +0530 (IST)
-Date:   Thu, 11 Aug 2022 12:11:02 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "syzbot" <syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com>
-Cc:     "davem" <davem@davemloft.net>,
-        "johannes" <johannes@sipsolutions.net>, "kuba" <kuba@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-wireless" <linux-wireless@vger.kernel.org>,
-        "netdev" <netdev@vger.kernel.org>,
-        "syzkaller-bugs" <syzkaller-bugs@googlegroups.com>
-Message-ID: <1828ba28d43.27f8b7ca86738.4232033862850200536@siddh.me>
-In-Reply-To: <000000000000f5acfd05e5e5ccdc@google.com>
-References: <000000000000f5acfd05e5e5ccdc@google.com>
-Subject: Re: [syzbot] WARNING in ieee80211_ibss_csa_beacon
+        Thu, 11 Aug 2022 02:43:08 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50B8DEE1
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:43:06 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id x25so18351291ljm.5
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:43:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=y5FLc62ya38DCrndtGr7VVaO4umLSwe5yc3jrPdFBrc=;
+        b=L1T1o8ZLdd5kbxyZjbXT0VQ5v2U/q5JVdFy57DZbCP0SNbQjsqKePpl+rzYwQFzV5M
+         29v0Q06y1/W7DMjRiu9GCAd9Djt94Mhrbeky9w4L5xk3u1Co3GhxrrXef0rcSpsmUckr
+         rXRRTKiX5qPxWLB7gIfUwN3+QeyEk9BrOucigGqNMtUfLEkDqEAp5aMKbMXSY4VB2eF+
+         3xiDTTLRKjILEuGa6KU+qs0gK2H9Tx9ymABJmRl86YRLig4XV/LXIsTY6wtaKfcIIwpn
+         D2o8Utp4GVH6MpEYvwUfk+79wt5tNkYv5ruSIjzGrVSF6VF9e5usgLnarhq0gsHMIISS
+         W1yQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=y5FLc62ya38DCrndtGr7VVaO4umLSwe5yc3jrPdFBrc=;
+        b=wo8l1r7cpZDqW/U84k5iyFQW28YCMqIny+Y+blPsJ/VHY6muHYSgrSaE6krJuTwwYC
+         XmG5Sw5M4ktBOA8rFjA8kG3okkPCfWJUjjOd2UKH1gqXMrIWDQ3tYRNcdJq1WplV2eGk
+         4tn95+a4P6OH4jVYwLESld5T4BhB/1FBxAIpK4TLKZOm534ipYtu3r8QkSCjdoBhlv2u
+         +p1DaR+Whsu4Z09EoLnJEoSGmANzj4KJF4OO58a9BqW6AfV0zb0W2liNxJpFzhYh1SAC
+         fdjnfVh0cxrsAp7syyCDzUGdHvULC/yKyAOvhDBjm5G0Z0n3O3qcK7X8cjpZKbr1hijN
+         0QFg==
+X-Gm-Message-State: ACgBeo0hwY5tx5s3nGkxE7QNCT019652ocFAosdQZM8VyszCB7z6tG0A
+        rafND9+VYlwX5KLfOcRrXS+D8Q==
+X-Google-Smtp-Source: AA6agR4h+jzDsmikLvCssyfAVWexiXl8Fvftjc223qA8kNJVZYUbk3OTI+SNepuFVGd3G3IP6e5rpg==
+X-Received: by 2002:a2e:b4ac:0:b0:25f:fc9f:bc2 with SMTP id q12-20020a2eb4ac000000b0025ffc9f0bc2mr2480323ljm.185.1660200185171;
+        Wed, 10 Aug 2022 23:43:05 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id c16-20020a05651c015000b0025e6e1c836dsm683249ljd.126.2022.08.10.23.43.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 23:43:03 -0700 (PDT)
+Message-ID: <97934c11-4308-a579-9088-9356e0ccab1c@linaro.org>
+Date:   Thu, 11 Aug 2022 09:43:02 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/7] dt-bindings: msm/dp: Add SDM845 and SC8280XP
+ compatibles
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220810035013.3582848-1-bjorn.andersson@linaro.org>
+ <20220810035013.3582848-2-bjorn.andersson@linaro.org>
+ <c5cc8752-d7e2-b870-6887-c025137ed8a1@linaro.org>
+ <20220810192029.GF200295-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220810192029.GF200295-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 22:17:12 +0530  syzbot  wrote:
-> Hello,
+On 10/08/2022 22:20, Rob Herring wrote:
+> On Wed, Aug 10, 2022 at 05:47:52PM +0300, Krzysztof Kozlowski wrote:
+>> On 10/08/2022 06:50, Bjorn Andersson wrote:
+>>> Add compatibles for the DisplayPort and Embedded DisplayPort blocks in
+>>> Qualcomm SDM845 and SC8280XP platforms.
+>>>
+>>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>>> ---
+>>>  .../devicetree/bindings/display/msm/dp-controller.yaml         | 3 +++
+>>>  1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+>>> index 94bc6e1b6451..90f9302d1731 100644
+>>> --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+>>> +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+>>> @@ -16,11 +16,14 @@ description: |
+>>>  properties:
+>>>    compatible:
+>>>      enum:
+>>> +      - qcom,sdm845-dp
+>>>        - qcom,sc7180-dp
+>>
+>> Alphabetical order, please.
+>>
+>> The DTS warnings from the bot look unrelated to this patch.
 > 
-> syzbot tried to test the proposed patch but the build/boot failed:
+> Yes, but there are a ton of them and I thought Bjorn might care. Looks 
+> like the schema is pretty out of sync with reality and they don't really 
+> look like dts side fixes.
 
-Trying again.
+It's in progress by Dmitry:
+https://lore.kernel.org/all/20220710084133.30976-1-dmitry.baryshkov@linaro.org/
 
-#syz test https://github.com/siddhpant/linux.git warning_ibss_csa_beacon
+Best regards,
+Krzysztof
