@@ -2,114 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87DDFC25B0D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887C0C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234185AbiHKGiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 02:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44988 "EHLO
+        id S234206AbiHKGim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 02:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233698AbiHKGhq (ORCPT
+        with ESMTP id S234197AbiHKGic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 02:37:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C887B792;
-        Wed, 10 Aug 2022 23:37:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FA186147D;
-        Thu, 11 Aug 2022 06:37:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879F9C433D6;
-        Thu, 11 Aug 2022 06:37:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660199864;
-        bh=x207FYSJa7cUI/hPBLKm3lge12rqi5SLownAS+tQ2PU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P+gz12zRt5PPNOeWI+8t9bPR8S3Wg0llsJEQL75p3c3ObZtjpVcEja24kRPpKHaSH
-         A7u36ZwEgsKuqUTM+QsKNT9DbzKD+AtLtfNrlmrROJtaOabDHtqkeeS9q/jCu9EHaO
-         wu/zfMTKnLPxH5oeH+sYqXsGllBvIWZWFSSxR9lg7JfGw/B6ArK/gLFIqyGIXRGJTi
-         OKMla3FHwxm+r94GKQReLlM2nKQys9csaUkAr1r4GkqQXw0A/GTCzeRPuAXavfQypG
-         Oh7Am6CJIyakRhP9DRWOGTnQ29hQQaLDShSgU14EFHxlTF6y34SB8R7fe7ppvpYn7T
-         DIT5KA1GEeiFg==
-Date:   Thu, 11 Aug 2022 09:37:25 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <namit@vmware.com>, Peter Xu <peterx@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-mm@kvack.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v5 2/5] userfaultfd: add /dev/userfaultfd for fine
- grained access control
-Message-ID: <YvSjpYOM4m5JG0xQ@kernel.org>
-References: <20220808175614.3885028-1-axelrasmussen@google.com>
- <20220808175614.3885028-3-axelrasmussen@google.com>
+        Thu, 11 Aug 2022 02:38:32 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520A589CCB
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:38:31 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id u6so12996391ljk.8
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:38:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=S2RfVLTw/jaWgFdyJ1ItzFOnc5KMcylvXH0jKXHIbD0=;
+        b=cjeX3LaP2Cnud2KiyL+1CgzuSx9GXWKcrWah1aMxEu4lN9FXPop0P5+HFSsLY7yzgS
+         gl/F5AuqztkO1ux37myt6eVM5ICXel9SxBDl9inxS/1oRNWq58WyISXQxcmF1rh0VcS7
+         fDEGN0nlxHvZNZfJmtl+u8KL8giTz3Kk/WRipSKYrlD+8ESuIxjgonnsMiqWeP22RMZ1
+         ADhzV7fNiF+XOWoPJlbVns1nfwtST/cCEiwNbsrShHVmOQ2VZJXTHXLThZ8lPOxQO1u4
+         mXxhGJ53zEw/gn6iVFSU/Ps0ZA+tKeWoJ3vhYVYQMeCB0eVkwxi14u7NkIcIlV8PkeHE
+         Ypcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=S2RfVLTw/jaWgFdyJ1ItzFOnc5KMcylvXH0jKXHIbD0=;
+        b=0JI2WKOom9ljfUcpzn5anVtbGabUbigwsVSkcOqKh6ur9oEPWgCXF0qWBBMQmOVHQF
+         FEPsqwQErpruBdfMJ+JPtFybI1/jduBmAYESveL+jBlQq69gY33wKUVyQ24eUWxfS1Az
+         WMXsFmJ1zIwgL6v/IsjkxUlQaUwpjgIAXu+snaxCE2dVy/YTzDtD9bKVRw+QeQdt3vf2
+         ZHd6qTuzh1cPKwRSlLxoXKp5mKina83AanrCKOIy4aAEOX96kNV+LIyd2gAjoZjMUiSJ
+         yu1S8Nu76gJyXhoBKknHK8wIrMi0VEbQa6ba3vUcKlSzQ9nfIgNao/TDH3UxoeXobUsp
+         OJzQ==
+X-Gm-Message-State: ACgBeo0isXBZCIkGeBBNAQycVWqzNDD16qRz3e3aElzfl2/Emb6lnUlC
+        /DSK5zEP5c3h+9yjPsk54SSvpQ==
+X-Google-Smtp-Source: AA6agR6DxUe7xlD+gKbwfWH2bVHb0ekzLW9vrvuby/vEbIOUrGz2lEbGgr875AOZcxe9gOXv3EPB0Q==
+X-Received: by 2002:a05:651c:b1e:b0:25e:bd24:8c4a with SMTP id b30-20020a05651c0b1e00b0025ebd248c4amr8511826ljr.38.1660199909715;
+        Wed, 10 Aug 2022 23:38:29 -0700 (PDT)
+Received: from localhost.localdomain ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id j15-20020a056512028f00b0048b2be5320csm596461lfp.118.2022.08.10.23.38.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 23:38:29 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vaishnav Achath <vaishnav.a@ti.com>, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] spi: dt-bindings: Drop Pratyush Yadav
+Date:   Thu, 11 Aug 2022 09:38:26 +0300
+Message-Id: <20220811063826.7620-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808175614.3885028-3-axelrasmussen@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 10:56:11AM -0700, Axel Rasmussen wrote:
-> Historically, it has been shown that intercepting kernel faults with
-> userfaultfd (thereby forcing the kernel to wait for an arbitrary amount
-> of time) can be exploited, or at least can make some kinds of exploits
-> easier. So, in 37cd0575b8 "userfaultfd: add UFFD_USER_MODE_ONLY" we
-> changed things so, in order for kernel faults to be handled by
-> userfaultfd, either the process needs CAP_SYS_PTRACE, or this sysctl
-> must be configured so that any unprivileged user can do it.
-> 
-> In a typical implementation of a hypervisor with live migration (take
-> QEMU/KVM as one such example), we do indeed need to be able to handle
-> kernel faults. But, both options above are less than ideal:
-> 
-> - Toggling the sysctl increases attack surface by allowing any
->   unprivileged user to do it.
-> 
-> - Granting the live migration process CAP_SYS_PTRACE gives it this
->   ability, but *also* the ability to "observe and control the
->   execution of another process [...], and examine and change [its]
->   memory and registers" (from ptrace(2)). This isn't something we need
->   or want to be able to do, so granting this permission violates the
->   "principle of least privilege".
-> 
-> This is all a long winded way to say: we want a more fine-grained way to
-> grant access to userfaultfd, without granting other additional
-> permissions at the same time.
-> 
-> To achieve this, add a /dev/userfaultfd misc device. This device
-> provides an alternative to the userfaultfd(2) syscall for the creation
-> of new userfaultfds. The idea is, any userfaultfds created this way will
-> be able to handle kernel faults, without the caller having any special
-> capabilities. Access to this mechanism is instead restricted using e.g.
-> standard filesystem permissions.
-> 
-> Acked-by: Nadav Amit <namit@vmware.com>
-> Acked-by: Peter Xu <peterx@redhat.com>
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Emails to Pratyush Yadav bounce ("550 Invalid recipient").  Generic SPI
+properties should be maintained by subsystem maintainer (Mark).  Add
+recent contributor Vaishnav Achath to the Cadence SPI bindings.
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> ---
->  fs/userfaultfd.c                 | 73 +++++++++++++++++++++++++-------
->  include/uapi/linux/userfaultfd.h |  4 ++
->  2 files changed, 61 insertions(+), 16 deletions(-)
+---
 
+Vaishnav Achath, are you ok with that?
+---
+ .../devicetree/bindings/spi/cdns,qspi-nor-peripheral-props.yaml | 2 +-
+ Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml        | 2 +-
+ Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor-peripheral-props.yaml
+index 553601a441a7..510b82c177c0 100644
+--- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor-peripheral-props.yaml
++++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor-peripheral-props.yaml
+@@ -10,7 +10,7 @@ description:
+   See spi-peripheral-props.yaml for more info.
+ 
+ maintainers:
+-  - Pratyush Yadav <p.yadav@ti.com>
++  - Vaishnav Achath <vaishnav.a@ti.com>
+ 
+ properties:
+   # cdns,qspi-nor.yaml
+diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+index 0a537fa3a641..4707294d8f59 100644
+--- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
++++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence Quad SPI controller
+ 
+ maintainers:
+-  - Pratyush Yadav <p.yadav@ti.com>
++  - Vaishnav Achath <vaishnav.a@ti.com>
+ 
+ allOf:
+   - $ref: spi-controller.yaml#
+diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+index ce048e782e80..a4abe1588005 100644
+--- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+@@ -16,7 +16,7 @@ description:
+   their own separate schema that should be referenced from here.
+ 
+ maintainers:
+-  - Pratyush Yadav <p.yadav@ti.com>
++  - Mark Brown <broonie@kernel.org>
+ 
+ properties:
+   reg:
 -- 
-Sincerely yours,
-Mike.
+2.34.1
+
