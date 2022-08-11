@@ -2,148 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5FFC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A29D1C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236129AbiHKPvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        id S236699AbiHKPvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236972AbiHKPuz (ORCPT
+        with ESMTP id S237006AbiHKPvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:50:55 -0400
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD30A1D2F;
-        Thu, 11 Aug 2022 08:42:39 -0700 (PDT)
-Received: by mail-qt1-f180.google.com with SMTP id h4so6971646qtj.11;
-        Thu, 11 Aug 2022 08:42:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=CmaQmycmiDs0ZhLNzBEap3uy9DegAtgeJY98yfTaoT0=;
-        b=ULaRRhLxOhA1fMHO203DND7B0vFpogE8S0PgGp6UUUiOiTGwaHI7zh/X35/l6Yil8a
-         7IyHQLQubjxQK2x3hU7NswjbyRkNDDMBcAK47je+7H0qq7yK6NKbi39sTI1KOViC1sUx
-         nrtawqaHp0sFKxQCQz3PwLFMNOFn+0t2paUmc6VGY6mNr6cUPFbGxQRIQAAjmK9Twnf9
-         hvjINFr7tUe45xFwWmzNjnQ3mUIjkYDRtj0Xg2QFBkpSQGhkISWWlmjoUN0MTHYkE+j5
-         8GMZPUNtgC16ztb+AT9kG7NGPRKmAPVBTBpBNh8ehEdT/zUkdcchrQi0z0shIv54N/Se
-         HV1w==
-X-Gm-Message-State: ACgBeo1Rl/uUxrpsmLDGaELLGK23Wvn5b3v7GBC2GaKPixyUTr1E3Euk
-        L7V80tL2cS4pdamYW1viKiIyAKTx44Mqdfep
-X-Google-Smtp-Source: AA6agR6JZleD7P0zWD1Cs/v4IGCQsXeZzAUKD7qjw+oohmOVOnnsf8OVADIsvGQVhz+B84v5gDJQTw==
-X-Received: by 2002:ac8:5a51:0:b0:342:e917:f25b with SMTP id o17-20020ac85a51000000b00342e917f25bmr24047628qta.284.1660232558391;
-        Thu, 11 Aug 2022 08:42:38 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id w22-20020ac857d6000000b0031f287f58b4sm1890826qta.51.2022.08.11.08.42.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 08:42:36 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id 204so28869438yba.1;
-        Thu, 11 Aug 2022 08:42:35 -0700 (PDT)
-X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
- r1-20020a5b06c1000000b00669a7c34c33mr29967472ybq.543.1660232555433; Thu, 11
- Aug 2022 08:42:35 -0700 (PDT)
+        Thu, 11 Aug 2022 11:51:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081D5979EF;
+        Thu, 11 Aug 2022 08:42:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98B4C616C2;
+        Thu, 11 Aug 2022 15:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661CBC433D7;
+        Thu, 11 Aug 2022 15:42:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660232563;
+        bh=xQmukVhejqSSvaIVDFsfMkvhcUx1mL0PI7bqN3mEXus=;
+        h=From:To:Cc:Subject:Date:From;
+        b=d4CXwt1cqNnn59qi82DeBc3VC6j8uMAsfvf/RUV7u+XJFVp2hwcQnaFYQBmdMwGuT
+         ens8eCyDYDXi8U8k87Vada0Xw3uTiSdnzYkRl92HPw0ioYnFpsJ54zgG4LXGVuxb6h
+         l6ICuYjJju0rLx554ZelyWN/htQLON4TlmMxs4IDH3PzoiEvqgUoBxKRIfE1Posy3E
+         s41U0vjlXMf64y9jlAqO3DsCsLBcjQ+nL4hGtLAXCxxpCSCccShBN42anIUXK0zsqo
+         nu6ybCyKpZ6z4M9qXVmqKj/6BQXHltGqB1Ta+2jJpaGybdU431cD4zUwipW+ImqYST
+         InHqQ2dm0O0Zw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
+        deller@gmx.de, tzimmermann@suse.de, sam@ravnborg.org,
+        alexander.deucher@amd.com, deng.changcheng@zte.com.cn,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 01/93] fbdev: Restart conflicting fb removal loop when unregistering devices
+Date:   Thu, 11 Aug 2022 11:40:55 -0400
+Message-Id: <20220811154237.1531313-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220726180623.1668-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <636e9214-4b36-e9a6-3c6b-b6edb944335e@linaro.org> <CA+V-a8sTw1qzuTeD2vb7RgDmmNdEP5qEcxXCjrFgkyrBrLrt5Q@mail.gmail.com>
- <e64cc15e-b31e-876d-b3cf-b60d255c495b@linaro.org> <CA+V-a8u1VW9xaj2KjySyMuegpisLVENO_6uJOpAFZGbKziYLYw@mail.gmail.com>
- <e31e0c1f-4755-704e-8428-93970877d8f5@linaro.org> <CA+V-a8sX=Frs_cds9MriauTFRvcZUNCvoeZ+SaC0GUpL7L6qhg@mail.gmail.com>
- <9f32a4a9-66b4-ba2e-1713-436103c2faf8@linaro.org> <OS0PR01MB5922763582B836DA45CDFF0886979@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <80f08089-e3bb-983e-313b-45613364829e@linaro.org>
-In-Reply-To: <80f08089-e3bb-983e-313b-45613364829e@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 11 Aug 2022 17:42:23 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
-Message-ID: <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
-Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding documentation for
- Renesas RZ/Five SoC and SMARC EVK
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-On Wed, Jul 27, 2022 at 2:37 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> On 27/07/2022 14:21, Biju Das wrote:
-> >> Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding
-> >> documentation for Renesas RZ/Five SoC and SMARC EVK
-> >> On 27/07/2022 13:37, Lad, Prabhakar wrote:
-> >>>>> I did run the dtbs_check test as per your suggestion (below is the
-> >>>>> log) and didn't see "no matching schema error"
-> >>>>>
-> >>>>
-> >>>> So you do not see any errors at all. Then it does not work, does it?
-> >>>>
-> >>> Right I reverted my changes I can see it complaining, dtb_check seems
-> >>> to have returned false positive in my case.
-> >>>
-> >>> What approach would you suggest to ignore the schema here?
-> >>
-> >> I don't think currently it would work with your approach. Instead, you
-> >> should select here all SoCs which the schema should match.
-> >>
-> >> This leads to my previous concern - you use the same SoC compatible for
-> >> two different architectures and different SoCs: ARMv8 and RISC-V.
-> >
-> > Or is it same SoC(R9A07G043) based on two different CPU architectures (ARMv8 and RISC-V)
->
-> Then it is not the same SoC! Same means same, identical. CPU
-> architecture is one of the major differences, which means it is not the
-> same.
->
-> > Using same SoM and Carrier board?
->
-> It's like saying PC with x86 and ARMv8 board are the same because they
-> both use same "PC chassis".
+[ Upstream commit 3367aa7d74d240261de2543ddb35531ccad9d884 ]
 
-That's not a fair comparison: the "PC chassis" is passive, while the
-carrier board is an active PCB.  So it is more akin to plugging
-any Intel LGA 1151 processor into any motherboard with an LGA
-1151 socket.  Do we have compatible values for all such possible
-combinations? ;-)
+Drivers that want to remove registered conflicting framebuffers prior to
+register their own framebuffer, call to remove_conflicting_framebuffers().
 
-The classic compatible scheme of an ordered list from most-specific
-to least-specific is not well-suited for this case of mere
-aggregation.  That's why we have been decoupling board and SoC
-compatible values for a while, and identifying specific boards by a
-combination of a board-specific and an SoC-specific compatible value.
+This function takes the registration_lock mutex, to prevent a race when
+drivers register framebuffer devices. But if a conflicting framebuffer
+device is found, the underlaying platform device is unregistered and this
+will lead to the platform driver .remove callback to be called. Which in
+turn will call to unregister_framebuffer() that takes the same lock.
 
-New SoCs that are available with different core CPU families (and
-that are pin-compatible) are just the next step in the evolution....
+To prevent this, a struct fb_info.forced_out field was used as indication
+to unregister_framebuffer() whether the mutex has to be grabbed or not.
 
-At the DT validation level, I think the proper solution is to
-merge Documentation/devicetree/bindings/arm/renesas.yaml and
-Documentation/devicetree/bindings/riscv/renesas.yaml into a single
-file under Documentation/devicetree/bindings/soc/renesas/.
+But this could be unsafe, since the fbdev core is making assumptions about
+what drivers may or may not do in their .remove callbacks. Allowing to run
+these callbacks with the registration_lock held can cause deadlocks, since
+the fbdev core has no control over what drivers do in their removal path.
 
-What do other people think?
-Thanks!
+A better solution is to drop the lock before platform_device_unregister(),
+so unregister_framebuffer() can take it when called from the fbdev driver.
+The lock is acquired again after the device has been unregistered and at
+this point the removal loop can be restarted.
 
-Gr{oetje,eeting}s,
+Since the conflicting framebuffer device has already been removed, the
+loop would just finish when no more conflicting framebuffers are found.
 
-                        Geert
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511113039.1252432-1-javierm@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/core/fbmem.c | 22 +++++++++++++++-------
+ include/linux/fb.h               |  1 -
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 643383d74edc..82880f59ba67 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1566,6 +1566,7 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ {
+ 	int i;
+ 
++restart_removal:
+ 	/* check all firmware fbs and kick off if the base addr overlaps */
+ 	for_each_registered_fb(i) {
+ 		struct apertures_struct *gen_aper;
+@@ -1600,12 +1601,23 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ 				 */
+ 				do_unregister_framebuffer(registered_fb[i]);
+ 			} else if (dev_is_platform(device)) {
+-				registered_fb[i]->forced_out = true;
++				/*
++				 * Drop the lock because if the device is unregistered, its
++				 * driver will call to unregister_framebuffer(), that takes
++				 * this lock.
++				 */
++				mutex_unlock(&registration_lock);
+ 				platform_device_unregister(to_platform_device(device));
++				mutex_lock(&registration_lock);
+ 			} else {
+ 				pr_warn("fb%d: cannot remove device\n", i);
+ 				do_unregister_framebuffer(registered_fb[i]);
+ 			}
++			/*
++			 * Restart the removal loop now that the device has been
++			 * unregistered and its associated framebuffer gone.
++			 */
++			goto restart_removal;
+ 		}
+ 	}
+ }
+@@ -1946,13 +1958,9 @@ EXPORT_SYMBOL(register_framebuffer);
+ void
+ unregister_framebuffer(struct fb_info *fb_info)
+ {
+-	bool forced_out = fb_info->forced_out;
+-
+-	if (!forced_out)
+-		mutex_lock(&registration_lock);
++	mutex_lock(&registration_lock);
+ 	do_unregister_framebuffer(fb_info);
+-	if (!forced_out)
+-		mutex_unlock(&registration_lock);
++	mutex_unlock(&registration_lock);
+ }
+ EXPORT_SYMBOL(unregister_framebuffer);
+ 
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index 9a77ab615c36..ae399d3ea4f9 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -503,7 +503,6 @@ struct fb_info {
+ 	} *apertures;
+ 
+ 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
+-	bool forced_out; /* set when being removed by another driver */
+ };
+ 
+ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
+-- 
+2.35.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
