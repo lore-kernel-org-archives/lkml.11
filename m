@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5757C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EBAC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237648AbiHKQTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        id S237658AbiHKQTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236771AbiHKQSR (ORCPT
+        with ESMTP id S236838AbiHKQSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 12:18:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9F2BED;
-        Thu, 11 Aug 2022 09:00:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4B8C1E;
+        Thu, 11 Aug 2022 09:00:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63BB6B82173;
-        Thu, 11 Aug 2022 16:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C670EC433D7;
-        Thu, 11 Aug 2022 16:00:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A00056133D;
+        Thu, 11 Aug 2022 16:00:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E190BC433C1;
+        Thu, 11 Aug 2022 16:00:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233623;
-        bh=T/XPVYTEQhOeweUY/f/EJxCNJvwxGVeJfXUn9bHh6k8=;
+        s=k20201202; t=1660233628;
+        bh=sFTFDibpydkF/MOnBN3M6xeEhb02hZQJCYZlhwBpMgE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dlVvRo3aog7u9dd4sL0REb+haD+pV2jHTAKhFMWORKYTwat2CZRjFCFeeZHrMYwES
-         ruqqIwKIVRjH9lvqtNmh4ftPkqgwjHMGizVZpAhV5DKOOdCPrCvAllsO2AUGhr6Dp5
-         sYaet5Dg+EaHEAFcaefnUEryI6ubWDedaPashAycvyEK+2xeaksWu/hKt4A6gLtMqB
-         cJV3UI2RABcCSzjQNpWQnN9ei7DC6ZbVmAKweIOvciO7YJ5EPLG5n4OK7DsEOkJkyo
-         6I/2dXfNku5bDLFhxpVBcnvWboiKuBsUKXM4e8b94NI55/ZBtlGCPJPYcAByeX4/Rc
-         0vioJAPax4h2g==
+        b=K6snkc2FSJ/s3U6O0OR+fozzxnyKihZxc5tnqpaeOv35UnvW3eUIj8xJ+ksveGE/4
+         8eQdoiJoy99rzN7sDzPp2rfLMCWLE5NuQnkZ3d0N7243vKDs1xO52Z650xm3DYGe+F
+         sjXtXAPHXnrs2bp0WnASjWXUqQ9wYTyJAqHmsRDh50q7YapdiaMLLzUeNBlF/VOqvV
+         rg/yYGXurXGoH4UARpzDLjXuO+ZcViIAfScnOqDEbkIoGDGQW2xB7Z4250BFSYU5rR
+         O5hk03JA4m4iPJxsPiPP8EuoIqABTn9vc69VEY2iu3SHTkcvk9GS8Z3sGfAmxKJtDm
+         Gg2SsXodkIf7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zqiang <qiang1.zhang@intel.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, dave@stgolabs.net,
-        josh@joshtriplett.org, frederic@kernel.org,
-        quic_neeraju@quicinc.com, rcu@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 33/69] rcuscale: Fix smp_processor_id()-in-preemptible warnings
-Date:   Thu, 11 Aug 2022 11:55:42 -0400
-Message-Id: <20220811155632.1536867-33-sashal@kernel.org>
+Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 35/69] mlxsw: cmd: Increase 'config_profile.flood_mode' length
+Date:   Thu, 11 Aug 2022 11:55:44 -0400
+Message-Id: <20220811155632.1536867-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -53,59 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-[ Upstream commit 92366810644d5675043c792abb70eaf974a77384 ]
+[ Upstream commit 89df3c6261f271c550f120b5ccf4d9c5132e870c ]
 
-Systems built with CONFIG_DEBUG_PREEMPT=y can trigger the following
-BUG while running the rcuscale performance test:
+Currently, the length of 'config_profile.flood_mode' is defined as 2
+bits, while the correct length is 3 bits.
 
-BUG: using smp_processor_id() in preemptible [00000000] code: rcu_scale_write/69
-CPU: 0 PID: 66 Comm: rcu_scale_write Not tainted 5.18.0-rc7-next-20220517-yoctodev-standard+
-caller is debug_smp_processor_id+0x17/0x20
-Call Trace:
-<TASK>
-dump_stack_lvl+0x49/0x5e
-dump_stack+0x10/0x12
-check_preemption_disabled+0xdf/0xf0
-debug_smp_processor_id+0x17/0x20
-rcu_scale_writer+0x2b5/0x580
-kthread+0x177/0x1b0
-ret_from_fork+0x22/0x30
-</TASK>
+As preparation for unified bridge model, which will use the whole field
+length, fix it and increase the field to the correct size.
 
-Reproduction method:
-runqemu kvm slirp nographic qemuparams="-m 4096 -smp 8" bootparams="isolcpus=2,3
-nohz_full=2,3 rcu_nocbs=2,3 rcutree.dump_tree=1 rcuscale.shutdown=false
-rcuscale.gp_async=true" -d
-
-The problem is that the rcu_scale_writer() kthreads fail to set the
-PF_NO_SETAFFINITY flags, which causes is_percpu_thread() to assume
-that the kthread's affinity might change at any time, thus the BUG
-noted above.
-
-This commit therefore causes rcu_scale_writer() to set PF_NO_SETAFFINITY
-in its kthread's ->flags field, thus preventing this BUG.
-
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/rcuscale.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/rcu/rcuscale.c b/kernel/rcu/rcuscale.c
-index 2cc34a22a506..525b1687ab3e 100644
---- a/kernel/rcu/rcuscale.c
-+++ b/kernel/rcu/rcuscale.c
-@@ -399,6 +399,7 @@ rcu_scale_writer(void *arg)
- 	VERBOSE_SCALEOUT_STRING("rcu_scale_writer task started");
- 	WARN_ON(!wdpp);
- 	set_cpus_allowed_ptr(current, cpumask_of(me % nr_cpu_ids));
-+	current->flags |= PF_NO_SETAFFINITY;
- 	sched_set_fifo_low(current);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+index 51b260d54237..0abd69040ba0 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+@@ -745,7 +745,7 @@ MLXSW_ITEM32(cmd_mbox, config_profile, max_vid_flood_tables, 0x30, 8, 4);
+  * max_fid_offset_flood_tables indicates the number of FID-offset tables.
+  * max_fid_flood_tables indicates the number of per-FID tables.
+  */
+-MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 2);
++MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 3);
  
- 	if (holdoff)
+ /* cmd_mbox_config_profile_max_fid_offset_flood_tables
+  * Maximum number of FID-offset flooding tables.
 -- 
 2.35.1
 
