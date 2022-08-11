@@ -2,126 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FB4C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD3FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234840AbiHKNm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 09:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
+        id S235012AbiHKNoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 09:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234397AbiHKNmy (ORCPT
+        with ESMTP id S234939AbiHKNoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 09:42:54 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCDC15A22
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:42:52 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id bs25so2953121wrb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:42:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=5iFjW4mH2SdQj0QDIE0YGEPOh872v8cXsK/Ld6auj0k=;
-        b=OVVOzKU2OF2ob9mMAjoIKHK5cTolrX3EI5Yv57arqnAg0Mk/fQiEhu5YOmKUppLcGs
-         bSDvg16jFXmkHecF62uKo6ESzrXzmrc0N+M9BzdVLANClfLjIxtcxUHW7+jqN9lFufBr
-         cE/GR4DYtqRXC8dIp9zo6xhjHD+6J7sUvD6Xs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=5iFjW4mH2SdQj0QDIE0YGEPOh872v8cXsK/Ld6auj0k=;
-        b=T/iLqzA8V2rSj08u0iqdYrk0GsJZ8ukDMGbZPYLPguXCGch047A0mEHkqtNNrON80F
-         7Cgbf1mkJ6P+CJoFxsGm95d3Kl6oMRo+SbY0ON4cGLg0vxjRdVtgLbLOhLKk43TOAqed
-         BMF13YC4f3b0vj4KV2cxS7ZtXLdq3rGjCD8z4/B/olOpfvcAkThvM+LHlvwEr7JEpPQI
-         swttSobvwrQKr6UI2xruTXEKrc0Y2IOcIRzHD1elI51GSDnm+Ta3xNC45U6AAM0Yw01q
-         DqmUV6WsC+LqdOZnAoD4fBmod1Au849IvEVGpOwMtgfuNc+oaKVIqy5aBHzL+f4wUQOc
-         gixA==
-X-Gm-Message-State: ACgBeo2G0g17pND7TQLldFpVqo0LHIuzWnl9mJg0zarE1+88lGmYvtCS
-        2Eu7tKupoOAXQCaW8oq4WimCXg==
-X-Google-Smtp-Source: AA6agR5uFxpGwgY41pOIGd/cQxEWOqrs8VXvPQXrj9cy/yX384JSAASkZ7n//wNcgMgTisKO6k7Xpw==
-X-Received: by 2002:adf:e112:0:b0:21d:7195:3a8d with SMTP id t18-20020adfe112000000b0021d71953a8dmr20668312wrz.371.1660225371492;
-        Thu, 11 Aug 2022 06:42:51 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-51-7.cust.vodafonedsl.it. [188.217.51.7])
-        by smtp.gmail.com with ESMTPSA id e20-20020a05600c4b9400b003a2cf1ba9e2sm5757888wmp.6.2022.08.11.06.42.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 06:42:51 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 15:42:48 +0200
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Antti Palosaari <crope@iki.fi>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Oliver Neukum <oneukum@suse.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+bb25f85e5aa482864dc0@syzkaller.appspotmail.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: airspy: fix memory leak in airspy probe
-Message-ID: <20220811134248.GA6390@tom-ThinkPad-T14s-Gen-2i>
-References: <20220811045701.31152-1-dzm91@hust.edu.cn>
+        Thu, 11 Aug 2022 09:44:11 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A369661D5B;
+        Thu, 11 Aug 2022 06:44:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660225450; x=1691761450;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=6G1vjfFDPRBJq3hrus4RUCAj1Ik6SbGGx7LGPLT4CKc=;
+  b=d4c4cnSceeeu7pOr1M6yPJGfJ3fVRak7yxgC47zNN1IUy5Tdxab8FQpQ
+   cnBQ7gPpd/hvDbuy5gyByOuMb4lwo8Im4oHMUbzDm0qlCTHn/ijQFZOvj
+   Mq3lq+LDZMrEPRr48zUj5FDkcV8nz5k9ctL5KIPNwWcpCtzi1hkz1qA6q
+   pWtjiYJKJbCH2SMClUXcoA9fT++42hoDozM5J4GtXDH6azUGtBvupYHp5
+   MElZW9qgLRhScPlvOPYRA8D2igtaz9uCPWI1Q3gwwFAcoWWRDjFf8DJPw
+   0BgRP0lvXbrnQokLfItXaKv0DQOp2FbifwnxcSyaisiM8C2qnOGVb1Sxb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="271731755"
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="271731755"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 06:44:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="665377410"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga008.fm.intel.com with ESMTP; 11 Aug 2022 06:43:59 -0700
+Date:   Thu, 11 Aug 2022 21:39:14 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Quentin Perret <qperret@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Michael Roth <michael.roth@amd.com>,
+        mhocko@suse.com, Muchun Song <songmuchun@bytedance.com>,
+        Will Deacon <will@kernel.org>, Fuad Tabba <tabba@google.com>
+Subject: Re: [PATCH v7 03/14] mm: Introduce memfile_notifier
+Message-ID: <20220811133914.GC916119@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-4-chao.p.peng@linux.intel.com>
+ <13394075-fca0-6f2b-92a2-f1291fcec9a3@redhat.com>
+ <20220810092232.GC862421@chaop.bj.intel.com>
+ <00f1aa03-bc82-ffce-569b-e2d5c459992c@redhat.com>
+ <YvPC87FMgF7uac7z@google.com>
+ <YvT1zOQtTQl2t300@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220811045701.31152-1-dzm91@hust.edu.cn>
+In-Reply-To: <YvT1zOQtTQl2t300@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dongliang,
-
-On Thu, Aug 11, 2022 at 12:57:00PM +0800, Dongliang Mu wrote:
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
+On Thu, Aug 11, 2022 at 12:27:56PM +0000, Quentin Perret wrote:
+> +CC Fuad
 > 
-> The commit ca9dc8d06ab6 ("media: airspy: respect the DMA coherency
->  rules") moves variable buf from stack to heap, however, it only frees
-> buf in the error handling code, missing deallocation in the success
-> path.
+> On Wednesday 10 Aug 2022 at 14:38:43 (+0000), Sean Christopherson wrote:
+> > > I understand Sean's suggestion about abstracting, but if the new name
+> > > makes it harder to grasp and there isn't really an alternative to memfd
+> > > in sight, I'm not so sure I enjoy the tried abstraction here.
+> > 
+> > ARM's pKVM implementation is potentially (hopefully) going to switch to this API
+> > (as a consumer) sooner than later.  If they anticipate being able to use memfd,
+> > then there's unlikely to be a second backing type any time soon.
+> > 
+> > Quentin, Will?
 > 
-> Fix this by freeing buf in the success path since this variable does not
-> have any references in other code.
-> 
-> Fixes: ca9dc8d06ab6 ("media: airspy: respect the DMA coherency rules")
-> Reported-by: syzbot+bb25f85e5aa482864dc0@syzkaller.appspotmail.com
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> ---
->  drivers/media/usb/airspy/airspy.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/media/usb/airspy/airspy.c b/drivers/media/usb/airspy/airspy.c
-> index 240a7cc56777..7b1c40132555 100644
-> --- a/drivers/media/usb/airspy/airspy.c
-> +++ b/drivers/media/usb/airspy/airspy.c
-> @@ -1070,6 +1070,10 @@ static int airspy_probe(struct usb_interface *intf,
->  				ret);
->  		goto err_free_controls;
->  	}
-> +
-> +	/* Free buf if success*/
-> +	kfree(buf);
-> +
+> Yep, Fuad is currently trying to port the pKVM mm stuff on top of this
+> series to see how well it fits, so stay tuned.
 
-buf var is only used to print the fw version during the probe.
-I think you are right we need to free this.
+Good to hear that.
 
-Reviewed-by: Tommaso Merciai <tommaso.merciai@amarulasolution.com>
+>I think there is still
+> some room for discussion around page conversions (private->shared etc),
+> and we'll need a clearer idea of what the code might look like to have a
+> constructive discussion,
 
->  	dev_info(s->dev, "Registered as %s\n",
->  			video_device_node_name(&s->vdev));
->  	dev_notice(s->dev, "SDR API is still slightly experimental and functionality changes may follow\n");
-> -- 
-> 2.35.1
-> 
+That's fine. Looking forward to your feedbacks.
 
-Regards,
-Tommaso
+>but so far it does seem like using a memfd (the
+> new private one or perhaps just memfd_secret, to be discussed) + memfd
+> notifiers is a promising option.
 
--- 
-Tommaso Merciai
-Embedded Linux Engineer
-tommaso.merciai@amarulasolutions.com
-__________________________________
+If it still memfd (even memfd_secret), maybe we can use the name
+memfd_notifier?
 
-Amarula Solutions SRL
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-T. +39 042 243 5310
-info@amarulasolutions.com
-www.amarulasolutions.com
+Chao
