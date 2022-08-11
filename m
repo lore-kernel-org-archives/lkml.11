@@ -2,172 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43500C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A03C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235791AbiHKPch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
+        id S235953AbiHKPck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235678AbiHKPb7 (ORCPT
+        with ESMTP id S235745AbiHKPcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:31:59 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAA59752E
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:30:55 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id j7so21782710wrh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=qZtGOXbRC+1H6SPLMpuq1SgPyHU7zMutv39GohgMBvo=;
-        b=kHDbzD7P9eGWeR5QgJz8o1M4lnlOV+24zL4PIkoKaISN137ifaBEtwvYZGOrdPMJ1W
-         6cHV0oSmCKFcNNk0vpWxMajyRH6PYZfHGLxbZa6xz0nQ0PXYtFjJjeq4xbJ9n4t/PUbL
-         m5WN1x1jV/pmiObU1mVXl4tO198NP8iOeBji/RR6eJUItHUSMiYtAhPQHerKaSrbAzxn
-         n7RuZbkyl7A9sc/63XXdJd5sjQkdpw5IakaHG8aepNjjhcwZFSbPg1/73XwhReevGlY8
-         71gjrAj4jM4uDDj5iU3EAQ3hK34JOnyjeJLo0cTpTUI0OAWpe36RaEDXeM0oEZJKjmXJ
-         UkZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=qZtGOXbRC+1H6SPLMpuq1SgPyHU7zMutv39GohgMBvo=;
-        b=4iLHuXc2rQIFFaS3KWrdUdQw4ELVU9eOsQs5QGZfF+PDop0bhd9auGYNEF9bWOJ1To
-         6aANim+IVKtirk5zj/amQ+YxHov+Mif17Y437dl1fUlM+FEyjBOHSpARS96kghh6Soyy
-         Rwnhto6xNIecn1F/7oCrtDM1r//XP5lnYyKrugx2rsrYA9sTnKny5nWeGFSbmxucNfHC
-         qi9bRxT6s5dFoLyzNImUg8nwo9GbkiIRp/H1mEAlftbbbcCuHiDwgL4da/YbqAgbgQnv
-         5j5KaSakHFGVfuVmlLJoi1IXq+E6WNkbK4pK39a4jMBdOGUT3LqGe83gcCK7XRxayWtd
-         CdnA==
-X-Gm-Message-State: ACgBeo2naSJFKqXu2wu+tIh3vWSMSA/0+BNGFPMF0aE82s2+xrxFjiuy
-        wT18gRR+9Rp2MpIAm2uu7XI=
-X-Google-Smtp-Source: AA6agR5a9kzgqtDr+SyVjmXoGK7TQ3C9s6/ZzMuJhHCJyK48sU4+XUw9zEtEFNtg3FIup6WEqH0qNg==
-X-Received: by 2002:a5d:52cb:0:b0:21a:3cc5:f5f4 with SMTP id r11-20020a5d52cb000000b0021a3cc5f5f4mr20771696wrv.367.1660231853386;
-        Thu, 11 Aug 2022 08:30:53 -0700 (PDT)
-Received: from localhost.localdomain (host-79-27-108-198.retail.telecomitalia.it. [79.27.108.198])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056000008700b00222ed7ea203sm9805502wrx.100.2022.08.11.08.30.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:30:52 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH 2/3] drm/i915/gt: Replace kmap() with kmap_local_page()
-Date:   Thu, 11 Aug 2022 17:30:40 +0200
-Message-Id: <20220811153041.12795-3-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220811153041.12795-1-fmdefrancesco@gmail.com>
-References: <20220811153041.12795-1-fmdefrancesco@gmail.com>
+        Thu, 11 Aug 2022 11:32:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B1599278;
+        Thu, 11 Aug 2022 08:30:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8375AB82157;
+        Thu, 11 Aug 2022 15:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89671C433D6;
+        Thu, 11 Aug 2022 15:30:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660231856;
+        bh=mNT78fvZUN02mlXBFilWDP/18n51R5iWoqARi/+ZHuY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e12vZcykQGW3Pra5E8uhciMfOxbuYY7zBoRms3b3H5EK/RjXqs/v+GmqMK1DYKuc2
+         QennEGSZXO35IPzKaDID9OosClmj1EXFGpp+oWs0GUFPNIr8f1U43VImRfDq/O7ht7
+         ZaTVxb56UVy7iqCuLqHKc73Kmfrt7iv0O5kbRKIyYeEraABztsDLjzG67SbA1j7ucr
+         ozA0AfP/kS348I+imTYGoRdVxIhVwuZqO1fy5INawgUIEd10wVaz1+nnJa+mQPehlh
+         LW+6Do/DNo0nl/nADpr0SnKQHW47pNGGjesDa2oaCtUckBrWMp1MA0ae9ttvt/Pc/m
+         uKxZSim7f4d5g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duncan Ma <duncan.ma@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Hansen Dsouza <Hansen.Dsouza@amd.com>,
+        Hamza Mahfooz <hamza.mahfooz@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Aric.Cyr@amd.com, Jun.Lei@amd.com,
+        wenjing.liu@amd.com, Jimmy.Kizito@amd.com, mwen@igalia.com,
+        Yi-Ling.Chen2@amd.com, Jerry.Zuo@amd.com, gabe.teeger@amd.com,
+        Sungjoon.Kim@amd.com, isabbasso@riseup.net,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 017/105] drm/amd/display: Fix dpp dto for disabled pipes
+Date:   Thu, 11 Aug 2022 11:27:01 -0400
+Message-Id: <20220811152851.1520029-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmap() is being deprecated in favor of kmap_local_page().
+From: Duncan Ma <duncan.ma@amd.com>
 
-There are two main problems with kmap(): (1) It comes with an overhead as
-mapping space is restricted and protected by a global lock for
-synchronization and (2) it also requires global TLB invalidation when the
-kmap’s pool wraps and it might block when the mapping space is fully
-utilized until a slot becomes available.
+[ Upstream commit d4965c53b95d7533dfc2309d2fc25838bd33220e ]
 
-With kmap_local_page() the mappings are per thread, CPU local, can take
-page faults, and can be called from any context (including interrupts).
-It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
-the tasks can be preempted and, when they are scheduled to run again, the
-kernel virtual addresses are restored and are still valid.
+[Why]
+When switching from 1 pipe to 4to1 mpc combine,
+DppDtoClk aren't enabled for the disabled pipes
+pior to programming the pipes. Upon optimizing
+bandwidth, DppDto are enabled causing intermittent
+underflow.
 
-Since its use in i915/gt is safe everywhere, it should be preferred.
+[How]
+Update dppclk dto whenever pipe are flagged to
+enable.
 
-Therefore, replace kmap() with kmap_local_page() in i915/gt
-
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Reviewed-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Reviewed-by: Hansen Dsouza <Hansen.Dsouza@amd.com>
+Acked-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
+Signed-off-by: Duncan Ma <duncan.ma@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c |  4 ++--
- drivers/gpu/drm/i915/gt/shmem_utils.c        | 11 ++++-------
- 2 files changed, 6 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c b/drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c
-index 6ebda3d65086..21d8ce40b897 100644
---- a/drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c
-+++ b/drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c
-@@ -747,7 +747,7 @@ static void swizzle_page(struct page *page)
- 	char *vaddr;
- 	int i;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+index ec6aa8d8b251..8b2c15a3cd92 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+@@ -1412,11 +1412,15 @@ static void dcn20_update_dchubp_dpp(
+ 	struct hubp *hubp = pipe_ctx->plane_res.hubp;
+ 	struct dpp *dpp = pipe_ctx->plane_res.dpp;
+ 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
++	struct dccg *dccg = dc->res_pool->dccg;
+ 	bool viewport_changed = false;
  
--	vaddr = kmap(page);
-+	vaddr = kmap_local_page(page);
+ 	if (pipe_ctx->update_flags.bits.dppclk)
+ 		dpp->funcs->dpp_dppclk_control(dpp, false, true);
  
- 	for (i = 0; i < PAGE_SIZE; i += 128) {
- 		memcpy(temp, &vaddr[i], 64);
-@@ -755,7 +755,7 @@ static void swizzle_page(struct page *page)
- 		memcpy(&vaddr[i + 64], temp, 64);
- 	}
- 
--	kunmap(page);
-+	kunmap_local(vaddr);
- }
- 
- /**
-diff --git a/drivers/gpu/drm/i915/gt/shmem_utils.c b/drivers/gpu/drm/i915/gt/shmem_utils.c
-index 402f085f3a02..48edbb8a33e5 100644
---- a/drivers/gpu/drm/i915/gt/shmem_utils.c
-+++ b/drivers/gpu/drm/i915/gt/shmem_utils.c
-@@ -98,22 +98,19 @@ static int __shmem_rw(struct file *file, loff_t off,
- 		unsigned int this =
- 			min_t(size_t, PAGE_SIZE - offset_in_page(off), len);
- 		struct page *page;
--		void *vaddr;
- 
- 		page = shmem_read_mapping_page_gfp(file->f_mapping, pfn,
- 						   GFP_KERNEL);
- 		if (IS_ERR(page))
- 			return PTR_ERR(page);
- 
--		vaddr = kmap(page);
- 		if (write) {
--			memcpy(vaddr + offset_in_page(off), ptr, this);
-+			memcpy_to_page(page, offset_in_page(off), ptr, this);
- 			set_page_dirty(page);
- 		} else {
--			memcpy(ptr, vaddr + offset_in_page(off), this);
-+			memcpy_from_page(ptr, page, offset_in_page(off), this);
- 		}
- 		mark_page_accessed(page);
--		kunmap(page);
- 		put_page(page);
- 
- 		len -= this;
-@@ -140,11 +137,11 @@ int shmem_read_to_iosys_map(struct file *file, loff_t off,
- 		if (IS_ERR(page))
- 			return PTR_ERR(page);
- 
--		vaddr = kmap(page);
-+		vaddr = kmap_local_page(page);
- 		iosys_map_memcpy_to(map, map_off, vaddr + offset_in_page(off),
- 				    this);
- 		mark_page_accessed(page);
--		kunmap(page);
-+		kunmap_local(vaddr);
- 		put_page(page);
- 
- 		len -= this;
++	if (pipe_ctx->update_flags.bits.enable)
++		dccg->funcs->update_dpp_dto(dccg, dpp->inst, pipe_ctx->plane_res.bw.dppclk_khz);
++
+ 	/* TODO: Need input parameter to tell current DCHUB pipe tie to which OTG
+ 	 * VTG is within DCHUBBUB which is commond block share by each pipe HUBP.
+ 	 * VTG is 1:1 mapping with OTG. Each pipe HUBP will select which VTG
 -- 
-2.37.1
+2.35.1
 
