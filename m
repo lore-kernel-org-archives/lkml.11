@@ -2,231 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07CD4C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF9EC25B07
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 02:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233776AbiHKC3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 22:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        id S233790AbiHKCb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 22:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231424AbiHKC3W (ORCPT
+        with ESMTP id S229924AbiHKCb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 22:29:22 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7AD6D9E5
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 19:29:21 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id e127so26212463yba.12
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 19:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=RESftm3WQown+1220yOWno2L2hI0w64qbWBKdNXpfW4=;
-        b=Mc0aS+n0e89jB8quKfth5G5ZhYq0T2ZUO0PZO+DqBlJbYYAOs0pEcxvRURpDOLKVxS
-         iUybjoF0YzT0Q1B2TShIrxPo0xph7MoKw+wwsGTLgzQu1BnP7co70w7HgzZ97iHux9VX
-         g4ehS9X/YQ9TjcIz0f8/93YggyRshQy0O+2AOn4HYGtcxjmZD+8fn+5ZehJd8hie4OKI
-         WOxDwnCzpy00snfywnpfi9Imb30/rMVn/KKnajpxa7L+xoYsQyaJ7odfH/mA42tOPaZQ
-         PTMlZQvzR/azyih5tEQqalS9ohLhsB3CG31UUmBZfDeNt9xtBBLkLBKKP9ji3UCfKuZ2
-         +3wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=RESftm3WQown+1220yOWno2L2hI0w64qbWBKdNXpfW4=;
-        b=TGKTkkvBxm58ii5MPd8yo7LeocvhEmYwKRjAi1vEWMOsYV9aDDK2twngKAwrAFtZ/i
-         9VXGXLAcznm12dg4+tVWYrod3cHp2COhW66tqVIiYQ1b7GuEy1k9S0Ft9GirY4l1kMa1
-         zKJ56imWCiq+/V5pEZ7bs2cu6WJffkwcBlwh8hkREe+O3yp4EjdPRjZkzuXPc9ShAz3F
-         TekvlRNu9nKuOj1ha0/PWGFjQrhJm+sSjARuXIvl4AQa5krqeRQFRrY1Q9WmlR3APRMV
-         RJNZldmv5qf/L+EmkvL9NCXSjHcO7C2kiwqnFroIaQtpGwJF5EujGqAHa1fSLsXLGaHQ
-         sqpg==
-X-Gm-Message-State: ACgBeo0Unyfz10eSIIsIlBc+5jj1bKRv25OKdK2ABsfX4nJaOSMGwtFl
-        R8KSiB27T9ldQB6FyRPPjyB3pjpyhxNB2FpTfszX7w==
-X-Google-Smtp-Source: AA6agR5eTK3Q05IveMvcrIPmrLpgMKUWHRH3qTw5xPmYLXA0oOY1ENlsXdIo/JN3mfT2sJgCRjTOTHCg620LhkXqLso=
-X-Received: by 2002:a25:20a:0:b0:673:c2bc:ab with SMTP id 10-20020a25020a000000b00673c2bc00abmr27043380ybc.447.1660184960390;
- Wed, 10 Aug 2022 19:29:20 -0700 (PDT)
+        Wed, 10 Aug 2022 22:31:26 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2481388DDD;
+        Wed, 10 Aug 2022 19:31:24 -0700 (PDT)
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27B0LWId005456;
+        Thu, 11 Aug 2022 02:31:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=GnAuLifRWY03Z/LAxGuFwQVULnRoYxG+l6O0aheCLUI=;
+ b=HuM4NrgCnd6obgJhrNgAbxfW8mzLNo3gQ5YqKuw7mpzWx0F58B8bil4MHoIjt5QdmftT
+ hCz+ataBOvrCLLW2T1EixJaA9Ie9WX5m1ifG3ZOmprnl5u9SXuUD6ozZkA8UrEmubOFx
+ IGTro+0uWHLUXYODm4+HvzelUItUgI2fW8B2TWU5YiiihqtRvIs4URJquKAFNRsUKAQ+
+ 2FQkRWc6+/H/vEJSpUDaCAMrWxM8Yx6A+gv/HCEBPwjdZ/YyjaDFvT/w3h7ihvWkszrn
+ C1Ovnb1XEvba29qng6HEbtLNiy9m4S3h5MO/8+n22tkImjHWDdGRwl4PqVpaNFVgejQa YQ== 
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3huwr24k0c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Aug 2022 02:31:20 +0000
+Received: from pps.filterd (NASANPPMTA05.qualcomm.com [127.0.0.1])
+        by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27B2O3oU008947;
+        Thu, 11 Aug 2022 02:26:19 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NASANPPMTA05.qualcomm.com (PPS) with ESMTPS id 3hshckdf5c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Aug 2022 02:26:19 +0000
+Received: from NASANPPMTA05.qualcomm.com (NASANPPMTA05.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27B2QJJL011368;
+        Thu, 11 Aug 2022 02:26:19 GMT
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NASANPPMTA05.qualcomm.com (PPS) with ESMTPS id 27B2QJu7011367
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Aug 2022 02:26:19 +0000
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 10 Aug 2022 19:26:19 -0700
+Received: from [10.111.167.201] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 10 Aug
+ 2022 19:26:16 -0700
+Message-ID: <6c67281a-e00e-f96a-6def-e7e0c15a95b2@quicinc.com>
+Date:   Wed, 10 Aug 2022 19:26:13 -0700
 MIME-Version: 1.0
-References: <20220727181936.3250466-1-saravanak@google.com>
- <20220809103052.GA1778649@roeck-us.net> <CAGETcx_ATE6vy9YhygHnBA2P1GDVi54np-=E+50F+cwnj6Wg4A@mail.gmail.com>
- <0c6ef9a3-bbb1-9f1c-7f00-ceb05589594e@roeck-us.net> <CAGETcx8yKqEthtyd8Zb=mqMBNp1TPRXbQOoFp+OxeCoXnTs2kw@mail.gmail.com>
- <1196e002-c07d-44fd-b07a-aa5ae446ea0b@roeck-us.net> <YvQnbq2RhMOElQE3@google.com>
- <225747de-4348-58b3-19be-8b14356ab3a0@roeck-us.net>
-In-Reply-To: <225747de-4348-58b3-19be-8b14356ab3a0@roeck-us.net>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 10 Aug 2022 19:28:44 -0700
-Message-ID: <CAGETcx895=9wPF+jnUfiycJ0k8d1S3BA0HLz42nCegtMBeo3LQ@mail.gmail.com>
-Subject: Re: [PATCH v6] amba: Remove deferred device addition
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Isaac Manjarres <isaacmanjarres@google.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        patches@armlinux.org.uk, kernel-team@android.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3] drm/msm: Make .remove and .shutdown HW shutdown
+ consistent
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>
+References: <20220725074313.42172-1-javierm@redhat.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220725074313.42172-1-javierm@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: zWa1g_5AHD3uerqB7_hC4aEldKOxN_z-
+X-Proofpoint-ORIG-GUID: zWa1g_5AHD3uerqB7_hC4aEldKOxN_z-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-11_01,2022-08-10_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
+ mlxscore=0 adultscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
+ impostorscore=0 phishscore=0 clxscore=1015 priorityscore=1501
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208110005
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 7:03 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On 8/10/22 14:47, Isaac Manjarres wrote:
-> > On Wed, Aug 10, 2022 at 05:58:58AM -0700, Guenter Roeck wrote:
-> >> On 8/9/22 20:33, Saravana Kannan wrote:
-> >> [ ... ]
-> >>
-> >>>
-> >>> Can you give me more details on the qemu configuration so I could try
-> >>> to reproduce it?
-> >>
-> >> qemu-system-arm -M vexpress-a9 -kernel arch/arm/boot/zImage -no-reboot \
-> >>      -initrd rootfs-armv5.cpio -m 128 \
-> >>      --append "rdinit=/sbin/init console=ttyAMA0,115200" \
-> >>      -dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb \
-> >>      -nographic -monitor null -serial stdio
-> >>
-> >> using multi_v7_defconfig will hang nicely with your patch applied,
-> >> and boot as expected without. This was with qemu v7.0, but I am
-> >> sure older qemu versions will show the same behavior. The initrd
-> >> used should not matter, but you'll find it at
-> >> https://github.com/groeck/linux-build-test/blob/master/rootfs/arm-v7/rootfs-armv5.cpio.gz
-> >>
-> >> Guenter
-> >>
-> > Hi Guenter,
-> >
-> > Thanks for the information; I was able to reproduce this on my end as
-> > well. The following changes fixed the problem for me. Can you please try
-> > them out?
-> >
-> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> > index 70f79fc71539..b377f18d8acc 100644
-> > --- a/drivers/base/dd.c
-> > +++ b/drivers/base/dd.c
-> > @@ -881,6 +881,11 @@ static int __device_attach_driver(struct device_driver *drv, void *_data)
-> >                  dev_dbg(dev, "Device match requests probe deferral\n");
-> >                  dev->can_match = true;
-> >                  driver_deferred_probe_add(dev);
-> > +               /*
-> > +                * Device can't match with the bus right now, so don't attempt
-> > +                * to match or bind with other drivers on the bus.
-> > +                */
-> > +               return ret;
-> >          } else if (ret < 0) {
-> >                  dev_dbg(dev, "Bus failed to match device: %d\n", ret);
-> >                  return ret;
-> > @@ -1120,6 +1125,11 @@ static int __driver_attach(struct device *dev, void *data)
-> >                  dev_dbg(dev, "Device match requests probe deferral\n");
-> >                  dev->can_match = true;
-> >                  driver_deferred_probe_add(dev);
-> > +               /*
-> > +                * Driver could not match with device, but may match with
-> > +                * another device on the bus.
-> > +                */
-> > +               return 0;
-> >          } else if (ret < 0) {
-> >                  dev_dbg(dev, "Bus failed to match device: %d\n", ret);
-> >                  return ret;
-> >
+Hi Javier
 
-Thanks Isaac for debugging and providing a fix! It's surprising that
-no one noticed this lack of "return"s for so long.
+Thank you for the patch.
 
->
-> Most of the tests pass with the above applied, but there is still one crash.
+On 7/25/2022 12:43 AM, Javier Martinez Canillas wrote:
+> Drivers' .remove and .shutdown callbacks are executed on different code
+> paths. The former is called when a device is removed from the bus, while
+> the latter is called at system shutdown time to quiesce the device.
+> 
+> This means that some overlap exists between the two, because both have to
+> take care of properly shutting down the hardware. But currently the logic
+> used in these two callbacks isn't consistent in msm drivers, which could
+> lead to kernel panic.
+> 
+> For example, on .remove the component is deleted and its .unbind callback
+> leads to the hardware being shutdown but only if the DRM device has been
+> marked as registered.
+> 
+> That check doesn't exist in the .shutdown logic and this can lead to the
+> driver calling drm_atomic_helper_shutdown() for a DRM device that hasn't
+> been properly initialized.
+> 
+> A situation like this can happen if drivers for expected sub-devices fail
+> to probe, since the .bind callback will never be executed. If that is the
+> case, drm_atomic_helper_shutdown() will attempt to take mutexes that are
+> only initialized if drm_mode_config_init() is called during a device bind.
+> 
+> This bug was attempted to be fixed in commit 623f279c7781 ("drm/msm: fix
+> shutdown hook in case GPU components failed to bind"), but unfortunately
+> it still happens in some cases as the one mentioned above, i.e:
+> 
+> [  169.495897] systemd-shutdown[1]: Powering off.
+> [  169.500466] kvm: exiting hardware virtualization
+> [  169.554787] platform wifi-firmware.0: Removing from iommu group 12
+> [  169.610238] platform video-firmware.0: Removing from iommu group 10
+> [  169.682164] ------------[ cut here ]------------
+> [  169.686909] WARNING: CPU: 6 PID: 1 at drivers/gpu/drm/drm_modeset_lock.c:317 drm_modeset_lock_all_ctx+0x3c4/0x3d0
+> ...
+> [  169.775691] Hardware name: Google CoachZ (rev3+) (DT)
+> [  169.780874] pstate: a0400009 (NzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  169.788021] pc : drm_modeset_lock_all_ctx+0x3c4/0x3d0
+> [  169.793205] lr : drm_modeset_lock_all_ctx+0x48/0x3d0
+> [  169.798299] sp : ffff80000805bb80
+> [  169.801701] x29: ffff80000805bb80 x28: ffff327c00128000 x27: 0000000000000000
+> [  169.809025] x26: 0000000000000000 x25: 0000000000000001 x24: ffffc95d820ec030
+> [  169.816349] x23: ffff327c00bbd090 x22: ffffc95d8215eca0 x21: ffff327c039c5800
+> [  169.823674] x20: ffff327c039c5988 x19: ffff80000805bbe8 x18: 0000000000000034
+> [  169.830998] x17: 000000040044ffff x16: ffffc95d80cac920 x15: 0000000000000000
+> [  169.838322] x14: 0000000000000315 x13: 0000000000000315 x12: 0000000000000000
+> [  169.845646] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+> [  169.852971] x8 : ffff80000805bc28 x7 : 0000000000000000 x6 : 0000000000000000
+> [  169.860295] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
+> [  169.867619] x2 : ffff327c00128000 x1 : 0000000000000000 x0 : ffff327c039c59b0
+> [  169.874944] Call trace:
+> [  169.877467]  drm_modeset_lock_all_ctx+0x3c4/0x3d0
+> [  169.882297]  drm_atomic_helper_shutdown+0x70/0x134
+> [  169.887217]  msm_drv_shutdown+0x30/0x40
+> [  169.891159]  platform_shutdown+0x28/0x40
+> [  169.895191]  device_shutdown+0x148/0x350
+> [  169.899221]  kernel_power_off+0x38/0x80
+> [  169.903163]  __do_sys_reboot+0x288/0x2c0
+> [  169.907192]  __arm64_sys_reboot+0x28/0x34
+> [  169.911309]  invoke_syscall+0x48/0x114
+> [  169.915162]  el0_svc_common.constprop.0+0x44/0xec
+> [  169.919992]  do_el0_svc+0x2c/0xc0
+> [  169.923394]  el0_svc+0x2c/0x84
+> [  169.926535]  el0t_64_sync_handler+0x11c/0x150
+> [  169.931013]  el0t_64_sync+0x18c/0x190
+> [  169.934777] ---[ end trace 0000000000000000 ]---
+> [  169.939557] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000018
+> [  169.948574] Mem abort info:
+> [  169.951452]   ESR = 0x0000000096000004
+> [  169.955307]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [  169.960765]   SET = 0, FnV = 0
+> [  169.963901]   EA = 0, S1PTW = 0
+> [  169.967127]   FSC = 0x04: level 0 translation fault
+> [  169.972136] Data abort info:
+> [  169.975093]   ISV = 0, ISS = 0x00000004
+> [  169.979037]   CM = 0, WnR = 0
+> [  169.982083] user pgtable: 4k pages, 48-bit VAs, pgdp=000000010eab1000
+> [  169.988697] [0000000000000018] pgd=0000000000000000, p4d=0000000000000000
+> [  169.995669] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> ...
+> [  170.079614] Hardware name: Google CoachZ (rev3+) (DT)
+> [  170.084801] pstate: a0400009 (NzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  170.091941] pc : ww_mutex_lock+0x28/0x32c
+> [  170.096064] lr : drm_modeset_lock_all_ctx+0x1b0/0x3d0
+> [  170.101254] sp : ffff80000805bb50
+> [  170.104658] x29: ffff80000805bb50 x28: ffff327c00128000 x27: 0000000000000000
+> [  170.111977] x26: 0000000000000000 x25: 0000000000000001 x24: 0000000000000018
+> [  170.119296] x23: ffff80000805bc10 x22: ffff327c039c5ad8 x21: ffff327c039c5800
+> [  170.126615] x20: ffff80000805bbe8 x19: 0000000000000018 x18: 0000000000000034
+> [  170.133933] x17: 000000040044ffff x16: ffffc95d80cac920 x15: 0000000000000000
+> [  170.141252] x14: 0000000000000315 x13: 0000000000000315 x12: 0000000000000000
+> [  170.148571] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+> [  170.155890] x8 : ffff80000805bc28 x7 : 0000000000000000 x6 : 0000000000000000
+> [  170.163209] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
+> [  170.170528] x2 : ffff327c00128000 x1 : 0000000000000000 x0 : 0000000000000018
+> [  170.177847] Call trace:
+> [  170.180364]  ww_mutex_lock+0x28/0x32c
+> [  170.184127]  drm_modeset_lock_all_ctx+0x1b0/0x3d0
+> [  170.188957]  drm_atomic_helper_shutdown+0x70/0x134
+> [  170.193876]  msm_drv_shutdown+0x30/0x40
+> [  170.197820]  platform_shutdown+0x28/0x40
+> [  170.201854]  device_shutdown+0x148/0x350
+> [  170.205888]  kernel_power_off+0x38/0x80
+> [  170.209832]  __do_sys_reboot+0x288/0x2c0
+> [  170.213866]  __arm64_sys_reboot+0x28/0x34
+> [  170.217990]  invoke_syscall+0x48/0x114
+> [  170.221843]  el0_svc_common.constprop.0+0x44/0xec
+> [  170.226672]  do_el0_svc+0x2c/0xc0
+> [  170.230079]  el0_svc+0x2c/0x84
+> [  170.233215]  el0t_64_sync_handler+0x11c/0x150
+> [  170.237686]  el0t_64_sync+0x18c/0x190
+> [  170.241451] Code: aa0103f4 d503201f d2800001 aa0103e3 (c8e37c02)
+> [  170.247704] ---[ end trace 0000000000000000 ]---
+> [  170.252457] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+> [  170.260654] Kernel Offset: 0x495d77c00000 from 0xffff800008000000
+> [  170.266910] PHYS_OFFSET: 0xffffcd8500000000
+> [  170.271212] CPU features: 0x800,00c2a015,19801c82
+> [  170.276042] Memory Limit: none
+> [  170.279183] ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b ]---
+> 
 
-Good to hear it's mostly good now.
+Can you please remove the timestamps and just keep the stacktrace?
 
-> 8<--- cut here ---^M
-> Unhandled fault: page domain fault (0x81b) at 0x00000122^M
-> [00000122] *pgd=00000000^M
-> Internal error: : 81b [#1] ARM^M
-> Modules linked in:^M
-> CPU: 0 PID: 1 Comm: swapper Tainted: G                 N 5.19.0+ #1^M
-> Hardware name: ARM-Versatile (Device Tree Support)^M
-> PC is at do_alignment_ldrstr+0x7c/0x164^M
-> LR is at ai_half+0x0/0x4^M
-> pc : [<c001fa00>]    lr : [<c0ca1278>]    psr: 60000113^M
-> sp : c8811d68  ip : 00000003  fp : 00000004^M
-> r10: c05433e4  r9 : c0ca1278  r8 : 00000801^M
-> r7 : 00000122  r6 : 00000000  r5 : e5823000  r4 : c8811df8^M
-> r3 : 00000100  r2 : c8811df8  r1 : 00000000  r0 : 00000122^M
-> Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none^M
-> Control: 00093177  Table: 01698000  DAC: 00000051^M
-> Register r0 information: non-paged memory^M
-> Register r1 information: NULL pointer^M
-> Register r2 information: 2-page vmalloc region starting at 0xc8810000 allocated at kernel_clone+0x70/0x644^M
-> Register r3 information: non-paged memory^M
-> Register r4 information: 2-page vmalloc region starting at 0xc8810000 allocated at kernel_clone+0x70/0x644^M
-> Register r5 information: non-paged memory^M
-> Register r6 information: NULL pointer^M
-> Register r7 information: non-paged memory^M
-> Register r8 information: non-paged memory^M
-> Register r9 information: non-slab/vmalloc memory^M
-> Register r10 information: non-slab/vmalloc memory^M
-> Register r11 information: non-paged memory^M
-> Register r12 information: non-paged memory^M
-> Process swapper (pid: 1, stack limit = 0x(ptrval))^M
-> Stack: (0xc8811d68 to 0xc8812000)^M
-> 1d60:                   c8811df8 e5823000 00000000 c00201dc 00000000 00000000^M
-> 1d80: c0bf2fd4 60000013 00000000 c006c440 00000001 00000000 e5823000 c053cdc0^M
-> 1da0: 00000000 c0be786c c1496d40 00000801 c0bec3f8 c001ffdc c8811df8 00000122^M
-> 1dc0: c1496d40 c0bc4858 00000000 c001d66c c12ae950 00000001 c0c5f3b0 c1496d40^M
-> 1de0: c05433e4 20000013 ffffffff c8811e2c c1496d40 c00095c4 00000001 00000001^M
-> 1e00: 00000122 00000100 c24d8cc0 c1552c00 00000fff c0c5f230 c1496d40 c24d6e58^M
-> 1e20: c0bc4858 00000000 c1497330 c8811e48 00000001 c05433e8 20000013 ffffffff^M
-> 1e40: 00000053 c05433cc ffffffed c1552c00 00000fff c0c5f230 c1496d40 c24d6e58^M
-> 1e60: c0bc4858 c053a784 c1552c00 c0c5f294 c0c5f294 c053a808 00000000 c1552c00^M
-> 1e80: c0c5f294 c05d9f94 00000000 c0c5f294 c05d9f74 c0c5f230 c1496d40 c05d7984^M
-> 1ea0: 00000000 c1540eac c7cd5fb4 c0be786c c0c5f294 c24d6e00 00000000 c05d8b7c^M
-> 1ec0: c0acccd4 c0c92600 c1496d40 c0c5f294 c0c92600 c1496d40 00000000 c1496d40^M
-> 1ee0: c0ca1000 c05dab3c c0bb0690 c0c92600 c1496d40 c000a8b0 00000000 00000000^M
-> 1f00: c14d7e4b c0b5f800 000000bf c0047c5c c0b5e9b4 00000000 c0c92600 c088e078^M
-> 1f20: c1496d40 00000007 c0c92600 c14d7e00 c0bc4874 c0b5e9b4 c0ca1000 c0bc4858^M
-> 1f40: 00000000 c0be786c c0bdda90 00000008 c14d7e00 c0bc4878 c0b5e9b4 c0b93230^M
-> 1f60: 00000007 00000007 00000000 c0b92400 00000000 000000bf 00000000 00000000^M
-> 1f80: c088e340 00000000 00000000 00000000 00000000 00000000 00000000 c088e350^M
-> 1fa0: 00000000 c088e340 00000000 c00084f8 00000000 00000000 00000000 00000000^M
-> 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000^M
-> 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000^M
->   do_alignment_ldrstr from do_alignment+0x200/0x984^M
->   do_alignment from do_DataAbort+0x38/0xb8^M
->   do_DataAbort from __dabt_svc+0x64/0xa0^M
-> Exception stack(0xc8811df8 to 0xc8811e40)^M
-> 1de0:                                                       00000001 00000001^M
-> 1e00: 00000122 00000100 c24d8cc0 c1552c00 00000fff c0c5f230 c1496d40 c24d6e58^M
-> 1e20: c0bc4858 00000000 c1497330 c8811e48 00000001 c05433e8 20000013 ffffffff^M
->   __dabt_svc from __clk_put+0x34/0x174^M
->   __clk_put from amba_read_periphid+0xd8/0x120^M
+> Fixes: 9d5cbf5fe46e ("drm/msm: add shutdown support for display platform_driver")
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 
-What the heck! How is clk_put() failing. I'll leave this to Isaac too.
+Other than that, I can see all prev comments have been addressed and 
+this change LGTM as well, hence
 
->   amba_read_periphid from amba_match+0x3c/0x84^M
->   amba_match from __driver_attach+0x20/0x114^M
->   __driver_attach from bus_for_each_dev+0x74/0xc0^M
->   bus_for_each_dev from bus_add_driver+0x154/0x1e8^M
->   bus_add_driver from driver_register+0x74/0x10c^M
->   driver_register from do_one_initcall+0x8c/0x2fc^M
->   do_one_initcall from kernel_init_freeable+0x190/0x220^M
->   kernel_init_freeable from kernel_init+0x10/0x108^M
->   kernel_init from ret_from_fork+0x14/0x3c^M
-> Exception stack(0xc8811fb0 to 0xc8811ff8)^M
-> 1fa0:                                     00000000 00000000 00000000 00000000^M
-> 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000^M
-> 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000^M
-> Code: e3a00002 e782310c e8bd8070 e792310c (e4c03001) ^M
-> ---[ end trace 0000000000000000 ]---^M
-> Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b^M
->
-> This is with versatile_defconfig and versatileab. Let me know if you need details.
-
-Is the dts that's generated called versatilbeab.dts?
-
--Saravana
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> ---
+> 
+> Changes in v3:
+> - Drop the msm_shutdown_hw() wrapper and just call drm_atomic_helper_shutdown()
+>    in both callbacks (Dmitry Baryshkov).
+> - Copy the comment in msm_drm_uninit() to msm_drv_shutdown() (Dmitry Baryshkov).
+> 
+> Changes in v2:
+> - Take the registered check out of the msm_shutdown_hw() and make callers to check instead.
+> - Make msm_shutdown_hw() an inline function.
+> - Add a Fixes: tag.
+> 
+>   drivers/gpu/drm/msm/msm_drv.c | 13 +++++++++----
+>   1 file changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+> index 1ed4cd09dbf8..1333fea57713 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.c
+> +++ b/drivers/gpu/drm/msm/msm_drv.c
+> @@ -1242,10 +1242,15 @@ void msm_drv_shutdown(struct platform_device *pdev)
+>   	struct msm_drm_private *priv = platform_get_drvdata(pdev);
+>   	struct drm_device *drm = priv ? priv->dev : NULL;
+>   
+> -	if (!priv || !priv->kms)
+> -		return;
+> -
+> -	drm_atomic_helper_shutdown(drm);
+> +	/*
+> +	 * Shutdown the hw if we're far enough along where things might be on.
+> +	 * If we run this too early, we'll end up panicking in any variety of
+> +	 * places. Since we don't register the drm device until late in
+> +	 * msm_drm_init, drm_dev->registered is used as an indicator that the
+> +	 * shutdown will be successful.
+> +	 */
+> +	if (drm && drm->registered)
+> +		drm_atomic_helper_shutdown(drm);
+>   }
+>   
+>   static struct platform_driver msm_platform_driver = {
