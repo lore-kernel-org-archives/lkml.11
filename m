@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9BFC25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84307C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238630AbiHKQht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50704 "EHLO
+        id S238023AbiHKQh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239299AbiHKQgv (ORCPT
+        with ESMTP id S239007AbiHKQea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D406611A;
-        Thu, 11 Aug 2022 09:12:18 -0700 (PDT)
+        Thu, 11 Aug 2022 12:34:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F04BC819;
+        Thu, 11 Aug 2022 09:11:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9145CB82164;
-        Thu, 11 Aug 2022 16:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3496C433D6;
-        Thu, 11 Aug 2022 16:12:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 906126145A;
+        Thu, 11 Aug 2022 16:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A14C433D6;
+        Thu, 11 Aug 2022 16:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234336;
-        bh=G5xEQW7ZVYbHbIfpH3jAQL5Gnijmtlw8o+XaJN28Zwk=;
+        s=k20201202; t=1660234272;
+        bh=/7Tt3mGLNqFqtvouJi8sZZB+COG859/xulJOuh6HOsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mkPB9LUF5O4YG3MS646VNIBB7GEZbO+m4vhGgAxKUcR2UHzMdi/pCULKGWSAAH1XU
-         fT6LeF4sLBan3U34ckjIIdYJh273UiloOwoYPv20dfidDlIB0jolDp4hP/v3ajcGq0
-         M6X9zatv6QFmX8DlaOd9yivAEKnFPuMlPwvPa91jHribR6AZWv7dSVoB4fx5rKt0wI
-         5HwVwSvw02U2mD9km69YFwr3HrK8fwrmr+/OxoD7lYoYD6MNJRE2+0lAtP1jfgddN3
-         yt5fcl1erdfF6OyU7ibKQhf49Mqh6Lz6/rm3MVpal/M9JSIHHNTn8MBJr+VCX0rZx1
-         tUE6lsH3Pncew==
+        b=a2ZzmNjToOEUqfOOn/8/jg6AFu1iEUTLGaXar8kWUf84yqSMFoOFQk24E271yglZX
+         LliMGwhR5lzGY3m1YGy9DyJ/uG6sqag6ClksGwfvgsLd7qKCD4dvSAHMJeCn6Xt33h
+         wufHdDrvVDZnj5bh7WxRDitVIKUKzBtU+L0WoyQUUgMFddNj92FFsBT911gjc4nuXu
+         pdo5MztZGBE/QGDVPoAGxMC3O6aPe1Ls8RFf7m6YRGZMulp213cSs0/R1WlQGphxGy
+         jkqhClG2OKNn52a565h825erEyDGMeCBNR/6HEmYYxfdo2ZGHvBPKabhFO1Pz8BRy0
+         gZQH2BGdN/xRw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Al Viro <viro@zeniv.linux.org.uk>, Sasha Levin <sashal@kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 11/12] d_add_ci(): make sure we don't miss d_lookup_done()
-Date:   Thu, 11 Aug 2022 12:11:37 -0400
-Message-Id: <20220811161144.1543598-11-sashal@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Breno Leitao <leitao@debian.org>,
+        Sasha Levin <sashal@kernel.org>, nayna@linux.ibm.com,
+        pfsmorigo@gmail.com, mpe@ellerman.id.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.14 08/14] crypto: vmx - Fix warning on p8_ghash_alg
+Date:   Thu, 11 Aug 2022 12:10:37 -0400
+Message-Id: <20220811161050.1543183-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
-References: <20220811161144.1543598-1-sashal@kernel.org>
+In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
+References: <20220811161050.1543183-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,37 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 40a3cb0d2314a41975aa385a74643878454f6eac ]
+[ Upstream commit cc8166bfc829043020b5cc3b7cdba02a17d03b6d ]
 
-All callers of d_alloc_parallel() must make sure that resulting
-in-lookup dentry (if any) will encounter __d_lookup_done() before
-the final dput().  d_add_ci() might end up creating in-lookup
-dentries; they are fed to d_splice_alias(), which will normally
-make sure they meet __d_lookup_done().  However, it is possible
-to end up with d_splice_alias() failing with ERR_PTR(-ELOOP)
-without having done so.  It takes a corrupted ntfs or case-insensitive
-xfs image, but neither should end up with memory corruption...
+The compiler complains that p8_ghash_alg isn't declared which is
+because the header file aesp8-ppc.h isn't included in ghash.c.
+This patch fixes the warning.
 
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: Breno Leitao <leitao@debian.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dcache.c | 1 +
+ drivers/crypto/vmx/ghash.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index 05bad55352bb..e42c715fc9e9 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -2089,6 +2089,7 @@ struct dentry *d_add_ci(struct dentry *dentry, struct inode *inode,
- 	}
- 	res = d_splice_alias(inode, found);
- 	if (res) {
-+		d_lookup_done(found);
- 		dput(found);
- 		return res;
- 	}
+diff --git a/drivers/crypto/vmx/ghash.c b/drivers/crypto/vmx/ghash.c
+index 1bfe867c0b7b..84a293d45cc5 100644
+--- a/drivers/crypto/vmx/ghash.c
++++ b/drivers/crypto/vmx/ghash.c
+@@ -22,6 +22,7 @@
+ #include <crypto/scatterwalk.h>
+ #include <crypto/internal/hash.h>
+ #include <crypto/b128ops.h>
++#include "aesp8-ppc.h"
+ 
+ #define IN_INTERRUPT in_interrupt()
+ 
 -- 
 2.35.1
 
