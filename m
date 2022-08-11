@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7947C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 00:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3824C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 00:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbiHKARq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 10 Aug 2022 20:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
+        id S233582AbiHKARu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 10 Aug 2022 20:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233491AbiHKARk (ORCPT
+        with ESMTP id S233551AbiHKARq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 10 Aug 2022 20:17:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964948FD5B
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 17:17:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D21CB81EA8
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 00:17:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A21C433D6;
-        Thu, 11 Aug 2022 00:17:36 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="cLNzgMBX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1660177054;
+        Wed, 10 Aug 2022 20:17:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E878FD5D
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 17:17:45 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1660177062;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xcdqPF+acOQR/oCrj/UIqVdUoCocIhPZs+3zfhhaqo4=;
-        b=cLNzgMBXL+BAsa/YoJXOUJ/DObagUBcZeCzI4ztbmUoi81ngK0YYq3v5+v+WQpjXf2Kof4
-        jWZU5qUgKv5U3jec+wfw22k3t3RsbpSgXxK8oBHFEqDQa2vpIgI9my1zxTeGAxknwWrNVF
-        gYftuYLMZWAHOFWA4oESdazEvXDZ00k=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bf13bbc0 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Thu, 11 Aug 2022 00:17:34 +0000 (UTC)
-Date:   Thu, 11 Aug 2022 02:17:31 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] random: use raw spinlocks for use on RT
-Message-ID: <YvRKm/IpbUID18FK@zx2c4.com>
-References: <20220801142530.133007-1-Jason@zx2c4.com>
- <YufkZU9kGkHHUhAK@linutronix.de>
+        bh=cUuS5wR61NmFQ4xmvkQge0ofNDbuv+yhiaUNvgh6AaU=;
+        b=xmTLXaHG72SxY4EMQyLqM7ceLTg3hPNtd4Xrdl9ZuWxoHsWKeLQ0mW+RmFUQkhLx3Fegp7
+        SfHN0dCSvYLqprnsaOl5JcHbuAyRQAL90JnNA3xH5vPYXV0x+3X2fxSf3YYjrCJT9LnEzs
+        Dhuj2OYMOQijvRyu56bPTR6YqNjmlZSU7dZziAOUaddcQKnpweY9+T4W060aeULLlfiPaI
+        Asgov5Z7vcbCutdE/ZIiYMgpGQw1QvfsuNydWWoZnAj5kk7amuCVNYZD8Y9ZeACAeir8AD
+        tgksaRPvKJju9HTUv7y4lyoDBw3qFl5wm9O3OW+Mq9JpNXbDn/OrUYVlGGppSw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1660177062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cUuS5wR61NmFQ4xmvkQge0ofNDbuv+yhiaUNvgh6AaU=;
+        b=CkbZwGW3eV47VPXcugEyl8MaxUw/0yG42ErEOPfCNPpqR5XNB8Odvxip2H3gVJQy0MQaKO
+        zAU3tNSrOfh9VgAQ==
+To:     Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "Shutemov, Kirill" <kirill.shutemov@intel.com>,
+        "Huang, Kai" <kai.huang@intel.com>
+Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        "Gomez Iglesias, Antonio" <antonio.gomez.iglesias@intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Subject: Re: [PATCH] x86/apic: Don't disable x2APIC if locked
+In-Reply-To: <bff78ad9-57d8-ca82-cc75-0b7e5024116d@linux.intel.com>
+References: <20220809234000.783284-1-daniel.sneddon@linux.intel.com>
+ <d6ffb489-7024-ff74-bd2f-d1e06573bb82@intel.com>
+ <238ea612-5a25-9323-b31f-0a14493db2f7@linux.intel.com>
+ <d4bcb22e-224c-d256-cb93-3ff6ed89a7d0@intel.com>
+ <341ea6e9-d8f3-ee7a-6794-67408abbf047@linux.intel.com>
+ <87r11nu52l.ffs@tglx>
+ <83a0d220-1872-caba-4e7e-b6a366655cf2@linux.intel.com>
+ <ba80b303-31bf-d44a-b05d-5c0f83038798@intel.com>
+ <bff78ad9-57d8-ca82-cc75-0b7e5024116d@linux.intel.com>
+Date:   Thu, 11 Aug 2022 02:17:41 +0200
+Message-ID: <87o7wrtyze.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YufkZU9kGkHHUhAK@linutronix.de>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Sebastian,
+On Wed, Aug 10 2022 at 16:38, Daniel Sneddon wrote:
+> On 8/10/22 16:09, Dave Hansen wrote:
+>> config INTEL_TDX_GUEST
+>>         bool "Intel TDX (Trust Domain Extensions) - Guest Support"
+>>         depends on X86_64 && CPU_SUP_INTEL
+>>         depends on X86_X2APIC
+>
+> So I got some more input.  SPR and newer will lock the APIC.  Older products
+> will get a ucode update, but that ucode update won't include the APIC lock.  So,
+> on non-SPR parts do we still want to make SGX depend on X2APIC?
 
-On Mon, Aug 01, 2022 at 04:34:13PM +0200, Sebastian Andrzej Siewior wrote:
-> On 2022-08-01 16:25:31 [+0200], Jason A. Donenfeld wrote:
-> > After handling several bug reports using various creative solutions,
-> > it's becoming clear that random bytes are actually a useful thing to
-> > happen from any ordinary context, including when interruptsare off.
-> > Actually, that's been long recognized, which is why the RNG uses
-> > spinlocks rather than mutexes. But on RT, those spinlocks are getting
-> > converted back into sleeping locks.
-> > 
-> > This clearly is causing more problems than it might hypothetically
-> > solve. Additionally, the locks in random.c are generally for fixed
-> > durations doing CPU-bound operations -- no waiting for hardware or I/O
-> > or the like. So this shouldn't result in a real harm to latency.
-> > 
-> > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> > Sebastian - I won't move forward with this without your Ack, obviously.
-> > What do you think of this general approach? -Jason
-> 
-> I would need to do worst-case measurements and I've been looking at this
-> just before writting the other email and there was a local_lock_t
-> somewhere which needs also change…
+What is the ucode update doing on pre SPR parts?
+Just providing magic voodoo which pretends to be safe?
 
-Did you ever come up some measurements here? It sure would be nice if I
-could apply this, but obviously that's contingent on you saying it's
-okay latency-wise on RT.
+The public available documentation for this is a huge pile of void.
 
-Jason
+The point is that if the SGX attestation will fail when X2APIC is not
+enforced on the host as of 'some magic dates in 2023' according to the
+documentation I pointed to, then any pre SPR SGX capable system is going
+to be disfunctional vs. SGX at one of those magic dates.
+
+Some people inside a particular company need to get their act together
+and either make this consistent or provide some coherent information why
+this is not required for pre SPR parts and why SPR needs to have it.
+
+Thanks,
+
+        tglx
+
+
