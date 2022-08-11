@@ -2,283 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC258C25B0D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 507B3C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234742AbiHKNhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 09:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
+        id S234084AbiHKNiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 09:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234073AbiHKNhd (ORCPT
+        with ESMTP id S234070AbiHKNiK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 09:37:33 -0400
-X-Greylist: delayed 291 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 11 Aug 2022 06:37:32 PDT
-Received: from vm3.sequanux.org (static.55.155.9.5.clients.your-server.de [5.9.155.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F42C6FA0A;
-        Thu, 11 Aug 2022 06:37:32 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by vm3.sequanux.org (Postfix) with ESMTP id 4B5A71087EA;
-        Thu, 11 Aug 2022 15:37:13 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at vm3.sequanux.org
-Received: from vm3.sequanux.org ([127.0.0.1])
-        by localhost (vm3.sequanux.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 6IrJoOqWwxPG; Thu, 11 Aug 2022 15:36:29 +0200 (CEST)
-Received: from localhost (softwrestling.org [95.216.36.37])
-        by vm3.sequanux.org (Postfix) with ESMTPSA id 69D6F108702;
-        Thu, 11 Aug 2022 15:36:29 +0200 (CEST)
-Date:   Thu, 11 Aug 2022 15:36:15 +0200
-From:   simon.guinot@sequanux.org
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Pavel Machek <pavel@ucw.cz>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee@kernel.org>, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
-        Tasanakorn Phaipool <tasanakorn@gmail.com>
-Subject: Re: [PATCH v2 2/4] gpio-f7188x: use unique labels for banks/chips
-Message-ID: <YvUFz0SmzCk8cRrK@76cbfcf04d45>
-References: <20220809150442.3525-1-henning.schild@siemens.com>
- <20220809150442.3525-3-henning.schild@siemens.com>
+        Thu, 11 Aug 2022 09:38:10 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB89F89CDD;
+        Thu, 11 Aug 2022 06:38:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660225088; x=1691761088;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=3YSnNJEECrBHaKlYPHVfDKRlWH4sV/biWsKMZr6LyGA=;
+  b=MWoLHKviM73gfIL2KJTHk8ig6DjGOjaBIjHcegsJukfHnWQuGmmFAt2B
+   7cG9DWUuf4SWs42W6T4Dtrskj/uHCbDf9l0nKIu4n9EqfiLrukeZLw32n
+   5+BnHIN7lPdwG2KLJvm7wEUEz7lYLP324fF4I+zAIy/f6m7t/YF7iivCh
+   r/sakBT79yX2InpTW8l5QAff1BLcMpZXjRY9hHBy56b/VxzAl/3/akpYX
+   vnB+Z/pyIgI0hHMMhNO175fI36ujBeq/+e7spOCLdfEnWKGh62V9bEXke
+   tpfKcXToRSoLyHDE/J97Fzj2AOoTAj3J33dJUjmneTEE8roN2I+rFIoWF
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="271121805"
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="271121805"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 06:37:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="665375567"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga008.fm.intel.com with ESMTP; 11 Aug 2022 06:37:40 -0700
+Date:   Thu, 11 Aug 2022 21:32:55 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     "Nikunj A. Dadhania" <nikunj@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>, bharata@amd.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220811133255.GB916119@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <b21f41e5-0322-bbfb-b9c2-db102488592d@amd.com>
+ <9e86daea-5619-a216-fe02-0562cf14c501@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="SzzCHqagaYVjy5mk"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220809150442.3525-3-henning.schild@siemens.com>
+In-Reply-To: <9e86daea-5619-a216-fe02-0562cf14c501@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Aug 11, 2022 at 01:30:06PM +0200, Gupta, Pankaj wrote:
+> 
+> > > This is the v7 of this series which tries to implement the fd-based KVM
+> > > guest private memory. The patches are based on latest kvm/queue branch
+> > > commit:
+> > > 
+> > >    b9b71f43683a (kvm/queue) KVM: x86/mmu: Buffer nested MMU
+> > > split_desc_cache only by default capacity
+> > > 
+> > > Introduction
+> > > ------------
+> > > In general this patch series introduce fd-based memslot which provides
+> > > guest memory through memory file descriptor fd[offset,size] instead of
+> > > hva/size. The fd can be created from a supported memory filesystem
+> > > like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
+> > > and the the memory backing store exchange callbacks when such memslot
+> > > gets created. At runtime KVM will call into callbacks provided by the
+> > > backing store to get the pfn with the fd+offset. Memory backing store
+> > > will also call into KVM callbacks when userspace punch hole on the fd
+> > > to notify KVM to unmap secondary MMU page table entries.
+> > > 
+> > > Comparing to existing hva-based memslot, this new type of memslot allows
+> > > guest memory unmapped from host userspace like QEMU and even the kernel
+> > > itself, therefore reduce attack surface and prevent bugs.
+> > > 
+> > > Based on this fd-based memslot, we can build guest private memory that
+> > > is going to be used in confidential computing environments such as Intel
+> > > TDX and AMD SEV. When supported, the memory backing store can provide
+> > > more enforcement on the fd and KVM can use a single memslot to hold both
+> > > the private and shared part of the guest memory.
+> > > 
+> > > mm extension
+> > > ---------------------
+> > > Introduces new MFD_INACCESSIBLE flag for memfd_create(), the file
+> > > created with these flags cannot read(), write() or mmap() etc via normal
+> > > MMU operations. The file content can only be used with the newly
+> > > introduced memfile_notifier extension.
+> > > 
+> > > The memfile_notifier extension provides two sets of callbacks for KVM to
+> > > interact with the memory backing store:
+> > >    - memfile_notifier_ops: callbacks for memory backing store to notify
+> > >      KVM when memory gets invalidated.
+> > >    - backing store callbacks: callbacks for KVM to call into memory
+> > >      backing store to request memory pages for guest private memory.
+> > > 
+> > > The memfile_notifier extension also provides APIs for memory backing
+> > > store to register/unregister itself and to trigger the notifier when the
+> > > bookmarked memory gets invalidated.
+> > > 
+> > > The patchset also introduces a new memfd seal F_SEAL_AUTO_ALLOCATE to
+> > > prevent double allocation caused by unintentional guest when we only
+> > > have a single side of the shared/private memfds effective.
+> > > 
+> > > memslot extension
+> > > -----------------
+> > > Add the private fd and the fd offset to existing 'shared' memslot so
+> > > that both private/shared guest memory can live in one single memslot.
+> > > A page in the memslot is either private or shared. Whether a guest page
+> > > is private or shared is maintained through reusing existing SEV ioctls
+> > > KVM_MEMORY_ENCRYPT_{UN,}REG_REGION.
+> > > 
+> > > Test
+> > > ----
+> > > To test the new functionalities of this patch TDX patchset is needed.
+> > > Since TDX patchset has not been merged so I did two kinds of test:
+> > > 
+> > > -  Regresion test on kvm/queue (this patchset)
+> > >     Most new code are not covered. Code also in below repo:
+> > >     https://github.com/chao-p/linux/tree/privmem-v7
+> > > 
+> > > -  New Funational test on latest TDX code
+> > >     The patch is rebased to latest TDX code and tested the new
+> > >     funcationalities. See below repos:
+> > >     Linux: https://github.com/chao-p/linux/tree/privmem-v7-tdx
+> > >     QEMU: https://github.com/chao-p/qemu/tree/privmem-v7
+> > 
+> > While debugging an issue with SEV+UPM, found that fallocate() returns
+> > an error in QEMU which is not handled (EINTR). With the below handling
+> > of EINTR subsequent fallocate() succeeds:
 
---SzzCHqagaYVjy5mk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+QEMU code has not well-tested so it's not strange you met problem. But
+from the man page, there is signal was caught for EINTR, do you know
+the signal number?
 
-On Tue, Aug 09, 2022 at 05:04:40PM +0200, Henning Schild wrote:
-> So that drivers building on top can find those pins with GPIO_LOOKUP
-> helpers.
->=20
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+Thanks for you patch but before we change it in QEMU I want to make sure
+it's indeed a QEMU issue (e.g. not a kernel isssue).
 
-Acked-by: Simon Guinot <simon.guinot@sequanux.org>
+> > 
+> > 
+> > diff --git a/backends/hostmem-memfd-private.c b/backends/hostmem-memfd-private.c
+> > index af8fb0c957..e8597ed28d 100644
+> > --- a/backends/hostmem-memfd-private.c
+> > +++ b/backends/hostmem-memfd-private.c
+> > @@ -39,7 +39,7 @@ priv_memfd_backend_memory_alloc(HostMemoryBackend *backend, Error **errp)
+> >       MachineState *machine = MACHINE(qdev_get_machine());
+> >       uint32_t ram_flags;
+> >       char *name;
+> > -    int fd, priv_fd;
+> > +    int fd, priv_fd, ret;
+> >       if (!backend->size) {
+> >           error_setg(errp, "can't create backend with size 0");
+> > @@ -65,7 +65,15 @@ priv_memfd_backend_memory_alloc(HostMemoryBackend *backend, Error **errp)
+> >                                      backend->size, ram_flags, fd, 0, errp);
+> >       g_free(name);
+> > -    fallocate(priv_fd, 0, 0, backend->size);
+> > +again:
+> > +    ret = fallocate(priv_fd, 0, 0, backend->size);
+> > +    if (ret) {
+> > +           perror("Fallocate failed: \n");
+> > +           if (errno == EINTR)
+> > +                   goto again;
+> > +           else
+> > +                   exit(1);
+> > +    }
+> > 
+> > However, fallocate() preallocates full guest memory before starting the guest.
+> > With this behaviour guest memory is *not* demand pinned. Is there a way to
+> > prevent fallocate() from reserving full guest memory?
+> 
+> Isn't the pinning being handled by the corresponding host memory backend
+> with mmu notifier and architecture support while doing the memory operations
+> e.g page migration and swapping/reclaim (not supported
+> currently AFAIU). But yes, we need to allocate entire guest memory with the
+> new flags MEMFILE_F_{UNMOVABLE, UNRECLAIMABLE etc}.
 
-> ---
->  drivers/gpio/gpio-f7188x.c | 138 ++++++++++++++++++-------------------
->  1 file changed, 69 insertions(+), 69 deletions(-)
->=20
-> diff --git a/drivers/gpio/gpio-f7188x.c b/drivers/gpio/gpio-f7188x.c
-> index 4d8f38bc3b45..9c91832b8c71 100644
-> --- a/drivers/gpio/gpio-f7188x.c
-> +++ b/drivers/gpio/gpio-f7188x.c
-> @@ -150,10 +150,10 @@ static void f7188x_gpio_set(struct gpio_chip *chip,=
- unsigned offset, int value);
->  static int f7188x_gpio_set_config(struct gpio_chip *chip, unsigned offse=
-t,
->  				  unsigned long config);
-> =20
-> -#define F7188X_GPIO_BANK(_base, _ngpio, _regbase)			\
-> +#define F7188X_GPIO_BANK(_base, _ngpio, _regbase, _label)			\
->  	{								\
->  		.chip =3D {						\
-> -			.label            =3D DRVNAME,			\
-> +			.label            =3D _label,			\
->  			.owner            =3D THIS_MODULE,		\
->  			.get_direction    =3D f7188x_gpio_get_direction,	\
->  			.direction_input  =3D f7188x_gpio_direction_in,	\
-> @@ -178,98 +178,98 @@ static int f7188x_gpio_set_config(struct gpio_chip =
-*chip, unsigned offset,
->  #define gpio_single_data(device)	((device) !=3D SIO_LD_GPIO_FINTEK)
-> =20
->  static struct f7188x_gpio_bank f71869_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 6, 0xF0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 8, 0xC0),
-> -	F7188X_GPIO_BANK(40, 8, 0xB0),
-> -	F7188X_GPIO_BANK(50, 5, 0xA0),
-> -	F7188X_GPIO_BANK(60, 6, 0x90),
-> +	F7188X_GPIO_BANK(0, 6, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xB0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 5, 0xA0, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 6, 0x90, DRVNAME "-6"),
->  };
-> =20
->  static struct f7188x_gpio_bank f71869a_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 6, 0xF0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 8, 0xC0),
-> -	F7188X_GPIO_BANK(40, 8, 0xB0),
-> -	F7188X_GPIO_BANK(50, 5, 0xA0),
-> -	F7188X_GPIO_BANK(60, 8, 0x90),
-> -	F7188X_GPIO_BANK(70, 8, 0x80),
-> +	F7188X_GPIO_BANK(0, 6, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xB0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 5, 0xA0, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 8, 0x90, DRVNAME "-6"),
-> +	F7188X_GPIO_BANK(70, 8, 0x80, DRVNAME "-7"),
->  };
-> =20
->  static struct f7188x_gpio_bank f71882_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 8, 0xF0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 4, 0xC0),
-> -	F7188X_GPIO_BANK(40, 4, 0xB0),
-> +	F7188X_GPIO_BANK(0, 8, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 4, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 4, 0xB0, DRVNAME "-4"),
->  };
-> =20
->  static struct f7188x_gpio_bank f71889a_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 7, 0xF0),
-> -	F7188X_GPIO_BANK(10, 7, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 8, 0xC0),
-> -	F7188X_GPIO_BANK(40, 8, 0xB0),
-> -	F7188X_GPIO_BANK(50, 5, 0xA0),
-> -	F7188X_GPIO_BANK(60, 8, 0x90),
-> -	F7188X_GPIO_BANK(70, 8, 0x80),
-> +	F7188X_GPIO_BANK(0, 7, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 7, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xB0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 5, 0xA0, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 8, 0x90, DRVNAME "-6"),
-> +	F7188X_GPIO_BANK(70, 8, 0x80, DRVNAME "-7"),
->  };
-> =20
->  static struct f7188x_gpio_bank f71889_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 7, 0xF0),
-> -	F7188X_GPIO_BANK(10, 7, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 8, 0xC0),
-> -	F7188X_GPIO_BANK(40, 8, 0xB0),
-> -	F7188X_GPIO_BANK(50, 5, 0xA0),
-> -	F7188X_GPIO_BANK(60, 8, 0x90),
-> -	F7188X_GPIO_BANK(70, 8, 0x80),
-> +	F7188X_GPIO_BANK(0, 7, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 7, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xB0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 5, 0xA0, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 8, 0x90, DRVNAME "-6"),
-> +	F7188X_GPIO_BANK(70, 8, 0x80, DRVNAME "-7"),
->  };
-> =20
->  static struct f7188x_gpio_bank f81866_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 8, 0xF0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 8, 0xC0),
-> -	F7188X_GPIO_BANK(40, 8, 0xB0),
-> -	F7188X_GPIO_BANK(50, 8, 0xA0),
-> -	F7188X_GPIO_BANK(60, 8, 0x90),
-> -	F7188X_GPIO_BANK(70, 8, 0x80),
-> -	F7188X_GPIO_BANK(80, 8, 0x88),
-> +	F7188X_GPIO_BANK(0, 8, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xB0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 8, 0xA0, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 8, 0x90, DRVNAME "-6"),
-> +	F7188X_GPIO_BANK(70, 8, 0x80, DRVNAME "-7"),
-> +	F7188X_GPIO_BANK(80, 8, 0x88, DRVNAME "-8"),
->  };
-> =20
-> =20
->  static struct f7188x_gpio_bank f81804_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 8, 0xF0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(50, 8, 0xA0),
-> -	F7188X_GPIO_BANK(60, 8, 0x90),
-> -	F7188X_GPIO_BANK(70, 8, 0x80),
-> -	F7188X_GPIO_BANK(90, 8, 0x98),
-> +	F7188X_GPIO_BANK(0, 8, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(50, 8, 0xA0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(60, 8, 0x90, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(70, 8, 0x80, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(90, 8, 0x98, DRVNAME "-6"),
->  };
-> =20
->  static struct f7188x_gpio_bank f81865_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 8, 0xF0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE0),
-> -	F7188X_GPIO_BANK(20, 8, 0xD0),
-> -	F7188X_GPIO_BANK(30, 8, 0xC0),
-> -	F7188X_GPIO_BANK(40, 8, 0xB0),
-> -	F7188X_GPIO_BANK(50, 8, 0xA0),
-> -	F7188X_GPIO_BANK(60, 5, 0x90),
-> +	F7188X_GPIO_BANK(0, 8, 0xF0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE0, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xD0, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xC0, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xB0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 8, 0xA0, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 5, 0x90, DRVNAME "-6"),
->  };
-> =20
->  static struct f7188x_gpio_bank nct6116d_gpio_bank[] =3D {
-> -	F7188X_GPIO_BANK(0, 8, 0xE0),
-> -	F7188X_GPIO_BANK(10, 8, 0xE4),
-> -	F7188X_GPIO_BANK(20, 8, 0xE8),
-> -	F7188X_GPIO_BANK(30, 8, 0xEC),
-> -	F7188X_GPIO_BANK(40, 8, 0xF0),
-> -	F7188X_GPIO_BANK(50, 8, 0xF4),
-> -	F7188X_GPIO_BANK(60, 8, 0xF8),
-> -	F7188X_GPIO_BANK(70, 1, 0xFC),
-> +	F7188X_GPIO_BANK(0, 8, 0xE0, DRVNAME "-0"),
-> +	F7188X_GPIO_BANK(10, 8, 0xE4, DRVNAME "-1"),
-> +	F7188X_GPIO_BANK(20, 8, 0xE8, DRVNAME "-2"),
-> +	F7188X_GPIO_BANK(30, 8, 0xEC, DRVNAME "-3"),
-> +	F7188X_GPIO_BANK(40, 8, 0xF0, DRVNAME "-4"),
-> +	F7188X_GPIO_BANK(50, 8, 0xF4, DRVNAME "-5"),
-> +	F7188X_GPIO_BANK(60, 8, 0xF8, DRVNAME "-6"),
-> +	F7188X_GPIO_BANK(70, 1, 0xFC, DRVNAME "-7"),
->  };
-> =20
->  static int f7188x_gpio_get_direction(struct gpio_chip *chip, unsigned of=
-fset)
-> --=20
-> 2.35.1
+Right.
 
---SzzCHqagaYVjy5mk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEXW8DgovlR3VS5hA0zyg/RDPmszoFAmL1Bc8ACgkQzyg/RDPm
-szp4iw//Zb3bF0W59U4UP3UOh2jPvUvX+tEhu3tdv5S0UWtgNhEuzjrRAvGW1tQo
-P8YuvwWPstfGdrkHoLVkFje1nGPTnpE1sovaIzVxsXuCrGC5TAFqjaZLwYwCsH6j
-aBCZhuQT0cBrRaOydPHXse+AYiA8BPQ/uNrRdT+aVvFJwRBAzgsnXTG/BitV+3Tr
-f0Ew0vgpdTOQ5bj/AAyN/cNav2xukzCQrkqRzAHtXHOU4tZKg2as2UUIODYziMY2
-KJP7Bhyi0NgdjzMdZsxcC8RnMleSl2LSCb/jw0kGOuZ+lNO/FNUvFyde46SVvtxx
-+Yq9xqK1Nvu1SOLhf8TpIAphfpZuT9viXY3Eg9D6N3tppCJvgEojdHZxoMhvewH+
-l60W6WuQgtzDP63bZbuZ4b7czBk1xJROjBwtcGv8YwMOdWT0rqERVLIfA0vRL8w4
-p3eWTG49l+Zd2eEO/GuDq6Yc7pSMhHogXER//zbWRE1wE2x9s+oRXejbjawLv7z7
-c5tEgQDJM1V4YNqcH4YkqHQot/c3xEALkT6T2V3Mf8Bt8csFXEtxSaS2vBitBEup
-nDFA0oJ4k1Ygo9JjQoVyx53JSofWdccBbFzqSFrKyceVmbGEMRmgzDGspSLUTEXL
-WAXL6a8gL2+STB/tW9tr93yhPKBkfoxRLFKh0yEDDGIQoGjcIbs=
-=RX9P
------END PGP SIGNATURE-----
-
---SzzCHqagaYVjy5mk--
+> 
+> 
+> Thanks,
+> Pankaj
+> 
+> > 
+> > > An example QEMU command line for TDX test:
+> > > -object tdx-guest,id=tdx,debug=off,sept-ve-disable=off \
+> > > -machine confidential-guest-support=tdx \
+> > > -object memory-backend-memfd-private,id=ram1,size=${mem} \
+> > > -machine memory-backend=ram1
+> > > 
+> > 
+> > Regards,
+> > Nikunj
+> > 
+> > 
