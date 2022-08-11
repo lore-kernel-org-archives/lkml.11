@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF238C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752FEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234763AbiHKPau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47916 "EHLO
+        id S235827AbiHKPbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbiHKPaJ (ORCPT
+        with ESMTP id S235896AbiHKPak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:30:09 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C8895699
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:29:42 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id h21-20020a17090aa89500b001f31a61b91dso5715005pjq.4
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:29:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=k4cTJcWzw8+6axf00iGx7biHKXUEGT3Ofca07ePg5B0=;
-        b=e8WRD+IbMXLxt0XX5XAhvJBvN5jLNJ8ZUx93+YW8cz7r7GCpyryYTdJ+UJNUPY223r
-         zzoPmw6xUn3VMbJuI2F2ZSeOhIbrKmiX3G9mhH6iyovCbNm2Puhe2oTBwUlY5OL7qfj2
-         sQGEp1yOeNmSmYqyuuyL7LSmz37k/frFxM+oU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=k4cTJcWzw8+6axf00iGx7biHKXUEGT3Ofca07ePg5B0=;
-        b=v0RJEAtl/qiGpwQzlztWwD6xCYmC+Obdy+FohEg9GbIClhzgD4lQpvAQmpnoKEBFzc
-         e0abN7P7a4hiulpEBtUZJFa+9UJ/Zf5yDsBZz4bcEUy51XsTonbRxs0cx1v8Y01+Iwae
-         ytBeN+UAkSYqHd2jueyzcR51TaghILgGLxTkVw5Q5jqYQH4U0o+AvBDJtT7DV9ccYTun
-         hIp0fEURld/OZbIqz0OAgkI9S8yKzn69vBwrRxpzXQY/aNss9vWJD+6FBg7npRnKzwXs
-         c/wglWmQ3/+HgYjznosGnIsaS+1s6l1KUBsmjDpf9gODulBXZoywdqAQ2mRIMTVwiVNY
-         iCEg==
-X-Gm-Message-State: ACgBeo3lEDDdLDuSg7xeg17XlW9cTBbP7WQ0WyPJHarSnyfkEPASBRNX
-        G6JbVie5w7odaFCVG9Ijh+Enog==
-X-Google-Smtp-Source: AA6agR5MDAoWj07mo8Re6bJHCK/lTI2S9VYB/kjpRf71aZeSVUXPPLyCezVqfrd1Gs3g5Ty8PSMb+A==
-X-Received: by 2002:a17:90a:55:b0:1f7:4513:8cac with SMTP id 21-20020a17090a005500b001f745138cacmr9192293pjb.93.1660231781372;
-        Thu, 11 Aug 2022 08:29:41 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w9-20020a1709026f0900b0016f1204cde8sm1985339plk.301.2022.08.11.08.29.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:29:40 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 08:29:39 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-mips@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
-Subject: Re: [PATCH] treewide: defconfig: address renamed CONFIG_DEBUG_INFO=y
-Message-ID: <202208110829.F82D003490@keescook>
-References: <20220811114609.2097335-1-arnd@kernel.org>
+        Thu, 11 Aug 2022 11:30:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF692956B1;
+        Thu, 11 Aug 2022 08:29:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ED58B82151;
+        Thu, 11 Aug 2022 15:29:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7824CC433C1;
+        Thu, 11 Aug 2022 15:29:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660231794;
+        bh=Kcc3+GretIhBYyl20guPmg+/oLg7fqLFLFv/C9EO0YQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Hs4VMhDiZ19LEMbkWDz5wXNhS/p6wQfWq1poc2wdPVNXrEGLjcqRh2fRWcYhL6KWy
+         APFm79+dgg1CZVNKHdajF7XVl31fLNdUh8EA0dUJpJoSMH+m5dbz1nAShoUQeAK1l+
+         DzHNIoPWYPSrwRSCDGTOtDv2OsmfY59yhlgkj+Y+IejP+0F93RGyr9UR+33lVywZVE
+         pwmUTDNZ7Jvca/CLtJU+YvTYHOfuLrpWQLzM+XCkyYikogArjrsonzHW1qLgxSyFQH
+         QR7Ldlip4cH1IMaJx8L1/YfDbmykk4zgH5tYzEHnOiSdCKa6BFNRTY2rhnIt00Goom
+         469HxeeEAAPvA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     David Zhang <dingchen.zhang@amd.com>, Leo Li <sunpeng.li@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Jerry.Zuo@amd.com, nicholas.kazlauskas@amd.com,
+        mikita.lipski@amd.com, Jimmy.Kizito@amd.com, dale.zhao@amd.com,
+        wenjing.liu@amd.com, Anthony.Koo@amd.com,
+        agustin.gutierrez@amd.com, Anson.Jacob@amd.com, po-tchen@amd.com,
+        rdunlap@infradead.org, dharati.shah@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 011/105] drm/amd/display: fix system hang when PSR exits
+Date:   Thu, 11 Aug 2022 11:26:55 -0400
+Message-Id: <20220811152851.1520029-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220811114609.2097335-1-arnd@kernel.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 01:44:34PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> CONFIG_DEBUG_INFO is now implicitly selected if one picks one of the
-> explicit options that could be DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT,
-> DEBUG_INFO_DWARF4, DEBUG_INFO_DWARF5.
-> 
-> This was actually not what I had in mind when I suggested making
-> it a 'choice' statement, but it's too late to change again now,
-> and the Kconfig logic is more sensible in the new form.
-> 
-> Change any defconfig file that had CONFIG_DEBUG_INFO enabled
-> but did not pick DWARF4 or DWARF5 explicitly to now pick the toolchain
-> default.
-> 
-> Fixes: f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO selectable from a choice")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+From: David Zhang <dingchen.zhang@amd.com>
 
-Thanks!
+[ Upstream commit 6cc5c77300afbb285c4f41e04f3435ae3c484c40 ]
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+[why]
+When DC driver send PSR exit dmub command to DMUB FW, it might not
+wait until PSR exit. Then it may hit the following deadlock situation.
+1. DC driver send HW LOCK command to DMUB FW due to frame update
+2. DMUB FW Set the HW lock
+3. DMUB execute PSR exit sequence and stuck at polling DPG Pending
+register due to the HW Lock is set
+4. DC driver ask DMUB FW to unlock HW lock, but DMUB FW is polling
+DPG pending register
 
+[how]
+The reason why DC driver doesn't wait until PSR exit is because some of
+the PSR state machine state is not update the dc driver. So when DC
+driver read back the PSR state, it take the state for PSR inactive.
+
+Signed-off-by: David Zhang <dingchen.zhang@amd.com>
+Acked-by: Leo Li <sunpeng.li@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/display/dc/dc_types.h     |  7 +++++++
+ drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c | 16 ++++++++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dc_types.h b/drivers/gpu/drm/amd/display/dc/dc_types.h
+index 2ba9f528c0fe..f1f11b3c205f 100644
+--- a/drivers/gpu/drm/amd/display/dc/dc_types.h
++++ b/drivers/gpu/drm/amd/display/dc/dc_types.h
+@@ -657,10 +657,17 @@ enum dc_psr_state {
+ 	PSR_STATE4b,
+ 	PSR_STATE4c,
+ 	PSR_STATE4d,
++	PSR_STATE4_FULL_FRAME,
++	PSR_STATE4a_FULL_FRAME,
++	PSR_STATE4b_FULL_FRAME,
++	PSR_STATE4c_FULL_FRAME,
++	PSR_STATE4_FULL_FRAME_POWERUP,
+ 	PSR_STATE5,
+ 	PSR_STATE5a,
+ 	PSR_STATE5b,
+ 	PSR_STATE5c,
++	PSR_STATE_HWLOCK_MGR,
++	PSR_STATE_POLLVUPDATE,
+ 	PSR_STATE_INVALID = 0xFF
+ };
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c b/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c
+index 1d4f0c45b536..f941aa107dc6 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c
++++ b/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c
+@@ -74,6 +74,22 @@ static enum dc_psr_state convert_psr_state(uint32_t raw_state)
+ 		state = PSR_STATE5b;
+ 	else if (raw_state == 0x53)
+ 		state = PSR_STATE5c;
++	else if (raw_state == 0x4A)
++		state = PSR_STATE4_FULL_FRAME;
++	else if (raw_state == 0x4B)
++		state = PSR_STATE4a_FULL_FRAME;
++	else if (raw_state == 0x4C)
++		state = PSR_STATE4b_FULL_FRAME;
++	else if (raw_state == 0x4D)
++		state = PSR_STATE4c_FULL_FRAME;
++	else if (raw_state == 0x4E)
++		state = PSR_STATE4_FULL_FRAME_POWERUP;
++	else if (raw_state == 0x60)
++		state = PSR_STATE_HWLOCK_MGR;
++	else if (raw_state == 0x61)
++		state = PSR_STATE_POLLVUPDATE;
++	else
++		state = PSR_STATE_INVALID;
+ 
+ 	return state;
+ }
 -- 
-Kees Cook
+2.35.1
+
