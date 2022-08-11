@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1CAC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FF9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238420AbiHKQ3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
+        id S238392AbiHKQ3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238129AbiHKQ1V (ORCPT
+        with ESMTP id S238389AbiHKQ10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:27:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C729F763;
-        Thu, 11 Aug 2022 09:08:34 -0700 (PDT)
+        Thu, 11 Aug 2022 12:27:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DE0A0242;
+        Thu, 11 Aug 2022 09:08:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F8AAB821AF;
-        Thu, 11 Aug 2022 16:08:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37178C433B5;
-        Thu, 11 Aug 2022 16:08:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EAFF612F0;
+        Thu, 11 Aug 2022 16:08:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53195C433D7;
+        Thu, 11 Aug 2022 16:08:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234111;
-        bh=W+lt4UsgxFtSwNLW8MAynTH2Z1I3/gnm3K/icSV2Mnc=;
+        s=k20201202; t=1660234115;
+        bh=mhmmrxvoPKeUkYHK58yY41A1Tx/UfD+/vmZ4vBHX+pU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDG8b7OOzZNrY/qncEFwXna9KD7v8+VFUAKleAaCNSLwCzRukiQuviOu+uFNKsoa4
-         7n9MAx1HDQQBZsz7RPvWGwGbVtzjeo379eLq9Er/kfM6gDjqdHPoQmNdWbV5RKX/Qi
-         qEUru7q/6bN4klmunqvotryfo8yI0SzSabqeyVUoMQd0Zne6BGrHn0L01BdEesa5js
-         10nno68WLBmzChPUdwgE8JSrIseVH5L33RhBtLl1yxRAR9Aykes9062Bl1Fhhv02OB
-         NDXZedp9eCPvNzzeVbw4mCtxrwpzPq4zrgTKM/qHL9IWTvjeNp3T1ziGY2zsZVCpio
-         GfGoqzakjnE3w==
+        b=acV4VjEtMZcyUjdS/Ga5GV5Ugnqr5m9NM5C2TbLM5t5gLwxn5OMWjACzPjDLssAwH
+         FWPgzqFeIy+n14NO1Um5bLF047MRTFlFMDURqaMOn2x75G02bIwD0Evo+sbNgpT5ve
+         SQ5NeL9iEysia+a8g6J0pD7O5HTTqE07+ZMKQ04p7PR9hRSTbY6ePvUY/lme0CgSGI
+         yvxzmj4kdbMkYOEmDFhozQ9AW3rPZoNucZKoFX1nTPdUQFa4NpRI8xKN8BioMsNA68
+         C4ObfabW7Evc8yW/PWmPQBB28HX0DuOTVoM0DZoRPfUC+/7Mbuj4vkBOsNG6gCwKdW
+         CoJ5aUDm/3ziA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Zhijun You <hujy652@gmail.com>,
-        Vasanthakumar Thiagarajan <vthiagar@qti.qualcomm.com>,
-        John Crispin <john@phrozen.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/25] ath10k: htt_tx: do not interpret Eth frames as WiFi
-Date:   Thu, 11 Aug 2022 12:07:57 -0400
-Message-Id: <20220811160826.1541971-2-sashal@kernel.org>
+Cc:     Mark Menzynski <mmenzyns@redhat.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 04/25] drm/nouveau: clear output poll workers before nouveau_fbcon_destroy()
+Date:   Thu, 11 Aug 2022 12:07:59 -0400
+Message-Id: <20220811160826.1541971-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160826.1541971-1-sashal@kernel.org>
 References: <20220811160826.1541971-1-sashal@kernel.org>
@@ -57,171 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+From: Mark Menzynski <mmenzyns@redhat.com>
 
-[ Upstream commit 70f119fb82af7f7417dc659faf02c91e1f853739 ]
+[ Upstream commit 6b03816f869529393b37d03e5d75b68f7365a7a4 ]
 
-The xmit path for the Ethernet encapsulated frames become more or less
-usable since d740d8fd2439 ("ath10k: unify tx mode and dispatch"). This
-change reorganize the xmit path in a manageable way to properly support
-various tx modes, but misses that the Ethernet encapsulated frame is a
-special case. We do not have an IEEE 802.11 header at the begining of
-them. But the HTT Tx handler still interprets first bytes of each frame
-as an IEEE 802.11 Frame Control field.
+Resources needed for output poll workers are destroyed in
+nouveau_fbcon_fini() before output poll workers are cleared in
+nouveau_display_fini(). This means there is a time between fbcon_fini()
+and display_fini(), where if output poll happens, it crashes.
 
-Than this code was copied by e62ee5c381c5 ("ath10k: Add support for
-htt_data_tx_desc_64 descriptor") and a2097d6444c3 ("ath10k: htt: High
-latency TX support") to another handlers. In fact the issue in the high
-latency (HL) handler was introduced by 83ac260151e7 ("ath10k: add mic
-bytes for pmf management packet").
+This patch introduces another output poll clearing before fbcon
+resources are destroyed.
 
-Ethernet encapsulated frame tx mode stay unused until 75d85fd9993c
-("ath10k: introduce basic tdls functionality") started using it for TDLS
-frames to avoid key selection issue in some firmwares.
+BUG: KASAN: use-after-free in
+__drm_fb_helper_initial_config_and_unlock.cold+0x1f3/0x291
+[drm_kms_helper]
 
-Trying to interpret the begining of an Ethernet encapsulated frame as an
-IEEE 802.11 header was not hurt us noticeably since we need to meet two
-conditions: (1) xmit should be performed towards a TDLS peer, and (2)
-the TDLS peer should have a specific OUI part of its MAC address. Looks
-like that the rareness in TDLS communications of OUIs that can be
-interpreted as an 802.11 management frame saves users from facing this
-issue earlier.
-
-Improve Ethernet tx mode support in the HTT Tx handler by avoiding
-interpreting its first bytes as an IEEE 802.11 header. While at it, make
-the ieee80211_hdr variable local to the code block that is guarded by
-!is_eth check. In this way, we clarify in which cases a frame can be
-interpreted as IEEE 802.11, and saves us from similar issues in the
-future.
-
-Credits: this change as part of xmit encapsulation offloading support
-was originally made by QCA and then submitted for inclusion by John
-Crispin [1]. But the whole work was not accepted due to the lack of a
-part for 64-bits descriptors [2]. Zhijun You then pointed this out to me
-in a reply to my initial RFC patch series. And I made this slightly
-reworked version that covered all the HTT Tx handler variants.
-
-1. https://lore.kernel.org/all/20191216092207.31032-1-john@phrozen.org/
-2. https://patchwork.kernel.org/project/linux-wireless/patch/20191216092207.31032-1-john@phrozen.org/
-
-Reported-by: Zhijun You <hujy652@gmail.com>
-Signed-off-by: Vasanthakumar Thiagarajan <vthiagar@qti.qualcomm.com>
-Signed-off-by: John Crispin <john@phrozen.org>
-Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220516032519.29831-3-ryazanov.s.a@gmail.com
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Karol Herbst <kherbst@redhat.com>
+Cc: Lyude Paul <lyude@redhat.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Cc: nouveau@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Mark Menzynski <mmenzyns@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220523113541.10562-1-mmenzyns@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 61 ++++++++++++++----------
- 1 file changed, 35 insertions(+), 26 deletions(-)
+ drivers/gpu/drm/nouveau/nouveau_fbcon.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index f73ed1044390..dac1b202cfb9 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -1245,7 +1245,6 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
- 	struct ath10k *ar = htt->ar;
- 	int res, data_len;
- 	struct htt_cmd_hdr *cmd_hdr;
--	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
- 	struct htt_data_tx_desc *tx_desc;
- 	struct ath10k_skb_cb *skb_cb = ATH10K_SKB_CB(msdu);
- 	struct sk_buff *tmp_skb;
-@@ -1256,11 +1255,15 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
- 	u16 flags1 = 0;
- 	u16 msdu_id = 0;
+diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+index c09ea357e88f..325fc94791c6 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
++++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+@@ -39,6 +39,7 @@
  
--	if ((ieee80211_is_action(hdr->frame_control) ||
--	     ieee80211_is_deauth(hdr->frame_control) ||
--	     ieee80211_is_disassoc(hdr->frame_control)) &&
--	     ieee80211_has_protected(hdr->frame_control)) {
--		skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+	if (!is_eth) {
-+		struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
-+
-+		if ((ieee80211_is_action(hdr->frame_control) ||
-+		     ieee80211_is_deauth(hdr->frame_control) ||
-+		     ieee80211_is_disassoc(hdr->frame_control)) &&
-+		     ieee80211_has_protected(hdr->frame_control)) {
-+			skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+		}
- 	}
+ #include <drm/drm_crtc.h>
+ #include <drm/drm_crtc_helper.h>
++#include <drm/drm_probe_helper.h>
+ #include <drm/drm_fb_helper.h>
+ #include <drm/drm_fourcc.h>
+ #include <drm/drm_atomic.h>
+@@ -606,6 +607,7 @@ nouveau_fbcon_fini(struct drm_device *dev)
+ 	if (!drm->fbcon)
+ 		return;
  
- 	data_len = msdu->len;
-@@ -1354,7 +1357,6 @@ static int ath10k_htt_tx_32(struct ath10k_htt *htt,
- {
- 	struct ath10k *ar = htt->ar;
- 	struct device *dev = ar->dev;
--	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
- 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(msdu);
- 	struct ath10k_skb_cb *skb_cb = ATH10K_SKB_CB(msdu);
- 	struct ath10k_hif_sg_item sg_items[2];
-@@ -1386,15 +1388,19 @@ static int ath10k_htt_tx_32(struct ath10k_htt *htt,
- 	txbuf_paddr = htt->txbuf.paddr +
- 		      (sizeof(struct ath10k_htt_txbuf_32) * msdu_id);
- 
--	if ((ieee80211_is_action(hdr->frame_control) ||
--	     ieee80211_is_deauth(hdr->frame_control) ||
--	     ieee80211_is_disassoc(hdr->frame_control)) &&
--	     ieee80211_has_protected(hdr->frame_control)) {
--		skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
--	} else if (!(skb_cb->flags & ATH10K_SKB_F_NO_HWCRYPT) &&
--		   txmode == ATH10K_HW_TXRX_RAW &&
--		   ieee80211_has_protected(hdr->frame_control)) {
--		skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+	if (!is_eth) {
-+		struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
-+
-+		if ((ieee80211_is_action(hdr->frame_control) ||
-+		     ieee80211_is_deauth(hdr->frame_control) ||
-+		     ieee80211_is_disassoc(hdr->frame_control)) &&
-+		     ieee80211_has_protected(hdr->frame_control)) {
-+			skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+		} else if (!(skb_cb->flags & ATH10K_SKB_F_NO_HWCRYPT) &&
-+			   txmode == ATH10K_HW_TXRX_RAW &&
-+			   ieee80211_has_protected(hdr->frame_control)) {
-+			skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+		}
- 	}
- 
- 	skb_cb->paddr = dma_map_single(dev, msdu->data, msdu->len,
-@@ -1556,7 +1562,6 @@ static int ath10k_htt_tx_64(struct ath10k_htt *htt,
- {
- 	struct ath10k *ar = htt->ar;
- 	struct device *dev = ar->dev;
--	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
- 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(msdu);
- 	struct ath10k_skb_cb *skb_cb = ATH10K_SKB_CB(msdu);
- 	struct ath10k_hif_sg_item sg_items[2];
-@@ -1588,15 +1593,19 @@ static int ath10k_htt_tx_64(struct ath10k_htt *htt,
- 	txbuf_paddr = htt->txbuf.paddr +
- 		      (sizeof(struct ath10k_htt_txbuf_64) * msdu_id);
- 
--	if ((ieee80211_is_action(hdr->frame_control) ||
--	     ieee80211_is_deauth(hdr->frame_control) ||
--	     ieee80211_is_disassoc(hdr->frame_control)) &&
--	     ieee80211_has_protected(hdr->frame_control)) {
--		skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
--	} else if (!(skb_cb->flags & ATH10K_SKB_F_NO_HWCRYPT) &&
--		   txmode == ATH10K_HW_TXRX_RAW &&
--		   ieee80211_has_protected(hdr->frame_control)) {
--		skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+	if (!is_eth) {
-+		struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
-+
-+		if ((ieee80211_is_action(hdr->frame_control) ||
-+		     ieee80211_is_deauth(hdr->frame_control) ||
-+		     ieee80211_is_disassoc(hdr->frame_control)) &&
-+		     ieee80211_has_protected(hdr->frame_control)) {
-+			skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+		} else if (!(skb_cb->flags & ATH10K_SKB_F_NO_HWCRYPT) &&
-+			   txmode == ATH10K_HW_TXRX_RAW &&
-+			   ieee80211_has_protected(hdr->frame_control)) {
-+			skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+		}
- 	}
- 
- 	skb_cb->paddr = dma_map_single(dev, msdu->data, msdu->len,
++	drm_kms_helper_poll_fini(dev);
+ 	nouveau_fbcon_accel_fini(dev);
+ 	nouveau_fbcon_destroy(dev, drm->fbcon);
+ 	kfree(drm->fbcon);
 -- 
 2.35.1
 
