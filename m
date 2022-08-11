@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D59C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B30B9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238226AbiHKQ2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
+        id S238241AbiHKQ2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238079AbiHKQ0b (ORCPT
+        with ESMTP id S238086AbiHKQ0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 12:26:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAF39F756;
-        Thu, 11 Aug 2022 09:07:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB879F746;
+        Thu, 11 Aug 2022 09:07:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3DDEB821AF;
-        Thu, 11 Aug 2022 16:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01188C433D6;
-        Thu, 11 Aug 2022 16:07:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C1E16141C;
+        Thu, 11 Aug 2022 16:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDFC3C433C1;
+        Thu, 11 Aug 2022 16:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234074;
-        bh=Nl4k4uVS+qZpeZesi4YWD+FNLNnu3oe2D9APmbP7Wxk=;
+        s=k20201202; t=1660234077;
+        bh=NkubZo0iuIEQ73DnsM8xDQ7qZoOJxp9SYFv4homoy7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4fcYhpgvX7ARPdgst0AzEHcKdQk4cRdJ2XzlI70NbZz9HnjvwNEE3pUsWc+j+aJ1
-         gRCJZw4IJHMWsI3pO6CtxIfXlffWl1pRINKHsXOx/59f2E60HYc/Fd9DiNyTMIk54M
-         X/IaKtxdmHb6OVV1Y7o8fJAfa+YAjOnLd1WwHjQdHIQFFBPvDzxhNR91ikcq61NqvN
-         DM96Rgxn43OsSgIaao/SdLC1OMhRO6C9xhni5cyX/sx5lI2gV5X02fKTwnbEBtSEGR
-         yODipUqjok21Y4ltPJiCmWd6S9ZN572JfGpI1sHnbBRusC4Ij8DFylmuvzbehj6C7s
-         UVgq0h2AMQhEw==
+        b=JikCspoQKL1PqVRzOY5hZr9Q5oeE+U/f/VIYFjqqDfmP7fiBdDEIKGG0IgVYqps9L
+         vwEmSYp3mjVSkMA+UgbQ3uP751hv0cEfTLqgSpdQx07bl4ngeLT/3CpPsL7s+JBV1H
+         8my/9s+23e0E098p04fYlqibhuag3FtM3+bDgdhA+EekRo6Ua93/pHC1QpcSHZewOG
+         L+F3JQkQ+AnCTr9gWOIPHoxp/JG5hsPvRfEj5rVoP2kdGe/PVI4cocHVy199P5tIVq
+         BkHatS0HOmKzoyWvh0I6XF7LHS8qNA9/o4uaR5Ck+ouqQ6ksuHLqS4snbFLaG7/xwG
+         GuydMMxu/kIJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, stefan.maetje@esd.eu,
-        mailhol.vincent@wanadoo.fr, socketcan@hartkopp.net,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 36/46] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
-Date:   Thu, 11 Aug 2022 12:04:00 -0400
-Message-Id: <20220811160421.1539956-36-sashal@kernel.org>
+Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 38/46] Bluetooth: hci_bcm: Add BCM4349B1 variant
+Date:   Thu, 11 Aug 2022 12:04:02 -0400
+Message-Id: <20220811160421.1539956-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
@@ -55,65 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Ahmad Fatoum <a.fatoum@pengutronix.de>
 
-[ Upstream commit 2d99bfbf3386962692dcccd73931cb0db07a1a43 ]
+[ Upstream commit 4f17c2b6694d0c4098f33b07ee3a696976940aa5 ]
 
-As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
-CAN controller does not support Clock Divider Register compared to
-the reference Philips SJA1000 device.
+The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
+portion can be controlled over serial.
 
-This patch adds a device quirk to handle this difference.
+Two subversions are added for the chip, because ROM firmware reports
+002.002.013 (at least for the chips I have here), while depending on
+patchram firmware revision, either 002.002.013 or 002.002.014 is
+reported.
 
-Link: https://lore.kernel.org/all/20220710115248.190280-4-biju.das.jz@bp.renesas.com
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/sja1000/sja1000.c | 8 +++++---
- drivers/net/can/sja1000/sja1000.h | 3 ++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/bluetooth/btbcm.c   | 2 ++
+ drivers/bluetooth/hci_bcm.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 25a4d7d0b349..3f2667c07dc3 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -184,8 +184,9 @@ static void chipset_init(struct net_device *dev)
- {
- 	struct sja1000_priv *priv = netdev_priv(dev);
- 
--	/* set clock divider and output control register */
--	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
-+		/* set clock divider and output control register */
-+		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
- 
- 	/* set acceptance filter (accept all) */
- 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
-@@ -210,7 +211,8 @@ static void sja1000_start(struct net_device *dev)
- 		set_reset_mode(dev);
- 
- 	/* Initialize chip if uninitialized at this stage */
--	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
-+	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
- 		chipset_init(dev);
- 
- 	/* Clear error counters and error code capture */
-diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
-index 9d46398f8154..7f736f1df547 100644
---- a/drivers/net/can/sja1000/sja1000.h
-+++ b/drivers/net/can/sja1000/sja1000.h
-@@ -145,7 +145,8 @@
- /*
-  * Flags for sja1000priv.flags
-  */
--#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
-+#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
-+#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
- 
- /*
-  * SJA1000 private data structure
+diff --git a/drivers/bluetooth/btbcm.c b/drivers/bluetooth/btbcm.c
+index 1b9743b7f2ef..d263eac784da 100644
+--- a/drivers/bluetooth/btbcm.c
++++ b/drivers/bluetooth/btbcm.c
+@@ -401,6 +401,8 @@ static const struct bcm_subver_table bcm_uart_subver_table[] = {
+ 	{ 0x6606, "BCM4345C5"	},	/* 003.006.006 */
+ 	{ 0x230f, "BCM4356A2"	},	/* 001.003.015 */
+ 	{ 0x220e, "BCM20702A1"  },	/* 001.002.014 */
++	{ 0x420d, "BCM4349B1"	},	/* 002.002.013 */
++	{ 0x420e, "BCM4349B1"	},	/* 002.002.014 */
+ 	{ 0x4217, "BCM4329B1"   },	/* 002.002.023 */
+ 	{ 0x6106, "BCM4359C0"	},	/* 003.001.006 */
+ 	{ 0x4106, "BCM4335A0"	},	/* 002.001.006 */
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index 259a643377c2..574f84708859 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -1489,6 +1489,7 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
+ 	{ .compatible = "brcm,bcm4345c5" },
+ 	{ .compatible = "brcm,bcm4330-bt" },
+ 	{ .compatible = "brcm,bcm43438-bt", .data = &bcm43438_device_data },
++	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
+ 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
+ 	{ .compatible = "brcm,bcm4335a0" },
+ 	{ },
 -- 
 2.35.1
 
