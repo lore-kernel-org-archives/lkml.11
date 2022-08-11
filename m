@@ -2,106 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DF7C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47117C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236256AbiHKPh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59322 "EHLO
+        id S234925AbiHKPiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236221AbiHKPhg (ORCPT
+        with ESMTP id S235800AbiHKPhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:37:36 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218C998C89;
+        Thu, 11 Aug 2022 11:37:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7220B98C92;
         Thu, 11 Aug 2022 08:33:39 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id k14so14758531pfh.0;
-        Thu, 11 Aug 2022 08:33:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=D5544vZ07mIqyQsDs/pSqvQEd46ChIGfK2jqr/vjGyo=;
-        b=PTTvFW1c/jfRRPrPg8lAVIXAHA+WoiWJfDTFUi0yZSu8A9DEkefCAhalQq58DrD8Aj
-         fSapjqPizOhPE/JNVGLYFDAHInEyJiyFxzsrNfxryoAgBUM+vdaWkJgxEd1I7NYHal67
-         BFljc4NfZ0WwaVbR0JTr19Y/gIGROzjTDjUBLeAuIQ45bHtRQYGSwGAa5B5XrU4d0HTl
-         bFTDFjrC+DeARMbPcgzizp8Bxj6VYHtRxAF+EdnsyrRGtRbtp0B7NhzXD4ktNZTt2XxC
-         U/HJIw75I04Vu3JdpqDw8v2Lznuyaq+VsT8Lw/xXqDdTk5pJqlTuspIwj2wkul4O3Plu
-         oW8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=D5544vZ07mIqyQsDs/pSqvQEd46ChIGfK2jqr/vjGyo=;
-        b=L6jpA5ffExN7OqW1yTg/s4FIcETSPyMFFlJ6oKJk8oeips2eks8v+QfzQONXSQwgp+
-         NICEHUrPRfxnEzyQKjQEZkM973F5O7ofGdV4PworNvKDZq83rB28M7muT1sGNWTXHhCd
-         F54mBPCM/JydDkdXwsoS03JUI2H8mOjy0sj1I6+pnFA4E2VmfxfVaxGejqOdVs4I7ywK
-         veEc2qX+tVX3KIF1kiluLF/8cKFHq64xCFRWQ+JkAzi9unn7nqLTHcy5BhWxv9c7fK9S
-         ah0DyNSQ8dN2aziSmj6CWpx8CZ30Q/dZ2eeDCIoUxae1Jn8ndO7ps4/aeuJBi6/pHUq/
-         hKIg==
-X-Gm-Message-State: ACgBeo08sOWOO9lziPHdSghLuIUHO8KzJ9+eZb+b1aeWTUqLUF9aLIIE
-        55MrAcvrviKUqkp52qtonsCNbGA/7WU=
-X-Google-Smtp-Source: AA6agR62JO81eGNTr1q8JYPEtLQ8DfJcKJ93BUFoMJc81F90nes5XxbTO94TSt6cB3IebLdQfvyO9A==
-X-Received: by 2002:a05:6a00:841:b0:52f:1cfe:ebd7 with SMTP id q1-20020a056a00084100b0052f1cfeebd7mr21473038pfk.47.1660232018489;
-        Thu, 11 Aug 2022 08:33:38 -0700 (PDT)
-Received: from [192.168.11.9] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id f23-20020aa79697000000b0052d4487ae7fsm4183174pfk.27.2022.08.11.08.33.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 08:33:37 -0700 (PDT)
-Message-ID: <278e0041-a2df-d067-59eb-87b8ac178567@gmail.com>
-Date:   Fri, 12 Aug 2022 00:33:34 +0900
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E006E615F5;
+        Thu, 11 Aug 2022 15:33:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B277C433B5;
+        Thu, 11 Aug 2022 15:33:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660232018;
+        bh=6cI4e/SzWqwKuLBDWqm/NtSsDV1+WYzfcjjsNPihx/k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YiiU3a6dmL+WQAVrttzw7x0dQQguzeLU6HCkkdK8e4dYXaDGeRGXWW36luHdD4Ljz
+         9zNs+JzR7GAgIFQ8seLRd0VpGpbSLDRpOVMeTe4xX2B4i6uXZPX0vzfP9iX746wLEN
+         bhs5SGIZvBhhpYfYvMQ1JfHLvecF3CQol9yHZ+Fd0rE0rJD+dK2FoZyF/qLJUyVxUg
+         VGVr42NwfcRLUURJc6qw1iNbkIOy5fcyplqLLvXZZ1jLHRQzo+20/eh4G6pajegq0h
+         intv7L1eplK9S8Eqi2wk5xXRjniXqRvOM+VDpyIvpgTgixbyw9uOZ/wnsnplInI8IJ
+         UTS+L0/rPbKpA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.19 048/105] media: atmel: atmel-isc-base: allow wb ctrls to be changed when isc is not configured
+Date:   Thu, 11 Aug 2022 11:27:32 -0400
+Message-Id: <20220811152851.1520029-48-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 3/3] docs: kerneldoc-preamble: Test xeCJK.sty before
- loading
-Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-References: <c41cab17-afd6-bc99-56a1-e4e73b8c1ef6@gmail.com>
- <c24c2a87-70b2-5342-bcc9-de467940466e@gmail.com>
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <c24c2a87-70b2-5342-bcc9-de467940466e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jon,
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-On Mon, 8 Aug 2022 17:53:57 +0900, Akira Yokosawa wrote:
-> On distros whose texlive packaging is fine-grained, texlive-xecjk
-> can be installed/removed independently of other texlive packages.
-> Conditionally loading xeCJK depending only on the existence of the
-> "Noto Sans CJK SC" font might end up in xelatex error of
-> "xeCJK.sty not found!".
-> 
-> Improve the situation by testing existence of xeCJK.sty before
-> loading it.
-> 
-> This is useful on RHEL 9 and its clone distros where texlive-xecjk
-> doesn't work at the moment due to a missing dependency [1].
-> "make pdfdocs" for non-CJK contents should work after removing
-> texlive-xecjk.
-In hindsight, I think this qualifies as a stable material.
-Let me append a couple of tags.
+[ Upstream commit aa63c5eaf7f7d2d3a4b1cc5782e7151b8ae3079f ]
 
-> 
-> Link: [1] https://bugzilla.redhat.com/show_bug.cgi?id=2086254
-> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Fixes: 398f7abdcb7e ("docs: pdfdocs: Pull LaTeX preamble part out of conf.py")
-Cc: stable@vger.kernel.org # v5.18+
+When attempting to change the white balance (WB) ctrls before starting
+streaming, e.g.:
 
-Jon, it's up to you whether this one is destined for v6.0-rcX or
-for the next merge window.  It has no dependency on patches 1/3
-and 2/3.
+ # v4l2-ctl -L
 
-        Thanks, Akira
+User Controls
+..
+            blue_component_gain 0x009819c1 (int)    : min=0 max=8191 step=1 default=512 value=512 flags=slider
+..
+ # v4l2-ctl --set-ctrl=blue_component_gain=500
+ # v4l2-ctl -L
+..
+            blue_component_gain 0x009819c1 (int)    : min=0 max=8191 step=1 default=512 value=500 flags=slider
+..
+
+These will not be written to the internal data struct and will not be
+written to the WB hardware module.
+Thus, after starting streaming, they will be reset to default:
+
+ # v4l2-ctl -L
+..
+            blue_component_gain 0x009819c1 (int)    : min=0 max=8191 step=1 default=512 value=512 flags=slider
+..
+
+It does not make much sense to not be able to configure the WB controls
+at all times. Even if the sensor would not be RAW Bayer (and in this case the
+WB module is unavailable), the user could configure the ISC itself, as the
+ISC should not care about the sensor format.
+Thus, when WB module is available (if the sensor changes format e.g.) it will
+be already configured as be user's desires.
+In consequence, remove the check in isc_s_awb_ctrl that will return if ISC
+does not know the sensor format.
+
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/platform/atmel/atmel-isc-base.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index 2f07a50035c8..fce4a7ae43d7 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -1525,10 +1525,6 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
+ 		else
+ 			ctrls->awb = ISC_WB_NONE;
+ 
+-		/* we did not configure ISC yet */
+-		if (!isc->config.sd_format)
+-			break;
+-
+ 		/* configure the controls with new values from v4l2 */
+ 		if (ctrl->cluster[ISC_CTRL_R_GAIN]->is_new)
+ 			ctrls->gain[ISC_HIS_CFG_MODE_R] = isc->r_gain_ctrl->val;
+-- 
+2.35.1
 
