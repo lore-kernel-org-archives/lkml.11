@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F388AC25B0D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A49DC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238631AbiHKQhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
+        id S238839AbiHKQhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239325AbiHKQgy (ORCPT
+        with ESMTP id S238972AbiHKQeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:36:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C832C7C19E;
-        Thu, 11 Aug 2022 09:12:20 -0700 (PDT)
+        Thu, 11 Aug 2022 12:34:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED1EBC800;
+        Thu, 11 Aug 2022 09:11:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F9CCB821AD;
-        Thu, 11 Aug 2022 16:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A06BC433D7;
-        Thu, 11 Aug 2022 16:12:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 133F2B82164;
+        Thu, 11 Aug 2022 16:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CAEC433D7;
+        Thu, 11 Aug 2022 16:11:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234338;
-        bh=TmKSVIiOroA3H2Jtidu6kQhyVrN7WLK70U0kV8Tfwrk=;
+        s=k20201202; t=1660234267;
+        bh=CpN0KNYJD0OMkZVAALbZfviYNAkXvcgFT0Qp0T9RZo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n9N/gUr7Pr9KCRyFeZ6S0gyoMnbqs0C2jIfeNaEYzbx2mVNYZz8ZziumgY/0geQ7N
-         G1vEOGR+Hzqi10YVSTHNwj0hYlHUFApWZAGdkPlyTLcg8W2gBJOycCSqvWoeXVa/Yh
-         JsH8y+jpE0vmMuRb29zraeOpTVM/UmwN0b0CsOkEWIVa5UnGb2ucMDGEZsKBPHEUyM
-         9w+flYY7BgMpPC2yWNWNjOVX1gIKOA4C4rG6rU4oDM4ToCG1KfBZQiZFIfkECeHGHE
-         sZ0YXrfJLjSj+EYBMKrwADuzxhZxL1dOHAzTq/wETqHmX/Ebw237xtmDeMhSyWwg3e
-         DgyRljDLG9/Jg==
+        b=iDS+j30VphnTzvXxolNxqGt7XdIreYnNTblTy42PD5uMULJg1h5blZGzfyjQcz1lZ
+         Dphl7OBq4qrd9SUnWsD5NmyqHvDGZtlcQzKkCeFhFpB6R1vM4Zr+KO9y1DShTzgXYg
+         NXhJehT+FRNmUaBNpJWaiTXonSLShBWTqJK0Pdu2iV5N7mi/GyzLBKxkSs+JpSkt2q
+         WYqGAeICIsZ6IAXfFIpngctqYPL3WfM6+gA4bAIfwWlABnpXldicyJ99OVr29h6i9N
+         UYu7l4bNiOY0k8XCc/ZRhjUWlGCvNKh9cqEKAEkTpG9nBeOYeszGleNx9trXuagkqE
+         MhProqIftAFHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Oleg.Karfich@wago.com, Thomas Gleixner <tglx@linutronix.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Sasha Levin <sashal@kernel.org>, linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 12/12] fs/dcache: Disable preemption on i_dir_seq write side on PREEMPT_RT
-Date:   Thu, 11 Aug 2022 12:11:38 -0400
-Message-Id: <20220811161144.1543598-12-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, isely@pobox.com,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/14] media: pvrusb2: fix memory leak in pvr_probe
+Date:   Thu, 11 Aug 2022 12:10:35 -0400
+Message-Id: <20220811161050.1543183-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
-References: <20220811161144.1543598-1-sashal@kernel.org>
+In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
+References: <20220811161050.1543183-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,69 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit cf634d540a29018e8d69ab1befb7e08182bc6594 ]
+[ Upstream commit 945a9a8e448b65bec055d37eba58f711b39f66f0 ]
 
-i_dir_seq is a sequence counter with a lock which is represented by the
-lowest bit. The writer atomically updates the counter which ensures that it
-can be modified by only one writer at a time. This requires preemption to
-be disabled across the write side critical section.
+The error handling code in pvr2_hdw_create forgets to unregister the
+v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
+it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
+which leads to that pvr2_hdw_destroy directly returns.
 
-On !PREEMPT_RT kernels this is implicit by the caller acquiring
-dentry::lock. On PREEMPT_RT kernels spin_lock() does not disable preemption
-which means that a preempting writer or reader would live lock. It's
-therefore required to disable preemption explicitly.
+Fix this by adding v4l2_device_unregister to decrease the refcount of
+usb interface.
 
-An alternative solution would be to replace i_dir_seq with a seqlock_t for
-PREEMPT_RT, but that comes with its own set of problems due to arbitrary
-lock nesting. A pure sequence count with an associated spinlock is not
-possible because the locks held by the caller are not necessarily related.
-
-As the critical section is small, disabling preemption is a sensible
-solution.
-
-Reported-by: Oleg.Karfich@wago.com
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lkml.kernel.org/r/20220613140712.77932-2-bigeasy@linutronix.de
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dcache.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index e42c715fc9e9..feb592bb7cbe 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -2425,7 +2425,15 @@ EXPORT_SYMBOL(d_rehash);
- 
- static inline unsigned start_dir_add(struct inode *dir)
- {
--
-+	/*
-+	 * The caller holds a spinlock (dentry::d_lock). On !PREEMPT_RT
-+	 * kernels spin_lock() implicitly disables preemption, but not on
-+	 * PREEMPT_RT.  So for RT it has to be done explicitly to protect
-+	 * the sequence count write side critical section against a reader
-+	 * or another writer preempting, which would result in a live lock.
-+	 */
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_disable();
- 	for (;;) {
- 		unsigned n = dir->i_dir_seq;
- 		if (!(n & 1) && cmpxchg(&dir->i_dir_seq, n, n + 1) == n)
-@@ -2437,6 +2445,8 @@ static inline unsigned start_dir_add(struct inode *dir)
- static inline void end_dir_add(struct inode *dir, unsigned n)
- {
- 	smp_store_release(&dir->i_dir_seq, n + 2);
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_enable();
- }
- 
- static void d_wait_lookup(struct dentry *dentry)
+diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+index 4b0d44e25396..0abe50f1965a 100644
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2604,6 +2604,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 		del_timer_sync(&hdw->encoder_run_timer);
+ 		del_timer_sync(&hdw->encoder_wait_timer);
+ 		flush_work(&hdw->workpoll);
++		v4l2_device_unregister(&hdw->v4l2_dev);
+ 		usb_free_urb(hdw->ctl_read_urb);
+ 		usb_free_urb(hdw->ctl_write_urb);
+ 		kfree(hdw->ctl_read_buffer);
 -- 
 2.35.1
 
