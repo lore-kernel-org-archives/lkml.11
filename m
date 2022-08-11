@@ -2,147 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCD9C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EFAC25B0D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236793AbiHKPtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
+        id S236685AbiHKPtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236648AbiHKPrp (ORCPT
+        with ESMTP id S235430AbiHKPrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:47:45 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BFF9925A
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:41:40 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id t15so10140827ilm.7
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:41:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=RTT7+zmODbaYBRXOi2mBaSvbEGfH2m4oaESkivpOFK0=;
-        b=k4VcTzmJAF0QbnrcgMbHraqcamIW+G6IhTmAT4XOjdaUJIJRgqyVjAyj9cq+L0hqCv
-         4F/elIW0d0B+OsQEXI85JASEvOCoBJKvTdGPbHxZmOBHByHf9JOR1CVslBxhDbuqgRt9
-         0y7gJKaqCxd3KDak8WX894EN1nL8QtOk8leVMOuHtYvhiRCacGLraP6YGaxn8w2oCDZo
-         TGey/4rZzROzLPy5Mna3e5Rn2+Yw20KGzZPNSmMX6Wc7rFsvtrIxj4W8/RY4GcPuvBAw
-         w51+C/sKcLFo9QQo/dHE5nDPPj1b7vK/y0jZ0SK7Q4cWad/sHTHGPpTIb5g/+ykhCFJ7
-         VhyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=RTT7+zmODbaYBRXOi2mBaSvbEGfH2m4oaESkivpOFK0=;
-        b=v2pfQEgjy3q1H3E+Pin/++SMceGXlHg3v8n+iF24SsB1NJYdFAFCSLYJ8imFYNUVgw
-         DB4VuIGblI0QjMDoDXg8KFYuuQrAzvnE56Eu6wL4ZwOpJFXuhS6x01RLuv1MPO44g9bt
-         4aejEVQHkG4d3iLx2PffjKWA5AToUcuiDEeylUjJ1LogE38sVT/sSlh1ZH1PkyN3nfxO
-         qML5kUm4nAqJb3wyTwZsyKU6pOxDJvG0v8dVIjVe9rN8v1kNRdFORttev3vCefBQYK0i
-         Q8IptmcrU1+eq2g8bpD2gA73geMx/6Tl6KMes1wAS0LV6+P657LFZt5RmEbRKqTOH7tL
-         XvJQ==
-X-Gm-Message-State: ACgBeo03JBw/j9qriYBbjZ8pqFsDNvb0RY5dOPpwYOTFVVs50PeglJ2Y
-        lWUNqUrEWWd6Nlex/9RZW4VCvg==
-X-Google-Smtp-Source: AA6agR4FZsdtqkq3Ho6PTNYBe3yE06cxzSBqfyXK1oz0gKpICAgWMmTtexNviq+rdefhaAChwkzqig==
-X-Received: by 2002:a05:6e02:180a:b0:2de:533a:dcb6 with SMTP id a10-20020a056e02180a00b002de533adcb6mr15284519ilv.277.1660232500162;
-        Thu, 11 Aug 2022 08:41:40 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id l16-20020a92d950000000b002df5a4c59f5sm3420813ilq.7.2022.08.11.08.41.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 08:41:39 -0700 (PDT)
-Message-ID: <8f3d1bf5-48f6-411d-674e-1568e3841d75@kernel.dk>
-Date:   Thu, 11 Aug 2022 09:41:38 -0600
+        Thu, 11 Aug 2022 11:47:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7AD99252;
+        Thu, 11 Aug 2022 08:41:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96F00B82150;
+        Thu, 11 Aug 2022 15:41:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C51C433C1;
+        Thu, 11 Aug 2022 15:41:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660232499;
+        bh=jxCJXV3r94ECNtHPtLRWzj+wtlXEx+3pRqSD92g9vzA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ju1nHxlVzE15f+y89SLinFKURlTUNkVPCn20RLtJ7KsKCL2Fx+0grcwwjNWw4ZQ1B
+         B+4SAlRxzihiT9w79WOSmUAXhC5WDO6xGnurLQLeDxwvT59wtWerPMieQj03FJbsWD
+         uNPJpXZ7Kh5skjw+sVhG+Vj/zYC2HYl3bZbP4KJOxxYW5em/RwrCOQkLjmUv5AygZp
+         rcVuLwUJnZGTB2Yq+uktmbMb7ZYHiDmped0ba+TKEt2EKjX9YnQvE14AeQI9Zu0wRp
+         3IRiw2UVW/GnWdlxGyXj7+hyXZ9LudOChlwMDdNVCJCkeOdHSoDYaXuIZT8JWl9iSB
+         AJ1/Qk5xD8Akw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 098/105] wifi: rtl8xxxu: Fix the error handling of the probe function
+Date:   Thu, 11 Aug 2022 11:28:22 -0400
+Message-Id: <20220811152851.1520029-98-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] Modify the return value ret to EOPNOTSUPP when
- initialized to reduce repeated assignment of errno
-Content-Language: en-US
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        Zhang chunchao <chunchao@nfschina.com>
-Cc:     asml.silence@gmail.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@nfschina.com
-References: <20220811075638.36450-1-chunchao@nfschina.com>
- <20220811150242.giygjmy4vimxtrzg@sgarzare-redhat>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220811150242.giygjmy4vimxtrzg@sgarzare-redhat>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/11/22 9:02 AM, Stefano Garzarella wrote:
-> On Thu, Aug 11, 2022 at 03:56:38PM +0800, Zhang chunchao wrote:
->> Remove unnecessary initialization assignments.
->>
->> Signed-off-by: Zhang chunchao <chunchao@nfschina.com>
->> ---
->> io_uring/io_uring.c | 3 +--
->> 1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
->> index b54218da075c..8c267af06401 100644
->> --- a/io_uring/io_uring.c
->> +++ b/io_uring/io_uring.c
->> @@ -3859,14 +3859,13 @@ SYSCALL_DEFINE4(io_uring_register, unsigned int, fd, unsigned int, opcode,
->>         void __user *, arg, unsigned int, nr_args)
->> {
->>     struct io_ring_ctx *ctx;
->> -    long ret = -EBADF;
->> +    long ret = -EOPNOTSUPP;
->>     struct fd f;
->>
->>     f = fdget(fd);
->>     if (!f.file)
->>         return -EBADF;
->>
->> -    ret = -EOPNOTSUPP;
->>     if (!io_is_uring_fops(f.file))
->>         goto out_fput;
->>
-> 
-> What about remove the initialization and assign it in the if branch?
-> I find it a bit easier to read.
-> 
-> I mean something like this:
-> 
-> --- a/io_uring/io_uring.c
-> +++ b/io_uring/io_uring.c
-> @@ -3859,16 +3859,17 @@ SYSCALL_DEFINE4(io_uring_register, unsigned int, fd, unsigned int, opcode,
->                 void __user *, arg, unsigned int, nr_args)
->  {
->         struct io_ring_ctx *ctx;
-> -       long ret = -EBADF;
-> +       long ret;
->         struct fd f;
-> 
->         f = fdget(fd);
->         if (!f.file)
->                 return -EBADF;
-> 
-> -       ret = -EOPNOTSUPP;
-> -       if (!io_is_uring_fops(f.file))
-> +       if (!io_is_uring_fops(f.file)) {
-> +               ret = -EOPNOTSUPP;
->                 goto out_fput;
-> +       }
-> 
->         ctx = f.file->private_data;
-> 
-> 
-> Otherwise remove the initialization, but leave the assignment as it is now.
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-Generally the kernel likes to do:
+[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
 
-err = -EFOO;
-if (something)
-	goto err_out;
+When the driver fails at ieee80211_alloc_hw() at the probe time, the
+driver will free the 'hw' which is not allocated, causing a bug.
 
-rather than put it inside the if clause. I guess the rationale is it
-makes it harder to forget to init the error value. I don't feel too
-strongly, I'm fine with your patch too. Can you send it as a real patch?
+The following log can reveal it:
 
+[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
+[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
+[   15.982583] Call Trace:
+[   15.984282]  ieee80211_free_hw+0x22/0x390
+[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
+
+Fix the bug by changing the order of the error handling.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 8b2ca9e8eac6..567ada2e665a 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -6657,7 +6657,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	if (!hw) {
+ 		ret = -ENOMEM;
+ 		priv = NULL;
+-		goto exit;
++		goto err_put_dev;
+ 	}
+ 
+ 	priv = hw->priv;
+@@ -6679,24 +6679,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 
+ 	ret = rtl8xxxu_parse_usb(priv, interface);
+ 	if (ret)
+-		goto exit;
++		goto err_set_intfdata;
+ 
+ 	ret = rtl8xxxu_identify_chip(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = rtl8xxxu_read_efuse(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = priv->fops->parse_efuse(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	rtl8xxxu_print_chipinfo(priv);
+@@ -6704,12 +6704,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	ret = priv->fops->load_firmware(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = rtl8xxxu_init_device(hw);
+ 	if (ret)
+-		goto exit;
++		goto err_set_intfdata;
+ 
+ 	hw->wiphy->max_scan_ssids = 1;
+ 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
+@@ -6759,12 +6759,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	if (ret) {
+ 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
+ 			__func__, ret);
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	return 0;
+ 
+-exit:
++err_set_intfdata:
+ 	usb_set_intfdata(interface, NULL);
+ 
+ 	if (priv) {
+@@ -6772,9 +6772,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 		mutex_destroy(&priv->usb_buf_mutex);
+ 		mutex_destroy(&priv->h2c_mutex);
+ 	}
+-	usb_put_dev(udev);
+ 
+ 	ieee80211_free_hw(hw);
++err_put_dev:
++	usb_put_dev(udev);
+ 
+ 	return ret;
+ }
 -- 
-Jens Axboe
+2.35.1
 
