@@ -2,233 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 507B3C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C7CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234084AbiHKNiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 09:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
+        id S234935AbiHKNis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 09:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234070AbiHKNiK (ORCPT
+        with ESMTP id S234070AbiHKNiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 09:38:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB89F89CDD;
-        Thu, 11 Aug 2022 06:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660225088; x=1691761088;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=3YSnNJEECrBHaKlYPHVfDKRlWH4sV/biWsKMZr6LyGA=;
-  b=MWoLHKviM73gfIL2KJTHk8ig6DjGOjaBIjHcegsJukfHnWQuGmmFAt2B
-   7cG9DWUuf4SWs42W6T4Dtrskj/uHCbDf9l0nKIu4n9EqfiLrukeZLw32n
-   5+BnHIN7lPdwG2KLJvm7wEUEz7lYLP324fF4I+zAIy/f6m7t/YF7iivCh
-   r/sakBT79yX2InpTW8l5QAff1BLcMpZXjRY9hHBy56b/VxzAl/3/akpYX
-   vnB+Z/pyIgI0hHMMhNO175fI36ujBeq/+e7spOCLdfEnWKGh62V9bEXke
-   tpfKcXToRSoLyHDE/J97Fzj2AOoTAj3J33dJUjmneTEE8roN2I+rFIoWF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="271121805"
-X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
-   d="scan'208";a="271121805"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 06:37:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
-   d="scan'208";a="665375567"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by fmsmga008.fm.intel.com with ESMTP; 11 Aug 2022 06:37:40 -0700
-Date:   Thu, 11 Aug 2022 21:32:55 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     "Nikunj A. Dadhania" <nikunj@amd.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>, bharata@amd.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220811133255.GB916119@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <b21f41e5-0322-bbfb-b9c2-db102488592d@amd.com>
- <9e86daea-5619-a216-fe02-0562cf14c501@amd.com>
+        Thu, 11 Aug 2022 09:38:46 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D7F8A6FD
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:38:44 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id i128-20020a1c3b86000000b003a536d58f73so2721760wma.4
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc;
+        bh=Zt1DdekTqC/b6j5H87LHP9VnxUbeUvSwLypi+Rc1nT0=;
+        b=RTcrODiQUIAj/KSLFgemALMUDjhVPm7riJtasW/hb6FtIn58h3spQbWcCBEgFQ+DIS
+         0rJV/8tEEMpk522BnvEV2Neg4liRLsipFwb2HyM2CdhwSl9FWoEQuaRU2vyupzm/0DkD
+         TaSR6De6DlgvYbHX8/a0C1j51EkYwHtVLt5NA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=Zt1DdekTqC/b6j5H87LHP9VnxUbeUvSwLypi+Rc1nT0=;
+        b=ETxjjimIGNuP2KQptmoESzAPTftQQaW72ghZsxWC40gyE2QatFPOPJi4mwFB1MRIGv
+         xX16h6pCP/P9RlksODjAlJJEO7yZSzq2+3gZ5KkUF0gfvXW04QxWfo4ArOBqYeiiMJFf
+         mYXRfwL0K5WSdgpeHk/Ga6pUeMfyAds61BF/EVlpM8QI84x5ElvWSBtIisy3iZ/RIgYA
+         8Ia3hfV0wONiPdwt6sO70hmX7RfdTFZI1cWEuQjtEJQtqH51Ajowd0BCv7diRC4qto5e
+         Ei7GKl/YFaIGlH3TQwdhPGMV3Car3uLo/ODcCuD7v7HAQtkNTHE91BL/iwGA1ty5L8Ul
+         4m4w==
+X-Gm-Message-State: ACgBeo3ZB60AneAfc6bH+CvgUGz4c6IgXpwwnWBNi/xmHX3XjFSdE/aN
+        JS87nPT4axjt+Ykc2qJqcbXm03/7GiGeX24b
+X-Google-Smtp-Source: AA6agR4P0mdQJ/7UBCeQO2a4ghnLkMWb9dioaTelBmAdU811ArDvgIOW4MYv7W8ZGrHXoTheC13ONA==
+X-Received: by 2002:a1c:f618:0:b0:3a4:e569:946b with SMTP id w24-20020a1cf618000000b003a4e569946bmr5678918wmc.106.1660225123332;
+        Thu, 11 Aug 2022 06:38:43 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id o13-20020a5d670d000000b0021d7b41255esm18380218wru.98.2022.08.11.06.38.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 06:38:42 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 15:38:40 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Clark Williams <williams@redhat.com>,
+        Mel Gorman <mgorman@suse.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>
+Subject: Re: [GIT PULL] printk for 5.20
+Message-ID: <YvUGYPcNo4HPS6Kt@phenom.ffwll.local>
+Mail-Followup-To: Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Clark Williams <williams@redhat.com>,
+        Mel Gorman <mgorman@suse.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>
+References: <CAHk-=wie+VC-R5=Hm=Vrg5PLrJxb1XiV67Efx-9Cr1fBKCWHTQ@mail.gmail.com>
+ <87r11qp63n.ffs@tglx>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9e86daea-5619-a216-fe02-0562cf14c501@amd.com>
+In-Reply-To: <87r11qp63n.ffs@tglx>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 01:30:06PM +0200, Gupta, Pankaj wrote:
+On Tue, Aug 09, 2022 at 03:18:20AM +0200, Thomas Gleixner wrote:
+> On Tue, Aug 02 2022 at 20:19, Linus Torvalds wrote:
+> > On Mon, Aug 1, 2022 at 8:08 AM Petr Mladek <pmladek@suse.com> wrote:
+> >>
+> >> - Completely disable printing on consoles with CONFIG_RT.
+> > And guys, I want to make it really clear how disappointed I am with
+> > the printk tree lately. There seems to be some kind of hardline
+> > religious fervor having taken over to make these kinds of "this is how
+> > it has to be done, screw any sanity or common sense".
+> ...
+> > Put another way: not only am I not pulling this, I'm concerned that I
+> > will not be pulling printk patches in the future either because of
+> > where these pull requests seem to be trending.
 > 
-> > > This is the v7 of this series which tries to implement the fd-based KVM
-> > > guest private memory. The patches are based on latest kvm/queue branch
-> > > commit:
-> > > 
-> > >    b9b71f43683a (kvm/queue) KVM: x86/mmu: Buffer nested MMU
-> > > split_desc_cache only by default capacity
-> > > 
-> > > Introduction
-> > > ------------
-> > > In general this patch series introduce fd-based memslot which provides
-> > > guest memory through memory file descriptor fd[offset,size] instead of
-> > > hva/size. The fd can be created from a supported memory filesystem
-> > > like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
-> > > and the the memory backing store exchange callbacks when such memslot
-> > > gets created. At runtime KVM will call into callbacks provided by the
-> > > backing store to get the pfn with the fd+offset. Memory backing store
-> > > will also call into KVM callbacks when userspace punch hole on the fd
-> > > to notify KVM to unmap secondary MMU page table entries.
-> > > 
-> > > Comparing to existing hva-based memslot, this new type of memslot allows
-> > > guest memory unmapped from host userspace like QEMU and even the kernel
-> > > itself, therefore reduce attack surface and prevent bugs.
-> > > 
-> > > Based on this fd-based memslot, we can build guest private memory that
-> > > is going to be used in confidential computing environments such as Intel
-> > > TDX and AMD SEV. When supported, the memory backing store can provide
-> > > more enforcement on the fd and KVM can use a single memslot to hold both
-> > > the private and shared part of the guest memory.
-> > > 
-> > > mm extension
-> > > ---------------------
-> > > Introduces new MFD_INACCESSIBLE flag for memfd_create(), the file
-> > > created with these flags cannot read(), write() or mmap() etc via normal
-> > > MMU operations. The file content can only be used with the newly
-> > > introduced memfile_notifier extension.
-> > > 
-> > > The memfile_notifier extension provides two sets of callbacks for KVM to
-> > > interact with the memory backing store:
-> > >    - memfile_notifier_ops: callbacks for memory backing store to notify
-> > >      KVM when memory gets invalidated.
-> > >    - backing store callbacks: callbacks for KVM to call into memory
-> > >      backing store to request memory pages for guest private memory.
-> > > 
-> > > The memfile_notifier extension also provides APIs for memory backing
-> > > store to register/unregister itself and to trigger the notifier when the
-> > > bookmarked memory gets invalidated.
-> > > 
-> > > The patchset also introduces a new memfd seal F_SEAL_AUTO_ALLOCATE to
-> > > prevent double allocation caused by unintentional guest when we only
-> > > have a single side of the shared/private memfds effective.
-> > > 
-> > > memslot extension
-> > > -----------------
-> > > Add the private fd and the fd offset to existing 'shared' memslot so
-> > > that both private/shared guest memory can live in one single memslot.
-> > > A page in the memslot is either private or shared. Whether a guest page
-> > > is private or shared is maintained through reusing existing SEV ioctls
-> > > KVM_MEMORY_ENCRYPT_{UN,}REG_REGION.
-> > > 
-> > > Test
-> > > ----
-> > > To test the new functionalities of this patch TDX patchset is needed.
-> > > Since TDX patchset has not been merged so I did two kinds of test:
-> > > 
-> > > -  Regresion test on kvm/queue (this patchset)
-> > >     Most new code are not covered. Code also in below repo:
-> > >     https://github.com/chao-p/linux/tree/privmem-v7
-> > > 
-> > > -  New Funational test on latest TDX code
-> > >     The patch is rebased to latest TDX code and tested the new
-> > >     funcationalities. See below repos:
-> > >     Linux: https://github.com/chao-p/linux/tree/privmem-v7-tdx
-> > >     QEMU: https://github.com/chao-p/qemu/tree/privmem-v7
-> > 
-> > While debugging an issue with SEV+UPM, found that fallocate() returns
-> > an error in QEMU which is not handled (EINTR). With the below handling
-> > of EINTR subsequent fallocate() succeeds:
-
-QEMU code has not well-tested so it's not strange you met problem. But
-from the man page, there is signal was caught for EINTR, do you know
-the signal number?
-
-Thanks for you patch but before we change it in QEMU I want to make sure
-it's indeed a QEMU issue (e.g. not a kernel isssue).
-
-> > 
-> > 
-> > diff --git a/backends/hostmem-memfd-private.c b/backends/hostmem-memfd-private.c
-> > index af8fb0c957..e8597ed28d 100644
-> > --- a/backends/hostmem-memfd-private.c
-> > +++ b/backends/hostmem-memfd-private.c
-> > @@ -39,7 +39,7 @@ priv_memfd_backend_memory_alloc(HostMemoryBackend *backend, Error **errp)
-> >       MachineState *machine = MACHINE(qdev_get_machine());
-> >       uint32_t ram_flags;
-> >       char *name;
-> > -    int fd, priv_fd;
-> > +    int fd, priv_fd, ret;
-> >       if (!backend->size) {
-> >           error_setg(errp, "can't create backend with size 0");
-> > @@ -65,7 +65,15 @@ priv_memfd_backend_memory_alloc(HostMemoryBackend *backend, Error **errp)
-> >                                      backend->size, ram_flags, fd, 0, errp);
-> >       g_free(name);
-> > -    fallocate(priv_fd, 0, 0, backend->size);
-> > +again:
-> > +    ret = fallocate(priv_fd, 0, 0, backend->size);
-> > +    if (ret) {
-> > +           perror("Fallocate failed: \n");
-> > +           if (errno == EINTR)
-> > +                   goto again;
-> > +           else
-> > +                   exit(1);
-> > +    }
-> > 
-> > However, fallocate() preallocates full guest memory before starting the guest.
-> > With this behaviour guest memory is *not* demand pinned. Is there a way to
-> > prevent fallocate() from reserving full guest memory?
+> I really have to stand up for the printk maintainers here.
 > 
-> Isn't the pinning being handled by the corresponding host memory backend
-> with mmu notifier and architecture support while doing the memory operations
-> e.g page migration and swapping/reclaim (not supported
-> currently AFAIU). But yes, we need to allocate entire guest memory with the
-> new flags MEMFILE_F_{UNMOVABLE, UNRECLAIMABLE etc}.
-
-Right.
-
+> Especially Petr has done an extraordinary job in the past few years.
+> There have been hickups, but with such a semantically ill defined
+> mechanism like printk() that's not a surprise at all.
 > 
+> Let me add some historical background here.
+> 
+> In Sept. 2019, i.e. almost 3 years ago, we all - including you - sat
+> together at Plumbers in Lisbon and agreed that printk() in it's back
+> then form is a nightmare not only for PREEMPT_RT. We also agreed back
+> then that seperating out the console writes into individual printk
+> threads makes sense because it also gets rid of the fully serializing
+> nature of printk() which exists for historical but not for technical
+> reasons. Also the magic oops_in_progress heuristics have been declared
+> to be just duct tape, as the still existing (after 25+ years of Linux)
+> situation with graphics demonstrates on a daily basis. We all agreed
+> that a dedicated atomic_write() which also allows to prioritize your
+> favourite pet pieve of making laptops more debugable by utilizing
+> persistant storage simpler and what's more important more reliable.
+
+Cutting the more detail stuff below because I'm justing chiming in on the
+overall direction.
+
+I want this. Where "want" means by default and across the board, and
+"this" the entire printk/console_lock redesign we discussed in Lisbon with
+threaded printing and properly separate out emergency output and
+everything else. Because ffs I'm so fed up having to deal with
+console_lock in graphcis drivers.
+
+This has nothing to do with rt or being niche or whatever but just that
+Petr, John and others are tackling some really nasty corners that everyone
+just covered with industrial quantities of duct-tape in the past years
+(decades?) and finally there's real movement (but a bit slower than I
+hoped for really). I visted linutronix folks a few weeks ago and we talked
+a bit what we could all do when this mess is sorted and I want it all.
+
+*graphics maintainer out*
+-Daniel
+
+> It took whopping 2.5 years to get to the point to reach this seperation
+> as it required to rewrite the buffers and other infrastructure. This was
+> very responsible and cautionosly guided by Petr and the other members of
+> the printk() maintainer team. Along with that went quite some
+> improvements like realistic timestamping and other details which matter
+> for dmesg power users.
+> 
+> The printk threads were added in the 5.19 merge window and unfortunately
+> reverted between 5.19-rc3 and 5.19-rc4 for the very wrong reason:
+> 
+>    Some embedded boards failed to boot.
+> 
+>      The root cause is missing locking in the init functions of the
+>      related UART drivers.
+> 
+>      This is not a problem of threaded printk(), Those are existing bugs
+>      in these drivers which can be triggered on a 5.18 kernel. They are
+>      hard to trigger and nobody cared so far because they were neither
+>      bisectable nor reliably reproducible. The threaded printk() change
+>      made them reproducible and the bisect pointed at the messenger and
+>      not at the root cause.
+> 
+> Nevertheless it was decided to throw away valuable work for no real good
+> reason. That revert costs me constantly ~2 seconds of boot time on one my
+> main development machines. Not much, but ~10% and I know that quite some
+> folks in the fastboot camp give a leg for 10%.
+> 
+> The right decision would have been to offer this by boot or config
+> parameter and not to throw the baby out with the bathwater.
+> 
+> I know it's my fault because I was AFK that week...
+> 
+> Coming back to the commit in question which made you (rightfully) upset.
+> 
+> I agree that it should never have happened, but OTOH it's a very clear
+> message of developer frustration to you:
+> 
+> On one hand you can't get tired of "praising" the RT people about their
+> responsible approach to solve fundamental shortcomigs in the kernel, but
+> at the same time you're pulling whatever new fancy "technology" which
+> comes around the corner and then makes my and your inbox full of
+> security issues. That's obviously not a problem, right?
+> 
+> Neither is it a problem that all of these "feature" developers can
+> rightfully ignore PREEMPT_RT and offload all the resulting problems to
+> the RT people, right?
+> 
+> I might be wrong, but you seem to have a fundamental misunderstanding of
+> the scope and importance of PREEEMPT_RT:
+> 
+> >  Oh, I agree that it probably is a pretty small community.
+> 
+> Pull the rug under that "pretty small community" and the industrial
+> world is comming to a grinding halt. That grinding halt will affect your
+> power grid, your water supply and quite some other essential things
+> which are listed under Civil Infrastructure. Plus the new fangled edge
+> computing, modern cars ....
+> 
+> There is a reason that at least some major industry players have
+> invested into the RT project for the last couple of years. All major
+> distro players have commercially supported RT offerings for years and
+> they are surely not doing this just for fun.
+> 
+> There are freeriders as always. Space*, car*, distro* ,,,,
+> 
+> > And I also think that people who are really into RT are basically
+> > always going to have extra patches anyway - I think the bulk of the
+> > core stuff has made it upstream, but not *all* has made it.
+> 
+> At the point of this writing the only outstanding issue is printk, which
+> prevents PREEMPT_RT from being enabled in your tree on x86[64] and
+> ARM[64].
+> 
+> This still does not justify the commit in question, but clearly points
+> out that there is an attitude problem.
+> 
+> Which attitude problem?
+> 
+>    The attitude problem that PREEMPT_RT is just a niche, but the larger
+>    kernel community is happy to consume the benefits of that allegded
+>    niche without giving anything back.
+> 
+> Think about that.
 > 
 > Thanks,
-> Pankaj
 > 
-> > 
-> > > An example QEMU command line for TDX test:
-> > > -object tdx-guest,id=tdx,debug=off,sept-ve-disable=off \
-> > > -machine confidential-guest-support=tdx \
-> > > -object memory-backend-memfd-private,id=ram1,size=${mem} \
-> > > -machine memory-backend=ram1
-> > > 
-> > 
-> > Regards,
-> > Nikunj
-> > 
-> > 
+>         Thomas
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
