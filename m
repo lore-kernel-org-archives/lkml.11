@@ -2,89 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA97C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CF5C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 21:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236354AbiHKVaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 17:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        id S236365AbiHKVb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 17:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235937AbiHKVaH (ORCPT
+        with ESMTP id S231284AbiHKVbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 17:30:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70BD9D8EE;
-        Thu, 11 Aug 2022 14:30:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B0216148F;
-        Thu, 11 Aug 2022 21:30:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BB0C433C1;
-        Thu, 11 Aug 2022 21:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660253405;
-        bh=x2wnfdHh9hLECh8av03/ocMCbc9lU0kiGT1idHoqt6E=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=fe9mDEKIwatWGnYpiBj/IjMwLcHO+1KJaHOHYuez8iz+DPGfiEoAyjdEqQZ8AJL1C
-         n30qAApOiaEbFjheSXHNAUd2/I24sXqTRwAyry11jbQBFA677OMv7heiNspfnh9AM4
-         dusjDyJhgqjfxepUUN0aRNdWBop3raPmai+RzhzdYfQf5+AAZANHoGBrO0dGKK8BpK
-         WNTusRweNw8Zf/G8iKLdbfe8IhSABQG6sH2RXoRizjuFUWmpILZU8TIZzEZcxA9SaZ
-         Di8+NKrMk6txZcv15wkmus2nhY32u5IelFgc+d17uaDSXocOP3OFqPVIN1BcM+xLmh
-         IPTa2UCfdzYaA==
-Message-ID: <72a93a2c8910c3615bba7c093c66c18b1a6a2696.camel@kernel.org>
-Subject: Re: [GIT PULL] Ceph updates for 5.20-rc1
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Ilya Dryomov <idryomov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthew Wilcox <willy@infradead.org>
-Date:   Thu, 11 Aug 2022 17:30:03 -0400
-In-Reply-To: <YvVzHQ5DVaPAvw26@ZenIV>
-References: <20220811152446.281723-1-idryomov@gmail.com>
-         <CAHk-=wifgq59uru6xDB=nY-1p6aQ-1YB8nVhW7T-N2ctK3m1gw@mail.gmail.com>
-         <CAOi1vP9BSi-65of-8D0BA1_DC0eVD_TQcWkhrGJwaXw_skhHFQ@mail.gmail.com>
-         <5d0b0367a5e28ec5b1f3b995c7792ff9a5cbcbd4.camel@kernel.org>
-         <YvVzHQ5DVaPAvw26@ZenIV>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Thu, 11 Aug 2022 17:31:24 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB9D45F79;
+        Thu, 11 Aug 2022 14:31:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=RAKwc334guoPBQoyyKOu50SCJZQyroHMyPY+vcCwB70=; b=qcM5CcBkmEzt24t4j92hRBTvEX
+        ntOytKlPDWc7Yk5GQSfyLaM8vzHJNxFQDpHlUGj4hbCTPuAL8PCbQDBGoAWivtMoS+w7bHWEZd1rt
+        176Y6Q3BHNqS42WqBjpTRuYBGyEa0daUGPnWj1VIS+6MDlYnzhbyilNCrABDcLtNuzfrhz9Z8HQwz
+        AQ/h3wa2iLy1pswApy/G6HiE4NVAVSYSfgtZ750H5VnabctiGpTJoQbNU2xI/s81qBL2kI7FMO/SB
+        Il1SLXAS0t7waiTfc221knYG+Lcm+tRLepvVs9hZwbM4V0HcYxiuNw1exN6eys/n3KJipbKB4Q/QJ
+        8QsF5kZg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oMFlx-001ITh-Iu; Thu, 11 Aug 2022 21:31:21 +0000
+Date:   Thu, 11 Aug 2022 22:31:21 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: State of the Page (August 2022)
+Message-ID: <YvV1KTyzZ+Jrtj9x@casper.infradead.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-08-11 at 22:22 +0100, Al Viro wrote:
-> On Thu, Aug 11, 2022 at 05:08:11PM -0400, Jeff Layton wrote:
->=20
-> > Actually, I never got a formal ack from Al. I did send it repeatedly,
-> > but I assume he has been too busy to respond. We've had it sitting in
-> > linux-next for a couple of months, and he did suggest that approach in
-> > the first place, but I too would also prefer to see his official ack on
-> > it.
->=20
-> "Suggested approach" had been about inode_insert5() changes, right?
+==============================
+State Of The Page, August 2022
+==============================
 
-Right. I was talking about this patch (which I think is sane):
+I thought I'd write down where we are with struct page and where
+we're going, just to make sure we're all (still?) pulling in a similar
+direction.
 
-    fs: change test in inode_insert5 for adding to the sb list
+Destination
+===========
 
-> But that's fs/inode.c side of things...  I have to admit that I'd missed
-> the unlining d_same_name() - exporting the sucker per se didn't look
-> insane and I hadn't looked at that in details ;-/
->=20
-> Looking at it now...  might be worth renaming it into __d_same_name(),
-> leaving it inlined and exporting a wrapper; not sure if the impact on
-> d_lookup()/__d_lookup()/d_alloc_parallel() is worth worrying about it,
-> though.
->=20
-> Profiling a case when we have a plenty of files in the same directory
-> on tmpfs, with something earlier in the pathname to kick out of RCU
-> mode (e.g. going through /proc/self/cwd) might be interesting...
+For some users, the size of struct page is simply too large.  At 64
+bytes per 4KiB page, memmap occupies 1.6% of memory.  If we can get
+struct page down to an 8 byte tagged pointer, it will be 0.2% of memory,
+which is an acceptable overhead.
 
-The d_name_name changes seemed ok to me, but it would be good to have
-your ack (or qualified NAK) if possible.
+   struct page {
+      unsigned long mem_desc;
+   };
 
---=20
-Jeff Layton <jlayton@kernel.org>
+Types of memdesc
+----------------
+
+This is very much subject to change as new users present themselves.
+Here are the current ones in-plan:
+
+ - Undescribed.  Instead of the rest of the word being a pointer,
+   there are 2^28 subtypes available:
+   - Unmappable.  Typically device drivers allocating private memory.
+   - Reserved.  These pages are not allocatable.
+   - HWPoison
+   - Offline (eg balloon)
+   - Guard (see debug_pagealloc)
+ - Slab
+ - Anon Folio
+ - File Folio
+ - Buddy (ie free -- also for PCP?)
+ - Page Table
+ - Vmalloc
+ - Net Pool
+ - Zsmalloc
+ - Z3Fold
+ - Mappable.  Typically device drivers mapping memory to userspace
+
+That implies 4 bits needed for the tag, so all memdesc allocations
+must be 16-byte aligned.  That is not an undue burden.  Memdescs
+must also be TYPESAFE_BY_RCU if they are mappable to userspace or
+can be stored in a file's address_space.
+
+It may be worth distinguishing between vmalloc-mappable and
+vmalloc-unmappable to prevent some things being mapped to userspace
+inadvertently.
+
+Contents of a memdesc
+---------------------
+
+At least initially, the first word of a memdesc must be identical to the
+current page flags.  That allows various functions (eg set_page_dirty())
+to work on any kind of page without needing to know whether it's a device
+driver page, a vmalloc page, anon or file folio.
+
+Similarly, both anon and file folios must have the list_head in the
+same place so they can be placed on the same LRU list.  Whether anon
+and file folios become separate types is still unclear to me.
+
+Mappable
+--------
+
+All pages mapped to userspace must have:
+
+ - A refcount
+ - A mapcount
+
+Preferably in the same place in the memdesc so we can handle them without
+having separate cases for each type of memdesc.  It would be nice to have
+a pincount as well, but that's already an optional feature.
+
+I propose:
+
+   struct mappable {
+       unsigned long flags;	/* contains dirty flag */
+       atomic_t _refcount;
+       atomic_t _mapcount;
+   };
+
+   struct folio {
+      union {
+         unsigned long flags;
+         struct mappable m;
+      };
+      ...
+   };
+
+Memdescs which should never be mapped to userspace (eg slab, page tables,
+zsmalloc) do not need to contain such a struct.
+
+Mapcount
+--------
+
+While discussed above, handling mapcount is tricky enough to need its
+own section.  Since folios can be mapped unaligned, we may need to
+increment mapcount once per page table entry that refers to it.  This
+is different from how THPs are handled today (one refcount per page
+plus a compound_mapcount for how many times the entire THP is mapped).
+So splitting a PMD entry results in incrementing mapcount by
+(PTRS_PER_PMD - 1).
+
+If the mapcount is raised to dangerously high levels, we can split
+the page.  This should not happen in normal operation.
+
+Extended Memdescs
+-----------------
+
+One of the things we're considering is that maybe a filesystem will
+want to have private data allocated with its folios.  Instead of hanging
+extra stuff off folio->private, they could embed a struct folio inside
+a struct ext4_folio.
+
+Buddy memdesc
+-------------
+
+I need to firm up a plan for this.  Allocating memory in order to free
+memory is generally a bad idea, so we either have to coopt the contents
+of other memdescs (and some allocations don't have memdescs!) or we
+need to store everything we need in the remainder of the unsigned long.
+I'm not yet familiar enough with the page allocator to have a clear
+picture of what is needed.
+
+Where are we?
+=============
+
+v5.17:
+
+ - Slab was broken out from struct page in 5.17 (thanks to Vlastimil).
+ - XFS & iomap mostly converted from pages to folios
+ - Block & page cache mostly have the folio interfaces in place
+
+v5.18:
+
+ - Large folio (multiple page) support added for filesystems that opt in
+ - File truncation converted to folios
+ - address_space_operations (aops) ->set_page_dirty converted to ->dirty_folio
+ - Much of get_user_page() converted to folios
+ - rmap_walk() converted to folios
+
+v5.19:
+
+ - Most aops now converted to folios
+ - More folio conversions in migration, shmem, swap, vmscan 
+
+v6.0:
+
+ - aops->migratepage became migrate_folio
+ - isolate_page and putback_page removed from aops
+ - More folio conversions in migration, shmem, swap, vmscan 
+
+Todo
+====
+
+Well, most of the above!
+
+ - Individual filesystems need converting from pages to folios
+ - Zsmalloc, z3fold, page tables, netpools need to be split from
+   struct page into their own types
+ - Anywhere referring to page->... needs to be converted to folio
+   or some other type.
+
+Help with any of this gratefully appreciated.  Especially if you're the
+maintainer of a thing and want to convert it yourself.  I'd rather help
+explain the subtleties of folios / mappables / ... to you than try
+to figure out the details of your code to convert it myself (and get
+it wrong).  Please contact me to avoid multiple people working on
+the same thing.
