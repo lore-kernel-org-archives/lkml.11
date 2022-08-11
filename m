@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BF9C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0FAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238872AbiHKQdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
+        id S238904AbiHKQd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238994AbiHKQbo (ORCPT
+        with ESMTP id S239034AbiHKQbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:31:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8406BC3A;
-        Thu, 11 Aug 2022 09:10:16 -0700 (PDT)
+        Thu, 11 Aug 2022 12:31:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F71510FF3;
+        Thu, 11 Aug 2022 09:10:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBE7C61456;
-        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4D423C43470;
-        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EED3B821A0;
+        Thu, 11 Aug 2022 16:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07E60C433C1;
+        Thu, 11 Aug 2022 16:10:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234215;
-        bh=w+++LZJNZdf5vlMvLVgFrKxj6AC7kHyNpp8yxdes5kc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e4wKZOFpU8xZgXlIM/gwZ/Ebm0UBQzqXVuskzd3wF8JtkoMdJnqahs0rStKzAB1FF
-         lHtgflBiXObzWKW959bvN3HzHVGXDJ9NgkFoR4M3FxeY4YU9Hm+Sk0AupOmr/KXhA+
-         v4Pr08bddcKEuSwt9f6LmK4xbWv+iZlB82ZFquKz2EHarfHTpGDZE/zKBI/S8i3fdZ
-         vjFkOqq4hIxh8gDrXcmMjGxs720g5cTE6xfnc8uz4pXX/MqxVHRWRON2oqfVBvZfXB
-         4OWO29W7vSaeIqqSLuRC/BazGhHcVKoGx+ikycchWuPdb8vR9DBAekIIazcR+7/HWL
-         l6vHjRf3eW3mA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2D53CC43145;
-        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1660234221;
+        bh=BlKBMOH6o2j7WE88oomjY+BnlOaiVoPJIpUyChZ8a3s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pX8703UfMDeRjSCn199oWi7qDwrN3OiG4psNN53sNYWiac+FetAZoNKcWdtszJWFx
+         +VfUnHYCQC0nFNUODp58A44CJMl/BpfWwmPD+CZtoFrhLMOzXNvDifD7wvP5FZ0xNC
+         24ssME9y4UH8AViAWEQ5NFmFN/L2ZvBz8ibKrNhKE4d30adP7c11hfz3RxBp1MooRC
+         Qy+Prbpy469LSdLT+NQZwxktV7t9IYGA05+4unLJWnUQ6qA/Gu6ZpGjGTkTcy19BQZ
+         ZP2vgnjzngYUDMqwdyNyvWt0zJ3yAgejFUyqjjMUh+DuBbqIZuQOUBYCaVsJkxtna1
+         KzjuJhYUKJXQA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Dave Airlie <airlied@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kherbst@redhat.com,
+        lyude@redhat.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 09/14] drm/nouveau/nvkm: use list_add_tail() when building object tree
+Date:   Thu, 11 Aug 2022 12:09:37 -0400
+Message-Id: <20220811160948.1542842-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811160948.1542842-1-sashal@kernel.org>
+References: <20220811160948.1542842-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV32
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166023421518.9507.3595774911960025799.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Aug 2022 16:10:15 +0000
-References: <20220810014521.9383-1-slark_xiao@163.com>
-In-Reply-To: <20220810014521.9383-1-slark_xiao@163.com>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     bjorn@mork.no, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Ben Skeggs <bskeggs@redhat.com>
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+[ Upstream commit 61c1f340bc809a1ca1e3c8794207a91cde1a7c78 ]
 
-On Wed, 10 Aug 2022 09:45:21 +0800 you wrote:
-> There are 2 models for MV32 serials. MV32-W-A is designed
-> based on Qualcomm SDX62 chip, and MV32-W-B is designed based
-> on Qualcomm SDX65 chip. So we use 2 different PID to separate it.
-> 
-> Test evidence as below:
-> T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=03 Dev#=  3 Spd=480 MxCh= 0
-> D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-> P:  Vendor=1e2d ProdID=00f3 Rev=05.04
-> S:  Manufacturer=Cinterion
-> S:  Product=Cinterion PID 0x00F3 USB Mobile Broadband
-> S:  SerialNumber=d7b4be8d
-> C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
-> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
-> I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-> I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-> 
-> [...]
+Fixes resume from hibernate failing on (at least) TU102, where cursor
+channel init failed due to being performed before the core channel.
 
-Here is the summary with links:
-  - net: usb: qmi_wwan: Add support for Cinterion MV32
-    https://git.kernel.org/netdev/net/c/ae7107baa5bd
+Not solid idea why suspend-to-ram worked, but, presumably HW being in
+an entirely clean state has something to do with it.
 
-You are awesome, thank you!
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/nouveau/nvkm/core/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+index d777df5a64e6..2aa0d6fed580 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
++++ b/drivers/gpu/drm/nouveau/nvkm/core/ioctl.c
+@@ -128,7 +128,7 @@ nvkm_ioctl_new(struct nvkm_client *client,
+ 	if (ret == 0) {
+ 		ret = nvkm_object_init(object);
+ 		if (ret == 0) {
+-			list_add(&object->head, &parent->tree);
++			list_add_tail(&object->head, &parent->tree);
+ 			if (nvkm_object_insert(object)) {
+ 				client->data = object;
+ 				return 0;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
