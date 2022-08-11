@@ -2,188 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 189B1C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF238C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235814AbiHKPaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
+        id S234763AbiHKPau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235746AbiHKP3p (ORCPT
+        with ESMTP id S235791AbiHKPaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:29:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCE796747;
-        Thu, 11 Aug 2022 08:29:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E350615CE;
-        Thu, 11 Aug 2022 15:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82044C433C1;
-        Thu, 11 Aug 2022 15:29:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660231771;
-        bh=Qein4jotMuYQonx6x2QvIt87OKd3haE8/BzXpAt4ElE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIPm7BDZGqiBOor68IqUoGXq5F7LkFpiUTi8F2K/8XK1CmqRxQMukLk4iJohM8d40
-         R0eD0dW5vSxNOMjwy7uyMN8O6G/RBeBpwLlpgDByoqXmiAwujHsE1fw4EGsSl6pT17
-         fxg1nGrBit1fZy2o1QFc3eJGZND+wb4p0b0O5d+ZEEgpCkvnP5w+F+iaqhjNi/UR7m
-         60dNzqUh5j/n0rxmvoJAzTZMTqs6BaoW1OpEky1iQjlJUxw+w6DpZjb4CZDjnh6uXu
-         PsbJ1MT64Zhe/uHWUNqY69T+abni3F8ukvzzZiKemYq0XU1D5homtxJ0kNrV/6QR4Z
-         Ug0qZNsdUxW6Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 010/105] bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
-Date:   Thu, 11 Aug 2022 11:26:54 -0400
-Message-Id: <20220811152851.1520029-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:30:09 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C8895699
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:29:42 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id h21-20020a17090aa89500b001f31a61b91dso5715005pjq.4
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:29:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=k4cTJcWzw8+6axf00iGx7biHKXUEGT3Ofca07ePg5B0=;
+        b=e8WRD+IbMXLxt0XX5XAhvJBvN5jLNJ8ZUx93+YW8cz7r7GCpyryYTdJ+UJNUPY223r
+         zzoPmw6xUn3VMbJuI2F2ZSeOhIbrKmiX3G9mhH6iyovCbNm2Puhe2oTBwUlY5OL7qfj2
+         sQGEp1yOeNmSmYqyuuyL7LSmz37k/frFxM+oU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=k4cTJcWzw8+6axf00iGx7biHKXUEGT3Ofca07ePg5B0=;
+        b=v0RJEAtl/qiGpwQzlztWwD6xCYmC+Obdy+FohEg9GbIClhzgD4lQpvAQmpnoKEBFzc
+         e0abN7P7a4hiulpEBtUZJFa+9UJ/Zf5yDsBZz4bcEUy51XsTonbRxs0cx1v8Y01+Iwae
+         ytBeN+UAkSYqHd2jueyzcR51TaghILgGLxTkVw5Q5jqYQH4U0o+AvBDJtT7DV9ccYTun
+         hIp0fEURld/OZbIqz0OAgkI9S8yKzn69vBwrRxpzXQY/aNss9vWJD+6FBg7npRnKzwXs
+         c/wglWmQ3/+HgYjznosGnIsaS+1s6l1KUBsmjDpf9gODulBXZoywdqAQ2mRIMTVwiVNY
+         iCEg==
+X-Gm-Message-State: ACgBeo3lEDDdLDuSg7xeg17XlW9cTBbP7WQ0WyPJHarSnyfkEPASBRNX
+        G6JbVie5w7odaFCVG9Ijh+Enog==
+X-Google-Smtp-Source: AA6agR5MDAoWj07mo8Re6bJHCK/lTI2S9VYB/kjpRf71aZeSVUXPPLyCezVqfrd1Gs3g5Ty8PSMb+A==
+X-Received: by 2002:a17:90a:55:b0:1f7:4513:8cac with SMTP id 21-20020a17090a005500b001f745138cacmr9192293pjb.93.1660231781372;
+        Thu, 11 Aug 2022 08:29:41 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id w9-20020a1709026f0900b0016f1204cde8sm1985339plk.301.2022.08.11.08.29.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 08:29:40 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 08:29:39 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+        linux-mips@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
+Subject: Re: [PATCH] treewide: defconfig: address renamed CONFIG_DEBUG_INFO=y
+Message-ID: <202208110829.F82D003490@keescook>
+References: <20220811114609.2097335-1-arnd@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220811114609.2097335-1-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+On Thu, Aug 11, 2022 at 01:44:34PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> CONFIG_DEBUG_INFO is now implicitly selected if one picks one of the
+> explicit options that could be DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT,
+> DEBUG_INFO_DWARF4, DEBUG_INFO_DWARF5.
+> 
+> This was actually not what I had in mind when I suggested making
+> it a 'choice' statement, but it's too late to change again now,
+> and the Kconfig logic is more sensible in the new form.
+> 
+> Change any defconfig file that had CONFIG_DEBUG_INFO enabled
+> but did not pick DWARF4 or DWARF5 explicitly to now pick the toolchain
+> default.
+> 
+> Fixes: f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO selectable from a choice")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit d8616ee2affcff37c5d315310da557a694a3303d ]
+Thanks!
 
-During TCP sockmap redirect pressure test, the following warning is triggered:
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-WARNING: CPU: 3 PID: 2145 at net/core/stream.c:205 sk_stream_kill_queues+0xbc/0xd0
-CPU: 3 PID: 2145 Comm: iperf Kdump: loaded Tainted: G        W         5.10.0+ #9
-Call Trace:
- inet_csk_destroy_sock+0x55/0x110
- inet_csk_listen_stop+0xbb/0x380
- tcp_close+0x41b/0x480
- inet_release+0x42/0x80
- __sock_release+0x3d/0xa0
- sock_close+0x11/0x20
- __fput+0x9d/0x240
- task_work_run+0x62/0x90
- exit_to_user_mode_prepare+0x110/0x120
- syscall_exit_to_user_mode+0x27/0x190
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The reason we observed is that:
-
-When the listener is closing, a connection may have completed the three-way
-handshake but not accepted, and the client has sent some packets. The child
-sks in accept queue release by inet_child_forget()->inet_csk_destroy_sock(),
-but psocks of child sks have not released.
-
-To fix, add sock_map_destroy to release psocks.
-
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220524075311.649153-1-wangyufen@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/bpf.h   |  1 +
- include/linux/skmsg.h |  1 +
- net/core/skmsg.c      |  1 +
- net/core/sock_map.c   | 23 +++++++++++++++++++++++
- net/ipv4/tcp_bpf.c    |  1 +
- 5 files changed, 27 insertions(+)
-
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 2b914a56a2c5..8e6092d0ea95 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2104,6 +2104,7 @@ int sock_map_bpf_prog_query(const union bpf_attr *attr,
- 			    union bpf_attr __user *uattr);
- 
- void sock_map_unhash(struct sock *sk);
-+void sock_map_destroy(struct sock *sk);
- void sock_map_close(struct sock *sk, long timeout);
- #else
- static inline int bpf_prog_offload_init(struct bpf_prog *prog,
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index c5a2d6f50f25..153b6dec9b6a 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -95,6 +95,7 @@ struct sk_psock {
- 	spinlock_t			link_lock;
- 	refcount_t			refcnt;
- 	void (*saved_unhash)(struct sock *sk);
-+	void (*saved_destroy)(struct sock *sk);
- 	void (*saved_close)(struct sock *sk, long timeout);
- 	void (*saved_write_space)(struct sock *sk);
- 	void (*saved_data_ready)(struct sock *sk);
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index b0fcd0200e84..fc69154bbc88 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -720,6 +720,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 	psock->eval = __SK_NONE;
- 	psock->sk_proto = prot;
- 	psock->saved_unhash = prot->unhash;
-+	psock->saved_destroy = prot->destroy;
- 	psock->saved_close = prot->close;
- 	psock->saved_write_space = sk->sk_write_space;
- 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 81d4b4756a02..9f08ccfaf6da 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -1561,6 +1561,29 @@ void sock_map_unhash(struct sock *sk)
- }
- EXPORT_SYMBOL_GPL(sock_map_unhash);
- 
-+void sock_map_destroy(struct sock *sk)
-+{
-+	void (*saved_destroy)(struct sock *sk);
-+	struct sk_psock *psock;
-+
-+	rcu_read_lock();
-+	psock = sk_psock_get(sk);
-+	if (unlikely(!psock)) {
-+		rcu_read_unlock();
-+		if (sk->sk_prot->destroy)
-+			sk->sk_prot->destroy(sk);
-+		return;
-+	}
-+
-+	saved_destroy = psock->saved_destroy;
-+	sock_map_remove_links(sk, psock);
-+	rcu_read_unlock();
-+	sk_psock_stop(psock, true);
-+	sk_psock_put(sk, psock);
-+	saved_destroy(sk);
-+}
-+EXPORT_SYMBOL_GPL(sock_map_destroy);
-+
- void sock_map_close(struct sock *sk, long timeout)
- {
- 	void (*saved_close)(struct sock *sk, long timeout);
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 0d3f68bb51c0..a1626afe87a1 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -540,6 +540,7 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
- 				   struct proto *base)
- {
- 	prot[TCP_BPF_BASE]			= *base;
-+	prot[TCP_BPF_BASE].destroy		= sock_map_destroy;
- 	prot[TCP_BPF_BASE].close		= sock_map_close;
- 	prot[TCP_BPF_BASE].recvmsg		= tcp_bpf_recvmsg;
- 	prot[TCP_BPF_BASE].sock_is_readable	= sk_msg_is_readable;
 -- 
-2.35.1
-
+Kees Cook
