@@ -2,67 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C503C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B661C25B0D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiHKQww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
+        id S235938AbiHKQxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiHKQwc (ORCPT
+        with ESMTP id S235273AbiHKQxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:52:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A1632D9B;
-        Thu, 11 Aug 2022 09:25:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46396B82148;
-        Thu, 11 Aug 2022 16:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E7AC433D6;
-        Thu, 11 Aug 2022 16:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660235144;
-        bh=eNAY7nWNpX+4QCS5pm35Zgw+2wWwXkC4x4JRn6bEsoU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z8GfzVsB4lo2Q7+VvVqkh0hhFVheVGn7fLnj9FluSweoTUA1FuqKNn5B/HWZnZYJf
-         Li0A4vMWGQm3Zv0n347RvsFuoNdlj+u8H3/S3ecubgn6Q4vchAQJyTyorm3rrU1u+t
-         T904AA78rBrotaqyz3l2CrWUVveh1T+qTbt6dD53oVIOJ7OSkGTXTEZ8SErH3y6LP4
-         GD0TsrqJh+GkvSQqisJ3HuOW0catPbhYLu3EwiirjJ7OqMBD6zzmPIXDlnFoLDBgRB
-         foyroxiqtWrDVVoZhy67kJZonhKr4EC01yqA50UnqGOmqb83h8P2a/9deJn3I3omfV
-         2QtYIS9nAq68A==
-Date:   Thu, 11 Aug 2022 09:25:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     <edumazet@google.com>, <mayflowerera@gmail.com>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Raed Salem <raeds@nvidia.com>
-Subject: Re: [PATCH net 1/1] net: macsec: Fix XPN properties passing to
- macsec offload
-Message-ID: <20220811092543.696a5ef2@kernel.org>
-In-Reply-To: <20220809102905.31826-1-ehakim@nvidia.com>
-References: <20220809102905.31826-1-ehakim@nvidia.com>
+        Thu, 11 Aug 2022 12:53:02 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C63647DD
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:26:21 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id l20-20020a056e02067400b002dfa7256498so11494692ilt.4
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 09:26:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=jwKoW2dmU4xYX7z1TceVMu6wBCcrEVjC555VpUvSS40=;
+        b=0K2rvv4rjiOTQ9d2/7pU649pCYQ+gYkaKNIZyUyhUk6XJVglN9m0V9FglEOSK/nEAh
+         79QIlWCplcqa139p4DpbJ4cpuZ6J3xh7s2ZTJ3QnJCA/eEmV044BgB/6CfEm8Tw8+dMr
+         FYr3V3bbFfUj5Vc3b3dGAT68lXxm4MQJ2cBqPwSMODR1Avsp9t53GQ6UX7iuf62AIbOK
+         vO0nqubynAUmnlPmGRD7VgHU6HG27XBFKbl9AA5YZy3BBMNjh1T8dkTE6uELCEBukae4
+         ZVA/D//YWi6iXGylWLBGoYGayBjr7CmtJieVDlQngD1BVgq31c0IqZVU4Bdr/vm7lQu/
+         EqEw==
+X-Gm-Message-State: ACgBeo1rEKEcprG6OamP5a+9rhoDAv0spTzJkb4BC/M1NLAt8wqBk51B
+        CtYJ8ABg6Fy7f7NJLiOxT0yI1tjfOT4wbwp9mcIgokBlj4qI
+X-Google-Smtp-Source: AA6agR4zs7vavnxjfkpwGymEDXUIycgoziw80KiGdcNHLW+SWFMyiryJTdUNHOFSzVm7TXCA/w+4QJifhkZwLXZeewV5ztSaO2wk
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:b799:0:b0:343:390a:4f66 with SMTP id
+ f25-20020a02b799000000b00343390a4f66mr50623jam.222.1660235180843; Thu, 11 Aug
+ 2022 09:26:20 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 09:26:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000032a72205e5f9a0d7@google.com>
+Subject: [syzbot] WARNING: fbcon: Driver 'vkm
+From:   syzbot <syzbot+a04bbc76cc1b6e4eaa76@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 9 Aug 2022 13:29:05 +0300 Emeel Hakim wrote:
-> Currently macsec invokes HW offload path before reading extended
-> packet number (XPN) related user properties i.e. salt and short
-> secure channel identifier (ssci), hence preventing macsec XPN HW
-> offload.
-> 
-> Fix by moving macsec XPN properties reading prior to HW offload path.
-> 
-> Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
-> Reviewed-by: Raed Salem <raeds@nvidia.com>
-> Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+Hello,
 
-Is there a driver in the tree which uses those values today?
-I can't grep out any rx_sa->key accesses in the drivers at all :S
+syzbot found the following issue on:
 
-If there is none it's not really a fix.
+HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10a8542a080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
+dashboard link: https://syzkaller.appspot.com/bug?extid=a04bbc76cc1b6e4eaa76
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12ede3fa080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a04bbc76cc1b6e4eaa76@syzkaller.appspotmail.com
+
+WARNING: fbcon: Driver 'vkm
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
