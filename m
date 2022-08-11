@@ -2,52 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A03C25B0F
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C73DDC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236616AbiHKPrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        id S236637AbiHKPrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236664AbiHKPqD (ORCPT
+        with ESMTP id S236817AbiHKPqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:46:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED3224950;
-        Thu, 11 Aug 2022 08:40:22 -0700 (PDT)
+        Thu, 11 Aug 2022 11:46:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3AB792CC;
+        Thu, 11 Aug 2022 08:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 14DD1CE223A;
-        Thu, 11 Aug 2022 15:40:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4334C433D7;
-        Thu, 11 Aug 2022 15:40:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 117AEB82123;
+        Thu, 11 Aug 2022 15:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A9AC433C1;
+        Thu, 11 Aug 2022 15:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232419;
-        bh=VSXzN9FQUeQ+9olGNZCgpdskhfdRDBYRp89MGdAkkww=;
+        s=k20201202; t=1660232445;
+        bh=7F4iQuSJJ0mLfpgwzKRLbI7Q2lZgvFXyXN65Y3imF9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KJgcbSmzpAh9RyXBp5Z2mPWsSS481N1xvDDb0fgm6epka4YNA1cOkj2L9hjEmjR8r
-         CGgqIrolBIoUdqNlQlN1A/JWD/dOfAGQ4roXMM7ZUhl62z56Cqk881YneRADmCAZyK
-         34rMoa1gCXd9yOSeU/BV1l2nCj1MgJ0maeODckIXg46X/1W7W0Hdjr3XB8obqmE6YC
-         irq80duFLp0TFvt6Cs4sgo01kMXAJOpsS43rryEVceMRpdufpfqtxT8lKvXnUWhgSu
-         oZyrJrBDjqtQWyp9dP1/u4d8HHjRPy5Yt6RZ9nK/XiSCabpTKHCYgs9ZUBSlxgJPB2
-         KEe1sMdbgQ0eg==
+        b=UPh86ZovxPZTTV1wbNLRRuvoqua/6Ph5w4kjKoFcD0OXKSWsqL1TcwdSLD4I2xYig
+         tixua5PbxDQy8WwKT4pWvJ86vrYB3I06e6XlmF4jn0/H0CJQeEEzLAFfGtPJUp6Hv5
+         VgeqP6N03Ej2cUEsz7JhdiaG9u+f6/n9YCyuLFw8SOz1NOhj/1xwq+BJiCnWLuukzi
+         lfkeDGt/R17vSLFwFVRlftKBkusRjzOPLcpejFCCK6FzGmuw3QAX4+UxVpfTcvZl2a
+         zv5IKPY/NBUcvlkqEtFlpEEBe788iHG0gs9kkAWus9XRaeKL/h28nFDZylD6noDfEh
+         GW81szo572iJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, imagedong@tencent.com,
-        dsahern@kernel.org, kafai@fb.com, talalahmad@google.com,
-        keescook@chromium.org, asml.silence@gmail.com,
-        bigeasy@linutronix.de, petrm@nvidia.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 077/105] bpf: Don't redirect packets with invalid pkt_len
-Date:   Thu, 11 Aug 2022 11:28:01 -0400
-Message-Id: <20220811152851.1520029-77-sashal@kernel.org>
+Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 081/105] Bluetooth: hci_bcm: Add BCM4349B1 variant
+Date:   Thu, 11 Aug 2022 11:28:05 -0400
+Message-Id: <20220811152851.1520029-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -59,77 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Ahmad Fatoum <a.fatoum@pengutronix.de>
 
-[ Upstream commit fd1894224407c484f652ad456e1ce423e89bb3eb ]
+[ Upstream commit 4f17c2b6694d0c4098f33b07ee3a696976940aa5 ]
 
-Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-skbs, that is, the flow->head is null.
-The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-run a bpf prog which redirects empty skbs.
-So we should determine whether the length of the packet modified by bpf
-prog or others like bpf_prog_test is valid before forwarding it directly.
+The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
+portion can be controlled over serial.
 
-LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+Two subversions are added for the chip, because ROM firmware reports
+002.002.013 (at least for the chips I have here), while depending on
+patchram firmware revision, either 002.002.013 or 002.002.014 is
+reported.
 
-Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/skbuff.h | 8 ++++++++
- net/bpf/test_run.c     | 3 +++
- net/core/dev.c         | 1 +
- 3 files changed, 12 insertions(+)
+ drivers/bluetooth/btbcm.c   | 2 ++
+ drivers/bluetooth/hci_bcm.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index d3d10556f0fa..2f41364a6791 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2624,6 +2624,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
- 
- #endif /* NET_SKBUFF_DATA_USES_OFFSET */
- 
-+static inline void skb_assert_len(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+	if (WARN_ONCE(!skb->len, "%s\n", __func__))
-+		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
-+#endif /* CONFIG_DEBUG_NET */
-+}
-+
- /*
-  *	Add data to an sk_buff
-  */
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 56f059b3c242..42f8de4ebbd7 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
- {
- 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
- 
-+	if (!skb->len)
-+		return -EINVAL;
-+
- 	if (!__skb)
- 		return 0;
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 30a1603a7225..fe487dc6798e 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 	bool again = false;
- 
- 	skb_reset_mac_header(skb);
-+	skb_assert_len(skb);
- 
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
- 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
+diff --git a/drivers/bluetooth/btbcm.c b/drivers/bluetooth/btbcm.c
+index 76fbb046bdbe..c9cda681c691 100644
+--- a/drivers/bluetooth/btbcm.c
++++ b/drivers/bluetooth/btbcm.c
+@@ -454,6 +454,8 @@ static const struct bcm_subver_table bcm_uart_subver_table[] = {
+ 	{ 0x6606, "BCM4345C5"	},	/* 003.006.006 */
+ 	{ 0x230f, "BCM4356A2"	},	/* 001.003.015 */
+ 	{ 0x220e, "BCM20702A1"  },	/* 001.002.014 */
++	{ 0x420d, "BCM4349B1"	},	/* 002.002.013 */
++	{ 0x420e, "BCM4349B1"	},	/* 002.002.014 */
+ 	{ 0x4217, "BCM4329B1"   },	/* 002.002.023 */
+ 	{ 0x6106, "BCM4359C0"	},	/* 003.001.006 */
+ 	{ 0x4106, "BCM4335A0"	},	/* 002.001.006 */
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index 785f445dd60d..d0a6f9ff4e08 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -1544,6 +1544,7 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
+ 	{ .compatible = "brcm,bcm43430a0-bt" },
+ 	{ .compatible = "brcm,bcm43430a1-bt" },
+ 	{ .compatible = "brcm,bcm43438-bt", .data = &bcm43438_device_data },
++	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
+ 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
+ 	{ .compatible = "brcm,bcm4335a0" },
+ 	{ },
 -- 
 2.35.1
 
