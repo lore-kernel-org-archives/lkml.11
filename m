@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A425C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:59:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF9AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236450AbiHKP7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
+        id S237278AbiHKP7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237078AbiHKP5b (ORCPT
+        with ESMTP id S237088AbiHKP5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:57:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA41FAB41D;
-        Thu, 11 Aug 2022 08:47:55 -0700 (PDT)
+        Thu, 11 Aug 2022 11:57:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45ADAB421;
+        Thu, 11 Aug 2022 08:47:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F6A6616F9;
-        Thu, 11 Aug 2022 15:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80908C433C1;
-        Thu, 11 Aug 2022 15:47:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23099616E4;
+        Thu, 11 Aug 2022 15:47:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBBFCC43141;
+        Thu, 11 Aug 2022 15:47:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232873;
-        bh=syuTXR0wXt+ODyN7niY0i2nUXYmaCVBG22yQ70Uh3Rk=;
+        s=k20201202; t=1660232857;
+        bh=zijP+AVIy0dgvEkwWHz9o8PrQqVQPjAw+9yR4pEOzbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5cbK3paMY5DP+8eVs1+h8ZMTwO7dScFluZ/olTobSo6uM/7azHfaIsS+wZa4SXaP
-         bQ8M/PB7j5kv/b1kSSiVEmPXd7SwkmCizHFDVZDqPbXU43dE6QKezuM2Tv4IjhxgLH
-         pNhh+eP2GIfarZwZlR4BW70keNy5OLX0mrDeJd1bngQEpAJV/YPVjzVuIB1R1wTnft
-         2SZAshyixMspIB06oTy1KTD/vvu4DljPVNntfy9quMzOkqglFGE2Ht30L4gH/Yq1Dg
-         jkIhHaa/95IJdtVnSX8L1amim4lbhuWGzmNh+uh5LjNPbeLH2oJoAHikJZi60qV2x1
-         i899vovyfPKmw==
+        b=jBaHwIvSOW5kizlLDxOX/blNZOFkdESSyg6PCezWXHsZqkT++07mT0XhqzKdoCjqz
+         ilyNh6wFM5Ax/+pq9sBNrTXafK2tpZEMpupkgs5n/cRxvll8rCEPd5AGIt074+r7va
+         HxP037RZJOQNms1Vl+F4MmYKl06DgbygPBr5KdL8BYEYFiSWlPG2W1V8P6Ks94dgcz
+         HXE9r1OonEqPG/MOG8QxiiMkAziTwUL4KBToTNhNxV41Zt26Tns3sjUbqqD0cJNq9W
+         SMZI/WowcZweEmjGA7xRg3OG8XbcugUYM1jqFcLQ12vnp/v2aOiY/PuNlr1Zn8DbLt
+         lINhLyb3/KVFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Stanley.Yang" <Stanley.Yang@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        YiPeng.Chai@amd.com, john.clements@amd.com, candice.li@amd.com,
-        mukul.joshi@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 51/93] drm/amdgpu: skip whole ras bad page framework on sriov
-Date:   Thu, 11 Aug 2022 11:41:45 -0400
-Message-Id: <20220811154237.1531313-51-sashal@kernel.org>
+Cc:     David Reaver <me@davidreaver.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org
+Subject: [PATCH AUTOSEL 5.18 49/93] scripts: get_feat.pl: use /usr/bin/env to find perl
+Date:   Thu, 11 Aug 2022 11:41:43 -0400
+Message-Id: <20220811154237.1531313-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
 References: <20220811154237.1531313-1-sashal@kernel.org>
@@ -57,35 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Stanley.Yang" <Stanley.Yang@amd.com>
+From: David Reaver <me@davidreaver.com>
 
-[ Upstream commit e0e146d5567317d6ba7d0169bed55d1d9ea05a61 ]
+[ Upstream commit 2bc6430884d5ee0e30ae18652d31f821d8e9ec32 ]
 
-It should not init whole ras bad page framework on sriov guest side
-due to it is handled on host side.
+I tried running `make pdfdocs` on NixOS, but it failed because
+get_feat.pl uses a shebang line with /usr/bin/perl, and that file path
+doesn't exist on NixOS. Using the more portable /usr/bin/env perl fixes
+the problem.
 
-Signed-off-by: Stanley.Yang <Stanley.Yang@amd.com>
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Reviewed-by: Tao Zhou <tao.zhou1@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: David Reaver <me@davidreaver.com>
+Link: https://lore.kernel.org/r/20220625211548.1200198-1-me@davidreaver.com
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 2 +-
+ scripts/get_feat.pl | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-index 3f96dadf2698..7506b0b9c2cb 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-@@ -2062,7 +2062,7 @@ int amdgpu_ras_recovery_init(struct amdgpu_device *adev)
- 	bool exc_err_limit = false;
- 	int ret;
+diff --git a/scripts/get_feat.pl b/scripts/get_feat.pl
+index 76cfb96b59b6..5c5397eeb237 100755
+--- a/scripts/get_feat.pl
++++ b/scripts/get_feat.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # SPDX-License-Identifier: GPL-2.0
  
--	if (!con)
-+	if (!con || amdgpu_sriov_vf(adev))
- 		return 0;
- 
- 	/* Allow access to RAS EEPROM via debugfs, when the ASIC
+ use strict;
 -- 
 2.35.1
 
