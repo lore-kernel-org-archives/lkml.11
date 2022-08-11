@@ -2,68 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BC2C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4D9C25B0D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237551AbiHKQM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48758 "EHLO
+        id S237491AbiHKQMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236980AbiHKQMB (ORCPT
+        with ESMTP id S237449AbiHKQMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 12:12:01 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A565A760DD
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:56:56 -0700 (PDT)
-X-QQ-mid: bizesmtp82t1660233403tyl386yp
-Received: from localhost.localdomain ( [110.188.55.240])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 11 Aug 2022 23:56:35 +0800 (CST)
-X-QQ-SSF: 0100000000200080H000B00A0000020
-X-QQ-FEAT: ntUToVEOiWoVPRpveSlZH+C/roA2UqPB/y8XhP4iN2dSWbOjCT0FeQqVlLK8A
-        HZ3ArrUUBx0AGwShvtWE4XkltAfd6RtAJVwuXZjkPdrYmzJMT53W8Tp2flCe/vAQNtLtv1B
-        g28u0I78SSe7vTJFyHEr1TLkhe2lsCsE8UTgMyyY+DP5+x1zdopURsF1h6e+hsDMtROJ024
-        HkoZNwuhkjP8XaAfMqVfeZ0oXYjOZc/d6x5RrlcgBJAHNrYVBfVnrrvUz8yUJIVN48g/roZ
-        aor7wL8N862bQNzi5ljMuoyiw/lpIxRETahGJSnKsJAwIObGGWe7sdNBr3x/weIN+ZQCVku
-        /iX/0Me1XZzVyrvW0TNaLGsN8T5XS30D9Oqjc8NYE2LUADxR2XO1CRpCOIssB0hLewCc6z2
-        m0H1pXQRdMg=
-X-QQ-GoodBg: 0
-From:   min tang <tangmin@cdjrlc.com>
-To:     airlied@linux.ie, daniel@ffwll.ch
-Cc:     zackr@vmware.com, linux-graphics-maintainer@vmware.com,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        min tang <tangmin@cdjrlc.com>
-Subject: [PATCH] drm/vmwgfx: Fix comment typo
-Date:   Thu, 11 Aug 2022 23:56:23 +0800
-Message-Id: <20220811155623.13661-1-tangmin@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFB96BD73;
+        Thu, 11 Aug 2022 08:56:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC51612EC;
+        Thu, 11 Aug 2022 15:56:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA8C0C433D6;
+        Thu, 11 Aug 2022 15:56:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660233412;
+        bh=vrdBkE2ZmzcmSjIjhiu+vMiXHBgu40Oq7MDBGADFiN8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jIJB8B2R4Nat0MZeke+fQizjhCVuhFKqQqiYdYD8VqqJKk2EbyXLo0vgJ1pxKbaaE
+         EKPkGjxXmGchoJ8TYAK0E17bpcoTINL7wTxttqoIRf99bu4NGLlZBTZbMC2tgkcMo5
+         EBSVuz/2cA7YGqu/jo0M57PXzOe7u/KjGBIJtidrtUWR6tUPVWz8TL3jD+S47wVToL
+         1SJLZejoMAnrrnVTCy5iRVIct8kjW1ARnocHlP1FH0DLP5Lftn5gOGERxC19S2BNXh
+         LMS3fD798s1eXA0Ou/0MfKORhxYOye98/GNks2dVlhoaxIYpweeCbZmS40kOVJ2iRX
+         95ciu7GZ+Nehg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 02/69] drm/r128: Fix undefined behavior due to shift overflowing the constant
+Date:   Thu, 11 Aug 2022 11:55:11 -0400
+Message-Id: <20220811155632.1536867-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
+References: <20220811155632.1536867-1-sashal@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `should' is duplicated in line 72, remove one.
+From: Borislav Petkov <bp@suse.de>
 
-Signed-off-by: min tang <tangmin@cdjrlc.com>
+[ Upstream commit 6556551f8848f98eff356c8aacae42c8dd65b2df ]
+
+Fix:
+
+  drivers/gpu/drm/r128/r128_cce.c: In function ‘r128_do_init_cce’:
+  drivers/gpu/drm/r128/r128_cce.c:417:2: error: case label does not reduce to an integer constant
+    case R128_PM4_64BM_64VCBM_64INDBM:
+    ^~~~
+  drivers/gpu/drm/r128/r128_cce.c:418:2: error: case label does not reduce to an integer constant
+    case R128_PM4_64PIO_64VCPIO_64INDPIO:
+    ^~~~
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220405151517.29753-5-bp@alien8.de
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/r128/r128_drv.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-index 1d1c8b82c898..7c04e8150fe2 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-@@ -69,7 +69,7 @@ struct vmw_du_update_plane {
- 	 *
- 	 * Some surface resource or buffer object need some extra cmd submission
- 	 * like update GB image for proxy surface and define a GMRFB for screen
--	 * object. That should should be done here as this callback will be
-+	 * object. That should be done here as this callback will be
- 	 * called after FIFO allocation with the address of command buufer.
- 	 *
- 	 * This callback is optional.
+diff --git a/drivers/gpu/drm/r128/r128_drv.h b/drivers/gpu/drm/r128/r128_drv.h
+index 2e1bc01aa5c9..970e192b0d51 100644
+--- a/drivers/gpu/drm/r128/r128_drv.h
++++ b/drivers/gpu/drm/r128/r128_drv.h
+@@ -300,8 +300,8 @@ extern long r128_compat_ioctl(struct file *filp, unsigned int cmd,
+ #	define R128_PM4_64PIO_128INDBM		(5  << 28)
+ #	define R128_PM4_64BM_128INDBM		(6  << 28)
+ #	define R128_PM4_64PIO_64VCBM_64INDBM	(7  << 28)
+-#	define R128_PM4_64BM_64VCBM_64INDBM	(8  << 28)
+-#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15 << 28)
++#	define R128_PM4_64BM_64VCBM_64INDBM	(8U  << 28)
++#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15U << 28)
+ #	define R128_PM4_BUFFER_CNTL_NOUPDATE	(1  << 27)
+ 
+ #define R128_PM4_BUFFER_WM_CNTL		0x0708
 -- 
-2.17.1
-
+2.35.1
 
