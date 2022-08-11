@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E22C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5628AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235939AbiHKQUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        id S237424AbiHKQVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237683AbiHKQTi (ORCPT
+        with ESMTP id S237663AbiHKQUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:19:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DED696741;
-        Thu, 11 Aug 2022 09:01:42 -0700 (PDT)
+        Thu, 11 Aug 2022 12:20:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8973E9C50B;
+        Thu, 11 Aug 2022 09:01:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7A9E9CE2256;
-        Thu, 11 Aug 2022 16:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25F18C433C1;
-        Thu, 11 Aug 2022 16:01:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41DB8B82166;
+        Thu, 11 Aug 2022 16:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B46AC433D7;
+        Thu, 11 Aug 2022 16:01:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233698;
-        bh=OiZAxAnQZjkyZ2td/D0/JWcnAdGXseToaBcDirW3jKY=;
+        s=k20201202; t=1660233715;
+        bh=5FJntoiGAy4FKurYXXyOYgeeCYPluPQ7jBivwhv82Vk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sTj3+bTo0JUtuH/1VKD3JrDcw9Dl0nvIHYQpikuD8FT15cRSF712eKPPgGQVACSUi
-         e524lauuaB7FDNFL0z5S5jSlU94I1nOLF/BZ10Asryww3t5iXQx9sLlvWgr7WoiB6X
-         0a6OctrfwYZCSZVjnfF9vYoFJudr5jQ9gqHZ8GPvKcT4vCcGuUxVAWMQWh/VoLPXEP
-         /4KqcQO1L9SrDxvAOqn6+X7qWsr2/AXnp3tTgt4IcJPomECDNdJm+mwK0MuEywXae/
-         ChykmiYfzZq21ANDo7IpQ7iz1+/xf7g0CDlV+z5V3XU0jwD5MHXNRGluyyFq7cbOFN
-         W772kQBtg+ptQ==
+        b=IRPnX1+8fIBudYbPaa4sHaQj2GuLevfqGoNATnAc6FW5R8W5wvwfySvCDtU1cFYXO
+         uWlxtYZB29DdJA3emN/7DDT13QmM4rIQ8aVfKZPzZWFJEFq6Weng5w8v769+oJdSqi
+         oEKhlMduuaGXn3qzsmcrS2cC0EDOtC6/GHqgAy4dhfjF26PVlxKwDZR5u42Q1V6oI+
+         PUyVDMRZW20iBcYQXQV0yemvpD99wUKQoLYdvy2MKuYbyMkM91KDI4dzeSzdIKwfls
+         6uQp7pWNeQhIBsdxOWDAvxBxlRnQhHiqypTciceDwoPrYfSORFj15rZEm9p+7HBS3K
+         T9inrvWR7yBfg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Stanley.Yang" <Stanley.Yang@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        YiPeng.Chai@amd.com, john.clements@amd.com, candice.li@amd.com,
-        mukul.joshi@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 43/69] drm/amdgpu: skip whole ras bad page framework on sriov
-Date:   Thu, 11 Aug 2022 11:55:52 -0400
-Message-Id: <20220811155632.1536867-43-sashal@kernel.org>
+Cc:     Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
+        quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
+        airlied@linux.ie, daniel@ffwll.ch, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 46/69] drm/msm/gem: Drop obj lock in msm_gem_free_object()
+Date:   Thu, 11 Aug 2022 11:55:55 -0400
+Message-Id: <20220811155632.1536867-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -57,35 +53,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Stanley.Yang" <Stanley.Yang@amd.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit e0e146d5567317d6ba7d0169bed55d1d9ea05a61 ]
+[ Upstream commit a414fe3a2129b490e1e9b8ad66f0364f4f961887 ]
 
-It should not init whole ras bad page framework on sriov guest side
-due to it is handled on host side.
+The only reason we grabbed the lock was to satisfy a bunch of places
+that WARN_ON() if called without the lock held.  But this angers lockdep
+which doesn't realize no one else can be holding the lock by the time we
+end up destroying the object (and sees what would otherwise be a locking
+inversion between reservation_ww_class_mutex and fs_reclaim).
 
-Signed-off-by: Stanley.Yang <Stanley.Yang@amd.com>
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Reviewed-by: Tao Zhou <tao.zhou1@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Closes: https://gitlab.freedesktop.org/drm/msm/-/issues/14
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/489364/
+Link: https://lore.kernel.org/r/20220613205032.2652374-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_gem.c |  8 --------
+ drivers/gpu/drm/msm/msm_gem.h | 14 +++++++++++++-
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-index 96a8fd0ca1df..adea3bfb0760 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-@@ -1964,7 +1964,7 @@ int amdgpu_ras_recovery_init(struct amdgpu_device *adev)
- 	bool exc_err_limit = false;
- 	int ret;
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index d280dd64744d..0d84bdd4a0a8 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -1017,8 +1017,6 @@ void msm_gem_free_object(struct drm_gem_object *obj)
+ 	list_del(&msm_obj->mm_list);
+ 	mutex_unlock(&priv->mm_lock);
  
--	if (!con)
-+	if (!con || amdgpu_sriov_vf(adev))
- 		return 0;
+-	msm_gem_lock(obj);
+-
+ 	/* object should not be on active list: */
+ 	GEM_WARN_ON(is_active(msm_obj));
  
- 	/* Allow access to RAS EEPROM via debugfs, when the ASIC
+@@ -1034,17 +1032,11 @@ void msm_gem_free_object(struct drm_gem_object *obj)
+ 
+ 		put_iova_vmas(obj);
+ 
+-		/* dma_buf_detach() grabs resv lock, so we need to unlock
+-		 * prior to drm_prime_gem_destroy
+-		 */
+-		msm_gem_unlock(obj);
+-
+ 		drm_prime_gem_destroy(obj, msm_obj->sgt);
+ 	} else {
+ 		msm_gem_vunmap(obj);
+ 		put_pages(obj);
+ 		put_iova_vmas(obj);
+-		msm_gem_unlock(obj);
+ 	}
+ 
+ 	drm_gem_object_release(obj);
+diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+index e39a8e7ad843..fdd9b1a08009 100644
+--- a/drivers/gpu/drm/msm/msm_gem.h
++++ b/drivers/gpu/drm/msm/msm_gem.h
+@@ -193,7 +193,19 @@ msm_gem_unlock(struct drm_gem_object *obj)
+ static inline bool
+ msm_gem_is_locked(struct drm_gem_object *obj)
+ {
+-	return dma_resv_is_locked(obj->resv);
++	/*
++	 * Destroying the object is a special case.. msm_gem_free_object()
++	 * calls many things that WARN_ON if the obj lock is not held.  But
++	 * acquiring the obj lock in msm_gem_free_object() can cause a
++	 * locking order inversion between reservation_ww_class_mutex and
++	 * fs_reclaim.
++	 *
++	 * This deadlock is not actually possible, because no one should
++	 * be already holding the lock when msm_gem_free_object() is called.
++	 * Unfortunately lockdep is not aware of this detail.  So when the
++	 * refcount drops to zero, we pretend it is already locked.
++	 */
++	return dma_resv_is_locked(obj->resv) || (kref_read(&obj->refcount) == 0);
+ }
+ 
+ static inline bool is_active(struct msm_gem_object *msm_obj)
 -- 
 2.35.1
 
