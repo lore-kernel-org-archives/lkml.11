@@ -2,114 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 418CCC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 07:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB6FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 07:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234371AbiHKHaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 03:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
+        id S234390AbiHKHaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 03:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiHKH3z (ORCPT
+        with ESMTP id S234387AbiHKH3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 03:29:55 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B374923FF;
-        Thu, 11 Aug 2022 00:29:53 -0700 (PDT)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27B7MBou019139;
-        Thu, 11 Aug 2022 07:29:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=BJGCRmyYQPJGbgLAMygRFr672dkJN7Q+xPPqyqu4g8w=;
- b=NnOzCRBwUkGgo/fj2qVd7xrxv3Vh9wGDU8fNQuZhIfXX9XekUeDD3yTWiNUSS/vi17di
- x1jsT0aculT6QP6qlDhsMFNaJOaRbhWHiG2xCOdT2i/0WIsGJDRXDMwlzxlEkMuWD3jT
- hAQoyYnuXJteHn1lkvR5Rdn2CrBXaDQ/J07zO0xlcx4T3SZLEZuATWfdiEXJePWxRQPm
- ZyIY2K+pHsMd8lXhyz2ac3oFamACDe66MDAjOTGyyPfcJHEmgYAKTvJvxAI0gjeluSMI
- OrNXonm8ln9F9z9Qtt81Z+wvTuLs2VrkNV1yIUwFhbiWowU0asrEXBmN67LOZod7tIPS QA== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hvsaaghu2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Aug 2022 07:29:09 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27B7T7Zw024814
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Aug 2022 07:29:08 GMT
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 11 Aug 2022 00:29:07 -0700
-Received: from [10.216.37.224] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 11 Aug
- 2022 00:29:02 -0700
-Message-ID: <9e8f79c8-466a-91b1-63b6-38c99022e735@quicinc.com>
-Date:   Thu, 11 Aug 2022 12:58:58 +0530
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B609923F1
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 00:29:54 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B92CA68AA6; Thu, 11 Aug 2022 09:29:51 +0200 (CEST)
+Date:   Thu, 11 Aug 2022 09:29:51 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Michal Hocko <mhocko@suse.com>, Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
+Message-ID: <20220811072951.GC13886@lst.de>
+References: <20220325122559.14251-1-mhocko@kernel.org> <Yj28gjonUa9+0yae@dhcp22.suse.cz> <20220325164856.GA16800@lst.de> <Yj3zyLs4f+ba6UqF@dhcp22.suse.cz> <YupFSpXOrcfXJNya@dhcp22.suse.cz> <YuqNToCACD8kKBG+@MiWiFi-R3L-srv> <YuqOrJKcgfamdXkk@dhcp22.suse.cz> <YuqU87SDwP0zg+c7@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/8] dt-bindings: remoteproc: qcom: adsp: Make ADSP pil
- loader as generic
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <quic_plai@quicinc.com>,
-        <bgoswami@quicinc.com>, <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <quic_rohkumar@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <devicetree@vger.kernel.org>
-References: <1659611751-7928-1-git-send-email-quic_srivasam@quicinc.com>
- <1659611751-7928-2-git-send-email-quic_srivasam@quicinc.com>
- <20220809183636.GA2158474-robh@kernel.org>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <20220809183636.GA2158474-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: VmOfpVif20bhFYcJLEp--zzOua1HooPC
-X-Proofpoint-GUID: VmOfpVif20bhFYcJLEp--zzOua1HooPC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-11_03,2022-08-10_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- malwarescore=0 spamscore=0 bulkscore=0 mlxlogscore=986 adultscore=0
- phishscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208110019
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuqU87SDwP0zg+c7@MiWiFi-R3L-srv>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 5aa4c2ecf5c7..93af781f9445 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -2761,7 +2761,6 @@ config ISA_BUS
+>  # x86_64 have no ISA slots, but can have ISA-style DMA.
+>  config ISA_DMA_API
+>  	bool "ISA-style DMA support" if (X86_64 && EXPERT)
+> -	default y
 
-On 8/10/2022 12:06 AM, Rob Herring wrote:
-Thanks for Your time Rob!!!
-> On Thu, Aug 04, 2022 at 04:45:44PM +0530, Srinivasa Rao Mandadapu wrote:
->> Rename sdm845 adsp pil bindings to generic name, for using same binings
->> file for subsequent SoCs.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> ---
->>   .../bindings/remoteproc/qcom,lpass-adsp-pil.yaml   | 160 +++++++++++++++++++++
->>   .../bindings/remoteproc/qcom,sdm845-adsp-pil.yaml  | 160 ---------------------
->>   2 files changed, 160 insertions(+), 160 deletions(-)
->>   create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,lpass-adsp-pil.yaml
->>   delete mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sdm845-adsp-pil.yaml
-> Please use the git-format-patch -M option so I'm not reviewing the whole
-> doc again. You also can (and should) change your git config to default
-> to this.
+This looks sensible to me, but you'll have to get it past Linus.
 
-Actually here Common dt bindings for SDM845 and SC7280 is not working, 
-as it has conflicts with clock headers.
+> -#ifdef CONFIG_ZONE_DMA
+> +#if defined(CONFIG_ZONE_DMA) && defined(CONFIG_ISA_DMA_API)
+>  	max_zone_pfns[ZONE_DMA]		= min(MAX_DMA_PFN, max_low_pfn);
+> +#else
+> +	max_zone_pfns[ZONE_DMA]		= min(MAX_DMA32_PFN, max_low_pfn);
+>  #endif
 
-I Would like to revert this patch and create new dt bindings file for 
-SC7280 platform.
-
->
-> Rob
+But this simply can't work at all.
