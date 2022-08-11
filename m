@@ -2,88 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FC2C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C59FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237534AbiHKQdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
+        id S238853AbiHKQdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238967AbiHKQbl (ORCPT
+        with ESMTP id S238984AbiHKQbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:31:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07660BB028;
-        Thu, 11 Aug 2022 09:10:10 -0700 (PDT)
+        Thu, 11 Aug 2022 12:31:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADD310FD;
+        Thu, 11 Aug 2022 09:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B6B86137B;
-        Thu, 11 Aug 2022 16:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 895B3C433D7;
-        Thu, 11 Aug 2022 16:10:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06EFE61422;
+        Thu, 11 Aug 2022 16:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 601BCC43143;
+        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234209;
-        bh=SqlZVIDfczPnETlK6rG91ViTcxMbZm8K5E8knNr1mZQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YOAIfXxYmODTp5wBjl9WBC4i202R4n8t+i4bhJMPkT/qP3pGnWh2l5IjcY20JvEek
-         eRo7+1LQNQ/nrS48MT6BhXVqJ/M6BJZjzZ4SOhRZS4xuMTMV6Rza6ANMtJK+YexOpx
-         P1g7L75uVRJGaQKdGYekOegdrSZCq9ni8I4F6jYbCl6gD5ud3CMbIM/YChBGwjecmF
-         PE9E3jerhcvTytTYrpccRb182//57J3M3ZZvTfhgZKHHv5j7XHHO4AMyIgdh7Wjr3Y
-         K0uJ1iwIzhHLwrR0dDiaZitDYZNf0nsWyBQLst7Qg1GREUd0adZ0c2bk449k4OkyOv
-         ekPDK9o9oLM/g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/14] mlxsw: cmd: Increase 'config_profile.flood_mode' length
-Date:   Thu, 11 Aug 2022 12:09:35 -0400
-Message-Id: <20220811160948.1542842-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811160948.1542842-1-sashal@kernel.org>
-References: <20220811160948.1542842-1-sashal@kernel.org>
+        s=k20201202; t=1660234215;
+        bh=iigHs5CKz4tUKOya26DgKcCC5RT3PcsM+dArmcfDSQ4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Nj/YE0EMcqSvG2GoUVb2LvW7c6fSOnyUELlVcesVL5s+ZoUPoAibdgTtJAXgcXh0v
+         FeRw4CEt1Ox2CVEW5KPnbi+YxuE+b3CzsEDIzG8pf3G3wpBg46jZS5CAbTWzQ6nlxK
+         0hRrLH6n3vZmfWuVlyrYPwZ2ujIOXUyXq5MBIEP0YZwtkGZ96L7V3Kdm10XPFi+tXp
+         taVg26jZRP2IkGU+NOesHej7RHNWaBE+Yqrr5KoukgMYRoHNjtu1YsJzy2VJe/EG9J
+         dDvWm7oFGttMiIU602lM22HgxaI11TFPuqvq+t9LwJhV3t+Wrqeq/BSzACmSwp2rXZ
+         qmIxjP1mg4qNw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3E1D6C43147;
+        Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] nfp: fix use-after-free in area_cache_get()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166023421525.9507.12428200165169561355.git-patchwork-notify@kernel.org>
+Date:   Thu, 11 Aug 2022 16:10:15 +0000
+References: <20220810073057.4032-1-wangjialiang0806@163.com>
+In-Reply-To: <20220810073057.4032-1-wangjialiang0806@163.com>
+To:     Jialiang Wang <wangjialiang0806@163.com>
+Cc:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, niejianglei2021@163.com,
+        oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+Hello:
 
-[ Upstream commit 89df3c6261f271c550f120b5ccf4d9c5132e870c ]
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Currently, the length of 'config_profile.flood_mode' is defined as 2
-bits, while the correct length is 3 bits.
+On Wed, 10 Aug 2022 15:30:57 +0800 you wrote:
+> area_cache_get() is used to distribute cache->area and set cache->id,
+>  and if cache->id is not 0 and cache->area->kref refcount is 0, it will
+>  release the cache->area by nfp_cpp_area_release(). area_cache_get()
+>  set cache->id before cpp->op->area_init() and nfp_cpp_area_acquire().
+> 
+> But if area_init() or nfp_cpp_area_acquire() fails, the cache->id is
+>  is already set but the refcount is not increased as expected. At this
+>  time, calling the nfp_cpp_area_release() will cause use-after-free.
+> 
+> [...]
 
-As preparation for unified bridge model, which will use the whole field
-length, fix it and increase the field to the correct size.
+Here is the summary with links:
+  - [v3] nfp: fix use-after-free in area_cache_get()
+    https://git.kernel.org/netdev/net/c/02e1a114fdb7
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/mellanox/mlxsw/cmd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 0772e4339b33..0a151ec37d30 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -710,7 +710,7 @@ MLXSW_ITEM32(cmd_mbox, config_profile, max_vid_flood_tables, 0x30, 8, 4);
-  * max_fid_offset_flood_tables indicates the number of FID-offset tables.
-  * max_fid_flood_tables indicates the number of per-FID tables.
-  */
--MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 2);
-+MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 3);
- 
- /* cmd_mbox_config_profile_max_fid_offset_flood_tables
-  * Maximum number of FID-offset flooding tables.
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
