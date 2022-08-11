@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059F3C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A01DC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238158AbiHKQ0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 12:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44844 "EHLO
+        id S238185AbiHKQ0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237814AbiHKQYe (ORCPT
+        with ESMTP id S238041AbiHKQYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 12:24:34 -0400
+        Thu, 11 Aug 2022 12:24:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C2522BCC;
-        Thu, 11 Aug 2022 09:06:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B08828E01;
+        Thu, 11 Aug 2022 09:06:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81AB0B821B1;
-        Thu, 11 Aug 2022 16:06:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F077C433D6;
-        Thu, 11 Aug 2022 16:06:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B337B82144;
+        Thu, 11 Aug 2022 16:06:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77BDC433C1;
+        Thu, 11 Aug 2022 16:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233981;
-        bh=IK5sDWkGcp7UNJSpKBfdEty4JJCJ3n0BenPU3Os+Yz4=;
+        s=k20201202; t=1660233989;
+        bh=isHuBvlH/B+b9zNxBdOHjfqu03uqUo/6IQ9xFYbWWOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LRoORiZqxQzcwtQrUou3yAzPdWQH+witIBBr+qXyZr5nKL++A70SJpdJZoBlO6GLn
-         D95P2uyfMFF/f2D+bAqq1LLKR9dltxQUF+nsZJCj5Y56jkmHZ9V7lhlamT/W8RktQv
-         cUb/rCoOvaP6MwOzABfqpSsdYCfri4VbjGnMR4aWNgBsTlDr1J47qltMqycyUI3qE4
-         tJcC3OSY/7vsV3AqCZvWlEpEEUSRruoXvR299qJgmgViMhwR1v7Khaa6S1VL69vUp7
-         jpt5+jsK3nP6Gb0Fw5tXccct9wd62l6K6FgoJBGGPs57dtipDerfRtGJDznIXdUwb3
-         2j+1oL/vNMq2Q==
+        b=mhOvUGTJiD5a9w8DdmDKnDya6K7bmIhEstKM4kYaLyt0KVVMwmzwn+8uAsQ4xdix0
+         Q7i3DzW0bCQSr3nTaIJtU2Y2sL7Wdp5QPVVmL24FfB5/gB2gQKvYf359MUM4tOBxCD
+         wQAy7Y70dTdnu9akAQqpdgtNgmORAPXY2Vl00lUrXGlX7GI8j4F8GYhoEqo6HIbEm0
+         twrAQIEEy/tR5g8LLXYVzQQ6joNJmyMtskGIywU576xNlMAxjFcTsWTnHDHadTZ+Hd
+         /iCJodINRJpUKnoxsFW3BQ89p1u3IKCjm690FqDBrl1gIrSr2IJvcJhRK/Wy4yDDMF
+         o92aQ+ATSQF0g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, isely@pobox.com,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 20/46] media: pvrusb2: fix memory leak in pvr_probe
-Date:   Thu, 11 Aug 2022 12:03:44 -0400
-Message-Id: <20220811160421.1539956-20-sashal@kernel.org>
+Cc:     Zqiang <qiang1.zhang@intel.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, dave@stgolabs.net,
+        josh@joshtriplett.org, frederic@kernel.org,
+        quic_neeraju@quicinc.com, rcu@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 24/46] rcuscale: Fix smp_processor_id()-in-preemptible warnings
+Date:   Thu, 11 Aug 2022 12:03:48 -0400
+Message-Id: <20220811160421.1539956-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
@@ -54,39 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Zqiang <qiang1.zhang@intel.com>
 
-[ Upstream commit 945a9a8e448b65bec055d37eba58f711b39f66f0 ]
+[ Upstream commit 92366810644d5675043c792abb70eaf974a77384 ]
 
-The error handling code in pvr2_hdw_create forgets to unregister the
-v4l2 device. When pvr2_hdw_create returns back to pvr2_context_create,
-it calls pvr2_context_destroy to destroy context, but mp->hdw is NULL,
-which leads to that pvr2_hdw_destroy directly returns.
+Systems built with CONFIG_DEBUG_PREEMPT=y can trigger the following
+BUG while running the rcuscale performance test:
 
-Fix this by adding v4l2_device_unregister to decrease the refcount of
-usb interface.
+BUG: using smp_processor_id() in preemptible [00000000] code: rcu_scale_write/69
+CPU: 0 PID: 66 Comm: rcu_scale_write Not tainted 5.18.0-rc7-next-20220517-yoctodev-standard+
+caller is debug_smp_processor_id+0x17/0x20
+Call Trace:
+<TASK>
+dump_stack_lvl+0x49/0x5e
+dump_stack+0x10/0x12
+check_preemption_disabled+0xdf/0xf0
+debug_smp_processor_id+0x17/0x20
+rcu_scale_writer+0x2b5/0x580
+kthread+0x177/0x1b0
+ret_from_fork+0x22/0x30
+</TASK>
 
-Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reproduction method:
+runqemu kvm slirp nographic qemuparams="-m 4096 -smp 8" bootparams="isolcpus=2,3
+nohz_full=2,3 rcu_nocbs=2,3 rcutree.dump_tree=1 rcuscale.shutdown=false
+rcuscale.gp_async=true" -d
+
+The problem is that the rcu_scale_writer() kthreads fail to set the
+PF_NO_SETAFFINITY flags, which causes is_percpu_thread() to assume
+that the kthread's affinity might change at any time, thus the BUG
+noted above.
+
+This commit therefore causes rcu_scale_writer() to set PF_NO_SETAFFINITY
+in its kthread's ->flags field, thus preventing this BUG.
+
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 1 +
+ kernel/rcu/rcuscale.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-index fccd1798445d..d22ce328a279 100644
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -2610,6 +2610,7 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
- 		del_timer_sync(&hdw->encoder_run_timer);
- 		del_timer_sync(&hdw->encoder_wait_timer);
- 		flush_work(&hdw->workpoll);
-+		v4l2_device_unregister(&hdw->v4l2_dev);
- 		usb_free_urb(hdw->ctl_read_urb);
- 		usb_free_urb(hdw->ctl_write_urb);
- 		kfree(hdw->ctl_read_buffer);
+diff --git a/kernel/rcu/rcuscale.c b/kernel/rcu/rcuscale.c
+index 2819b95479af..ca61dc9a9358 100644
+--- a/kernel/rcu/rcuscale.c
++++ b/kernel/rcu/rcuscale.c
+@@ -369,6 +369,7 @@ rcu_scale_writer(void *arg)
+ 	VERBOSE_SCALEOUT_STRING("rcu_scale_writer task started");
+ 	WARN_ON(!wdpp);
+ 	set_cpus_allowed_ptr(current, cpumask_of(me % nr_cpu_ids));
++	current->flags |= PF_NO_SETAFFINITY;
+ 	sched_set_fifo_low(current);
+ 
+ 	if (holdoff)
 -- 
 2.35.1
 
