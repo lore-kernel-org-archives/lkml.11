@@ -2,136 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6436CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C08C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235547AbiHKNWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 09:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
+        id S235496AbiHKNYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 09:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235108AbiHKNWf (ORCPT
+        with ESMTP id S234066AbiHKNYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 09:22:35 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1864816AE;
-        Thu, 11 Aug 2022 06:22:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660224153; x=1691760153;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=TXGp2l7srz7CG/35HC62yaH3SzOuZ/KTY0IN1dEpGAI=;
-  b=T5Vzi5QzJt1rxP32GUX/mrs4MWVVTlwuxjMi9Y89Am1NkOMIJGTnmTNd
-   Zdg6TTt9BernHTVXvKdFu70eG2bDgOCyY2Tj7pJqxNSBByrt4YQuF1DVh
-   ySRvMMo6Bqi+PwOJXo7qFkt5EZjjljg1mMZ+4DyR5NxOPWuVZ3vmWA90X
-   L2+DuVmzXchnKnjwWqaCWWg+M0nfRWTXBNSMoHgoSYhOU7qUQeUr1XeCs
-   0Mz38l6tm5lLClygUQcHARxAM0uo6S45FtDw0Zaf0syOJvBHvIxgh3eHU
-   qIR8fakSdWch+/EOw1YROjUJuDqi1vAnIEBsIraZu7CQtL4STibM3njJg
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="292602176"
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="292602176"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 06:22:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="608920719"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Aug 2022 06:22:23 -0700
-Date:   Thu, 11 Aug 2022 21:17:38 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 05/14] mm/memfd: Introduce MFD_INACCESSIBLE flag
-Message-ID: <20220811131738.GA916119@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-6-chao.p.peng@linux.intel.com>
- <203c752f-9439-b5ae-056c-27b2631dcb81@redhat.com>
- <20220810093741.GE862421@chaop.bj.intel.com>
- <64ab9678-c72d-b6d9-8532-346cc9c06814@redhat.com>
+        Thu, 11 Aug 2022 09:24:10 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE70816A5
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:24:10 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id u5-20020a6b4905000000b00681e48dbd92so9716989iob.21
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:24:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=Tz3EySJ3G4jRxpLoZxF4SZXo5koC2ppG85L8I0jq3G4=;
+        b=BeW4UG3gz9TmSnZ4cyJX+ar5RmyXR33hfjwCTn5ChkIQ8pNNJGaxNdn1h7Na8+XZcP
+         T7tefsGzJhrdx6uvImJhzwHpEGgSy0X8pEEy6RN7KNCjwLmObzpPVFJ2M8YmJ041XB2g
+         YEfVIn0snVg6a4sMZe4TYWZgX1hyZw5haS4KryMSCihxikt4qXh2+Y0eaKGLYNFhUvgX
+         ExEezNX+uE/jEaOaVJ3Gu5eSXPTAxEMFYZc+QJ0F47ZIQtXGMcaG5bxLyX5HoSd6OzQD
+         GL5cNrN8fILsmjx8lbiqbHAdYME0TpPeQzq3abm6oc4uKZrBTfI5YXCWYIPaQFkKBvQa
+         K05Q==
+X-Gm-Message-State: ACgBeo3gdyNIOyd9+clJB1efsN/yQCqczPGCYgVwLQr19rNeKpD0YetR
+        ZptB0oxgjQr5lkfape1t5vZOCydl6mTWdCXlGF2gXc+6/d9w
+X-Google-Smtp-Source: AA6agR4PDNFIDZLUnFtMh84ZcSt77qOF1CqKiM3wLwJu8aFeKZT5JwMjvuUcAAP5JcTadc3KZp6KSptfobmmcywosSmL5Q/fzrXJ
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <64ab9678-c72d-b6d9-8532-346cc9c06814@redhat.com>
+X-Received: by 2002:a05:6602:13c8:b0:669:c3de:776f with SMTP id
+ o8-20020a05660213c800b00669c3de776fmr12529611iov.124.1660224249853; Thu, 11
+ Aug 2022 06:24:09 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 06:24:09 -0700
+In-Reply-To: <20220811103620.2807-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a9029805e5f71478@google.com>
+Subject: Re: [syzbot] INFO: task hung in __generic_file_fsync (3)
+From:   syzbot <syzbot+ed920a72fd23eb735158@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 11:55:19AM +0200, David Hildenbrand wrote:
-> On 10.08.22 11:37, Chao Peng wrote:
-> > On Fri, Aug 05, 2022 at 03:28:50PM +0200, David Hildenbrand wrote:
-> >> On 06.07.22 10:20, Chao Peng wrote:
-> >>> Introduce a new memfd_create() flag indicating the content of the
-> >>> created memfd is inaccessible from userspace through ordinary MMU
-> >>> access (e.g., read/write/mmap). However, the file content can be
-> >>> accessed via a different mechanism (e.g. KVM MMU) indirectly.
-> >>>
-> >>> It provides semantics required for KVM guest private memory support
-> >>> that a file descriptor with this flag set is going to be used as the
-> >>> source of guest memory in confidential computing environments such
-> >>> as Intel TDX/AMD SEV but may not be accessible from host userspace.
-> >>>
-> >>> The flag can not coexist with MFD_ALLOW_SEALING, future sealing is
-> >>> also impossible for a memfd created with this flag.
-> >>
-> >> It's kind of weird to have it that way. Why should the user have to
-> >> care? It's the notifier requirement to have that, no?
-> >>
-> >> Why can't we handle that when register a notifier? If anything is
-> >> already mapped, fail registering the notifier if the notifier has these
-> >> demands. If registering succeeds, block it internally.
-> >>
-> >> Or what am I missing? We might not need the memfile set flag semantics
-> >> eventually and would not have to expose such a flag to user space.
-> > 
-> > This makes sense if doable. The major concern was: is there a reliable
-> > way to detect this (already mapped) at the time of memslot registering.
-> 
-> If too complicated, we could simplify to "was this ever mapped" and fail
-> for now. Hooking into shmem_mmap() might be sufficient for that to get
-> notified about the first mmap.
-> 
-> As an alternative, mapping_mapped() or similar *might* do what we want.
+Hello,
 
-mapping_mapped() sounds the right one, I remember SEV people want first
-map then unmap. "was this ever mapped" may not work for them.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Thanks,
-Chao
-> 
-> 
-> 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+Reported-and-tested-by: syzbot+ed920a72fd23eb735158@syzkaller.appspotmail.com
+
+Tested on:
+
+commit:         200e340f Merge tag 'pull-work.dcache' of git://git.ker..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=16422f53080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
+dashboard link: https://syzkaller.appspot.com/bug?extid=ed920a72fd23eb735158
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=16273ac3080000
+
+Note: testing is done by a robot and is best-effort only.
