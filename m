@@ -2,108 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27EECC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF217C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236010AbiHKPd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        id S235846AbiHKPdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235952AbiHKPci (ORCPT
+        with ESMTP id S235800AbiHKPcj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:32:38 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3FE97D57
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:31:32 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id w197so8755506oie.5
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:31:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=7DrcmAf9Cs9YQAf7id7R52Yp/mcVnx55k0vZxgZh1Uw=;
-        b=Rw4iLOLh+LaT7yhFHWhvYNd9mq2StwwLxRBqGi/7Ds5ITmJkjPTTnp9H1/rQwMxfPd
-         vk3AuHrWhNu4tvUbrcuBxPmQ4Z1YgdYZPFNjb2iUH1vUTicenuebBmVvtsA8jwGb3vnp
-         qmZq+2s4xNzARka6ovk9o2eLfbHdP1VLJILO14qC+/xbSNYF4HW2mOvbQz3yve+pd5E4
-         RcHpNCpwXjawlcf3x5kVKr1aUo3Z5RYn2oYlkYEHUFCM8uQwu7fADBx7FQvDhnlyePi+
-         FlHs0M4pxjjfeXt4Y1a7Y6IeIwwMMRjJUq/Lz/l7jPd7awQfp4VSm7NV2dI8lqMPzQUR
-         fmWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=7DrcmAf9Cs9YQAf7id7R52Yp/mcVnx55k0vZxgZh1Uw=;
-        b=yci2KgcwNa46TadnJuYplT4sua4W/s2o4p0N7c6Rs0gzCR8s4HOu24aJmd5dR6nzD+
-         MheIJEdsItb+vt3IYlqZ9Ve555KmafxZV/DEL2Lcqw772t7wZd6S36GwEBxcoOnlQjKB
-         ueT+RkalHyy44P5PDQhWFnf7686i90AqXTx3raoh/dpeTF80W+v1iLuR+bEmgSYSo0w9
-         aPmoA34qMVQ3nqHw5BWExgQYJPzltY0eHTuw189O/qleQbpd+Iq51epCWC3eNFV0rHGy
-         Y+RSTjyj+FAZBK9CUeBEKRz6ilAr1HTGJQ3bLh1HATit6Pr7cvPEavwEGYNvDdosumsP
-         pdGg==
-X-Gm-Message-State: ACgBeo03ji7+lP0OEFMWW5njzqrhfqRX0f9w0h6+Bae7EaePNnRpQKs8
-        6G+PDXvE8bLr41JDfDoHuj8=
-X-Google-Smtp-Source: AA6agR6yp1Ne41XGFgWnopYd04fjJH6BITIgPT75nqhbRjKeRsuC9t4fHGyB0rHVv05RlLpzODHwvg==
-X-Received: by 2002:a05:6808:302c:b0:339:ee90:94df with SMTP id ay44-20020a056808302c00b00339ee9094dfmr3712525oib.193.1660231891790;
-        Thu, 11 Aug 2022 08:31:31 -0700 (PDT)
-Received: from localhost ([2600:1700:7130:4fa0::49])
-        by smtp.gmail.com with ESMTPSA id r10-20020a05683001ca00b006370b948974sm1187015ota.32.2022.08.11.08.31.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:31:31 -0700 (PDT)
-From:   Fae <faenkhauser@gmail.com>
-To:     James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
-Cc:     Fae <faenkhauser@gmail.com>
-Subject: [PATCH] Sound: pci/hda: Add quirk for HP Envy x360 ey0xxx
-Date:   Thu, 11 Aug 2022 10:29:24 -0500
-Message-Id: <20220811152923.10143-1-faenkhauser@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220811053950.11810-1-faenkhauser@gmail.com>
-References: <20220811053950.11810-1-faenkhauser@gmail.com>
+        Thu, 11 Aug 2022 11:32:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A5897D59;
+        Thu, 11 Aug 2022 08:31:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F8096148F;
+        Thu, 11 Aug 2022 15:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5E7C433C1;
+        Thu, 11 Aug 2022 15:31:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660231891;
+        bh=h/889FJU56IRAob0y1y7VpcmL0w4Y1MCS7pcsa1DZ+E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lHIvf2iHBmBunOHZSRVMJkKPKlsHS4f6tU41z7o2gcnd+NyuzxfdV/jeEoR3fvFHy
+         +HDT7Pnp+LERkFY8uS6upzqgXNfpa6oWBukqUVBI/KK2kqatVgvSOZPLu3iMksTiFz
+         4YKPWroTpcDQbxVmF3Rkge5vGYvRUYuAhlvkxM0mGDGtPPtoVrWg6rsh9EwQHrmxcT
+         wh7Mr6s1Kc5vO8BR3fflv0l+KQzuTWf7AF/pIJ7mQflALVbeRa3WI8XLketWl3FLB/
+         uZ1omIBGljxcja9FLz/TZS3AyGdgAd+jcoJKAm6LG2KNGKF8peJc700uLDbhRuVQh+
+         UUsOD27GHSzXQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 023/105] net/mlx5: Add HW definitions of vport debug counters
+Date:   Thu, 11 Aug 2022 11:27:07 -0400
+Message-Id: <20220811152851.1520029-23-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
+References: <20220811152851.1520029-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's at least 1 more device that doesn't use ACPI/BIOS config for the CSC3551
-https://lore.kernel.org/lkml/20220703053225.2203-1-xw897002528@gmail.com/T/
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Signed-off-by: Fae <faenkhauser@gmail.com>
+[ Upstream commit 3e94e61bd44d90070dcda53b647fdc826097ef26 ]
+
+total_q_under_processor_handle - number of queues in error state due to an
+async error or errored command.
+
+send_queue_priority_update_flow - number of QP/SQ priority/SL update
+events.
+
+cq_overrun - number of times CQ entered an error state due to an
+overflow.
+
+async_eq_overrun -number of time an EQ mapped to async events was
+overrun.
+
+comp_eq_overrun - number of time an EQ mapped to completion events was
+overrun.
+
+quota_exceeded_command - number of commands issued and failed due to quota
+exceeded.
+
+invalid_command - number of commands issued and failed dues to any reason
+other than quota exceeded.
+
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Michael Guralnik <michaelgur@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/cs35l41_hda.c   | 3 ++-
- sound/pci/hda/patch_realtek.c | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ include/linux/mlx5/mlx5_ifc.h | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 129bffb431c22..21d8c2de128ff 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -1156,7 +1156,8 @@ static int cs35l41_no_acpi_dsd(struct cs35l41_hda *cs35l41, struct device *physd
- 	hw_cfg->valid = true;
- 	put_device(physdev);
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index fd7d083a34d3..f0b0bb67955e 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1426,7 +1426,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
  
--	if (strncmp(hid, "CLSA0100", 8) == 0) {
-+	if ((strncmp(hid, "CLSA0100", 8) == 0) ||
-+	    (strncmp(hid, "CSC3551", 7) == 0)) {
- 		hw_cfg->bst_type = CS35L41_EXT_BOOST_NO_VSPK_SWITCH;
- 	} else if (strncmp(hid, "CLSA0101", 8) == 0) {
- 		hw_cfg->bst_type = CS35L41_EXT_BOOST;
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 8a57636f622e9..e7053cbc6bb6e 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9179,6 +9179,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x83b9, "HP Spectre x360", ALC269_FIXUP_HP_MUTE_LED_MIC3),
- 	SND_PCI_QUIRK(0x103c, 0x841c, "HP Pavilion 15-CK0xx", ALC269_FIXUP_HP_MUTE_LED_MIC3),
- 	SND_PCI_QUIRK(0x103c, 0x8497, "HP Envy x360", ALC269_FIXUP_HP_MUTE_LED_MIC3),
-+	SND_PCI_QUIRK(0x103c, 0x8a31, "HP ENVY x360 2-in-1 Laptop 15-ey0xxx", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x103c, 0x84da, "HP OMEN dc0019-ur", ALC295_FIXUP_HP_OMEN),
- 	SND_PCI_QUIRK(0x103c, 0x84e7, "HP Pavilion 15", ALC269_FIXUP_HP_MUTE_LED_MIC3),
- 	SND_PCI_QUIRK(0x103c, 0x8519, "HP Spectre x360 15-df0xxx", ALC285_FIXUP_HP_SPECTRE_X360),
+ 	u8         reserved_at_120[0xa];
+ 	u8         log_max_ra_req_dc[0x6];
+-	u8         reserved_at_130[0xa];
++	u8         reserved_at_130[0x9];
++	u8         vnic_env_cq_overrun[0x1];
+ 	u8         log_max_ra_res_dc[0x6];
+ 
+ 	u8         reserved_at_140[0x5];
+@@ -1621,7 +1622,11 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         nic_receive_steering_discard[0x1];
+ 	u8         receive_discard_vport_down[0x1];
+ 	u8         transmit_discard_vport_down[0x1];
+-	u8         reserved_at_343[0x5];
++	u8         eq_overrun_count[0x1];
++	u8         reserved_at_344[0x1];
++	u8         invalid_command_count[0x1];
++	u8         quota_exceeded_count[0x1];
++	u8         reserved_at_347[0x1];
+ 	u8         log_max_flow_counter_bulk[0x8];
+ 	u8         max_flow_counter_15_0[0x10];
+ 
+@@ -3391,11 +3396,21 @@ struct mlx5_ifc_vnic_diagnostic_statistics_bits {
+ 
+ 	u8         transmit_discard_vport_down[0x40];
+ 
+-	u8         reserved_at_140[0xa0];
++	u8         async_eq_overrun[0x20];
++
++	u8         comp_eq_overrun[0x20];
++
++	u8         reserved_at_180[0x20];
++
++	u8         invalid_command[0x20];
++
++	u8         quota_exceeded_command[0x20];
+ 
+ 	u8         internal_rq_out_of_buffer[0x20];
+ 
+-	u8         reserved_at_200[0xe00];
++	u8         cq_overrun[0x20];
++
++	u8         reserved_at_220[0xde0];
+ };
+ 
+ struct mlx5_ifc_traffic_counter_bits {
 -- 
-2.37.1
+2.35.1
 
