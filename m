@@ -2,138 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F374C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 04:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF86C25B07
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 04:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbiHKEVD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 00:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
+        id S233828AbiHKE03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 00:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233585AbiHKEVB (ORCPT
+        with ESMTP id S233585AbiHKE0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 00:21:01 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2752262E
-        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 21:20:59 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M3D5v1WVjzXdRJ;
-        Thu, 11 Aug 2022 12:16:51 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 11 Aug 2022 12:20:57 +0800
-Received: from huawei.com (10.175.101.6) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 11 Aug
- 2022 12:20:57 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <chenxiaosong2@huawei.com>,
-        <zhangxiaoxu5@huawei.com>
-Subject: [PATCH] tty: n_gsm: fix NULL pointer dereference in gsmld_receive_buf()
-Date:   Thu, 11 Aug 2022 12:28:48 +0800
-Message-ID: <20220811042848.3017861-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 11 Aug 2022 00:26:23 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A8619C1C
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 21:26:20 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-10cf9f5b500so20326914fac.2
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 21:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=jUKsu0lhTbXIcD5FnG5XfET8ojcYleI7FIdCXl2Va6Q=;
+        b=blbEER1F1wxbTHQUgg+RH2LGrMyQlbIn/TV0IwctsOdjqWh8z5HKRpgqX/5BlqrKqc
+         kcb9x/aj2qeWPhN7df+rE8jlKHwaLZDC25mD7blN0/ucutZnRmVgBrdjzmjLYosq1uca
+         BVKDQ2AQa75kcKWiToYmeSofNWGK8ROHtCgDu1byrrQYDsa9vJHip1YAx4FkOE6aWPm7
+         3JloGqC2f0uk9XlSI5UVAsUTZpqntZG2fFrhNY3Vziy4IZCmdN6ObZrlCzjeRQKXtNUN
+         QfNsTXN5M01jbUd8OieaCumLfLgJzQYJTU+Nall1unnWejsp/L8K1qOzrfGsBGY7yGHL
+         karg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=jUKsu0lhTbXIcD5FnG5XfET8ojcYleI7FIdCXl2Va6Q=;
+        b=joCNBgkR0Zqt3CPR1wkSCc0iyM4OPR4Dozi6NRwM45hq0kCe539lfu8iencisDtHz3
+         t8GGeNhg0djiaavVlrvzMBufEsIq2KaYt30XRiVcvcNid9WDIjEnKQMhdLM/35p3YmCO
+         FzTqTQbrfVvFZTReSTh5d3f1KUBpyQDPsifbM1aOTE6KgIjCVn2yeMXgbhiJGlc5RO+I
+         rspSCKvylYVt/0mOmBcCia02ab4zjGPtkXEx7rm+kXUr3f9nZIbFm1uiXCgsYhsN6VHL
+         pGSaL5QiUmjz6VQrYE3atv3xo68q8YAh2jIdFvzma8s1zbXlF/WedrOeD1YUoE8vUZ8K
+         2g3w==
+X-Gm-Message-State: ACgBeo1gJ2H9UlRsxiyQCLIQNxBe5MAZ4w/nJlZ2xAS7qIRtznJToHxS
+        TPktCvISY9COYKA/h0//xIW9cA==
+X-Google-Smtp-Source: AA6agR4Sw+tImrRgav7VLc9aizrg5JzFFsQAFPizwinOvwIs4uuvT7ftqEiW7Qsdj84FFaS9zAslPQ==
+X-Received: by 2002:a05:6870:c6a4:b0:10e:585c:ba1a with SMTP id cv36-20020a056870c6a400b0010e585cba1amr2900443oab.41.1660191979967;
+        Wed, 10 Aug 2022 21:26:19 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id l17-20020a9d7351000000b006370c0e5be0sm1009517otk.48.2022.08.10.21.26.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 21:26:19 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Taniya Das <tdas@codeaurora.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: clock: Add Qualcomm SC8280XP GPU binding
+Date:   Wed, 10 Aug 2022 21:28:54 -0700
+Message-Id: <20220811042855.3867774-2-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811042855.3867774-1-bjorn.andersson@linaro.org>
+References: <20220811042855.3867774-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reported NULL pointer dereference bug as follows:
+Add compatible for the Qualcomm SC8280XP GPU.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-PGD 0 P4D 0
-Oops: 0010 [#1] PREEMPT SMP KASAN PTI
-CPU: 3 PID: 1360 Comm: a.out Not tainted 5.19.0-next-20220810 #9
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
- BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-RIP: 0010:0x0
-Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-RSP: 0018:ffffc9000570fcf8 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: ffff8880189c2000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880189c2000
-RBP: ffffc9000570fda1 R08: 0000000000000000 R09: ffffffff8f59ab27
-R10: ffffc9000570fd58 R11: ffff8880196f8000 R12: 0000000000000001
-R13: 0000000000000000 R14: ffffc9000570fd90 R15: dffffc0000000000
-FS:  00007f382232c540(0000) GS:ffff888107d80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffd6 CR3: 0000000101452005 CR4: 0000000000770ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- <TASK>
- gsmld_receive_buf+0x1c7/0x320
- tty_ioctl+0x50e/0x1520
- __x64_sys_ioctl+0x19c/0x210
- do_syscall_64+0x38/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f382225e9b9
-Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7
- 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
- ff 73 01 c3 48 8b 0d a7 54 0c 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffd1c0fdd98 EFLAGS: 00000217 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f382225e9b9
-RDX: 00007ffd1c0fdda4 RSI: 0000000000005412 RDI: 0000000000000004
-RBP: 00007ffd1c0fddb0 R08: 000000000000000e R09: 000000001c0fdea0
-R10: 0000000000000000 R11: 0000000000000217 R12: 0000560d89007070
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
-CR2: 0000000000000000
----[ end trace 0000000000000000 ]---
-
-Reproducer(c program):
-1. int fd = open("/dev/char/4:20", O_RDWR, 0);
-2. int arg = 0x15; ioctl(fd, 0x5423, &arg);
-3. int arg2 = 0; ioctl(fd, 0x5412, &arg2);
-
-gsm->receive is NULL when gsm_mux is not activated by gsm_activate_mux():
-
-  ioctl(fd, 0x5423, &arg)
-    vfs_ioctl
-      tty_ioctl
-        tiocsetd
-          tty_set_ldisc
-            tty_ldisc_open
-              gsmld_open
-                gsm_alloc_mux
-                  gsm = kzalloc(sizeof(struct gsm_mux), GFP_KERNEL)
-                  gsm->receive == NULL
-  ioctl(fd, 0x5412, &arg2)
-    vfs_ioctl
-      tty_ioctl
-        tiocsti // fake input character
-          gsmld_receive_buf
-            gsm->receive == NULL
-
-Fix this by adding sanity check on struct gsm_mux->receive.
-
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/tty/n_gsm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/clock/qcom,gpucc.yaml |  2 ++
+ .../dt-bindings/clock/qcom,gpucc-sc8280xp.h   | 35 +++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+ create mode 100644 include/dt-bindings/clock/qcom,gpucc-sc8280xp.h
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index caa5c14ed57f..f1621667b69f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2850,6 +2850,9 @@ static void gsmld_receive_buf(struct tty_struct *tty, const unsigned char *cp,
- 	struct gsm_mux *gsm = tty->disc_data;
- 	char flags = TTY_NORMAL;
- 
-+	if (!gsm->receive)
-+		return;
+diff --git a/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml b/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml
+index 9ebcb1943b0a..a7d0af1bd9e0 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml
+@@ -17,6 +17,7 @@ description: |
+     dt-bindings/clock/qcom,gpucc-sdm845.h
+     dt-bindings/clock/qcom,gpucc-sc7180.h
+     dt-bindings/clock/qcom,gpucc-sc7280.h
++    dt-bindings/clock/qcom,gpucc-sc8280xp.h
+     dt-bindings/clock/qcom,gpucc-sm6350.h
+     dt-bindings/clock/qcom,gpucc-sm8150.h
+     dt-bindings/clock/qcom,gpucc-sm8250.h
+@@ -28,6 +29,7 @@ properties:
+       - qcom,sc7180-gpucc
+       - qcom,sc7280-gpucc
+       - qcom,sc8180x-gpucc
++      - qcom,sc8280xp-gpucc
+       - qcom,sm6350-gpucc
+       - qcom,sm8150-gpucc
+       - qcom,sm8250-gpucc
+diff --git a/include/dt-bindings/clock/qcom,gpucc-sc8280xp.h b/include/dt-bindings/clock/qcom,gpucc-sc8280xp.h
+new file mode 100644
+index 000000000000..bb7da46333b0
+--- /dev/null
++++ b/include/dt-bindings/clock/qcom,gpucc-sc8280xp.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
++ */
 +
- 	if (debug & 4)
- 		gsm_hex_dump_bytes(__func__, cp, count);
- 
++#ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SC8280XP_H
++#define _DT_BINDINGS_CLK_QCOM_GPU_CC_SC8280XP_H
++
++/* GPU_CC clocks */
++#define GPU_CC_PLL0						0
++#define GPU_CC_PLL1						1
++#define GPU_CC_AHB_CLK						2
++#define GPU_CC_CB_CLK						3
++#define GPU_CC_CRC_AHB_CLK					4
++#define GPU_CC_CX_GMU_CLK					5
++#define GPU_CC_CX_SNOC_DVM_CLK					6
++#define GPU_CC_CXO_AON_CLK					7
++#define GPU_CC_CXO_CLK						8
++#define GPU_CC_FREQ_MEASURE_CLK					9
++#define GPU_CC_GMU_CLK_SRC					10
++#define GPU_CC_GX_GMU_CLK					11
++#define GPU_CC_GX_VSENSE_CLK					12
++#define GPU_CC_HUB_AHB_DIV_CLK_SRC				13
++#define GPU_CC_HUB_AON_CLK					14
++#define GPU_CC_HUB_CLK_SRC					15
++#define GPU_CC_HUB_CX_INT_CLK					16
++#define GPU_CC_HUB_CX_INT_DIV_CLK_SRC				17
++#define GPU_CC_SLEEP_CLK					18
++#define GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK				19
++
++/* GPU_CC power domains */
++#define GPU_CC_CX_GDSC				0
++#define GPU_CC_GX_GDSC				1
++
++#endif
 -- 
-2.31.1
+2.35.1
 
