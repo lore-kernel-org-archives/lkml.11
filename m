@@ -2,118 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38122C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F07C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236382AbiHKPkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41234 "EHLO
+        id S236402AbiHKPkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236170AbiHKPjh (ORCPT
+        with ESMTP id S236229AbiHKPkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:39:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8E09AFA1;
-        Thu, 11 Aug 2022 08:35:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48857B82123;
-        Thu, 11 Aug 2022 15:35:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E6CC433C1;
-        Thu, 11 Aug 2022 15:35:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232102;
-        bh=yiDJVQm4e6NZsd0zPhUQaqgcrkk57fe/1dE73Cr3ak0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QS4P0IC15ZKRT7m3XjSyqsPNCB786GZnF5U6SkUCLO4/i/iSBC+Lq/ro6HTSU9RKf
-         zBgycqCvYxZpdNe+FabptIJO2M0Sk7fQ5ejbmg16AClRDAh3cLRQNWI2WbqqHJJVbY
-         EeoyE7aGD+SkQWIJKgEk2wxWkbk3Qnu5tVi9+V4bnOoCn88WDujVjEymeMxRWo2qX+
-         NKJDzB4A61ah3ggiGsNamOjZAddWN1BQ0YTrLVmo+UK93Ltdebv58uKqsQKLnPFX8H
-         bKUByl2zvuF8YQqpMPbsCrS6YeoKgqIn7NsWGN0VKf85gmvXArw3max3rByVxc2pY7
-         86OZ+12DdU8Dg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Aurabindo Jayamohanan Pillai <Aurabindo.Pillai@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, nicholas.kazlauskas@amd.com,
-        roman.li@amd.com, qingqing.zhuo@amd.com, shenshih@amd.com,
-        Wayne.Lin@amd.com, contact@emersion.fr, alex.hung@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 059/105] drm/amd/display: Fix dmub soft hang for PSR 1
-Date:   Thu, 11 Aug 2022 11:27:43 -0400
-Message-Id: <20220811152851.1520029-59-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        Thu, 11 Aug 2022 11:40:18 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587BC6611A;
+        Thu, 11 Aug 2022 08:35:36 -0700 (PDT)
+X-QQ-mid: bizesmtp65t1660232128t7vb3wej
+Received: from localhost.localdomain ( [110.188.55.240])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 11 Aug 2022 23:34:56 +0800 (CST)
+X-QQ-SSF: 0100000000200080H000B00A0000020
+X-QQ-FEAT: eSZ1CZgv+JAYe9sMCjBWExPgF7vZS5c1uGr3RzgRWt00ux6K74KDayhMzZpYT
+        fHUu1+Gn9v9rGFXhiXOigk1GYKaXmifPrK6Nvp6dkk0oaAM1ZIIIlKSvZGIQzdUpUqJf5lX
+        zUiIBqtU1U8kP/CDFzT4SEdP93YTYK4ip4KrinMeYnzybowuAytqn8mdxaTHN0d8peHuqb1
+        1bnVHwGblRgT8Lo3zG8nGSEmlxggyLio6JMF99Zh0eAxN9emHYVhAQoRKzDJL0GpkH1DYai
+        NzXTXWmlQpWfHlpm+LkbXxyh7ym9kwgSHgxgek5wUqTMf/Jj7sNlIRinVYcO8ymm+LMbuv1
+        xiAVraTUQgWNh6j5qR6NMjmIrt7ABpzrcP1Nlrv00AKCree8ELtJNuc23Sd/anXmdy2F2gF
+X-QQ-GoodBg: 0
+From:   min tang <tangmin@cdjrlc.com>
+To:     jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        min tang <tangmin@cdjrlc.com>
+Subject: [PATCH] scsi: Fix comment typo
+Date:   Thu, 11 Aug 2022 23:34:44 +0800
+Message-Id: <20220811153444.13119-1-tangmin@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fangzhi Zuo <Jerry.Zuo@amd.com>
+The double `only' is duplicated in line 1806, remove one.
 
-[ Upstream commit 22676bc500c27d987a0b42cbe162aebf783f1c38 ]
-
-[Why]
-Unexpected change of aux hw mapping causes dmub soft hang when
-initiate aux transation at wrong aux channel.
-
-ddc_channel stands for hw dp aux index which is from vbios,
-but link_index is pure software concept for link count depending on which link
-is probed first. They are not interchangeable.
-
-dmub aux transaction could pass if happens eDP link_index gets
-the same value as vbios ddc_channel, e.g., ddc_channel = 1, link_index = 1
-if they gets different, e.g., ddc_channel = 2, link_index = 0, overwrite
-ddc_channel with link_index will have wrong ddc channel being used for aux
-transaction in dmub PSR, cause aux transaction soft hang.
-
-[How]
-ddc_channel mapping to each link is determined by vbios and further
-parsed in dc. Such info. should not be touched in any kind, otherwise
-the mapping is screwed up leading to aux transaction timeout.
-
-Reviewed-by: Aurabindo Jayamohanan Pillai <Aurabindo.Pillai@amd.com>
-Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Signed-off-by: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: min tang <tangmin@cdjrlc.com>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/scsi/sd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 3087dd1a1856..a6efd5c1fa2a 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -8538,7 +8538,7 @@ static int amdgpu_dm_i2c_xfer(struct i2c_adapter *i2c_adap,
- 
- 	if (dc_submit_i2c(
- 			ddc_service->ctx->dc,
--			ddc_service->ddc_pin->hw_info.ddc_channel,
-+			ddc_service->link->link_index,
- 			&cmd))
- 		result = num;
- 
-@@ -8574,8 +8574,6 @@ create_i2c(struct ddc_service *ddc_service,
- 	snprintf(i2c->base.name, sizeof(i2c->base.name), "AMDGPU DM i2c hw bus %d", link_index);
- 	i2c_set_adapdata(&i2c->base, i2c);
- 	i2c->ddc_service = ddc_service;
--	if (i2c->ddc_service->ddc_pin)
--		i2c->ddc_service->ddc_pin->hw_info.ddc_channel = link_index;
- 
- 	return i2c;
- }
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 749316462075..aae7ec6651e0 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -1803,7 +1803,7 @@ static const struct block_device_operations sd_fops = {
+  *
+  *	This function is called by the SCSI midlayer before starting
+  *	SCSI EH. When counting medium access failures we have to be
+- *	careful to register it only only once per device and SCSI EH run;
++ *	careful to register it only once per device and SCSI EH run;
+  *	there might be several timed out commands which will cause the
+  *	'max_medium_access_timeouts' counter to trigger after the first
+  *	SCSI EH run already and set the device to offline.
 -- 
-2.35.1
+2.17.1
+
 
