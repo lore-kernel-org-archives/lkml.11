@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C5CC25B0F
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBC0C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235722AbiHKP3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:29:25 -0400
+        id S235760AbiHKP32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:29:28 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235708AbiHKP3P (ORCPT
+        with ESMTP id S235729AbiHKP3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:29:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F6692F57;
-        Thu, 11 Aug 2022 08:29:14 -0700 (PDT)
+        Thu, 11 Aug 2022 11:29:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADF217596;
+        Thu, 11 Aug 2022 08:29:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3137FB82157;
-        Thu, 11 Aug 2022 15:29:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D6CC43470;
-        Thu, 11 Aug 2022 15:29:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB99F615BB;
+        Thu, 11 Aug 2022 15:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FDBBC433D6;
+        Thu, 11 Aug 2022 15:29:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660231752;
-        bh=ZrVVdqJ1lXbKlPTTe/MiF2IuGjRwNIlSt/ErmVMx+tA=;
+        s=k20201202; t=1660231757;
+        bh=MFVDAdiLEuXcjEP1yPc7pO6eheduwbIcKJcSuRY9kVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g0d4Sukdx57W5vYnuAd3ExcTdQwFbz2L6+7ibgM3pCM9djIC1tb2xNxzZsy7/eh8F
-         9N7+HPWrXc2qooiawXLfTcL1NNRKKO8kdipJeoAWSLN8O/pAqJk9gRdvpZtozDImny
-         UqbpMo+ufTWv9tjcRhzWJvcR9ux4Tsq3+G9yw6s+Jsu+rxfQ34NSvFWuIrKjtB1XlC
-         38jAKE9xOxZcXR0L2z5QnJIP+J4kbWfSlDL8eDeb9MJn6gUyuWJUtEJsdwWvkamirQ
-         nzavdxCLGezYTnluAEBBMPCu+NfZpfyKyYlWxj+VDnEVBlLK2dLsKP0B6e+3J9RWMv
-         Llkl8GAJRipNQ==
+        b=NowL7M2YlJC/+wQEd8fyTAIehcBtTLeaONuJnAEa7tIFHCZjhQkp4c/Hb44KR7eoV
+         eSsKiiTHrkKw26Di+EfHLHjL4vQMSUDcJ2JmDdD7F+nvoXqf5QOspjspTOpdQkftYg
+         XZSK/mXJDWJ//idmHNgDYD20VCfsm0BOt7m3PO8wVqnEKlIPwdq/KZynZrZSgWitmt
+         zGEMvXRi8tOPEUjsl5orh8Nxai548RaXRt8Q8fMB0fbDgGzESBCsUcrx4ykGjUFjE4
+         qYQ+7TkA7D2H1yOV7XK4utXH1EN+ljIe3GjG9DHtLxRr3FOWbncsQ2RBhdk0RcmTAg
+         AxZ0MfRtry/jw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Bizon <mbizon@freebox.fr>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 004/105] ath10k: fix misreported tx bandwidth for 160Mhz
-Date:   Thu, 11 Aug 2022 11:26:48 -0400
-Message-Id: <20220811152851.1520029-4-sashal@kernel.org>
+Cc:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Sasha Levin <sashal@kernel.org>, robh@kernel.org,
+        tomeu.vizoso@collabora.com, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 006/105] drm/panfrost: Handle HW_ISSUE_TTRX_2968_TTRX_3162
+Date:   Thu, 11 Aug 2022 11:26:50 -0400
+Message-Id: <20220811152851.1520029-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -54,39 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Bizon <mbizon@freebox.fr>
+From: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
 
-[ Upstream commit 75a7062e533e309a9ca0812c69f3ac3cefadb8b1 ]
+[ Upstream commit 382435709516c1a7dc3843872792abf95e786c83 ]
 
-Because of this missing switch case, 160Mhz transmit was reported as
-20Mhz, leading to wrong airtime calculation and AQL limiting max
-throughput.
+Add handling for the HW_ISSUE_TTRX_2968_TTRX_3162 quirk. Logic ported
+from kbase. kbase lists this workaround as used on Mali-G57.
 
-Tested-on: QCA9984 hw2.0 PCI 10.4-3.10-00047
-
-Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/cd2735a40da7f4fcc5323e3fca3775e7b5402ece.camel@freebox.fr
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220525145754.25866-3-alyssa.rosenzweig@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_rx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/panfrost/panfrost_gpu.c    | 3 +++
+ drivers/gpu/drm/panfrost/panfrost_issues.h | 3 +++
+ drivers/gpu/drm/panfrost/panfrost_regs.h   | 1 +
+ 3 files changed, 7 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index 771252dd6d4e..e8727c0b0171 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -3884,6 +3884,10 @@ ath10k_update_per_peer_tx_stats(struct ath10k *ar,
- 		arsta->tx_info.status.rates[0].flags |=
- 				IEEE80211_TX_RC_80_MHZ_WIDTH;
- 		break;
-+	case RATE_INFO_BW_160:
-+		arsta->tx_info.status.rates[0].flags |=
-+				IEEE80211_TX_RC_160_MHZ_WIDTH;
-+		break;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+index aa89926742fd..295bef27fb55 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+@@ -108,6 +108,9 @@ static void panfrost_gpu_init_quirks(struct panfrost_device *pfdev)
+ 			quirks |= SC_LS_ALLOW_ATTR_TYPES;
  	}
  
- 	if (peer_stats->succ_pkts) {
++	if (panfrost_has_hw_issue(pfdev, HW_ISSUE_TTRX_2968_TTRX_3162))
++		quirks |= SC_VAR_ALGORITHM;
++
+ 	if (panfrost_has_hw_feature(pfdev, HW_FEATURE_TLS_HASHING))
+ 		quirks |= SC_TLS_HASH_ENABLE;
+ 
+diff --git a/drivers/gpu/drm/panfrost/panfrost_issues.h b/drivers/gpu/drm/panfrost/panfrost_issues.h
+index 501a76c5e95f..41a714ce6fce 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_issues.h
++++ b/drivers/gpu/drm/panfrost/panfrost_issues.h
+@@ -125,6 +125,9 @@ enum panfrost_hw_issue {
+ 	 * kernel must fiddle with L2 caches to prevent data leakage */
+ 	HW_ISSUE_TGOX_R1_1234,
+ 
++	/* Must set SC_VAR_ALGORITHM */
++	HW_ISSUE_TTRX_2968_TTRX_3162,
++
+ 	HW_ISSUE_END
+ };
+ 
+diff --git a/drivers/gpu/drm/panfrost/panfrost_regs.h b/drivers/gpu/drm/panfrost/panfrost_regs.h
+index 0b6cd8fdcb47..accb4fa3adb8 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_regs.h
++++ b/drivers/gpu/drm/panfrost/panfrost_regs.h
+@@ -195,6 +195,7 @@
+ #define SC_TLS_HASH_ENABLE		BIT(17)
+ #define SC_LS_ATTR_CHECK_DISABLE	BIT(18)
+ #define SC_ENABLE_TEXGRD_FLAGS		BIT(25)
++#define SC_VAR_ALGORITHM		BIT(29)
+ /* End SHADER_CONFIG register */
+ 
+ /* TILER_CONFIG register */
 -- 
 2.35.1
 
