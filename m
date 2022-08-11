@@ -2,44 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF9AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FDEC25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 16:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237278AbiHKP7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49424 "EHLO
+        id S237261AbiHKQAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 12:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237088AbiHKP5c (ORCPT
+        with ESMTP id S237236AbiHKQAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:57:32 -0400
+        Thu, 11 Aug 2022 12:00:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45ADAB421;
-        Thu, 11 Aug 2022 08:47:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1675ABD6A;
+        Thu, 11 Aug 2022 08:48:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23099616E4;
-        Thu, 11 Aug 2022 15:47:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBBFCC43141;
-        Thu, 11 Aug 2022 15:47:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 509BC616F4;
+        Thu, 11 Aug 2022 15:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF259C43141;
+        Thu, 11 Aug 2022 15:48:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232857;
-        bh=zijP+AVIy0dgvEkwWHz9o8PrQqVQPjAw+9yR4pEOzbM=;
+        s=k20201202; t=1660232886;
+        bh=5VONM8AZd/i5yhEdHC2G9D7p3qdxuKwqB16hmKffJ/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jBaHwIvSOW5kizlLDxOX/blNZOFkdESSyg6PCezWXHsZqkT++07mT0XhqzKdoCjqz
-         ilyNh6wFM5Ax/+pq9sBNrTXafK2tpZEMpupkgs5n/cRxvll8rCEPd5AGIt074+r7va
-         HxP037RZJOQNms1Vl+F4MmYKl06DgbygPBr5KdL8BYEYFiSWlPG2W1V8P6Ks94dgcz
-         HXE9r1OonEqPG/MOG8QxiiMkAziTwUL4KBToTNhNxV41Zt26Tns3sjUbqqD0cJNq9W
-         SMZI/WowcZweEmjGA7xRg3OG8XbcugUYM1jqFcLQ12vnp/v2aOiY/PuNlr1Zn8DbLt
-         lINhLyb3/KVFg==
+        b=YX9fV2KqxB6GsKPQ3fY8UWtzIHOFYqCzGvW+rlSyY+bFOrQeyevMXF/eapWuX2G1Z
+         dAq2Ch+fgykrynhrQswJBBx5RlqJu2nqppcnFNr9aRv+OHcERC2q1liuYEr/JX9C+Z
+         IQV/IJjoW4/0cJwAoR9ygIpyKRBPYa7INJc2kCltp0gZI5qBI4iK/nTMAIb6dWCmmj
+         kAUSppt1l9YATw0sFnoMXoAx9Ccup71VUS0+83LAW5tKoEBhK3dgjnzVMQmfwgkkWN
+         qZSdymG9lYEdsffMaiPA3lLp3mA3dYcXOqsqd8QdNz6LkmfTBm8R0cl59IVC7kFv3U
+         wTXngMy3cRAcQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Reaver <me@davidreaver.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org
-Subject: [PATCH AUTOSEL 5.18 49/93] scripts: get_feat.pl: use /usr/bin/env to find perl
-Date:   Thu, 11 Aug 2022 11:41:43 -0400
-Message-Id: <20220811154237.1531313-49-sashal@kernel.org>
+Cc:     Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Michael Strauss <Michael.Strauss@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, wyatt.wood@amd.com,
+        aric.cyr@amd.com, meenakshikumar.somasundaram@amd.com,
+        Jimmy.Kizito@amd.com, arnd@arndb.de, baihaowen@meizu.com,
+        Jing.Zhou@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 52/93] drm/amd/display: Guard against ddc_pin being NULL for AUX
+Date:   Thu, 11 Aug 2022 11:41:46 -0400
+Message-Id: <20220811154237.1531313-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
 References: <20220811154237.1531313-1-sashal@kernel.org>
@@ -51,33 +60,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Reaver <me@davidreaver.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-[ Upstream commit 2bc6430884d5ee0e30ae18652d31f821d8e9ec32 ]
+[ Upstream commit bc19909f19fdc8253d720d11c948935786fbfa08 ]
 
-I tried running `make pdfdocs` on NixOS, but it failed because
-get_feat.pl uses a shebang line with /usr/bin/perl, and that file path
-doesn't exist on NixOS. Using the more portable /usr/bin/env perl fixes
-the problem.
+[Why]
+In the case where we don't support DMUB aux but we have DPIA links
+in the configuration we might try to message AUX using the legacy
+path - where DDC pin is NULL. This causes a NULL pointer dereference.
 
-Signed-off-by: David Reaver <me@davidreaver.com>
-Link: https://lore.kernel.org/r/20220625211548.1200198-1-me@davidreaver.com
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+[How]
+Guard against NULL DDC pin, return a failure for aux engine acquire.
+
+Reviewed-by: Michael Strauss <Michael.Strauss@amd.com>
+Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/get_feat.pl | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dce/dce_aux.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/scripts/get_feat.pl b/scripts/get_feat.pl
-index 76cfb96b59b6..5c5397eeb237 100755
---- a/scripts/get_feat.pl
-+++ b/scripts/get_feat.pl
-@@ -1,4 +1,4 @@
--#!/usr/bin/perl
-+#!/usr/bin/env perl
- # SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c b/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
+index 8e814000db62..5620a3345e4d 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
++++ b/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
+@@ -573,6 +573,11 @@ int dce_aux_transfer_raw(struct ddc_service *ddc,
+ 	memset(&aux_req, 0, sizeof(aux_req));
+ 	memset(&aux_rep, 0, sizeof(aux_rep));
  
- use strict;
++	if (ddc_pin == NULL) {
++		*operation_result = AUX_RET_ERROR_ENGINE_ACQUIRE;
++		return -1;
++	}
++
+ 	aux_engine = ddc->ctx->dc->res_pool->engines[ddc_pin->pin_data->en];
+ 	if (!acquire(aux_engine, ddc_pin)) {
+ 		*operation_result = AUX_RET_ERROR_ENGINE_ACQUIRE;
 -- 
 2.35.1
 
