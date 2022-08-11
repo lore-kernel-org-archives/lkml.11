@@ -2,72 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1EFC25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06039C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235660AbiHKRNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 13:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
+        id S234338AbiHKRN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 13:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234919AbiHKRNa (ORCPT
+        with ESMTP id S235915AbiHKRNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 13:13:30 -0400
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2EA98CB0;
-        Thu, 11 Aug 2022 09:54:20 -0700 (PDT)
-Received: by mail-pl1-f169.google.com with SMTP id x10so17419868plb.3;
-        Thu, 11 Aug 2022 09:54:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=ghMwt9G6INoMEmlW5dhmg6qUUpa6pnUlc2kP5MleMy0=;
-        b=OWYAs9lFto6IuRZgIWur8ciQXZ2QuosNSSqNnw+BpmbFAXDWopVrFLS4wP4kHqQ6Mm
-         ovRek8Ykcv6aZmSmjBiBUxf2eAcqIOqWtLXHv45CxhqUjSgxwTw7G984HARXsTepag9Y
-         eLTr5X30KFrBlTvMwPF1esnPUC6C2RirFzsyg09Lnv5fYMVffFCC8DyMN7hNzuO+WB4O
-         KRg5p1YtBIfu6HGzy8K/ybDHkpht20EWmz45jibSSU4MAxxcmC+DCUCK2/XZEu5DDFiG
-         BxXqZMyM3lGAukY78HI+Us5DMoM9rZUIilyPeJoKlS3DWnnoP2t3iyxiSIJ4QNso2ciI
-         KekQ==
-X-Gm-Message-State: ACgBeo0ugceQvK+fqluWVIMPnagHeUjhb96zuoIxGoFftqe2ZwDuaMDJ
-        911ka4Nc0iWs9OLFToSDU4A=
-X-Google-Smtp-Source: AA6agR5ieWdQuWvudLAEWQMsFxgSeC/cycIV50x4a22kEvb+9VbqhyvFZei0LgdosP4xscNrEyZ9tg==
-X-Received: by 2002:a17:902:8302:b0:16d:d74f:e5cc with SMTP id bd2-20020a170902830200b0016dd74fe5ccmr128985plb.6.1660236859831;
-        Thu, 11 Aug 2022 09:54:19 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:fa57:1951:439d:3051? ([2620:15c:211:201:fa57:1951:439d:3051])
-        by smtp.gmail.com with ESMTPSA id u12-20020a170903124c00b0016d2d2c7df1sm15447418plh.188.2022.08.11.09.54.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 09:54:19 -0700 (PDT)
-Message-ID: <3e736bbf-9094-f2c9-18b3-1113a9d3a806@acm.org>
-Date:   Thu, 11 Aug 2022 09:54:16 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] scsi: ufs: host: ufs-exynos: staticize fsd_ufs_drvs
-Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, avri.altman@wdc.com,
-        martin.petersen@oracle.com, chanho61.park@samsung.com,
-        linux-samsung-soc@vger.kernel.org
-References: <CGME20220811162118epcas5p2f452b3b425953d47e60e4b29868c03c9@epcas5p2.samsung.com>
- <20220811161053.54081-1-alim.akhtar@samsung.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220811161053.54081-1-alim.akhtar@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Thu, 11 Aug 2022 13:13:36 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58AF99E13F;
+        Thu, 11 Aug 2022 09:54:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B4D44113E;
+        Thu, 11 Aug 2022 09:54:49 -0700 (PDT)
+Received: from e123648.arm.com (unknown [10.57.15.253])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C8AEE3F5A1;
+        Thu, 11 Aug 2022 09:54:47 -0700 (PDT)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org, viresh.kumar@linaro.org,
+        rafael@kernel.org
+Cc:     linux-pm@vger.kernel.org, lukasz.luba@arm.com
+Subject: [PATCH] cpufreq: check only freq_table in __resolve_freq()
+Date:   Thu, 11 Aug 2022 17:54:08 +0100
+Message-Id: <20220811165408.23027-1-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/11/22 09:10, Alim Akhtar wrote:
-> struct fsd_ufs_drvs is not used outside this file, so made it static.
-> This fixes sparse warning:
-> 
-> drivers/ufs/host/ufs-exynos.c:1721:28: sparse: sparse:
-> symbol 'fsd_ufs_drvs' was not declared. Should it be static?
+The there is no need to check if the cpufreq driver implements callback
+cpufreq_driver::target_index. The logic in the __resolve_freq uses
+the frequency table available in the policy. It doesn't matter if the
+driver provides 'target_index' or 'target' callback. It just has to
+populate the 'policy->freq_table'.
 
-`staticize' is not a verb. Anyway:
+Thus, check only frequency table during the frequency resolving call.
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+---
+ drivers/cpufreq/cpufreq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 7820c4e74289..69b3d61852ac 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -532,7 +532,7 @@ static unsigned int __resolve_freq(struct cpufreq_policy *policy,
+ 
+ 	target_freq = clamp_val(target_freq, policy->min, policy->max);
+ 
+-	if (!cpufreq_driver->target_index)
++	if (!policy->freq_table)
+ 		return target_freq;
+ 
+ 	idx = cpufreq_frequency_table_target(policy, target_freq, relation);
+-- 
+2.17.1
+
