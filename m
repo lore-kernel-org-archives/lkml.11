@@ -2,166 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EFAC25B0D
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5FFC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236685AbiHKPtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S236129AbiHKPvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235430AbiHKPrr (ORCPT
+        with ESMTP id S236972AbiHKPuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:47:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7AD99252;
-        Thu, 11 Aug 2022 08:41:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96F00B82150;
-        Thu, 11 Aug 2022 15:41:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C51C433C1;
-        Thu, 11 Aug 2022 15:41:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232499;
-        bh=jxCJXV3r94ECNtHPtLRWzj+wtlXEx+3pRqSD92g9vzA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ju1nHxlVzE15f+y89SLinFKURlTUNkVPCn20RLtJ7KsKCL2Fx+0grcwwjNWw4ZQ1B
-         B+4SAlRxzihiT9w79WOSmUAXhC5WDO6xGnurLQLeDxwvT59wtWerPMieQj03FJbsWD
-         uNPJpXZ7Kh5skjw+sVhG+Vj/zYC2HYl3bZbP4KJOxxYW5em/RwrCOQkLjmUv5AygZp
-         rcVuLwUJnZGTB2Yq+uktmbMb7ZYHiDmped0ba+TKEt2EKjX9YnQvE14AeQI9Zu0wRp
-         3IRiw2UVW/GnWdlxGyXj7+hyXZ9LudOChlwMDdNVCJCkeOdHSoDYaXuIZT8JWl9iSB
-         AJ1/Qk5xD8Akw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 098/105] wifi: rtl8xxxu: Fix the error handling of the probe function
-Date:   Thu, 11 Aug 2022 11:28:22 -0400
-Message-Id: <20220811152851.1520029-98-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:50:55 -0400
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD30A1D2F;
+        Thu, 11 Aug 2022 08:42:39 -0700 (PDT)
+Received: by mail-qt1-f180.google.com with SMTP id h4so6971646qtj.11;
+        Thu, 11 Aug 2022 08:42:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=CmaQmycmiDs0ZhLNzBEap3uy9DegAtgeJY98yfTaoT0=;
+        b=ULaRRhLxOhA1fMHO203DND7B0vFpogE8S0PgGp6UUUiOiTGwaHI7zh/X35/l6Yil8a
+         7IyHQLQubjxQK2x3hU7NswjbyRkNDDMBcAK47je+7H0qq7yK6NKbi39sTI1KOViC1sUx
+         nrtawqaHp0sFKxQCQz3PwLFMNOFn+0t2paUmc6VGY6mNr6cUPFbGxQRIQAAjmK9Twnf9
+         hvjINFr7tUe45xFwWmzNjnQ3mUIjkYDRtj0Xg2QFBkpSQGhkISWWlmjoUN0MTHYkE+j5
+         8GMZPUNtgC16ztb+AT9kG7NGPRKmAPVBTBpBNh8ehEdT/zUkdcchrQi0z0shIv54N/Se
+         HV1w==
+X-Gm-Message-State: ACgBeo1Rl/uUxrpsmLDGaELLGK23Wvn5b3v7GBC2GaKPixyUTr1E3Euk
+        L7V80tL2cS4pdamYW1viKiIyAKTx44Mqdfep
+X-Google-Smtp-Source: AA6agR6JZleD7P0zWD1Cs/v4IGCQsXeZzAUKD7qjw+oohmOVOnnsf8OVADIsvGQVhz+B84v5gDJQTw==
+X-Received: by 2002:ac8:5a51:0:b0:342:e917:f25b with SMTP id o17-20020ac85a51000000b00342e917f25bmr24047628qta.284.1660232558391;
+        Thu, 11 Aug 2022 08:42:38 -0700 (PDT)
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
+        by smtp.gmail.com with ESMTPSA id w22-20020ac857d6000000b0031f287f58b4sm1890826qta.51.2022.08.11.08.42.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Aug 2022 08:42:36 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id 204so28869438yba.1;
+        Thu, 11 Aug 2022 08:42:35 -0700 (PDT)
+X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
+ r1-20020a5b06c1000000b00669a7c34c33mr29967472ybq.543.1660232555433; Thu, 11
+ Aug 2022 08:42:35 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220726180623.1668-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <636e9214-4b36-e9a6-3c6b-b6edb944335e@linaro.org> <CA+V-a8sTw1qzuTeD2vb7RgDmmNdEP5qEcxXCjrFgkyrBrLrt5Q@mail.gmail.com>
+ <e64cc15e-b31e-876d-b3cf-b60d255c495b@linaro.org> <CA+V-a8u1VW9xaj2KjySyMuegpisLVENO_6uJOpAFZGbKziYLYw@mail.gmail.com>
+ <e31e0c1f-4755-704e-8428-93970877d8f5@linaro.org> <CA+V-a8sX=Frs_cds9MriauTFRvcZUNCvoeZ+SaC0GUpL7L6qhg@mail.gmail.com>
+ <9f32a4a9-66b4-ba2e-1713-436103c2faf8@linaro.org> <OS0PR01MB5922763582B836DA45CDFF0886979@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <80f08089-e3bb-983e-313b-45613364829e@linaro.org>
+In-Reply-To: <80f08089-e3bb-983e-313b-45613364829e@linaro.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 11 Aug 2022 17:42:23 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
+Message-ID: <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
+Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding documentation for
+ Renesas RZ/Five SoC and SMARC EVK
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+Hi Krzysztof,
 
-[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
+On Wed, Jul 27, 2022 at 2:37 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> On 27/07/2022 14:21, Biju Das wrote:
+> >> Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding
+> >> documentation for Renesas RZ/Five SoC and SMARC EVK
+> >> On 27/07/2022 13:37, Lad, Prabhakar wrote:
+> >>>>> I did run the dtbs_check test as per your suggestion (below is the
+> >>>>> log) and didn't see "no matching schema error"
+> >>>>>
+> >>>>
+> >>>> So you do not see any errors at all. Then it does not work, does it?
+> >>>>
+> >>> Right I reverted my changes I can see it complaining, dtb_check seems
+> >>> to have returned false positive in my case.
+> >>>
+> >>> What approach would you suggest to ignore the schema here?
+> >>
+> >> I don't think currently it would work with your approach. Instead, you
+> >> should select here all SoCs which the schema should match.
+> >>
+> >> This leads to my previous concern - you use the same SoC compatible for
+> >> two different architectures and different SoCs: ARMv8 and RISC-V.
+> >
+> > Or is it same SoC(R9A07G043) based on two different CPU architectures (ARMv8 and RISC-V)
+>
+> Then it is not the same SoC! Same means same, identical. CPU
+> architecture is one of the major differences, which means it is not the
+> same.
+>
+> > Using same SoM and Carrier board?
+>
+> It's like saying PC with x86 and ARMv8 board are the same because they
+> both use same "PC chassis".
 
-When the driver fails at ieee80211_alloc_hw() at the probe time, the
-driver will free the 'hw' which is not allocated, causing a bug.
+That's not a fair comparison: the "PC chassis" is passive, while the
+carrier board is an active PCB.  So it is more akin to plugging
+any Intel LGA 1151 processor into any motherboard with an LGA
+1151 socket.  Do we have compatible values for all such possible
+combinations? ;-)
 
-The following log can reveal it:
+The classic compatible scheme of an ordered list from most-specific
+to least-specific is not well-suited for this case of mere
+aggregation.  That's why we have been decoupling board and SoC
+compatible values for a while, and identifying specific boards by a
+combination of a board-specific and an SoC-specific compatible value.
 
-[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
-[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
-[   15.982583] Call Trace:
-[   15.984282]  ieee80211_free_hw+0x22/0x390
-[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
+New SoCs that are available with different core CPU families (and
+that are pin-compatible) are just the next step in the evolution....
 
-Fix the bug by changing the order of the error handling.
+At the DT validation level, I think the proper solution is to
+merge Documentation/devicetree/bindings/arm/renesas.yaml and
+Documentation/devicetree/bindings/riscv/renesas.yaml into a single
+file under Documentation/devicetree/bindings/soc/renesas/.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+What do other people think?
+Thanks!
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 8b2ca9e8eac6..567ada2e665a 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -6657,7 +6657,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (!hw) {
- 		ret = -ENOMEM;
- 		priv = NULL;
--		goto exit;
-+		goto err_put_dev;
- 	}
- 
- 	priv = hw->priv;
-@@ -6679,24 +6679,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 
- 	ret = rtl8xxxu_parse_usb(priv, interface);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	ret = rtl8xxxu_identify_chip(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_read_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = priv->fops->parse_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	rtl8xxxu_print_chipinfo(priv);
-@@ -6704,12 +6704,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	ret = priv->fops->load_firmware(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_init_device(hw);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	hw->wiphy->max_scan_ssids = 1;
- 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
-@@ -6759,12 +6759,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (ret) {
- 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
- 			__func__, ret);
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	return 0;
- 
--exit:
-+err_set_intfdata:
- 	usb_set_intfdata(interface, NULL);
- 
- 	if (priv) {
-@@ -6772,9 +6772,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 		mutex_destroy(&priv->usb_buf_mutex);
- 		mutex_destroy(&priv->h2c_mutex);
- 	}
--	usb_put_dev(udev);
- 
- 	ieee80211_free_hw(hw);
-+err_put_dev:
-+	usb_put_dev(udev);
- 
- 	return ret;
- }
--- 
-2.35.1
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
