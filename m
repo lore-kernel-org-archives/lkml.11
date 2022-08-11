@@ -2,88 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B95C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3634C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 17:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235581AbiHKRRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 13:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        id S235358AbiHKRS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 13:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235877AbiHKRRP (ORCPT
+        with ESMTP id S235244AbiHKRSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 13:17:15 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF932AE9;
-        Thu, 11 Aug 2022 10:11:00 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id v5so9774869wmj.0;
-        Thu, 11 Aug 2022 10:11:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc;
-        bh=9lmCRb9w6uCDtNqUvz+VlG2tKHmhpYW/JN7ZTZ0wmWA=;
-        b=HueoZjS09HesHA6TCTd0JPvcBzWU0gb3xP9VW8Z/5Z/IKUTGcxCTFMAG6sdNrMVRPI
-         XnrC4DiqsP2rdQJP9mkDCIzGrBusm9Qc0UUy6mvDQvs1Y9D/odTmBhoAqjwVVT1PEP2a
-         JhvZLP7Y7ewJiwBLh9bNypUzht0ngPd3zFtQ3sgGLWOI4mqyM3Tb8e7fp8v1GuUb8mnW
-         BsIZT+UyxiocbCaiSIIB9NZf9tSMHiXuJipn0qbdhRIgFIWA+K/RWq1NdWpHZCzcCc+J
-         J1DEAaHrNGdyKVd4wCP6/y4ZMEMKdBfjcDWQwdB+WVDIpg0wcevdm6XgmJVtTgxQMo0t
-         WLBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=9lmCRb9w6uCDtNqUvz+VlG2tKHmhpYW/JN7ZTZ0wmWA=;
-        b=5bEikKJo0oktgkE3/NnbDwa8v5RvNJkt5w7ybFFH0+FftiafE/zZFRPK5ODysowQxO
-         GYn5gDdA9yoLndzffqOJezh8O6u3UtPUoX6GjKuzjJ5jaxsCJ3ZsyNxlw5GuFYw1KAay
-         wNSjZ8UmLKMikICZuDwphSspbTo8cKMXoiqS9CzKYrjPCsXdnWltRwcpSz1yJLkum6g7
-         39ctZzR6yJd0qEj0yF1LWpzDvehg1p+Ic4Nk7WtUEsXHT1JWu6Ha9PNSXwvbb7XGU0lk
-         xAh2ATQ3MkgFKlxx2L5VMFYxP6r4OM4zvX226qDvem8JzcaABLaxK8kgqf9nIKBSUvvN
-         c+Qg==
-X-Gm-Message-State: ACgBeo22qLvlRgQEtzEKxCiFd7BwHNi+lCfRfnyfbAMDpNlJPYJ6n0yu
-        KmhpjoXrP/F4HaqdWKjI1toIvJfQLY0=
-X-Google-Smtp-Source: AA6agR68hJQ2kVu941cLF0W2MeedTSh595znTTi1zvBbU1seBZqoyPGDGJiGim5IewA7q2JgPbE7ew==
-X-Received: by 2002:a05:600c:4ed0:b0:3a3:3ef3:c8d1 with SMTP id g16-20020a05600c4ed000b003a33ef3c8d1mr6369177wmq.154.1660237859175;
-        Thu, 11 Aug 2022 10:10:59 -0700 (PDT)
-Received: from debian ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id m27-20020a05600c3b1b00b003a308e9a192sm7647413wms.30.2022.08.11.10.10.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 10:10:58 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 18:10:48 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Alex Deucher <alexander.deucher@amd.com>,
-        Hamza Mahfooz <hamza.mahfooz@amd.com>,
-        Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org
-Subject: build failure of next-20220811 due to b1a63a0b48ad
- ("drm/amd/display: consider DSC pass-through during mode validation")
-Message-ID: <YvU4GD8HtZ1A4dhI@debian>
+        Thu, 11 Aug 2022 13:18:35 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054FB98CB0;
+        Thu, 11 Aug 2022 10:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=LtG2lQ8g4UFMf1coUU5mYDsEFUIxxdCEAwjofNBnS6E=; b=COivCoJdVPvxuCsM3im5fV1ASK
+        4oXPj5JLozg6OMvSWP+UnzS4S5WPNzPBVVsTCtBd61dIJJoy6DeJQh+P3Gp1XSrM9KlVGeUFq+lwi
+        o+FrcMVlJ9aeOBQuqbzfKKeuQMbMoDA4veJN5pMO6LgazRocaxoaYOZFo8YKWs+2Z/8Lyz52WImnf
+        KraCvCojyNHbWODv3mBzYrsc2uDbTredmcoj5GXepEE0UhXnwb39s/nKmHNm8ToQXAUYuXBbCX0DP
+        L9SpcRtartqLx7cLb/SLherpd+t5snbpknNaAXCOaWHv1AwVwDIcuG46E4LuoW8FfKtt8HsJPN7OW
+        Z631nn/A==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1oMBlJ-00EAyg-Rl; Thu, 11 Aug 2022 11:14:27 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1oMBlH-000cR7-Qc; Thu, 11 Aug 2022 11:14:23 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        David Sloan <david.sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu, 11 Aug 2022 11:14:13 -0600
+Message-Id: <20220811171417.147697-2-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220811171417.147697-1-logang@deltatee.com>
+References: <20220811171417.147697-1-logang@deltatee.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, david.sloan@eideticom.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH 1/5] md: Flush workqueue md_rdev_misc_wq in md_alloc()
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+From: David Sloan <david.sloan@eideticom.com>
 
-Not sure if it has been reported, builds of riscv, alpha, s390, arm,
-arm64, xtensa, mips, csky allmodconfig have failed to build next-20220811
-with the error:
+A race condition still exists when removing and re-creating md devices
+in test cases. However, it is only seen on some setups.
 
-ERROR: modpost: "dc_dsc_compute_bandwidth_range" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
-ERROR: modpost: "dc_dsc_get_policy_for_timing" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
+The race condition was tracked down to a reference still being held
+to the kobject by the rdev in the md_rdev_misc_wq which will be released
+in rdev_delayed_delete().
 
-git bisect pointed to b1a63a0b48ad ("drm/amd/display: consider DSC pass-through during mode validation")
-And, reverting that commit has fixed the build failure.
+md_alloc() waits for previous deletions by waiting on the md_misc_wq,
+but the md_rdev_misc_wq may still be holding a reference to a recently
+removed device.
 
-I will be happy to test any patch or provide any extra log if needed.
+To fix this, also flush the md_rdev_misc_wq in md_alloc().
 
+Signed-off-by: David Sloan <david.sloan@eideticom.com>
+[logang@deltatee.com: rewrote commit message]
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/md.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---
-Regards
-Sudip
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index afaf36b2f6ab..71d221601bf8 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -5620,6 +5620,7 @@ struct mddev *md_alloc(dev_t dev, char *name)
+ 	 * removed (mddev_delayed_delete).
+ 	 */
+ 	flush_workqueue(md_misc_wq);
++	flush_workqueue(md_rdev_misc_wq);
+ 
+ 	mutex_lock(&disks_mutex);
+ 	mddev = mddev_alloc(dev);
+-- 
+2.30.2
+
