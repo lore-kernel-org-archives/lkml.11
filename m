@@ -2,99 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22332C25B07
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 22:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB25C25B0C
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 22:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236359AbiHKWEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 18:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        id S236268AbiHKWFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 18:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235092AbiHKWEo (ORCPT
+        with ESMTP id S236488AbiHKWFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 18:04:44 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A859F0F2
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 15:04:43 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id w15so20646657ljw.1
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 15:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ClZkoO2gn+DuUwd5gSUHUhC51CqF9F+Etb4xaf+Veuw=;
-        b=ECo/2V/B4Jxi39vXhbgAVoVni5Tl4lyXTJNAbps09XA4bYPzvhGFjOKvONZm7PPno9
-         Vm9jA1szyjrbyO/z2+hFDQDt26sb2UM5FbHYOwuWbVm7fRYl1rDxnoJeah8VdQdiNF5I
-         WYn5UCPS6aaPj+h8JTcPaxzffePTgkkFV5C8rPfUBgA4aiv1Ef+Zj2+din/8of1nxhG8
-         4ZsW0bjoqKS0LHrwifjKx+2dMYV19bb6d48eURgEzHM1vMgiessUYX8m+7gv7Y/1vz6c
-         c9cZCB8Agjs6rqOon1Vka2Mh2nXDbuKvYgMXPQ/zbLG2VaJYHOLt/zjUuk5I6msuwlfv
-         0rtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ClZkoO2gn+DuUwd5gSUHUhC51CqF9F+Etb4xaf+Veuw=;
-        b=ViO/3N2XjNlJ6u9UGD2xN75I7VqMu0g089Ur/0mFhbVnx6vMVZoqGPY2fayWQdamPS
-         Rnx42tqXmlbQvMMUWv0f95nHAjTJOWPXfjhZtooUqUQ+7P7YISg25zuLluT5gwMxTk8F
-         muiKoBv8cZQ+Tzy/eThUmg2OM/HvVbZ0jORKqwY8qTrSwbggp3lZxvw+4C0BKC/guk90
-         bZzapPlAEQ1gs3YrGbTmtQH51KxpGBJNbJvLS/iXs/3ctYSJ+jBHRoBnsHEI/eYhhraQ
-         bXpTzSwStVFpfvWn0T9Wfwa/6L7uwi9KcO9QZnUBlsv0Foo6Tkh4EdcOLK79U8dITX77
-         8y4g==
-X-Gm-Message-State: ACgBeo2n+qWcb7LWuS6qvifXe2RZS+pCXxyX5y64+L5ZAfnx+JVf15h/
-        RPWT1Nc3vywFzc4x73znSizjaArxu1+xiGNi76uCwA==
-X-Google-Smtp-Source: AA6agR4vdLsL/8BbE8c/lUrun/dyty7m/tzj2+iJcItMzwC2sdqfehgEsYupuwaPy9xzYjaCyDdFP8XXiAFGjr4s3eM=
-X-Received: by 2002:a05:651c:98f:b0:25f:e61c:c12 with SMTP id
- b15-20020a05651c098f00b0025fe61c0c12mr327173ljq.26.1660255481412; Thu, 11 Aug
- 2022 15:04:41 -0700 (PDT)
+        Thu, 11 Aug 2022 18:05:50 -0400
+X-Greylist: delayed 607 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 11 Aug 2022 15:05:49 PDT
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7036B1EEDF;
+        Thu, 11 Aug 2022 15:05:49 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id BFB892B05D1B;
+        Thu, 11 Aug 2022 17:55:40 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 11 Aug 2022 17:55:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1660254940; x=1660262140; bh=ZgAnECcKiNINQ/nMekoYRrtEA
+        FO/LNkk2RLbQLXX3Oc=; b=vIS86Kh2zXrtYCvVOYCzWsRKom8XuVEa6HpXfxCra
+        EIctIqfcntjf8OVXYRma1/nuFkyBfXewbOo1jb1iSFJgi8594bKSqe9Q9hCQ3i87
+        0aASAw1PBw3nhZm6tJ2L9ktWvqAPmywm4Jh1BxR8tkNoHRjCTn8jNT+Uq9scl1Qs
+        uG1sHoeBCz/ZyMI1jqiuEHUvzdaIms194LGwvTtcG+2xzLjQ/k3uzI3Y7bnt2+Yc
+        oDs5svJYGA059hsCN31fI83KYApBBOWUIh85/vsQ1M6VAhQERTH1jJq4OCSTJjDd
+        XVb2a38JdhsPW1kRekHmb/AVgZ4Sr/7RIHakJp5Nj+xZQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1660254940; x=1660262140; bh=ZgAnECcKiNINQ/nMekoYRrtEAFO/LNkk2RL
+        bQLXX3Oc=; b=ASUoPEXG3PHwYvWY3SPVwQ1CDMrHQ9S6NdthZQlptZrRfxUyPkm
+        92Rxw0hoUr8iRn9VRo9DgXcYDb7FgAmT6aeVKfAM/5bFFXOIc1m/WjWloMAhjcEE
+        DkrelS1no3NoV1gQ4WSAVlpsMKsa/j+5zbpdjuHtGL+dOME+oKvo1ll6UFMZkgdt
+        cbCr7u6w3q34os3ix8cVsPrKOiBL+4T24Q5NvdxHH4tzy33kstxUgb+ihhMxMc4i
+        XS6QA+lsAt7xkBDtjmQxWVO+1URgSpBzjcB9fx/wSa7IjdiegrUU1mXkJpq/RgLK
+        fn8w3BGK47Dc9Ambigh68Uozi28mNVMdb3w==
+X-ME-Sender: <xms:23r1YubqbHJ3u0qSoa4DJXrUQfZqWDFSq-wcjxKWZWCD1yEGjtEKZg>
+    <xme:23r1YhbEaNt4rqDvZQvph7P3MuS0WWF8rhpSFDyXpSjqpaD1vkRYKMLfKcHF3bwT_
+    3AGoCqxGgZEYRlKcA>
+X-ME-Received: <xmr:23r1Yo-Zb1ulSDneO6iolcO3ljq6WFv8xOMzlO_w0AprgE_RUb-hvw-S3QMe7ModH-PvHOuUAQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedgtdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdlfeehmdenogevohgrshhtrg
+    hlqdfhgeduvddqtddvucdludehtddmnecujfgurhephffvvefufffkofgggfestdekredt
+    redttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqe
+    enucggtffrrghtthgvrhhnpeetueektdeuhfefvefggfevgeffgfekfefhkeekteffheev
+    tddvhedukeehffeltdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsth
+    gvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdr
+    giihii
+X-ME-Proxy: <xmx:23r1YgpIMgm9fSTff6UETf1xQBxZW_7i5zefq8K0v1euPdO-ESvdsA>
+    <xmx:23r1YppsnWjtVI3hs1EEsfvJWk2NAB7K1H_Ojki1vG5JgeoR8YUIOQ>
+    <xmx:23r1YuQ1eCWumr42QYffI2-ddQqlnh4IolG1rQfGt5eVF8vh6cacgg>
+    <xmx:3Hr1Yk1_8Tt381-AngQtpf7HiVpvoiSgVDPJA9JQuCE3ESDSpWkktg_eHkQ>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 11 Aug 2022 17:55:38 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, memxor@gmail.com
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v4 0/3] Add more bpf_*_ct_lookup() selftests
+Date:   Thu, 11 Aug 2022 15:55:24 -0600
+Message-Id: <cover.1660254747.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <YvSxeDkmwxcJL+Z0@debian> <YvUZ+9kJ/AvUMxzO@dev-arch.thelio-3990X>
- <CAHk-=wivP4zipYnwNWCLF5cd24GLs3m8=Sp7M-CmmPva_UC+3Q@mail.gmail.com>
- <CAKwvOdnQjgtwqFXLv+QtWPfpHosM5fxE5oqbX0VUD53F8L6bRg@mail.gmail.com> <CAHk-=wgJA=e-CLcvU5LRKu0bMLeAewXtOM6as1hFVeQAVkMPbg@mail.gmail.com>
-In-Reply-To: <CAHk-=wgJA=e-CLcvU5LRKu0bMLeAewXtOM6as1hFVeQAVkMPbg@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 11 Aug 2022 15:04:29 -0700
-Message-ID: <CAKwvOdkUc=8DD938in5PMeGYAn3PEWp4E_W8qEHq_y7Smy8+mQ@mail.gmail.com>
-Subject: Re: mainline build failure for arm64 allmodconfig with clang
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Joe Perches <joe@perches.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Justin Stitt <justinstitt@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 12:35 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Thu, Aug 11, 2022 at 11:39 AM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
-> >
-> > Generally, printing an int with %hhu may truncate depending on the
-> > value of the int.
->
-> Yes.
->
-> HOWEVER.
->
-> That truncation is *LITERALLY THE MAIN REASON TO EVER USE %hhu IN THE
-> FIRST PLACE*.
->
-> See the issue?
->
-> Warning about "this may truncate bits" when the main reason to use
-> that format string in the first place is said bit truncation is kind
-> of stupid, isn't it?
+This patchset adds more bpf_*_ct_lookup() selftests. The goal is to test
+interaction with netfilter subsystem as well as reading from `struct
+nf_conn`. The first is important when migrating legacy systems towards
+bpf. The latter is important in general to take full advantage of
+connection tracking.
 
-Yeah, I guess adding a truncate to the caller is kind of unnecessary
-if you're still going to use %hhd anyways.  What are your thoughts on
-this bug I've filed?
-https://github.com/llvm/llvm-project/issues/57102
+I'll follow this patchset up with support for writing to `struct nf_conn`.
+
+Past discussion:
+- v3: https://lore.kernel.org/bpf/cover.1660173222.git.dxu@dxuuu.xyz/
+- v2: https://lore.kernel.org/bpf/cover.1660062725.git.dxu@dxuuu.xyz/
+- v1: https://lore.kernel.org/bpf/cover.1659209738.git.dxu@dxuuu.xyz/
+
+Changes since v3:
+- Remove deprecated CHECK_FAIL() usage
+- cc netfilter folks
+
+Changes since v2:
+- Add bpf-ci kconfig changes
+
+Changes since v1:
+- Reword commit message / cover letter to not mention connmark writing
+
+Daniel Xu (3):
+  selftests/bpf: Add existing connection bpf_*_ct_lookup() test
+  selftests/bpf: Add connmark read test
+  selftests/bpf: Update CI kconfig
+
+ tools/testing/selftests/bpf/config            |  2 +
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c | 60 +++++++++++++++++++
+ .../testing/selftests/bpf/progs/test_bpf_nf.c | 21 +++++++
+ 3 files changed, 83 insertions(+)
 
 -- 
-Thanks,
-~Nick Desaulniers
+2.37.1
+
