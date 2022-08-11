@@ -2,110 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7558C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23429C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236916AbiHKPya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
+        id S235913AbiHKPye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236686AbiHKPxt (ORCPT
+        with ESMTP id S236914AbiHKPxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 11:53:49 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F6545068
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:45:20 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id 17so17230439plj.10
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:45:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc;
-        bh=IqdpAm+3ZI27zm3WrWt4kogz8HX3uySUVAkMSid/X6U=;
-        b=1G0z6VKeHyOv+DmFlwNaDXpbESavfOAPdJ0y7qxpkZ8KGb1ELkE4Oi3sNw5j1vlVrv
-         YsT/Jvnr4Qx4zxafupJ6e465wLqyqB94XpJdUo1RMy0UAaoWJ2m9rEns8gIXEddP+y/G
-         1Lcw6OCuCuxqK9qvhxVrW914AGArcswAUhTHLJZ7gA/zEismEh7/w4AKVuAwf0eAzk5j
-         bAbiWFDAIE7pU3pwRWZqCGEl9PkgLvUfdi/HBFADY5zuJ8T8djjykzn2LsYLXKNoJKjt
-         ZKfPAOFCPCMSlKygsEwhK8NAgqV+i6VGFHBBNq3eAyEi2+/p6PBbELjvq6J9dh4q4dxY
-         IJnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc;
-        bh=IqdpAm+3ZI27zm3WrWt4kogz8HX3uySUVAkMSid/X6U=;
-        b=ViJ7AuNpv79WD9JBOOXYEF60VKW0w/WO3gG7LINDb+3esgB/FGuFFU5Pdj/73sDkBZ
-         7ns6d+m+L8qGin2oanJvDvI62PBLRl8YDkrZjy3WHkCKAhNpv7HZ0V3Ugjipwl+h2ylC
-         7G1xpenpxcnQIQCngsXnN4fXZZj0ruJAAj61Pq6kZEG9qwGOkZodA8xLtyaFs3u1zSMD
-         1VYJwdlLeeeS2ZhTx+qBq08ZAL7dkDTwHVwsgMoutLgiTzez8E/VG9a1XBpxd/1wjppm
-         5d9UlM3PuqzQhGZ6EnDTvcNtWrX18y/NRKkMFDAwuAf0uhZvPXafFpZ+tVCjy2BHqFqM
-         9etw==
-X-Gm-Message-State: ACgBeo34JIxDPxRzMLiR2g4hQ4jWmsuZG8/Cf9VwxleeAybtu5JjJUnD
-        BmXy8BRYqaGV+P0BsLHYi/U8cQ==
-X-Google-Smtp-Source: AA6agR4aa6Jphe0Y0Hlh91VQt7xwxcn4/ibQAux03E/k/HY8C9mVj0pgJLt4eegG06tTQiRHNA5sfg==
-X-Received: by 2002:a17:903:31cb:b0:16f:3d1:f5b with SMTP id v11-20020a17090331cb00b0016f03d10f5bmr33577264ple.148.1660232719614;
-        Thu, 11 Aug 2022 08:45:19 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id n129-20020a622787000000b0052dcbd87ae8sm4216988pfn.25.2022.08.11.08.45.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:45:19 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 08:45:19 -0700 (PDT)
-X-Google-Original-Date: Thu, 11 Aug 2022 08:39:47 PDT (-0700)
-Subject:     Re: [PATCH] riscv: traps_misaligned: do not duplicate stringify
-In-Reply-To: <20220623112905.253157-1-krzysztof.kozlowski@linaro.org>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski@linaro.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     krzysztof.kozlowski@linaro.org
-Message-ID: <mhng-1a6d1fe9-4b73-4088-bd89-015486990666@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3AB275F5;
+        Thu, 11 Aug 2022 08:45:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0DF1616E3;
+        Thu, 11 Aug 2022 15:45:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5093AC433D6;
+        Thu, 11 Aug 2022 15:45:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660232720;
+        bh=eom5LFBDz/ZfunXho4RQAiR5oZ8Zcx6DCMpu1BzSGjo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NJ7FRxd8S3qsp8AmcEMQKTzBdYxKO34GnvqyXq5/+xg2XxsdLkLdfEG1s6h9bUBTd
+         JwwIJxAlA1r7964b7Y8NrNa3aYnjCd/nBxIUcgbqOd00zYi+X2WpXrOk2gCoQGHR44
+         qnuePT4y182jXkUIBLI8liXC6lsvbX9gysFwIfaumeiJlPPQzsLzcyuJXFBBXP6KLY
+         w6zshPDblzKEEzTa1hFzong5XWKgzDxm4dBv37RpknQBcm0cb6PvexKSupodOgYeA1
+         bTPny8wdSq2FaCthncjbuZg1/ywU27e+H9VZjzUPQaQmUC9JVy6DVSKmywIoA1XYL9
+         2RkSKTcUXF9MA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
+        andrii@kernel.org, shuah@kernel.org, hengqi.chen@gmail.com,
+        songliubraving@fb.com, kuifeng@fb.com, fallentree@fb.com,
+        mauricio@kinvolk.io, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 23/93] selftests/bpf: Avoid skipping certain subtests
+Date:   Thu, 11 Aug 2022 11:41:17 -0400
+Message-Id: <20220811154237.1531313-23-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
+References: <20220811154237.1531313-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 04:29:05 PDT (-0700), krzysztof.kozlowski@linaro.org wrote:
-> Use existing stringify macro from the kernel headers.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  arch/riscv/kernel/traps_misaligned.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/arch/riscv/kernel/traps_misaligned.c b/arch/riscv/kernel/traps_misaligned.c
-> index 46c4dafe3ba0..378f5b151443 100644
-> --- a/arch/riscv/kernel/traps_misaligned.c
-> +++ b/arch/riscv/kernel/traps_misaligned.c
-> @@ -7,6 +7,7 @@
->  #include <linux/mm.h>
->  #include <linux/module.h>
->  #include <linux/irq.h>
-> +#include <linux/stringify.h>
->
->  #include <asm/processor.h>
->  #include <asm/ptrace.h>
-> @@ -150,9 +151,6 @@
->  #define PRECISION_S 0
->  #define PRECISION_D 1
->
-> -#define STR(x) XSTR(x)
-> -#define XSTR(x) #x
-> -
->  #define DECLARE_UNPRIVILEGED_LOAD_FUNCTION(type, insn)			\
->  static inline type load_##type(const type *addr)			\
->  {									\
-> @@ -207,9 +205,9 @@ static inline ulong get_insn(ulong mepc)
->  	asm ("and %[tmp], %[addr], 2\n"
->  		"bnez %[tmp], 1f\n"
->  #if defined(CONFIG_64BIT)
-> -		STR(LWU) " %[insn], (%[addr])\n"
-> +		__stringify(LWU) " %[insn], (%[addr])\n"
->  #else
-> -		STR(LW) " %[insn], (%[addr])\n"
-> +		__stringify(LW) " %[insn], (%[addr])\n"
->  #endif
->  		"and %[tmp], %[insn], %[rvc_mask]\n"
->  		"beq %[tmp], %[rvc_mask], 2f\n"
+From: Yonghong Song <yhs@fb.com>
 
-Thanks, this is on for-next.
+[ Upstream commit 3831cd1f9ff627734096f22d8e37f72a5cabf92e ]
+
+Commit 704c91e59fe0 ('selftests/bpf: Test "bpftool gen min_core_btf"')
+added a test test_core_btfgen to test core relocation with btf
+generated with 'bpftool gen min_core_btf'. Currently,
+among 76 subtests, 25 are skipped.
+
+  ...
+  #46/69   core_reloc_btfgen/enumval:OK
+  #46/70   core_reloc_btfgen/enumval___diff:OK
+  #46/71   core_reloc_btfgen/enumval___val3_missing:OK
+  #46/72   core_reloc_btfgen/enumval___err_missing:SKIP
+  #46/73   core_reloc_btfgen/enum64val:OK
+  #46/74   core_reloc_btfgen/enum64val___diff:OK
+  #46/75   core_reloc_btfgen/enum64val___val3_missing:OK
+  #46/76   core_reloc_btfgen/enum64val___err_missing:SKIP
+  ...
+  #46      core_reloc_btfgen:SKIP
+  Summary: 1/51 PASSED, 25 SKIPPED, 0 FAILED
+
+Alexei found that in the above core_reloc_btfgen/enum64val___err_missing
+should not be skipped.
+
+Currently, the core_reloc tests have some negative tests.
+In Commit 704c91e59fe0, for core_reloc_btfgen, all negative tests
+are skipped with the following condition
+  if (!test_case->btf_src_file || test_case->fails) {
+	test__skip();
+	continue;
+  }
+This is too conservative. Negative tests do not fail
+mkstemp() and run_btfgen() should not be skipped.
+There are a few negative tests indeed failing run_btfgen()
+and this patch added 'run_btfgen_fails' to mark these tests
+so that they can be skipped for btfgen tests. With this,
+we have
+  ...
+  #46/69   core_reloc_btfgen/enumval:OK
+  #46/70   core_reloc_btfgen/enumval___diff:OK
+  #46/71   core_reloc_btfgen/enumval___val3_missing:OK
+  #46/72   core_reloc_btfgen/enumval___err_missing:OK
+  #46/73   core_reloc_btfgen/enum64val:OK
+  #46/74   core_reloc_btfgen/enum64val___diff:OK
+  #46/75   core_reloc_btfgen/enum64val___val3_missing:OK
+  #46/76   core_reloc_btfgen/enum64val___err_missing:OK
+  ...
+  Summary: 1/62 PASSED, 14 SKIPPED, 0 FAILED
+
+Totally 14 subtests are skipped instead of 25.
+
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220614055526.628299-1-yhs@fb.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/core_reloc.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+index f28f75aa9154..70734bd10437 100644
+--- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
++++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+@@ -84,6 +84,7 @@ static int duration = 0;
+ #define NESTING_ERR_CASE(name) {					\
+ 	NESTING_CASE_COMMON(name),					\
+ 	.fails = true,							\
++	.run_btfgen_fails = true,							\
+ }
+ 
+ #define ARRAYS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
+@@ -258,12 +259,14 @@ static int duration = 0;
+ 	BITFIELDS_CASE_COMMON("test_core_reloc_bitfields_probed.o",	\
+ 			      "probed:", name),				\
+ 	.fails = true,							\
++	.run_btfgen_fails = true,							\
+ 	.raw_tp_name = "sys_enter",					\
+ 	.prog_name = "test_core_bitfields",				\
+ }, {									\
+ 	BITFIELDS_CASE_COMMON("test_core_reloc_bitfields_direct.o",	\
+ 			      "direct:", name),				\
+ 	.fails = true,							\
++	.run_btfgen_fails = true,							\
+ 	.prog_name = "test_core_bitfields_direct",			\
+ }
+ 
+@@ -296,6 +299,7 @@ static int duration = 0;
+ #define SIZE_ERR_CASE(name) {						\
+ 	SIZE_CASE_COMMON(name),						\
+ 	.fails = true,							\
++	.run_btfgen_fails = true,							\
+ }
+ 
+ #define TYPE_BASED_CASE_COMMON(name)					\
+@@ -369,6 +373,7 @@ struct core_reloc_test_case {
+ 	const char *output;
+ 	int output_len;
+ 	bool fails;
++	bool run_btfgen_fails;
+ 	bool needs_testmod;
+ 	bool relaxed_core_relocs;
+ 	const char *prog_name;
+@@ -885,7 +890,7 @@ static void run_core_reloc_tests(bool use_btfgen)
+ 		/* generate a "minimal" BTF file and use it as source */
+ 		if (use_btfgen) {
+ 
+-			if (!test_case->btf_src_file || test_case->fails) {
++			if (!test_case->btf_src_file || test_case->run_btfgen_fails) {
+ 				test__skip();
+ 				continue;
+ 			}
+-- 
+2.35.1
+
