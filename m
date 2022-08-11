@@ -2,178 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B3DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:21:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B4B8C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235690AbiHKPVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        id S232321AbiHKPYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235656AbiHKPVN (ORCPT
+        with ESMTP id S234382AbiHKPYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:21:13 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D281861D54;
-        Thu, 11 Aug 2022 08:21:10 -0700 (PDT)
-Received: from dev010.ch-qa.sw.ru ([172.29.1.15])
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1oM9xi-00FExA-NK;
-        Thu, 11 Aug 2022 17:20:17 +0200
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-kernel@vger.kernel.org, "Denis V . Lunev" <den@openvz.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>,
-        kernel@openvz.org, devel@openvz.org
-Subject: [PATCH v3 0/2] neighbour: fix possible DoS due to net iface start/stop loop
-Date:   Thu, 11 Aug 2022 18:20:10 +0300
-Message-Id: <20220811152012.319641-1-alexander.mikhalitsyn@virtuozzo.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
-References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+        Thu, 11 Aug 2022 11:24:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2600B915F7
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:24:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660231445;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1h3Y3RmJF3aa7mPyEan1bKo/SeXETlN162Suiv+//04=;
+        b=HayQsLq7aEyaGIQRVz/55g02LocgnpwRIAKgEf+HSX7MO3tWF7yBuW/rhPrLr9+8CxPn9Y
+        vauZkWJAGIFHUBgs8k5S8IclSW7NUq8ouehQfQaeycCfGoelXadJrQKx2sFp0TNmy9PBil
+        841P+bnAtsX0c6xLXcXc7yV0rhSh/O8=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-386-c7PPIALtMvefdd7Tpa4bzQ-1; Thu, 11 Aug 2022 11:24:04 -0400
+X-MC-Unique: c7PPIALtMvefdd7Tpa4bzQ-1
+Received: by mail-pl1-f198.google.com with SMTP id u10-20020a170903124a00b0016ec85be3b7so11520015plh.4
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:24:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=1h3Y3RmJF3aa7mPyEan1bKo/SeXETlN162Suiv+//04=;
+        b=Rl9GuXFFHhfMdh8U/WOZG7k0TxMk3kCzjrxCxav6nsVgRphL5DDeHCr3254uEvOGYV
+         LDI5/ZKuv6ILXFIgbWUU3uReDWV+OsICPbwMhfEeq5HlbPUmg4UctFmgoHzkMTcDGMXL
+         3MdsG30MyXjQYUWbq3e3Uyp4siQc22q1FveE0PSjiOHni9FoYedEGNnvnpUyCB5/xVp+
+         FPSL95JyE0QWX5l1Fp30Wn+w8KA6riacp/KqVqjQj9KQAY6Xhf4tMxvkkwYPl8mIjk48
+         itU0G9nDpyyrKBeBAEL501L5xVoiM0s5jTXF6W38ggZVuB1Jssm4OAv5i3Ic2FPpnt/m
+         ukWg==
+X-Gm-Message-State: ACgBeo1l7+BQoMaGYxkNjVwHks4Dsy5uwr506XKjcDA7zqOh34p3Y3r1
+        cyBfSdLs+XCPrAE0+n9EMN1rnoHr/lh8FvSGq3pGVFF+ILss+Mi8aeg2lddXfxHI2gkB5sO00X1
+        19SMLurV3Q7VQ+B+keH73q42ledclZx+rYmRei3sd
+X-Received: by 2002:a63:e70f:0:b0:41c:ac9e:27aa with SMTP id b15-20020a63e70f000000b0041cac9e27aamr26240931pgi.489.1660231443733;
+        Thu, 11 Aug 2022 08:24:03 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6xDlcoTxL3DHADFHK9h8Xh4vShOzgWZAlNazMjrDr1EngYc2KIR0v3BBaBT6g6mw9pZ5Iy443C10PlJwme4qU=
+X-Received: by 2002:a63:e70f:0:b0:41c:ac9e:27aa with SMTP id
+ b15-20020a63e70f000000b0041cac9e27aamr26240916pgi.489.1660231443414; Thu, 11
+ Aug 2022 08:24:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <9e16d503-2203-57ed-d6af-61fea0c3e10b@gmail.com>
+ <nycvar.YFH.7.76.2207231339500.19850@cbobk.fhfr.pm> <20220724114849.GA32182@elementary>
+ <20220725224841.GA75640@elementary> <3f2e0a49-38a8-417e-1bb0-9a9f28371240@gmail.com>
+ <20220804182445.GA16569@elementary>
+In-Reply-To: <20220804182445.GA16569@elementary>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 11 Aug 2022 17:23:52 +0200
+Message-ID: <CAO-hwJ+hBipNJpeYaHRr2-rKXA5d79XT7zE2fo2oEKUKJtKJ0g@mail.gmail.com>
+Subject: Re: PROBLEM: Regression likely in hid_uclogic driver breaks Huion
+ Inspiroy H640 drawing tablet
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     Stefan Hansson <newbie13xd@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Peter Hutterer <peter.hutterer@who-t.net>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear friends,
+On Thu, Aug 4, 2022 at 8:24 PM Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gma=
+il.com> wrote:
+>
+> Hi again,
+>
+> On 2022-07-26 18:48, Jos=C3=A9 Exp=C3=B3sito wrote:
+> > The first bad commit is 87562fcd1342 ("HID: input: remove the need for
+> > HID_QUIRK_INVERT"):
+> > https://lore.kernel.org/all/20220203143226.4023622-11-benjamin.tissoire=
+s@redhat.com/
+> > (CCing the folks whose email is in the patch tags)
+> >
+> > I reverted the patch on hid/for-next and, after fixing a tiny conflict,
+> > I can confirm that the tablet works again as expected.
+> >
+> > I'd need to investigate a bit more over the weekend, but I think that
+> > all HUION tablets with the latest firmware (internally, v2) are
+> > affected.
+>
+> Indeed, it looks like v2 devices are affected. Similar reports:
+>
+>  - https://github.com/DIGImend/digimend-kernel-drivers/issues/626
+>  - https://bugzilla.kernel.org/show_bug.cgi?id=3D216106
+>
+> Kindly sending this thread back to your inbox to see if we could fix
+> this regression.
 
-Recently one of OpenVZ users reported that they have issues with network
-availability of some containers. It was discovered that the reason is absence
-of ARP replies from the Host Node on the requests about container IPs.
+[sorry, I was out on vacation the past 2 weeks and this week was the
+usual "urgent" thing I have to day for yesterday]
 
-Of course, we started from tcpdump analysis and noticed that ARP requests
-successfuly comes to the problematic node external interface. So, something
-was wrong from the kernel side.
+Ideally, I'd like to not revert that commit. It solves a bunch of
+issues on many devices, so that's maybe not the way forward.
 
-I've played a lot with arping and perf in attempts to understand what's
-happening. And the key observation was that we experiencing issues only
-with ARP requests with broadcast source ip (skb->pkt_type == PACKET_BROADCAST).
-But for packets skb->pkt_type == PACKET_HOST everything works flawlessly.
+FWIW, it was quite painful to tweak and that was a solution that
+matches the hid-multitouch devices I could find.
 
-Let me show a small piece of code:
+I tried to process your email when you described the succession of
+events without much success.
 
-static int arp_process(struct sock *sk, struct sk_buff *skb)
-...
-				if (NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED ||
-				    skb->pkt_type == PACKET_HOST ||
-				    NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY) == 0) { // reply instantly
-					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
-						     sip, dev, tip, sha,
-						     dev->dev_addr, sha,
-						     reply_dst);
-				} else {
-					pneigh_enqueue(&arp_tbl,                     // reply with delay
-						       in_dev->arp_parms, skb);
-					goto out_free_dst;
-				}
+Would you mind dumping a hid-record when exposing the bug?
 
-The problem was that for PACKET_BROADCAST packets we delaying replies and use pneigh_enqueue() function.
-For some reason, queued packets were lost almost all the time! The reason for such behaviour is pneigh_queue_purge()
-function which cleanups all the queue, and this function called everytime once some network device in the system
-gets link down.
+Cheers,
+Benjamin
 
-neigh_ifdown -> pneigh_queue_purge
 
-Now imagine that we have a node with 500+ containers with microservices. And some of that microservices are buggy
-and always restarting... in this case, pneigh_queue_purge function will be called very frequently.
-
-This problem is reproducible only with so-called "host routed" setup. The classical scheme bridge + veth
-is not affected.
-
-Minimal reproducer
-
-Suppose that we have a network 172.29.1.1/16 brd 172.29.255.255
-and we have free-to-use IP, let it be 172.29.128.3
-
-1. Network configuration. I showing the minimal configuration, it makes no sense
-as we have both veth devices stay at the same net namespace, but for demonstation and simplicity sake it's okay.
-
-ip l a veth31427 type veth peer name veth314271
-ip l s veth31427 up
-ip l s veth314271 up
-
-# setup static arp entry and publish it
-arp -Ds -i br0 172.29.128.3 veth31427 pub
-# setup static route for this address
-route add 172.29.128.3/32 dev veth31427
-
-2. "attacker" side (kubernetes pod with buggy microservice :) )
-
-unshare -n
-ip l a type veth
-ip l s veth0 up
-ip l s veth1 up
-for i in {1..100000}; do ip link set veth0 down; sleep 0.01; ip link set veth0 up; done
-
-This will totaly block ARP replies for 172.29.128.3 address. Just try
-# arping -I eth0 172.29.128.3 -c 4
-
-Our proposal is simple:
-1. Let's cleanup queue partially. Remove only skb's that related to the net namespace
-of the adapter which link is down.
-
-2. Let's account proxy_queue limit properly per-device. Current limitation looks
-not fully correct because we comparing per-device configurable limit with the
-"global" qlen of proxy_queue.
-
-Thanks,
-Alex
-
-v2:
-	- only ("neigh: fix possible DoS due to net iface start/stop") is changed
-		do del_timer_sync() if queue is empty after pneigh_queue_purge()
-
-v3:
-	- rebase to net tree
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Denis V. Lunev <den@openvz.org>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Cc: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Cc: kernel@openvz.org
-Cc: devel@openvz.org
-Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-
-Alexander Mikhalitsyn (1):
-  neighbour: make proxy_queue.qlen limit per-device
-
-Denis V. Lunev (1):
-  neigh: fix possible DoS due to net iface start/stop loop
-
- include/net/neighbour.h |  1 +
- net/core/neighbour.c    | 46 +++++++++++++++++++++++++++++++++--------
- 2 files changed, 38 insertions(+), 9 deletions(-)
-
--- 
-2.36.1
+>
+> Best wishes,
+> Jose
+>
+> > Those tablets do not set the inrange bit (UCLOGIC_PARAMS_PEN_INRANGE_NO=
+NE).
+> > The driver sets it and uses a timer to remove it.
+> > See drivers/hid/hid-uclogic-core.c, function uclogic_raw_event_pen().
+> > [...]
+>
 
