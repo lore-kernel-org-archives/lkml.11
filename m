@@ -2,252 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA27AC25B0F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B99F9C25B0E
 	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 06:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234223AbiHKGjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 02:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S234238AbiHKGjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 02:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234203AbiHKGik (ORCPT
+        with ESMTP id S234226AbiHKGis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 02:38:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FB38B98F;
-        Wed, 10 Aug 2022 23:38:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38E18B81F67;
-        Thu, 11 Aug 2022 06:38:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6267C433C1;
-        Thu, 11 Aug 2022 06:38:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660199916;
-        bh=ObzsSq38QhjJU3z9SqVp2kx02GMsyLY2WQQT993Pc+o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=njvqmbiGzoNIjuVSOqkbMmQXPwsNf4qbHglOb0DqRez0oHLKxezK59yxDcXtSLkE8
-         BShZe7RFI9nNwUVZBW2zo6LRfS+NqX84QPAyWK7Tvcn7D0km3A8d/l3/UmUUjKpK2O
-         TO7HyQvqje10CqvI9R5gvBEU+ws99Drat/UiKlWXyshHX7kIQMRBRhV50ZxpJiaw6m
-         UDLrwmoTK4Hh3i8waITK8u/FH107WMDeJCwsEccdu8AqoAtCAtNoREGDVqX/QpY9sD
-         Mw9/d93T9etlwOLp6BzzENjEPWYF0UyJ4WSzebHcbiujkSsrN0jpADKVGEeuFXknPS
-         ognTVfT2DiqcQ==
-Date:   Thu, 11 Aug 2022 09:38:18 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <namit@vmware.com>, Peter Xu <peterx@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-mm@kvack.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v5 3/5] userfaultfd: selftests: modify selftest to use
- /dev/userfaultfd
-Message-ID: <YvSj2h7WgV1xd2Ht@kernel.org>
-References: <20220808175614.3885028-1-axelrasmussen@google.com>
- <20220808175614.3885028-4-axelrasmussen@google.com>
+        Thu, 11 Aug 2022 02:38:48 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2775A8B993
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:38:45 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id z25so24339990lfr.2
+        for <linux-kernel@vger.kernel.org>; Wed, 10 Aug 2022 23:38:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=AGEywKGeoHQ0FbmdJ6X1DklF8N9Blk35YsMIqDrQ5Mw=;
+        b=QDLGAXXBsgC04gfJKOEdrkRdt7sHC5ZTFaNm25Y4iwXxALrOoH45XuzuBmlG5JpolA
+         TqXKykAgXPC01T8cFQQwtgcC2K410aXDsoXaMBJnbvVyfentYv2dbO7+q9UQUEtplti9
+         jUBIYkji138JeXwjl4H42p8ncNvpyyTAGDHs5hoYnfLVEZD7Da5BThWeJhkifdnoT7p8
+         ejaBsT9TFFNO6YWOu5W1puCR6a4WH2VUiROY2Woj+MAxjFDhdJvFVn581Zq+E1Qey/On
+         qpZdMYJGCrW2sbcjULBpZO9pAfxPDcKbsIfpmhppTl+q0MMiR21tAUPdBgV1xefOQznE
+         D9GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=AGEywKGeoHQ0FbmdJ6X1DklF8N9Blk35YsMIqDrQ5Mw=;
+        b=giLw8YuEAk//llDMM9hmGTvWczp6Io+WEZRqkbH0wmw13wS1jEcqrXpBB5EiWE8TRj
+         sQbAzCY2kGkK+uWZ26BFrAwGf9o/pGFl85jKcufy7szqi9XaoVp/qtI/GvYVYqU3o1Vk
+         q+1Pq1WrkOq1/9wzFuIFBKnEKJwuCqk5AjsBLGzmU0jXu2zaW2OcRxcIJcrZAGZq4xnZ
+         kvL88ApjWGRQTgfbYTJ1rvI0jGic5FWvXba0yHe7z7AdnGbS/kSFFBGW3KlF+AMukV5h
+         F+eOmEgDy85jllDP1yAyxdjfTMTd2zD3CnMKv/9jD3yTx7tuGIKFNmC/JOCqZj6HzLyz
+         /Wog==
+X-Gm-Message-State: ACgBeo0J8ILpYQeugqSXq1mvAaYRR2XZFe+MnDZP2B8W6nXJJnzEI5it
+        9I4sM8Q22ZGOXXCi+mhm3Erd+g==
+X-Google-Smtp-Source: AA6agR4ugZV+KRC/fxXYtcxvD9OkFiF6TJixcJtRQF4gWRmYwTQnRaC2c4lhLhI+rf8d4aFDAojiEQ==
+X-Received: by 2002:a05:6512:3583:b0:48a:e811:3d89 with SMTP id m3-20020a056512358300b0048ae8113d89mr11627782lfr.371.1660199923566;
+        Wed, 10 Aug 2022 23:38:43 -0700 (PDT)
+Received: from localhost.localdomain ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id c15-20020a056512324f00b0048ac33f34d8sm585537lfr.289.2022.08.10.23.38.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 23:38:42 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: phy: Drop Pratyush Yadav
+Date:   Thu, 11 Aug 2022 09:38:40 +0300
+Message-Id: <20220811063840.7670-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808175614.3885028-4-axelrasmussen@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 10:56:12AM -0700, Axel Rasmussen wrote:
-> We clearly want to ensure both userfaultfd(2) and /dev/userfaultfd keep
-> working into the future, so just run the test twice, using each
-> interface.
-> 
-> Instead of always testing both userfaultfd(2) and /dev/userfaultfd,
-> let the user choose which to test.
-> 
-> As with other test features, change the behavior based on a new
-> command line flag. Introduce the idea of "test mods", which are
-> generic (not specific to a test type) modifications to the behavior of
-> the test. This is sort of borrowed from this RFC patch series [1], but
-> simplified a bit.
-> 
-> The benefit is, in "typical" configurations this test is somewhat slow
-> (say, 30sec or something). Testing both clearly doubles it, so it may
-> not always be desirable, as users are likely to use one or the other,
-> but never both, in the "real world".
-> 
-> [1]: https://patchwork.kernel.org/project/linux-mm/patch/20201129004548.1619714-14-namit@vmware.com/
-> 
-> Acked-by: Peter Xu <peterx@redhat.com>
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Emails to Pratyush Yadav bounce ("550 Invalid recipient").
 
-With a few nits below
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml | 2 +-
+ Documentation/devicetree/bindings/phy/cdns,dphy.yaml    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-
-> ---
->  tools/testing/selftests/vm/userfaultfd.c | 69 ++++++++++++++++++++----
->  1 file changed, 60 insertions(+), 9 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-> index 7c3f1b0ab468..cae72867c173 100644
-> --- a/tools/testing/selftests/vm/userfaultfd.c
-> +++ b/tools/testing/selftests/vm/userfaultfd.c
-> @@ -77,6 +77,11 @@ static int bounces;
->  #define TEST_SHMEM	3
->  static int test_type;
->  
-> +#define UFFD_FLAGS	(O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY)
-> +
-> +/* test using /dev/userfaultfd, instead of userfaultfd(2) */
-> +static bool test_dev_userfaultfd;
-> +
->  /* exercise the test_uffdio_*_eexist every ALARM_INTERVAL_SECS */
->  #define ALARM_INTERVAL_SECS 10
->  static volatile bool test_uffdio_copy_eexist = true;
-> @@ -125,6 +130,8 @@ struct uffd_stats {
->  const char *examples =
->      "# Run anonymous memory test on 100MiB region with 99999 bounces:\n"
->      "./userfaultfd anon 100 99999\n\n"
-> +    "# Run the same anonymous memory test, but using /dev/userfaultfd:\n"
-> +    "./userfaultfd anon:dev 100 99999\n\n"
->      "# Run share memory test on 1GiB region with 99 bounces:\n"
->      "./userfaultfd shmem 1000 99\n\n"
->      "# Run hugetlb memory test on 256MiB region with 50 bounces:\n"
-> @@ -141,6 +148,14 @@ static void usage(void)
->  		"[hugetlbfs_file]\n\n");
->  	fprintf(stderr, "Supported <test type>: anon, hugetlb, "
->  		"hugetlb_shared, shmem\n\n");
-> +	fprintf(stderr, "'Test mods' can be joined to the test type string with a ':'. "
-> +		"Supported mods:\n");
-> +	fprintf(stderr, "\tsyscall - Use userfaultfd(2) (default)\n");
-> +	fprintf(stderr, "\tdev - Use /dev/userfaultfd instead of userfaultfd(2)\n");
-> +	fprintf(stderr, "\nExample test mod usage:\n");
-> +	fprintf(stderr, "# Run anonymous memory test with /dev/userfaultfd:\n");
-> +	fprintf(stderr, "./userfaultfd anon:dev 100 99999\n\n");
-> +
->  	fprintf(stderr, "Examples:\n\n");
->  	fprintf(stderr, "%s", examples);
->  	exit(1);
-> @@ -154,12 +169,14 @@ static void usage(void)
->  			ret, __LINE__);				\
->  	} while (0)
->  
-> -#define err(fmt, ...)				\
-> +#define errexit(exitcode, fmt, ...)		\
->  	do {					\
->  		_err(fmt, ##__VA_ARGS__);	\
-> -		exit(1);			\
-> +		exit(exitcode);			\
->  	} while (0)
->  
-> +#define err(fmt, ...) errexit(1, fmt, ##__VA_ARGS__)
-> +
->  static void uffd_stats_reset(struct uffd_stats *uffd_stats,
->  			     unsigned long n_cpus)
->  {
-> @@ -383,13 +400,29 @@ static void assert_expected_ioctls_present(uint64_t mode, uint64_t ioctls)
->  	}
->  }
->  
-> +static int __userfaultfd_open_dev(void)
-> +{
-> +	int fd, _uffd = -1;
-
-Nit: the initialization here is not necessary, _uffd is always set from
-ioctl() return value.
-
-> +
-> +	fd = open("/dev/userfaultfd", O_RDWR | O_CLOEXEC);
-> +	if (fd < 0)
-> +		return -1;
-> +
-> +	_uffd = ioctl(fd, USERFAULTFD_IOC_NEW, UFFD_FLAGS);
-> +	close(fd);
-> +	return _uffd;
-> +}
-> +
->  static void userfaultfd_open(uint64_t *features)
->  {
->  	struct uffdio_api uffdio_api;
->  
-> -	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
-> +	if (test_dev_userfaultfd)
-> +		uffd = __userfaultfd_open_dev();
-> +	else
-> +		uffd = syscall(__NR_userfaultfd, UFFD_FLAGS);
->  	if (uffd < 0)
-> -		err("userfaultfd syscall not available in this kernel");
-> +		errexit(KSFT_SKIP, "creating userfaultfd failed");
-
-I'm not sure if this should be KSFT_SKIP. If creation of uffd failed
-because anything except ENOSYS I'd consider the test failing. 
-
->  	uffd_flags = fcntl(uffd, F_GETFD, NULL);
->  
->  	uffdio_api.api = UFFD_API;
-> @@ -1584,8 +1617,6 @@ unsigned long default_huge_page_size(void)
->  
->  static void set_test_type(const char *type)
->  {
-> -	uint64_t features = UFFD_API_FEATURES;
-> -
->  	if (!strcmp(type, "anon")) {
->  		test_type = TEST_ANON;
->  		uffd_test_ops = &anon_uffd_test_ops;
-> @@ -1603,9 +1634,29 @@ static void set_test_type(const char *type)
->  		test_type = TEST_SHMEM;
->  		uffd_test_ops = &shmem_uffd_test_ops;
->  		test_uffdio_minor = true;
-> -	} else {
-> -		err("Unknown test type: %s", type);
->  	}
-> +}
-> +
-> +static void parse_test_type_arg(const char *raw_type)
-> +{
-> +	char *buf = strdup(raw_type);
-> +	uint64_t features = UFFD_API_FEATURES;
-> +
-> +	while (buf) {
-> +		const char *token = strsep(&buf, ":");
-> +
-> +		if (!test_type)
-> +			set_test_type(token);
-> +		else if (!strcmp(token, "dev"))
-> +			test_dev_userfaultfd = true;
-> +		else if (!strcmp(token, "syscall"))
-> +			test_dev_userfaultfd = false;
-> +		else
-> +			err("unrecognized test mod '%s'", token);
-> +	}
-> +
-> +	if (!test_type)
-> +		err("failed to parse test type argument: '%s'", raw_type);
->  
->  	if (test_type == TEST_HUGETLB)
->  		page_size = default_huge_page_size();
-> @@ -1653,7 +1704,7 @@ int main(int argc, char **argv)
->  		err("failed to arm SIGALRM");
->  	alarm(ALARM_INTERVAL_SECS);
->  
-> -	set_test_type(argv[1]);
-> +	parse_test_type_arg(argv[1]);
->  
->  	nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
->  	nr_pages_per_cpu = atol(argv[2]) * 1024*1024 / page_size /
-> -- 
-> 2.37.1.559.g78731f0fdb-goog
-> 
-
+diff --git a/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml b/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
+index 07be031d82e6..834f65636819 100644
+--- a/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
++++ b/Documentation/devicetree/bindings/phy/cdns,dphy-rx.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence DPHY Rx Device Tree Bindings
+ 
+ maintainers:
+-  - Pratyush Yadav <p.yadav@ti.com>
++  - Kishon Vijay Abraham I <kishon@ti.com>
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/phy/cdns,dphy.yaml b/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
+index f0e9ca8427bb..37bc20493fd0 100644
+--- a/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
++++ b/Documentation/devicetree/bindings/phy/cdns,dphy.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence DPHY Device Tree Bindings
+ 
+ maintainers:
+-  - Pratyush Yadav <p.yadav@ti.com>
++  - Kishon Vijay Abraham I <kishon@ti.com>
+ 
+ properties:
+   compatible:
 -- 
-Sincerely yours,
-Mike.
+2.34.1
+
