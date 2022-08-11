@@ -2,163 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 973E2C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F98C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 12:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235289AbiHKMmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 08:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
+        id S235332AbiHKMmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 08:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235049AbiHKMmG (ORCPT
+        with ESMTP id S235049AbiHKMmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 08:42:06 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C97E61D46
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 05:42:05 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id d7so16983751pgc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 05:42:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=0NMhQVuhzXkwwEud1IyNm6hvZaVuRoUuPkQoEp6AaTY=;
-        b=U2AwqSzPv6fO8PpGUCaF2AQotw7T7X2O6thhEuTk1KEihDUucDVJe5ziLoUa6E6d0y
-         BqnXd6O76kRCk6OFQ5nFGHiwaWZIFk/ANu5Zzfd40OwXF64SLcPX1MlHJeU5agYRo0EN
-         VHMo9ynMC0Zyal7n4+ERV5Zh4E33sJfM7rOQHgDF3N/YlQ5Izl5Ui0TmaSO8hZStkOEW
-         jQ19UPY/Ji+zJMlUVPAanUybYLK58sjcPqDTKh51IVFHGKXEB8A+UglgWADRqwb6qsav
-         ZWZtJtH5nNWJOR0TV59ioeKcoZOe9riuBAKvQP/9w7DhyOj0o1eqWr02yEDDCQY1fBIJ
-         d5MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=0NMhQVuhzXkwwEud1IyNm6hvZaVuRoUuPkQoEp6AaTY=;
-        b=o4H3wphRFsM9FR3SKDW1+3BS/MXkRG2xMYg/tWdQ0Ba6RLZXWPy8uhtEevJ4qdAVf2
-         6R8iZYh85OQzYxPF0rnuYf2nTy4d35NkHCqe9Jb82o1p3JR0hnAhOhGoXIA8EB7mDcDF
-         MrHXWPEfywIJ7MVqQ8rjRqjAdxfgqfSjCX73xGrl5QDOM9xybqxbkoxTnOUQK1VDVuyj
-         +62QVoZMwjPyIO6aP2MJlQaQjziynja10lRCzyH/BfBTxk/jKiRmrIZjk2gjIfaSYiY4
-         shGXD+BkloiiRTCpw53Vu97euNPMme7eO2Yn6/E3YIKWkcbeV12EtCP0ESArWInet82w
-         ErUw==
-X-Gm-Message-State: ACgBeo0CY/ojKyLdrULxdXi5Qcq6OJRPF/WOsq0Oe/wfXP16PtPjnHI4
-        0SGkkOVnbfKJi4wgKgFF1vNKEw==
-X-Google-Smtp-Source: AA6agR4/HxN7yvc3GgDrwV/AysM6JnJrKGknSriYDYyiEe9VplJgKHrc61lciSxG6nIdfeLuw0i9qg==
-X-Received: by 2002:a63:43c2:0:b0:41a:9dea:5dac with SMTP id q185-20020a6343c2000000b0041a9dea5dacmr26052449pga.585.1660221725016;
-        Thu, 11 Aug 2022 05:42:05 -0700 (PDT)
-Received: from C02DV8HUMD6R.bytedance.net ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id w2-20020a62c702000000b0052f0a404fa7sm4056949pfg.146.2022.08.11.05.42.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Aug 2022 05:42:04 -0700 (PDT)
-From:   Abel Wu <wuyun.abel@bytedance.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Muchun Song <songmuchun@bytedance.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Abel Wu <wuyun.abel@bytedance.com>
-Subject: [PATCH v2] mm/mempolicy: fix lock contention on mems_allowed
-Date:   Thu, 11 Aug 2022 20:41:57 +0800
-Message-Id: <20220811124157.74888-1-wuyun.abel@bytedance.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
+        Thu, 11 Aug 2022 08:42:49 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80073.outbound.protection.outlook.com [40.107.8.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB09161D46;
+        Thu, 11 Aug 2022 05:42:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i1txRSi45kWVvz80uAqOAKVZ5Gq4zJ7Bs1eU9e36kv/3blD2fvq5EF/GWKLhKhj1I+YfSmMmDZqcvCQSsMDo+4zXBJzkrV7S9bsPdJSJCSeq/ugSuTnPpg6YkPyJZ3syr7X2EIKPnHHTIgq7+07oVmsuAPGlYL2jQgZC2TOuaoXCS/tGiKJ4lvMIyc46mwLPNcKMdSnxZ01+KfB88gePOJBNvBdU7oKyaMzv8TmmQ08ppArz6EFDRTFpPZDCXp0FfjRrub7wOZ2I04a00R7mc/l04OtWv8DNyMT/RfuiBs/Ica2YCcVWskMfHG8PCALXy4/3+IeDcoKDIhDjHcelQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3BFQ3vp1z03uHsrBhwhXM13bhA4+Fl0wA4Ro6FrX6Ks=;
+ b=VNSRmV+1+QJtgL0sGtmUXj2/Ohs2LLSO1K0pCxCL72CQugtUqBE98aN52b87MCWeAffkFDi+nCppExT+Ahoj3m+I31KiAU3FmkyYvqHDrPKYHO0pVHuUaf2zSrr4AxXRSyPX2PdtkCuF7Ehf5v1373tpjcCcq9BOstUG6C+GLh2sRC5qhdmI4M88rLpTqERT+gi2t6/walZgRUZs10Dmq563rJOhMD8tUPmHRZYnTbppd1k3jkSHSAKsbM+WFU/73Y8AKtFanpQdZ4McYCvyGm0825o/oKuvNc6WjQHVxIp/x4JBXwl/DTt/4D8gc1GKNsnErSnPhJct63rUb7m9HA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3BFQ3vp1z03uHsrBhwhXM13bhA4+Fl0wA4Ro6FrX6Ks=;
+ b=SQpCOaZvzUQgoXk+5ifJxN1urLSW0iostbAruSGfD0xoBIU4xtMaQCCdzgUrbf+JVzqdowBxA4cA5db5c1wD7tjSfT/d+EMK0bXUYSRPJeIpLS3DttNFNw2aqBERMIiQWoIhhBe1evZZRlSy8h5itYBvhh/uCrMoonjMhELVn2A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
+ by VI1PR0402MB2832.eurprd04.prod.outlook.com (2603:10a6:800:b3::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.22; Thu, 11 Aug
+ 2022 12:42:45 +0000
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::747c:397f:a003:dbca]) by AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::747c:397f:a003:dbca%5]) with mapi id 15.20.5525.010; Thu, 11 Aug 2022
+ 12:42:45 +0000
+From:   Shenwei Wang <shenwei.wang@nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linus.walleij@linaro.org, brgl@bgdev.pl, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        imx@lists.linux.dev, Shenwei Wang <shenwei.wang@nxp.com>
+Subject: [PATCH v4 0/3] Add IMX8 SCU GPIO support
+Date:   Thu, 11 Aug 2022 07:41:32 -0500
+Message-Id: <20220811124135.95299-1-shenwei.wang@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR20CA0020.namprd20.prod.outlook.com
+ (2603:10b6:a03:1f4::33) To AM9PR04MB8274.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3e8::23)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7d87dd3e-b1f4-4ec7-0165-08da7b96fd32
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB2832:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: C8R8fAx5vsJSw0/NXDOGrcEXWsoqf6S+ofm5doaQzGqzzDW3pvOtK4bFSg28jaBorlHOaXbagEMqpwq7Xh384bLd1khzySTFRtIE4S9YmkBLL7+eXWMZgcm5bpEKQFZ2jv8dHZDyBU/mLta2qLeZtMIEFtTrz2RLGpB7G4/6Q9MQffjxe8MSP6QXx8MBkCAVNmv/iLF2/WmfKuo87Z0Xv7tEbArrQmoZvVcam5hI2c4BU24WsZ/KwQ8gWVPEGX3XoBvTOzx+ydnnMQggwQsmdb4GMRNOcMLChGeyhn2MB3gWh3E1h887/EZ0zD0CprcAaVw214wgE8gksvYIbLI/hW7Pu2Hy4QaIPLSg74G9Ah4n21qflNOGwoC77zNeCZ/Nuwi8ZHBwW7OHdbluZypLd1JO+VyXCwjtaIADgJRYKumbBgdxQOjmuHIsM4w0AYrltHs/xwbRczq2Ja+IAogJq0vnhIdFQbtOvERnxwX+ZVUUFfJS8uTAju4oh1EA+Dv3ynkOjo+9wN5RnPqRMfCNAJqHVgp2Y8L66Oo0MDvg9SSflDVr4JuMUlmOZFrRtMPBelaVHzST1C+BC3f7FU63k1c5oSl13mS/fsbGAf+6tghTbKYd32hZIp9LHpW0aynbX/67j3gNbh28p4GdGEzozR/XUT2oPc21I9N2Qg4diBH/6xz0UldHyOOsQUmzFUyWmI9lBrwj4sdGQp/tsYpJA/kPR/G4Lq7DYYRGVIh6gs9JRbsDfH3Qq9vTZjSJNFmomJyB9SUxvF7ejKXWCdCuWyy2r7SzBE3Rq4C0Uenk8o0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(6666004)(186003)(6636002)(41300700001)(478600001)(1076003)(83380400001)(2906002)(36756003)(316002)(26005)(7416002)(38350700002)(8936002)(6512007)(52116002)(6506007)(44832011)(2616005)(5660300002)(55236004)(86362001)(66476007)(8676002)(66556008)(66946007)(4326008)(6486002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SpiyRspKY/OTbxn8+m/yXcrg/dNIzKOUEpYN2nZqUKumda9ff/YZ4TPEQ0Sw?=
+ =?us-ascii?Q?oX0sMP4vDH/1VkuZxD3JauMyjSVslEI48VCmfubkxpuFwd4gvoDmITdFWQO5?=
+ =?us-ascii?Q?sj8ks/zajdTyvHyhAF67Z3NBkmEZID8Ab+9Syv4gXo0O8FqxDNpWtsTadsJo?=
+ =?us-ascii?Q?HA8CYeFXCU5Fal56YTiYoBFEL8jC4R0SWpkMRtQqxt6i38wCdx5HYU0ckBEO?=
+ =?us-ascii?Q?TmcgvB09fl7ot7Wjy4dDObdTGS3e+HZyAwxspsxKtkqgUyf6E1JaST6kg6A6?=
+ =?us-ascii?Q?BBxVmfZsvd7T4kMSf5XwgtGCluIFDwjBsYYiKfN6Vgn2BfOiKXKOJSxFhxed?=
+ =?us-ascii?Q?Ku/aPJv7MiV3lEXa3j0J07Vowk2sK+N0U4Ki473/HaD9qn1yv5z27pVShD+z?=
+ =?us-ascii?Q?XLZUirNeqgWtIngXgHfE8SZyvmQ4IQiZGVxnBfIIJ2c7kNMSA+tlxKvZtRzF?=
+ =?us-ascii?Q?LPR2n8ws5+hyH7COQ6GnbNLRvc4ETrNckgaxq1AABBoinPg3Ad6aENv7Jz28?=
+ =?us-ascii?Q?xvOV1NKnG1H/TGw2dVHlzpFqMDIsbOuvaFyNXE6jmzae/TtTpbQMcsXuW0ZN?=
+ =?us-ascii?Q?lO8gPCxJcufb4cQb7VOmXfzNl/R/j9vFqtp/Nwb3FM1xcmuYxSSdRPS976Wx?=
+ =?us-ascii?Q?hbkMOr6sLkqDwpHh/g/cSAyGdILzj1C5xoalL1mfTkYi3SDTGi9oUmR3yAXe?=
+ =?us-ascii?Q?pg3FY/kJLvdVbcEdafzYBMTbJogp9djoDF0/bCFG1Q6kzSsPKhVNlTc3i1HK?=
+ =?us-ascii?Q?cP1BNNQcS1LO615QOVkb73rfz0IokUUFYk0FuHcSZ90odDWHcNCM6VQPtYa/?=
+ =?us-ascii?Q?8FC6ElWbPbKVT5iJKNX68ek1LYHAigXhT/Zusmc1V28Z1BzVcKMQGl9B96I1?=
+ =?us-ascii?Q?AzyftYLdN53jxGana4X3fZ2wkUu7bZe3dyyc+WZqxWE6W5CIzWeyMdrPUWla?=
+ =?us-ascii?Q?Q1lTNIad4j6cvmYqHw6MdWUoWiXHBwOeivbIegoqe3yGxI3X+2g+uTlGJeU2?=
+ =?us-ascii?Q?+inMbL8etAI14+c618oQxU6AME+U2qNxsii+ZhtPhPr5ZW/qXCZlXQupFxFD?=
+ =?us-ascii?Q?hWSLtNUczjO/no0zm557oOZPM+zULlTdnlOpZkxN7a4Bx3SECh6aR2xgpFpi?=
+ =?us-ascii?Q?olqhF1/IPcgfHO9focjCg9gRGws9vZb5njXvw2UCWg98Ki0VTcN+jEeO/tgA?=
+ =?us-ascii?Q?le8WK+6r+uQVIdEeF56+WcC0LH32rbVj7Pb16dcDZX/qKuI5rueLogKgDuHr?=
+ =?us-ascii?Q?9Z7BNP112UsG5HRkn3EZBz5rWBp4TZYzY7J0M8eqwZdjsdOWAqbrWDkQ6ZgA?=
+ =?us-ascii?Q?nnjT8KcfvOJbsQjvrA8vnSLvBn2eH+ZbqoKe184epF0BO0/GAHzhxiVxb0nQ?=
+ =?us-ascii?Q?o6B0CFqslRnJaJw8krPt4iEhSO2lZHMoLmm/9nqN6fFyv1GC6CQ+5Xh6qf8g?=
+ =?us-ascii?Q?X9zJY2pkKtqYMUgV6e3fBt5RR5aLA9urV4cUMVNrdThAhlbpliSj/E+eTpYI?=
+ =?us-ascii?Q?lzpLIBKaoGctm71MRjvS6mTnYBCa2dMd7sfysJem2VVDvNkFih0+IgLxj/jl?=
+ =?us-ascii?Q?39rKnig5CNeO2JQDyyvAq3JQasryG1HfY+j0Z2Qd?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d87dd3e-b1f4-4ec7-0165-08da7b96fd32
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2022 12:42:45.2683
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ue3geQgTfSCX6vupQYVqU7sFxnrZDlgXJzzKPI8w+52BVk1H/raTjfH7N65PfF8Zcz5DC9Aa0mgpj6yRnm06IQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2832
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mems_allowed field can be modified by other tasks, so it isn't
-safe to access it with alloc_lock unlocked even in the current
-process context.
+The system controller (SCU) is the central unit to manage the resources
+on i.MX8 platforms. The SCU firmware provides a set of APIs to access
+the GPIO PINs on the SCU domain.
 
-Say there are two tasks: A from cpusetA is performing set_mempolicy(2),
-and B is changing cpusetA's cpuset.mems:
+This patch series implements the standard GPIO driver over the SCU
+firmware APIs, so that the GPIOs on the SCU domain could be accessed
+like a local GPIO PINs.
 
-  A (set_mempolicy)		B (echo xx > cpuset.mems)
-  -------------------------------------------------------
-  pol = mpol_new();
-				update_tasks_nodemask(cpusetA) {
-				  foreach t in cpusetA {
-				    cpuset_change_task_nodemask(t) {
-  mpol_set_nodemask(pol) {
-				      task_lock(t); // t could be A
-    new = f(A->mems_allowed);
-				      update t->mems_allowed;
-    pol.create(pol, new);
-				      task_unlock(t);
-  }
-				    }
-				  }
-				}
-  task_lock(A);
-  A->mempolicy = pol;
-  task_unlock(A);
+Changes in V4:
+ - remove the generic compatible of "fsl,imx-sc-gpio"
+ - update the gpio $ref in "fsl,scu.yaml" as the file name is changed
+ - update the commit comment for 0003 because the driver is moved to the
+   directory of "drivers/gpio"
 
-In this case A's pol->nodes is computed by old mems_allowed, and could
-be inconsistent with A's new mems_allowed.
+Changes in V3:
+ - follow the other imx8 SCU binding rule and rename the compatible string
+   from fsl,imx8-scu-gpio to fsl,imx8qxp-sc-gpio
+ - rename the doc file from fsl,imx8-scu-gpio.yaml to fsl,imx-sc-gpio.yaml
 
-While it is different when replacing vmas' policy: the pol->nodes is
-gone wild only when current_cpuset_is_being_rebound():
+Changes in V2:
+ - move the driver into the gpio directory per Krzysztof's feedback
+ - change the subnode description in file fsl,scu.yaml
+ - fix the dt_binding_check error
 
-  A (mbind)			B (echo xx > cpuset.mems)
-  -------------------------------------------------------
-  pol = mpol_new();
-  mmap_write_lock(A->mm);
-				cpuset_being_rebound = cpusetA;
-				update_tasks_nodemask(cpusetA) {
-				  foreach t in cpusetA {
-				    cpuset_change_task_nodemask(t) {
-  mpol_set_nodemask(pol) {
-				      task_lock(t); // t could be A
-    mask = f(A->mems_allowed);
-				      update t->mems_allowed;
-    pol.create(pol, mask);
-				      task_unlock(t);
-  }
-				    }
-  foreach v in A->mm {
-    if (cpuset_being_rebound == cpusetA)
-      pol.rebind(pol, cpuset.mems);
-    v->vma_policy = pol;
-  }
-  mmap_write_unlock(A->mm);
-				    mmap_write_lock(t->mm);
-				    mpol_rebind_mm(t->mm);
-				    mmap_write_unlock(t->mm);
-				  }
-				}
-				cpuset_being_rebound = NULL;
+Shenwei Wang (3):
+  dt-bindings: gpio: Add imx scu gpio driver bindings
+  dt-bindings: firmware: imx: Add imx-scu gpio node
+  gpio: imx-scu: add imx-scu GPIO driver
 
-In this case, the cpuset.mems, which has already done updating, is
-finally used for calculating pol->nodes, rather than A->mems_allowed.
-So it is OK to call mpol_set_nodemask() with alloc_lock unlocked when
-doing mbind(2).
+ .../devicetree/bindings/firmware/fsl,scu.yaml |   5 +
+ .../bindings/gpio/fsl,imx-sc-gpio.yaml        |  39 +++++
+ drivers/gpio/Kconfig                          |   4 +
+ drivers/gpio/Makefile                         |   1 +
+ drivers/gpio/gpio-imx-scu.c                   | 139 ++++++++++++++++++
+ 5 files changed, 188 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gpio/fsl,imx-sc-gpio.yaml
+ create mode 100644 drivers/gpio/gpio-imx-scu.c
 
-Fixes: 78b132e9bae9 ("mm/mempolicy: remove or narrow the lock on current")
-Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
----
- mm/mempolicy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-index d39b01fd52fe..61e4e6f5cfe8 100644
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -855,12 +855,14 @@ static long do_set_mempolicy(unsigned short mode, unsigned short flags,
- 		goto out;
- 	}
- 
-+	task_lock(current);
- 	ret = mpol_set_nodemask(new, nodes, scratch);
- 	if (ret) {
-+		task_unlock(current);
- 		mpol_put(new);
- 		goto out;
- 	}
--	task_lock(current);
-+
- 	old = current->mempolicy;
- 	current->mempolicy = new;
- 	if (new && new->mode == MPOL_INTERLEAVE)
--- 
-2.31.1
+--
+2.25.1
 
