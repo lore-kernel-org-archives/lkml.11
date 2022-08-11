@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84807C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D4FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236484AbiHKPnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
+        id S236431AbiHKPn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236385AbiHKPnl (ORCPT
+        with ESMTP id S236479AbiHKPnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 11 Aug 2022 11:43:41 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AFC9F194
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:38:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8A1A50E8
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:38:08 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id BB5535FD07;
-        Thu, 11 Aug 2022 18:38:07 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id B797E5FD04;
+        Thu, 11 Aug 2022 18:38:05 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660232287;
-        bh=0ZPDUCDYt8cTM0IRDWEirHqaXpS1VqLDEtitynBVmKI=;
+        s=mail; t=1660232285;
+        bh=5w4LerBx6pluL5hWSjCUy6U5aknGE0ymDNztcNBibbY=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=NleaxToKuULRFvBgPvAtWzSeyDWx7rdHhn5tNxtUwAdMrJnm/hM9t65IeF9pgqkEc
-         fWQucu+KVWt7bsECOLUzUDX7RnEqWpaz+BiLUac/KzfaQq/QQlC/9NS5EDkPu964m6
-         S4ViXrD4Bg6o1tenEnDT9Sueuk33ypMFhXEiNB6j/SwNRp5lC7mkY9fSlNS3/KqKy8
-         TArDFAvt3GEyihgu4iQjVaYbcSRhoBAwSeJ8Ajn6BAV2ygakX4Y5d4HUzwtTQKatPJ
-         XJYoxWnTOhV8hh9pQbCuYZdeoDTTijPEiaDcURL4qvMMUbUQFKXCj9ruSjZOMj4971
-         itHl/wKsqktXA==
+        b=Tckq2EtgEiZUvdQAO1p+MllsNXNcoXG7HQ7THmKvR8j80dK3KOQ+fqTct2640cvSc
+         1ufqAlnlY3OqHDKZVJEjQVLcLuA3A5qnsl7RklR+VXCYgWnQ3nh4p1XqsgYwcoSb+Y
+         MKt/B0cRILv39RTH9wpxae0Ao7FKbIsYnejEcvGA199wEj9m/TjZIjofStB3Rzk1jR
+         bwFbr9rjxv/mp/gDQRd2j+um3vc21AMSWnt2foacexSb9tUspZDlN/LoWbsRr3tgNQ
+         fdQjcAdA4E56wjml1fYDBPBOQNYeUFPgIfy5flVYZEJHTqyj9UpuDyZtPQt+vHIZzd
+         jTACYe0T/BzAQ==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 11 Aug 2022 18:38:07 +0300 (MSK)
+        Thu, 11 Aug 2022 18:38:04 +0300 (MSK)
 From:   Alexey Romanov <avromanov@sberdevices.ru>
 To:     <minchan@kernel.org>, <senozhatsky@chromium.org>,
         <ngupta@vflare.org>, <akpm@linux-foundation.org>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <kernel@sberdevices.ru>, Alexey Romanov <avromanov@sberdevices.ru>
-Subject: [PATCH v1 2/2] zsmalloc: remove unnecessary size_class NULL check
-Date:   Thu, 11 Aug 2022 18:37:55 +0300
-Message-ID: <20220811153755.16102-3-avromanov@sberdevices.ru>
+Subject: [PATCH v1 0/2] tidy up zsmalloc implementation
+Date:   Thu, 11 Aug 2022 18:37:53 +0300
+Message-ID: <20220811153755.16102-1-avromanov@sberdevices.ru>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220811153755.16102-1-avromanov@sberdevices.ru>
-References: <20220811153755.16102-1-avromanov@sberdevices.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -59,54 +57,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pool->size_class array elements can't be NULL, so this check
-is not needed.
+Hello!
 
-In the whole code, we assign pool->size_class[i] values that are
-not NULL. Releasing memory for these values occurs in the
-zs_destroy_pool() function, which also releases and destroys the pool.
+This patchset remove some unnecessary checks and adds clarifying 
+comment. While analysis zs_object_copy() function code, I spent 
+some time to understand what the call kunmap_atomic(d_addr) is for. 
+It seems that this point is not trivial and it is worth adding
+a comment.
 
-In addition, in the zs_stats_size_show() and async_free_zspage(),
-with similar iterations over the array, we don't check it for NULL
-pointer.
+Alexey Romanov (2):
+  zsmalloc: zs_object_copy: add clarifying comment
+  zsmalloc: remove unnecessary size_class NULL check
 
-Signed-off-by: Alexey Romanov <avromanov@sberdevices.ru>
----
- mm/zsmalloc.c | 7 -------
- 1 file changed, 7 deletions(-)
+ mm/zsmalloc.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
-index 5efa8c592193..f3cf0d0925a3 100644
---- a/mm/zsmalloc.c
-+++ b/mm/zsmalloc.c
-@@ -2154,8 +2154,6 @@ unsigned long zs_compact(struct zs_pool *pool)
- 
- 	for (i = ZS_SIZE_CLASSES - 1; i >= 0; i--) {
- 		class = pool->size_class[i];
--		if (!class)
--			continue;
- 		if (class->index != i)
- 			continue;
- 		pages_freed += __zs_compact(pool, class);
-@@ -2200,8 +2198,6 @@ static unsigned long zs_shrinker_count(struct shrinker *shrinker,
- 
- 	for (i = ZS_SIZE_CLASSES - 1; i >= 0; i--) {
- 		class = pool->size_class[i];
--		if (!class)
--			continue;
- 		if (class->index != i)
- 			continue;
- 
-@@ -2361,9 +2357,6 @@ void zs_destroy_pool(struct zs_pool *pool)
- 		int fg;
- 		struct size_class *class = pool->size_class[i];
- 
--		if (!class)
--			continue;
--
- 		if (class->index != i)
- 			continue;
- 
 -- 
 2.30.1
 
