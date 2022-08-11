@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FB5C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D1CC25B0E
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 13:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235190AbiHKNyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 09:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
+        id S235240AbiHKNyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 09:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235162AbiHKNyM (ORCPT
+        with ESMTP id S235135AbiHKNy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 09:54:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2489E6C104
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:54:11 -0700 (PDT)
+        Thu, 11 Aug 2022 09:54:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 856F861D66
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 06:54:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660226050;
+        s=mimecast20190719; t=1660226065;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZhGKF7+dCMLetRacbIFf8HUIdAhXW0qkVdcin2fPWSI=;
-        b=anzWDGTYQtYYUXvbgBMNlsxLXX7afkoAyc15/Q3Sh3SlXrg3FupFcwdqnaAdsv3s9od/gE
-        5yKJlJMN4v7vzcK678qe5mzFik84+n7FmY4n10xLR61lK2DYZGNc8TDJ+9HP/ZZrkBUHgl
-        ugJ5Z0wUIzo384F+lhlcedRDGFGsrpU=
+        bh=6inRrhICS2L+j8kFy9iUcAEGaJYSzOH4irG6UMt8jBk=;
+        b=F3njOtkVSgIGxOGWUUOYYAIFA/2ArbaJ9yPDF1/oDWpyc3Z0nPtqONqUF0aXRFd9chRvMl
+        Rife1u8bRz39tSPmLYM1pkvqi/Sf61trTOWYc3q9SESMQDfb8i2XGWacaA+/ayLLqLcGHW
+        nwplx4eVNRvG7YWK7nXXjCN7F4ykU1A=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-BK5UrAvbNpOGfXyxE2r_8g-1; Thu, 11 Aug 2022 09:54:09 -0400
-X-MC-Unique: BK5UrAvbNpOGfXyxE2r_8g-1
+ us-mta-661-jpiI7v9WOoKMCts-OUNHog-1; Thu, 11 Aug 2022 09:54:22 -0400
+X-MC-Unique: jpiI7v9WOoKMCts-OUNHog-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1FBCE8117B0;
-        Thu, 11 Aug 2022 13:54:08 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C99898032F6;
+        Thu, 11 Aug 2022 13:54:19 +0000 (UTC)
 Received: from eperezma.remote.csb (unknown [10.39.192.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CD95D40D2827;
-        Thu, 11 Aug 2022 13:54:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BA43240D282E;
+        Thu, 11 Aug 2022 13:54:13 +0000 (UTC)
 From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
 To:     virtualization@lists.linux-foundation.org,
         Jason Wang <jasowang@redhat.com>,
@@ -57,9 +57,9 @@ Cc:     ecree.xilinx@gmail.com, gautam.dawar@amd.com,
         Si-Wei Liu <si-wei.liu@oracle.com>,
         Stefano Garzarella <sgarzare@redhat.com>, dinang@xilinx.com,
         Xie Yongji <xieyongji@bytedance.com>
-Subject: [PATCH v8 1/3] vdpa: delete unreachable branch on vdpasim_suspend
-Date:   Thu, 11 Aug 2022 15:53:51 +0200
-Message-Id: <20220811135353.2549658-2-eperezma@redhat.com>
+Subject: [PATCH v8 3/3] vhost: Remove invalid parameter of VHOST_VDPA_SUSPEND ioctl
+Date:   Thu, 11 Aug 2022 15:53:53 +0200
+Message-Id: <20220811135353.2549658-4-eperezma@redhat.com>
 In-Reply-To: <20220811135353.2549658-1-eperezma@redhat.com>
 References: <20220811135353.2549658-1-eperezma@redhat.com>
 MIME-Version: 1.0
@@ -74,30 +74,25 @@ It was a leftover from previous versions.
 
 Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
- drivers/vdpa/vdpa_sim/vdpa_sim.c | 7 -------
- 1 file changed, 7 deletions(-)
+Note that I'm not sure this removal is valid. The ioctl is not in master
+branch by the send date of this patch, but there are commits on vhost
+branch that do have it.
+---
+ include/uapi/linux/vhost.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-index 213883487f9b..79a50edf8998 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-@@ -509,16 +509,9 @@ static int vdpasim_reset(struct vdpa_device *vdpa)
- static int vdpasim_suspend(struct vdpa_device *vdpa)
- {
- 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
--	int i;
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index 89fcb2afe472..768ec46a88bf 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -178,6 +178,6 @@
+  * the possible device specific states) that is required for restoring in the
+  * future. The device must not change its configuration after that point.
+  */
+-#define VHOST_VDPA_SUSPEND		_IOW(VHOST_VIRTIO, 0x7D, int)
++#define VHOST_VDPA_SUSPEND		_IO(VHOST_VIRTIO, 0x7D)
  
- 	spin_lock(&vdpasim->lock);
- 	vdpasim->running = false;
--	if (vdpasim->running) {
--		/* Check for missed buffers */
--		for (i = 0; i < vdpasim->dev_attr.nvqs; ++i)
--			vdpasim_kick_vq(vdpa, i);
--
--	}
- 	spin_unlock(&vdpasim->lock);
- 
- 	return 0;
+ #endif
 -- 
 2.31.1
 
