@@ -2,133 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BA4C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84807C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 11 Aug 2022 15:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236424AbiHKPmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 11:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        id S236484AbiHKPnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 11:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236137AbiHKPk0 (ORCPT
+        with ESMTP id S236385AbiHKPnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 11:40:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6297823C;
-        Thu, 11 Aug 2022 08:36:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E01D26164A;
-        Thu, 11 Aug 2022 15:36:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E652BC433D6;
-        Thu, 11 Aug 2022 15:36:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232169;
-        bh=Dfu9RCUIB6ugS/Ldk1mYhjHoA0aDNxpfThk5FfxsekA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=goK+YWXzBBGQPVuFgYsfc+Szdp2UFUHboMhB/wjejkW1ragFaha/tSOct5fEnzrND
-         ossoKJjRwdlFy01D/BHkSL36y/YQbiEP/tQAJ67sENKm55fxby1/enTDiVhhMSTQfa
-         simkXFnmhpaEF24CL5uZsmcA+Yg99SCrSFIC1IdBfWd6tvn8VwzrjMLMzriWYK68i7
-         DL3h5pdn/V6+kTNFcehcPDxPqCXC/gZHfCkq99PTlDBLQOerVJtQENzcRcMigut9aj
-         i4mw9dUxoyUGwhTBDEZFKjP7UuMJO3Gk0YvM8zMvN8NwoEESbLXeHJrvd2bRoOeIFm
-         8T7Taty0eQjSw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
-        quic_abhinavk@quicinc.com, dmitry.baryshkov@linaro.org,
-        airlied@linux.ie, daniel@ffwll.ch, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 062/105] drm/msm/gem: Drop obj lock in msm_gem_free_object()
-Date:   Thu, 11 Aug 2022 11:27:46 -0400
-Message-Id: <20220811152851.1520029-62-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        Thu, 11 Aug 2022 11:43:41 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AFC9F194
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 08:38:09 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id BB5535FD07;
+        Thu, 11 Aug 2022 18:38:07 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660232287;
+        bh=0ZPDUCDYt8cTM0IRDWEirHqaXpS1VqLDEtitynBVmKI=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=NleaxToKuULRFvBgPvAtWzSeyDWx7rdHhn5tNxtUwAdMrJnm/hM9t65IeF9pgqkEc
+         fWQucu+KVWt7bsECOLUzUDX7RnEqWpaz+BiLUac/KzfaQq/QQlC/9NS5EDkPu964m6
+         S4ViXrD4Bg6o1tenEnDT9Sueuk33ypMFhXEiNB6j/SwNRp5lC7mkY9fSlNS3/KqKy8
+         TArDFAvt3GEyihgu4iQjVaYbcSRhoBAwSeJ8Ajn6BAV2ygakX4Y5d4HUzwtTQKatPJ
+         XJYoxWnTOhV8hh9pQbCuYZdeoDTTijPEiaDcURL4qvMMUbUQFKXCj9ruSjZOMj4971
+         itHl/wKsqktXA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 11 Aug 2022 18:38:07 +0300 (MSK)
+From:   Alexey Romanov <avromanov@sberdevices.ru>
+To:     <minchan@kernel.org>, <senozhatsky@chromium.org>,
+        <ngupta@vflare.org>, <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, Alexey Romanov <avromanov@sberdevices.ru>
+Subject: [PATCH v1 2/2] zsmalloc: remove unnecessary size_class NULL check
+Date:   Thu, 11 Aug 2022 18:37:55 +0300
+Message-ID: <20220811153755.16102-3-avromanov@sberdevices.ru>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220811153755.16102-1-avromanov@sberdevices.ru>
+References: <20220811153755.16102-1-avromanov@sberdevices.ru>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/11 13:20:00 #20096813
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+pool->size_class array elements can't be NULL, so this check
+is not needed.
 
-[ Upstream commit a414fe3a2129b490e1e9b8ad66f0364f4f961887 ]
+In the whole code, we assign pool->size_class[i] values that are
+not NULL. Releasing memory for these values occurs in the
+zs_destroy_pool() function, which also releases and destroys the pool.
 
-The only reason we grabbed the lock was to satisfy a bunch of places
-that WARN_ON() if called without the lock held.  But this angers lockdep
-which doesn't realize no one else can be holding the lock by the time we
-end up destroying the object (and sees what would otherwise be a locking
-inversion between reservation_ww_class_mutex and fs_reclaim).
+In addition, in the zs_stats_size_show() and async_free_zspage(),
+with similar iterations over the array, we don't check it for NULL
+pointer.
 
-Closes: https://gitlab.freedesktop.org/drm/msm/-/issues/14
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/489364/
-Link: https://lore.kernel.org/r/20220613205032.2652374-1-robdclark@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexey Romanov <avromanov@sberdevices.ru>
 ---
- drivers/gpu/drm/msm/msm_gem.c |  8 --------
- drivers/gpu/drm/msm/msm_gem.h | 14 +++++++++++++-
- 2 files changed, 13 insertions(+), 9 deletions(-)
+ mm/zsmalloc.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index 7f92231785a0..e171af15fb11 100644
---- a/drivers/gpu/drm/msm/msm_gem.c
-+++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -1020,8 +1020,6 @@ void msm_gem_free_object(struct drm_gem_object *obj)
- 	list_del(&msm_obj->mm_list);
- 	mutex_unlock(&priv->mm_lock);
+diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
+index 5efa8c592193..f3cf0d0925a3 100644
+--- a/mm/zsmalloc.c
++++ b/mm/zsmalloc.c
+@@ -2154,8 +2154,6 @@ unsigned long zs_compact(struct zs_pool *pool)
  
--	msm_gem_lock(obj);
+ 	for (i = ZS_SIZE_CLASSES - 1; i >= 0; i--) {
+ 		class = pool->size_class[i];
+-		if (!class)
+-			continue;
+ 		if (class->index != i)
+ 			continue;
+ 		pages_freed += __zs_compact(pool, class);
+@@ -2200,8 +2198,6 @@ static unsigned long zs_shrinker_count(struct shrinker *shrinker,
+ 
+ 	for (i = ZS_SIZE_CLASSES - 1; i >= 0; i--) {
+ 		class = pool->size_class[i];
+-		if (!class)
+-			continue;
+ 		if (class->index != i)
+ 			continue;
+ 
+@@ -2361,9 +2357,6 @@ void zs_destroy_pool(struct zs_pool *pool)
+ 		int fg;
+ 		struct size_class *class = pool->size_class[i];
+ 
+-		if (!class)
+-			continue;
 -
- 	/* object should not be on active list: */
- 	GEM_WARN_ON(is_active(msm_obj));
+ 		if (class->index != i)
+ 			continue;
  
-@@ -1037,17 +1035,11 @@ void msm_gem_free_object(struct drm_gem_object *obj)
- 
- 		put_iova_vmas(obj);
- 
--		/* dma_buf_detach() grabs resv lock, so we need to unlock
--		 * prior to drm_prime_gem_destroy
--		 */
--		msm_gem_unlock(obj);
--
- 		drm_prime_gem_destroy(obj, msm_obj->sgt);
- 	} else {
- 		msm_gem_vunmap(obj);
- 		put_pages(obj);
- 		put_iova_vmas(obj);
--		msm_gem_unlock(obj);
- 	}
- 
- 	drm_gem_object_release(obj);
-diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
-index 6b7d5bb3b575..4b387c7a0779 100644
---- a/drivers/gpu/drm/msm/msm_gem.h
-+++ b/drivers/gpu/drm/msm/msm_gem.h
-@@ -230,7 +230,19 @@ msm_gem_unlock(struct drm_gem_object *obj)
- static inline bool
- msm_gem_is_locked(struct drm_gem_object *obj)
- {
--	return dma_resv_is_locked(obj->resv);
-+	/*
-+	 * Destroying the object is a special case.. msm_gem_free_object()
-+	 * calls many things that WARN_ON if the obj lock is not held.  But
-+	 * acquiring the obj lock in msm_gem_free_object() can cause a
-+	 * locking order inversion between reservation_ww_class_mutex and
-+	 * fs_reclaim.
-+	 *
-+	 * This deadlock is not actually possible, because no one should
-+	 * be already holding the lock when msm_gem_free_object() is called.
-+	 * Unfortunately lockdep is not aware of this detail.  So when the
-+	 * refcount drops to zero, we pretend it is already locked.
-+	 */
-+	return dma_resv_is_locked(obj->resv) || (kref_read(&obj->refcount) == 0);
- }
- 
- static inline bool is_active(struct msm_gem_object *msm_obj)
 -- 
-2.35.1
+2.30.1
 
