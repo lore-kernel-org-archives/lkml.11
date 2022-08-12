@@ -2,139 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC60C25B06
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 01:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D081C25B06
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 01:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234782AbiHLB1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 21:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40816 "EHLO
+        id S235462AbiHLB1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 21:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbiHLB1A (ORCPT
+        with ESMTP id S235268AbiHLB1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 21:27:00 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B155587
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 18:26:59 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id x23so18392204pll.7
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 18:26:59 -0700 (PDT)
+        Thu, 11 Aug 2022 21:27:08 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C5D9BB51
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 18:27:07 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id w11-20020a17090a380b00b001f73f75a1feso7000109pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 18:27:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=IC2lOX4v95VrufPS47o61RIKEMbFjLQqPK43AtSv6po=;
-        b=UE9z9/3M/BAUiXTOQrCRmLbiL2MAC3pvT3WlcBscTEAWfL722Wj6OXfNmvrinxoYaJ
-         FvWholCLiJDnuaeJ5zzWb60iBctYTKpCdbSRbk5A5cNrLL7kWPBDoiLYr6pe/BP9Iu+b
-         FTDNNsKlkkTxaeyHSnKwH4m+RJ44e2m2bIGRvQY7SO7Nrk/LeJ72oaToLUxsHlo7KBcx
-         tYpOMlFTLHXf6cFevj1kZjUpTyzuQXR4mhnvbbFb+vnHsLn+Tdj7QpThMF8Z1Vvf+OGI
-         aBWzD1NcT9GS+QlZvSEeVegmFHLmA/+D4CKMfeAnZSspbRjsqxgvwTy2RNF6MRbdOlX6
-         K4Xg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=r6pkBLYew73BseP+hLTOhqoRkIsBep/iLPB2yjs5hu4=;
+        b=I0mTgVUKEsBOB15afJoGgRDCtfUOYBLEclD96bBTCk6xZwMNtvse4Yg3mFsZKl5ky7
+         3R9SCHwbkSjq2N8RaMQVScSXxTr+Fp20m6PaunXeE5hzKvEu/cYysYKAhQAMG5ITBPNO
+         iVjhe0vTHnMk234H/RLfdNUVjzkgoqonUlV7T7pLCHCh5j+5UKd27FUtHJOpN2aL8cON
+         tuPbypDARlYH31Zanrsvv6fPxUMzVc00AS1i9NL6FsV0J6nFLllCTrBGXfUMGI8LGhMT
+         PNM1JTuXXXxuRaEVMzmJLcSi2cnT+Qv3GeWEcZUhmCnt25JH+X6yMdwuRcYWBq3fR8d0
+         OO+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=IC2lOX4v95VrufPS47o61RIKEMbFjLQqPK43AtSv6po=;
-        b=TSP1XZCkY+oPEuimzBzItbwB9U1n7YFsSzK+WhwnZj1s2T2Dc4Vyz1pDuY2JfpYUBd
-         VBM6hTF5HCm4oajSKu5Pqpz9n5UO1g2NCfmHzqBT1hGxvJkBoY36k+RE65mmmR7e9VJK
-         lVLpd6+G0pX9BSADR+ferNMYSvH23qQ0mR1LJLrBW34BQOSm+Tgj+Yc3Fk6cvd0TpCYU
-         QdP5bHygRpre7FBSdU6XsS7xIDk5Frbw9ZWpG9uvefhT5PHMPoFVW7q42l89HkPT3V/s
-         NvE+S/5VDdbPb9eGAuuUiaY6vUIpiJ/lGbmVKoPahCqEMA6IPtng1C+UECVfKbysw2lK
-         4aPA==
-X-Gm-Message-State: ACgBeo36Zr5nXrEB0x1CkeLSMZzvwi8pHrN6nKZGJVwXMTWrT+7sXpK3
-        SEQJlPXdZ+ZcM4a/LRJwMmj3xA==
-X-Google-Smtp-Source: AA6agR4a+3vDJ+tdb5s4TP+TqyslMWMcYsO4THIG/TPxnJ10mwssUEupQP1W6Ft56ScaJ0Re6cv3ow==
-X-Received: by 2002:a17:90b:1bc6:b0:1f5:313a:de4b with SMTP id oa6-20020a17090b1bc600b001f5313ade4bmr11414402pjb.4.1660267618478;
-        Thu, 11 Aug 2022 18:26:58 -0700 (PDT)
-Received: from leoy-huanghe.lan (n058152077182.netvigator.com. [58.152.77.182])
-        by smtp.gmail.com with ESMTPSA id e15-20020a17090301cf00b0016a111c83cdsm324932plh.119.2022.08.11.18.26.53
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=r6pkBLYew73BseP+hLTOhqoRkIsBep/iLPB2yjs5hu4=;
+        b=1e0QxGQfLgdBYXXRfKbvQ90GqwPEvZAYZ3lKBc7YwHLYSEeTQ+32vKSta31gJaRptM
+         //oJzdySTHLQw2qotEnhmDzohSD+WdQCMqAibzeTRjGZ0dHfh3SJvoEPwB8tb2HKROmM
+         M0t+ywpFpr5TYgb/umgtCcAYMyh2fr6btpSQ522KeXfc4/f30xZPAEBjOgiXaiCPgxy9
+         +t0j0VcLahfi20n9K9lWzj2V5lrOjaHRCi6ev6GbW+hQySoU7NMArpXvBkGKZLt4QMh7
+         qmIysWYu+hqdAVISCHm6ckklww+ae0pmw9y8ZIx47s8i4sgV3TecD0xiLzRghHycrbr9
+         YZLg==
+X-Gm-Message-State: ACgBeo1WuuobvFJGgiEzlfd8cyVsaJ7Pao2SM3cclw1XeonRvYLt2How
+        mjmoV2nN49wKszl37tfac84ZvhWo7anW8hdt
+X-Google-Smtp-Source: AA6agR4K5xv36FYebO1ewf095xyPwaXieUgWaIsc0nTbqCWmatPVjFUaQabDKVGKhdZQ5wztSWB5+w==
+X-Received: by 2002:a17:902:da89:b0:170:a235:5993 with SMTP id j9-20020a170902da8900b00170a2355993mr1720629plx.94.1660267626881;
+        Thu, 11 Aug 2022 18:27:06 -0700 (PDT)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id 128-20020a621886000000b0052d200c8040sm322671pfy.211.2022.08.11.18.27.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 18:26:58 -0700 (PDT)
-Date:   Fri, 12 Aug 2022 09:26:51 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Suzuki Kuruppassery Poulose <suzuki.poulose@arm.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Ian Rogers <irogers@google.com>, Like Xu <likexu@tencent.com>,
-        German Gomez <german.gomez@arm.com>,
-        Timothy Hayes <timothy.hayes@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v6 00/15] perf c2c: Support data source and display for
- Arm64
-Message-ID: <20220812012651.GA1643436@leoy-huanghe.lan>
-References: <20220811062451.435810-1-leo.yan@linaro.org>
- <YvWB32rTsOHirOb4@kernel.org>
+        Thu, 11 Aug 2022 18:27:06 -0700 (PDT)
+From:   Zeng Jingxiang <zengjx95@gmail.com>
+To:     sj@kernel.org, akpm@linux-foundation.org
+Cc:     damon@lists.linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Zeng Jingxiang <linuszeng@tencent.com>
+Subject: [PATCH] mm/damon: remove dead code in damon_lru_sort_enabled_store()
+Date:   Fri, 12 Aug 2022 09:24:59 +0800
+Message-Id: <20220812012459.481215-1-zengjx95@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvWB32rTsOHirOb4@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnaldo,
+From: Zeng Jingxiang <linuszeng@tencent.com>
 
-On Thu, Aug 11, 2022 at 07:25:35PM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Thu, Aug 11, 2022 at 02:24:36PM +0800, Leo Yan escreveu:
-> > Arm64 Neoverse CPUs supports data source in Arm SPE trace, this allows
-> > us to detect cache line contention and transfers.
-> > 
-> > This patch set has been rebased on the acme/perf/core branch with the latest
-> > commit b39c9e1b101d ("perf machine: Fix missing free of
-> > machine->kallsyms_filename").
-> > 
-> > To make building success, a compilation fixing commit [1] has been sent
-> > to LKML, this patch set is dependent on it.  This patch set has been verified
-> > for both x86 perf memory events and Arm SPE events.
-> > 
-> > [1] https://lore.kernel.org/lkml/20220811044341.426796-1-leo.yan@linaro.org/
-> 
-> So, I tentatively applied this set after applying the patch for
-> <asm/sysreg.h>, and its all now out in tmp.perf/core in my git tree,
-> please check.
+The variable damon_lru_sort_initialized is always true, causing the
+corresponding conditional expression cannot be executed.
 
-With discussing with Suzuki, he pointed it is not perfect for adding asm
-include path in that way.  With the patch on tmp.perf/core branch, two
-include paths are added into CFLAGS for arm-spe.c:
+Assigning true to damon_lru_sort_initialized here
+544         damon_lru_sort_initialized = true;
 
-  -I$(srctree)/tools/arch/$(SRCARCH)/include/
-  -I$(srctree)/tools/arch/arm64/include/
+The value of damon_lru_sort_initialized is always true.
+As a result, the following expression cannot be executed.
 
-When we build perf on x86_64, then $(srctree)/tools/arch/x86/include/
-takes more precedence than $(srctree)/tools/arch/arm64/include/; if we
-want to include header file without relative path in c code, like
-"#include <asm/cputype.h>", then it has chance to find the same name
-file from x86's asm folder rather than arm64's asm folder.
+463         if (!damon_lru_sort_initialized)
+464                 return rc;
 
-At yesterday, I spent couple hours to find other methods (like
-filter-out, CFLAGS_REMOVE, etc) in makefile but it's no lucky to make
-success to give precedence for $(srctree)/tools/arch/arm64/include/.
+Fixes: 40e983cca927 ("mm/damon: introduce DAMON-based LRU-lists Sorting")
+Signed-off-by: Zeng Jingxiang <linuszeng@tencent.com>
+---
+ mm/damon/lru_sort.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-So current patches on the branch tmp.perf/core can build successfully,
-but if have any better method to resolve the header path precedence
-issue, then I prefer to improve for this, which can allow us later
-don't worry about it.  Any suggestion for this?
+diff --git a/mm/damon/lru_sort.c b/mm/damon/lru_sort.c
+index 9de6f00a71c5..e2a656e1b728 100644
+--- a/mm/damon/lru_sort.c
++++ b/mm/damon/lru_sort.c
+@@ -450,8 +450,6 @@ static void damon_lru_sort_timer_fn(struct work_struct *work)
+ }
+ static DECLARE_DELAYED_WORK(damon_lru_sort_timer, damon_lru_sort_timer_fn);
+ 
+-static bool damon_lru_sort_initialized;
+-
+ static int damon_lru_sort_enabled_store(const char *val,
+ 		const struct kernel_param *kp)
+ {
+@@ -460,9 +458,6 @@ static int damon_lru_sort_enabled_store(const char *val,
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	if (!damon_lru_sort_initialized)
+-		return rc;
+-
+ 	schedule_delayed_work(&damon_lru_sort_timer, 0);
+ 
+ 	return 0;
+@@ -541,7 +536,6 @@ static int __init damon_lru_sort_init(void)
+ 
+ 	schedule_delayed_work(&damon_lru_sort_timer, 0);
+ 
+-	damon_lru_sort_initialized = true;
+ 	return 0;
+ }
+ 
+-- 
+2.36.1
 
-> I'm doing the usual set of container build tests, but any additional
-> checking, including on the committer note I added to the first patch in
-> this series, claryfing it is not really a "sync" with the kernel
-> headers, is more than welcome.
-
-It's fine for me for adding my Signed-off for the signature chain.
-Appreicate for the amending.
-
-Thanks,
-Leo
