@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11095C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 07:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5DDC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 07:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbiHLHe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 03:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
+        id S237377AbiHLHfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 03:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231848AbiHLHez (ORCPT
+        with ESMTP id S237388AbiHLHft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 03:34:55 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3827A61C6
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 00:34:52 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id by6so134594ljb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 00:34:52 -0700 (PDT)
+        Fri, 12 Aug 2022 03:35:49 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C3054655
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 00:35:48 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id w15so167912ljw.1
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 00:35:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=/0za9YUjlCWR21SNkhMiDN3IDAZyQAT6AQCAzmrddpE=;
-        b=VVrjuOUNW/QU9Hyq7AfSOklgFQwWn6UP6bxTIRkljjoWCpC8QQLG9DC0P/t1Oll7mL
-         kzTOzeEaUrvcGu/3YoXWafwJlEUumZAELskM1pAYKtQsFAW3CQQv8Utl6uLjJ933ATii
-         e4V/vTszQiTuYATPbenDeaWd1TKFpa7GP1ra0QgapKOW6gSjw+q/J9jdAErQczA1KCvt
-         /z7jVeVK/iMdP6S/ct64eiKm/cWReCD6aBvTUozAb1KMH4e0QudMAxz2XxFMW9Uvkcp8
-         rUKrS+g9jTpKaoP7rgYriKkkMlUHUFz3ivGkmqmgO8YHeZf7fvPqVEwkIRJclCqm9VzK
-         8CDA==
+        bh=crf/lK1s1ldsW0Tw+pD5ZUVc6HtWvvcIF4KEVSHKYCs=;
+        b=MfvFWerjwE77AMLPjqKIegxdoqhOqfeQHdlO/9wkZV8Ij6ZLgc2ol2zQPgQeWsj/cb
+         73haqi/mTZaglW2d9895VCaJISlsrujvoqxmq0cOEDO7VkYXH6VUxmVTO4BoILtdY5vE
+         UempconjzeH7i57ydpUcpD0RQ06+algfRdpTwWNf9x0xGVA1VtARrXXCiE60EHpSua3T
+         isrJnW182uUbzmoNuVyGYw5kQ43DIkENrudblAvGJi2l5Hib86Dd9CqUlmbW1TaP7Jet
+         TtxSbGSn6SfZNs/6oUI5PcdaZGBAqhrvTc3jQW181cTTgirqhvd30CEL2iHTqAP9kF7t
+         sBew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=/0za9YUjlCWR21SNkhMiDN3IDAZyQAT6AQCAzmrddpE=;
-        b=QY8/618cpX+xdQt/dDLNhmX3PDt+5C2L8Bm3lGp5IqBO8VFItCXmjJy9x352+pNDSt
-         S2JWXzgaZCqrOu2mOY0rZqxGqYIlPGuSJndPFslsm3h8RQeni1Qba9/3X9Dz6yZMn2fn
-         bDk2pzG73aMnpcQYKDfh2twzSihOeuFFVcFtOwMcJfVuKA/AOf89FNfoqv8TfakPdU81
-         QhUBs/wOUSc/zmxp/n6GWC8sV7G2DqNtb9xzrQE7rGuuhC0v6bBOECUlJU5NOG5UyBUS
-         NTliW5afwvzYdJsgeS4q7yI5+rgW6OENwiLEI1RQkThgvOdpXD+3SYC7jBxUsFXe5Igj
-         1JIA==
-X-Gm-Message-State: ACgBeo3gTDo9vqBXT0usKMyswWWpPSE6Z2rnqJKojL2d7ivlCeoj9HRF
-        YXiixp1tOBKG6EB33TDO7pO6vA==
-X-Google-Smtp-Source: AA6agR6znqORoYJxRfGm+Kmi2onxatlXLgKKjqviuP7ROeF5zZKHdK1k0rlZjV8xnPXrXDRmjs5bWQ==
-X-Received: by 2002:a2e:3515:0:b0:25e:7139:345f with SMTP id z21-20020a2e3515000000b0025e7139345fmr773042ljz.129.1660289691141;
-        Fri, 12 Aug 2022 00:34:51 -0700 (PDT)
+        bh=crf/lK1s1ldsW0Tw+pD5ZUVc6HtWvvcIF4KEVSHKYCs=;
+        b=XZZQh2LNQqYqVM0ebF6RFYh3SZVePRQL4Pwy5cwhqcEaUqwVyGLDQ/KJtPuBDUg8/7
+         JQxZhMBixZ0n6mEAVe412mdS8Y6WBLIngUfixgv7bef0reivVmhugdKyyfb1CF5j9/Vh
+         i0R0SUPtsESVps4Yn7A3tjLzWWFQrJnw1xg/IAEax/xPHgFPTqY2gXjHpkeuClGohMwu
+         8M9xh7hAQPIicyWFmJpsat56AgSLG0tvKuiqaKqMI5d6r7d0eybb+4t5LLyPq7P8Cgef
+         zASSvIzO6x3tIJfJQMTC25OuWoWwRsfaMyP1c2HN583b78Be7nvhBo9oxKdhg+ZGj0Kd
+         hLJQ==
+X-Gm-Message-State: ACgBeo21fB8VR7yHAb/dsjGBKxn52Rch+Vh4P6BMAxaZs2g1FO2PMSTk
+        iZGQOJeitZV6GhvCvQlL4uRzBw==
+X-Google-Smtp-Source: AA6agR4psy2iVI6/fRchmfquS+bif8PW2q7V1EgYmOZnqcSeinMvmGjxODB1u3SfgOJboPsudN4f0w==
+X-Received: by 2002:a2e:bf16:0:b0:25f:f90a:b856 with SMTP id c22-20020a2ebf16000000b0025ff90ab856mr866672ljr.473.1660289746838;
+        Fri, 12 Aug 2022 00:35:46 -0700 (PDT)
 Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05651c128b00b0025e4a8a8038sm258775ljc.88.2022.08.12.00.34.46
+        by smtp.gmail.com with ESMTPSA id p2-20020a05651211e200b0048af60faabcsm118423lfs.131.2022.08.12.00.35.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 00:34:50 -0700 (PDT)
-Message-ID: <f636ad9d-5e9c-f703-221a-3c09f31ed105@linaro.org>
-Date:   Fri, 12 Aug 2022 10:34:40 +0300
+        Fri, 12 Aug 2022 00:35:46 -0700 (PDT)
+Message-ID: <99b5bddb-4a09-a3ac-e01b-d0ae624ad2f8@linaro.org>
+Date:   Fri, 12 Aug 2022 10:35:39 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 1/4] dt-bindings: PCI: fu740-pci: fix missing clock-names
+Subject: Re: [PATCH 2/4] dt-bindings: PCI: microchip,pcie-host: fix missing
+ clocks properties
 Content-Language: en-US
 To:     Conor Dooley <mail@conchuod.ie>,
         Daire McNamara <daire.mcnamara@microchip.com>,
@@ -71,9 +72,9 @@ To:     Conor Dooley <mail@conchuod.ie>,
 Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
 References: <20220811203306.179744-1-mail@conchuod.ie>
- <20220811203306.179744-2-mail@conchuod.ie>
+ <20220811203306.179744-3-mail@conchuod.ie>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220811203306.179744-2-mail@conchuod.ie>
+In-Reply-To: <20220811203306.179744-3-mail@conchuod.ie>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -83,30 +84,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 11/08/2022 23:33, Conor Dooley wrote:
 > From: Conor Dooley <conor.dooley@microchip.com>
 > 
-> The commit in the fixes tag removed the clock-names property from the
-
-Instead:
-The commit b92225b034c0 ("dt-bindings: PCI: designware: Fix
-'unevaluatedProperties' warnings")....
-
-> SiFive FU740 PCI Controller dt-binding,
-
-No, it did not do it... At least I cannot see it. Where is the removal
-exactly in that patch? The commit removed clock-names from required, not
-from properties.
-
- but it was already in the dts
-> for the FU740. dtbs_check was not able to pick up on this at the time
-> but v2022.08 of dt-schema now can:
+> Upgrading dt-schema to v2022.08 reveals unevaluatedProperties issues
+> that were not previously visible, such as the missing clocks and
+> clock-names properties for PolarFire SoC's PCI controller:
+> arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dtb: pcie@2000000000: Unevaluated properties are not allowed ('clock-names', 'clocks', 'legacy-interrupt-controller', 'microchip,axi-m-atr0' were unexpected)
+>         From schema: Documentation/devicetree/bindings/pci/microchip,pcie-host.yaml
 > 
-> arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dtb: pcie@e00000000: Unevaluated properties are not allowed ('clock-names' was unexpected)
->         From schema: linux/Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml
+> The clocks are required to enable interfaces between the FPGA fabric
+> and the core complex, so add them to the binding.
 > 
-> The Linux driver does not use this property, but outside of the kernel
-> this property may have users. Re-add the property and its "clocks"
-> dependency.
+> Fixes: 6ee6c89aac35 ("dt-bindings: PCI: microchip: Add Microchip PolarFire host binding")
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  .../bindings/pci/microchip,pcie-host.yaml     | 25 +++++++++++++++++++
+>  1 file changed, 25 insertions(+)
 > 
+> diff --git a/Documentation/devicetree/bindings/pci/microchip,pcie-host.yaml b/Documentation/devicetree/bindings/pci/microchip,pcie-host.yaml
+> index edb4f81253c8..2a2166f09e2c 100644
+> --- a/Documentation/devicetree/bindings/pci/microchip,pcie-host.yaml
+> +++ b/Documentation/devicetree/bindings/pci/microchip,pcie-host.yaml
+> @@ -25,6 +25,31 @@ properties:
+>        - const: cfg
+>        - const: apb
+>  
+> +  clocks:
+> +    description:
+> +      Fabric Interface Controllers, FICs, are the interface between the FPGA
+> +      fabric and the core complex on PolarFire SoC. The FICs require two clocks,
+> +      one from each side of the interface. The "FIC clocks" described by this
+> +      property are on the core complex side & communication through a FIC is not
+> +      possible unless it's corresponding clock is enabled. A clock must be
+> +      enabled for each of the interfaces the root port is connected through.
+> +    minItems: 1
+> +    items:
+> +      - description: FIC0's clock
+> +      - description: FIC1's clock
+> +      - description: FIC2's clock
+> +      - description: FIC3's clock
+> +
+> +  clock-names:
+> +    items:
+> +      enum:
+> +        - fic0
+> +        - fic1
+> +        - fic2
+> +        - fic3
+> +    minItems: 1
+> +    maxItems: 4
 
+No need for maxItems.
 
 Best regards,
 Krzysztof
