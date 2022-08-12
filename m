@@ -2,153 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CFFC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 05:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E11C25B0F
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 05:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235266AbiHLFsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 01:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
+        id S236802AbiHLFyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 01:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHLFsg (ORCPT
+        with ESMTP id S229524AbiHLFym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 01:48:36 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF31A3D5E
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 22:48:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660283315; x=1691819315;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bhi9ULzUm8P4QX4guIXDUZ2lGpf10YGb7VD5BUWJwkc=;
-  b=BWs4fCLnAwImHRu8RqRrf296BgZU14ByYAdKf3zgqxJNz7Ufx7oURf+v
-   GHyx+Vun4hzHvhrUoYizkCn4ouSj7tzyx+EiNKi73Oi0nRv7cVfw/GE7f
-   n27xyu6psi787K20I1/3TByD88+Thexhn/2so7Laj7AMX/wmAXzbiXmYm
-   TaKC7+kpO/S/phreqsNy5vkX8dE4Ci+S3M1YE8Wul6T+XFUFlW1IfTMWg
-   FjGF+13AWuYJbUSvVWatHsqI+fu55DeLjs+KOu2cfVsO5Kq/NTpieD77T
-   nXa3iKjrwdTuAOYe0ZkTLKDBZA2aGx+gfrA/EXEcpEtNoc4ysT++Xi/Ph
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="274583678"
-X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="274583678"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 22:48:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="732123550"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 11 Aug 2022 22:48:33 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMNX7-0000DD-0N;
-        Fri, 12 Aug 2022 05:48:33 +0000
-Date:   Fri, 12 Aug 2022 13:47:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: drivers/pci/controller/pci-mvebu.c:437:17: sparse: sparse:
- restricted __le16 degrades to integer
-Message-ID: <202208121357.vIqsdlc1-lkp@intel.com>
+        Fri, 12 Aug 2022 01:54:42 -0400
+Received: from cavan.codon.org.uk (cavan.codon.org.uk [176.126.240.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90959A222B;
+        Thu, 11 Aug 2022 22:54:38 -0700 (PDT)
+Received: by cavan.codon.org.uk (Postfix, from userid 1000)
+        id 168AC40A77; Fri, 12 Aug 2022 06:54:37 +0100 (BST)
+Date:   Fri, 12 Aug 2022 06:54:37 +0100
+From:   Matthew Garrett <mjg59@srcf.ucam.org>
+To:     Brendan Trotter <btrotter@gmail.com>
+Cc:     The development of GNU GRUB <grub-devel@gnu.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        Alec Brown <alec.r.brown@oracle.com>,
+        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
+        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
+        "persaur@gmail.com" <persaur@gmail.com>,
+        "Yoder, Stuart" <stuart.yoder@arm.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        James Morris <jmorris@namei.org>
+Subject: Re: Linux DRTM on UEFI platforms
+Message-ID: <20220812055437.GA10952@srcf.ucam.org>
+References: <b1e7b545-8e66-5dc0-ff5a-9f69d1751a5f@apertussolutions.com>
+ <CAELHeEcEN=4YrPJROvzHoOiqqe5Bk0f8pDCZDnQ6aS=2LdwNow@mail.gmail.com>
+ <f09fe749-e139-db6a-b2ad-45db76da04ae@apertussolutions.com>
+ <CAELHeEe5H8BNf8K22XRm3hXf=_imHBnf-MHcFYvPCXX7GYkt4w@mail.gmail.com>
+ <203110bb-b70b-b4f1-9453-46136659f84c@apertussolutions.com>
+ <CAELHeEe2CiTXfMf3OYu3bzc_kH=rs4qzC-4XQL12AM=Nq8Csjw@mail.gmail.com>
+ <20220810174638.GA7906@srcf.ucam.org>
+ <CAELHeEdNgYCh_kQwWpEc4aXw-YL-KGrAeDCL-VaG3ChFs6LNVw@mail.gmail.com>
+ <20220811182502.GA32433@srcf.ucam.org>
+ <CAELHeEcfHSXewFCywsYeN_g8Q_BNG+4tP-QENO5QBw8Dj91yMA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAELHeEcfHSXewFCywsYeN_g8Q_BNG+4tP-QENO5QBw8Dj91yMA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pali,
+On Fri, Aug 12, 2022 at 12:52:58PM +0930, Brendan Trotter wrote:
+> Hi,
+> 
+> On Fri, Aug 12, 2022 at 3:55 AM Matthew Garrett <mjg59@srcf.ucam.org> wrote:
+> > On Thu, Aug 11, 2022 at 07:25:58PM +0930, Brendan Trotter wrote:
+> > > On Thu, Aug 11, 2022 at 3:16 AM Matthew Garrett <mjg59@srcf.ucam.org> wrote:
+> > > > The kernel has no way to know this - *any* code you've run before
+> > > > performing a measurement could tamper with the kernel such that it
+> > > > believes it's fine. This is just as true in DRTM as it is in SRTM. But
+> > > > you know what the expected measurements should be, so you're able to
+> > > > either seal secrets to those PCR values or rely on remote attestation.
+> > >
+> > > In this scenario the kernel has no idea what the measurement should
+> > > be, it only knows the measurement that a potentially malicious boot
+> > > loader felt like giving the kernel previously (e.g. when the kernel
+> > > was installed).
+> >
+> > Even if the kernel has an idea of what the measurement should be, it has
+> > no way to verify that what it believes to be true is true - any
+> > malicious code could simply have modified the kernel to believe that
+> > anything it asks the TPM returns the "correct" answer.
+> 
+> Right. To achieve the best possible security; you'd need Secure Boot
+> to ensure that the kernel itself wasn't modified, and then the kernel
+> establishes a dynamic root of trust itself.
 
-First bad commit (maybe != root cause):
+You can't rely on Secure Boot because compromised firmware might fail to 
+implement it, so you're back to relying on dynamic trust.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   7ebfc85e2cd7b08f518b526173e9a33b56b3913b
-commit: 0746ae1be12177ebda0666eefa82583cbaeeefd6 PCI: mvebu: Add support for compiling driver as module
-date:   7 months ago
-config: arm-randconfig-s051-20220811 (https://download.01.org/0day-ci/archive/20220812/202208121357.vIqsdlc1-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0746ae1be12177ebda0666eefa82583cbaeeefd6
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 0746ae1be12177ebda0666eefa82583cbaeeefd6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mach-mvebu/ drivers/pci/controller/ drivers/soc/bcm/brcmstb/pm/ drivers/soc/ti/
+> Anything involving a boot loader (e.g. Secure Boot ensure's boot
+> loader wasn't modified, then boot loader ensure's kernel wasn't
+> modified, then ....) increases the attack surface for no benefit.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I honestly feel like we're talking about different things. Can you 
+describe the attack vector you're concerned about here?
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/pci/controller/pci-mvebu.c:437:17: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:437:38: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:455:30: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:458:31: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:472:17: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:472:34: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:482:30: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:483:31: sparse: sparse: restricted __le16 degrades to integer
-   drivers/pci/controller/pci-mvebu.c:727:29: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le16 [usertype] vendor @@     got int @@
-   drivers/pci/controller/pci-mvebu.c:727:29: sparse:     expected restricted __le16 [usertype] vendor
-   drivers/pci/controller/pci-mvebu.c:727:29: sparse:     got int
-   drivers/pci/controller/pci-mvebu.c:728:29: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le16 [usertype] device @@     got unsigned int @@
-   drivers/pci/controller/pci-mvebu.c:728:29: sparse:     expected restricted __le16 [usertype] device
-   drivers/pci/controller/pci-mvebu.c:728:29: sparse:     got unsigned int
-   drivers/pci/controller/pci-mvebu.c:729:37: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le32 [usertype] class_revision @@     got unsigned int @@
-   drivers/pci/controller/pci-mvebu.c:729:37: sparse:     expected restricted __le32 [usertype] class_revision
-   drivers/pci/controller/pci-mvebu.c:729:37: sparse:     got unsigned int
+> I'm not convinced an external agent can detect "bad/forged
+> measurement" either. E.g. if a MiTM boot loader always provided a
+> bad/forged measurement the external agent won't detect it (as the
+> measurement always matches the expected measurement), and then if the
+> MiTM boot loader is replaced by a good/honest boot loader the external
+> agent will decide that the good/honest boot loader is malicious
+> because its measurement doesn't match the expected bad/forged
+> measurement.
 
-vim +437 drivers/pci/controller/pci-mvebu.c
-
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  429  
-e7a01876729c3e drivers/pci/controller/pci-mvebu.c Pali Rohár       2021-11-25  430  static int mvebu_pcie_handle_iobase_change(struct mvebu_pcie_port *port)
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  431  {
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  432  	struct mvebu_pcie_window desired = {};
-1f08673eef1236 drivers/pci/controller/pci-mvebu.c Thomas Petazzoni 2018-10-18  433  	struct pci_bridge_emul_conf *conf = &port->bridge.conf;
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  434  
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  435  	/* Are the new iobase/iolimit values invalid? */
-1f08673eef1236 drivers/pci/controller/pci-mvebu.c Thomas Petazzoni 2018-10-18  436  	if (conf->iolimit < conf->iobase ||
-e7a01876729c3e drivers/pci/controller/pci-mvebu.c Pali Rohár       2021-11-25 @437  	    conf->iolimitupper < conf->iobaseupper)
-e7a01876729c3e drivers/pci/controller/pci-mvebu.c Pali Rohár       2021-11-25  438  		return mvebu_pcie_set_window(port, port->io_target, port->io_attr,
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  439  					     &desired, &port->iowin);
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  440  
-641e674d6c0f97 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2013-11-26  441  	if (!mvebu_has_ioport(port)) {
-641e674d6c0f97 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2013-11-26  442  		dev_WARN(&port->pcie->pdev->dev,
-641e674d6c0f97 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2013-11-26  443  			 "Attempt to set IO when IO is disabled\n");
-e7a01876729c3e drivers/pci/controller/pci-mvebu.c Pali Rohár       2021-11-25  444  		return -EOPNOTSUPP;
-641e674d6c0f97 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2013-11-26  445  	}
-641e674d6c0f97 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2013-11-26  446  
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  447  	/*
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  448  	 * We read the PCI-to-PCI bridge emulated registers, and
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  449  	 * calculate the base address and size of the address decoding
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  450  	 * window to setup, according to the PCI-to-PCI bridge
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  451  	 * specifications. iobase is the bus address, port->iowin_base
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  452  	 * is the CPU address.
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  453  	 */
-1f08673eef1236 drivers/pci/controller/pci-mvebu.c Thomas Petazzoni 2018-10-18  454  	desired.remap = ((conf->iobase & 0xF0) << 8) |
-1f08673eef1236 drivers/pci/controller/pci-mvebu.c Thomas Petazzoni 2018-10-18  455  			(conf->iobaseupper << 16);
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  456  	desired.base = port->pcie->io.start + desired.remap;
-1f08673eef1236 drivers/pci/controller/pci-mvebu.c Thomas Petazzoni 2018-10-18  457  	desired.size = ((0xFFF | ((conf->iolimit & 0xF0) << 8) |
-1f08673eef1236 drivers/pci/controller/pci-mvebu.c Thomas Petazzoni 2018-10-18  458  			 (conf->iolimitupper << 16)) -
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  459  			desired.remap) +
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  460  		       1;
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  461  
-e7a01876729c3e drivers/pci/controller/pci-mvebu.c Pali Rohár       2021-11-25  462  	return mvebu_pcie_set_window(port, port->io_target, port->io_attr, &desired,
-d9bf28e2650fe3 drivers/pci/host/pci-mvebu.c       Jason Gunthorpe  2016-12-12  463  				     &port->iowin);
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  464  }
-45361a4fe44641 drivers/pci/host/pci-mvebu.c       Thomas Petazzoni 2013-05-16  465  
-
-:::::: The code at line 437 was first introduced by commit
-:::::: e7a01876729c3e650c5f6ee446b71a309d1c55ab PCI: mvebu: Propagate errors when updating PCI_IO_BASE and PCI_MEM_BASE registers
-
-:::::: TO: Pali Rohár <pali@kernel.org>
-:::::: CC: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+The point of DRTM is that the platform (in the form of an authenticated 
+code module running on the CPU, outside of the control of the OS) 
+performs a measreument of a specific point in time. The policy it's 
+provided with allows an external agent to identify which component of 
+the runtime system is being measured. If an external malicious agent has 
+been executed then the measurement will be different as a result.
