@@ -2,92 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10703C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F44C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238095AbiHLK5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        id S238230AbiHLK6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237446AbiHLK5A (ORCPT
+        with ESMTP id S233391AbiHLK6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:57:00 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F3FAA3CE
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:56:58 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id f20so837069lfc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:56:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=mChUjQTtXHpc2A+QlFmH2j/MWN0EZMkc2lSHpOXeQrA=;
-        b=Y9ftosvW+/lXOfo2DHn/iOKLY+DKnzGTJ/du2uR/xcqHW5eEuf/MhEfhmLloPHjwCO
-         oBbJry4O8PjVfaJ5FODDfz5T+LNbcxuJs5Gd0cZfk1nKVp8go/D2FeOtJU+2sXQ3rJLv
-         NDSu+WYXb0U/rhC1Ph+3m/FOizpJlCkHFVx5wsNrFRYQ3UkbZpmeNGHh8sIoAnLenkh+
-         vndZxXrtL+c/XXlsiLfZSyuiYiQ0KKvZJLZJgwiuvEr8HjkHJSwgAJa2LemBKUlEWxtd
-         xISOy5mUZ7ESoOE8vzF8bHvZ0mY+jnuLvpJC3CsD/hI21t4DKdjdnRBgIcmxkgPQcgQU
-         a5IQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=mChUjQTtXHpc2A+QlFmH2j/MWN0EZMkc2lSHpOXeQrA=;
-        b=4p0r1TPjIpjK6w0vs7gbw6ev1kNb8Y88Z/d47FhPPWiy0yG5dB1Wp1IZAUwLn+Sgge
-         arKQRIF/Qi7PN9GgH7gOmNvchX/i4wzgAL8j6BBffeljUynaMAzRor17SbOJkl43Es3T
-         TxER6Wsx4R+pySFD9FnRw1hBfO5/FS5MyY42eDL8EYy1j+IDGEDnAcgasvN6R6pPaamw
-         Kk+wT5YwNNpoW/2lH6iP6QZfF2sGmWSBzneSYCFVCa2m8sCKC9J87G2gccmM1hfDJif5
-         ZyUpYCVz6OazufXT9KnpmXzqVeRawo9tpxYYAZ0/NzTaVnOP5mLTVIOwj7ouLrHOpSYM
-         LVfg==
-X-Gm-Message-State: ACgBeo1D4dbX4cR+8ASGvnKDEGhzx76AFd8aNED/6NJ/RpmFvXtu4YfP
-        8tep+px0WpXZp+8KBye0eO/raw==
-X-Google-Smtp-Source: AA6agR4c+dqcuuneKDezG2XNuToIgmi+wQmcMT9vCnGaJvx1lSq90f0pUvfTgcx6kKuGrwL9SZQRYA==
-X-Received: by 2002:a05:6512:3fa8:b0:48c:ffd1:625d with SMTP id x40-20020a0565123fa800b0048cffd1625dmr998883lfa.251.1660301817252;
-        Fri, 12 Aug 2022 03:56:57 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id f7-20020a056512360700b0048b0f2dc35asm178317lfs.75.2022.08.12.03.56.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 03:56:56 -0700 (PDT)
-Message-ID: <3a26be5c-04c5-cd67-1154-dfd7d99fb5d0@linaro.org>
-Date:   Fri, 12 Aug 2022 13:56:50 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3 0/1] Mediatek MT6366 Regulator patch
-Content-Language: en-US
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>, lee.jones@linaro.org,
-        robh+dt@kernel.org, matthias.bgg@gmail.com, lgirdwood@gmail.com,
-        broonie@kernel.org, eddie.huang@mediatek.com, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, fshao@chromium.org
-Cc:     sen.chu@mediatek.com, hui.liu@mediatek.com,
-        allen-kh.cheng@mediatek.com, hsin-hsiung.wang@mediatek.com,
-        sean.wang@mediatek.com, macpaul.lin@mediatek.com,
-        wen.su@mediatek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Fri, 12 Aug 2022 06:58:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E15ABD5A
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:58:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660301923; x=1691837923;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pjsECAg9GYqPKW7dPlVYry6RTRxn5cZygQq1l/idkQc=;
+  b=XHmbEpNooSGU1S4m2whw4ewLl7L2pRshMeH1yBl3RYmvVqtQKPO/yZhG
+   esfX87suJrDudvvlanfuuc8YKJYeW9wzAKdvMSA88Bpeaz4Emz5DwP3xm
+   B0vjD7TFVAnOmRl5s91PP98/Rp+01cgTn/BNb6NhSytcg1IBGj/KoW7My
+   ehbIHQHJGYRtNMscuT0VOU/ZZG9cFMrXTCXIZI0vde3UK1brgBxb5G7xK
+   xM8W4PCNPFUlVtQ9d9G45RDJJ+F7p6nZWCX7qlGIkh22EiYHaESXkXeLw
+   l3FuBXLyhukbHRLLm7JpLROde9kgn5qjCSBk0IkJ3ydhOIi7hdaW8JqBt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="317542476"
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="317542476"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 03:58:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="665781756"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Aug 2022 03:58:40 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMSND-0000SG-1i;
+        Fri, 12 Aug 2022 10:58:39 +0000
+Date:   Fri, 12 Aug 2022 18:58:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sathvika Vasireddy <sv@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     kbuild-all@lists.01.org, jpoimboe@redhat.com, peterz@infradead.org,
+        linux-kernel@vger.kernel.org, aik@ozlabs.ru, mpe@ellerman.id.au,
+        mingo@redhat.com, christophe.leroy@csgroup.eu, rostedt@goodmis.org,
+        mbenes@suse.cz, npiggin@gmail.com, chenzhongjin@huawei.com,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220812092901.6429-1-zhiyong.tao@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220812092901.6429-1-zhiyong.tao@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        naveen.n.rao@linux.vnet.ibm.com, sv@linux.ibm.com
+Subject: Re: [PATCH 14/16] objtool: Add arch specific function
+ arch_ftrace_match()
+Message-ID: <202208121847.XuEAqabf-lkp@intel.com>
+References: <20220808114908.240813-15-sv@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808114908.240813-15-sv@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 12:29, Zhiyong Tao wrote:
-> Add mt6366 binding documentation
-> 
-> Changes in patch v3:
-> 1)change patch title
+Hi Sathvika,
 
-Where is the driver?
+Thank you for the patch! Yet something to improve:
 
-Don't ignore feedback:
-https://lore.kernel.org/all/YuJsDI8rqkHuysIT@sirena.org.uk/
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.19 next-20220812]
+[cannot apply to powerpc/next powerpc/topic/ppc-kvm masahiroy-kbuild/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Best regards,
-Krzysztof
+url:    https://github.com/intel-lab-lkp/linux/commits/Sathvika-Vasireddy/objtool-Enable-and-implement-mcount-option-on-powerpc/20220808-200702
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 4e23eeebb2e57f5a28b36221aa776b5a1122dde5
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220812/202208121847.XuEAqabf-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/2b03c8be7104e834933d2f5928e69828190e935c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sathvika-Vasireddy/objtool-Enable-and-implement-mcount-option-on-powerpc/20220808-200702
+        git checkout 2b03c8be7104e834933d2f5928e69828190e935c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 prepare
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arch/x86/decode.c: In function 'arch_ftrace_match':
+>> arch/x86/decode.c:28:21: error: 'func' undeclared (first use in this function)
+      28 |         if (!strcmp(func->name, "__fentry__"))
+         |                     ^~~~
+   arch/x86/decode.c:28:21: note: each undeclared identifier is reported only once for each function it appears in
+   make[5]: *** [tools/build/Makefile.build:96: tools/objtool/arch/x86/decode.o] Error 1
+   make[4]: *** [tools/build/Makefile.build:139: arch/x86] Error 2
+   make[4]: *** Waiting for unfinished jobs....
+   make[3]: *** [Makefile:54: tools/objtool/objtool-in.o] Error 2
+   make[2]: *** [Makefile:73: objtool] Error 2
+   make[1]: *** [Makefile:1347: tools/objtool] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
