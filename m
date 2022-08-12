@@ -2,83 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A3DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 18:09:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A630BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 18:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239246AbiHLSJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 14:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
+        id S238539AbiHLSMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 14:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236842AbiHLSJh (ORCPT
+        with ESMTP id S229464AbiHLSMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 14:09:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FA1B287D;
-        Fri, 12 Aug 2022 11:09:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD03E6175D;
-        Fri, 12 Aug 2022 18:09:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 373CCC433D6;
-        Fri, 12 Aug 2022 18:09:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660327775;
-        bh=1eSXvEZnukSKTGZe7faWqcL1475O0ngKFVeI9su/VAw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Hn4q3fEUQCsyyZm+CYqMeKikc96Jq4GliVXAfnoz6Ngc5A4ivDXPz8RX4xTigNaLy
-         cfDLuqLz3Oh45DkhjDAYCjCSUZ2A8TaPGJu7IHt8nSBrP1iucbaz4z4FqOqbAU8vvc
-         UustajZhWF4WcQtQrpxSyjFOz9YPHXioH6B/PLKly2+kR8i3OhGg8i480TQJ0bM/3y
-         J5Dd87Va0YkfIM0DDWZC9PkfmEuImBIPfabqvSuAgCEAOnvYd8FQhwz7JzRqxcRlQP
-         ixfdIIQ6hqAI+Hh++guZX3sQpQyasqrn3R4ZEFHFTCdGDqrXUS921ILWc1pXOVq1kI
-         UWTLa7HNQeG9Q==
-Received: by mail-vs1-f42.google.com with SMTP id v128so1550224vsb.10;
-        Fri, 12 Aug 2022 11:09:35 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2gjFhq9jFjkdWVd/X9GkkfQlG6j3w4Hntff7aE55A+ETlMeOGo
-        E539ZCxrcbsHy0jquQYsNi3wlx9dryV9xnz+Bw==
-X-Google-Smtp-Source: AA6agR6gAxDp5EROI0oYJQFMogqYJdz05fwV9p3hLUFxkUsgWcC2eUmq8Ku3c8UFTfaktZD96oZzFoCpWskHhruVGz8=
-X-Received: by 2002:a67:c08f:0:b0:38a:8c1c:45aa with SMTP id
- x15-20020a67c08f000000b0038a8c1c45aamr2280715vsi.85.1660327774173; Fri, 12
- Aug 2022 11:09:34 -0700 (PDT)
+        Fri, 12 Aug 2022 14:12:06 -0400
+Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F81B2871;
+        Fri, 12 Aug 2022 11:12:01 -0700 (PDT)
+Received: by mail-il1-f180.google.com with SMTP id s10so866856ilq.5;
+        Fri, 12 Aug 2022 11:12:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=vPDP46SbD5PMcyL1dEuWf5iKsofXHoY5Pt8XyHeL+Ho=;
+        b=ymy1MjYeENA/iG6ie7GCZpkNIC20g1cmOZ8mH0E+eQH/yojmD+9RwU9Bg2POmIwiI7
+         3GNBDyUWzi7MBU66wcarj5/1/NJbux5q3oNX1NHJIFL/6HRipAZE2ifMRYRO2lE8vnTI
+         qhXRU54qlZ723tV04t4w5kFfdydyohUlinldwUWv5iIGjRDyd9CUSjjLEmDpBxEZKhEJ
+         gGgldR6p0DAkXuXWPyF8OVCLj4lHPRD+AwegxmX7ziejf9hzkKz7n8HkviSiogUyF2Y3
+         C3JDBVD90JAlqd0g3n3pqj6NA4r5gHRLX1ct6xHBzLDzOsP6c5X0JbEbGLD793pQYExs
+         xn4Q==
+X-Gm-Message-State: ACgBeo3T7UBQrEq1hf86DLqUQJ8wN+SVl8RI9LHsuxcI+KTdgsuw6hi8
+        FFrTEWhSZw3Y7POYXqImsw==
+X-Google-Smtp-Source: AA6agR7Iogo68hWdtZvlYHAq3kuETNChIpkR/cUVPhgEQ27Q565iwm/ZxwYiFtBuuoHtdJ3bi3Ik+g==
+X-Received: by 2002:a05:6e02:1208:b0:2df:38d1:cb5b with SMTP id a8-20020a056e02120800b002df38d1cb5bmr2452528ilq.65.1660327920358;
+        Fri, 12 Aug 2022 11:12:00 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id b24-20020a02a598000000b0034334c61c96sm150726jam.106.2022.08.12.11.11.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 11:11:59 -0700 (PDT)
+Received: (nullmailer pid 465319 invoked by uid 1000);
+        Fri, 12 Aug 2022 18:11:58 -0000
+Date:   Fri, 12 Aug 2022 12:11:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [GIT PULL] Devicetree fixes for v6.0, take 1
+Message-ID: <20220812181158.GA462401-robh@kernel.org>
 MIME-Version: 1.0
-References: <20220812174420.2706827-1-khilman@baylibre.com>
-In-Reply-To: <20220812174420.2706827-1-khilman@baylibre.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 12 Aug 2022 12:09:22 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+DDPTYodAk-TKs61AUpdYhocWq+EoRGgVwgc1hz5gk0A@mail.gmail.com>
-Message-ID: <CAL_Jsq+DDPTYodAk-TKs61AUpdYhocWq+EoRGgVwgc1hz5gk0A@mail.gmail.com>
-Subject: Re: [PATCH] of: irq: Export of_msi_get_domain
-To:     Kevin Hilman <khilman@baylibre.com>
-Cc:     Frank Rowand <frowand.list@gmail.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-omap@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 11:44 AM Kevin Hilman <khilman@baylibre.com> wrote:
->
-> From: Matthias Brugger <matthias.bgg@gmail.com>
->
-> Export of_mis_get_domain to enable it for users from outside.
+Linus,
 
-typo
-
->
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
-> Link: https://lore.kernel.org/r/20200122104723.16955-1-peter.ujfalusi@ti.com
-> Signed-off-by: Kevin Hilman <khilman@baylibre.com>
-> ---
-> Peter tried to resurrect this in 2020 (c.f. Link tag in log) but it
-> didn't work.  Here's one more attempt.  I need this enable building
-> some TI DMA drivers as modules.
-
-Then apply this with that enabling. I've already acked it (which keeps
-it out of my queue, so drop that if you want to ensure I see it).
+Please pull a few DT fixes and one missed schema conversion.
 
 Rob
+
+
+The following changes since commit eb555cb5b794f4e12a9897f3d46d5a72104cd4a7:
+
+  Merge tag '5.20-rc-ksmbd-server-fixes' of git://git.samba.org/ksmbd (2022-08-08 20:15:13 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-6.0-1
+
+for you to fetch changes up to 8f426582e0e0c9bbd58e170e1b209334eb5df79e:
+
+  dt-bindings: chrome: google,cros-ec-typec: restrict allowed properties (2022-08-12 11:13:32 -0600)
+
+----------------------------------------------------------------
+Devicetree fixes for v6.0, take 1:
+
+- Fix schema warnings in qcom,ipq6018-pinctrl and sdhci-msm
+
+- Convert Qualcomm SPMI PMIC to DT schema
+
+- Make secure interrupt optional for arm,mhu
+
+- Fix google,cros-ec-typec binding allowed properties
+
+- Update a bunch of bouncing email addresses
+
+----------------------------------------------------------------
+Bhupesh Sharma (1):
+      dt-bindings: mmc: sdhci-msm: Fix 'operating-points-v2 was unexpected' issue
+
+David Heidelberg (1):
+      dt-bindings: mfd: convert to yaml Qualcomm SPMI PMIC
+
+Krzysztof Kozlowski (7):
+      dt-bindings: display: simple-framebuffer: Drop Bartlomiej Zolnierkiewicz
+      dt-bindings: iio: Drop Joachim Eastwood
+      dt-bindings: iio: Drop Bogdan Pricop
+      dt-bindings: Drop Beniamin Bia and Stefan Popa
+      dt-bindings: Drop Robert Jones
+      dt-bindings: Drop Dan Murphy and Ricardo Rivera-Matos
+      dt-bindings: chrome: google,cros-ec-typec: restrict allowed properties
+
+Rob Herring (3):
+      dt-bindings: Drop DT_MK_SCHEMA_FLAGS conditional selecting schema files
+      dt-bindings: pinctrl: qcom,ipq6018: Fix example 'gpio-ranges' size
+      dt-bindings: mailbox: arm,mhu: Make secure interrupt optional
+
+ Documentation/devicetree/bindings/Makefile         |   4 +-
+ .../bindings/chrome/google,cros-ec-typec.yaml      |  15 +-
+ .../bindings/display/simple-framebuffer.yaml       |   1 -
+ .../devicetree/bindings/hwmon/adi,adm1177.yaml     |   1 -
+ .../devicetree/bindings/iio/accel/fsl,mma7455.yaml |   1 -
+ .../devicetree/bindings/iio/adc/adi,ad7091r5.yaml  |   2 +-
+ .../devicetree/bindings/iio/adc/adi,ad7606.yaml    |   3 +-
+ .../bindings/iio/adc/nxp,lpc1850-adc.yaml          |   2 +-
+ .../devicetree/bindings/iio/adc/ti,adc108s102.yaml |   2 +-
+ .../devicetree/bindings/iio/adc/ti,ads124s08.yaml  |   2 +-
+ .../bindings/iio/amplifiers/adi,hmc425a.yaml       |   1 -
+ .../devicetree/bindings/iio/imu/nxp,fxos8700.yaml  |   2 +-
+ .../bindings/leds/leds-class-multicolor.yaml       |   2 +-
+ .../devicetree/bindings/leds/leds-lp50xx.yaml      |   2 +-
+ .../devicetree/bindings/mailbox/arm,mhu.yaml       |   1 +
+ .../devicetree/bindings/mfd/gateworks-gsc.yaml     |   1 -
+ .../devicetree/bindings/mfd/qcom,spmi-pmic.txt     |  94 ----------
+ .../devicetree/bindings/mfd/qcom,spmi-pmic.yaml    | 190 +++++++++++++++++++++
+ .../devicetree/bindings/mmc/sdhci-msm.yaml         |   2 +
+ .../devicetree/bindings/net/ti,dp83822.yaml        |   2 +-
+ .../devicetree/bindings/net/ti,dp83867.yaml        |   2 +-
+ .../devicetree/bindings/net/ti,dp83869.yaml        |   2 +-
+ .../bindings/pinctrl/qcom,ipq6018-pinctrl.yaml     |   2 +-
+ .../devicetree/bindings/power/supply/bq2515x.yaml  |   3 +-
+ .../devicetree/bindings/power/supply/bq256xx.yaml  |   2 +-
+ .../devicetree/bindings/power/supply/bq25980.yaml  |   3 +-
+ .../devicetree/bindings/sound/tas2562.yaml         |   2 +-
+ .../devicetree/bindings/sound/tlv320adcx140.yaml   |   2 +-
+ 28 files changed, 224 insertions(+), 124 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
