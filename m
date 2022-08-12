@@ -2,114 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F684C28B2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 11:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 750B4C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 11:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbiHLLqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 07:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        id S237535AbiHLLsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 07:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238229AbiHLLqr (ORCPT
+        with ESMTP id S235923AbiHLLsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 07:46:47 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9594B9018B
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:46:45 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id a89so1017696edf.5
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:46:45 -0700 (PDT)
+        Fri, 12 Aug 2022 07:48:15 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22C1AFAE2
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:48:12 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id e8-20020a17090a280800b001f2fef7886eso679196pjd.3
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:48:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
+        d=quanta-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
-        bh=06Z6GJcD54x41e0t+YKAiliCLRRI6h46exlRnJSDDOQ=;
-        b=D+Sc4KxwwSTbPBV0CPhSaEVniSRZc21Ok5bwtCAv8M5je8j5xDCfgUCFEIjhiADpxs
-         S9X3TnSg2ckFdqx6E4Sc+2hOj6sNj5Lqub8hw1V00h8w0mgTrE/ru41nVRn8ptBLVBB5
-         ySBNUH07AxEUwTasenR7VUbc06BtpMmj7n7i3083BMYFPB2/GGt07CxVv3Qaqu8tFxdH
-         Z4Di3HFU9goFVmrzu7l72NafzSgxURDWOx7X+b3zw/JdYOpTo2TLlqErkxVShjrOBTpk
-         fL+Jwpvg38ghXCWrm/QVAY02b+fUS8I9Nria9q4qwdmFYKFB5lBHgGgDufxzDmNUqQkE
-         oaFA==
+        bh=1WPdo9M+Sx6XTbFXOZ/AtUfevOxtbqvZ35Od/wJosKk=;
+        b=z7o6YDD1kXTK8o/DG7hkIWs3Z8hy7Yo6SjbLpSvIWfUN4EG+Ch1bZ3ZBpz6v7RBpud
+         y36XNext6pDcS1uCMdAZqOzQxBc9V1FfdE7xmc6CIonPd1wxpgRn2GSZMY/IUbblmFZ4
+         6E+y+Z5m71GgwfbcNAB42ohiR5R5VoFRgJ8Nn1EPz1NOMpww7sJi8q182alt/1Ql2Ik1
+         VGOme+UfJy4285EOw2UvJkVBeOvhcGF4EOQucHIjQlQPxUtotN6BctQaVa6WdfLShiHD
+         qmzgFgOGBzNT4F2yPczyhmDuye8ZkLRgeKYTLLiPYFyY3Y1EyRmPmuB2F9bj7C1UiBoK
+         2fvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=06Z6GJcD54x41e0t+YKAiliCLRRI6h46exlRnJSDDOQ=;
-        b=e0lnW72GuVu5yidFZQWEptbyKWZvUQuGECzw7PlXvP7UJBlB+4EllFSAQk65KyXeib
-         PygGkDLoBx6IKQigde8xuq71sZ/DDp1eoi8dP8PSVO+A/Pp0AACX4DKtpPHbwl5w5tgX
-         RG7dhRu8jlu6JITopUJkzlLbtjsezGUHAB+vVcdQ9OG3a+V4RsvvW6nTwF46L2z+S+z8
-         8BIbCCsIg1pkfJr9gOK5YVilMs4UF/FAqPQ0QuYRA/drmEuvFjG/bpCXZCk/O4jrdY6X
-         cOKZTSPa5i1iX/Xs9Q3xLdRaXJEyFmRGp2gKH9gLf80pQGU4TX79EANSPhoIoJvCepR/
-         sgHg==
-X-Gm-Message-State: ACgBeo1iUkSLxzNhTL6eVcFqn/rIZZT7Hi4Pw8xTiiSQ2ojv7FzLbMVB
-        RpZLIjqz67QlYb5QkGTga1lsIw==
-X-Google-Smtp-Source: AA6agR6KeG3p7wiDG03hxJzWCoWNAkcztEp1+dsyHFqZbBjGYRWVOCLu2jT3rViHkH+/z5D/MUkBmQ==
-X-Received: by 2002:a05:6402:26c5:b0:43e:2f1b:31c2 with SMTP id x5-20020a05640226c500b0043e2f1b31c2mr3212843edd.424.1660304804091;
-        Fri, 12 Aug 2022 04:46:44 -0700 (PDT)
-Received: from otso.arnhem.chello.nl (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id 1-20020a170906210100b0072b31307a79sm713168ejt.60.2022.08.12.04.46.43
+        bh=1WPdo9M+Sx6XTbFXOZ/AtUfevOxtbqvZ35Od/wJosKk=;
+        b=WYNB0bJpUk4HB5Lz/4hiXxJDxSp3qSd3/+pu6QZ7T5jv51nXTVBKZsfLHNzM/o+Qxg
+         hIDNnxRYgv3tRgHs3yvWwj+3qKCWIvJMukGJyNjDoejeBUUMWexT0baLXW8G58k6YxJY
+         HP2wKR800lBOGrOhNPQbnPLnR78zUK5tblSWpQ/MTo4dIZ1AhlNKXFUIozajCD8WMAwB
+         SL4cGo4tyJtX1thpG0QkHTJAe4MrdrxOxLQUxydcOtOwK8V34WJge8Nr/n2zqmYyIhgV
+         zavuD9IRZPoDVB4lRu7Nkb7jvUKOsryewbflJSbO61izFD8FrwccKablZ7SIf69FhBgo
+         Frtw==
+X-Gm-Message-State: ACgBeo3JMckxvxSOEStC8g1+7/kBi44rwwb9mo1OkDA9yNk/SyBAAZa6
+        HVeMhq8Y2V4teQCFobfNMmwFFw==
+X-Google-Smtp-Source: AA6agR7d1ezsS3nvkyhQ1bVhlUpxExz65NeFOzJabTp4+B2vJE68BRef/AbGYGLCukUi5Cc1rnwPrA==
+X-Received: by 2002:a17:90b:394:b0:1f5:90a1:acf0 with SMTP id ga20-20020a17090b039400b001f590a1acf0mr13458944pjb.40.1660304892505;
+        Fri, 12 Aug 2022 04:48:12 -0700 (PDT)
+Received: from sean-biuld-server.itotolink.net (1-34-200-211.hinet-ip.hinet.net. [1.34.200.211])
+        by smtp.gmail.com with ESMTPSA id z6-20020a1709027e8600b0016d7afee272sm1499378pla.153.2022.08.12.04.48.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 04:46:43 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: qcom: pm6150l: add missing adc channels
-Date:   Fri, 12 Aug 2022 13:46:15 +0200
-Message-Id: <20220812114614.1195679-1-luca.weiss@fairphone.com>
-X-Mailer: git-send-email 2.37.1
+        Fri, 12 Aug 2022 04:48:12 -0700 (PDT)
+From:   Sean Hong <sean.hong@quanta.corp-partner.google.com>
+To:     perex@perex.cz, tiwai@suse.com
+Cc:     cezary.rojewski@intel.com, pierre-louis.bossart@linux.intel.com,
+        liam.r.girdwood@linux.intel.com, peter.ujfalusi@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        kai.vehmanen@linux.intel.com, broonie@kernel.org,
+        brent.lu@intel.com, yong.zhi@intel.com,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Sean Hong <sean.hong@quanta.corp-partner.google.com>
+Subject: [PATCH] ASoC: Intel: sof_rt5682: Add support for jsl_rt5682_rt1019
+Date:   Fri, 12 Aug 2022 19:48:04 +0800
+Message-Id: <20220812114804.550809-1-sean.hong@quanta.corp-partner.google.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing adc channels and add pre-scaling property to die_temp
-channel, as per downstream dts.
+This patch adds the driver data for rt5682s on SSP0 for ADL platform
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+Signed-off-by: Sean Hong <sean.hong@quanta.corp-partner.google.com>
 ---
- arch/arm64/boot/dts/qcom/pm6150l.dtsi | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ sound/soc/intel/boards/sof_rt5682.c               |  9 +++++++++
+ sound/soc/intel/common/soc-acpi-intel-jsl-match.c | 13 +++++++++++++
+ 2 files changed, 22 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/pm6150l.dtsi b/arch/arm64/boot/dts/qcom/pm6150l.dtsi
-index 7aa2ef90cb6a..f02c223ef448 100644
---- a/arch/arm64/boot/dts/qcom/pm6150l.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm6150l.dtsi
-@@ -20,10 +20,29 @@ pm6150l_adc: adc@3100 {
- 			#size-cells = <0>;
- 			#io-channel-cells = <1>;
+diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
+index 045965312245b..3a840f3a9f5d2 100644
+--- a/sound/soc/intel/boards/sof_rt5682.c
++++ b/sound/soc/intel/boards/sof_rt5682.c
+@@ -1100,6 +1100,15 @@ static const struct platform_device_id board_ids[] = {
+ 					SOF_RT5682_SSP_AMP(1) |
+ 					SOF_RT5682_NUM_HDMIDEV(4)),
+ 	},
++	{
++		.name = "jsl_rt5682_rt1019",
++		.driver_data = (kernel_ulong_t)(SOF_RT5682_MCLK_EN |
++					SOF_RT5682_MCLK_24MHZ |
++					SOF_RT5682_SSP_CODEC(0) |
++					SOF_SPEAKER_AMP_PRESENT |
++					SOF_RT1019_SPEAKER_AMP_PRESENT |
++					SOF_RT5682_SSP_AMP(1)),
++	},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(platform, board_ids);
+diff --git a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+index b95c4b2cda947..139d2468f5f70 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+@@ -29,6 +29,11 @@ static const struct snd_soc_acpi_codecs rt1015p_spk = {
+ 	.codecs = {"RTL1015"}
+ };
  
-+			adc-chan@0 {
-+				reg = <ADC5_REF_GND>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "ref_gnd";
-+			};
++static struct snd_soc_acpi_codecs rt1019p_spk = {
++	.num_codecs = 1,
++	.codecs = {"RTL1019"}
++}
 +
-+			adc-chan@1 {
-+				reg = <ADC5_1P25VREF>;
-+				qcom,pre-scaling = <1 1>;
-+				label = "vref_1p25";
-+			};
-+
- 			adc-chan@6 {
- 				reg = <ADC5_DIE_TEMP>;
-+				qcom,pre-scaling = <1 1>;
- 				label = "die_temp";
- 			};
-+
-+			adc-chan@83 {
-+				reg = <ADC5_VPH_PWR>;
-+				qcom,pre-scaling = <1 3>;
-+				label = "vph_pwr";
-+			};
- 		};
- 
- 		pm6150l_adc_tm: adc-tm@3500 {
+ static const struct snd_soc_acpi_codecs mx98360a_spk = {
+ 	.num_codecs = 1,
+ 	.codecs = {"MX98360A"}
+@@ -78,6 +83,14 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_jsl_machines[] = {
+ 		.quirk_data = &mx98360a_spk,
+ 		.sof_tplg_filename = "sof-jsl-rt5682-mx98360a.tplg",
+ 	},
++	{
++		.comp_ids = &rt5682_rt5682s_hp,
++		.drv_name = "jsl_rt5682_rt1019",
++		.sof_fw_filename = "sof-jsl.ri",
++		.machine_quirk = snd_soc_acpi_codec_list,
++		.quirk_data = &rt1019p_spk,
++		.sof_tplg_filename = "sof-jsl-rt5682-rt1015.tplg",
++	},
+ 	{
+ 		.id = "10134242",
+ 		.drv_name = "jsl_cs4242_mx98360a",
 -- 
-2.37.1
+2.25.1
 
