@@ -2,133 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B173DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 08:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CAD8C25B0F
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 08:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237825AbiHLIBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 04:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41044 "EHLO
+        id S235588AbiHLIGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 04:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237807AbiHLIAy (ORCPT
+        with ESMTP id S229552AbiHLIGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 04:00:54 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271F7DE98;
-        Fri, 12 Aug 2022 01:00:52 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8939E5C0064;
-        Fri, 12 Aug 2022 04:00:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 12 Aug 2022 04:00:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1660291251; x=1660377651; bh=8ACGRm0dwGVoAVmIuINlfIamT
-        QCxuccBvGOj1vSpQxs=; b=wLvbqfvt6dUV1CYy9j1IYKCSz0dq6jwCyFzLdIvvY
-        CZZSGcTw3w9K8aHYY8uA2alIUDMXsSeFUr6k3fVFmQy/S0F8KeLe/fBunR9UcOpC
-        N2LCzzv4zs0VWPju8mR4Y1Ooi3R5LgJkcNYVv/Wkt5Z+6sTmZ2RgT00ZuXECWtGF
-        ZI7MZGTd8YAkqbvizAwPuPhXYZ1aGf0KN69jdYum73rxXKQW+JJLcEx5fh3w/LF+
-        l21oVObjq9gi+9cfEYw9L/gwoHbNwsSdwZDT/B1WN8gPZsA0h2Cv3FIEsLwxyK7G
-        DjUwCpdwaaEWk2AcrffWXF7O2MCJTAkDPQHPiTwAz9GkQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660291251; x=1660377651; bh=8ACGRm0dwGVoAVmIuINlfIamTQCxuccBvGO
-        j1vSpQxs=; b=wxoSlat8ZO4yKvbQu7hCvPD+NdsMKmkvq4Tz8CBjMBdBfX8tNjr
-        Mxukx/yl07nfR/Tg0Sty6j8qevkLu4XtBEYnNAG62pUxyTNPgwG6YJwWdk8d/kpx
-        cxElSLAi1fFTJszkeGsLKh/wdwdkQk2IbyHDrXs+2d9R+KBVbSzySNwOAXWpb7CK
-        7jDXdBu46SQte/iuT0c84yjd+4p1lK1c0Sz6vhc3twuAQeUtNCThA2BbMvbEY2Rv
-        1mpMhK2l94sPmqA62IXgFo9FXN788yBXvRqkkVWZm0/Hg7xD8DVxWA4PbJ38CYwi
-        67ECugefkieeSvMhiHN1K8HNtNSfFW+isYQ==
-X-ME-Sender: <xms:swj2Yhz3RNKkmDIaHa5EA13S3R-VWB12euh8WEv_pI5t6EfNZFg6eg>
-    <xme:swj2YhR7JttJ0dIdlc1NSbdvIKXoOZs3EjSpGK5ReQmEgVMSkjSqXGFu3HEJhw6QH
-    zJ-kRGj-DnMrLOfIg>
-X-ME-Received: <xmr:swj2YrW3xqeGu-yIkfnP8x1lS7yQ6hngTYBjpSrj0CjEP6j1acdyRVvKvylRKCvC31Qe25BFEjK2jI_JuHsWNPS6eQAVlUZSQ0yW96rgrbP5WLnCAZc9SII_12x_NuuubrSR1Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeghedguddvjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeeh
-    hffhkeekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:swj2YjhCaI6QScNxW-3I5v6-Cfh5HqQErFRrJ1WYAo0Hnl0iBJzwFQ>
-    <xmx:swj2YjBGxiX12Id0ux0xBNUF20fhE9VLW3NcCRJBvevXStfNfIdl7g>
-    <xmx:swj2YsKeoQ0F13qarPOhAKAL5n1qOmdPtzTsCAYki9pQ_6degQKY_Q>
-    <xmx:swj2YlDyNCnESDzoN5hJXTjdw4hwtolizpLCMF6UMGcZkT1LuOMkJQ>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 12 Aug 2022 04:00:50 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH] clk: sunxi-ng: d1: Limit PLL rates to stable ranges
-Date:   Fri, 12 Aug 2022 03:00:49 -0500
-Message-Id: <20220812080050.59850-1-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
+        Fri, 12 Aug 2022 04:06:47 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB329DB6D;
+        Fri, 12 Aug 2022 01:06:46 -0700 (PDT)
+Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M3x8Y4CcJz687YW;
+        Fri, 12 Aug 2022 16:06:37 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 12 Aug 2022 10:06:43 +0200
+Received: from [10.48.157.254] (10.48.157.254) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 12 Aug 2022 09:06:42 +0100
+Message-ID: <437abe43-7ddd-6f49-9386-d8ed04c659bf@huawei.com>
+Date:   Fri, 12 Aug 2022 09:06:42 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 0/6] libsas and drivers: NCQ error handling
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <jinpu.wang@cloud.ionos.com>, <yangxingui@huawei.com>,
+        <chenxiang66@hisilicon.com>, <hare@suse.de>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1658489049-232850-1-git-send-email-john.garry@huawei.com>
+ <d2e27cb7-d90a-2f0a-1848-e1ec8faf7899@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <d2e27cb7-d90a-2f0a-1848-e1ec8faf7899@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.48.157.254]
+X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set the min/max rates for audio and video PLLs to keep them from going
-outside their documented stable ranges. Use the most restrictive of the
-"stable" and "actual" frequencies listed in the manual.
+On 11/08/2022 19:54, Damien Le Moal wrote:
+> On 2022/07/22 4:24, John Garry wrote:
+>> As reported in [0], the pm8001 driver NCQ error handling more or less
+>> duplicates what libata does in link error handling, as follows:
+>> - abort all commands
+>> - do autopsy with read log ext 10 command
+>> - reset the target to recover
+>>
+>> Indeed for the hisi_sas driver we want to add similar handling for NCQ
+>> errors.
+>>
+>> This series add a new libsas API - sas_ata_link_abort() - to handle host
+>> NCQ errors, and fixes up pm8001 and hisi_sas drivers to use it. As
+>> mentioned in the pm8001 changeover patch, I would prefer a better place to
+>> locate the SATA ABORT command (rather that nexus reset callback).
+>>
+>> I would appreciate some testing of the pm8001 change as the read log ext10
+>> command mostly hangs on my arm64 machine - these arm64 hangs are a known
+>> issue.
+> 
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+Thanks for this!
 
- drivers/clk/sunxi-ng/ccu-sun20i-d1.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> I applied this series on top of the current Linus tree and ran some tests: a
+> bunch of fio runs and also ran libzbc test suites on a SATA SMR drive as that
+> generates many command failures. No problems detected, the tests all pass.
+> FYI, messages for failed commands look like this:
+> 
+> pm80xx0:: mpi_sata_event 2685: SATA EVENT 0x23
+> sas: Enter sas_scsi_recover_host busy: 1 failed: 1
+> sas: sas_scsi_find_task: aborting task 0x00000000ba62a907
+> pm80xx0:: mpi_sata_completion 2292: task null, freeing CCB tag 2
+> sas: sas_scsi_find_task: task 0x00000000ba62a907 is aborted
+> sas: sas_eh_handle_sas_errors: task 0x00000000ba62a907 is aborted
+> ata21.00: exception Emask 0x0 SAct 0x20000000 SErr 0x0 action 0x0
+> ata21.00: failed command: WRITE FPDMA QUEUED
+> ata21.00: cmd 61/02:00:ff:ff:ea/00:00:02:00:00/40 tag 29 ncq dma 8192 out
+> res 43/04:02:ff:ff:ea/00:00:02:00:00/00 Emask 0x400 (NCQ error) <F>
+> ata21.00: status: { DRDY SENSE ERR }
+> ata21.00: error: { ABRT }
+> ata21.00: configured for UDMA/133
+> ata21: EH complete
+> sas: --- Exit sas_scsi_recover_host: busy: 0 failed: 1 tries: 1
+> 
 
-diff --git a/drivers/clk/sunxi-ng/ccu-sun20i-d1.c b/drivers/clk/sunxi-ng/ccu-sun20i-d1.c
-index 51058ba4db4d..8ef3cdeb7962 100644
---- a/drivers/clk/sunxi-ng/ccu-sun20i-d1.c
-+++ b/drivers/clk/sunxi-ng/ccu-sun20i-d1.c
-@@ -104,6 +104,8 @@ static struct ccu_nm pll_video0_4x_clk = {
- 	.lock		= BIT(28),
- 	.n		= _SUNXI_CCU_MULT_MIN(8, 8, 12),
- 	.m		= _SUNXI_CCU_DIV(1, 1), /* input divider */
-+	.min_rate	= 252000000U,
-+	.max_rate	= 2400000000U,
- 	.common		= {
- 		.reg		= 0x040,
- 		.hw.init	= CLK_HW_INIT_PARENTS_DATA("pll-video0-4x", osc24M,
-@@ -126,6 +128,8 @@ static struct ccu_nm pll_video1_4x_clk = {
- 	.lock		= BIT(28),
- 	.n		= _SUNXI_CCU_MULT_MIN(8, 8, 12),
- 	.m		= _SUNXI_CCU_DIV(1, 1), /* input divider */
-+	.min_rate	= 252000000U,
-+	.max_rate	= 2400000000U,
- 	.common		= {
- 		.reg		= 0x048,
- 		.hw.init	= CLK_HW_INIT_PARENTS_DATA("pll-video1-4x", osc24M,
-@@ -175,6 +179,8 @@ static struct ccu_nm pll_audio0_4x_clk = {
- 	.m		= _SUNXI_CCU_DIV(16, 6),
- 	.sdm		= _SUNXI_CCU_SDM(pll_audio0_sdm_table, BIT(24),
- 					 0x178, BIT(31)),
-+	.min_rate	= 180000000U,
-+	.max_rate	= 3000000000U,
- 	.common		= {
- 		.reg		= 0x078,
- 		.features	= CCU_FEATURE_SIGMA_DELTA_MOD,
-@@ -202,6 +208,8 @@ static struct ccu_nm pll_audio1_clk = {
- 	.lock		= BIT(28),
- 	.n		= _SUNXI_CCU_MULT_MIN(8, 8, 12),
- 	.m		= _SUNXI_CCU_DIV(1, 1),
-+	.min_rate	= 180000000U,
-+	.max_rate	= 3000000000U,
- 	.common		= {
- 		.reg		= 0x080,
- 		.hw.init	= CLK_HW_INIT_PARENTS_DATA("pll-audio1", osc24M,
--- 
-2.35.1
+For this specific test we don't seem to run a hardreset after the 
+autopsy, but we do seem to be getting an NCQ error. That's interesting.
+
+We have noticed this scenario for hisi_sas NCQ error, whereby the 
+autopsy decided a reset is not required or useful, such as a medium 
+error. Anyway the pm8001 driver relies on the reset being run always for 
+the NCQ error. So I am thinking of tweaking sas_ata_link_abort() as follows:
+
+void sas_ata_link_abort(struct domain_device *device)
+{
+	struct ata_port *ap = device->sata_dev.ap;
+	struct ata_link *link = &ap->link;
+
+	link->eh_info.err_mask |= AC_ERR_DEV;
++	link->eh_info.action |= ATA_EH_RESET;
+	ata_link_abort(link);
+}
+
+This should force a reset.
+
+Thanks,
+John
+
+> Seems all good to me.
+> 
+>>
+>> Finally with these changes we can make the libsas task alloc/free APIs
+>> private, which they should always have been.
+>>
+>> Based on v5.19-rc6
+>>
+>> [0] https://lore.kernel.org/linux-scsi/8fb3b093-55f0-1fab-81f4-e8519810a978@huawei.com/
+>>
+>> John Garry (5):
+>>    scsi: pm8001: Modify task abort handling for SATA task
+>>    scsi: libsas: Add sas_ata_link_abort()
+>>    scsi: pm8001: Use sas_ata_link_abort() to handle NCQ errors
+>>    scsi: hisi_sas: Don't issue ATA softreset in hisi_sas_abort_task()
+>>    scsi: libsas: Make sas_{alloc, alloc_slow, free}_task() private
+>>
+>> Xingui Yang (1):
+>>    scsi: hisi_sas: Add SATA_DISK_ERR bit handling for v3 hw
+>>
+>>   drivers/scsi/hisi_sas/hisi_sas_main.c  |   5 +-
+>>   drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |  22 ++-
+>>   drivers/scsi/libsas/sas_ata.c          |  10 ++
+>>   drivers/scsi/libsas/sas_init.c         |   3 -
+>>   drivers/scsi/libsas/sas_internal.h     |   4 +
+>>   drivers/scsi/pm8001/pm8001_hwi.c       | 194 +++++++------------------
+>>   drivers/scsi/pm8001/pm8001_sas.c       |  13 ++
+>>   drivers/scsi/pm8001/pm8001_sas.h       |   8 +-
+>>   drivers/scsi/pm8001/pm80xx_hwi.c       | 177 ++--------------------
+>>   include/scsi/libsas.h                  |   4 -
+>>   include/scsi/sas_ata.h                 |   5 +
+>>   11 files changed, 132 insertions(+), 313 deletions(-)
+>>
+> 
+> 
 
