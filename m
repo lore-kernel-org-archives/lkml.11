@@ -2,151 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC19DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:57:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442E7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238426AbiHLN5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 09:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
+        id S238549AbiHLN6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 09:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbiHLN51 (ORCPT
+        with ESMTP id S233383AbiHLN6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 09:57:27 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51119925D
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:57:26 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id k26so2175942ejx.5
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=UqdfMBk3FFh1oCjqYXyPvd30eogbRofxBEUHJL5KgK0=;
-        b=UIOZDYkytCcVwuVC8i6ZqFPz3l3zhM5EVr/20mUsnh5cx2mTXPpvRc2c9jbYUYLQZc
-         AfvSHtrRT4r02XTsO7bSI2mD76VkFeItd+jLH9Z5Bu9CiTgdy1XBIPsmF5BDjZ/LU0lu
-         7Ig+56xv16be3+gJepLICuA9ONSyc0ohcRaAhACdwfjuzDt2GWJPa9bBqShHOasgyIOR
-         MI8kMIu+bqS1lpN0XYYe9ibALCmU3r5EPNRUZPTygDHk+oJN/qr+XvbL9W+LPfbWRZ2T
-         HJENOPnMWurAw0bnBfgCFi/0BUcytm/DBBK8oXE2CbTbLqfzYDt0PL8uRon/+hsmMtOF
-         Aiyg==
+        Fri, 12 Aug 2022 09:58:23 -0400
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED39D8CE;
+        Fri, 12 Aug 2022 06:58:21 -0700 (PDT)
+Received: by mail-qv1-f54.google.com with SMTP id m10so654714qvu.4;
+        Fri, 12 Aug 2022 06:58:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=UqdfMBk3FFh1oCjqYXyPvd30eogbRofxBEUHJL5KgK0=;
-        b=2ZAox4hFKbWLpajot7u8GIAeSWDOqh3xSHltzkgJjR7ZagwaFWCkLa+jV0fuPEsAdK
-         XlTdcEAK3Lw8+BXFVTj1uvs8pZN0I7nfxTeX3Tix85z9DaqpJ07hhGQu3GmD95TnpDpA
-         MQH1/hTo1iq0pWLDAIbBNoOE7gGGrZ8oWcuCA2BM7rfFymhQBXiO08zWIGNu9zsM4fVE
-         SRTuPLCF2l5ICn7lrcxKd515wo3Nl+lWaUYRTIksNPgAl0FeamqsO24lqz6VjfW50WMk
-         D2jHnVvyhB1DGvfDLuZpioD6ujFv7lbIamYNQiFTdxj4EYyTfcX1IAf2tGNj21Lok0q6
-         jR3w==
-X-Gm-Message-State: ACgBeo0BzRPFMb8rxtI9B0mP+psDg7peSMGC8WhrMA7Bdg8Zhn2PCp4Y
-        yUH0BBqPmQUSu0iMJJ0NLKaxKgGYBVRh3uiksXI=
-X-Google-Smtp-Source: AA6agR5b6JHS11XaB1VLJdcr0UpOBC3SruahBqfEW7BjMgwF9FOhR6nIAQ4vdwbn4/nulbrITJlNjfSVctyZMKCpMUQ=
-X-Received: by 2002:a17:907:d9e:b0:731:1a5:8c68 with SMTP id
- go30-20020a1709070d9e00b0073101a58c68mr2816133ejc.365.1660312645159; Fri, 12
- Aug 2022 06:57:25 -0700 (PDT)
+        bh=d7r3RnctDfwx/VdWd1r6qoq8F6MrjhkzcAY+2hCxdkY=;
+        b=mO8De3TFqfcCfR+6S0AfTHxy5Vb8xMXDzGh0HKlABGaoHCopQQTjqJHnwKUVD05G4u
+         Ly7qJJce6BdYzUYcEDcMlKC5p3hXtFiOOxs48/mkNEB0g07WqbZ8SPC2xq3OFLJXqTXD
+         S76MU0GvwmfX1gcob3j6of+aPvBfmyYSV9QfPy64cNW08fhIWncBxYcuNeINEtwBjYn5
+         Tw6d0qNMVJlv7tIaaXJLTdUqGg1aNnRXOtFnGvTV7ZdG65ZRxTYyigoDMx1QJnZgnxfP
+         EwKe4p4kPHiyM9EMv2upDXW3HHywTV36h45oOPbqtGDW9WunHnuCpyYBkrmKd0CPCW4E
+         HZAQ==
+X-Gm-Message-State: ACgBeo2OYEnIqHmZlYnLvpt9ALMuIV0eVPvpJz+G+hX95A9TrtrbDz/4
+        lyVlXLmGmKOjmKM6LVBtSJUUAsRucj/kSQ==
+X-Google-Smtp-Source: AA6agR6yGJ2GGQL+2k7aUzgGKP8H2d8+YJ65r06Ln0Z5hgE6e2vSGqZ9OUDNEDzIXw0y/ny1E1HDnw==
+X-Received: by 2002:a05:6214:62a:b0:476:8cb6:2b2e with SMTP id a10-20020a056214062a00b004768cb62b2emr3751068qvx.62.1660312700378;
+        Fri, 12 Aug 2022 06:58:20 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id h1-20020ac87141000000b00342f5408ea5sm1820753qtp.49.2022.08.12.06.58.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 06:58:20 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id 7so1656458ybw.0;
+        Fri, 12 Aug 2022 06:58:20 -0700 (PDT)
+X-Received: by 2002:a25:6890:0:b0:684:2c5c:1bd8 with SMTP id
+ d138-20020a256890000000b006842c5c1bd8mr850130ybc.604.1660312221067; Fri, 12
+ Aug 2022 06:50:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220812132124.2053673-1-dzm91@hust.edu.cn> <YvZYmprZ1NiMkynp@kroah.com>
-In-Reply-To: <YvZYmprZ1NiMkynp@kroah.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Fri, 12 Aug 2022 21:56:46 +0800
-Message-ID: <CAD-N9QWU_tcnHMtP3iWcQogSWwDET4nhK5AQKDbh2KJQzwfF9A@mail.gmail.com>
-Subject: Re: [PATCH] drivers: binderfs: fix memory leak in binderfs_fill_super
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220706143521.459565-1-Jason@zx2c4.com> <20220708004032.733426-1-Jason@zx2c4.com>
+In-Reply-To: <20220708004032.733426-1-Jason@zx2c4.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 12 Aug 2022 15:50:09 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXnF+ArtzgVH+rEKXgcujrwW2nfyMwaKB9UYf-GC3OT_w@mail.gmail.com>
+Message-ID: <CAMuHMdXnF+ArtzgVH+rEKXgcujrwW2nfyMwaKB9UYf-GC3OT_w@mail.gmail.com>
+Subject: Re: [PATCH v5] random: remove CONFIG_ARCH_RANDOM
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@suse.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 9:41 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Fri, Aug 12, 2022 at 09:21:24PM +0800, Dongliang Mu wrote:
-> > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >
-> > In binderfs_fill_super, if s_root is not successfully initialized by
-> > d_make_root, the previous allocated s_sb_info will not be freed since
-> > generic_shutdown_super first checks if sb->s_root and then does
-> > put_super operation. The put_super operation calls binderfs_put_super
-> > to deallocate s_sb_info and put ipc_ns. This will lead to memory leak
-> > in binderfs_fill_super.
-> >
-> > Fix this by invoking binderfs_put_super at error sites before s_root
-> > is successfully initialized.
-> >
-> > Fixes: 095cf502b31e ("binderfs: port to new mount api")
-> > Reported-by: syzkaller <syzkaller@googlegroups.com>
->
-> Where is the specific syzkaller link for this report?  It would be good
-> to reference it so it can be properly checked.
->
-> Also, how did you test this change?
+Hi Jason,
 
-I found this memory leak in my local syzkaller, and there is no any
-syzbot report about this crash, therefore I use such a Reported-by to
-indicate.
-
-Although my local syzkaller does generate any reproducer, this bug can
-be triggered by injecting faults at new_inode and d_make_root (i.e.,
-between s_sb_info allocation and code after d_make_root).
-
+On Fri, Jul 8, 2022 at 2:44 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> When RDRAND was introduced, there was much discussion on whether it
+> should be trusted and how the kernel should handle that. Initially, two
+> mechanisms cropped up, CONFIG_ARCH_RANDOM, a compile time switch, and
+> "nordrand", a boot-time switch.
 >
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > ---
-> >  drivers/android/binderfs.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-> > index 588d753a7a19..20f5bc77495f 100644
-> > --- a/drivers/android/binderfs.c
-> > +++ b/drivers/android/binderfs.c
-> > @@ -710,8 +710,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> >       info->mount_opts.stats_mode = ctx->stats_mode;
-> >
-> >       inode = new_inode(sb);
-> > -     if (!inode)
-> > +     if (!inode) {
-> > +             binderfs_put_super(sb);
-> >               return -ENOMEM;
-> > +     }
-> >
-> >       inode->i_ino = FIRST_INODE;
-> >       inode->i_fop = &simple_dir_operations;
-> > @@ -721,8 +723,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> >       set_nlink(inode, 2);
-> >
-> >       sb->s_root = d_make_root(inode);
-> > -     if (!sb->s_root)
-> > +     if (!sb->s_root) {
-> > +             binderfs_put_super(sb);
-> >               return -ENOMEM;
-> > +     }
+> Later the thinking evolved. With a properly designed RNG, using RDRAND
+> values alone won't harm anything, even if the outputs are malicious.
+> Rather, the issue is whether those values are being *trusted* to be good
+> or not. And so a new set of options were introduced as the real
+> ones that people use -- CONFIG_RANDOM_TRUST_CPU and "random.trust_cpu".
+> With these options, RDRAND is used, but it's not always credited. So in
+> the worst case, it does nothing, and in the best case, maybe it helps.
 >
-> How did you test this change to verify that you are not now just leaking
-> memory?  It looks to me like you just changed one problem for another
-> one :(
+> Along the way, CONFIG_ARCH_RANDOM's meaning got sort of pulled into the
+> center and became something certain platforms force-select.
+>
+> The old options don't really help with much, and it's a bit odd to have
+> special handling for these instructions when the kernel can deal fine
+> with the existence or untrusted existence or broken existence or
+> non-existence of that CPU capability.
+>
+> Simplify the situation by removing CONFIG_ARCH_RANDOM and using the
+> ordinary asm-generic fallback pattern instead, keeping the two options
+> that are actually used. For now it leaves "nordrand" for now, as the
+> removal of that will take a different route.
+>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: H. Peter Anvin <hpa@zytor.com>
+> Acked-by: Borislav Petkov <bp@suse.de>
+> Acked-by: Heiko Carstens <hca@linux.ibm.com>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-As mentioned above, I just tested my change by injecting faults at
-new_inode and d_make_root.
+Thanks for your patch, which is now commit 9592eef7c16ec5fb ("random:
+remove CONFIG_ARCH_RANDOM") upstream.
 
-Can you explain more about "changed one problem for another one"? I
-don't quite understand this statement.
+> --- a/drivers/char/Kconfig
+> +++ b/drivers/char/Kconfig
+> @@ -431,7 +431,6 @@ config ADI
+>  config RANDOM_TRUST_CPU
+>         bool "Initialize RNG using CPU RNG instructions"
+>         default y
+> -       depends on ARCH_RANDOM
+>         help
+>           Initialize the RNG using random numbers supplied by the CPU's
+>           RNG instructions (e.g. RDRAND), if supported and available. These
 
->
-> Please always be very very careful when making these types of changes,
-> and verify and test that they are correct.
->
-> thanks,
->
-> greg k-h
+This change means everyone configuring a kernel will be asked this
+question, even when configuring for an architecture that does not
+support RNG instructions.
+
+Perhaps this question should be hidden behind EXPERT?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
