@@ -2,152 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DC2C3276A
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 15:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4741C282E7
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 15:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239187AbiHLPO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 11:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S238965AbiHLPPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 11:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238989AbiHLPOY (ORCPT
+        with ESMTP id S239189AbiHLPO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 11:14:24 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE0FA599C;
-        Fri, 12 Aug 2022 08:14:23 -0700 (PDT)
-Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M46Zp58GHz688mK;
-        Fri, 12 Aug 2022 23:11:30 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 12 Aug 2022 17:14:17 +0200
-Received: from SecurePC-101-06.china.huawei.com (10.122.247.231) by
- lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 12 Aug 2022 16:14:17 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     <linuxarm@huawei.com>, <linux-cxl@vger.kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-CC:     <john.garry@huawei.com>, Peter Zijlstra <peterz@infradead.org>,
-        "Ingo Molnar" <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Alison Schofield" <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [RFC PATCH 4/4] docs: perf: Minimal introduction the the CXL PMU device and driver.
-Date:   Fri, 12 Aug 2022 16:12:14 +0100
-Message-ID: <20220812151214.2025-5-Jonathan.Cameron@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220812151214.2025-1-Jonathan.Cameron@huawei.com>
-References: <20220812151214.2025-1-Jonathan.Cameron@huawei.com>
+        Fri, 12 Aug 2022 11:14:58 -0400
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D67A7A81;
+        Fri, 12 Aug 2022 08:14:57 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id l22so1522314wrz.7;
+        Fri, 12 Aug 2022 08:14:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=EoiVDV1BpkQyac6N0M+0zVwSj3WK1AdJP/ntOJZkbiI=;
+        b=y+C6TXoGy+311Sk25HndUdD8oAFpkGvgecJybzjCxB2DZEJQOrZkmUmsuPiqCI7MYK
+         nSygq/qCXeJkAetWuNZmVuqOLpfhIkZiyi0PUksGqaPvRgPGMfD10an0EY1LnHsiXQo3
+         O3MX5M+fD8ovdchs7GRBFr/RjXfv9rE6CclRf8ZPdwZZaUuagAc1rHUclt2hzaABqtgV
+         0DxTl0Fku6UTlBwX4KzWQb/yr0gAf2i6NiI1nzzKmlpxYe/1XLlsSFgdZ9rMt22tu9qo
+         66s+eu6aVCvbHc7D2a0LxigsTFTjugt752viL8GosJrhBi95OmTwhQLQb8GaCWykYqH+
+         4V5w==
+X-Gm-Message-State: ACgBeo3nSzT4v8Au/HSgM27ms/en+vyPUdFXUwwqxZ0TRMQD9/M4YbuF
+        uRzVSSMdxMhAvLRLVTR7DZDdfh1pZ9g=
+X-Google-Smtp-Source: AA6agR67pF4bd0Gg+R7FFH9Fs1c0QAkU7YjmSu0wWkZPvc1aU+z3yNTU4l0akoiHi1cnVXOTwkrsNw==
+X-Received: by 2002:a05:6000:18a3:b0:21f:d6a4:1aec with SMTP id b3-20020a05600018a300b0021fd6a41aecmr2444780wri.468.1660317296338;
+        Fri, 12 Aug 2022 08:14:56 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id h41-20020a05600c49a900b003a5260b8392sm3938969wmp.23.2022.08.12.08.14.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 08:14:56 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 15:14:54 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        linux-hyperv@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v1 5/5][RFT] ACPI: Drop parent field from struct
+ acpi_device
+Message-ID: <20220812151454.fqt2gknsoqjco4mz@liuwe-devbox-debian-v2>
+References: <12036348.O9o76ZdvQC@kreacher>
+ <2196460.iZASKD2KPV@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.122.247.231]
-X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2196460.iZASKD2KPV@kreacher>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Very basic introduction to the device and the current driver support
-provided. I expect to expand on this in future versions of this patch
-set.
+On Wed, Aug 10, 2022 at 06:23:05PM +0200, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> The parent field in struct acpi_device is, in fact, redundant,
+> because the dev.parent field in it effectively points to the same
+> object and it is used by the driver core.
+> 
+> Accordingly, the parent field can be dropped from struct acpi_device
+> and for this purpose define acpi_dev_parent() to retrieve the parent
+> struct acpi_device pointer from the dev.parent field in struct
+> acpi_device.  Next, update all of the users of the parent field
+> in struct acpi_device to use acpi_dev_parent() instead of it and
+> drop it.
+> 
+> While at it, drop the ACPI_IS_ROOT_DEVICE() macro that is only used
+> in one place in a confusing way.
+> 
+> No intentional functional impact.
+> 
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> ---
+> 
+> I may have missed some places where adev->parent is used directly, so
+> if that's happened, please let me know (I'm assuming that 0-day will
+> pick up this patch and run it through all of the relevant configs
+> anyway).
+> 
+> ---
+[...]
+>  drivers/hv/vmbus_drv.c       |    3 ++-
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
---
-RFC:
-- I'll post separately about this shortly, but it seems very odd
-  to me that there is no way to assign a parent to an event_sources
-  device.  As a result we get the messy approach of playing match
-  the name to figure out what the CPMU instance is connected to.
----
- Documentation/admin-guide/perf/cxl.rst   | 60 ++++++++++++++++++++++++
- Documentation/admin-guide/perf/index.rst |  1 +
- 2 files changed, 61 insertions(+)
-
-diff --git a/Documentation/admin-guide/perf/cxl.rst b/Documentation/admin-guide/perf/cxl.rst
-new file mode 100644
-index 000000000000..6ffc057591fb
---- /dev/null
-+++ b/Documentation/admin-guide/perf/cxl.rst
-@@ -0,0 +1,60 @@
-+======================================
-+CXL Performance Monitoring Unit (CPMU)
-+======================================
-+
-+The CXL rev 3.0 specification provides a definition of CXL Performance
-+Monitoring Unit in section 13.2: Performance Monitoring.
-+
-+CXL components (e.g. Root Port, Switch Upstream Port, End Point) may have
-+any number of CPMU instances. CPMU capabilities are fully discoverable from
-+the devices. The specification provides event definitions for all CXL protocol
-+message types and a set of additional events for things commonly counted on
-+CXL devices (e.g. DRAM events).
-+
-+CPMU driver
-+===========
-+
-+The CPMU driver register a perf PMU with the name cpmu<id> on the CXL bus.
-+
-+    /sys/bus/cxl/device/cpmu<id>
-+
-+The associated PMU is registered as
-+
-+   /sys/bus/event_sources/devices/cpmu<id>
-+
-+In common with other CXL bus devices, the id has no specific meaning and the
-+relationship to specific CXL device should be established via the device parent
-+of the device on the CXL bus.
-+
-+PMU driver provides description of available events and filter options in sysfs.
-+
-+The "format" directory describes all formats of the config (event vendor id,
-+group id and mask) config1 (threshold, filter enables) and config2 (filter
-+parameters) fields of the perf_event_attr structure.  The "events" directory
-+describes all documented events show in perf list.
-+
-+The events shown in perf list are the most fine grained events with a single
-+bit of the event mask set. More general events may be enable by setting
-+multiple mask bits in config. For example, all Device to Host Read Requests
-+may be captured on a single counter by setting the bits for all of
-+
-+* d2h_req_rdcurr
-+* d2h_req_rdown
-+* d2h_req_rdshared
-+* d2h_req_rdany
-+* d2h_req_rdownnodata
-+
-+Example of usage::
-+
-+  $#perf list
-+  cpmu0/clock_ticks/                                 [Kernel PMU event]
-+  cpmu0/d2h_req_itomwr/                              [Kernel PMU event]
-+  cpmu0/d2h_req_rdany/                               [Kernel PMU event]
-+  cpmu0/d2h_req_rdcurr/                              [Kernel PMU event]
-+  -----------------------------------------------------------
-+
-+  $# perf stat -e cpmu0/clock_ticks/ -e cpmu0/d2h_req_itowrm/
-+
-+The driver does not support sampling. So "perf record" and attaching to
-+a task are unsupported.
-+
-diff --git a/Documentation/admin-guide/perf/index.rst b/Documentation/admin-guide/perf/index.rst
-index 69b23f087c05..ff1ac52c37fb 100644
---- a/Documentation/admin-guide/perf/index.rst
-+++ b/Documentation/admin-guide/perf/index.rst
-@@ -17,3 +17,4 @@ Performance monitor support
-    xgene-pmu
-    arm_dsu_pmu
-    thunderx2-pmu
-+   cxl
--- 
-2.32.0
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
