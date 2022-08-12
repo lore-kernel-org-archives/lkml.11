@@ -2,132 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9110AC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7A8C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238187AbiHLKOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        id S237919AbiHLKOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238170AbiHLKOL (ORCPT
+        with ESMTP id S238308AbiHLKOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:14:11 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53B3AB4E8
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:13:18 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id w15so507405ljw.1
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=8cLhmbUzxjFPeEqNnxegdJhRMYmiHcGmozP5wffiZTU=;
-        b=WTxdbpatl/Nddz+PTuVRR73SuOXowEQtLmLFxwXWr5GSYU+ztSACZWVLaK2vzxj6m2
-         3NdwSnjEIuzz6QdV1sGNd+PZwhsw0kp2vd8OV4FBs95Ubiv1gkcyN7+g+cGKDByb+dwc
-         VQaz4lcgk7eb4C/9zl9ZYT0SHgo4br4IhFxpnqSl4UJ9dKefLYB9Ro0WwChQc7roJYiv
-         qtr4ZjKf0hvB8pl/KDFx1/0QTUUnNrZUeTJYA9rnIsSID56uY/KMzHsCWv4uyxdt/0Z3
-         w+mbvhDGrfZt2gPg0v9ElyCXUE5wVb/a+Etr7VCnn3ncEwUWWctATPiZqmDsJPyv+BLB
-         mg+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=8cLhmbUzxjFPeEqNnxegdJhRMYmiHcGmozP5wffiZTU=;
-        b=MTZp+pZwmY+9a6r3zgy0KIw+2QiRsL9sHdkFJgp6PXZIxqMDj1GUSd3JrMwkS/+Ri6
-         nB+KtGlKYoW/YBXdYoYVLqXOEJrbSDkkFtZM8B13tN/h9zNKbJy3Ql2+Fp/kXo6utfm1
-         wgLLtCoYM7pzUFEL/waH4QDLaLMkk5ACC/EPKR9mqIKx8yP33O6wtbs4Z3qpr9h+jmjQ
-         S/Ya+In0JWxeXOo6QLbIrtKn54IqhiuqXHxkpqA9kFljfXaBs4kiMgbp9R9OxKiLu6ed
-         3bCqk9o7Gh2y3frjybtS3yvpFd/GEaiQekBouN4isnB1fBojZRJa+opFrOjMankVitEK
-         /c9g==
-X-Gm-Message-State: ACgBeo2Vg2hdeFkoBQQFC3HUzVbA/0JBUU1bNVsx29g0D7BwCngTniaq
-        0tNNuQFNkbXC+SN8QnNEpwVsWA==
-X-Google-Smtp-Source: AA6agR7naJ9emf9TqWnh8kwp04vlKy5jAdUnOcyWakfGln360Wqaak0cNUSE0V2nXvLtaxyZjCuJ0Q==
-X-Received: by 2002:a2e:b8d3:0:b0:25f:e94d:10ae with SMTP id s19-20020a2eb8d3000000b0025fe94d10aemr897828ljp.331.1660299197072;
-        Fri, 12 Aug 2022 03:13:17 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id e7-20020a05651c038700b0025df04af0f0sm305398ljp.51.2022.08.12.03.13.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 03:13:16 -0700 (PDT)
-Message-ID: <c2991370-b55f-c782-d62c-f9c667e40389@linaro.org>
-Date:   Fri, 12 Aug 2022 13:13:10 +0300
+        Fri, 12 Aug 2022 06:14:23 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CE3ABD76;
+        Fri, 12 Aug 2022 03:13:42 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 1B84F5C0162;
+        Fri, 12 Aug 2022 06:13:40 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 12 Aug 2022 06:13:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660299220; x=1660385620; bh=zE
+        POgXch4RnjNYE4POh1BRcOpzKpo4IjzZ+TAEzqKUc=; b=k+ZLIdoG9wrMDEGlfA
+        c9djB+sYDhM/K8ns4HF8xToVmTu6BIbIBgNRxE4ogwjmC1Du8NlJs5YMvrRPK7s5
+        /hg76wobZJKzWEqbp7NGYH3F8paDa7L3MvHtC+QH/dqFFAyDk1KvkkROTIFzyHc5
+        clwzEHx7H40jB8z0I1S1G4YQRt28Aq+3+cKkgvlmMgZZazct8BarCCNOWZgTNrQH
+        qUPAQsyseZkG+7m93jcw6BtZasPzwwYyMYbK0ZzZLAqyY3BfsrJuQLmqgo046EB4
+        WnPqf4zdiNo/WSdGwZlmybTedWZ5p9t5jsIu6ozm3BOcUn9zDqlIA0qHW6Ao1InE
+        rzxw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660299220; x=1660385620; bh=zEPOgXch4RnjNYE4POh1BRcOpzKp
+        o4IjzZ+TAEzqKUc=; b=JXF8YA2G2KUv3m6D77HAn6ksFPepbUbd15JuCdAIxWol
+        eGwqNYj1fl6xtuJ5ZVDJ5wNkWLP+xLwoBdX0zoXpbm7dry75JJuKsXD50b1iVqKn
+        zdzeTVrRY8Ia9xm43DGNHZQ/wxYLvRrwcgpksU1dK8brSc5UkaDnoFjVfE5akN7u
+        XNRho3wZUKH1dkB7pUZSRC7naA+qF3eTcKyr1GsD1KzeRn2mOqNmDTSjwR08QihW
+        EGUJmPC4zggXTConaycBamJRS+/wh9z/qQL+5rnGtcnXMizOYqDzOS/gAyqB92fC
+        gjj8rVg7PgEW/jPui9fgM4RaJlloHDQD2ota7aO7Uw==
+X-ME-Sender: <xms:0yf2YjUidQPnmNygUlNK3a3P4ldclFXhebKFLLhUpliEcCo52IEd3w>
+    <xme:0yf2YrlKbXx5f4QiyhovPkxOS7uDLUc_fDE2x17rsQSqApa2V5OOSsZeTC2Z2qI_C
+    50dNhc-03zgt1NWKhs>
+X-ME-Received: <xmr:0yf2YvZel3PNhsPtrT9t-8spVe4elSKRLuWiGfbOA8Ra2QImTmPK_rcRjAacpPCRKQkUgQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegiedgvdehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
+    dttddttddvnecuhfhrohhmpedfmfhirhhilhhlucetrdcuufhhuhhtvghmohhvfdcuoehk
+    ihhrihhllhesshhhuhhtvghmohhvrdhnrghmvgeqnecuggftrfgrthhtvghrnhephfeige
+    fhtdefhedtfedthefghedutddvueehtedttdehjeeukeejgeeuiedvkedtnecuvehluhhs
+    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepkhhirhhilhhlsehshh
+    huthgvmhhovhdrnhgrmhgv
+X-ME-Proxy: <xmx:0yf2YuXeb1qj12vACU70iPBxwwxqohcdVJw9d43PFDnL0Fn5vxB_xA>
+    <xmx:0yf2YtlpQ1E1a9K00SXTK3uf2x3IoEg73mZ28oM4-N1gGAAZ-NFEXg>
+    <xmx:0yf2Yrejv22MCpDiFSdjGyNEwXmg7-IxDV4jGfno50Jg9nYrdfcJlA>
+    <xmx:1Cf2Yix5liigdlgPJj6bhZPTjCLlDD9xB_QsRGDMb5RYbpBucrQ_fA>
+Feedback-ID: ie3994620:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 12 Aug 2022 06:13:39 -0400 (EDT)
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 03205104A31; Fri, 12 Aug 2022 13:16:39 +0300 (+03)
+Date:   Fri, 12 Aug 2022 13:16:39 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: State of the Page (August 2022)
+Message-ID: <20220812101639.ijonnx7zeus7h2hn@box.shutemov.name>
+References: <YvV1KTyzZ+Jrtj9x@casper.infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 6/6] i2c: imx-lpi2c: handle IPG clock
-Content-Language: en-US
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, aisheng.dong@nxp.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        xiaoning.wang@nxp.com, Peng Fan <peng.fan@nxp.com>
-References: <20220812043424.4078034-1-peng.fan@oss.nxp.com>
- <20220812043424.4078034-7-peng.fan@oss.nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220812043424.4078034-7-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvV1KTyzZ+Jrtj9x@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 07:34, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Thu, Aug 11, 2022 at 10:31:21PM +0100, Matthew Wilcox wrote:
+> ==============================
+> State Of The Page, August 2022
+> ==============================
 > 
-> The LPI2C controller needs both PER and IPG clock to work, but current
-> driver only supports PER clock. This patch add IPG clock.
+> I thought I'd write down where we are with struct page and where
+> we're going, just to make sure we're all (still?) pulling in a similar
+> direction.
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/i2c/busses/i2c-imx-lpi2c.c | 41 ++++++++++++++++++++++--------
->  1 file changed, 31 insertions(+), 10 deletions(-)
+> Destination
+> ===========
 > 
-> diff --git a/drivers/i2c/busses/i2c-imx-lpi2c.c b/drivers/i2c/busses/i2c-imx-lpi2c.c
-> index 8b9ba055c418..f43ad1ae8627 100644
-> --- a/drivers/i2c/busses/i2c-imx-lpi2c.c
-> +++ b/drivers/i2c/busses/i2c-imx-lpi2c.c
-> @@ -94,7 +94,8 @@ enum lpi2c_imx_pincfg {
->  
->  struct lpi2c_imx_struct {
->  	struct i2c_adapter	adapter;
-> -	struct clk		*clk;
-> +	struct clk		*clk_per;
-> +	struct clk		*clk_ipg;
->  	void __iomem		*base;
->  	__u8			*rx_buf;
->  	__u8			*tx_buf;
-> @@ -207,7 +208,7 @@ static int lpi2c_imx_config(struct lpi2c_imx_struct *lpi2c_imx)
->  
->  	lpi2c_imx_set_mode(lpi2c_imx);
->  
-> -	clk_rate = clk_get_rate(lpi2c_imx->clk);
-> +	clk_rate = clk_get_rate(lpi2c_imx->clk_per);
->  	if (lpi2c_imx->mode == HS || lpi2c_imx->mode == ULTRA_FAST)
->  		filt = 0;
->  	else
-> @@ -561,10 +562,16 @@ static int lpi2c_imx_probe(struct platform_device *pdev)
->  	strlcpy(lpi2c_imx->adapter.name, pdev->name,
->  		sizeof(lpi2c_imx->adapter.name));
->  
-> -	lpi2c_imx->clk = devm_clk_get(&pdev->dev, NULL);
-> -	if (IS_ERR(lpi2c_imx->clk)) {
-> +	lpi2c_imx->clk_per = devm_clk_get(&pdev->dev, "per");
-> +	if (IS_ERR(lpi2c_imx->clk_per)) {
->  		dev_err(&pdev->dev, "can't get I2C peripheral clock\n");
-> -		return PTR_ERR(lpi2c_imx->clk);
-> +		return PTR_ERR(lpi2c_imx->clk_per);
-> +	}
-> +
-> +	lpi2c_imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
-> +	if (IS_ERR(lpi2c_imx->clk_ipg)) {
-> +		dev_err(&pdev->dev, "can't get I2C ipg clock\n");
-> +		return PTR_ERR(lpi2c_imx->clk_ipg);
->  	}
+> For some users, the size of struct page is simply too large.  At 64
+> bytes per 4KiB page, memmap occupies 1.6% of memory.  If we can get
+> struct page down to an 8 byte tagged pointer, it will be 0.2% of memory,
+> which is an acceptable overhead.
 
-You just broke all DTS...
+Right. This is attractive. But it brings cost of indirection.
 
-Best regards,
-Krzysztof
+It can be especially painful for physical memory scanning. I guess we can
+derive some info from memdesc type itself, like if it can be movable. But
+still looks like an expensive change.
+
+Do you have any estimation on how much CPU time we will pay to reduce
+memory (and cache) overhead? RAM size tend to grow faster than IPC.
+We need to make sure it is the right direction.
+
+>    struct page {
+>       unsigned long mem_desc;
+>    };
+> 
+> Types of memdesc
+> ----------------
+> 
+> This is very much subject to change as new users present themselves.
+> Here are the current ones in-plan:
+> 
+>  - Undescribed.  Instead of the rest of the word being a pointer,
+>    there are 2^28 subtypes available:
+>    - Unmappable.  Typically device drivers allocating private memory.
+>    - Reserved.  These pages are not allocatable.
+>    - HWPoison
+>    - Offline (eg balloon)
+>    - Guard (see debug_pagealloc)
+>  - Slab
+>  - Anon Folio
+>  - File Folio
+>  - Buddy (ie free -- also for PCP?)
+>  - Page Table
+>  - Vmalloc
+>  - Net Pool
+>  - Zsmalloc
+>  - Z3Fold
+>  - Mappable.  Typically device drivers mapping memory to userspace
+> 
+> That implies 4 bits needed for the tag, so all memdesc allocations
+> must be 16-byte aligned.  That is not an undue burden.  Memdescs
+> must also be TYPESAFE_BY_RCU if they are mappable to userspace or
+> can be stored in a file's address_space.
+> 
+> It may be worth distinguishing between vmalloc-mappable and
+> vmalloc-unmappable to prevent some things being mapped to userspace
+> inadvertently.
+
+Given that memdesc represents Slab too, how do we allocate them?
+
+> 
+> Contents of a memdesc
+> ---------------------
+> 
+> At least initially, the first word of a memdesc must be identical to the
+> current page flags.  That allows various functions (eg set_page_dirty())
+> to work on any kind of page without needing to know whether it's a device
+> driver page, a vmalloc page, anon or file folio.
+> 
+> Similarly, both anon and file folios must have the list_head in the
+> same place so they can be placed on the same LRU list.  Whether anon
+> and file folios become separate types is still unclear to me.
+> 
+> Mappable
+> --------
+> 
+> All pages mapped to userspace must have:
+> 
+>  - A refcount
+>  - A mapcount
+> 
+> Preferably in the same place in the memdesc so we can handle them without
+> having separate cases for each type of memdesc.  It would be nice to have
+> a pincount as well, but that's already an optional feature.
+> 
+> I propose:
+> 
+>    struct mappable {
+>        unsigned long flags;	/* contains dirty flag */
+>        atomic_t _refcount;
+>        atomic_t _mapcount;
+>    };
+> 
+>    struct folio {
+>       union {
+>          unsigned long flags;
+>          struct mappable m;
+>       };
+>       ...
+>    };
+
+Hm. How does lockless page cache lookup would look like in this case?
+
+Currently it relies on get_page_unless_zero() and to keep it work there's
+should be guarantee that nothing else is allocated where mappable memdesc
+was before. Would it require some RCU tricks on memdesc free?
+
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
