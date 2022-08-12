@@ -2,137 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34E9C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 19:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01961C282E7
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 19:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237414AbiHLT13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 15:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
+        id S234221AbiHLT2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 15:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236041AbiHLT1Z (ORCPT
+        with ESMTP id S238120AbiHLT2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 15:27:25 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F6BB08AD
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 12:27:24 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id j5so2184180oih.6
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 12:27:24 -0700 (PDT)
+        Fri, 12 Aug 2022 15:28:23 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB2EB08AC;
+        Fri, 12 Aug 2022 12:28:23 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id p8so1536771plq.13;
+        Fri, 12 Aug 2022 12:28:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=RFQCcD+o7jwAXDtp4U1/kPCj0a6x0GtskgYZEyvj9NE=;
-        b=VN5AtKQ/0zk7x64khzHNWqzjm0YpR7+d4JF2kbafdw/v3J3hYRIdcNzqJ8FPF4RhUs
-         QxLkUT7lD4USFVw1hxOGVaETi0LiAOQ7Se5IDMBtHLQrqUhWO9QFA1vmg/sR7Jva4mUN
-         bXy3mS5hSvGH8qcmVfFGwtUzPTOuRVmUxe35w4vwvoeQRrC2muArkWZIRADALVts/l9C
-         r0DlbDCVBXh4HDqzsk0LtHtUdWg1S2ZSvpJr8uxePjMrBacUFb0muvGa4vGkooI5euss
-         QoKyMZdVvCNs8rQQAH6gfCe3pffgGNcqP5ZaavIFXTBtopeW3+iI8Oi2RHV4K9kHIxKw
-         ADXw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=IaNDAdEa8hgXhA9slqB1hEbULevRfy/CuIByo7fB7oY=;
+        b=HLSm97rrOLYJkzPX2w6QgFUDvZAlVyraM1Cdtc6CnudfXDGFGGSC6oP9jpu1K5FU9y
+         jr9ifGkldw6NkuannS9dSFrNzyYUzifTOx83mmUeATi0/1yzcjnKoUJQQCYdGNPqITB7
+         B78KVzOFbVwHSu9HOeACSLpEpQsTA3KXkmMzCOga9JsEGadJfEjdsGuDIWWKtpKtpC58
+         YHRYgvxX5YcqeedHn1YHQZn6d0HqRABlOr7PbKRecywam6pic7QV9bsgLV4ZtlTXWhD+
+         uuMwPWLT+NK87kyzdj6ytGOTT1wIgnO3hcUJUPSnPx+5WpyUfpjxwww4ARJGRVw5Rn54
+         KQeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=RFQCcD+o7jwAXDtp4U1/kPCj0a6x0GtskgYZEyvj9NE=;
-        b=HXEqY+Do0lyoP7uItWWKludpd8pHfnVSesVgNbBiBHs5xw3OJ38DjYBLqlN5vpJOk8
-         kWOToANyfn9qI/WfKZ9tnGD8OL3bAq8gd2nEarl9/RPucQTs34bj6PmHgk9IeMQ/wUp4
-         AsWY6DyieOEZfYafh5Sfa47VJ1j621ELh9VPmBb8i+QV0xbzFgO15M4TJALOWStcN/vM
-         XzmDHJueihV/SivzyB4034lm3TeR2aS0YcqYaDPLxggUFcVlRWAeGggNVk2XQx6BMorL
-         inSrDD1tFv8IV9r7cjcgpFJVlXJiT6hiFbS5XSPv7xkhl3Lb8KKtrOb5rtDNqRAFtGp2
-         Xn7A==
-X-Gm-Message-State: ACgBeo2tMHkRI/VXfET8PAL9Wohu1dEkho+6Rrk82yjnsV4Fs98IxXFt
-        0KwjG1ed+cQ3D/BitNG2CZWsMMjChXMwjIxY/9CX0w==
-X-Google-Smtp-Source: AA6agR6UTYEA+QjXIoZYrda4A+K5joJ6JqfQgfoRbqeFCe5cFOm100RmivhhsKSDVQ65QXNMpukAivi55f0ZGzlLtNY=
-X-Received: by 2002:a05:6808:150f:b0:343:3202:91cf with SMTP id
- u15-20020a056808150f00b00343320291cfmr5737538oiw.112.1660332443800; Fri, 12
- Aug 2022 12:27:23 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=IaNDAdEa8hgXhA9slqB1hEbULevRfy/CuIByo7fB7oY=;
+        b=qBawCP+eRSHxWEx4HS0YIq6Qvpb2iN3ZOp9QYmIyTTOOthKFIZyh0jltqvnOlTi/Mh
+         jx1s2L61MIAJ85iuSicrH6ZuzKzITOxmeLWT50mJ2HYFK6Dbk4zjUKyiW2duuS20JGgA
+         9t5URMsBefWoWszlVTVaPtCkZEXMsJvAlmfW3xKDSFgeCjJ4UJKAxlgtDZ6svw2sI+ie
+         pG+W41Mr8PnzGnTGXSZnxUhszDW/Fxn9lElDLeZdbxuJepfvqZBz0Xns0K8Xe7N66Jwy
+         XmyxjZmlp0mTIWq85yUIwNTC8dpWSB8Ste4XazxvPaYc1DpPMKZe1cnSVkc19TLbFCjQ
+         HLTA==
+X-Gm-Message-State: ACgBeo2JMHSgehhkl9rYm3mx2LCGe/ABNmmAy+1h2YEBkk+nmigCyvLg
+        UnqUX8if3KqSk58Ny7lrMtE=
+X-Google-Smtp-Source: AA6agR7Y6iCDD7AR93KBVw18z7gK/7WjC04/p/OasvAPHPOCIhX6lGMi+tKOCzhW72UlXFqTP/Qz7A==
+X-Received: by 2002:a17:902:d484:b0:171:3cbc:7c6 with SMTP id c4-20020a170902d48400b001713cbc07c6mr5423597plg.85.1660332502216;
+        Fri, 12 Aug 2022 12:28:22 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:eb15:868d:43:d73a])
+        by smtp.gmail.com with ESMTPSA id b4-20020a6567c4000000b0040dd052ab11sm1691136pgs.58.2022.08.12.12.28.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 12:28:21 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 12:28:18 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     margeyang <marge.yang@synaptics.corp-partner.google.com>
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hdegoede@redhat.com, benjamin.tissoires@redhat.com,
+        marge.yang@tw.synaptics.com, derek.cheng@tw.synaptics.com,
+        vincent.huang@tw.synaptics.com
+Subject: Re: [PATCH V2] Input: synaptics-rmi4 - filter incomplete relative
+ packet.
+Message-ID: <Yvap0uh1U81gqy6J@google.com>
+References: <1660293805-16053-1-git-send-email-marge.yang@synaptics.corp-partner.google.com>
 MIME-Version: 1.0
-References: <20220812014706.43409-1-yuan.yao@intel.com> <20220812020206.foknky4hghgsadby@yy-desk-7060>
-In-Reply-To: <20220812020206.foknky4hghgsadby@yy-desk-7060>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Fri, 12 Aug 2022 12:27:12 -0700
-Message-ID: <CALMp9eSj3SMRkSzgFcFit1up7T8-Wmu7u3ePMVfkqty6CtR6kA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] kvm: nVMX: Checks "VMCS shadowing" with VMCS link
- pointer for non-root mode VM{READ,WRITE}
-To:     Yuan Yao <yuan.yao@linux.intel.com>
-Cc:     Yuan Yao <yuan.yao@intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jon Cargille <jcargill@google.com>,
-        Peter Shier <pshier@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1660293805-16053-1-git-send-email-marge.yang@synaptics.corp-partner.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 7:02 PM Yuan Yao <yuan.yao@linux.intel.com> wrote:
->
-> On Fri, Aug 12, 2022 at 09:47:06AM +0800, Yuan Yao wrote:
-> > Add checking to VMCS12's "VMCS shadowing", make sure the checking of
-> > VMCS12's vmcs_link_pointer for non-root mode VM{READ,WRITE} happens
-> > only if VMCS12's "VMCS shadowing" is 1.
-> >
-> > SDM says that for non-root mode the VMCS's "VMCS shadowing" must be 1
-> > (and the corresponding bits in VMREAD/VMWRITE bitmap must be 0) when
-> > condition checking of [B] is reached(please refer [A]), which means
-> > checking to VMCS link pointer for non-root mode VM{READ,WRITE} should
-> > happen only when "VMCS shadowing" =3D 1.
-> >
-> > Description from SDM Vol3(April 2022) Chapter 30.3 VMREAD/VMWRITE:
-> >
-> > IF (not in VMX operation)
-> >    or (CR0.PE =3D 0)
-> >    or (RFLAGS.VM =3D 1)
-> >    or (IA32_EFER.LMA =3D 1 and CS.L =3D 0)
-> > THEN #UD;
-> > ELSIF in VMX non-root operation
-> >       AND (=E2=80=9CVMCS shadowing=E2=80=9D is 0 OR
-> >            source operand sets bits in range 63:15 OR
-> >            VMREAD bit corresponding to bits 14:0 of source
-> >            operand is 1)  <------[A]
-> > THEN VMexit;
-> > ELSIF CPL > 0
-> > THEN #GP(0);
-> > ELSIF (in VMX root operation AND current-VMCS pointer is not valid) OR
-> >       (in VMX non-root operation AND VMCS link pointer is not valid)
-> > THEN VMfailInvalid;  <------ [B]
-> > ...
-> >
-> > Fixes: dd2d6042b7f4 ("kvm: nVMX: VMWRITE checks VMCS-link pointer befor=
-e VMCS field")
-> > Signed-off-by: Yuan Yao <yuan.yao@intel.com>
-> > ---
-> >  arch/x86/kvm/vmx/nested.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> > index ddd4367d4826..30685be54c5d 100644
-> > --- a/arch/x86/kvm/vmx/nested.c
-> > +++ b/arch/x86/kvm/vmx/nested.c
-> > @@ -5123,6 +5123,7 @@ static int handle_vmread(struct kvm_vcpu *vcpu)
-> >                */
-> >               if (vmx->nested.current_vmptr =3D=3D INVALID_GPA ||
-> >                   (is_guest_mode(vcpu) &&
-> > +                  nested_cpu_has_shadow_vmcs(vcpu) &&
->
-> Oops, should be "nested_cpu_has_shadow_vmcs(get_vmcs12(vcpu))".
->
-> >                    get_vmcs12(vcpu)->vmcs_link_pointer =3D=3D INVALID_G=
-PA))
-> >                       return nested_vmx_failInvalid(vcpu);
-> >
-> > @@ -5233,6 +5234,7 @@ static int handle_vmwrite(struct kvm_vcpu *vcpu)
-> >        */
-> >       if (vmx->nested.current_vmptr =3D=3D INVALID_GPA ||
-> >           (is_guest_mode(vcpu) &&
-> > +          nested_cpu_has_shadow_vmcs(vcpu) &&
->
-> Ditto.
->
-> >            get_vmcs12(vcpu)->vmcs_link_pointer =3D=3D INVALID_GPA))
-> >               return nested_vmx_failInvalid(vcpu);
-> >
-> > --
-> > 2.27.0
-> >
+Hi Marge,
+
+On Fri, Aug 12, 2022 at 04:43:25PM +0800, margeyang wrote:
+> From: Marge Yang <marge.yang@synaptics.corp-partner.google.com>
+> 
+> RMI4 F03 supports the Stick function,
+> it's designed to support relative packet.
+> This patch supports the following case.
+> When relative packet can't be reported completely,
+> it may miss one byte or two byte.
+> New Synaptics firmware will report PARITY error.
+> When timeout error or parity error happens,
+> RMI4 driver will sends 0xFE command and
+> ask FW to Re-send stick packet again.
+
+My understanding is that F03 is intended to be a pass-through mechanism
+for PS/2-compatible devices. In that spirit all protocol handling and
+validation should happen in psmouse driver that attaches to a serio port
+provided by F03.
+
+Historically we did not pay attention to parity and frame errors for
+PS/2 mice/touchpads (and for keyboards on x86) but we coudl add such
+code there. Do we actually observe this with RMI devices? Can RMI
+firmware handle this better instead?
+
+Thanks.
+
+-- 
+Dmitry
