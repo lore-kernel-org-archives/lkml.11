@@ -2,177 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F85C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B51EC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237874AbiHLNt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 09:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
+        id S237883AbiHLNwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 09:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237117AbiHLNtX (ORCPT
+        with ESMTP id S231637AbiHLNwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 09:49:23 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52584A50E5
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:49:20 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id x21so1425607edd.3
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:49:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=7AFiTG5TAXnB5fvKCQf+++SXrQCe+l505NPj1becQ5c=;
-        b=jCnxehuYeSEg1Bm3oVBS7KAsoXbC4hrLuDdUs9sIjOdLeKDUnNGJHzhCTDBuFxrx0V
-         NvvBEt8C6sEWWrdV8FhV5816gW8j8MoNPP0I8jCt2Gvv+Uf3QvroZ4F5IzHA0FL6ATxj
-         4MjPKr7YHsa+lQBZdABoGhJceirzjr6VZrhT5ZhYGGogNs7laJ5W57iYfxviFpHE7cdU
-         g4219lS9EgcvYR7babmOPuDQPFzXZ6Q/Pk5CDDAiz7KcEKigyupZVlgRNaW/Cm1v3Mif
-         c9VdzX1a0d+8L2gn1wk9HsGAeUpob85NgQueeQkNtIo1LCdorT9TnH8lrPb6xjfrSGMa
-         iHkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=7AFiTG5TAXnB5fvKCQf+++SXrQCe+l505NPj1becQ5c=;
-        b=rn66t6zZXz2nXA/bJ6jmcAlJNigY8u7SSs3JMpN1UmLP5tyBddfv/Y08zA1lSnn+KL
-         MIs9cXSGyLV8zfWC+WRvCeENb/bHv2SocMTdEsvUjq/I7ulQeF+IgvlYS+nNqZjsqRuC
-         IFU65F3D1K6GaNuRjfz0YTlltmU4/AZPOgloFbEWs0oZ4qIu2ndxRR5KurrkziTvU3M+
-         Fb18nymYC7/ZBFJo4d0Ru2GTBTA+6SZU//WOd160M8hYHkQx448YVOHMJToT0A17taw/
-         vGIKNfs7jnGfAEtRclxLMgz54s/29BWA/kSUMxTVlD0r1HDyrn6zSQAqz0Ur1j84QBlF
-         y/Sw==
-X-Gm-Message-State: ACgBeo2pz2mXAjN29mVkhSc8cArZSLrr0M2tIPSIdCLAX+AvJj6lzUS4
-        f5R2LBr7FYEF1uu0wwsXDLlUxbwUcvyGbe9CR1Kb9rgI
-X-Google-Smtp-Source: AA6agR4VtibhFUH/ds8v9YejB0qbw6TefHdMOit3eiELmgq02Gvf77Rl81V0dmPpWbb6J2DbEAoVheUzb4Pca85IHZY=
-X-Received: by 2002:a05:6402:268a:b0:43e:84d:c5cc with SMTP id
- w10-20020a056402268a00b0043e084dc5ccmr3731031edd.372.1660312158755; Fri, 12
- Aug 2022 06:49:18 -0700 (PDT)
+        Fri, 12 Aug 2022 09:52:21 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9ABFA8CC7
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660312338; x=1691848338;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HDcTxaIToZQYcdvOhNn0jX4NVqCzNEAbPACHR8cmaC4=;
+  b=yd4qGOY4BcLwV1FIMNPdC3dt2SUazuQy3VqVGBcURYXm2ljSCdfAgd79
+   MfzRtnlKIxRfPR0jAeYms/mVVnAOlqFCmogD0yfMhoEFhY8TKCzqEN3lM
+   Se0GE21S0MIKGhAQrRKQ0y3kmzkikY1EDwgRjTm2P4Npuw+RyGuVa5GK/
+   3xTwIRghh3ZylJUY6DZGnFsTVPpI9RtQBD1p+PczhUIx8VBIyIIZuWi5E
+   v/yc4TYJeORQPkQgI36ji/DsAIS+bVd481KIzWY9culrChwpTrtMvNLlz
+   3/c8pHcttHoACQ7TiWi9Gggj5cFyqYgVcca8I25ahjvxV2pO6Mjd8nr+3
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="176000719"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Aug 2022 06:52:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 12 Aug 2022 06:52:16 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 12 Aug 2022 06:52:14 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+CC:     Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Paul Walmsley" <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        <linux-riscv@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH] perf: riscv: fix broken build due to struct redefinition
+Date:   Fri, 12 Aug 2022 14:51:20 +0100
+Message-ID: <20220812135119.1648940-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220812132124.2053673-1-dzm91@hust.edu.cn> <20220812134138.gpu7274yahlvr6hr@wittgenstein>
-In-Reply-To: <20220812134138.gpu7274yahlvr6hr@wittgenstein>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Fri, 12 Aug 2022 21:48:40 +0800
-Message-ID: <CAD-N9QWSwoLw9nvaQieUCPZoAYXyNTymUVOzKOTUOfC38FkXnA@mail.gmail.com>
-Subject: Re: [PATCH] drivers: binderfs: fix memory leak in binderfs_fill_super
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 9:41 PM Christian Brauner <brauner@kernel.org> wrote:
->
-> On Fri, Aug 12, 2022 at 09:21:24PM +0800, Dongliang Mu wrote:
-> > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >
-> > In binderfs_fill_super, if s_root is not successfully initialized by
-> > d_make_root, the previous allocated s_sb_info will not be freed since
-> > generic_shutdown_super first checks if sb->s_root and then does
-> > put_super operation. The put_super operation calls binderfs_put_super
-> > to deallocate s_sb_info and put ipc_ns. This will lead to memory leak
-> > in binderfs_fill_super.
-> >
-> > Fix this by invoking binderfs_put_super at error sites before s_root
-> > is successfully initialized.
-> >
-> > Fixes: 095cf502b31e ("binderfs: port to new mount api")
-> > Reported-by: syzkaller <syzkaller@googlegroups.com>
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > ---
->
-> Seems right but where's the full syzbot link to the issue?
-> Also, wouldn't (untested) sm like the below be better?:
+Building riscv/for-next produces following error:
+drivers/perf/riscv_pmu_sbi.c:44:7: error: redefinition of 'sbi_pmu_ctr_info'
+union sbi_pmu_ctr_info {
+      ^
+arch/riscv/include/asm/sbi.h:125:7: note: previous definition is here
+union sbi_pmu_ctr_info {
 
-I originally would like to change the order to object initialization,
-but I am not sure if they can be exchanged since many *_fill_super are
-ended with d_make_root.
+This appears to have been caused by a merge conflict resolution between
+riscv/for-next & riscv/fixes, causing the struct define not being
+properly moved to its header.
 
-If you are sure about this exchange, I can resubmit a v2 patch.
+Fixes: 9a7ccac63f9c ("perf: riscv_pmu{,_sbi}: Miscallenous improvement & fixes")
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ drivers/perf/riscv_pmu_sbi.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
->
-> diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-> index 588d753a7a19..4582b043d21e 100644
-> --- a/drivers/android/binderfs.c
-> +++ b/drivers/android/binderfs.c
-> @@ -692,6 +692,15 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
->         sb->s_magic = BINDERFS_SUPER_MAGIC;
->         sb->s_op = &binderfs_super_ops;
->         sb->s_time_gran = 1;
-> +       sb->s_fs_info = NULL;
-> +
-> +       inode = new_inode(sb);
-> +       if (!inode)
-> +               return -ENOMEM;
-> +
-> +       sb->s_root = d_make_root(inode);
-> +       if (!sb->s_root)
-> +               return -ENOMEM;
->
->         sb->s_fs_info = kzalloc(sizeof(struct binderfs_info), GFP_KERNEL);
->         if (!sb->s_fs_info)
-> @@ -709,10 +718,6 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
->         info->mount_opts.max = ctx->max;
->         info->mount_opts.stats_mode = ctx->stats_mode;
->
-> -       inode = new_inode(sb);
-> -       if (!inode)
-> -               return -ENOMEM;
-> -
->         inode->i_ino = FIRST_INODE;
->         inode->i_fop = &simple_dir_operations;
->         inode->i_mode = S_IFDIR | 0755;
-> @@ -720,10 +725,6 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
->         inode->i_op = &binderfs_dir_inode_operations;
->         set_nlink(inode, 2);
->
-> -       sb->s_root = d_make_root(inode);
-> -       if (!sb->s_root)
-> -               return -ENOMEM;
-> -
->         ret = binderfs_binder_ctl_create(sb);
->         if (ret)
->                 return ret;
->
-> >  drivers/android/binderfs.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-> > index 588d753a7a19..20f5bc77495f 100644
-> > --- a/drivers/android/binderfs.c
-> > +++ b/drivers/android/binderfs.c
-> > @@ -710,8 +710,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> >       info->mount_opts.stats_mode = ctx->stats_mode;
-> >
-> >       inode = new_inode(sb);
-> > -     if (!inode)
-> > +     if (!inode) {
-> > +             binderfs_put_super(sb);
-> >               return -ENOMEM;
-> > +     }
-> >
-> >       inode->i_ino = FIRST_INODE;
-> >       inode->i_fop = &simple_dir_operations;
-> > @@ -721,8 +723,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> >       set_nlink(inode, 2);
-> >
-> >       sb->s_root = d_make_root(inode);
-> > -     if (!sb->s_root)
-> > +     if (!sb->s_root) {
-> > +             binderfs_put_super(sb);
-> >               return -ENOMEM;
-> > +     }
-> >
-> >       ret = binderfs_binder_ctl_create(sb);
-> >       if (ret)
-> > --
-> > 2.25.1
-> >
+diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
+index e7c6fecbf061..6f6681bbfd36 100644
+--- a/drivers/perf/riscv_pmu_sbi.c
++++ b/drivers/perf/riscv_pmu_sbi.c
+@@ -41,20 +41,6 @@ static const struct attribute_group *riscv_pmu_attr_groups[] = {
+ 	NULL,
+ };
+ 
+-union sbi_pmu_ctr_info {
+-	unsigned long value;
+-	struct {
+-		unsigned long csr:12;
+-		unsigned long width:6;
+-#if __riscv_xlen == 32
+-		unsigned long reserved:13;
+-#else
+-		unsigned long reserved:45;
+-#endif
+-		unsigned long type:1;
+-	};
+-};
+-
+ /*
+  * RISC-V doesn't have hetergenous harts yet. This need to be part of
+  * per_cpu in case of harts with different pmu counters
+-- 
+2.36.1
+
