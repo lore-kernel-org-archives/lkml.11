@@ -2,426 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC249C2BB43
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B71F0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239499AbiHLRcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 13:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
+        id S237935AbiHLRfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 13:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239478AbiHLRbj (ORCPT
+        with ESMTP id S239019AbiHLRev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 13:31:39 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260C5A74CD;
-        Fri, 12 Aug 2022 10:31:38 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id m10so1103857qvu.4;
-        Fri, 12 Aug 2022 10:31:38 -0700 (PDT)
+        Fri, 12 Aug 2022 13:34:51 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03120B2742
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 10:34:50 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id w5so2237479lfq.5
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 10:34:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=cnGlLj7kED+0umSEXRpR16vGmIvX7t6d2KRAOcwODhM=;
-        b=MGA99ssFFqlEVlrOGCKGkOxcIkvMYXSafVJRuJkbjSRW6ZQZXrQO8bH63MLzzAWuj3
-         0sZrhgA/IjEywdx7USDWyWU8kkDXua6VydU9Yppf2xRoowV+uAmM4y/MtIAQO1wmj3Le
-         zD1rUnbLmwqudrVN/kZjkUzxs2pqTplH8tpwsrgAXLafKuv8br//BydSOucAwCaRux++
-         AUpWd0qSRIOtM61n+ZPxIys/chEzTPXBtqfha5sG7el0HeePfiUl4UF+wI9GqlaenAPm
-         dB6zilZYacmosdv2m+fGOBq0LkCdWNTTInb9MuNdDU34ISpoNmk/ZWzSiNZLAkffZLlP
-         yRzQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=8uJrZnBn1qDS0BGSkvxlFm5HObaIuT1JmBT6UeEISI8=;
+        b=dD/l6ku6zx+XntXFItFTEmnxjPOh7xtO3PzebTKXoERAY1KFzerpHTEurH/U4cPCXb
+         ipfYy5EaEV0JyN03x7oTT61kxAKNBaZr1a7axIXirT15PlVeqEkW2WejjdeGoRwu12Jd
+         cfTEjZ83j/Ji3CUvh/6DJO6IyZvjEfw/6vRqfn+eXw+1PfayDDYpIMxI8d7U7nFsbhNP
+         9ykOxvFLQJPG6sXY0zHmVad1ZF3BUKg6TmYvurO307xK2E10kYzBD31vCYz9ZfmOzkSz
+         QtFDytLh2ChjbupEchtXx9JyOBj+SpBax51xiSLhLi9cPbP+XkCpAeY1lojB6zrMBQMK
+         EXVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=cnGlLj7kED+0umSEXRpR16vGmIvX7t6d2KRAOcwODhM=;
-        b=GeUS/h1j3cBRlANbXlWY/1Vx8ww81glVdOauKvfkwbja8Gs8wgw2k9vKvayLJELGXK
-         3eLwluDxpO8HaT7Gpy6nKv2TXSFVzliqZ4ni3HCOfNv44K00YZtF99XOcdK08rAJJNEy
-         jxFBCWolscvX4FsOGCnv8AVikhp+5eztwq9Bfpn7KPh2edzsi52mX3t/zrkBk53B5elF
-         lfpiaLm8AjHVBslW5MptCisBuoVMiYeqVJ2js5JCe5NB603c1p50mal38uF6GOiDqhns
-         GBfveimbRlC36HJfXAOPu8rWS+gUta7xvZRiqeVPK7q/N1ETZMa/2r4X+3WnLLT+u/0a
-         gW+A==
-X-Gm-Message-State: ACgBeo3db620u+ZFn4Z5hg7P6hhbzK4YJe+35bVtWPis+KBCkdZmr9b0
-        ZulCzAQ+Q7drQ1C2wc32GU8iJJJAjO0=
-X-Google-Smtp-Source: AA6agR5kfmGbiogVJ0hhJaTlzcrxGrG6qZnCaVjbES36ieV6xOVRdmh/miB/l4dHYh4ov9v1IfXaqQ==
-X-Received: by 2002:a05:6214:d66:b0:476:a5d7:57e5 with SMTP id 6-20020a0562140d6600b00476a5d757e5mr4558989qvs.113.1660325496734;
-        Fri, 12 Aug 2022 10:31:36 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t201-20020a37aad2000000b006b9b7879964sm2369300qke.28.2022.08.12.10.31.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 10:31:36 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM BCM7XXX
-        ARM ARCHITECTURE),
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS)
-Subject: [PATCH v4 3/3] memory: Add Broadcom STB memory controller driver
-Date:   Fri, 12 Aug 2022 10:31:25 -0700
-Message-Id: <20220812173125.2410536-4-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220812173125.2410536-1-f.fainelli@gmail.com>
-References: <20220812173125.2410536-1-f.fainelli@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=8uJrZnBn1qDS0BGSkvxlFm5HObaIuT1JmBT6UeEISI8=;
+        b=ZMijE1hmcXlZ5RWfI/1kVKo+1zpiM7slKyq2qJ+qG6pfH57N0yT180rQRmqPX//+0A
+         lrUod8yNhPPi0QDm7Oq0kP0Azg8rwz/zsD4QXKRlut683lnUWVSNg3exvTEbvSmvWXQc
+         lU1XN+zNdTzMfb0d4BUNJ5WMBcABBEQW9pFPY7QwTsQg6Jrd10dpQ+4VmAKMzJxwHCOT
+         1HlFDeN2CpJkqU98oXrLTKnbPoAc9BBxsscP8E+1oJ0VLqIwEL7SLQ4xllTF2lcXsOxF
+         m/EE3boxbF69T62u31j4hwP06TUsxOC64E4i91G6hA+yPOGnvXhYfMJtCRC4fiNUug0/
+         dI4Q==
+X-Gm-Message-State: ACgBeo1JbFsPv+E1N7lEI9sEHJtu4F+BdOIX95N3h9sZwmXeQKQInK4l
+        NMkWfU0Bc4brLUZI4EMVnryapQ==
+X-Google-Smtp-Source: AA6agR5Z4imJ8rDIGTv8h4bUGbzdx3ZYA2/ooRuEuRvdv3ZFUEbAWfC+5GfEzPnGdhWxpAtv0dv/yQ==
+X-Received: by 2002:a05:6512:3ca1:b0:48a:fe06:f772 with SMTP id h33-20020a0565123ca100b0048afe06f772mr1667457lfv.80.1660325688321;
+        Fri, 12 Aug 2022 10:34:48 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id z18-20020ac25df2000000b0048ad3d1a058sm282580lfq.52.2022.08.12.10.34.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 10:34:47 -0700 (PDT)
+Message-ID: <1715a053-ae68-ea70-b13f-3d25f2354c00@linaro.org>
+Date:   Fri, 12 Aug 2022 20:34:41 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2] dt-bindings: leds: Expand LED_COLOR_ID definitions
+Content-Language: en-US
+To:     Olliver Schinagl <oliver@schinagl.nl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Baolin Wang <baolin.wang@linaro.org>,
+        Daniel Mack <daniel@zonque.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Simon Shields <simon@lineageos.org>,
+        Olliver Schinagl <oliver+list@schinagl.nl>,
+        devicetree@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <7c688821-140b-4b05-651b-337f602dc1fe@schinagl.nl>
+ <6ec9eaa1-2bc2-a32f-6685-4a2a645a5a59@schinagl.nl>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <6ec9eaa1-2bc2-a32f-6685-4a2a645a5a59@schinagl.nl>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for configuring the Self Refresh Power Down (SRPD)
-inactivity timeout on Broadcom STB chips. This is used to conserve power
-when the DRAM activity is reduced.
+On 12/08/2022 17:31, Olliver Schinagl wrote:
+> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
+> 
+> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
+> added. However, there's a little more very common LED colors.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/memory/Kconfig        |   9 +
- drivers/memory/Makefile       |   1 +
- drivers/memory/brcmstb_memc.c | 301 ++++++++++++++++++++++++++++++++++
- 3 files changed, 311 insertions(+)
- create mode 100644 drivers/memory/brcmstb_memc.c
+You have messed up commit msg.
 
-diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
-index ac1a411648d8..fac290e48e0b 100644
---- a/drivers/memory/Kconfig
-+++ b/drivers/memory/Kconfig
-@@ -66,6 +66,15 @@ config BRCMSTB_DPFE
- 	  for the DRAM's temperature. Slower refresh rate means cooler RAM,
- 	  higher refresh rate means hotter RAM.
- 
-+config BRCMSTB_MEMC
-+	tristate "Broadcom STB MEMC driver"
-+	default ARCH_BRCMSTB
-+	depends on ARCH_BRCMSTB || COMPILE_TEST
-+	help
-+	  This driver provides a way to configure the Broadcom STB memory
-+	  controller and specifically control the Self Refresh Power Down
-+	  (SRPD) inactivity timeout.
-+
- config BT1_L2_CTL
- 	bool "Baikal-T1 CM2 L2-RAM Cache Control Block"
- 	depends on MIPS_BAIKAL_T1 || COMPILE_TEST
-diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
-index bc7663ed1c25..e148f636c082 100644
---- a/drivers/memory/Makefile
-+++ b/drivers/memory/Makefile
-@@ -11,6 +11,7 @@ obj-$(CONFIG_ARM_PL172_MPMC)	+= pl172.o
- obj-$(CONFIG_ATMEL_SDRAMC)	+= atmel-sdramc.o
- obj-$(CONFIG_ATMEL_EBI)		+= atmel-ebi.o
- obj-$(CONFIG_BRCMSTB_DPFE)	+= brcmstb_dpfe.o
-+obj-$(CONFIG_BRCMSTB_MEMC)	+= brcmstb_memc.o
- obj-$(CONFIG_BT1_L2_CTL)	+= bt1-l2-ctl.o
- obj-$(CONFIG_TI_AEMIF)		+= ti-aemif.o
- obj-$(CONFIG_TI_EMIF)		+= emif.o
-diff --git a/drivers/memory/brcmstb_memc.c b/drivers/memory/brcmstb_memc.c
-new file mode 100644
-index 000000000000..5705b346b1f5
---- /dev/null
-+++ b/drivers/memory/brcmstb_memc.c
-@@ -0,0 +1,301 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DDR Self-Refresh Power Down (SRPD) support for Broadcom STB SoCs
-+ *
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+
-+#define REG_MEMC_CNTRLR_CONFIG		0x00
-+#define  CNTRLR_CONFIG_LPDDR4_SHIFT	5
-+#define  CNTRLR_CONFIG_MASK		0xf
-+#define REG_MEMC_SRPD_CFG_21		0x20
-+#define REG_MEMC_SRPD_CFG_20		0x34
-+#define REG_MEMC_SRPD_CFG_1x		0x3c
-+#define INACT_COUNT_SHIFT		0
-+#define INACT_COUNT_MASK		0xffff
-+#define SRPD_EN_SHIFT			16
-+
-+struct brcmstb_memc_data {
-+	u32 srpd_offset;
-+};
-+
-+struct brcmstb_memc {
-+	struct device *dev;
-+	void __iomem *ddr_ctrl;
-+	unsigned int timeout_cycles;
-+	u32 frequency;
-+	u32 srpd_offset;
-+};
-+
-+static int brcmstb_memc_uses_lpddr4(struct brcmstb_memc *memc)
-+{
-+	void __iomem *config = memc->ddr_ctrl + REG_MEMC_CNTRLR_CONFIG;
-+	u32 reg;
-+
-+	reg = readl_relaxed(config) & CNTRLR_CONFIG_MASK;
-+
-+	return reg == CNTRLR_CONFIG_LPDDR4_SHIFT;
-+}
-+
-+static int brcmstb_memc_srpd_config(struct brcmstb_memc *memc,
-+				    unsigned int cycles)
-+{
-+	void __iomem *cfg = memc->ddr_ctrl + memc->srpd_offset;
-+	u32 val;
-+
-+	/* Max timeout supported in HW */
-+	if (cycles > INACT_COUNT_MASK)
-+		return -EINVAL;
-+
-+	memc->timeout_cycles = cycles;
-+
-+	val = (cycles << INACT_COUNT_SHIFT) & INACT_COUNT_MASK;
-+	if (cycles)
-+		val |= BIT(SRPD_EN_SHIFT);
-+
-+	writel_relaxed(val, cfg);
-+	/* Ensure the write is committed to the controller */
-+	(void)readl_relaxed(cfg);
-+
-+	return 0;
-+}
-+
-+static ssize_t frequency_show(struct device *dev,
-+			      struct device_attribute *attr, char *buf)
-+{
-+	struct brcmstb_memc *memc = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "%d\n", memc->frequency);
-+}
-+
-+static ssize_t srpd_show(struct device *dev,
-+			 struct device_attribute *attr, char *buf)
-+{
-+	struct brcmstb_memc *memc = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "%d\n", memc->timeout_cycles);
-+}
-+
-+static ssize_t srpd_store(struct device *dev, struct device_attribute *attr,
-+			  const char *buf, size_t count)
-+{
-+	struct brcmstb_memc *memc = dev_get_drvdata(dev);
-+	unsigned int val;
-+	int ret;
-+
-+	/*
-+	 * Cannot change the inactivity timeout on LPDDR4 chips because the
-+	 * dynamic tuning process will also get affected by the inactivity
-+	 * timeout, thus making it non functional.
-+	 */
-+	if (brcmstb_memc_uses_lpddr4(memc))
-+		return -EOPNOTSUPP;
-+
-+	ret = kstrtouint(buf, 10, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = brcmstb_memc_srpd_config(memc, val);
-+	if (ret)
-+		return ret;
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RO(frequency);
-+static DEVICE_ATTR_RW(srpd);
-+
-+static struct attribute *dev_attrs[] = {
-+	&dev_attr_frequency.attr,
-+	&dev_attr_srpd.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group dev_attr_group = {
-+	.attrs = dev_attrs,
-+};
-+
-+static const struct of_device_id brcmstb_memc_of_match[];
-+
-+static int brcmstb_memc_probe(struct platform_device *pdev)
-+{
-+	const struct brcmstb_memc_data *memc_data;
-+	const struct of_device_id *of_id;
-+	struct device *dev = &pdev->dev;
-+	struct brcmstb_memc *memc;
-+	int ret;
-+
-+	memc = devm_kzalloc(dev, sizeof(*memc), GFP_KERNEL);
-+	if (!memc)
-+		return -ENOMEM;
-+
-+	dev_set_drvdata(dev, memc);
-+
-+	of_id = of_match_device(brcmstb_memc_of_match, dev);
-+	memc_data = of_id->data;
-+	memc->srpd_offset = memc_data->srpd_offset;
-+
-+	memc->ddr_ctrl = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(memc->ddr_ctrl))
-+		return PTR_ERR(memc->ddr_ctrl);
-+
-+	of_property_read_u32(pdev->dev.of_node, "clock-frequency",
-+			     &memc->frequency);
-+
-+	ret = sysfs_create_group(&dev->kobj, &dev_attr_group);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int brcmstb_memc_remove(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+
-+	sysfs_remove_group(&dev->kobj, &dev_attr_group);
-+
-+	return 0;
-+}
-+
-+enum brcmstb_memc_hwtype {
-+	BRCMSTB_MEMC_V21,
-+	BRCMSTB_MEMC_V20,
-+	BRCMSTB_MEMC_V1X,
-+};
-+
-+static const struct brcmstb_memc_data brcmstb_memc_versions[] = {
-+	{ .srpd_offset = REG_MEMC_SRPD_CFG_21 },
-+	{ .srpd_offset = REG_MEMC_SRPD_CFG_20 },
-+	{ .srpd_offset = REG_MEMC_SRPD_CFG_1x },
-+};
-+
-+static const struct of_device_id brcmstb_memc_of_match[] = {
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.1.x",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V1X]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.0",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V20]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.1",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.2",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.3",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.5",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.6",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.7",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.8",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.3.0",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-b.3.1",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.0",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.1",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.2",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.3",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.4",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
-+	},
-+	/* default to the original offset */
-+	{
-+		.compatible = "brcm,brcmstb-memc-ddr",
-+		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V1X]
-+	},
-+	{}
-+};
-+
-+static int __maybe_unused brcmstb_memc_suspend(struct device *dev)
-+{
-+	struct brcmstb_memc *memc = dev_get_drvdata(dev);
-+	void __iomem *cfg = memc->ddr_ctrl + memc->srpd_offset;
-+	u32 val;
-+
-+	if (memc->timeout_cycles == 0)
-+		return 0;
-+
-+	/*
-+	 * Disable SRPD prior to suspending the system since that can
-+	 * cause issues with other memory clients managed by the ARM
-+	 * trusted firmware to access memory.
-+	 */
-+	val = readl_relaxed(cfg);
-+	val &= ~BIT(SRPD_EN_SHIFT);
-+	writel_relaxed(val, cfg);
-+	/* Ensure the write is committed to the controller */
-+	(void)readl_relaxed(cfg);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused brcmstb_memc_resume(struct device *dev)
-+{
-+	struct brcmstb_memc *memc = dev_get_drvdata(dev);
-+
-+	if (memc->timeout_cycles == 0)
-+		return 0;
-+
-+	return brcmstb_memc_srpd_config(memc, memc->timeout_cycles);
-+}
-+
-+static SIMPLE_DEV_PM_OPS(brcmstb_memc_pm_ops, brcmstb_memc_suspend,
-+			 brcmstb_memc_resume);
-+
-+static struct platform_driver brcmstb_memc_driver = {
-+	.probe = brcmstb_memc_probe,
-+	.remove = brcmstb_memc_remove,
-+	.driver = {
-+		.name		= "brcmstb_memc",
-+		.of_match_table	= brcmstb_memc_of_match,
-+		.pm		= pm_ptr(&brcmstb_memc_pm_ops),
-+	},
-+};
-+module_platform_driver(brcmstb_memc_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Broadcom");
-+MODULE_DESCRIPTION("DDR SRPD driver for Broadcom STB chips");
--- 
-2.25.1
+Also please do not attach new patches to some old threads. It buries
+them deep and makes inbox check not easy.
 
+> 
+> While the documentation states 'add what is missing', engineers tend to
+> be lazy and will just use what currently exists. So this patch will take
+> (a) list from online retailers [0], [1], [2] and use the common LED 
+> colors from
+
+Wrap the description.
+
+
+> there, this being reasonable as this is what is currently available to 
+> purchase.
+
+
+> 
+> Note, that LIME seems to be the modern take to 'Yellow-green' or
+> 'Yellowish-green' from some older datasheets.
+> 
+> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
+> [1]: 
+> https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
+> [2]: 
+> https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
+> 
+> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+> ---
+> 
+> Changes since v1: Unbreak existing definitions.
+> 
+>   include/dt-bindings/leds/common.h | 28 ++++++++++++++++------------
+>   1 file changed, 16 insertions(+), 12 deletions(-)
+> 
+> diff --git a/include/dt-bindings/leds/common.h 
+> b/include/dt-bindings/leds/common.h
+> index 3be89a7c20a9..04bf94523ea3 100644
+> --- a/include/dt-bindings/leds/common.h
+> +++ b/include/dt-bindings/leds/common.h
+> @@ -22,18 +22,22 @@
+>   #define LEDS_BOOST_FIXED    2
+> 
+>   /* Standard LED colors */
+> -#define LED_COLOR_ID_WHITE    0
+> -#define LED_COLOR_ID_RED    1
+> -#define LED_COLOR_ID_GREEN    2
+> -#define LED_COLOR_ID_BLUE    3
+> -#define LED_COLOR_ID_AMBER    4
+> -#define LED_COLOR_ID_VIOLET    5
+> -#define LED_COLOR_ID_YELLOW    6
+> -#define LED_COLOR_ID_IR        7
+> -#define LED_COLOR_ID_MULTI    8    /* For multicolor LEDs */
+> -#define LED_COLOR_ID_RGB    9    /* For multicolor LEDs that can do 
+> arbitrary color,
+
+Also messed up patch. I have doubts that it applies.
+
+> -                       so this would include RGBW and similar */
+> -#define LED_COLOR_ID_MAX    10
+> +#define LED_COLOR_ID_WHITE      0
+Best regards,
+Krzysztof
