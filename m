@@ -2,107 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99304C32767
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE77C32765
 	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 15:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239171AbiHLPOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 11:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
+        id S239035AbiHLPOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 11:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238953AbiHLPOK (ORCPT
+        with ESMTP id S238884AbiHLPOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 11:14:10 -0400
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321E0A61F4;
-        Fri, 12 Aug 2022 08:14:09 -0700 (PDT)
-Received: by mail-io1-f54.google.com with SMTP id l24so1020129ion.13;
-        Fri, 12 Aug 2022 08:14:09 -0700 (PDT)
+        Fri, 12 Aug 2022 11:14:04 -0400
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA78A7A80;
+        Fri, 12 Aug 2022 08:14:03 -0700 (PDT)
+Received: by mail-io1-f44.google.com with SMTP id y82so1036451iof.7;
+        Fri, 12 Aug 2022 08:14:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=message-id:date:subject:references:in-reply-to:cc:to:from
          :x-gm-message-state:from:to:cc;
-        bh=ikeEPiuKHYMe9xXHEeJbSPSH1rglZXTX+Lz/Wx8z9D8=;
-        b=7lyj8WEE1Q3M4LxAWq5J21p3F6XCoNnXjzxALeRwQXnmdRz+qldbNG7TJaxr5dKe+6
-         6c8V+WAKYT6opGCKWOup6WrfTUEN6sU1Omr2L2FZBdbZTYHMnCuNzeP2SII1B5Xz28Kw
-         wQygZ9qv8juTApde8HtgibUCFWWPa02/rE65jA5KMlh56/ds8HQVuJ6NmjLbRX4unTKI
-         PsHiF6WHWsPtuL1ejXbTKUjSEmRadeVC2JwBXK040y5HXFy1yMEHg/SmUKaFCpJxCbWi
-         IUJb/KkURMtTxoGIFEWKhqPwvStUzOL/T466U70rzptB4QbPv9Vm6aVh7O9dQwD975mv
-         0Rpg==
-X-Gm-Message-State: ACgBeo06nyPbp3YYS5NLWjAVYdQhB5y9G2jrbyNL/n/WTZHZnQWtS5sA
-        718N1e+Ph+fp9RKAsiDzQQ==
-X-Google-Smtp-Source: AA6agR7QH8e1Cxzl8c/w8Z4o6Wh9QqSi0rqDkC8FsYzAPkC89ZCQl6Gn7SL/x2lPIDRU2S2GKjrQug==
-X-Received: by 2002:a02:b60d:0:b0:343:5ddd:66b3 with SMTP id h13-20020a02b60d000000b003435ddd66b3mr2137872jam.8.1660317248790;
-        Fri, 12 Aug 2022 08:14:08 -0700 (PDT)
+        bh=BMZIfIjHtqwgWzdSXqrr9NE51goJCuzG7L3KL1zDXNg=;
+        b=ayvCdLOUb48rYdOu0LdKroaJVyWioYQbD6+SIjy5PATK4ASBzyDLI/5sb5bO2neY0T
+         F/Iabg3OkoNohl+22WS+N301K7wBLJLjksbcGYi+82YNzvQ8Su1VTGu0bia4twI81faX
+         olszei0oIV+AuSoZ68fmvejUV4mH3bXM/YLQ+kIIgI1pBRGCTxJzOhuaz0koSEGrmSEB
+         evpSdmpiz17lhV4ZnibDAjM+EQUPY9qjiavqbBfg8VXwXPLR3KTdYYYp6Pelscp4tA54
+         j31RgkIl0ri6uzvY6POj2Zy3Qt99amrhI0wMv6ElNqnbfr6AOdcWY0s7c8J6Xow+aS3u
+         ImeA==
+X-Gm-Message-State: ACgBeo2L/zNJryjX0/Rlk5PdtTn0/BzC+blxQ3AO6AvRBADtJWUhjGWg
+        /IyznzVIVt5H+K4h0RNUBQ==
+X-Google-Smtp-Source: AA6agR4X5v/nUftmGk0t9KaWseTabpHT1C+d74LDJT61kSTdh21Tr/Mjcs4ZeK6MF/9vOSWFo+VCrw==
+X-Received: by 2002:a05:6638:3892:b0:342:8aa5:a050 with SMTP id b18-20020a056638389200b003428aa5a050mr2305379jav.145.1660317242922;
+        Fri, 12 Aug 2022 08:14:02 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id m66-20020a6b3f45000000b0067cb742ad4csm1054062ioa.23.2022.08.12.08.14.07
+        by smtp.gmail.com with ESMTPSA id k17-20020a023351000000b0034286654d38sm1082746jak.82.2022.08.12.08.14.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 08:14:08 -0700 (PDT)
-Received: (nullmailer pid 168984 invoked by uid 1000);
+        Fri, 12 Aug 2022 08:14:02 -0700 (PDT)
+Received: (nullmailer pid 168986 invoked by uid 1000);
         Fri, 12 Aug 2022 15:13:53 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>
-Cc:     fshao@chromium.org, lee.jones@linaro.org,
-        hsin-hsiung.wang@mediatek.com, a.zummo@towertech.it,
-        lgirdwood@gmail.com, robh+dt@kernel.org, broonie@kernel.org,
-        macpaul.lin@mediatek.com, wen.su@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        sean.wang@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        linux-rtc@vger.kernel.org, eddie.huang@mediatek.com,
-        devicetree@vger.kernel.org, allen-kh.cheng@mediatek.com,
-        linux-kernel@vger.kernel.org, alexandre.belloni@bootlin.com,
-        sen.chu@mediatek.com, hui.liu@mediatek.com,
-        linux-mediatek@lists.infradead.org, matthias.bgg@gmail.com
-In-Reply-To: <20220812092901.6429-2-zhiyong.tao@mediatek.com>
-References: <20220812092901.6429-1-zhiyong.tao@mediatek.com> <20220812092901.6429-2-zhiyong.tao@mediatek.com>
-Subject: Re: [PATCH v3 1/1] regulator: dt-bindings: mediatek: add mt6366
+To:     wei.fang@nxp.com
+Cc:     andrew@lunn.ch, pabeni@redhat.com, robh+dt@kernel.org,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, linux@armlinux.org.uk, edumazet@google.com,
+        kuba@kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20220812145009.1229094-2-wei.fang@nxp.com>
+References: <20220812145009.1229094-1-wei.fang@nxp.com> <20220812145009.1229094-2-wei.fang@nxp.com>
+Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
 Date:   Fri, 12 Aug 2022 09:13:53 -0600
-Message-Id: <1660317233.452120.168983.nullmailer@robh.at.kernel.org>
+Message-Id: <1660317233.459028.168985.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 12 Aug 2022 17:29:01 +0800, Zhiyong Tao wrote:
-> Add mt6366 regulator document
+On Sat, 13 Aug 2022 00:50:08 +1000, wei.fang@nxp.com wrote:
+> From: Wei Fang <wei.fang@nxp.com>
 > 
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> The hibernation mode of Atheros AR803x PHYs is default enabled.
+> When the cable is unplugged, the PHY will enter hibernation
+> mode and the PHY clock does down. For some MACs, it needs the
+> clock to support it's logic. For instance, stmmac needs the PHY
+> inputs clock is present for software reset completion. Therefore,
+> It is reasonable to add a DT property to disable hibernation mode.
+> 
+> Signed-off-by: Wei Fang <wei.fang@nxp.com>
 > ---
->  .../regulator/mediatek,mt6366-regulator.yaml  | 287 ++++++++++++++++++
->  1 file changed, 287 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.yaml
+>  Documentation/devicetree/bindings/net/qca,ar803x.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
+./Documentation/devicetree/bindings/net/qca,ar803x.yaml:46:5: [error] syntax error: could not find expected ':' (syntax)
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vrf12: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vio18: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vcamio: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vcn18: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vfe28: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vcn28: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vxo22: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vaux18: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vbif28: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vio28: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-va12: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vrf18: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/mediatek,mt6366-regulator.example.dtb: ldo-vaud28: 'regulator-name' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/net/qca,ar803x.example.dts'
+Documentation/devicetree/bindings/net/qca,ar803x.yaml:46:5: could not find expected ':'
+make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/net/qca,ar803x.example.dts] Error 1
+make[1]: *** Waiting for unfinished jobs....
+./Documentation/devicetree/bindings/net/qca,ar803x.yaml:46:5: could not find expected ':'
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qca,ar803x.yaml: ignoring, error parsing file
+make: *** [Makefile:1404: dt_binding_check] Error 2
 
 doc reference errors (make refcheckdocs):
 
