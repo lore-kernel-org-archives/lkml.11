@@ -2,102 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE77C32765
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73A8C3276B
 	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 15:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239035AbiHLPOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 11:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
+        id S239179AbiHLPO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 11:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238884AbiHLPOE (ORCPT
+        with ESMTP id S238973AbiHLPOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 11:14:04 -0400
-Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA78A7A80;
-        Fri, 12 Aug 2022 08:14:03 -0700 (PDT)
-Received: by mail-io1-f44.google.com with SMTP id y82so1036451iof.7;
-        Fri, 12 Aug 2022 08:14:03 -0700 (PDT)
+        Fri, 12 Aug 2022 11:14:10 -0400
+Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06EBA8316;
+        Fri, 12 Aug 2022 08:14:06 -0700 (PDT)
+Received: by mail-il1-f174.google.com with SMTP id g18so618283ilk.4;
+        Fri, 12 Aug 2022 08:14:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=message-id:date:subject:references:in-reply-to:cc:to:from
          :x-gm-message-state:from:to:cc;
-        bh=BMZIfIjHtqwgWzdSXqrr9NE51goJCuzG7L3KL1zDXNg=;
-        b=ayvCdLOUb48rYdOu0LdKroaJVyWioYQbD6+SIjy5PATK4ASBzyDLI/5sb5bO2neY0T
-         F/Iabg3OkoNohl+22WS+N301K7wBLJLjksbcGYi+82YNzvQ8Su1VTGu0bia4twI81faX
-         olszei0oIV+AuSoZ68fmvejUV4mH3bXM/YLQ+kIIgI1pBRGCTxJzOhuaz0koSEGrmSEB
-         evpSdmpiz17lhV4ZnibDAjM+EQUPY9qjiavqbBfg8VXwXPLR3KTdYYYp6Pelscp4tA54
-         j31RgkIl0ri6uzvY6POj2Zy3Qt99amrhI0wMv6ElNqnbfr6AOdcWY0s7c8J6Xow+aS3u
-         ImeA==
-X-Gm-Message-State: ACgBeo2L/zNJryjX0/Rlk5PdtTn0/BzC+blxQ3AO6AvRBADtJWUhjGWg
-        /IyznzVIVt5H+K4h0RNUBQ==
-X-Google-Smtp-Source: AA6agR4X5v/nUftmGk0t9KaWseTabpHT1C+d74LDJT61kSTdh21Tr/Mjcs4ZeK6MF/9vOSWFo+VCrw==
-X-Received: by 2002:a05:6638:3892:b0:342:8aa5:a050 with SMTP id b18-20020a056638389200b003428aa5a050mr2305379jav.145.1660317242922;
-        Fri, 12 Aug 2022 08:14:02 -0700 (PDT)
+        bh=0eLVaMC01PNGjZpFs/ysIl+m8N63WCqY/TMChEbDYg0=;
+        b=6XOb/BfDAjqwhJt7CY9OG9mHZ7mn0EHYFyyL0UC9bLGIfUzKEnGwh5l7hZYqiXXXZT
+         61UCZ480x5xw69WD61cVx+LIy94m31YDwZZ3HvhXpm5I4m/vz/If1bz5xp3IdVqKif51
+         wWksbt3jL0VvN0ZY1Ela3vclO6bXgtiWsSDY2zZAG4fGK9aj4pNey0MdxzidHw7PeAlF
+         PpXAzeTqCVO7xQGbiu8AlRW2e4YP68wKjK12HTcXps2DByDRejxN6CkbwGBKK6q/lIit
+         1HXTVnYQBaxwGuoY/3OO5gqzDX4VEDucuGfQNuSXiPru0iuh5ufyvFcDdpMvw8gJvdcT
+         Auvw==
+X-Gm-Message-State: ACgBeo0A0ybVhgjLlUrOb8y0AJ3zNBM4WPOJ4m4le+vLPBcb0vja10dI
+        XXCUoUffNgg9zUE/4ez+ww==
+X-Google-Smtp-Source: AA6agR4kHmLj4/xFXi7YoJuj7sFcfvXQr++r7N1bmpGlXs50al2WmMAyv2dnRWOggoYOOBAkPkA9Zw==
+X-Received: by 2002:a05:6e02:180a:b0:2de:20c8:572 with SMTP id a10-20020a056e02180a00b002de20c80572mr1957188ilv.213.1660317246428;
+        Fri, 12 Aug 2022 08:14:06 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id k17-20020a023351000000b0034286654d38sm1082746jak.82.2022.08.12.08.14.01
+        by smtp.gmail.com with ESMTPSA id n12-20020a056638110c00b00342913963c7sm5141jal.16.2022.08.12.08.14.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 08:14:02 -0700 (PDT)
-Received: (nullmailer pid 168986 invoked by uid 1000);
+        Fri, 12 Aug 2022 08:14:06 -0700 (PDT)
+Received: (nullmailer pid 168988 invoked by uid 1000);
         Fri, 12 Aug 2022 15:13:53 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     wei.fang@nxp.com
-Cc:     andrew@lunn.ch, pabeni@redhat.com, robh+dt@kernel.org,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, linux@armlinux.org.uk, edumazet@google.com,
-        kuba@kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20220812145009.1229094-2-wei.fang@nxp.com>
-References: <20220812145009.1229094-1-wei.fang@nxp.com> <20220812145009.1229094-2-wei.fang@nxp.com>
-Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, festevam@gmail.com,
+        Peng Fan <peng.fan@nxp.com>, s.hauer@pengutronix.de,
+        devicetree@vger.kernel.org, xiaoning.wang@nxp.com,
+        shawnguo@kernel.org, robh+dt@kernel.org, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com,
+        krzysztof.kozlowski+dt@linaro.org
+In-Reply-To: <20220812043424.4078034-2-peng.fan@oss.nxp.com>
+References: <20220812043424.4078034-1-peng.fan@oss.nxp.com> <20220812043424.4078034-2-peng.fan@oss.nxp.com>
+Subject: Re: [PATCH 1/6] dt-bindings: i2c: i2c-imx-lpi2c: add ipg clk
 Date:   Fri, 12 Aug 2022 09:13:53 -0600
-Message-Id: <1660317233.459028.168985.nullmailer@robh.at.kernel.org>
+Message-Id: <1660317233.465911.168987.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 13 Aug 2022 00:50:08 +1000, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
+On Fri, 12 Aug 2022 12:34:19 +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 > 
-> The hibernation mode of Atheros AR803x PHYs is default enabled.
-> When the cable is unplugged, the PHY will enter hibernation
-> mode and the PHY clock does down. For some MACs, it needs the
-> clock to support it's logic. For instance, stmmac needs the PHY
-> inputs clock is present for software reset completion. Therefore,
-> It is reasonable to add a DT property to disable hibernation mode.
+> i.MX LPI2C actually requires dual clock: per clock and ipg clock, so add
+> both.
 > 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 > ---
->  Documentation/devicetree/bindings/net/qca,ar803x.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  Documentation/devicetree/bindings/i2c/i2c-imx-lpi2c.yaml | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/net/qca,ar803x.yaml:46:5: [error] syntax error: could not find expected ':' (syntax)
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/net/qca,ar803x.example.dts'
-Documentation/devicetree/bindings/net/qca,ar803x.yaml:46:5: could not find expected ':'
-make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/net/qca,ar803x.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/net/qca,ar803x.yaml:46:5: could not find expected ':'
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qca,ar803x.yaml: ignoring, error parsing file
-make: *** [Makefile:1404: dt_binding_check] Error 2
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
+i2c@40a40000: clock-names:0: 'per' was expected
+	arch/arm/boot/dts/imx7ulp-com.dtb
+	arch/arm/boot/dts/imx7ulp-evk.dtb
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+i2c@40a40000: clock-names: ['ipg'] is too short
+	arch/arm/boot/dts/imx7ulp-com.dtb
+	arch/arm/boot/dts/imx7ulp-evk.dtb
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+i2c@40a40000: clocks: [[14, 2]] is too short
+	arch/arm/boot/dts/imx7ulp-com.dtb
 
-pip3 install dtschema --upgrade
+i2c@40a40000: clocks: [[18, 2]] is too short
+	arch/arm/boot/dts/imx7ulp-evk.dtb
 
-Please check and re-submit.
+i2c@40a40000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	arch/arm/boot/dts/imx7ulp-com.dtb
+	arch/arm/boot/dts/imx7ulp-evk.dtb
+
+i2c@40a50000: clock-names:0: 'per' was expected
+	arch/arm/boot/dts/imx7ulp-com.dtb
+	arch/arm/boot/dts/imx7ulp-evk.dtb
+
+i2c@40a50000: clock-names: ['ipg'] is too short
+	arch/arm/boot/dts/imx7ulp-com.dtb
+	arch/arm/boot/dts/imx7ulp-evk.dtb
+
+i2c@40a50000: clocks: [[14, 3]] is too short
+	arch/arm/boot/dts/imx7ulp-com.dtb
+
+i2c@40a50000: clocks: [[18, 3]] is too short
+	arch/arm/boot/dts/imx7ulp-evk.dtb
+
+i2c@40a50000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	arch/arm/boot/dts/imx7ulp-com.dtb
+	arch/arm/boot/dts/imx7ulp-evk.dtb
+
+i2c@5a800000: clock-names: ['per'] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a800000: clocks: [[15, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+
+i2c@5a800000: clocks: [[35, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+
+i2c@5a800000: clocks: [[37, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a800000: clocks: [[38, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+
+i2c@5a800000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a810000: clock-names: ['per'] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a810000: clocks: [[16, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+
+i2c@5a810000: clocks: [[36, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+
+i2c@5a810000: clocks: [[38, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a810000: clocks: [[43, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+
+i2c@5a810000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a820000: clock-names: ['per'] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a820000: clocks: [[17, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+
+i2c@5a820000: clocks: [[37, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+
+i2c@5a820000: clocks: [[43, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a820000: clocks: [[45, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+
+i2c@5a820000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a830000: clock-names: ['per'] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a830000: clocks: [[18, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+
+i2c@5a830000: clocks: [[38, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+
+i2c@5a830000: clocks: [[44, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
+
+i2c@5a830000: clocks: [[46, 0]] is too short
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+
+i2c@5a830000: Unevaluated properties are not allowed ('clock-names', 'clocks' were unexpected)
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dtb
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dtb
 
