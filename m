@@ -2,113 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBE4C25B08
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A830C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237228AbiHLMEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 08:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
+        id S238145AbiHLMJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 08:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236835AbiHLMEs (ORCPT
+        with ESMTP id S237976AbiHLMJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 08:04:48 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AABCAF0C6
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:04:47 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id c17so1075195lfb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:04:47 -0700 (PDT)
+        Fri, 12 Aug 2022 08:09:20 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DBCB0291
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:09:18 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z2so1104809edc.1
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:09:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=6Kp8Yta0WaKZAcq5lDGwXYhuy7Bp52cXQEeMVR/1+WI=;
-        b=e0NTS05OhsARZawCS+Q9V5QJklC7TFmJvLAbC9/1Rjz6b9TNijx7oX6q1vyROu9TGa
-         L0GarXzM939iDPY+j88jTWrXvpr9+jisqiOo01vBWL1rq457Qd3WlrD8H1S4k/iyc/KW
-         8m6xzKOXbjIKqyrTLY8QI+2M8TRkN0S3NV+UvwHCa5I1GSdFXUD6MMrkpWz65uVrwObF
-         PA3IZWAZB1iE5H7/JTu5WF383hEt5cRcvSZhQ8ip1G17tF0MhvQBe4pXSF7jqPU2bbaT
-         EydDQkwel042igDTE9+/sVIgg700h2ooG4BGxWR50lm/Q3fqPMW0/zKODvwTJB4/cqXZ
-         m9Lg==
+        d=fairphone.com; s=fair;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc;
+        bh=yQJnAvxwwDIRShMc7gbItPdruUOcVO91CwwmlkjdBV4=;
+        b=FcCofm1FhUVT0y+mEgvBIoj3n6cKnIgxHtk1mcvHSoL8hXoct5dx6RIf+e7jeVG/ga
+         P6HVJyoEFjyO4lQWI5qIZ/NvFlK11FTWq21WH/DQ84Y6kBpywVaHbDgpY1s11se3uFTQ
+         9E2zq3OLJGG2UEnA6EYPwyPSawIejNt2OpnLIj/i50L+Tb8XD33UAl8b2YyXTjrGndHy
+         xVwAD7/yf2GEU1MIxFjG+0aePMu2GZFrWaivMd5oifBegAjEeRMuqfxcej3ZSvVX/eCb
+         oNcLN/kWqj7fXgBV91fW2FI/ZWZFqbGd5FDt45cQYngC8KUOzledBlLgK7IGcVJfXm5+
+         tSyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=6Kp8Yta0WaKZAcq5lDGwXYhuy7Bp52cXQEeMVR/1+WI=;
-        b=Xw6IJVpI6HFnawmZBkU2aTH1l9VkO88sUw7RGzFwXPGmCZtkdhEaLLCZSyxGkTgzKm
-         lT/WmhDb2l8dN//fiw+xODYNIdlaJmAVe/U8fKTKkXw1GAqJ3oBToT2tmfq/n+0/Dm+Z
-         vQe0YE64AgldeNFDGdM2V1+N1U0VVUQhmEZc2UgFyfPw5AyFoKWTnysQgdhQ4dxlS45l
-         ya07Pykbd4LqelmA0I/u708LaiIWvlrGOQdjyjDFwsGEVw+bGk4FGk6ntqyoOtoYAIPt
-         GfUUPLb5c8hKXZB58L6nEb2YpTHgFRNGlza9rLqHtVXF+VP1MbhaeGa+zPcL84KWSqpz
-         0biw==
-X-Gm-Message-State: ACgBeo3dAwO9O2xwk4KaLOk4N53uf2sZ1WTSPdoIW5/0rGOFnPEjbAH3
-        S3wOU/64zg3SBUmdByoiiM9Q6A==
-X-Google-Smtp-Source: AA6agR4sqXxxKi4mb3+0CFJc4qCyD4xvAMcIyGUn9NI4/7Ff/JuoW8K5vFDg7SS1M6jSetsvVHzWQQ==
-X-Received: by 2002:a05:6512:401b:b0:48b:32f5:de20 with SMTP id br27-20020a056512401b00b0048b32f5de20mr1268909lfb.33.1660305885359;
-        Fri, 12 Aug 2022 05:04:45 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id r3-20020a2e8e23000000b0025e60089f34sm333216ljk.52.2022.08.12.05.04.42
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc;
+        bh=yQJnAvxwwDIRShMc7gbItPdruUOcVO91CwwmlkjdBV4=;
+        b=YQcNOkEVG3k6AI8dTzTRs46bIUp3k3T58gtB+m1IVaznjLhqUibue45WrxDPOc2sNB
+         fkMCMfuCwVoip4ZRgDIGM9bG9GFCQtXcy6uO5Yc3lYzIgWNSA0lB0TrZE8bSZe/yAEN7
+         gVakFS2h4z5N7cg8fCm2gd6ecF7abbWyPMArHKAuMsVy3HdonQ7lXvZf7jcMA/m5MUU4
+         dZQb2CxNOlXNYahYlUiVaOa4b492LMdV0IZ1b1O5FrIXColDeSo20oSr6J/6a2GgSavv
+         WjJr+dSdxlai28QXldXo+9nh9vu+1byCBTbcNRe+6ZNdu/TmNkzh0XferTiZTT6VPZaf
+         cvrQ==
+X-Gm-Message-State: ACgBeo37CCzbVNpoc7BJ8GxBU4SheoXC6ShexIhl2Cd186ndctF7x0fj
+        w/f19lgoHh6TaCQ3Ds7ocOxAfQ==
+X-Google-Smtp-Source: AA6agR5lbyjU78E5dz6FNsDcA7i+JaI7LaU/jSttjLi0tz6iRhI5F4cxhULTI7Be88sUI04Zo6w84Q==
+X-Received: by 2002:a05:6402:50cb:b0:440:87d4:3ad2 with SMTP id h11-20020a05640250cb00b0044087d43ad2mr3317546edb.219.1660306157306;
+        Fri, 12 Aug 2022 05:09:17 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id o11-20020a170906768b00b00730af3346d6sm715698ejm.212.2022.08.12.05.09.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 05:04:44 -0700 (PDT)
-Message-ID: <4cf8d73e-9f14-fe8d-d6e2-551920c1f29e@linaro.org>
-Date:   Fri, 12 Aug 2022 15:04:41 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Wei Fang <wei.fang@nxp.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220812145009.1229094-1-wei.fang@nxp.com>
- <20220812145009.1229094-2-wei.fang@nxp.com>
- <0cd22a17-3171-b572-65fb-e9d3def60133@linaro.org>
- <DB9PR04MB81060AF4890DEA9E2378940288679@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <14cf568e-d7ee-886e-5122-69b2e58b8717@linaro.org>
- <YvY7Vjtj+WV3BI59@shell.armlinux.org.uk>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YvY7Vjtj+WV3BI59@shell.armlinux.org.uk>
+        Fri, 12 Aug 2022 05:09:16 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date:   Fri, 12 Aug 2022 14:09:15 +0200
+Message-Id: <CM41EUB650GB.YO1J30NYO5NU@otso>
+Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>, "Andy Gross" <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 5/5] arm64: dts: qcom: sm6350: Add interconnect
+ support
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     "Luca Weiss" <luca.weiss@fairphone.com>,
+        <linux-arm-msm@vger.kernel.org>
+X-Mailer: aerc 0.11.0
+References: <20220525144404.200390-1-luca.weiss@fairphone.com>
+ <20220525144404.200390-6-luca.weiss@fairphone.com>
+In-Reply-To: <20220525144404.200390-6-luca.weiss@fairphone.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 14:36, Russell King (Oracle) wrote:
-> On Fri, Aug 12, 2022 at 02:25:42PM +0300, Krzysztof Kozlowski wrote:
->> hibernation is a feature, but 'disable-hibernation' is not. DTS
->> describes the hardware, not policy or driver bejhvior. Why disabling
->> hibernation is a property of hardware? How you described, it's not,
->> therefore either property is not for DT or it has to be phrased
->> correctly to describe the hardware.
-> 
-> However, older DT descriptions need to be compatible with later kernels,
-> and as existing setups have hibernation enabled, introducing a property
-> to _enable_ hibernation (which implies if the property is not present,
-> hibernation is disabled) changes the behaviour with older DT, thereby
-> breaking backwards compatibility.
-> 
-> Yes, DT needs to describe hardware, but there are also other
-> constraints too.
+Hi Bjorn,
 
-I did not propose a property to enable hibernation. The property must
-describe hardware, so this piece is missing, regardless whether the
-logic in the driver is "enable" or "disable".
+On Wed May 25, 2022 at 4:44 PM CEST, Luca Weiss wrote:
+> Add all the different NoC providers that are found in SM6350 and
+> populate different nodes that use the interconnect properties.
+>
+> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
 
-The hardware property for example is: "broken foo, so hibernation should
-be disabled" or "engineer forgot to wire cables, so hibernation won't
-work"...
+The other patches (1-4) from this series have been merged into torvalds'
+repo already, so just this one is missing from 5.20/6.0.
 
-Best regards,
-Krzysztof
+Could you please pick it up for the next merge window if everything's
+alright with it?
+
+Regards
+Luca
