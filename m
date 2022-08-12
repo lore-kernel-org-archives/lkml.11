@@ -2,497 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F50BC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 15:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43738C28B2C
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 15:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238772AbiHLPN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 11:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
+        id S238923AbiHLPOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 11:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236232AbiHLPNU (ORCPT
+        with ESMTP id S235840AbiHLPN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 11:13:20 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2151A5705;
-        Fri, 12 Aug 2022 08:13:18 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M46ck19TVz68778;
-        Fri, 12 Aug 2022 23:13:10 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Fri, 12 Aug 2022 17:13:17 +0200
-Received: from SecurePC-101-06.china.huawei.com (10.122.247.231) by
- lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 12 Aug 2022 16:13:16 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     <linuxarm@huawei.com>, <linux-cxl@vger.kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-CC:     <john.garry@huawei.com>, Peter Zijlstra <peterz@infradead.org>,
-        "Ingo Molnar" <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Alison Schofield" <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Subject: [RFC PATCH 2/4] cxl/pci: Find and register CXL PMU devices
-Date:   Fri, 12 Aug 2022 16:12:12 +0100
-Message-ID: <20220812151214.2025-3-Jonathan.Cameron@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220812151214.2025-1-Jonathan.Cameron@huawei.com>
-References: <20220812151214.2025-1-Jonathan.Cameron@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.122.247.231]
-X-ClientProxiedBy: lhrpeml100005.china.huawei.com (7.191.160.25) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+        Fri, 12 Aug 2022 11:13:57 -0400
+Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A658A347F;
+        Fri, 12 Aug 2022 08:13:56 -0700 (PDT)
+Received: by mail-il1-f174.google.com with SMTP id g18so618012ilk.4;
+        Fri, 12 Aug 2022 08:13:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=qrYMH+Kwic0lNNdXlyACBjAld7jR6Z8oVCf9ilB6udQ=;
+        b=esgETDHhTHHR2fsrlkrokpNO1tyKLmQ2Oh2Chii8sddOYhR+H/fodCZuQthG0p8c3F
+         yDQlPKL3m27wnBn/K4rfxV8y9qWVmaf7ytdd92jsCPSzwranrtdh5jqSMY7L7A0snbVF
+         Bmm/0qoGSpCEAEbsPJ1YD0dq0Lpis9YV42a1xmDCz2HRre77R4VDGpsTGZdOoVtaUKvo
+         CM9l33vXh7VxOZiuurO9lO2nwRQsXixkAz1FdYrNTYf0CeWIiLTWztyGKjfKhttdeKVy
+         Rv8FcFnFkmZ7AusloiuDOuk7TiQsXbJLcdMtbzqEbaoOiz7ONG2VrR6rQrkHpFkY3j7l
+         HAAA==
+X-Gm-Message-State: ACgBeo1HVqRmKnYgpt7JRsQghE0eBayIGKV5ItqBzVMki7PJeTZVL03s
+        cHMiBhwJ8c/tBfMeXsJZTJYADRashQ==
+X-Google-Smtp-Source: AA6agR4LIkp2IQh8Xf1gwt2+DMWiriYNLrEfpR8rav2W8/cROciO1rzAEhb1njHS4Nnbwm7Gm0KzRg==
+X-Received: by 2002:a05:6e02:19cc:b0:2dd:ad68:7443 with SMTP id r12-20020a056e0219cc00b002ddad687443mr2092242ill.141.1660317235332;
+        Fri, 12 Aug 2022 08:13:55 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id bq12-20020a056638468c00b00343617e8368sm793015jab.99.2022.08.12.08.13.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 08:13:54 -0700 (PDT)
+Received: (nullmailer pid 168973 invoked by uid 1000);
+        Fri, 12 Aug 2022 15:13:53 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        devicetree@vger.kernel.org, Rob Clark <robdclark@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220811040121.3775613-2-bjorn.andersson@linaro.org>
+References: <20220811040121.3775613-1-bjorn.andersson@linaro.org> <20220811040121.3775613-2-bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 1/3] dt-bindings: display/msm: Add binding for SC8280XP MDSS
+Date:   Fri, 12 Aug 2022 09:13:53 -0600
+Message-Id: <1660317233.413609.168972.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CXL PMU devices can be found from entries in the Register
-Locator DVSEC.
+On Wed, 10 Aug 2022 21:01:19 -0700, Bjorn Andersson wrote:
+> Add binding for the display subsystem and display processing unit in the
+> Qualcomm SC8280XP platform.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  .../bindings/display/msm/dpu-sc8280xp.yaml    | 284 ++++++++++++++++++
+>  1 file changed, 284 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.yaml
+> 
 
-In order to register the minimum number of IRQ vectors necessary
-to support all CPMUs found, separate the registration into two
-steps.  First find the devices, and query the IRQs used and then
-register the devices. Between these two steps, request the
-IRQ vectors necessary and enable bus master support.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Future IRQ users for CXL type 3 devices (e.g. DOEs) will need to
-follow a similar pattern the number of vectors necessary is known
-before any parts of the driver stack rely on their availability.
+yamllint warnings/errors:
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.example.dts:21:18: fatal error: dt-bindings/clock/qcom,dispcc-sc8280xp.h: No such file or directory
+   21 |         #include <dt-bindings/clock/qcom,dispcc-sc8280xp.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:383: Documentation/devicetree/bindings/display/msm/dpu-sc8280xp.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1404: dt_binding_check] Error 2
 
----
+doc reference errors (make refcheckdocs):
 
-Open questions
-1) Is this IRQ vector 'count' / request then use approach flexible
-   enough for other interrupt users on these devices.
-2) Does hanging the CPMU off the PCI device make sense. These can
-   occur in Switch upstream ports as well.
-3) Naming.  It would be nice if the device naming indicated which
-   EP these were associated with, but that wouldn't be inline
-   with the rest of the CXL bus device naming.  What is best
-   option here?
----
- drivers/cxl/core/Makefile |  1 +
- drivers/cxl/core/core.h   |  3 ++
- drivers/cxl/core/cpmu.c   | 67 ++++++++++++++++++++++++++++++++++
- drivers/cxl/core/port.c   |  2 ++
- drivers/cxl/core/regs.c   | 29 +++++++++++++++
- drivers/cxl/cpmu.h        | 54 ++++++++++++++++++++++++++++
- drivers/cxl/cxl.h         | 15 ++++++++
- drivers/cxl/cxlpci.h      |  1 +
- drivers/cxl/pci.c         | 76 ++++++++++++++++++++++++++++++++++++++-
- 9 files changed, 247 insertions(+), 1 deletion(-)
+See https://patchwork.ozlabs.org/patch/
 
-diff --git a/drivers/cxl/core/Makefile b/drivers/cxl/core/Makefile
-index 79c7257f4107..1318e8a6830f 100644
---- a/drivers/cxl/core/Makefile
-+++ b/drivers/cxl/core/Makefile
-@@ -10,4 +10,5 @@ cxl_core-y += memdev.o
- cxl_core-y += mbox.o
- cxl_core-y += pci.o
- cxl_core-y += hdm.o
-+cxl_core-y += cpmu.o
- cxl_core-$(CONFIG_CXL_REGION) += region.o
-diff --git a/drivers/cxl/core/core.h b/drivers/cxl/core/core.h
-index 1d8f87be283f..d2b12cdfd61f 100644
---- a/drivers/cxl/core/core.h
-+++ b/drivers/cxl/core/core.h
-@@ -14,12 +14,14 @@ extern struct device_attribute dev_attr_create_pmem_region;
- extern struct device_attribute dev_attr_delete_region;
- extern struct device_attribute dev_attr_region;
- extern const struct device_type cxl_pmem_region_type;
-+extern const struct device_type cxl_cpmu_type;
- extern const struct device_type cxl_region_type;
- void cxl_decoder_kill_region(struct cxl_endpoint_decoder *cxled);
- #define CXL_REGION_ATTR(x) (&dev_attr_##x.attr)
- #define CXL_REGION_TYPE(x) (&cxl_region_type)
- #define SET_CXL_REGION_ATTR(x) (&dev_attr_##x.attr),
- #define CXL_PMEM_REGION_TYPE(x) (&cxl_pmem_region_type)
-+#define CXL_CPMU_TYPE(x) (&cxl_cpmu_region_type)
- int cxl_region_init(void);
- void cxl_region_exit(void);
- #else
-@@ -37,6 +39,7 @@ static inline void cxl_region_exit(void)
- #define CXL_REGION_TYPE(x) NULL
- #define SET_CXL_REGION_ATTR(x)
- #define CXL_PMEM_REGION_TYPE(x) NULL
-+#define CXL_CPMU_TYPE(x) NULL
- #endif
- 
- struct cxl_send_command;
-diff --git a/drivers/cxl/core/cpmu.c b/drivers/cxl/core/cpmu.c
-new file mode 100644
-index 000000000000..2d17d4083c8f
---- /dev/null
-+++ b/drivers/cxl/core/cpmu.c
-@@ -0,0 +1,67 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(c) 2022 Huawei. All rights reserved. */
-+
-+#include <linux/device.h>
-+#include <linux/slab.h>
-+#include <linux/idr.h>
-+#include <cpmu.h>
-+#include <cxl.h>
-+
-+static DEFINE_IDA(cpmu_ida);
-+
-+static void cxl_cpmu_release(struct device *dev)
-+{
-+	struct cxl_cpmu *cpmu = container_of(dev, struct cxl_cpmu, dev);
-+
-+	ida_free(&cpmu_ida, cpmu->id);
-+	kfree(cpmu);
-+}
-+
-+const struct device_type cxl_cpmu_type = {
-+	.name = "cxl_cpmu",
-+	.release = cxl_cpmu_release,
-+};
-+
-+static void remove_dev(void *dev)
-+{
-+	device_del(dev);
-+}
-+
-+int devm_cxl_cpmu_add(struct device *parent, struct cxl_cpmu_regs *regs, int index)
-+{
-+	struct cxl_cpmu *cpmu;
-+	struct device *dev;
-+	int rc;
-+
-+	cpmu = kzalloc(sizeof(*cpmu), GFP_KERNEL);
-+	if (!cpmu)
-+		return -ENOMEM;
-+
-+	cpmu->base = regs->cpmu;
-+	dev = &cpmu->dev;
-+	device_initialize(dev);
-+	device_set_pm_not_required(dev);
-+	dev->parent = parent;
-+	dev->bus = &cxl_bus_type;
-+	dev->type = &cxl_cpmu_type;
-+	rc = ida_alloc(&cpmu_ida, GFP_KERNEL);
-+	if (rc < 0)
-+		goto err;
-+	cpmu->id = rc;
-+
-+	rc = dev_set_name(dev, "cpmu%d", cpmu->id);
-+	if (rc)
-+		goto err;
-+
-+	rc = device_add(dev);
-+	if (rc)
-+		goto err;
-+
-+	return devm_add_action_or_reset(parent, remove_dev, dev);
-+
-+err:
-+	put_device(&cpmu->dev);
-+	return rc;
-+}
-+EXPORT_SYMBOL_NS_GPL(devm_cxl_cpmu_add, CXL);
-+
-diff --git a/drivers/cxl/core/port.c b/drivers/cxl/core/port.c
-index 1629c7a4033f..66bde8e2edb8 100644
---- a/drivers/cxl/core/port.c
-+++ b/drivers/cxl/core/port.c
-@@ -55,6 +55,8 @@ static int cxl_device_id(struct device *dev)
- 		return CXL_DEVICE_MEMORY_EXPANDER;
- 	if (dev->type == CXL_REGION_TYPE())
- 		return CXL_DEVICE_REGION;
-+	if (dev->type == &cxl_cpmu_type)
-+		return CXL_DEVICE_CPMU;
- 	return 0;
- }
- 
-diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
-index 2f651211d120..1ba1a77ecbf1 100644
---- a/drivers/cxl/core/regs.c
-+++ b/drivers/cxl/core/regs.c
-@@ -6,6 +6,7 @@
- #include <linux/pci.h>
- #include <cxlmem.h>
- #include <cxlpci.h>
-+#include <cpmu.h>
- 
- /**
-  * DOC: cxl registers
-@@ -331,3 +332,31 @@ int cxl_count_regblock(struct pci_dev *pdev, enum cxl_regloc_type type)
- }
- EXPORT_SYMBOL_NS_GPL(cxl_count_regblock, CXL);
- 
-+int cxl_map_cpmu_regs(struct pci_dev *pdev,
-+		      struct cxl_cpmu_regs *regs,
-+		      struct cxl_register_map *map)
-+{
-+	struct device *dev = &pdev->dev;
-+	resource_size_t phys_addr;
-+
-+	phys_addr = pci_resource_start(pdev, map->barno) + map->block_offset;
-+	regs->cpmu = devm_cxl_iomap_block(dev, phys_addr, CPMU_REGMAP_SIZE);
-+	if (!regs->cpmu)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(cxl_map_cpmu_regs, CXL);
-+
-+int cxl_cpmu_get_irq(struct cxl_cpmu_regs *regs)
-+{
-+	int irq = -1;
-+	u64 val;
-+
-+	val = readq(regs->cpmu + CPMU_CAP_REG);
-+	if (FIELD_GET(CPMU_CAP_INT, val))
-+		irq = FIELD_GET(CPMU_CAP_MSI_N_MSK, val);
-+
-+	return irq;
-+}
-+EXPORT_SYMBOL_NS_GPL(cxl_cpmu_get_irq, CXL);
-diff --git a/drivers/cxl/cpmu.h b/drivers/cxl/cpmu.h
-new file mode 100644
-index 000000000000..880077bf0b9f
---- /dev/null
-+++ b/drivers/cxl/cpmu.h
-@@ -0,0 +1,54 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright(c) 2022 Huawei
-+ * CXL Specification rev 3.0 Setion 8.2.7 (CPMU Register Interface)
-+ */
-+#ifndef CXL_CPMU_H
-+#define CXL_CPMU_H
-+
-+#define CPMU_CAP_REG			0x0
-+#define   CPMU_CAP_NUM_COUNTERS_MSK		GENMASK_ULL(4, 0)
-+#define   CPMU_CAP_COUNTER_WIDTH_MSK		GENMASK_ULL(15, 8)
-+#define   CPMU_CAP_NUM_EVN_CAP_REG_SUP_MSK	GENMASK_ULL(24, 20)
-+#define   CPMU_CAP_FILTERS_SUP_MSK		GENMASK_ULL(39, 32)
-+#define   CPMU_CAP_MSI_N_MSK			GENMASK_ULL(47, 44)
-+#define   CPMU_CAP_WRITEABLE_WHEN_FROZEN	BIT(48)
-+#define   CPMU_CAP_FREEZE			BIT(49)
-+#define   CPMU_CAP_INT				BIT(50)
-+#define   CPMU_CAP_VERSION_MSK			GENMASK_ULL(63, 60)
-+
-+#define CPMU_OVERFLOW_REG		0x10
-+#define CPMU_FREEZE_REG			0x18
-+#define CPMU_EVENT_CAP_REG(n)		(0x100 + 8 * (n))
-+#define   CPMU_EVENT_CAP_SUPPORTED_EVENTS_MSK	GENMASK_ULL(31, 0)
-+#define   CPMU_EVENT_CAP_GROUP_ID_MSK		GENMASK_ULL(47, 32)
-+#define   CPMU_EVENT_CAP_VENDOR_ID_MSK		GENMASK_ULL(63, 48)
-+
-+#define CPMU_COUNTER_CFG_REG(n)		(0x200 + 8 * (n))
-+#define   CPMU_COUNTER_CFG_TYPE_MSK		GENMASK_ULL(1, 0)
-+#define     CPMU_COUNTER_CFG_TYPE_FREE_RUN	0
-+#define     CPMU_COUNTER_CFG_TYPE_FIXED_FUN	1
-+#define     CPMU_COUNTER_CFG_TYPE_CONFIGURABLE	2
-+#define   CPMU_COUNTER_CFG_ENABLE		BIT(8)
-+#define   CPMU_COUNTER_CFG_INT_ON_OVRFLW	BIT(9)
-+#define   CPMU_COUNTER_CFG_FREEZE_ON_OVRFLW	BIT(10)
-+#define   CPMU_COUNTER_CFG_EDGE			BIT(11)
-+#define   CPMU_COUNTER_CFG_INVERT		BIT(12)
-+#define   CPMU_COUNTER_CFG_THRESHOLD_MSK	GENMASK_ULL(23, 16)
-+#define   CPMU_COUNTER_CFG_EVENTS_MSK		GENMASK_ULL(55, 24)
-+#define   CPMU_COUNTER_CFG_EVENT_GRP_ID_IDX_MSK	GENMASK_ULL(63, 59)
-+
-+#define CPMU_FILTER_CFG_REG(n, f)	(0x400 + 4 * ((f) + (n) * 8))
-+#define   CPMU_FILTER_CFG_VALUE_MSK		GENMASK(15, 0)
-+
-+#define CPMU_COUNTER_REG(n)			(0xc00 + 8 * (n))
-+
-+#define CPMU_REGMAP_SIZE 0xe00 /* Table 8-32 CXL 3.0 specification */
-+struct cxl_cpmu {
-+	struct device dev;
-+	void __iomem *base;
-+	int id;
-+};
-+
-+#define to_cxl_cpmu(dev) container_of(dev, struct cxl_cpmu, dev)
-+#endif
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 5a1bcdbda654..2768e1677e2b 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -166,6 +166,10 @@ struct cxl_regs {
- 	struct_group_tagged(cxl_device_regs, device_regs,
- 		void __iomem *status, *mbox, *memdev;
- 	);
-+
-+	struct_group_tagged(cxl_cpmu_regs, cpmu_regs,
-+		void __iomem *cpmu;
-+	);
- };
- 
- struct cxl_reg_map {
-@@ -184,6 +188,10 @@ struct cxl_device_reg_map {
- 	struct cxl_reg_map memdev;
- };
- 
-+struct cxl_cpmu_reg_map {
-+	struct cxl_reg_map cpmu;
-+};
-+
- /**
-  * struct cxl_register_map - DVSEC harvested register block mapping parameters
-  * @base: virtual base of the register-block-BAR + @block_offset
-@@ -201,6 +209,7 @@ struct cxl_register_map {
- 	union {
- 		struct cxl_component_reg_map component_map;
- 		struct cxl_device_reg_map device_map;
-+		struct cxl_cpmu_reg_map cpmu_map;
- 	};
- };
- 
-@@ -219,6 +228,10 @@ enum cxl_regloc_type;
- int cxl_count_regblock(struct pci_dev *pdev, enum cxl_regloc_type type);
- int cxl_find_regblock(struct pci_dev *pdev, enum cxl_regloc_type type,
- 		      struct cxl_register_map *map, int index);
-+int cxl_map_cpmu_regs(struct pci_dev *pdev,
-+		      struct cxl_cpmu_regs *regs,
-+		      struct cxl_register_map *map);
-+int cxl_cpmu_get_irq(struct cxl_cpmu_regs *regs);
- void __iomem *devm_cxl_iomap_block(struct device *dev, resource_size_t addr,
- 				   resource_size_t length);
- 
-@@ -626,6 +639,7 @@ void cxl_driver_unregister(struct cxl_driver *cxl_drv);
- #define CXL_DEVICE_MEMORY_EXPANDER	5
- #define CXL_DEVICE_REGION		6
- #define CXL_DEVICE_PMEM_REGION		7
-+#define CXL_DEVICE_CPMU			8
- 
- #define MODULE_ALIAS_CXL(type) MODULE_ALIAS("cxl:t" __stringify(type) "*")
- #define CXL_MODALIAS_FMT "cxl:t%d"
-@@ -653,6 +667,7 @@ static inline struct cxl_pmem_region *to_cxl_pmem_region(struct device *dev)
- }
- #endif
- 
-+int devm_cxl_cpmu_add(struct device *parent, struct cxl_cpmu_regs *regs, int idx);
- /*
-  * Unit test builds overrides this to __weak, find the 'strong' version
-  * of these symbols in tools/testing/cxl/.
-diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
-index eec597dbe763..a842c3d1341a 100644
---- a/drivers/cxl/cxlpci.h
-+++ b/drivers/cxl/cxlpci.h
-@@ -59,6 +59,7 @@ enum cxl_regloc_type {
- 	CXL_REGLOC_RBI_COMPONENT,
- 	CXL_REGLOC_RBI_VIRT,
- 	CXL_REGLOC_RBI_MEMDEV,
-+	CXL_REGLOC_RBI_CPMU,
- 	CXL_REGLOC_RBI_TYPES
- };
- 
-diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index 1758380247ec..e1276fdc8609 100644
---- a/drivers/cxl/pci.c
-+++ b/drivers/cxl/pci.c
-@@ -428,12 +428,39 @@ static void devm_cxl_pci_create_doe(struct cxl_dev_state *cxlds)
- 	}
- }
- 
-+static void cxl_pci_free_irq_vectors(void *data)
-+{
-+	pci_free_irq_vectors(data);
-+}
-+
-+static int cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds, int vectors)
-+{
-+	struct device *dev = cxlds->dev;
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	int rc;
-+
-+	rc = pci_alloc_irq_vectors(pdev, vectors, vectors,
-+				   PCI_IRQ_MSI | PCI_IRQ_MSIX);
-+	if (rc < 0)
-+		return rc;
-+	if (rc != vectors) {
-+		pci_err(pdev, "Not enough interrupts; use polling where supported\n");
-+		/* Some got allocated; clean them up */
-+		cxl_pci_free_irq_vectors(pdev);
-+		return -ENOSPC;
-+	}
-+
-+	return devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
-+}
-+
- static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
-+	struct cxl_cpmu_regs *cpmu_regs_array = NULL;
- 	struct cxl_register_map map;
- 	struct cxl_memdev *cxlmd;
- 	struct cxl_dev_state *cxlds;
--	int rc;
-+	int i, rc, cpmu_count;
-+	int max_interrupt = -1;
- 
- 	/*
- 	 * Double check the anonymous union trickery in struct cxl_regs
-@@ -494,6 +521,53 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (rc)
- 		return rc;
- 
-+	/*
-+	 * Before registering sub devices that use interrupts, the maximum
-+	 * interrupt used on the device should be established to allow the correct
-+	 * number of irq vectors to be requested. Separate the registration process
-+	 * into before / after interrupt vector request.
-+	 */
-+	cpmu_count = cxl_count_regblock(pdev, CXL_REGLOC_RBI_CPMU);
-+	if (cpmu_count) {
-+		cpmu_regs_array = kmalloc_array(cpmu_count, sizeof(cpmu_regs_array),
-+						GFP_KERNEL);
-+		if (!cpmu_regs_array)
-+			return -ENOMEM;
-+	}
-+	/* Pass one - just enough to find out what interrupts are used */
-+	for (i = 0; i < cpmu_count; i++) {
-+		int irq;
-+
-+		rc = cxl_find_regblock(pdev, CXL_REGLOC_RBI_CPMU, &map, i);
-+		if (rc) {
-+			kfree(cpmu_regs_array);
-+			return rc;
-+		}
-+
-+		rc = cxl_map_cpmu_regs(pdev, &cpmu_regs_array[i], &map);
-+		if (rc) {
-+			kfree(cpmu_regs_array);
-+			return rc;
-+		}
-+
-+		irq = cxl_cpmu_get_irq(&cpmu_regs_array[i]);
-+		max_interrupt = max(max_interrupt, irq);
-+	}
-+
-+	if (max_interrupt >= 0) {
-+		pci_set_master(pdev);
-+		rc = cxl_alloc_irq_vectors(cxlds, max_interrupt + 1);
-+		if (rc) {
-+			kfree(cpmu_regs_array);
-+			return rc;
-+		}
-+	}
-+
-+	/* Pass 2 - register the CPMU instances */
-+	for (i = 0; i < cpmu_count; i++)
-+		devm_cxl_cpmu_add(cxlds->dev, &cpmu_regs_array[i], i);
-+	kfree(cpmu_regs_array);
-+
- 	cxlmd = devm_cxl_add_memdev(cxlds);
- 	if (IS_ERR(cxlmd))
- 		return PTR_ERR(cxlmd);
--- 
-2.32.0
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
