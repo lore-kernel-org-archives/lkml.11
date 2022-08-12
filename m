@@ -2,95 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3717FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEE1C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238578AbiHLNXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 09:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
+        id S238388AbiHLNXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 09:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbiHLNX3 (ORCPT
+        with ESMTP id S238569AbiHLNXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 09:23:29 -0400
-Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0165390C68
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:23:26 -0700 (PDT)
-Received: from localhost.localdomain ([222.20.126.44])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 27CDLQdu023627-27CDLQdx023627
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Fri, 12 Aug 2022 21:21:32 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: binderfs: fix memory leak in binderfs_fill_super
-Date:   Fri, 12 Aug 2022 21:21:24 +0800
-Message-Id: <20220812132124.2053673-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 12 Aug 2022 09:23:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4A390C6A;
+        Fri, 12 Aug 2022 06:23:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB610617C0;
+        Fri, 12 Aug 2022 13:23:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3215BC433D7;
+        Fri, 12 Aug 2022 13:23:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660310609;
+        bh=/lv88xp2oA1PzTLyJc6dBD17FKmwoXzEzmWpFb15WwI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mCM2NIjtRzkX8nwXyl1wy6yZCBtMTB5loKmfwDCQFawv7062SOm2uWBZlgwMiag7N
+         sNk2TOs+Z6O4IBSKD69xlcYbTX1yOnlELS/uEv+TPQcWiJCwVoCJM0pMeR6DwfNUb1
+         cDR4xvgiuLS4lQF7bQXSpAfkRGeG9KR59bxDBe7F8apJIlK9RgnJjuRWF3HdJK2p3U
+         ABez2PcWTUE07lKz4bnYvY0fegMGmRcHYqWfHNAk4G6F85PY/EM3ee7ZmsaMyAPT40
+         UqfLoVeLG3k9p1iD0Wjn+kfyHWHc71V/OcC3pIHhthTGUx4PDNBs9wycJjlW7k4/kY
+         3hhKXMhjD3eCA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0CBF64035A; Fri, 12 Aug 2022 10:23:26 -0300 (-03)
+Date:   Fri, 12 Aug 2022 10:23:25 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Martin =?utf-8?B?TGnFoWth?= <mliska@suse.cz>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH] perf: fix coding style in build-id.c
+Message-ID: <YvZUTbEjvSLbUJQQ@kernel.org>
+References: <2983e2e0-6850-ad59-79d8-efe83b22cffe@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+In-Reply-To: <2983e2e0-6850-ad59-79d8-efe83b22cffe@suse.cz>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+Em Fri, Aug 12, 2022 at 01:42:56PM +0200, Martin Liška escreveu:
+> Use tabs instead of 8 spaces for the indentation.
 
-In binderfs_fill_super, if s_root is not successfully initialized by
-d_make_root, the previous allocated s_sb_info will not be freed since
-generic_shutdown_super first checks if sb->s_root and then does
-put_super operation. The put_super operation calls binderfs_put_super
-to deallocate s_sb_info and put ipc_ns. This will lead to memory leak
-in binderfs_fill_super.
+Thanks, applied.
 
-Fix this by invoking binderfs_put_super at error sites before s_root
-is successfully initialized.
+- Arnaldo
 
-Fixes: 095cf502b31e ("binderfs: port to new mount api")
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/android/binderfs.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-index 588d753a7a19..20f5bc77495f 100644
---- a/drivers/android/binderfs.c
-+++ b/drivers/android/binderfs.c
-@@ -710,8 +710,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
- 	info->mount_opts.stats_mode = ctx->stats_mode;
- 
- 	inode = new_inode(sb);
--	if (!inode)
-+	if (!inode) {
-+		binderfs_put_super(sb);
- 		return -ENOMEM;
-+	}
- 
- 	inode->i_ino = FIRST_INODE;
- 	inode->i_fop = &simple_dir_operations;
-@@ -721,8 +723,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
- 	set_nlink(inode, 2);
- 
- 	sb->s_root = d_make_root(inode);
--	if (!sb->s_root)
-+	if (!sb->s_root) {
-+		binderfs_put_super(sb);
- 		return -ENOMEM;
-+	}
- 
- 	ret = binderfs_binder_ctl_create(sb);
- 	if (ret)
+> Signed-off-by: Martin Liska <mliska@suse.cz>
+> ---
+>  tools/perf/util/build-id.c | 22 +++++++++++-----------
+>  1 file changed, 11 insertions(+), 11 deletions(-)
+> 
+> diff --git a/tools/perf/util/build-id.c b/tools/perf/util/build-id.c
+> index 9e176146eb10..0cc68cdd84c8 100644
+> --- a/tools/perf/util/build-id.c
+> +++ b/tools/perf/util/build-id.c
+> @@ -652,17 +652,17 @@ static char *build_id_cache__find_debug(const char *sbuild_id,
+>  	nsinfo__mountns_exit(&nsc);
+>  
+>  #ifdef HAVE_DEBUGINFOD_SUPPORT
+> -        if (realname == NULL) {
+> -                debuginfod_client* c = debuginfod_begin();
+> -                if (c != NULL) {
+> -                        int fd = debuginfod_find_debuginfo(c,
+> -                                                           (const unsigned char*)sbuild_id, 0,
+> -                                                           &realname);
+> -                        if (fd >= 0)
+> -                                close(fd); /* retaining reference by realname */
+> -                        debuginfod_end(c);
+> -                }
+> -        }
+> +	if (realname == NULL) {
+> +		debuginfod_client* c = debuginfod_begin();
+> +		if (c != NULL) {
+> +			int fd = debuginfod_find_debuginfo(c,
+> +					(const unsigned char*)sbuild_id, 0,
+> +					&realname);
+> +			if (fd >= 0)
+> +				close(fd); /* retaining reference by realname */
+> +			debuginfod_end(c);
+> +		}
+> +	}
+>  #endif
+>  
+>  out:
+> -- 
+> 2.37.1
+
 -- 
-2.25.1
 
+- Arnaldo
