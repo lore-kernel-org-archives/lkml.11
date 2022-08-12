@@ -2,118 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D081C25B06
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 01:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6826C25B06
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 01:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235462AbiHLB1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 21:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
+        id S229833AbiHLBcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 21:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235268AbiHLB1I (ORCPT
+        with ESMTP id S230422AbiHLBcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 21:27:08 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C5D9BB51
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 18:27:07 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id w11-20020a17090a380b00b001f73f75a1feso7000109pjb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 18:27:07 -0700 (PDT)
+        Thu, 11 Aug 2022 21:32:45 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41092BF71;
+        Thu, 11 Aug 2022 18:32:44 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b96so25133233edf.0;
+        Thu, 11 Aug 2022 18:32:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=r6pkBLYew73BseP+hLTOhqoRkIsBep/iLPB2yjs5hu4=;
-        b=I0mTgVUKEsBOB15afJoGgRDCtfUOYBLEclD96bBTCk6xZwMNtvse4Yg3mFsZKl5ky7
-         3R9SCHwbkSjq2N8RaMQVScSXxTr+Fp20m6PaunXeE5hzKvEu/cYysYKAhQAMG5ITBPNO
-         iVjhe0vTHnMk234H/RLfdNUVjzkgoqonUlV7T7pLCHCh5j+5UKd27FUtHJOpN2aL8cON
-         tuPbypDARlYH31Zanrsvv6fPxUMzVc00AS1i9NL6FsV0J6nFLllCTrBGXfUMGI8LGhMT
-         PNM1JTuXXXxuRaEVMzmJLcSi2cnT+Qv3GeWEcZUhmCnt25JH+X6yMdwuRcYWBq3fR8d0
-         OO+A==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=Yu55T4L0tuXafN1uZTmyVTcIyoH+0dEPzfrt7zhu/EM=;
+        b=RVMfC9D4XbQ2ECXnO3ivEpeoUuYwiYciNFHdseF9wRNym7lHwKPpcTkPQx8vMWKkks
+         l7vffeMoBS0SNGmuOOmFzQ1qDZ+3SHBJmY5QSstebwkdVnXiOYKKxxbwHfKfBPSLPTZW
+         /bEu0qClUybC0C73NsUC7AECvW5yhfaj561w3HlSc9PVDsMDomKFBkkYzWGlWfKFu8u8
+         bpzE7CLl36brv/OC/reheeNFP5QovQL5/xXAz6TqSBhiqzSzDbqEU7kF3vFiX3ba7u3f
+         Sj9ScuIaWprPMS8QZJ6OlfRyvEnDwSDE9DN66yk33kgcy39ZhD3jTbd+tpBk8cjWoxdQ
+         IUJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=r6pkBLYew73BseP+hLTOhqoRkIsBep/iLPB2yjs5hu4=;
-        b=1e0QxGQfLgdBYXXRfKbvQ90GqwPEvZAYZ3lKBc7YwHLYSEeTQ+32vKSta31gJaRptM
-         //oJzdySTHLQw2qotEnhmDzohSD+WdQCMqAibzeTRjGZ0dHfh3SJvoEPwB8tb2HKROmM
-         M0t+ywpFpr5TYgb/umgtCcAYMyh2fr6btpSQ522KeXfc4/f30xZPAEBjOgiXaiCPgxy9
-         +t0j0VcLahfi20n9K9lWzj2V5lrOjaHRCi6ev6GbW+hQySoU7NMArpXvBkGKZLt4QMh7
-         qmIysWYu+hqdAVISCHm6ckklww+ae0pmw9y8ZIx47s8i4sgV3TecD0xiLzRghHycrbr9
-         YZLg==
-X-Gm-Message-State: ACgBeo1WuuobvFJGgiEzlfd8cyVsaJ7Pao2SM3cclw1XeonRvYLt2How
-        mjmoV2nN49wKszl37tfac84ZvhWo7anW8hdt
-X-Google-Smtp-Source: AA6agR4K5xv36FYebO1ewf095xyPwaXieUgWaIsc0nTbqCWmatPVjFUaQabDKVGKhdZQ5wztSWB5+w==
-X-Received: by 2002:a17:902:da89:b0:170:a235:5993 with SMTP id j9-20020a170902da8900b00170a2355993mr1720629plx.94.1660267626881;
-        Thu, 11 Aug 2022 18:27:06 -0700 (PDT)
-Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id 128-20020a621886000000b0052d200c8040sm322671pfy.211.2022.08.11.18.27.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 18:27:06 -0700 (PDT)
-From:   Zeng Jingxiang <zengjx95@gmail.com>
-To:     sj@kernel.org, akpm@linux-foundation.org
-Cc:     damon@lists.linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Zeng Jingxiang <linuszeng@tencent.com>
-Subject: [PATCH] mm/damon: remove dead code in damon_lru_sort_enabled_store()
-Date:   Fri, 12 Aug 2022 09:24:59 +0800
-Message-Id: <20220812012459.481215-1-zengjx95@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=Yu55T4L0tuXafN1uZTmyVTcIyoH+0dEPzfrt7zhu/EM=;
+        b=FCBzF6J0vW5ms4naoPDLT9eEdAb+6Y4xotqbzOSVXQmzLzqu0xKs6LXMZ51gnH4zoA
+         UwRVCLbgva3RV+wV3ZT+bRcjJpi8ZqNmRgVQWPJI05PUU41DQ79YIg+9f/hT+ZvvSA/T
+         6Tj5YQyKzSVlxMi3vWxcVlzOJ/t3pSVjIgjUBlFtmZANpjocHsqnrvX+ApvBAKUPjvdm
+         uDOCznbqfZhNrSLa53bCDwCw9n0BJM7VM6JSaZKGsLoNVLhVFhZvlmfLE4wATdZ5i/4w
+         N6IDBK9emew5XRlSqW0uHWazlbMCxLlP4kc0MSth93WQsJoOQQ1zOXbwsGuoeyZRsjdx
+         a5UQ==
+X-Gm-Message-State: ACgBeo16Zl41eGj+R16lAWYoNdu25zjDWSbC2xR0TLm81iF9sa+WzOkI
+        SxyoW/tcYwGhlZ4t+bldUTLhzHsASWDeiBbi2OI=
+X-Google-Smtp-Source: AA6agR7KtMGU/rsla2f7fwENtwgXLzDc8MR3ZiQqpxnnG/Ft8aj9l+1lBnO+G/fY21kqT5zoqP3r6bdeV6mAxZPfefs=
+X-Received: by 2002:a05:6402:438d:b0:43d:b383:660f with SMTP id
+ o13-20020a056402438d00b0043db383660fmr1490810edc.283.1660267962604; Thu, 11
+ Aug 2022 18:32:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1660225318-4063-1-git-send-email-u0084500@gmail.com>
+ <1660225318-4063-2-git-send-email-u0084500@gmail.com> <3cae9d60-4012-1dfd-abd9-4d0b9379e6bb@linaro.org>
+In-Reply-To: <3cae9d60-4012-1dfd-abd9-4d0b9379e6bb@linaro.org>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Fri, 12 Aug 2022 09:32:31 +0800
+Message-ID: <CADiBU3_depGDZtiyizU3MB939A3oH1uTWzTMyruUy0z=u6BZkQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: power: supply: Add Richtek RT9471
+ battery charger
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        =?UTF-8?B?5ri45a2Q6aao?= <alina_yu@richtek.com>,
+        cy_huang <cy_huang@richtek.com>, alinayu829@gmail.com,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zeng Jingxiang <linuszeng@tencent.com>
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E6=96=BC 2022=E5=B9=
+=B48=E6=9C=8811=E6=97=A5 =E9=80=B1=E5=9B=9B =E6=99=9A=E4=B8=8A10:12=E5=AF=
+=AB=E9=81=93=EF=BC=9A
+>
+> On 11/08/2022 16:41, cy_huang wrote:
+> > From: ChiYuan Huang <cy_huang@richtek.com>
+> >
+> > Add bindings for the Richtek RT9471 I2C controlled battery charger.
+> >
+>
+> Thank you for your patch. There is something to discuss/improve.
+>
+> > +properties:
+> > +  compatible:
+> > +    const: richtek,rt9471
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  ceb-gpios:
+> > +    maxItems: 1
+>
+> This looks not standard, so please provide a description.
+It's the external 'charge enable' pin that's used to control battery chargi=
+ng.
+The priority is higher than the register 'CHG_EN' control.
+In the word, 'b' means it's reverse logic, low to allow charging, high
+to force disable charging.
 
-The variable damon_lru_sort_initialized is always true, causing the
-corresponding conditional expression cannot be executed.
+description:
+  External charge enable pin that can force control not to charge the batte=
+ry.
+  Low to allow charging, high to disable charging.
 
-Assigning true to damon_lru_sort_initialized here
-544         damon_lru_sort_initialized = true;
+>
+> > +
+> > +  wakeup-source: true
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  interrupt-controller: true
+> > +
+> > +  "#interrupt-cells":
+> > +    const: 1
+>
+> Why a charger driver is a interrupt-controller?
+There're 32 nested IRQs from RT9471.
+The original thought is to make the user easy to bind the interrupt
+into their driver.
 
-The value of damon_lru_sort_initialized is always true.
-As a result, the following expression cannot be executed.
-
-463         if (!damon_lru_sort_initialized)
-464                 return rc;
-
-Fixes: 40e983cca927 ("mm/damon: introduce DAMON-based LRU-lists Sorting")
-Signed-off-by: Zeng Jingxiang <linuszeng@tencent.com>
----
- mm/damon/lru_sort.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/mm/damon/lru_sort.c b/mm/damon/lru_sort.c
-index 9de6f00a71c5..e2a656e1b728 100644
---- a/mm/damon/lru_sort.c
-+++ b/mm/damon/lru_sort.c
-@@ -450,8 +450,6 @@ static void damon_lru_sort_timer_fn(struct work_struct *work)
- }
- static DECLARE_DELAYED_WORK(damon_lru_sort_timer, damon_lru_sort_timer_fn);
- 
--static bool damon_lru_sort_initialized;
--
- static int damon_lru_sort_enabled_store(const char *val,
- 		const struct kernel_param *kp)
- {
-@@ -460,9 +458,6 @@ static int damon_lru_sort_enabled_store(const char *val,
- 	if (rc < 0)
- 		return rc;
- 
--	if (!damon_lru_sort_initialized)
--		return rc;
--
- 	schedule_delayed_work(&damon_lru_sort_timer, 0);
- 
- 	return 0;
-@@ -541,7 +536,6 @@ static int __init damon_lru_sort_init(void)
- 
- 	schedule_delayed_work(&damon_lru_sort_timer, 0);
- 
--	damon_lru_sort_initialized = true;
- 	return 0;
- }
- 
--- 
-2.36.1
-
+For charger driver, does it mean legacy IRQ handler is more preferred?
+>
+> > +
+> > +  usb-otg-vbus-regulator:
+> > +    type: object
+> > +    unevaluatedProperties: false
+> > +    $ref: /schemas/regulator/regulator.yaml#
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - wakeup-source
+> > +  - interrupts
+> > +  - interrupt-controller
+> > +  - "#interrupt-cells"
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    i2c {
+> > +      #address-cells =3D <1>;
+> > +      #size-cells =3D <0>;
+> > +
+> > +      charger@53 {
+> > +        compatible =3D "richtek,rt9471";
+> > +        reg =3D <0x53>;
+> > +        ceb-gpios =3D <&gpio26 1 0>;
+>
+> Isn't the last value a GPIO flag? If yes, use appropriate define.
+I already specify GPIOD_OUT_LOW in the gpiod_request flag.
+Do I need to convert the gpio request code to GPIOD_OUT_HIGH,
+and specify here as GPIO_ACTIVE_LOW?
+>
+>
+>
+> Best regards,
+> Krzysztof
