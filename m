@@ -2,141 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442E7C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA819C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238549AbiHLN6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 09:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
+        id S238562AbiHLN6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 09:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233383AbiHLN6X (ORCPT
+        with ESMTP id S232791AbiHLN6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 09:58:23 -0400
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED39D8CE;
-        Fri, 12 Aug 2022 06:58:21 -0700 (PDT)
-Received: by mail-qv1-f54.google.com with SMTP id m10so654714qvu.4;
-        Fri, 12 Aug 2022 06:58:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=d7r3RnctDfwx/VdWd1r6qoq8F6MrjhkzcAY+2hCxdkY=;
-        b=mO8De3TFqfcCfR+6S0AfTHxy5Vb8xMXDzGh0HKlABGaoHCopQQTjqJHnwKUVD05G4u
-         Ly7qJJce6BdYzUYcEDcMlKC5p3hXtFiOOxs48/mkNEB0g07WqbZ8SPC2xq3OFLJXqTXD
-         S76MU0GvwmfX1gcob3j6of+aPvBfmyYSV9QfPy64cNW08fhIWncBxYcuNeINEtwBjYn5
-         Tw6d0qNMVJlv7tIaaXJLTdUqGg1aNnRXOtFnGvTV7ZdG65ZRxTYyigoDMx1QJnZgnxfP
-         EwKe4p4kPHiyM9EMv2upDXW3HHywTV36h45oOPbqtGDW9WunHnuCpyYBkrmKd0CPCW4E
-         HZAQ==
-X-Gm-Message-State: ACgBeo2OYEnIqHmZlYnLvpt9ALMuIV0eVPvpJz+G+hX95A9TrtrbDz/4
-        lyVlXLmGmKOjmKM6LVBtSJUUAsRucj/kSQ==
-X-Google-Smtp-Source: AA6agR6yGJ2GGQL+2k7aUzgGKP8H2d8+YJ65r06Ln0Z5hgE6e2vSGqZ9OUDNEDzIXw0y/ny1E1HDnw==
-X-Received: by 2002:a05:6214:62a:b0:476:8cb6:2b2e with SMTP id a10-20020a056214062a00b004768cb62b2emr3751068qvx.62.1660312700378;
-        Fri, 12 Aug 2022 06:58:20 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id h1-20020ac87141000000b00342f5408ea5sm1820753qtp.49.2022.08.12.06.58.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 06:58:20 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id 7so1656458ybw.0;
-        Fri, 12 Aug 2022 06:58:20 -0700 (PDT)
-X-Received: by 2002:a25:6890:0:b0:684:2c5c:1bd8 with SMTP id
- d138-20020a256890000000b006842c5c1bd8mr850130ybc.604.1660312221067; Fri, 12
- Aug 2022 06:50:21 -0700 (PDT)
+        Fri, 12 Aug 2022 09:58:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3C6A50E1;
+        Fri, 12 Aug 2022 06:58:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57482B8243A;
+        Fri, 12 Aug 2022 13:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5901C433C1;
+        Fri, 12 Aug 2022 13:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660312725;
+        bh=xh5J5TASioRfOeCFMDXvtupuSBvJ7WbXoTGn877mnnY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NCCsa0p2UBi6sZpooriV0YmzPMP5tTpKco8A5NLhoBTJwVW5Ys06UitalfBCRzCa7
+         Wf+lUQ04QeKe4hzMr7T/Hx2nIpY4opUsL/hnt4d3jQMlGiAw9yEMvKtjtMAOYSG9Xc
+         DIuNRGfFEbQaoIYuegJK4pTG0HAiH26rdtJFYP0rdZMApBM25cRbzyqeiYtOqycgZx
+         BH/NLpIncOQj206IkvdXakmL4df/QYb+HfEoKx/V7E9YWPLVlwhdUqN5QVETI6BTSS
+         xXIMED9PznDBup60i/dfBLyl1JQlywVzb7xAt3Q5XxTst6IIfWnV9D18L25iCkDg3q
+         qAcy/NtPGzVjA==
+Received: by pali.im (Postfix)
+        id B34BC9CF; Fri, 12 Aug 2022 15:58:41 +0200 (CEST)
+Date:   Fri, 12 Aug 2022 15:58:41 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: mvebu: Fix endianity when accessing pci emul bridge
+ members
+Message-ID: <20220812135841.uhmdkpvjok574ijf@pali>
+References: <20220812094058.16141-1-pali@kernel.org>
+ <3096bb82-62e6-bc9f-1600-fb58d6826302@arm.com>
 MIME-Version: 1.0
-References: <20220706143521.459565-1-Jason@zx2c4.com> <20220708004032.733426-1-Jason@zx2c4.com>
-In-Reply-To: <20220708004032.733426-1-Jason@zx2c4.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 12 Aug 2022 15:50:09 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXnF+ArtzgVH+rEKXgcujrwW2nfyMwaKB9UYf-GC3OT_w@mail.gmail.com>
-Message-ID: <CAMuHMdXnF+ArtzgVH+rEKXgcujrwW2nfyMwaKB9UYf-GC3OT_w@mail.gmail.com>
-Subject: Re: [PATCH v5] random: remove CONFIG_ARCH_RANDOM
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@suse.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3096bb82-62e6-bc9f-1600-fb58d6826302@arm.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+On Friday 12 August 2022 11:32:59 Robin Murphy wrote:
+> On 2022-08-12 10:40, Pali Rohár wrote:
+> > PCI emul bridge members iolimitupper, iobaseupper, memlimit and membase are
+> > of type __le16, so correctly access these members via le16_to_cpu() macros.
+> > 
+> > Fixes: 4ded69473adb ("PCI: mvebu: Propagate errors when updating PCI_IO_BASE and PCI_MEM_BASE registers")
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > ---
+> >   drivers/pci/controller/pci-mvebu.c | 12 ++++++------
+> >   1 file changed, 6 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+> > index c1ffdb06c971..00ea0836b81a 100644
+> > --- a/drivers/pci/controller/pci-mvebu.c
+> > +++ b/drivers/pci/controller/pci-mvebu.c
+> > @@ -523,7 +523,7 @@ static int mvebu_pcie_handle_iobase_change(struct mvebu_pcie_port *port)
+> >   	/* Are the new iobase/iolimit values invalid? */
+> >   	if (conf->iolimit < conf->iobase ||
+> > -	    conf->iolimitupper < conf->iobaseupper)
+> > +	    le16_to_cpu(conf->iolimitupper) < le16_to_cpu(conf->iobaseupper))
+> >   		return mvebu_pcie_set_window(port, port->io_target, port->io_attr,
+> >   					     &desired, &port->iowin);
+> > @@ -535,10 +535,10 @@ static int mvebu_pcie_handle_iobase_change(struct mvebu_pcie_port *port)
+> >   	 * is the CPU address.
+> >   	 */
+> >   	desired.remap = ((conf->iobase & 0xF0) << 8) |
+> > -			(conf->iobaseupper << 16);
+> > +			le16_to_cpu(conf->iobaseupper << 16);
+> 
+> This will always give 0, even when natively LE.
 
-On Fri, Jul 8, 2022 at 2:44 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> When RDRAND was introduced, there was much discussion on whether it
-> should be trusted and how the kernel should handle that. Initially, two
-> mechanisms cropped up, CONFIG_ARCH_RANDOM, a compile time switch, and
-> "nordrand", a boot-time switch.
->
-> Later the thinking evolved. With a properly designed RNG, using RDRAND
-> values alone won't harm anything, even if the outputs are malicious.
-> Rather, the issue is whether those values are being *trusted* to be good
-> or not. And so a new set of options were introduced as the real
-> ones that people use -- CONFIG_RANDOM_TRUST_CPU and "random.trust_cpu".
-> With these options, RDRAND is used, but it's not always credited. So in
-> the worst case, it does nothing, and in the best case, maybe it helps.
->
-> Along the way, CONFIG_ARCH_RANDOM's meaning got sort of pulled into the
-> center and became something certain platforms force-select.
->
-> The old options don't really help with much, and it's a bit odd to have
-> special handling for these instructions when the kernel can deal fine
-> with the existence or untrusted existence or broken existence or
-> non-existence of that CPU capability.
->
-> Simplify the situation by removing CONFIG_ARCH_RANDOM and using the
-> ordinary asm-generic fallback pattern instead, keeping the two options
-> that are actually used. For now it leaves "nordrand" for now, as the
-> removal of that will take a different route.
->
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: H. Peter Anvin <hpa@zytor.com>
-> Acked-by: Borislav Petkov <bp@suse.de>
-> Acked-by: Heiko Carstens <hca@linux.ibm.com>
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+You are right, I overlooked it and I put closing parenthesis at wrong
+place. Bit shifting should be applied after le to cpu conversion. I will
+fix it in V2.
 
-Thanks for your patch, which is now commit 9592eef7c16ec5fb ("random:
-remove CONFIG_ARCH_RANDOM") upstream.
-
-> --- a/drivers/char/Kconfig
-> +++ b/drivers/char/Kconfig
-> @@ -431,7 +431,6 @@ config ADI
->  config RANDOM_TRUST_CPU
->         bool "Initialize RNG using CPU RNG instructions"
->         default y
-> -       depends on ARCH_RANDOM
->         help
->           Initialize the RNG using random numbers supplied by the CPU's
->           RNG instructions (e.g. RDRAND), if supported and available. These
-
-This change means everyone configuring a kernel will be asked this
-question, even when configuring for an architecture that does not
-support RNG instructions.
-
-Perhaps this question should be hidden behind EXPERT?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> >   	desired.base = port->pcie->io.start + desired.remap;
+> >   	desired.size = ((0xFFF | ((conf->iolimit & 0xF0) << 8) |
+> > -			 (conf->iolimitupper << 16)) -
+> > +			 le16_to_cpu(conf->iolimitupper << 16)) -
+> 
+> Similarly here.
+> 
+> Robin.
+> 
+> >   			desired.remap) +
+> >   		       1;
+> > @@ -552,7 +552,7 @@ static int mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
+> >   	struct pci_bridge_emul_conf *conf = &port->bridge.conf;
+> >   	/* Are the new membase/memlimit values invalid? */
+> > -	if (conf->memlimit < conf->membase)
+> > +	if (le16_to_cpu(conf->memlimit) < le16_to_cpu(conf->membase))
+> >   		return mvebu_pcie_set_window(port, port->mem_target, port->mem_attr,
+> >   					     &desired, &port->memwin);
+> > @@ -562,8 +562,8 @@ static int mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
+> >   	 * window to setup, according to the PCI-to-PCI bridge
+> >   	 * specifications.
+> >   	 */
+> > -	desired.base = ((conf->membase & 0xFFF0) << 16);
+> > -	desired.size = (((conf->memlimit & 0xFFF0) << 16) | 0xFFFFF) -
+> > +	desired.base = ((le16_to_cpu(conf->membase) & 0xFFF0) << 16);
+> > +	desired.size = (((le16_to_cpu(conf->memlimit) & 0xFFF0) << 16) | 0xFFFFF) -
+> >   		       desired.base + 1;
+> >   	return mvebu_pcie_set_window(port, port->mem_target, port->mem_attr, &desired,
