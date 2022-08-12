@@ -2,101 +2,375 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFACC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:18:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE94C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238398AbiHLKSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
+        id S237922AbiHLKTQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238381AbiHLKSZ (ORCPT
+        with ESMTP id S233226AbiHLKTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:18:25 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5C8ABD68;
-        Fri, 12 Aug 2022 03:18:23 -0700 (PDT)
-X-UUID: afc2ab8757ae49e7b17dcb7b58e74bc2-20220812
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=B+FTuluiWmDsVQOUqUaDNHxDaF82USCHWPcShjP7BSg=;
-        b=podX01h/X/elH/y1UR3zYDop7sVhdoJAzfSP2AQDFFqP8O5jGQhsYz+eR+RcwsHVIuO5Z4bRuCLtMtHeqxvPsSQwFo2obShscqkbuZsMHJgUIPLzKOKB/fPTNwNzppU3H6DSTXO0LhNhTpWZ6zCJUdI/UggFj93eHgeDbqOx1xY=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:90b5856b-07f5-4065-b7d9-76d81486f2e5,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_H
-        am,ACTION:release,TS:5
-X-CID-META: VersionHash:3d8acc9,CLOUDID:74c57c9c-da39-4e3b-a854-56c7d2111b46,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
-        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: afc2ab8757ae49e7b17dcb7b58e74bc2-20220812
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1983268181; Fri, 12 Aug 2022 18:18:17 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 12 Aug 2022 18:18:16 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Fri, 12 Aug 2022 18:18:16 +0800
-Message-ID: <9173e1755f76d1fc34e3822eda138749ebbc7f73.camel@mediatek.com>
-Subject: Re: [PATCH 3/3] dt-bindings: nvmem: mediatek: efuse: Add support
- for MT8188
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <broonie@kernel.org>, <srinivas.kandagatla@linaro.org>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Fri, 12 Aug 2022 18:18:16 +0800
-In-Reply-To: <20220715120114.4243-3-johnson.wang@mediatek.com>
-References: <20220715120114.4243-1-johnson.wang@mediatek.com>
-         <20220715120114.4243-3-johnson.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 12 Aug 2022 06:19:13 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519CDAB429
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:19:11 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M401l2GDwz1M8h6;
+        Fri, 12 Aug 2022 18:15:55 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 12 Aug 2022 18:19:09 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 12 Aug 2022 18:19:08 +0800
+Message-ID: <531eca0c-cff3-d5e7-3a80-a554d19c7ee4@huawei.com>
+Date:   Fri, 12 Aug 2022 18:19:07 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next] riscv: extable: add new extable type
+ EX_TYPE_KACCESS_ERR_ZERO support
+To:     <Conor.Dooley@microchip.com>, <paul.walmsley@sifive.com>,
+        <palmer@dabbelt.com>, <palmer@rivosinc.com>,
+        <aou@eecs.berkeley.edu>
+CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <wangkefeng.wang@huawei.com>, <guohanjun@huawei.com>
+References: <20220812085212.1525820-1-tongtiangen@huawei.com>
+ <3f663baf-45a1-0bf0-cad9-a4c269b0b3d4@microchip.com>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <3f663baf-45a1-0bf0-cad9-a4c269b0b3d4@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-15 at 20:01 +0800, Johnson Wang wrote:
-> Add compatible for MT8188 SoC.
+
+
+在 2022/8/12 16:58, Conor.Dooley@microchip.com 写道:
+> On 12/08/2022 09:52, Tong Tiangen wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> Currently, The extable type EX_TYPE_UACCESS_ERR_ZERO is used by
+>> __get/put_kernel_nofault(), but those helpers are not uaccess type, so we
+>> add a new extable type EX_TYPE_KACCESS_ERR_ZERO which can be used by
+>> __get/put_kernel_no_fault().
+>>
+>> Also change the name of __get/put_user_nocheck to __get/put_mem_nocheck
+>> to make it conform to its use situation (not only used in uaccess).
 > 
-> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
-> ---
-> This patch is based on "linux-next"[1].
-> [1]
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-> ---
->  Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Is there a reason why this should not be a different patch?
+> Thanks,
+> Conor.
+
+Oh, my fault, this modification should be split.
+Thanks,
+Tong.
+
 > 
-> diff --git
-> a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-> b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-> index b5a1109f2ee1..75e0a516e59a 100644
-> --- a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-> +++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
-> @@ -30,6 +30,7 @@ properties:
->                - mediatek,mt8173-efuse
->                - mediatek,mt8183-efuse
->                - mediatek,mt8186-efuse
-> +              - mediatek,mt8188-efuse
->                - mediatek,mt8192-efuse
->                - mediatek,mt8195-efuse
->                - mediatek,mt8516-efuse
-
-Hi Srinivas,
-
-Just a gentle ping on this.
-Could you please give me some suggestion on this patch?
-
-Thank you very much.
-
-BRs,
-Johnson Wang
-
+>>
+>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+>> ---
+>>    arch/riscv/include/asm/asm-extable.h |  12 ++
+>>    arch/riscv/include/asm/uaccess.h     | 160 +++++++++++++--------------
+>>    2 files changed, 92 insertions(+), 80 deletions(-)
+>>
+>> diff --git a/arch/riscv/include/asm/asm-extable.h b/arch/riscv/include/asm/asm-extable.h
+>> index 14be0673f5b5..73c70098a9c8 100644
+>> --- a/arch/riscv/include/asm/asm-extable.h
+>> +++ b/arch/riscv/include/asm/asm-extable.h
+>> @@ -6,6 +6,7 @@
+>>    #define EX_TYPE_FIXUP                  1
+>>    #define EX_TYPE_BPF                    2
+>>    #define EX_TYPE_UACCESS_ERR_ZERO       3
+>> +#define EX_TYPE_KACCESS_ERR_ZERO       4
+>>
+>>    #ifdef __ASSEMBLY__
+>>
+>> @@ -57,9 +58,20 @@
+>>                               EX_DATA_REG(ZERO, zero)                     \
+>>                             ")")
+>>
+>> +#define _ASM_EXTABLE_KACCESS_ERR_ZERO(insn, fixup, err, zero)          \
+>> +       __DEFINE_ASM_GPR_NUMS                                           \
+>> +       __ASM_EXTABLE_RAW(#insn, #fixup,                                \
+>> +                         __stringify(EX_TYPE_KACCESS_ERR_ZERO),        \
+>> +                         "("                                           \
+>> +                           EX_DATA_REG(ERR, err) " | "                 \
+>> +                           EX_DATA_REG(ZERO, zero)                     \
+>> +                         ")")
+>> +
+>>    #define _ASM_EXTABLE_UACCESS_ERR(insn, fixup, err)                     \
+>>           _ASM_EXTABLE_UACCESS_ERR_ZERO(insn, fixup, err, zero)
+>>
+>> +#define _ASM_EXTABLE_KACCESS_ERR(insn, fixup, err)                     \
+>> +       _ASM_EXTABLE_KACCESS_ERR_ZERO(insn, fixup, err, zero)
+>>    #endif /* __ASSEMBLY__ */
+>>
+>>    #endif /* __ASM_ASM_EXTABLE_H */
+>> diff --git a/arch/riscv/include/asm/uaccess.h b/arch/riscv/include/asm/uaccess.h
+>> index 855450bed9f5..5372f3f1e3f6 100644
+>> --- a/arch/riscv/include/asm/uaccess.h
+>> +++ b/arch/riscv/include/asm/uaccess.h
+>> @@ -50,62 +50,62 @@
+>>     * call.
+>>     */
+>>
+>> -#define __get_user_asm(insn, x, ptr, err)                      \
+>> -do {                                                           \
+>> -       __typeof__(x) __x;                                      \
+>> -       __asm__ __volatile__ (                                  \
+>> -               "1:\n"                                          \
+>> -               "       " insn " %1, %2\n"                      \
+>> -               "2:\n"                                          \
+>> -               _ASM_EXTABLE_UACCESS_ERR_ZERO(1b, 2b, %0, %1)   \
+>> -               : "+r" (err), "=&r" (__x)                       \
+>> -               : "m" (*(ptr)));                                \
+>> -       (x) = __x;                                              \
+>> +#define __get_mem_asm(insn, x, ptr, err, type)                         \
+>> +do {                                                                   \
+>> +       __typeof__(x) __x;                                              \
+>> +       __asm__ __volatile__ (                                          \
+>> +               "1:\n"                                                  \
+>> +               "       " insn " %1, %2\n"                              \
+>> +               "2:\n"                                                  \
+>> +               _ASM_EXTABLE_##type##ACCESS_ERR_ZERO(1b, 2b, %0, %1)    \
+>> +               : "+r" (err), "=&r" (__x)                               \
+>> +               : "m" (*(ptr)));                                        \
+>> +       (x) = __x;                                                      \
+>>    } while (0)
+>>
+>>    #ifdef CONFIG_64BIT
+>> -#define __get_user_8(x, ptr, err) \
+>> -       __get_user_asm("ld", x, ptr, err)
+>> +#define __get_mem_8(x, ptr, err, type) \
+>> +       __get_mem_asm("ld", x, ptr, err, type)
+>>    #else /* !CONFIG_64BIT */
+>> -#define __get_user_8(x, ptr, err)                              \
+>> -do {                                                           \
+>> -       u32 __user *__ptr = (u32 __user *)(ptr);                \
+>> -       u32 __lo, __hi;                                         \
+>> -       __asm__ __volatile__ (                                  \
+>> -               "1:\n"                                          \
+>> -               "       lw %1, %3\n"                            \
+>> -               "2:\n"                                          \
+>> -               "       lw %2, %4\n"                            \
+>> -               "3:\n"                                          \
+>> -               _ASM_EXTABLE_UACCESS_ERR_ZERO(1b, 3b, %0, %1)   \
+>> -               _ASM_EXTABLE_UACCESS_ERR_ZERO(2b, 3b, %0, %1)   \
+>> -               : "+r" (err), "=&r" (__lo), "=r" (__hi)         \
+>> -               : "m" (__ptr[__LSW]), "m" (__ptr[__MSW]));      \
+>> -       if (err)                                                \
+>> -               __hi = 0;                                       \
+>> -       (x) = (__typeof__(x))((__typeof__((x)-(x)))(            \
+>> -               (((u64)__hi << 32) | __lo)));                   \
+>> +#define __get_mem_8(x, ptr, err, type)                                 \
+>> +do {                                                                   \
+>> +       u32 __user *__ptr = (u32 __user *)(ptr);                        \
+>> +       u32 __lo, __hi;                                                 \
+>> +       __asm__ __volatile__ (                                          \
+>> +               "1:\n"                                                  \
+>> +               "       lw %1, %3\n"                                    \
+>> +               "2:\n"                                                  \
+>> +               "       lw %2, %4\n"                                    \
+>> +               "3:\n"                                                  \
+>> +               _ASM_EXTABLE_##type##ACCESS_ERR_ZERO(1b, 3b, %0, %1)    \
+>> +               _ASM_EXTABLE_##type##ACCESS_ERR_ZERO(2b, 3b, %0, %1)    \
+>> +               : "+r" (err), "=&r" (__lo), "=r" (__hi)                 \
+>> +               : "m" (__ptr[__LSW]), "m" (__ptr[__MSW]));              \
+>> +       if (err)                                                        \
+>> +               __hi = 0;                                               \
+>> +       (x) = (__typeof__(x))((__typeof__((x)-(x)))(                    \
+>> +               (((u64)__hi << 32) | __lo)));                           \
+>>    } while (0)
+>>    #endif /* CONFIG_64BIT */
+>>
+>> -#define __get_user_nocheck(x, __gu_ptr, __gu_err)              \
+>> -do {                                                           \
+>> -       switch (sizeof(*__gu_ptr)) {                            \
+>> -       case 1:                                                 \
+>> -               __get_user_asm("lb", (x), __gu_ptr, __gu_err);  \
+>> -               break;                                          \
+>> -       case 2:                                                 \
+>> -               __get_user_asm("lh", (x), __gu_ptr, __gu_err);  \
+>> -               break;                                          \
+>> -       case 4:                                                 \
+>> -               __get_user_asm("lw", (x), __gu_ptr, __gu_err);  \
+>> -               break;                                          \
+>> -       case 8:                                                 \
+>> -               __get_user_8((x), __gu_ptr, __gu_err);  \
+>> -               break;                                          \
+>> -       default:                                                \
+>> -               BUILD_BUG();                                    \
+>> -       }                                                       \
+>> +#define __get_mem_nocheck(x, __gu_ptr, __gu_err, type)                 \
+>> +do {                                                                   \
+>> +       switch (sizeof(*__gu_ptr)) {                                    \
+>> +       case 1:                                                         \
+>> +               __get_mem_asm("lb", (x), __gu_ptr, __gu_err, type);     \
+>> +               break;                                                  \
+>> +       case 2:                                                         \
+>> +               __get_mem_asm("lh", (x), __gu_ptr, __gu_err, type);     \
+>> +               break;                                                  \
+>> +       case 4:                                                         \
+>> +               __get_mem_asm("lw", (x), __gu_ptr, __gu_err, type);     \
+>> +               break;                                                  \
+>> +       case 8:                                                         \
+>> +               __get_mem_8((x), __gu_ptr, __gu_err, type);             \
+>> +               break;                                                  \
+>> +       default:                                                        \
+>> +               BUILD_BUG();                                            \
+>> +       }                                                               \
+>>    } while (0)
+>>
+>>    /**
+>> @@ -136,7 +136,7 @@ do {                                                                \
+>>           __chk_user_ptr(__gu_ptr);                               \
+>>                                                                   \
+>>           __enable_user_access();                                 \
+>> -       __get_user_nocheck(x, __gu_ptr, __gu_err);              \
+>> +       __get_mem_nocheck(x, __gu_ptr, __gu_err, U);            \
+>>           __disable_user_access();                                \
+>>                                                                   \
+>>           __gu_err;                                               \
+>> @@ -163,28 +163,28 @@ do {                                                              \
+>>    ({                                                             \
+>>           const __typeof__(*(ptr)) __user *__p = (ptr);           \
+>>           might_fault();                                          \
+>> -       access_ok(__p, sizeof(*__p)) ?          \
+>> +       access_ok(__p, sizeof(*__p)) ?                          \
+>>                   __get_user((x), __p) :                          \
+>>                   ((x) = 0, -EFAULT);                             \
+>>    })
+>>
+>> -#define __put_user_asm(insn, x, ptr, err)                      \
+>> +#define __put_mem_asm(insn, x, ptr, err, type)                 \
+>>    do {                                                           \
+>>           __typeof__(*(ptr)) __x = x;                             \
+>>           __asm__ __volatile__ (                                  \
+>>                   "1:\n"                                          \
+>>                   "       " insn " %z2, %1\n"                     \
+>>                   "2:\n"                                          \
+>> -               _ASM_EXTABLE_UACCESS_ERR(1b, 2b, %0)            \
+>> +               _ASM_EXTABLE_##type##ACCESS_ERR(1b, 2b, %0)     \
+>>                   : "+r" (err), "=m" (*(ptr))                     \
+>>                   : "rJ" (__x));                                  \
+>>    } while (0)
+>>
+>>    #ifdef CONFIG_64BIT
+>> -#define __put_user_8(x, ptr, err) \
+>> -       __put_user_asm("sd", x, ptr, err)
+>> +#define __put_mem_8(x, ptr, err, type) \
+>> +       __put_mem_asm("sd", x, ptr, err, type)
+>>    #else /* !CONFIG_64BIT */
+>> -#define __put_user_8(x, ptr, err)                              \
+>> +#define __put_mem_8(x, ptr, err, type)                         \
+>>    do {                                                           \
+>>           u32 __user *__ptr = (u32 __user *)(ptr);                \
+>>           u64 __x = (__typeof__((x)-(x)))(x);                     \
+>> @@ -194,8 +194,8 @@ do {                                                                \
+>>                   "2:\n"                                          \
+>>                   "       sw %z4, %2\n"                           \
+>>                   "3:\n"                                          \
+>> -               _ASM_EXTABLE_UACCESS_ERR(1b, 3b, %0)            \
+>> -               _ASM_EXTABLE_UACCESS_ERR(2b, 3b, %0)            \
+>> +               _ASM_EXTABLE_##type##ACCESS_ERR(1b, 3b, %0)     \
+>> +               _ASM_EXTABLE_##type##ACCESS_ERR(2b, 3b, %0)     \
+>>                   : "+r" (err),                                   \
+>>                           "=m" (__ptr[__LSW]),                    \
+>>                           "=m" (__ptr[__MSW])                     \
+>> @@ -203,24 +203,24 @@ do {                                                              \
+>>    } while (0)
+>>    #endif /* CONFIG_64BIT */
+>>
+>> -#define __put_user_nocheck(x, __gu_ptr, __pu_err)                                      \
+>> -do {                                                           \
+>> -       switch (sizeof(*__gu_ptr)) {                            \
+>> -       case 1:                                                 \
+>> -               __put_user_asm("sb", (x), __gu_ptr, __pu_err);  \
+>> -               break;                                          \
+>> -       case 2:                                                 \
+>> -               __put_user_asm("sh", (x), __gu_ptr, __pu_err);  \
+>> -               break;                                          \
+>> -       case 4:                                                 \
+>> -               __put_user_asm("sw", (x), __gu_ptr, __pu_err);  \
+>> -               break;                                          \
+>> -       case 8:                                                 \
+>> -               __put_user_8((x), __gu_ptr, __pu_err);  \
+>> -               break;                                          \
+>> -       default:                                                \
+>> -               BUILD_BUG();                                    \
+>> -       }                                                       \
+>> +#define __put_mem_nocheck(x, __gu_ptr, __pu_err, type)                 \
+>> +do {                                                                   \
+>> +       switch (sizeof(*__gu_ptr)) {                                    \
+>> +       case 1:                                                         \
+>> +               __put_mem_asm("sb", (x), __gu_ptr, __pu_err, type);     \
+>> +               break;                                                  \
+>> +       case 2:                                                         \
+>> +               __put_mem_asm("sh", (x), __gu_ptr, __pu_err, type);     \
+>> +               break;                                                  \
+>> +       case 4:                                                         \
+>> +               __put_mem_asm("sw", (x), __gu_ptr, __pu_err, type);     \
+>> +               break;                                                  \
+>> +       case 8:                                                         \
+>> +               __put_mem_8((x), __gu_ptr, __pu_err, type);             \
+>> +               break;                                                  \
+>> +       default:                                                        \
+>> +               BUILD_BUG();                                            \
+>> +       }                                                               \
+>>    } while (0)
+>>
+>>    /**
+>> @@ -253,7 +253,7 @@ do {                                                                \
+>>           __chk_user_ptr(__gu_ptr);                               \
+>>                                                                   \
+>>           __enable_user_access();                                 \
+>> -       __put_user_nocheck(__val, __gu_ptr, __pu_err);          \
+>> +       __put_mem_nocheck(__val, __gu_ptr, __pu_err, U);        \
+>>           __disable_user_access();                                \
+>>                                                                   \
+>>           __pu_err;                                               \
+>> @@ -279,7 +279,7 @@ do {                                                                \
+>>    ({                                                             \
+>>           __typeof__(*(ptr)) __user *__p = (ptr);                 \
+>>           might_fault();                                          \
+>> -       access_ok(__p, sizeof(*__p)) ?          \
+>> +       access_ok(__p, sizeof(*__p)) ?                          \
+>>                   __put_user((x), __p) :                          \
+>>                   -EFAULT;                                        \
+>>    })
+>> @@ -321,7 +321,7 @@ unsigned long __must_check clear_user(void __user *to, unsigned long n)
+>>    do {                                                                   \
+>>           long __kr_err;                                                  \
+>>                                                                           \
+>> -       __get_user_nocheck(*((type *)(dst)), (type *)(src), __kr_err);  \
+>> +       __get_mem_nocheck(*((type *)(dst)), (type *)(src), __kr_err, K);\
+>>           if (unlikely(__kr_err))                                         \
+>>                   goto err_label;                                         \
+>>    } while (0)
+>> @@ -330,7 +330,7 @@ do {                                                                        \
+>>    do {                                                                   \
+>>           long __kr_err;                                                  \
+>>                                                                           \
+>> -       __put_user_nocheck(*((type *)(src)), (type *)(dst), __kr_err);  \
+>> +       __put_mem_nocheck(*((type *)(src)), (type *)(dst), __kr_err, K);\
+>>           if (unlikely(__kr_err))                                         \
+>>                   goto err_label;                                         \
+>>    } while (0)
+>> --
+>> 2.25.1
+>>
+>>
+>> _______________________________________________
+>> linux-riscv mailing list
+>> linux-riscv@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
