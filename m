@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317F7C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 21:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F699C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 21:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235878AbiHLVjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 17:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
+        id S235951AbiHLVjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 17:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbiHLVjl (ORCPT
+        with ESMTP id S234256AbiHLVjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 12 Aug 2022 17:39:41 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718AA9F1BE;
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DFF9FAB4;
         Fri, 12 Aug 2022 14:39:40 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LaVlh-1nfLDD35Rf-00mMKb;
- Fri, 12 Aug 2022 23:39:13 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0Lg24j-1nc3Qa0vil-00pda5;
+ Fri, 12 Aug 2022 23:39:19 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
@@ -35,47 +35,69 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 0/2] arm64: dts: freescale: verdin-imx8mm/p: fix atmel_mxt_ts reset polarity
-Date:   Fri, 12 Aug 2022 23:39:03 +0200
-Message-Id: <20220812213905.216065-1-marcel@ziswiler.com>
+Subject: [PATCH v1 2/2] arm64: dts: freescale: verdin-imx8mp: fix atmel_mxt_ts reset polarity
+Date:   Fri, 12 Aug 2022 23:39:05 +0200
+Message-Id: <20220812213905.216065-3-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220812213905.216065-1-marcel@ziswiler.com>
+References: <20220812213905.216065-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:BvH86vIzHnF0Ev4yFtzt0ehaInOmIA51RxXGpGnqroqThlI+wKn
- HxeOrStKIPnchO3aXszf0pLsRZs5aybBKemSwIddaO7D/uoy6c+Y1vPRTOOGtiHcDBK856U
- yRecUMKM/8u7FVjPJKR9pBrsVlz2lcy7t4He/4Nc7ccaMUlsygVqhuRKiVxKMy2FOg4oApr
- EiExLrqu7BEZZanjiCdeQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:rMhfLbtZ3fc=:x/xuQtTJqRNgBT7ShyTz+S
- SwZw8VAZ7RZWq7yeIwCwYQtdwYIL1BVZuzHI6xWFRuXTZJxfKLsGi3ro18JEVaIKRc9OJ719f
- KSeQjnm8SK41YWMGWJkPFfEYRlYwgOPLjRgcgHl/vk5/bOJ2qpn96qLabmQ4AhKXFCx88XEGG
- dWrRWnN8i6MIcvGL3os5R73cL+ewfzhv5HNgn8U3WEp0VCeUAaYc50AOfROn89ibzvvCQYGOD
- 8aSvQ1q38CVjrCKdiT/WdKIjCqAld0cjHADg5i0XTOekcJvM5Du/aM9vEJ8CDQFCVj5sNVnUd
- RneKeO7VisKYrmUqg78Ju4kk3LIhLC2DlJcF50UHLge+yG6ttoBeqDlt5tmNu42tnngdVrjSQ
- E2Zp60yil5VbFzg0Y9/D2F+xBR6Zi7I3kINUM9BuWC6ejP+y3g6jT9MGBUHX1ug2OBMMVcdLW
- f96hjm4e7D4qKr2hONoRSza1RlSLUo/CuUitawwUNMT/yoqZ+2US6hdrUEmzyNxz2e7iJLByv
- 4Bq08P+el7MOiLd8Td7PkFu/bRLlwSbfm5jQ3MHVvXgrFppPtojZj/xEjVywN7DR+OD/WwFfw
- PmNCYyVJiF8M87aX0kLbgw30Du+F4ND7RPMZhDqaBkvZY68QQbkPyPdwDvBPNOBlUmqrQhknt
- tkrdUmbD3eqbXuU7orh8CVlolL+8cgvlIMLGhMc0mAac9KRSHOvN9Xh/qwgSNOYAYtHWezMAr
- dMOhg0tziu7QNl3E5nzRy3/1p5Tgc1rT94E6nGLPZBi/+gIK3Qvw5+GPMHM=
+X-Provags-ID: V03:K1:S17GK/XSAzYGodzyvabz4JvWX5PFty20mLQHnNRLhhhX3R/50kM
+ kx5z78l5QyxQe05X8UziHJvzkfjj7yFjpPdT0bTnkH+mRSxSkql99sjjusfvOKaqokr594k
+ /uzh8UkqhAYdfbUqIA1AdqVy9B81kxT15EtQnt5DszdVlRjmyD96kp0KyfMCt8ZXYzqze7a
+ H5rgJ98JIKtkU1QHfsy8w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:S3tfj6Zh64s=:D/v5w1R7ecM6UlodKj8xI2
+ LNrCZhTkpwezc+Tkf3cY9jE4Ak5nysJCRy1wTVZjxQHP0CrtgsGXiT6VpXCPNt4PqaKnYUt8E
+ 3A0pURDKoX5ZWS1GkJd0jIETn/faLXAA+t+sBwFsnt4HB+ca6VseCjQsKSIzgvjRQKeQsfxAO
+ wWxOif/M833EZDEFHOjou8NWdAdYhw4dBov4T0IbUdXyLfRLkSUvPsQl9Nyp0/YAxAagK05X3
+ nrkTuPvaSMFfocrgvPZjle3MAipPpiBTeNiho0steKqHz/pQ18NeIAPRVymxIfE5btXRIwm+T
+ COcean+6gR3/vKbDchJa8MZS75weKSAwOc2+FxsDwjt57WHx9JProcIUBJX/LRM1pthzWR/6y
+ GD3f2gJ6PrNh4OnHPexRJV50lKe9mxzx6f0zrRAh4kBXgZIPq9eZqqQgH+/VQeB77bvvlMuCJ
+ Upb2Ge1AiBTm/XycTWH0OEc+/5VPoe/hKPPK5KOGdxPLQsWR2pqK1J3LrPigriVFTxaM84PaG
+ 3+EsSewsRen0QrQpb3PAmz+9fmZ+tJsSdyN4ZmDBvYPr/Gan6W3ghRBH0sckrfaKZ8h8JPzE1
+ axD1gOmr7kYj4Pg+puhwhCfplq9+PUtadrpzWobMznvNC/Myq4g95XYZn5JBpIzqJ/NZ5kcaX
+ OrdXCbZ0aM9PR+nSS1X4sE8r34qrzWn9qWuFMRFPGiwGWfFWiDb96Fs5vtbUDFYj7ZoifvrZw
+ Cptn2iZlRbBRV69VXnkOqvEuke6IriGr8fk5AHZgTNaEPzWZQD7cE6YmxIs=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
+Fix reset GPIO polarity in-line with the following commit feedaacdadfc
+("Input: atmel_mxt_ts - fix up inverted RESET handler").
 
-Unfortunately, I was not aware of this reset GPIO polarity fix when
-I submitted initial support. Let us correct this oversight. Thanks!
+Fixes: a39ed23bdf6e ("arm64: dts: freescale: add initial support for verdin imx8m plus")
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
+---
 
-Marcel Ziswiler (2):
-  arm64: dts: freescale: verdin-imx8mm: fix atmel_mxt_ts reset polarity
-  arm64: dts: freescale: verdin-imx8mp: fix atmel_mxt_ts reset polarity
-
- arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 2 +-
  arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+index c5987bdbb383..1c74c6a19449 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+@@ -628,7 +628,7 @@ atmel_mxt_ts_mezzanine: touch-mezzanine@4a {
+ 		interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
+ 		reg = <0x4a>;
+ 		/* Verdin GPIO_2 (SODIMM 208) */
+-		reset-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
+ 		status = "disabled";
+ 	};
+ };
+@@ -705,7 +705,7 @@ atmel_mxt_ts: touch@4a {
+ 		pinctrl-0 = <&pinctrl_gpio_9_dsi>, <&pinctrl_i2s_2_bclk_touch_reset>;
+ 		reg = <0x4a>;
+ 		/* Verdin I2S_2_BCLK (TOUCH_RESET#, SODIMM 42) */
+-		reset-gpios = <&gpio5 0 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
+ 		status = "disabled";
+ 	};
+ 
 -- 
 2.36.1
 
