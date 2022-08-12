@@ -2,84 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4EEC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 08:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E2DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 08:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237758AbiHLIvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 04:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
+        id S237748AbiHLIvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 04:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237685AbiHLIu7 (ORCPT
+        with ESMTP id S230385AbiHLIvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 04:50:59 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66EA50EC;
-        Fri, 12 Aug 2022 01:50:58 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id d187so347744iof.4;
-        Fri, 12 Aug 2022 01:50:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=b6/KbIVIDTaUyaV//iHuuYUs3+XV8ludk3GKB+bRhdQ=;
-        b=BaUpRQq651RplbQkaUvXUnXrccegTKoLTKdy8SjV1oB0eHdoftLiL3eiuuLt+WUOj1
-         PuQP1EG7zrQxAiVmjHdlXDhARX/xITJg/oR9fHZ1O1Tdb2JJpplf5YJywjbYxZadMyHB
-         U9tOjN8nrGTS1l8qkcRypr59cjqhSGun7xNXtafyzBNB0/pmeqfDc83MUS9wMr0Icodn
-         TkLs4+uactRkBeMxEalimtK2XAsYoRELlryTHa4woUhQXtM3NTNFGBKagW2QdELXemJU
-         MI28IoUB1vECMVszkey6rpmejHLA6MVEuayeXNXqRwmlkJWAgGAcqIbZYrh0JHSqpC8C
-         9pBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=b6/KbIVIDTaUyaV//iHuuYUs3+XV8ludk3GKB+bRhdQ=;
-        b=s/HmXrniNj8dAuAqfqhfQz3CdwOBpVVCcF/BqegDrdeGHD7Co9AffPsne1irhztLkN
-         +6yyf55KOIVlD2lsFVdyRaUgoZTdNqc/GSCghGCzbxK5cWaPgMZrN1wwjjAWS0Zcmr8P
-         LSdBIQTEgfc4N2h27pnTEPhxPxODU6oxsbS1ygh44qgD6KtztZGl72RvuQgd3L0qcJIt
-         zQawJYFpQadqRlkQI0heAxmmnFSZHt4V+tkpoko0ucOHcp3HXRJKOHd24wG9yyUz23+A
-         hIvIN3X9tzmes1RPhwLa7dO+C3cRfg5goe/GRvWDiqG+uPId/HrnfQsxc0mxWwVp2IMZ
-         3qVw==
-X-Gm-Message-State: ACgBeo1W6JG+KbT+x00ALbZn+tAv2r51FRZQN2ufYeUx04ULREkdN4ay
-        qe9PhWCqfaCHqpUH7AC92RNM7OSCl9sYfNgh0Sc=
-X-Google-Smtp-Source: AA6agR7g9fP251B4QtpYGgSc200C3FCiNg41oVwZHr15DGY3rfR1fXJQMV/wf+IuAfOF13mbK/S6VN+f6nZl5iBaM68=
-X-Received: by 2002:a05:6602:224a:b0:681:2125:a85b with SMTP id
- o10-20020a056602224a00b006812125a85bmr1250018ioo.44.1660294258364; Fri, 12
- Aug 2022 01:50:58 -0700 (PDT)
+        Fri, 12 Aug 2022 04:51:36 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A715DA8CC9;
+        Fri, 12 Aug 2022 01:51:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660294295; x=1691830295;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=A19Y/Vv7Njp++9ZFDHaF/Zkego9M6KhA3Ql91r6OQzc=;
+  b=QVqofymZZMdExXURciux63zga++lnmflhghjAdQtV0MqIdgnB/cyWsp7
+   VViudGL0yp9rwi4DMPuCWqSgyts2qDavimQ0ZZ7ugpnPrZ6oFum89qakJ
+   QMy7myJ2aks/TxVbsuXMuxETDIapmd5dEPAGczKreyvt1e79gad1sal5V
+   qIZdWY5xvilm/XL5+VSVyw/fFJdq2mM5jf8vJp2qWYjTA0LhK/VsjZBXz
+   tOUG4w+n/EV72woUAYxcobRvEhTghLcUjEYmAuT+bNtU5I93SE3HiPijG
+   Mq0LjiBvIdpZMh98ulCWND3UA+InS8YYVXZTG4Ftr/LmlFe0fzAig1jH0
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="353297754"
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="353297754"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 01:51:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="602451369"
+Received: from zxingrtx.sh.intel.com ([10.239.159.110])
+  by orsmga007.jf.intel.com with ESMTP; 12 Aug 2022 01:51:27 -0700
+From:   zhengjun.xing@linux.intel.com
+To:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        alexander.shishkin@intel.com, jolsa@kernel.org, namhyung@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        irogers@google.com, ak@linux.intel.com, kan.liang@linux.intel.com,
+        zhengjun.xing@linux.intel.com
+Subject: [PATCH 00/11] Add generated latest Intel events and metrics
+Date:   Fri, 12 Aug 2022 16:52:28 +0800
+Message-Id: <20220812085239.3089231-1-zhengjun.xing@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220812025015.316609-1-imagedong@tencent.com>
-In-Reply-To: <20220812025015.316609-1-imagedong@tencent.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Fri, 12 Aug 2022 10:50:47 +0200
-Message-ID: <CANiq72kgF-UAzvUVTgg9mh9RZ6sYwVxGpERzvCkueh1z2PeqTg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: skb: prevent the split of
- kfree_skb_reason() by gcc
-To:     menglong8.dong@gmail.com
-Cc:     kuba@kernel.org, ojeda@kernel.org, ndesaulniers@google.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        asml.silence@gmail.com, imagedong@tencent.com,
-        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
-        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 4:50 AM <menglong8.dong@gmail.com> wrote:
->
->  #define __noreturn                      __attribute__((__noreturn__))
->
-> +#define __nofnsplit                     __attribute__((__optimize__("O1")))
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-This is still in the wrong place...
+The goal of this patch series is to align the json events for Intel
+platforms with those generated by:
+https://github.com/intel/event-converter-for-linux-perf/blob/master/download_and_gen.py
+This script takes the latest event json and TMA metrics from:
+https://download.01.org/perfmon/ and adds to these metrics, in
+particular uncore ones, from: https://github.com/intel/perfmon-metrics
 
-Also, from what the bot says, Clang does not support it. I took a
-look, and that seems to be the case. ICC doesn't, either. Thus you
-would need to guard it and also add the docs as needed, like the other
-attributes.
+Compared to the previous json, the major changes are:
+ - Add new metrics “UNCORE_FREQ” for Linux perf,this new metric can be added to all platforms that have Sockets_CLKS.
+ - Remove duplicated uncore events.
+ - the inclusion of previously ungenerated and experimental uncore events.
 
-(Not saying that solving the issue with the attribute is a good idea,
-but if you really wanted to add one, it should be done properly)
+Zhengjun Xing (11):
+  perf vendor events: Update metrics for broadwellde
+  perf vendor events: Update events and metrics for broadwellx
+  perf vendor events: Update events and metrics for cascadelakex
+  perf vendor events: Update events and metrics for haswellx
+  perf vendor events: Update events and metrics for icelakex
+  perf vendor events: Update metrics for ivytown
+  perf vendor events: Update metrics for jaketown
+  perf vendor events: Update events for knightslanding
+  perf vendor events: Update metrics for sapphirerapids
+  perf vendor events: Update events and metrics for skylakex
+  perf vendor events: Update events for snowridgex
 
-Cheers,
-Miguel
+ .../arch/x86/broadwellde/bdwde-metrics.json   |     6 +
+ .../arch/x86/broadwellx/bdx-metrics.json      |     6 +
+ .../arch/x86/broadwellx/uncore-cache.json     |   163 +-
+ .../arch/x86/cascadelakex/clx-metrics.json    |     6 +
+ .../arch/x86/cascadelakex/uncore-memory.json  |  4424 +-
+ .../arch/x86/cascadelakex/uncore-other.json   | 23162 +++++++++-
+ .../arch/x86/cascadelakex/uncore-power.json   |   201 +
+ .../arch/x86/haswellx/hsx-metrics.json        |   411 +-
+ .../arch/x86/haswellx/uncore-cache.json       |   173 +-
+ .../arch/x86/icelakex/icx-metrics.json        |     6 +
+ .../arch/x86/icelakex/uncore-memory.json      |  1523 +
+ .../arch/x86/icelakex/uncore-other.json       | 38506 +++++++++++++++-
+ .../arch/x86/icelakex/uncore-power.json       |   225 +
+ .../arch/x86/ivytown/ivt-metrics.json         |     6 +
+ .../arch/x86/jaketown/jkt-metrics.json        |     6 +
+ .../arch/x86/knightslanding/uncore-other.json |   213 +
+ .../arch/x86/sapphirerapids/spr-metrics.json  |     6 +
+ .../arch/x86/skylakex/skx-metrics.json        |     6 +
+ .../arch/x86/skylakex/uncore-memory.json      |  3566 +-
+ .../arch/x86/skylakex/uncore-other.json       | 23442 +++++++++-
+ .../arch/x86/skylakex/uncore-power.json       |   201 +
+ .../arch/x86/snowridgex/uncore-other.json     |   111 +-
+ 22 files changed, 91393 insertions(+), 4976 deletions(-)
+ create mode 100644 tools/perf/pmu-events/arch/x86/cascadelakex/uncore-power.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/skylakex/uncore-power.json
+
+-- 
+2.25.1
+
