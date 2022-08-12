@@ -2,295 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42713C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD3EC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238380AbiHLKr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
+        id S238196AbiHLKsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238131AbiHLKrY (ORCPT
+        with ESMTP id S231822AbiHLKsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:47:24 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BD99C52B;
-        Fri, 12 Aug 2022 03:47:23 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id v5so420019wmj.0;
-        Fri, 12 Aug 2022 03:47:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
-        bh=lxAxMPZxgmQtDQtE+oJRxaulsge/j6wRSfGnBdmPeUs=;
-        b=KHfGfVw+MUDzp8/oFMh5H/GKhNeyNSm9LNMFCJD5vt0lGyy/jt9iDr7gvVUQjMV6Ae
-         TmLR9Y0PM6MTHfpRIE3McDaiTXdLzd6pBmAlSx5A/rLfG/sHVQdEFxrEd3kOeh4Z1ti1
-         QnNslgJVDRGqfxoIAJF1NSLguAirb4lyZxCc5lIweCY17FlRKO7jkP+IGWv1qzsila9y
-         IW3YT/DOs6KIjZMFqhIn3rv35hgZxOiOoLgL4E+AdYgyxkkNuMdM7GuJ+6rovBPVT33r
-         yr0Sh+XmWBkT+UsYj7AGDprOP5OOAvcRk1PReyNI4Tqj+PdOx9gkX7m1ySqryFrZ83b3
-         YAKw==
+        Fri, 12 Aug 2022 06:48:16 -0400
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5777C9FF8;
+        Fri, 12 Aug 2022 03:48:15 -0700 (PDT)
+Received: by mail-qv1-f53.google.com with SMTP id b7so325501qvq.2;
+        Fri, 12 Aug 2022 03:48:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=lxAxMPZxgmQtDQtE+oJRxaulsge/j6wRSfGnBdmPeUs=;
-        b=A4dMbqsQnpCwJLD7AUXHc+XtFKJhfQP7FeYIAWdhfLU1x3jkHjD+q4Fyb0oiKn7Y28
-         I1Olh93Bl6KAsuyXs+XKDQmazLZXG5x2km8uHka+zqVIG3/mI0gl2vRQW447AkOn1vVm
-         3rovBCD2ZOOdATahTVXmHMK4yt/YQSJc+PHN8t1bkR81/9ESc9dGgF82oF6x9RYsk7QU
-         LBnnjlaXnl5PawPb0W6iYF14EvtIhwNug2HCfo56ArHb9wCcDbwe7HS0CBR55Baowm9J
-         Ji6t/XFSgCU/FjX0C13CqRVe9VQgmFGggI0oGHCCOoxLghpkkERBXj+JpBPjhH++CNfz
-         80Ww==
-X-Gm-Message-State: ACgBeo24mxtr6Py805pB6TKSqpdBa7RqaZHzSIzcqMxbf4YlZUtq5+Yg
-        Z2r0/ukNm/q50DflB9kB3c4=
-X-Google-Smtp-Source: AA6agR6hxx0ZGvoWmAtkREfac96ggJ1X8fc4X84WxGkyzC4ZfZ5/jV5GqcRJS9ShyPj/7fCRRvd7yA==
-X-Received: by 2002:a7b:cc90:0:b0:3a5:3899:7be1 with SMTP id p16-20020a7bcc90000000b003a538997be1mr2192394wma.19.1660301241977;
-        Fri, 12 Aug 2022 03:47:21 -0700 (PDT)
-Received: from [192.168.90.166] (188.red-83-35-57.dynamicip.rima-tde.net. [83.35.57.188])
-        by smtp.gmail.com with ESMTPSA id a20-20020a5d4574000000b0021f15514e7fsm2109485wrc.0.2022.08.12.03.47.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 03:47:21 -0700 (PDT)
-Message-ID: <61774fbafd3ce64a93d94202a77d242e8001778a.camel@gmail.com>
-Subject: Re: [PATCH v5 3/5] iio: pressure: bmp280: Add support for BMP380
- sensor family
-From:   Angel Iglesias <ang.iglesiasg@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Fri, 12 Aug 2022 12:47:20 +0200
-In-Reply-To: <CAHp75VexAQ5BQEyoAJq9r8uY1MussTy12bUyLd5z6GtJSbf0NQ@mail.gmail.com>
-References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
-         <462251c4bca30b53f06307043ad52d859eb8d5c1.1659872590.git.ang.iglesiasg@gmail.com>
-         <CAHp75VexAQ5BQEyoAJq9r8uY1MussTy12bUyLd5z6GtJSbf0NQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.module_f35+14217+587aad52) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=T/2FZXIGpYCgsZ5/AhrQtZsSNuWBGq95VlFDnMpQa1w=;
+        b=hlQKb3NdbPy6jaDgbmW4iBbYwRuHIMS8Le3K++MdPVp6+Nk8hy9VCaQ14q8fhH8oYy
+         cWisbOis/tNdvENJdpGIbxlsPwuQZgi0KqH9pFEaXKDEwAnNq+oQgT/HVZJsRygPeMfV
+         l4ELMa22T2yzjbhqt4EhkQOzsLmR7wHhpqvioVMQzExNNfwB4xhLEhefbqL5GOFSWxVY
+         eZKSo3mOwrB7Fp9uPEFpVSQQl1bI9FdoHUFYzUovu59GZoJg81VVQRNj9rZd/XtytQ9X
+         bcqY66g78cagIFRMMgWO93zJz9h4v7XBWFFu2WQc8bPSlEBWD4wNyq9joylBrTHNBpE9
+         OefQ==
+X-Gm-Message-State: ACgBeo3uX9TS0vQAa/+sdGgVIz90OfXoWBBvW6d3v/xQtA7M5pHoNoeE
+        1zYySU/D1Tqx+Q331KGmhDOhgrzxoBsMtg==
+X-Google-Smtp-Source: AA6agR63zvSfbSnFL2zmb1zqThSIu80vwXrWmJ2GlYraOaEMqtO2Lojivr14qVU41RI5Whl7ic38Pw==
+X-Received: by 2002:ad4:4b30:0:b0:476:f037:8a2 with SMTP id s16-20020ad44b30000000b00476f03708a2mr2754488qvw.2.1660301294202;
+        Fri, 12 Aug 2022 03:48:14 -0700 (PDT)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id y6-20020ae9f406000000b006b8cff25187sm1537953qkl.42.2022.08.12.03.48.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 03:48:13 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-32a17d3bba2so6123987b3.9;
+        Fri, 12 Aug 2022 03:48:12 -0700 (PDT)
+X-Received: by 2002:a81:13c2:0:b0:31f:3dc8:e01 with SMTP id
+ 185-20020a8113c2000000b0031f3dc80e01mr3214850ywt.316.1660301292378; Fri, 12
+ Aug 2022 03:48:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220630195703.10155-1-bvanassche@acm.org> <20220630195703.10155-3-bvanassche@acm.org>
+ <alpine.DEB.2.22.394.2207191125130.1006766@ramsan.of.borg>
+ <db19ed29-e7f9-e5b0-3a6c-f2812078a07d@acm.org> <CAMuHMdVzsgSYtbJQnaigNax_JbxPsQfU+gHcteS-ojWbxUdMfw@mail.gmail.com>
+ <CAMuHMdWtxBj8ug7AHTqentF8UD4jpO2sgoWWcQCOvEKLJtdq8A@mail.gmail.com>
+ <506ca1a6-1122-5755-fc74-60f7c7bfbd0d@acm.org> <CAMuHMdVQ2K2v8jpsFfOMk99DG_sBB4_ioiQRroC7K_Ov1wvp9w@mail.gmail.com>
+ <6f70e742-9d8a-f389-0482-0ba9696bf445@acm.org> <CAMuHMdVc+ATGV-=R3uV6RyF0-mZiuKv7HpmogRBgqGVyO-MKWg@mail.gmail.com>
+ <54e20a27-a10b-b77a-e950-1d3398e2e907@acm.org> <CAMuHMdURQpAEGgv4cY7v0rqzs12v2TT=Amt26Y0OoBSW7YAoaw@mail.gmail.com>
+ <084e7c5a-f98d-d61e-de81-83525851ecf9@acm.org>
+In-Reply-To: <084e7c5a-f98d-d61e-de81-83525851ecf9@acm.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 12 Aug 2022 12:48:00 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdW2vOC8ZsE_XF8TbSNoF9zCrwq7UkGZ5jXen1E1mTZe+g@mail.gmail.com>
+Message-ID: <CAMuHMdW2vOC8ZsE_XF8TbSNoF9zCrwq7UkGZ5jXen1E1mTZe+g@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] scsi: sd: Rework asynchronous resume support
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Ming Lei <ming.lei@redhat.com>, Hannes Reinecke <hare@suse.de>,
+        John Garry <john.garry@huawei.com>, ericspero@icloud.com,
+        jason600.groome@gmail.com,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-ide@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On lun, 2022-08-08 at 11:08 +0200, Andy Shevchenko wrote:
-> On Sun, Aug 7, 2022 at 1:56 PM Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
-> > 
-> > Adds compatibility with the new generation of this sensor, the BMP380
-> > 
-> > Includes basic sensor initialization to do pressure and temp
-> > measurements and allows tuning oversampling settings for each channel.
-> > 
-> > The compensation algorithms are adapted from the device datasheet and
-> > the repository https://github.com/BoschSensortec/BMP3-Sensor-API
-> 
-> Missed period.
-> 
-> ...
-> 
-> >   *
-> > https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-DS000-121.pdf
-> >   *
-> > https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-12.pdf
-> >   *
-> > https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_DS001-11.pdf
-> 
-> Seems like the above links are unresponsive now? Perhaps you may fix
-> them as well in a separate patch?
+Hi Bart,
 
-Sure. Should I include this patch in this next version of this series, or should
-I send the patch as a standalone change?
+CC linux-ide
 
-> > + *
-> > https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp388-ds001.pdf
-> 
-> ...
-> 
-> > +/* See datasheet Section 3.11.1. */
-> 
-> Again, a bit of consistency in (one-line) comments, please.
-> 
-> > +struct bmp380_calib {
-> > +       u16 T1;
-> > +       u16 T2;
-> > +       s8  T3;
-> > +       s16 P1;
-> > +       s16 P2;
-> > +       s8  P3;
-> > +       s8  P4;
-> > +       u16 P5;
-> > +       u16 P6;
-> > +       s8  P7;
-> > +       s8  P8;
-> > +       s16 P9;
-> > +       s8  P10;
-> > +       s8  P11;
-> > +};
-> 
-> __packed ?
-> 
-> ...
-> 
-> > +/* Send a command to BMP3XX sensors */
-> 
-> > +       /* check if device is ready to process a command */
-> > +       /* send command to process */
-> > +       /* wait for 2ms for command to be processed */
-> > +       /* check for command processing error */
-> 
-> Consistency, please!
-> 
-> ...
-> 
-> > +       dev_dbg(data->dev, "Command 0x%X processed successfully\n", cmd);
-> 
-> Useless.
-> 
-> ...
-> 
-> > +/*
-> > + * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
-> 
-> DegC?! Perhaps "Celsius degrees"?
-> 
-> > + * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
-> > + * value.
-> > + *
-> > + * Taken from datasheet, Section Appendix 9, "Compensation formula" and
-> > repo
-> > + * https://github.com/BoschSensortec/BMP3-Sensor-API
-> 
-> Missed period.
-> 
-> > + */
-> 
-> ...
-> 
-> > +       return (s32) comp_temp;
-> 
-> Do you need casting?
-> 
-> ...
-> 
-> > +/*
-> > + * Returns pressure in Pa as unsigned 32 bit integer in fractional Pascal.
-> 
-> an unsigned
-> 32-bit
-> 
-> > + * Output value of "9528709" represents 9528709/100 = 95287.09 Pa =
-> > 952.8709 hPa
-> > + *
-> > + * Taken from datasheet, Section 9.3. "Pressure compensation" and
-> > repository
-> > + * https://github.com/BoschSensortec/BMP3-Sensor-API
-> 
-> Missed period.
-> 
-> > + */
-> 
-> ...
-> 
-> > +       var1 = ((s64)data->t_fine) * ((s64)data->t_fine);
-> 
-> Too many parentheses?
+On Fri, Jul 22, 2022 at 7:56 PM Bart Van Assche <bvanassche@acm.org> wrote:
+> On 7/22/22 01:53, Geert Uytterhoeven wrote:
+> > During s2idle, the following trace data is generated:
+> >
+> >     kworker/u16:9-325     [000] ...2.   230.478731: block_rq_issue: 8,0
+> > N 0 () 0 + 0 [kworker/u16:9]
+> >     kworker/u16:9-325     [000] ...2.   230.478745:
+> > scsi_dispatch_cmd_start: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+> > prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=0
+> > cmnd=(SYNCHRONIZE_CACHE - raw=35 00 00 00 00 00 00 00 00 00)
+> >            <idle>-0       [007] d.h3.   230.478832:
+> > scsi_dispatch_cmd_done: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+> > prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=0
+> > cmnd=(SYNCHRONIZE_CACHE - raw=35 00 00 00 00 00 00 00 00 00)
+> > result=(driver=DRIVER_OK host=DID_OK message=COMMAND_COMPLETE
+> > status=SAM_STAT_GOOD)
+> >            <idle>-0       [000] ..s2.   230.478851: block_rq_complete:
+> > 8,0 N () 18446744073709551615 + 0 [0]
+> >     kworker/u16:9-325     [000] ...2.   230.483134: block_rq_issue: 8,0
+> > N 0 () 0 + 0 [kworker/u16:9]
+> >     kworker/u16:9-325     [000] ...2.   230.483136:
+> > scsi_dispatch_cmd_start: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+> > prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=1
+> > cmnd=(START_STOP - raw=1b 00 00 00 00 00)
+> >            <idle>-0       [007] d.h3.   230.624530:
+> > scsi_dispatch_cmd_done: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+> > prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=1
+> > cmnd=(START_STOP - raw=1b 00 00 00 00 00) result=(driver=DRIVER_OK
+> > host=DID_OK message=COMMAND_COMPLETE status=SAM_STAT_GOOD)
+> >            <idle>-0       [000] d.s4.   230.624634: scsi_eh_wakeup: host_no=0
+> >            <idle>-0       [000] ..s2.   230.624642: block_rq_complete:
+> > 8,0 N () 18446744073709551615 + 0 [0]
+> >    kworker/u16:14-1027    [007] d..3.   231.393642: scsi_eh_wakeup: host_no=0
+> >
+> > When reading from hard drive after s2idle, no more trace data
+> > is generated.
+>
+> I think the above commands come from the suspend sequence. '1b 00 00 00
+> 00 00' stops a block device. The lowest bit in byte 4 needs to be set to
+> start a block device.
+>
+> Something that is not yet clear is whether or not sd_submit_start()
+> hangs during the resume process. How about verifying whether or not
+> sd_submit_start() hangs by either issuing SysRq-t or by adding pr_info()
+> statements in that function?
 
-Yup, operator precedence of typecast precedes multiplication.
+sd_submit_start() is called once during suspend, and once during
+resume.  It does not hang.
 
-> ...
-> 
-> > +       /*
-> > +        * Dividing by 10 followed by multiplying by 10 to avoid
-> > +        * possible overflow caused by (uncomp_data->pressure *
-> > partial_data4)
-> 
-> Missed period.
-> 
-> > +        */
-> 
-> ...
-> 
-> > +       return (u32)comp_press;
-> 
-> Do you need casting?
+Reading from /dev/sda hangs after resume (not in sd_submit_start(),
+which is never called for reading).
 
-Not really, should fall on the implicit conversion rules of the compiler as it
-works like an assignment, right?. Also, after shifting 40 bits to the right,
-there's no risk of overflow, comp_press can be a u32 from the start instead of a
-u64.
+Two tasks are blocked in blk_mq_get_tag() calling io_schedule():
 
-> ...
-> 
-> > +               /* reading was skipped */
-> 
-> The useless comment.
-> 
-> > +               dev_err(data->dev, "reading pressure skipped\n");
-> 
-> ...
-> 
-> > +       /* Compensated pressure is in cPa (centipascals) */
-> > +       *val2 = 100000;
-> 
-> Anything to use from units.h?
-> 
-> ...
-> 
-> > +       ret = regmap_write_bits(data->regmap, BMP380_REG_OSR,
-> > +                               BMP380_OSRS_TEMP_MASK |
-> > BMP380_OSRS_PRESS_MASK,
-> > +                               osrs);
-> > +       if (ret < 0) {
-> 
-> Do all these ' < 0' parts make any sense?
+task:kworker/7:1     state:D stack:    0 pid:  122 ppid:     2 flags:0x00000008
+Workqueue: events ata_scsi_dev_rescan
+Call trace:
+ __switch_to+0xbc/0x124
+ __schedule+0x540/0x71c
+ schedule+0x58/0xa0
+ io_schedule+0x18/0x34
+ blk_mq_get_tag+0x138/0x244
+ __blk_mq_alloc_requests+0x130/0x2f0
+ blk_mq_alloc_request+0x74/0xa8
+ scsi_alloc_request+0x10/0x30
+ __scsi_execute+0x5c/0x18c
+ scsi_vpd_inquiry+0x7c/0xdc
+ scsi_get_vpd_size+0x34/0xa8
+ scsi_get_vpd_buf+0x28/0xf4
+ scsi_attach_vpd+0x44/0x170
+ scsi_rescan_device+0x30/0x98
+ ata_scsi_dev_rescan+0xc8/0xfc
+ process_one_work+0x2e0/0x474
+ worker_thread+0x1cc/0x270
+ kthread+0xd8/0xe8
+ ret_from_fork+0x10/0x20
 
-I've checked regmap calls and return 0 when call is successful, so the answer is
-no
 
-> > +       }
-> 
-> ...
-> 
-> > +       { .compatible = "bosch,bmp380", .data = (void *)BMP380_CHIP_ID },
-> >         { .compatible = "bosch,bme280", .data = (void *)BME280_CHIP_ID },
-> >         { .compatible = "bosch,bmp280", .data = (void *)BMP280_CHIP_ID },
-> >         { .compatible = "bosch,bmp180", .data = (void *)BMP180_CHIP_ID },
-> 
-> See below.
-> 
-> ...
-> 
-> > +       {"bmp380", BMP380_CHIP_ID },
-> >         {"bmp280", BMP280_CHIP_ID },
-> >         {"bmp180", BMP180_CHIP_ID },
-> >         {"bmp085", BMP180_CHIP_ID },
-> 
-> Can we actually keep them forward-ordered? (Add 380 after 280 here and
-> in a separate patch sort the rest, or other way around, sort as a
-> prerequisite patch)
+task:hd              state:D stack:    0 pid: 1163 ppid:  1076 flags:0x00000000
+Call trace:
+ __switch_to+0xbc/0x124
+ __schedule+0x540/0x71c
+ schedule+0x58/0xa0
+ io_schedule+0x18/0x34
+ blk_mq_get_tag+0x138/0x244
+ __blk_mq_alloc_requests+0x130/0x2f0
+ blk_mq_submit_bio+0x44c/0x5b4
+ __submit_bio+0x24/0x5c
+ submit_bio_noacct_nocheck+0x8c/0x178
+ submit_bio_noacct+0x380/0x3b0
+ submit_bio+0x34/0x3c
+ mpage_bio_submit+0x28/0x38
+ mpage_readahead+0xa8/0x178
+ blkdev_readahead+0x14/0x1c
+ read_pages+0x4c/0x158
+ page_cache_ra_unbounded+0xd8/0x174
+ do_page_cache_ra+0x40/0x4c
+ page_cache_ra_order+0x14/0x1c
+ ondemand_readahead+0x124/0x2fc
+ page_cache_sync_ra+0x50/0x54
+ filemap_read+0x130/0x6e8
+ blkdev_read_iter+0xf0/0x164
+ new_sync_read+0x74/0xc0
+ vfs_read+0xbc/0xd8
+ ksys_read+0x6c/0xd4
+ __arm64_sys_read+0x14/0x1c
+ invoke_syscall+0x70/0xf4
+ el0_svc_common.constprop.0+0xbc/0xf0
+ do_el0_svc+0x18/0x20
+ el0_svc+0x30/0x84
+ el0t_64_sync_handler+0x90/0xf8
+ el0t_64_sync+0x14c/0x150
 
-Sure!
+I hope this helps.
+Thanks!
 
-> ...
-> 
-> > +#define BMP380_MIN_TEMP                        -4000
-> > +#define BMP380_MAX_TEMP                        8500
-> > +#define BMP380_MIN_PRES                        3000000
-> > +#define BMP380_MAX_PRES                        12500000
-> 
-> Units?
+Gr{oetje,eeting}s,
 
-Units as in I should use units.h constants or also comment in which units are
-these constants?
+                        Geert
 
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Kind regards,
-Angel
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
