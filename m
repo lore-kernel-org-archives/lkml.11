@@ -2,202 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A568AC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8013AC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239094AbiHLOHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 10:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
+        id S239104AbiHLOJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 10:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239050AbiHLOHr (ORCPT
+        with ESMTP id S237287AbiHLOJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 10:07:47 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE95956B3;
-        Fri, 12 Aug 2022 07:07:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660313231; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=fbBtS1sg+Vt+hYNlH9db0vKSm0VsISSrbfKZ/jEVUctlhUv5Xw0mKF+lLIVdoOC67ZqtwTDl6GFF8h81U4wl03iMeFA2rH3tCxg+UuQrCE64wNKQ4ctiDtYbgXfQv3VNw+3p1b8EzvwFZWgglGMMKOZwefzrtQKneptX8LGJnZU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660313231; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=FknEHEc1nj2hFhwhzwEjhZw/Siy0uBdyidv+M0TdjsE=; 
-        b=ejCDYI+Vgpjfdt/dnFRUl682pDogP8XqdY2fOEJXOEgi4dwLIVjYUGvNfl/2zrKz9R5whJ0XUzCS02wecsaw28nvbwvQqMPVIUKQ3lmOJtCDDNA7sBwOb5sLMPLUhmi/lLOvz2b6toEXjiUn7IY/YYRK9UXl+nt/pC4s09Ce458=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660313231;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=FknEHEc1nj2hFhwhzwEjhZw/Siy0uBdyidv+M0TdjsE=;
-        b=hwqzb+Y5rHO41lrcPIZ6+VC9+Dogbd4NVHxz44ZoQT3+znvTYXqqwpgUoX2t5gA/
-        pGmtNz/+mfYN6mG2syEJNbXRVTlpWxSa5AOtc2UodyAwE45f+OH+aRsbfbf7kvDqV4I
-        HnQ15pmVHeveHhlEv12dlDPD8dwmloROl5lpYfqU=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 16603132237851003.355451322594; Fri, 12 Aug 2022 07:07:03 -0700 (PDT)
-Message-ID: <24e251d7-f5db-5715-463d-333f5dfbfceb@arinc9.com>
-Date:   Fri, 12 Aug 2022 17:06:57 +0300
+        Fri, 12 Aug 2022 10:09:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAF8AB06A
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:09:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD8CFB82435
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 14:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE8FEC433C1;
+        Fri, 12 Aug 2022 14:09:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660313366;
+        bh=P/YwCx8KIlvJImMMOI4qn/OI5pBpHMATs70bdyoQlGs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W+vjPIgCvQjaedRp7HML66QeZ5xUX/j0pimp06TbIoGxywEZL8lNIzCE0Ldnt5ORc
+         73JPwMiLoCd5P1qH7isVQgKtY3xX4l+OaBV+Gb+3UIIx75VkiyikcFR32Z2kbbjt2Z
+         Bu6DnyCkoDhsjUFrU3hF35r51OGgvATbx4/7kuCg=
+Date:   Fri, 12 Aug 2022 16:09:23 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] drivers: binderfs: fix memory leak in binderfs_fill_super
+Message-ID: <YvZfEwFL7GSHEzs8@kroah.com>
+References: <20220812132124.2053673-1-dzm91@hust.edu.cn>
+ <YvZYmprZ1NiMkynp@kroah.com>
+ <CAD-N9QWU_tcnHMtP3iWcQogSWwDET4nhK5AQKDbh2KJQzwfF9A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 4/4] dt-bindings: net: dsa: mediatek,mt7530: update
- json-schema
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220730142627.29028-1-arinc.unal@arinc9.com>
- <20220730142627.29028-5-arinc.unal@arinc9.com>
- <e5cf8a19-637c-95cf-1527-11980c73f6c0@linaro.org>
- <bb60608a-7902-99fa-72aa-5765adabd300@arinc9.com>
- <8a665b7a-bbd0-99ce-658e-bc78568bdca2@linaro.org>
- <40130c63-1e36-bb43-43b4-444a8f287226@linaro.org>
- <70e246af-c336-0896-95b5-9e42a17a239d@arinc9.com>
- <3731cd56-f7e8-6807-06b5-b8b176b078b6@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <3731cd56-f7e8-6807-06b5-b8b176b078b6@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD-N9QWU_tcnHMtP3iWcQogSWwDET4nhK5AQKDbh2KJQzwfF9A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 12.08.2022 16:48, Krzysztof Kozlowski wrote:
-> On 12/08/2022 16:41, Arınç ÜNAL wrote:
->> On 12.08.2022 10:01, Krzysztof Kozlowski wrote:
->>> On 12/08/2022 09:57, Krzysztof Kozlowski wrote:
->>>> On 12/08/2022 01:09, Arınç ÜNAL wrote:
->>>>>>> -patternProperties:
->>>>>>> -  "^(ethernet-)?ports$":
->>>>>>> -    type: object
->>>>>>
->>>>>> Actually four patches...
->>>>>>
->>>>>> I don't find this change explained in commit msg. What is more, it looks
->>>>>> incorrect. All properties and patternProperties should be explained in
->>>>>> top-level part.
->>>>>>
->>>>>> Defining such properties (with big piece of YAML) in each if:then: is no
->>>>>> readable.
->>>>>
->>>>> I can't figure out another way. I need to require certain properties for
->>>>> a compatible string AND certain enum/const for certain properties which
->>>>> are inside patternProperties for "^(ethernet-)?port@[0-9]+$" by reading
->>>>> the compatible string.
->>>>
->>>> requiring properties is not equal to defining them and nothing stops you
->>>> from defining all properties top-level and requiring them in
->>>> allOf:if:then:patternProperties.
->>>>
->>>>
->>>>> If I put allOf:if:then under patternProperties, I can't do the latter.
->>>>
->>>> You can.
->>
->> Am I supposed to do something like this:
->>
->> patternProperties:
->>     "^(ethernet-)?ports$":
->>       type: object
->>
->>       patternProperties:
->>         "^(ethernet-)?port@[0-9]+$":
->>           type: object
->>           description: Ethernet switch ports
->>
->>           unevaluatedProperties: false
->>
->>           properties:
->>             reg:
->>               description:
->>                 Port address described must be 5 or 6 for CPU port and
->>                 from 0 to 5 for user ports.
->>
->>           allOf:
->>             - $ref: dsa-port.yaml#
->>             - if:
->>                 properties:
->>                   label:
->>                     items:
->>                       - const: cpu
->>               then:
->>                 allOf:
->>                   - if:
->>                       properties:
+On Fri, Aug 12, 2022 at 09:56:46PM +0800, Dongliang Mu wrote:
+> On Fri, Aug 12, 2022 at 9:41 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Fri, Aug 12, 2022 at 09:21:24PM +0800, Dongliang Mu wrote:
+> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> > >
+> > > In binderfs_fill_super, if s_root is not successfully initialized by
+> > > d_make_root, the previous allocated s_sb_info will not be freed since
+> > > generic_shutdown_super first checks if sb->s_root and then does
+> > > put_super operation. The put_super operation calls binderfs_put_super
+> > > to deallocate s_sb_info and put ipc_ns. This will lead to memory leak
+> > > in binderfs_fill_super.
+> > >
+> > > Fix this by invoking binderfs_put_super at error sites before s_root
+> > > is successfully initialized.
+> > >
+> > > Fixes: 095cf502b31e ("binderfs: port to new mount api")
+> > > Reported-by: syzkaller <syzkaller@googlegroups.com>
+> >
+> > Where is the specific syzkaller link for this report?  It would be good
+> > to reference it so it can be properly checked.
+> >
+> > Also, how did you test this change?
 > 
-> Not really, this is absolutely unreadable.
+> I found this memory leak in my local syzkaller, and there is no any
+> syzbot report about this crash, therefore I use such a Reported-by to
+> indicate.
 > 
-> Usually the way it is handled is:
+> Although my local syzkaller does generate any reproducer, this bug can
+> be triggered by injecting faults at new_inode and d_make_root (i.e.,
+> between s_sb_info allocation and code after d_make_root).
 > 
-> patternProperties:
->     "^(ethernet-)?ports$":
->       type: object
+> >
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > >  drivers/android/binderfs.c | 8 ++++++--
+> > >  1 file changed, 6 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
+> > > index 588d753a7a19..20f5bc77495f 100644
+> > > --- a/drivers/android/binderfs.c
+> > > +++ b/drivers/android/binderfs.c
+> > > @@ -710,8 +710,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
+> > >       info->mount_opts.stats_mode = ctx->stats_mode;
+> > >
+> > >       inode = new_inode(sb);
+> > > -     if (!inode)
+> > > +     if (!inode) {
+> > > +             binderfs_put_super(sb);
+> > >               return -ENOMEM;
+> > > +     }
+> > >
+> > >       inode->i_ino = FIRST_INODE;
+> > >       inode->i_fop = &simple_dir_operations;
+> > > @@ -721,8 +723,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
+> > >       set_nlink(inode, 2);
+> > >
+> > >       sb->s_root = d_make_root(inode);
+> > > -     if (!sb->s_root)
+> > > +     if (!sb->s_root) {
+> > > +             binderfs_put_super(sb);
+> > >               return -ENOMEM;
+> > > +     }
+> >
+> > How did you test this change to verify that you are not now just leaking
+> > memory?  It looks to me like you just changed one problem for another
+> > one :(
 > 
->       patternProperties:
->         "^(ethernet-)?port@[0-9]+$":
->           type: object
->           description: Ethernet switch ports
->           unevaluatedProperties: false
->           ... regular stuff follows
+> As mentioned above, I just tested my change by injecting faults at
+> new_inode and d_make_root.
 > 
-> allOf:
->   - if:
->       properties:
->         compatible:
->           .....
->     then:
->       patternProperties:
->         "^(ethernet-)?ports$":
->           patternProperties:
->             "^(ethernet-)?port@[0-9]+$":
->               properties:
->                 reg:
->                   const: 5
-> 
-> 
-> I admit that it is still difficult to parse, which could justify
-> splitting to separate schema. Anyway the point of my comment was to
-> define all properties in top level, not in allOf.
-> 
-> allOf should be used to constrain these properties.
+> Can you explain more about "changed one problem for another one"? I
+> don't quite understand this statement.
 
-The problem is:
-- only specific values of reg are allowed if label is cpu.
-- only specific values of phy-mode are allowed if reg is 5 or 6.
+I think you are leaking memory in at least your second change here,
+possibly the first, I didn't look at the code very closely.
 
-This forces me to define properties under allOf:if:then. Splitting to 
-separate schema (per compatible string?) wouldn't help in this case.
+So please verify that you do not add problems when trying to remove
+them.
 
-I can split patternProperties to two sections, but I can't directly 
-define the reg property like you put above.
+Also, really, in a normal system, this path is impossible to hit.
 
-I can at least split mediatek,mt7531 to a separate schema to have less 
-patternProperties on a single binding.
+thanks,
 
-What do you think?
-
-Arınç
+greg k-h
