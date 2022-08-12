@@ -2,96 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC954C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 18:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8CAC25B0F
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 18:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiHLSvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 14:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
+        id S238873AbiHLSxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 14:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237592AbiHLSvs (ORCPT
+        with ESMTP id S236937AbiHLSxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 14:51:48 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5ED42F8
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 11:51:46 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id k14so1707340pfh.0
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 11:51:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nZViEdSBzXu2fQrhABwX+EwUi8ilQIR8gtlHJif3W58=;
-        b=E0l5Fg3hWxENLdXvd5uMkoenmbrqG1sZ6T/PqIO+x2YscxkUyzp+nEwG53prW/NDte
-         kDmNyrqlPnCrPKJSfbgjeONdijBy/IUIvf1qmEe0JO1crmQBYs4TL46M1abH8yj665HL
-         dA7mfOYDn2006d+fFWcEsHllwlmWmqY3Iks5L6afT8Lo3QBtBi1fXFC6HYcV5/46DF9p
-         IcSVOF1UK9j3Nas+6ysIJ0bFb33EYr7mh5iDr4hsXswZ1X68gL2wi0gtVfg8zaf3EuFk
-         lArAX6vm/oVmmDehO7/qLY3VK1voiSwm7mIMwyhQ6r5lHcHHLZeMER6JydNuft3o2XHd
-         WEXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nZViEdSBzXu2fQrhABwX+EwUi8ilQIR8gtlHJif3W58=;
-        b=ouZxLpISfuP9U+o+u+sxzmVxjZVsxcWzyw7ChTbl9WDUA1n/SRdgOJ0dngsfewj0Aj
-         dwruPK/FV39TKWot+uzrsnPO/roi/BLwZWByYmfFYVyf8A63FfpqRYJSnL04EAZxE2ne
-         MaMRNxy5yV2jNwUiIAAX3BdmZz8me5bUF93MXWyLevr9PZ8bM6M39EiHSjfF+yGgbM58
-         c3/AmxVeCrkc7RBIJX5ISFbZoovXNflrAsfgCkZis0tI+t8hUq8IIxj6H8fMEGGBsw2z
-         0V0VMM5DWfjlgh9IDBoV7bWdXr81OwarcEYTVj+oy35yrAlNOwgTIvNBTbS6aTk/5Iui
-         FEJA==
-X-Gm-Message-State: ACgBeo0cssK1kTkFuTK2vzRVuS61ahyxtGmF585jjGOayRnET9qyky6t
-        BmfWBft/JEEWcRrp+Vc8bgnHKP21qC+8Jp/463Rfag==
-X-Google-Smtp-Source: AA6agR7TmDXwXXpixA9Q5bXBZTjcdI0zqcFrwO16eaIC1gzV7Hi3Uyiq+gk7rIYYFmycG3wuFaCbNSPl+yxG1TlxS4s=
-X-Received: by 2002:a63:3e88:0:b0:41c:d12e:d2d9 with SMTP id
- l130-20020a633e88000000b0041cd12ed2d9mr4174233pga.533.1660330306011; Fri, 12
- Aug 2022 11:51:46 -0700 (PDT)
+        Fri, 12 Aug 2022 14:53:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC5012083;
+        Fri, 12 Aug 2022 11:53:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A9B86175E;
+        Fri, 12 Aug 2022 18:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 673FDC433D6;
+        Fri, 12 Aug 2022 18:53:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660330399;
+        bh=Isq46jtT9saMIvYaavTN6TUWCvUM3dZVDN8O/L7fbqA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=szow6uk4k9Ys6Cdtd3k1SwzfPTtB0X1cRJgrb8D93bQFK9elYsSq2RDMc0UL6a0Hu
+         crlB3FQTFyqpdgKRpNNPddmOYYKB5OwrcsxjfQQ36XcwUcyRXoAKd0Y3PXu29Wl4XG
+         BWxBC7KlsjktfzITIKTI5F6DUHJRVPtriF6TQcCwCV0CEu0atjpF9Q4Dgk+px/kT4c
+         kP1LJrip1qODqQFEzM9mOt8XC/FLgqtH/vE6l+QvmQTqHWwImuuZvmyePox2rvqlXd
+         gZT948G5E5O4WXrrsc8vVuURn4wruSLy/Gr6M6HRrExPcUuxhGg6Cz/3ke9s7UxFuP
+         mH0XU5N/3sbkA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id D78BA4035A; Fri, 12 Aug 2022 15:53:16 -0300 (-03)
+Date:   Fri, 12 Aug 2022 15:53:16 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     carsten.haitzler@foss.arm.com
+Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
+        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
+        mike.leach@linaro.org, leo.yan@linaro.org,
+        linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH v7 00/14] perf: test: Add trace data quality tests for
+ CoreSight
+Message-ID: <YvahnOSyts95F8xm@kernel.org>
+References: <20220812121641.336465-1-carsten.haitzler@foss.arm.com>
+ <YvahJcUNAZ0WC8fj@kernel.org>
 MIME-Version: 1.0
-References: <20220812173526.15537-1-tharvey@gateworks.com> <CAOMZO5B5OMFMjXuM6Lk7iy_f3GnvWC-O_0uEds3jD-5oTtjMZA@mail.gmail.com>
-In-Reply-To: <CAOMZO5B5OMFMjXuM6Lk7iy_f3GnvWC-O_0uEds3jD-5oTtjMZA@mail.gmail.com>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Fri, 12 Aug 2022 11:51:35 -0700
-Message-ID: <CAJ+vNU3E+5DWR5tQyUurLzGkinjX2fidbVNZ4T70CNmhM6eNTw@mail.gmail.com>
-Subject: Re: [PATCH 1/6] arm64: dts: imx8mp-venice-gw74xx: fix CAN STBY polarity
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvahJcUNAZ0WC8fj@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 10:51 AM Fabio Estevam <festevam@gmail.com> wrote:
->
-> Hi Tim,
->
-> On Fri, Aug 12, 2022 at 2:35 PM Tim Harvey <tharvey@gateworks.com> wrote:
->
-> > diff --git a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-> > index 521215520a0f..de17021df53f 100644
-> > --- a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-> > +++ b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-> > @@ -123,8 +123,8 @@ reg_can2_stby: regulator-can2-stby {
-> >                 pinctrl-names = "default";
-> >                 pinctrl-0 = <&pinctrl_reg_can>;
-> >                 regulator-name = "can2_stby";
-> > -               gpio = <&gpio3 19 GPIO_ACTIVE_HIGH>;
-> > -               enable-active-high;
-> > +               gpio = <&gpio3 19 GPIO_ACTIVE_LOW>;
-> > +               enable-active-low;
->
-> This 'enable-active-low' property does not exist. Just remove it.
+Em Fri, Aug 12, 2022 at 03:51:17PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Fri, Aug 12, 2022 at 01:16:27PM +0100, carsten.haitzler@foss.arm.com escreveu:
+> > previous older versions of test scripts that are editor backup files
+> > as well as skipping perf.data files that may appear and so on.
 
-Fabio,
+> > Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
 
-Thanks - I see now that for active-low you just omit the
-'enable-active-high' prop. I will send a new version.
+> On the next series, please add to the cover letter a summary of what
+> changed on each repost.
 
-Thanks,
+I also saw that several of your patches got reviewed and given
+"Reviewed-by" tags, so if some of the patches in the previous versions
+didn't change and received Reviewed-by tags, please collect them on the
+current version.
 
-Tim
+- Arnaldo
