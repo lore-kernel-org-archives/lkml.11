@@ -2,118 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C974C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 22:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B496C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 22:26:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235582AbiHLW0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 18:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
+        id S237243AbiHLW0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 18:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237439AbiHLWZk (ORCPT
+        with ESMTP id S237670AbiHLWZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 18:25:40 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2139712D0B;
-        Fri, 12 Aug 2022 15:25:38 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id u24so1837140qku.2;
-        Fri, 12 Aug 2022 15:25:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=22h/M/V860IplmghhOOIgt/faKZklILiFH5PQHaZGuQ=;
-        b=bV9JUvVE2HdIowfvyhODwSprmEzqvEvIWJkWCX8mGzO6O6Mb1X9tyyTDSJkEV3J9kv
-         kcqGPhbxTK5TKWHzG6ebBjnWGzzLcWZncl3zl3ODqWLTsFDspWHUzX06bIROnZ8g2lDS
-         gDlBDvInrqAmpk6V+6S9n9WXvQeahiUbo+RB6ZxCY5WgaRydlEb/+VqaYbiHMb2IZB/1
-         4tFvrZAA2ikeutY2/agaLhtNF3zHs+ah7eKPInVxsGcw6zPVj3Oeksz0icXkV3vGhktC
-         cQ83UZrwaYGnilwnF4VaJhvGeRxBKN/8FnY5XPQnmMqGw+OzdV8Xgl1xLxsMlX3LCcgZ
-         /jXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=22h/M/V860IplmghhOOIgt/faKZklILiFH5PQHaZGuQ=;
-        b=GZQ7Q1phPgLaMkawfdH+m99Z/wEkUYTtCbaUFYdPCbB8alJxz320bLwS+2gKOe24M7
-         q5pzaLGzGrWyU+9dvb0grebTfShtmJadt7H7/926vd9dnuXOV6aCQ9At+Y8jejzK/mWl
-         6hIgXPQ5e8uKkCyfc9jbZqYh+jZcdDIGD5tu81JxQcFfSpzakxgD+NVkR75PVhG19Xpr
-         RncgleF+rZ7n7eUfStEOybkedZP3lbO/FZ/ol55PL0Z6N6Pcnl0M1JUeRixKaYOYwJzu
-         GAqyBCSTpL9uTNSSYypPExj6mZJwaIE4ZAGznYaRLfFuNluDvdkk1FvPTxDRIgZEnATU
-         MH2Q==
-X-Gm-Message-State: ACgBeo3rIvEDLad7yg1CsAp5kPt7egfqgTt0EB2n3N78XYlWRj1VRYhp
-        dzKE8zMUC2Rw9JD/Y+HNYeJkDbgBzlw=
-X-Google-Smtp-Source: AA6agR4sfKig+81R21IHRCKMPg1+J43EyxVKJ0AjLE7V76UMtM0QABWO3kvjmalmekrTXtUjv3gzOQ==
-X-Received: by 2002:a37:88c3:0:b0:6b9:53c7:75e4 with SMTP id k186-20020a3788c3000000b006b953c775e4mr4299661qkd.532.1660343136819;
-        Fri, 12 Aug 2022 15:25:36 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f17-20020a05620a409100b006b942ae928bsm2788878qko.71.2022.08.12.15.25.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 15:25:36 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM BCM7XXX
-        ARM ARCHITECTURE),
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS)
-Subject: [PATCH v5 0/3] Add Broadcom STB memory controller driver
-Date:   Fri, 12 Aug 2022 15:25:30 -0700
-Message-Id: <20220812222533.2428033-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 12 Aug 2022 18:25:42 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAB9165A1;
+        Fri, 12 Aug 2022 15:25:39 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id D23C05C00D7;
+        Fri, 12 Aug 2022 18:25:38 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Fri, 12 Aug 2022 18:25:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660343138; x=1660429538; bh=QP
+        RBJNcjcaoF0UH+AoGMng9AecsIOHPCAQZk3jqaN58=; b=O4cN9Z9+zaSipDLRYj
+        CkyGWQPVbDWeCgX/JW4y6OGKFz8AI5cGc6ZC9YaYVjc0gG/Or3921E3iBZ8aF/vh
+        xX9m+IaebcDqcoVdcfm7G8IHlu5NTXAhp9udVGUWsRd2wuFA5at2it8nDQ6tOJDe
+        qrd8PTFgiJt/NEgV32FM9GyL6qVD8O4+UwbSlDopummb7jhO0F1GaaaUz0pFfZED
+        R0NA8z5Xz2KbB4EcJ1JQkeyLT1iB8Wr/Iz2RlGliYjH38ki2na/Dxbbr9NA7csl6
+        4SQg4m7dt6jwleWTNt4ShmFmv0k1qopF+RvH6g6JJ1gfHPslk5uee+Q2BvOA3xgW
+        rpng==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1660343138; x=1660429538; bh=QPRBJNcjcaoF0
+        UH+AoGMng9AecsIOHPCAQZk3jqaN58=; b=kPLJCpUUt715ZpTvAagsu7mqQWTG5
+        7u6ddKzbyuZnIbpOpEcog2CxRCeV1+VQWMTzZm8poB6emcqFxDmUacV5gjtavPLe
+        tG2ZDAn5UzuIfomv3dG1LL1egKjni017UeKgxTpP9N1fAMfq9TC+NzSAEWAqaKWA
+        8M10vvA60i/p296kbQXqaHvJVYvIsmvmBeuUti2g3xwKKpZH0HXm9VZ3aGcnt1z0
+        i38XfPONGUo98Yju2YeZ5E7D0Npy9uS50vKoA/nyCYlmsl/BGe5KCUjPrdHtUarU
+        NZhNiXoT/DgKD0PJGka4ehFNY0Baj1BXiLBRo1Aubm27rY4NAuV96JBfA==
+X-ME-Sender: <xms:YtP2YtvDPhKO7_2ML2fmtMDw5PfpMZRBC_4zsjIMimwujgj3JSDsvQ>
+    <xme:YtP2YmdCiujhXwsh-qs7q-xuj4BshYStQcr8C5sEwJ5O1-gQwl0M27W_gxUBw_j_4
+    QstPO_j4dNxQVKXNVY>
+X-ME-Received: <xmr:YtP2Ygwo27pjVgm0rC-yywPgY24G0ISlg-kHEQMCys2rKJ2_DX0dXHACQrAG>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegjedgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
+    ertdertddtnecuhfhrohhmpedfnfhukhgvucffrdculfhonhgvshdfuceolhhukhgvsehl
+    jhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnhepgfetfedugfetudeuheetjefhue
+    fggfelleetvdevtefhueeujeefvdegleevhefgnecuvehluhhsthgvrhfuihiivgepvden
+    ucfrrghrrghmpehmrghilhhfrhhomheplhhukhgvsehljhhonhgvshdruggvvh
+X-ME-Proxy: <xmx:YtP2YkNBPg22DFYjCTX4aeclxS40_vfVu0bt_psenlPeu28Ed5Jzkg>
+    <xmx:YtP2Yt-_KxLR9a15QrIRJuDTFyg3va7-Mpe66_yz8OX-0CY3sy-pLQ>
+    <xmx:YtP2YkWofc9AKX28SEhYObnK-M-lOrARoYN8gU5edCfe09hUaGJelw>
+    <xmx:YtP2YvJJ1XzwGvK8QAsRlHyOliQE_a78fUT2YjTy-6lerFnACXK3pw>
+Feedback-ID: i5ec1447f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 12 Aug 2022 18:25:35 -0400 (EDT)
+From:   "Luke D. Jones" <luke@ljones.dev>
+To:     hdegoede@redhat.com
+Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "Luke D. Jones" <luke@ljones.dev>
+Subject: [PATCH 5/6] asus-wmi: Refactor egpu_enable attribute
+Date:   Sat, 13 Aug 2022 10:25:08 +1200
+Message-Id: <20220812222509.292692-6-luke@ljones.dev>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220812222509.292692-1-luke@ljones.dev>
+References: <20220812222509.292692-1-luke@ljones.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+The settings for these attributes can be read from the device, this
+is now done instead of reading a stored value from module. The stored
+value is also removed.
 
-This small patch series adds basic support for controlling self-refresh
-power down on Broadcom STB memory controllers. We might be able to
-contribute more features to the memory controller driver in the future
-like accurate reporting of the memory type, timings, and possibly some
-performance counters.
+This means the simpler asus_wmi_dev_is_present() can be used in
+*_check_present() - it is not an error for these methods to be
+missing.
 
-Changes in v5:
+The _write() functions have their bodies shifted in to *_store()
+which simplifies things further.
 
-- use DEFINE_SIMPLE_PM_OPS() to avoid keeping the __maybe_unused
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/platform/x86/asus-wmi.c | 84 ++++++++++-----------------------
+ 1 file changed, 26 insertions(+), 58 deletions(-)
 
-Changes in v4:
-
-- drop unnecessary owner assignment for the platform_driver
-- use pm_ptr() as directed
-
-Changes in v3:
-
-- made 'frequency' property optional to avoid introducing warnings for
-  existing BMIPS and BCM7445 DTS files
-- updated sysfs document to use a shorter and universal path
-
-Changes in v2:
-
-- merged the v1 first two patches
-- added a sysfs document describing attributes exposed
-- addressed feedback from Krzysztof regarding style and API usage
-
-Florian Fainelli (3):
-  dt-bindings: memory-controller: Document Broadcom STB MEMC
-  Documentation: sysfs: Document Broadcom STB memc sysfs knobs
-  memory: Add Broadcom STB memory controller driver
-
- .../ABI/testing/sysfs-platform-brcmstb-memc   |  15 +
- .../bindings/arm/bcm/brcm,brcmstb.txt         |  11 +-
- .../brcm,brcmstb-memc-ddr.yaml                |  52 +++
- drivers/memory/Kconfig                        |   9 +
- drivers/memory/Makefile                       |   1 +
- drivers/memory/brcmstb_memc.c                 | 301 ++++++++++++++++++
- 6 files changed, 380 insertions(+), 9 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-platform-brcmstb-memc
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml
- create mode 100644 drivers/memory/brcmstb_memc.c
-
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index a72ecc4e33b7..87b042fac1ce 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -228,9 +228,7 @@ struct asus_wmi {
+ 	u8 fan_boost_mode_mask;
+ 	u8 fan_boost_mode;
+ 
+-	bool egpu_enable_available; // 0 = enable
+-	bool egpu_enable;
+-
++	bool egpu_enable_available;
+ 	bool dgpu_disable_available;
+ 
+ 	bool throttle_thermal_policy_available;
+@@ -624,48 +622,10 @@ static DEVICE_ATTR_RW(dgpu_disable);
+ /* eGPU ********************************************************************/
+ static int egpu_enable_check_present(struct asus_wmi *asus)
+ {
+-	u32 result;
+-	int err;
+-
+ 	asus->egpu_enable_available = false;
+ 
+-	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_EGPU, &result);
+-	if (err) {
+-		if (err == -ENODEV)
+-			return 0;
+-		return err;
+-	}
+-
+-	if (result & ASUS_WMI_DSTS_PRESENCE_BIT) {
++	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_EGPU))
+ 		asus->egpu_enable_available = true;
+-		asus->egpu_enable = result & ASUS_WMI_DSTS_STATUS_BIT;
+-	}
+-
+-	return 0;
+-}
+-
+-static int egpu_enable_write(struct asus_wmi *asus)
+-{
+-	u32 retval;
+-	u8 value;
+-	int err;
+-
+-	/* Don't rely on type conversion */
+-	value = asus->egpu_enable ? 1 : 0;
+-
+-	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_EGPU, value, &retval);
+-
+-	if (err) {
+-		pr_warn("Failed to set egpu disable: %d\n", err);
+-		return err;
+-	}
+-
+-	if (retval > 1) {
+-		pr_warn("Failed to set egpu disable (retval): 0x%x\n", retval);
+-		return -EIO;
+-	}
+-
+-	sysfs_notify(&asus->platform_device->dev.kobj, NULL, "egpu_enable");
+ 
+ 	return 0;
+ }
+@@ -674,9 +634,13 @@ static ssize_t egpu_enable_show(struct device *dev,
+ 				   struct device_attribute *attr, char *buf)
+ {
+ 	struct asus_wmi *asus = dev_get_drvdata(dev);
+-	bool mode = asus->egpu_enable;
++	int result;
++
++	result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_EGPU);
++	if (result < 0)
++		return result;
+ 
+-	return sysfs_emit(buf, "%d\n", mode);
++	return sysfs_emit(buf, "%d\n", result);
+ }
+ 
+ /* The ACPI call to enable the eGPU also disables the internal dGPU */
+@@ -684,29 +648,33 @@ static ssize_t egpu_enable_store(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    const char *buf, size_t count)
+ {
+-	bool enable;
+-	int result;
++	int result, err;
++	u32 enable;
+ 
+ 	struct asus_wmi *asus = dev_get_drvdata(dev);
+ 
+-	result = kstrtobool(buf, &enable);
+-	if (result)
+-		return result;
++	err = kstrtou32(buf, 10, &enable);
++	if (err)
++		return err;
+ 
+-	asus->egpu_enable = enable;
++	if (enable > 1)
++		return -EINVAL;
+ 
+-	result = egpu_enable_write(asus);
+-	if (result)
+-		return result;
++	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_EGPU, enable, &result);
++	if (err) {
++		pr_warn("Failed to set egpu disable: %d\n", err);
++		return err;
++	}
+ 
+-	/* Ensure that the kernel status of dgpu is updated */
+-	result = dgpu_disable_check_present(asus);
+-	if (result)
+-		return result;
++	if (result > 1) {
++		pr_warn("Failed to set egpu disable (retval): 0x%x\n", result);
++		return -EIO;
++	}
++
++	sysfs_notify(&asus->platform_device->dev.kobj, NULL, "egpu_enable");
+ 
+ 	return count;
+ }
+-
+ static DEVICE_ATTR_RW(egpu_enable);
+ 
+ /* Battery ********************************************************************/
 -- 
-2.25.1
+2.37.1
 
