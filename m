@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1762C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88BCC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 13:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238900AbiHLNbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 09:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        id S238911AbiHLNcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 09:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238921AbiHLNbe (ORCPT
+        with ESMTP id S238896AbiHLNcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 09:31:34 -0400
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27D69BB47
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:31:33 -0700 (PDT)
-Received: by mail-qv1-f44.google.com with SMTP id l18so577305qvt.13
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:31:33 -0700 (PDT)
+        Fri, 12 Aug 2022 09:32:20 -0400
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611919AFCD
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:32:19 -0700 (PDT)
+Received: by mail-vs1-f45.google.com with SMTP id 67so810270vsv.2
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:32:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=6vlKlfYZ8UUr42Z0Ey6Sidm4mVEyWELk9h2eYr+jvz0=;
-        b=5ooE0NP3Pi2x3r8cbFR2iCLxijwbxFGy4N7CwcBrnIlIdRH2wTvaYu3clOhgqwo5zS
-         Gjrck2F5H/PqdQkD7auVoDA2wSzGiwvxCyOICteaLqMY5bZrPX6cPPXn34HWPRWzhXBe
-         h2MQKv3Noe0188yzx5uQQdj2SBdtYeeOD7z04G2UBAn0bQVAe79AeaKotVXmq6cX826r
-         nBL8Td72zywpd9Rxo1nWqvBfBPx02umkLVqMhJQGnqxdCbQPUy9867o3KXryy6xusFLt
-         yHBfqMNzkOy5nptVnMq4qvwWnD7eP4cUZWICKWGJ956UhkzqPnQkpXUAs0GR2AkQ2M9Y
-         mt3g==
-X-Gm-Message-State: ACgBeo2FjOHskTojWtR8eu68IaVeUZw/xoYA0tOW+BzpCXcZ/7aicvUb
-        a5nb7hkLtAASPLDGDmDWrybk0z3oZA27OA==
-X-Google-Smtp-Source: AA6agR7rKr+SX3sG/xMlpCd60VV4lknD+Emfe5TFYXdJTTeEvRVj0l7rVzuOV3ppAnzXejqTSThQtg==
-X-Received: by 2002:a05:6214:20ad:b0:478:a967:560 with SMTP id 13-20020a05621420ad00b00478a9670560mr3527001qvd.58.1660311092357;
-        Fri, 12 Aug 2022 06:31:32 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id a8-20020ac86108000000b003435bb7fe9csm1621443qtm.78.2022.08.12.06.31.30
+        bh=OXdSHuVG78f8K6rpNcMaWPwy/pvmJ+nqUgx8dG2xzfs=;
+        b=K1soJI4r2/RDWqg2Fashs/x5heF18hY/NkA2TIHO58NjoaQ+cAiocx5dpY/d01+f69
+         3kjfJgqT2IKCSSSSlCrhLJRf/sF9zQFm7xYCHfitVysc3i7PURBMzAC24OS9fAX1OjC9
+         DPHI5C/qNgh04yugToovM8nEjO+NjL2VLXw7GPT3XAXf5ocn1+nm6FB7vPhSIc2nhO6V
+         iow+OOPQQdG3hlqVBMooqkrdWe4w1m9cZ5ew5cZJOV3n/9Scx/Z2wEb+lz68xc5LR3Lu
+         5pYlXslYXjG+dJ8Kpt/nuYrnM+8hl54RUdTyE3eao19zMOfVcUVW6odWtotDMBYKiKYi
+         wQDg==
+X-Gm-Message-State: ACgBeo3aFuweQDvnBs/cMOqxRBabgo8koOhAxGlkk7p7eJ67q5rvWett
+        ksHMZLgVkDi4nADAiagiuDReUUkyNX+kzQ==
+X-Google-Smtp-Source: AA6agR56WE75UR3CSWzCY93jzKN6GGXCSAcERY+4ZX7RuIHGJgGVxnzojaB4bxGkRjYpLZgoBFT9Fw==
+X-Received: by 2002:a05:6102:2223:b0:32d:2ae1:412 with SMTP id d3-20020a056102222300b0032d2ae10412mr1901446vsb.6.1660311138174;
+        Fri, 12 Aug 2022 06:32:18 -0700 (PDT)
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
+        by smtp.gmail.com with ESMTPSA id f28-20020ab0101c000000b00384d3ce037dsm1510008uab.4.2022.08.12.06.32.17
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 06:31:31 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-31f445bd486so9787427b3.13
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:31:30 -0700 (PDT)
-X-Received: by 2002:a81:1204:0:b0:322:7000:4ecb with SMTP id
- 4-20020a811204000000b0032270004ecbmr3814535yws.47.1660311090509; Fri, 12 Aug
- 2022 06:31:30 -0700 (PDT)
+        Fri, 12 Aug 2022 06:32:17 -0700 (PDT)
+Received: by mail-ua1-f41.google.com with SMTP id f10so315835uap.2
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 06:32:17 -0700 (PDT)
+X-Received: by 2002:a5b:6c1:0:b0:669:a7c3:4c33 with SMTP id
+ r1-20020a5b06c1000000b00669a7c34c33mr3307653ybq.543.1660310750947; Fri, 12
+ Aug 2022 06:25:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech> <20220728-rpi-analog-tv-properties-v1-34-3d53ae722097@cerno.tech>
-In-Reply-To: <20220728-rpi-analog-tv-properties-v1-34-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech> <20220728-rpi-analog-tv-properties-v1-7-3d53ae722097@cerno.tech>
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-7-3d53ae722097@cerno.tech>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 12 Aug 2022 15:31:19 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXizN9OgXgxwdFc1gpnhZof-SZrCH8PczEiJrtYpB62Ow@mail.gmail.com>
-Message-ID: <CAMuHMdXizN9OgXgxwdFc1gpnhZof-SZrCH8PczEiJrtYpB62Ow@mail.gmail.com>
-Subject: Re: [PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
- command-line option
+Date:   Fri, 12 Aug 2022 15:25:39 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWa9soLHSvmxWqjKAO93WhViww6GZiC9qh0RccVENPRYw@mail.gmail.com>
+Message-ID: <CAMuHMdWa9soLHSvmxWqjKAO93WhViww6GZiC9qh0RccVENPRYw@mail.gmail.com>
+Subject: Re: [PATCH v1 07/35] drm/modes: Only consider bpp and refresh before options
 To:     Maxime Ripard <maxime@cerno.tech>
 Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
@@ -83,69 +82,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi Maxime,
 
-On Fri, Jul 29, 2022 at 6:37 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> Our new tv mode option allows to specify the TV mode from a property.
-> However, it can still be useful, for example to avoid any boot time
-> artifact, to set that property directly from the kernel command line.
+On Fri, Jul 29, 2022 at 6:35 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> Some video= options might have a value that contains a dash. However, the
+> command line parsing mode considers all dashes as the separator between the
+> mode and the bpp count.
 >
-> Let's add some code to allow it, and some unit tests to exercise that code.
+> Let's rework the parsing code a bit to only consider a dash as the bpp
+> separator if it before a comma, the options separator.
+>
+> A follow-up patch will add a unit-test for this once such an option is
+> introduced.
 >
 > Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
 Thanks for your patch!
 
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
 > --- a/drivers/gpu/drm/drm_modes.c
 > +++ b/drivers/gpu/drm/drm_modes.c
-> @@ -1677,6 +1677,80 @@ static int drm_mode_parse_panel_orientation(const char *delim,
->         return 0;
->  }
+> @@ -1819,20 +1819,22 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
 >
-> +#define TV_OPTION_EQUAL(value, len, option) \
-> +       ((strlen(option) == len) && !strncmp(value, option, len))
+>         name = mode_option;
+>
+> +       /* Locate the start of named options */
+> +       options_ptr = strchr(name, ',');
+> +       if (options_ptr)
+> +               options_off = options_ptr - name;
+> +       else
+> +               options_off = strlen(name);
 > +
-> +static int drm_mode_parse_tv_mode(const char *delim,
-> +                                 struct drm_cmdline_mode *mode)
-> +{
-> +       const char *value;
-> +       unsigned int len;
-> +
-> +       if (*delim != '=')
-> +               return -EINVAL;
-> +
-> +       value = delim + 1;
-> +       delim = strchr(value, ',');
-> +       if (!delim)
-> +               delim = value + strlen(value);
-> +
-> +       len = delim - value;
-> +       if (TV_OPTION_EQUAL(value, len, "NTSC-443"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_NTSC_443;
-> +       else if (TV_OPTION_EQUAL(value, len, "NTSC-J"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_NTSC_J;
-> +       else if (TV_OPTION_EQUAL(value, len, "NTSC-M"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_NTSC_M;
+>         /* Try to locate the bpp and refresh specifiers, if any */
+> -       bpp_ptr = strchr(name, '-');
+> +       bpp_ptr = strnchr(name, options_off, '-');
 
-[...]
+Probably you still want to add a check that the next character
+is actually a digit, cfr. my "[PATCH v2 5/5] drm/modes:
+parse_cmdline: Add support for named modes containing dashes"
+(https://lore.kernel.org/dri-devel/2eb205da88c3cb19ddf04d167ece4e16a330948b.1657788997.git.geert@linux-m68k.org)?
 
-You already have the array tv_norm_values[] from "[PATCH v1 05/35]
-drm/connector: Add TV standard property". Can't you export that, and
-loop over that array instead?
-
-> +       else if (TV_OPTION_EQUAL(value, len, "HD480I"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_HD480I;
-> +       else if (TV_OPTION_EQUAL(value, len, "HD480P"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_HD480P;
-> +       else if (TV_OPTION_EQUAL(value, len, "HD576I"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_HD576I;
-> +       else if (TV_OPTION_EQUAL(value, len, "HD576P"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_HD576P;
-> +       else if (TV_OPTION_EQUAL(value, len, "HD720P"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_HD720P;
-> +       else if (TV_OPTION_EQUAL(value, len, "HD1080I"))
-> +               mode->tv_mode = DRM_MODE_TV_NORM_HD1080I;
-
-The names in tv_norm_values[] use lower-case, while you use upper-case
-here.
+>         if (bpp_ptr)
+>                 bpp_off = bpp_ptr - name;
+>
+> -       refresh_ptr = strchr(name, '@');
+> +       refresh_ptr = strnchr(name, options_off, '@');
+>         if (refresh_ptr)
+>                 refresh_off = refresh_ptr - name;
+>
+> -       /* Locate the start of named options */
+> -       options_ptr = strchr(name, ',');
+> -       if (options_ptr)
+> -               options_off = options_ptr - name;
+> -
+>         /* Locate the end of the name / resolution, and parse it */
+>         if (bpp_ptr) {
+>                 mode_end = bpp_off;
 
 Gr{oetje,eeting}s,
 
