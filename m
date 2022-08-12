@@ -2,295 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED5FC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CA1C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiHLMuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 08:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
+        id S238786AbiHLMvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 08:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238860AbiHLMuq (ORCPT
+        with ESMTP id S238530AbiHLMuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 08:50:46 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6933CFC
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660308645; x=1691844645;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=P/fAt24DxFqvPoyPLU5c9Y/VeDiAMJeVyGR8ot4zoAA=;
-  b=e5tKovhy2d3LHOUXRKK0YOLSWXISMfxfDTkWpk5R/pyFZPA7IxKrK01z
-   KyAearuS6KyEIxswY+Gwr4yPuPQd6bkXAD7lHY/xtHH4+i+YDhtSNVQee
-   LcnEOE/Jp6Qf2o/5oS5nTLxzMmXMcsD2dRcwD27lJm3GgPnnF/nQa2N3T
-   9HRvGC5eyJhjYPyjC4w3h5h28zs89wLCsVZIF7DZ3HZj1s3OdNgAWYpdD
-   eNPO+il7NIg/Q4SDTDjmJal1FIUgYkzVbwDEP7/RSwYC9q0eTOssp/TBz
-   FcZZKScp5TkVOiwqX8ezo/OQmuY4On5Ck6XNY6m7Ew15fQBKTswKWg9gf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="291586666"
-X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="291586666"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 05:50:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="605905926"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 12 Aug 2022 05:50:42 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMU7d-0000Wk-1z;
-        Fri, 12 Aug 2022 12:50:41 +0000
-Date:   Fri, 12 Aug 2022 20:50:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     xiakaixu1987@gmail.com, sj@kernel.org, akpm@linux-foundation.org
-Cc:     kbuild-all@lists.01.org, damon@lists.linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Kaixu Xia <kaixuxia@tencent.com>
-Subject: Re: [PATCH] mm/damon/core: simplify the parameter passing for region
- split operation
-Message-ID: <202208122001.69lQAxjD-lkp@intel.com>
-References: <1660290073-26347-1-git-send-email-kaixuxia@tencent.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1660290073-26347-1-git-send-email-kaixuxia@tencent.com>
+        Fri, 12 Aug 2022 08:50:50 -0400
+X-Greylist: delayed 670 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 12 Aug 2022 05:50:47 PDT
+Received: from mail-m11877.qiye.163.com (mail-m11877.qiye.163.com [115.236.118.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE13DCDB
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:50:47 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPV6:240e:3b7:3273:7840:a495:c635:2164:c7e1])
+        by mail-m11877.qiye.163.com (Hmail) with ESMTPA id 44D44400934;
+        Fri, 12 Aug 2022 20:39:34 +0800 (CST)
+From:   Ding Hui <dinghui@sangfor.com.cn>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        anatolii.gerasymenko@intel.com, Ding Hui <dinghui@sangfor.com.cn>
+Subject: [PATCH] ice: avoid improper tc config for queue map
+Date:   Fri, 12 Aug 2022 20:39:33 +0800
+Message-Id: <20220812123933.5481-1-dinghui@sangfor.com.cn>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZHk5KVkpDQh8eHUtNTUNOGFUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUlPSx5BSBlMQUhJTEhBTENPS0EaT0JOQRhNSE5BSUpNT0EYTB5KWVdZFhoPEhUdFF
+        lBWU9LSFVKSktISkNVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Kz46Lzo*ND0#FRkzFgE3Ng8W
+        DD0KC1FVSlVKTU1LSEtMQkxOS0hDVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlJT0seQUgZTEFISUxIQUxDT0tBGk9CTkEYTUhOQUlKTU9BGEweSllXWQgBWUFDQ0pDNwY+
+X-HM-Tid: 0a82921129ba2eb3kusn44d44400934
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+There are problems if allocated queues less than Traffic Classes.
 
-Thank you for the patch! Yet something to improve:
+Commit a632b2a4c920 ("ice: ethtool: Prohibit improper channel config
+for DCB") already disallow setting less queues than TCs.
 
-[auto build test ERROR on akpm-mm/mm-everything]
+Another case is if we first set less queues, and later update more TCs
+config due to LLDP, ice_vsi_cfg_tc() will failed but left wrong
+num_txq/rxq and tc_cfg in vsi, that will cause invalid porinter access.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/xiakaixu1987-gmail-com/mm-damon-core-simplify-the-parameter-passing-for-region-split-operation/20220812-154316
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220812/202208122001.69lQAxjD-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/26b7d93b0f64c71d6d324a4a37d85641b55eaec2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review xiakaixu1987-gmail-com/mm-damon-core-simplify-the-parameter-passing-for-region-split-operation/20220812-154316
-        git checkout 26b7d93b0f64c71d6d324a4a37d85641b55eaec2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+[   95.968089] ice 0000:3b:00.1: More TCs defined than queues/rings allocated.
+[   95.968092] ice 0000:3b:00.1: Trying to use more Rx queues (8), than were allocated (1)!
+[   95.968093] ice 0000:3b:00.1: Failed to config TC for VSI index: 0
+[   95.969621] general protection fault: 0000 [#1] SMP NOPTI
+[   95.969705] CPU: 1 PID: 58405 Comm: lldpad Kdump: loaded Tainted: G     U  W  O     --------- -t - 4.18.0 #1
+[   95.969867] Hardware name: O.E.M/BC11SPSCB10, BIOS 8.23 12/30/2021
+[   95.969992] RIP: 0010:devm_kmalloc+0xa/0x60
+[   95.970052] Code: 5c ff ff ff 31 c0 5b 5d 41 5c c3 b8 f4 ff ff ff eb f4 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 89 d1 <8b> 97 60 02 00 00 48 8d 7e 18 48 39 f7 72 3f 55 89 ce 53 48 8b 4c
+[   95.970344] RSP: 0018:ffffc9003f553888 EFLAGS: 00010206
+[   95.970425] RAX: dead000000000200 RBX: ffffea003c425b00 RCX: 00000000006080c0
+[   95.970536] RDX: 00000000006080c0 RSI: 0000000000000200 RDI: dead000000000200
+[   95.970648] RBP: dead000000000200 R08: 00000000000463c0 R09: ffff888ffa900000
+[   95.970760] R10: 0000000000000000 R11: 0000000000000002 R12: ffff888ff6b40100
+[   95.970870] R13: ffff888ff6a55018 R14: 0000000000000000 R15: ffff888ff6a55460
+[   95.970981] FS:  00007f51b7d24700(0000) GS:ffff88903ee80000(0000) knlGS:0000000000000000
+[   95.971108] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   95.971197] CR2: 00007fac5410d710 CR3: 0000000f2c1de002 CR4: 00000000007606e0
+[   95.971309] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   95.971419] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   95.971530] PKRU: 55555554
+[   95.971573] Call Trace:
+[   95.971622]  ice_setup_rx_ring+0x39/0x110 [ice]
+[   95.971695]  ice_vsi_setup_rx_rings+0x54/0x90 [ice]
+[   95.971774]  ice_vsi_open+0x25/0x120 [ice]
+[   95.971843]  ice_open_internal+0xb8/0x1f0 [ice]
+[   95.971919]  ice_ena_vsi+0x4f/0xd0 [ice]
+[   95.971987]  ice_dcb_ena_dis_vsi.constprop.5+0x29/0x90 [ice]
+[   95.972082]  ice_pf_dcb_cfg+0x29a/0x380 [ice]
+[   95.972154]  ice_dcbnl_setets+0x174/0x1b0 [ice]
+[   95.972220]  dcbnl_ieee_set+0x89/0x230
+[   95.972279]  ? dcbnl_ieee_del+0x150/0x150
+[   95.972341]  dcb_doit+0x124/0x1b0
+[   95.972392]  rtnetlink_rcv_msg+0x243/0x2f0
+[   95.972457]  ? dcb_doit+0x14d/0x1b0
+[   95.972510]  ? __kmalloc_node_track_caller+0x1d3/0x280
+[   95.972591]  ? rtnl_calcit.isra.31+0x100/0x100
+[   95.972661]  netlink_rcv_skb+0xcf/0xf0
+[   95.972720]  netlink_unicast+0x16d/0x220
+[   95.972781]  netlink_sendmsg+0x2ba/0x3a0
+[   95.975891]  sock_sendmsg+0x4c/0x50
+[   95.979032]  ___sys_sendmsg+0x2e4/0x300
+[   95.982147]  ? kmem_cache_alloc+0x13e/0x190
+[   95.985242]  ? __wake_up_common_lock+0x79/0x90
+[   95.988338]  ? __check_object_size+0xac/0x1b0
+[   95.991440]  ? _copy_to_user+0x22/0x30
+[   95.994539]  ? move_addr_to_user+0xbb/0xd0
+[   95.997619]  ? __sys_sendmsg+0x53/0x80
+[   96.000664]  __sys_sendmsg+0x53/0x80
+[   96.003747]  do_syscall_64+0x5b/0x1d0
+[   96.006862]  entry_SYSCALL_64_after_hwframe+0x65/0xca
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Only update num_txq/rxq when passed check, and restore tc_cfg if setup
+queue map failed.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+---
+ drivers/net/ethernet/intel/ice/ice_lib.c | 42 +++++++++++++++---------
+ 1 file changed, 26 insertions(+), 16 deletions(-)
 
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h: In function 'damon_test_split_at':
->> mm/damon/core-test.h:129:31: error: passing argument 1 of 'damon_split_region_at' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     129 |         damon_split_region_at(c, t, r, 25);
-         |                               ^
-         |                               |
-         |                               struct damon_ctx *
-   mm/damon/core.c:930:56: note: expected 'struct damon_target *' but argument is of type 'struct damon_ctx *'
-     930 | static void damon_split_region_at(struct damon_target *t,
-         |                                   ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h:129:34: error: passing argument 2 of 'damon_split_region_at' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     129 |         damon_split_region_at(c, t, r, 25);
-         |                                  ^
-         |                                  |
-         |                                  struct damon_target *
-   mm/damon/core.c:931:56: note: expected 'struct damon_region *' but argument is of type 'struct damon_target *'
-     931 |                                   struct damon_region *r, unsigned long sz_r)
-         |                                   ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h:129:37: warning: passing argument 3 of 'damon_split_region_at' makes integer from pointer without a cast [-Wint-conversion]
-     129 |         damon_split_region_at(c, t, r, 25);
-         |                                     ^
-         |                                     |
-         |                                     struct damon_region *
-   mm/damon/core.c:931:73: note: expected 'long unsigned int' but argument is of type 'struct damon_region *'
-     931 |                                   struct damon_region *r, unsigned long sz_r)
-         |                                                           ~~~~~~~~~~~~~~^~~~
-   In file included from mm/damon/core.c:1218:
->> mm/damon/core-test.h:129:9: error: too many arguments to function 'damon_split_region_at'
-     129 |         damon_split_region_at(c, t, r, 25);
-         |         ^~~~~~~~~~~~~~~~~~~~~
-   mm/damon/core.c:930:13: note: declared here
-     930 | static void damon_split_region_at(struct damon_target *t,
-         |             ^~~~~~~~~~~~~~~~~~~~~
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h: In function 'damon_test_split_regions_of':
->> mm/damon/core-test.h:222:32: error: passing argument 1 of 'damon_split_regions_of' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     222 |         damon_split_regions_of(c, t, 2);
-         |                                ^
-         |                                |
-         |                                struct damon_ctx *
-   mm/damon/core.c:948:57: note: expected 'struct damon_target *' but argument is of type 'struct damon_ctx *'
-     948 | static void damon_split_regions_of(struct damon_target *t, int nr_subs)
-         |                                    ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h:222:35: warning: passing argument 2 of 'damon_split_regions_of' makes integer from pointer without a cast [-Wint-conversion]
-     222 |         damon_split_regions_of(c, t, 2);
-         |                                   ^
-         |                                   |
-         |                                   struct damon_target *
-   mm/damon/core.c:948:64: note: expected 'int' but argument is of type 'struct damon_target *'
-     948 | static void damon_split_regions_of(struct damon_target *t, int nr_subs)
-         |                                                            ~~~~^~~~~~~
-   In file included from mm/damon/core.c:1218:
->> mm/damon/core-test.h:222:9: error: too many arguments to function 'damon_split_regions_of'
-     222 |         damon_split_regions_of(c, t, 2);
-         |         ^~~~~~~~~~~~~~~~~~~~~~
-   mm/damon/core.c:948:13: note: declared here
-     948 | static void damon_split_regions_of(struct damon_target *t, int nr_subs)
-         |             ^~~~~~~~~~~~~~~~~~~~~~
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h:229:32: error: passing argument 1 of 'damon_split_regions_of' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     229 |         damon_split_regions_of(c, t, 4);
-         |                                ^
-         |                                |
-         |                                struct damon_ctx *
-   mm/damon/core.c:948:57: note: expected 'struct damon_target *' but argument is of type 'struct damon_ctx *'
-     948 | static void damon_split_regions_of(struct damon_target *t, int nr_subs)
-         |                                    ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h:229:35: warning: passing argument 2 of 'damon_split_regions_of' makes integer from pointer without a cast [-Wint-conversion]
-     229 |         damon_split_regions_of(c, t, 4);
-         |                                   ^
-         |                                   |
-         |                                   struct damon_target *
-   mm/damon/core.c:948:64: note: expected 'int' but argument is of type 'struct damon_target *'
-     948 | static void damon_split_regions_of(struct damon_target *t, int nr_subs)
-         |                                                            ~~~~^~~~~~~
-   In file included from mm/damon/core.c:1218:
-   mm/damon/core-test.h:229:9: error: too many arguments to function 'damon_split_regions_of'
-     229 |         damon_split_regions_of(c, t, 4);
-         |         ^~~~~~~~~~~~~~~~~~~~~~
-   mm/damon/core.c:948:13: note: declared here
-     948 | static void damon_split_regions_of(struct damon_target *t, int nr_subs)
-         |             ^~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/damon_split_region_at +129 mm/damon/core-test.h
-
-17ccae8bb5c928 SeongJae Park 2021-09-07  119  
-17ccae8bb5c928 SeongJae Park 2021-09-07  120  static void damon_test_split_at(struct kunit *test)
-17ccae8bb5c928 SeongJae Park 2021-09-07  121  {
-17ccae8bb5c928 SeongJae Park 2021-09-07  122  	struct damon_ctx *c = damon_new_ctx();
-17ccae8bb5c928 SeongJae Park 2021-09-07  123  	struct damon_target *t;
-17ccae8bb5c928 SeongJae Park 2021-09-07  124  	struct damon_region *r;
-17ccae8bb5c928 SeongJae Park 2021-09-07  125  
-1971bd630452e9 SeongJae Park 2022-03-22  126  	t = damon_new_target();
-17ccae8bb5c928 SeongJae Park 2021-09-07  127  	r = damon_new_region(0, 100);
-17ccae8bb5c928 SeongJae Park 2021-09-07  128  	damon_add_region(r, t);
-17ccae8bb5c928 SeongJae Park 2021-09-07 @129  	damon_split_region_at(c, t, r, 25);
-17ccae8bb5c928 SeongJae Park 2021-09-07  130  	KUNIT_EXPECT_EQ(test, r->ar.start, 0ul);
-17ccae8bb5c928 SeongJae Park 2021-09-07  131  	KUNIT_EXPECT_EQ(test, r->ar.end, 25ul);
-17ccae8bb5c928 SeongJae Park 2021-09-07  132  
-17ccae8bb5c928 SeongJae Park 2021-09-07  133  	r = damon_next_region(r);
-17ccae8bb5c928 SeongJae Park 2021-09-07  134  	KUNIT_EXPECT_EQ(test, r->ar.start, 25ul);
-17ccae8bb5c928 SeongJae Park 2021-09-07  135  	KUNIT_EXPECT_EQ(test, r->ar.end, 100ul);
-17ccae8bb5c928 SeongJae Park 2021-09-07  136  
-17ccae8bb5c928 SeongJae Park 2021-09-07  137  	damon_free_target(t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  138  	damon_destroy_ctx(c);
-17ccae8bb5c928 SeongJae Park 2021-09-07  139  }
-17ccae8bb5c928 SeongJae Park 2021-09-07  140  
-17ccae8bb5c928 SeongJae Park 2021-09-07  141  static void damon_test_merge_two(struct kunit *test)
-17ccae8bb5c928 SeongJae Park 2021-09-07  142  {
-17ccae8bb5c928 SeongJae Park 2021-09-07  143  	struct damon_target *t;
-17ccae8bb5c928 SeongJae Park 2021-09-07  144  	struct damon_region *r, *r2, *r3;
-17ccae8bb5c928 SeongJae Park 2021-09-07  145  	int i;
-17ccae8bb5c928 SeongJae Park 2021-09-07  146  
-1971bd630452e9 SeongJae Park 2022-03-22  147  	t = damon_new_target();
-17ccae8bb5c928 SeongJae Park 2021-09-07  148  	r = damon_new_region(0, 100);
-17ccae8bb5c928 SeongJae Park 2021-09-07  149  	r->nr_accesses = 10;
-17ccae8bb5c928 SeongJae Park 2021-09-07  150  	damon_add_region(r, t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  151  	r2 = damon_new_region(100, 300);
-17ccae8bb5c928 SeongJae Park 2021-09-07  152  	r2->nr_accesses = 20;
-17ccae8bb5c928 SeongJae Park 2021-09-07  153  	damon_add_region(r2, t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  154  
-17ccae8bb5c928 SeongJae Park 2021-09-07  155  	damon_merge_two_regions(t, r, r2);
-17ccae8bb5c928 SeongJae Park 2021-09-07  156  	KUNIT_EXPECT_EQ(test, r->ar.start, 0ul);
-17ccae8bb5c928 SeongJae Park 2021-09-07  157  	KUNIT_EXPECT_EQ(test, r->ar.end, 300ul);
-17ccae8bb5c928 SeongJae Park 2021-09-07  158  	KUNIT_EXPECT_EQ(test, r->nr_accesses, 16u);
-17ccae8bb5c928 SeongJae Park 2021-09-07  159  
-17ccae8bb5c928 SeongJae Park 2021-09-07  160  	i = 0;
-17ccae8bb5c928 SeongJae Park 2021-09-07  161  	damon_for_each_region(r3, t) {
-17ccae8bb5c928 SeongJae Park 2021-09-07  162  		KUNIT_EXPECT_PTR_EQ(test, r, r3);
-17ccae8bb5c928 SeongJae Park 2021-09-07  163  		i++;
-17ccae8bb5c928 SeongJae Park 2021-09-07  164  	}
-17ccae8bb5c928 SeongJae Park 2021-09-07  165  	KUNIT_EXPECT_EQ(test, i, 1);
-17ccae8bb5c928 SeongJae Park 2021-09-07  166  
-17ccae8bb5c928 SeongJae Park 2021-09-07  167  	damon_free_target(t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  168  }
-17ccae8bb5c928 SeongJae Park 2021-09-07  169  
-17ccae8bb5c928 SeongJae Park 2021-09-07  170  static struct damon_region *__nth_region_of(struct damon_target *t, int idx)
-17ccae8bb5c928 SeongJae Park 2021-09-07  171  {
-17ccae8bb5c928 SeongJae Park 2021-09-07  172  	struct damon_region *r;
-17ccae8bb5c928 SeongJae Park 2021-09-07  173  	unsigned int i = 0;
-17ccae8bb5c928 SeongJae Park 2021-09-07  174  
-17ccae8bb5c928 SeongJae Park 2021-09-07  175  	damon_for_each_region(r, t) {
-17ccae8bb5c928 SeongJae Park 2021-09-07  176  		if (i++ == idx)
-17ccae8bb5c928 SeongJae Park 2021-09-07  177  			return r;
-17ccae8bb5c928 SeongJae Park 2021-09-07  178  	}
-17ccae8bb5c928 SeongJae Park 2021-09-07  179  
-17ccae8bb5c928 SeongJae Park 2021-09-07  180  	return NULL;
-17ccae8bb5c928 SeongJae Park 2021-09-07  181  }
-17ccae8bb5c928 SeongJae Park 2021-09-07  182  
-17ccae8bb5c928 SeongJae Park 2021-09-07  183  static void damon_test_merge_regions_of(struct kunit *test)
-17ccae8bb5c928 SeongJae Park 2021-09-07  184  {
-17ccae8bb5c928 SeongJae Park 2021-09-07  185  	struct damon_target *t;
-17ccae8bb5c928 SeongJae Park 2021-09-07  186  	struct damon_region *r;
-17ccae8bb5c928 SeongJae Park 2021-09-07  187  	unsigned long sa[] = {0, 100, 114, 122, 130, 156, 170, 184};
-17ccae8bb5c928 SeongJae Park 2021-09-07  188  	unsigned long ea[] = {100, 112, 122, 130, 156, 170, 184, 230};
-17ccae8bb5c928 SeongJae Park 2021-09-07  189  	unsigned int nrs[] = {0, 0, 10, 10, 20, 30, 1, 2};
-17ccae8bb5c928 SeongJae Park 2021-09-07  190  
-17ccae8bb5c928 SeongJae Park 2021-09-07  191  	unsigned long saddrs[] = {0, 114, 130, 156, 170};
-17ccae8bb5c928 SeongJae Park 2021-09-07  192  	unsigned long eaddrs[] = {112, 130, 156, 170, 230};
-17ccae8bb5c928 SeongJae Park 2021-09-07  193  	int i;
-17ccae8bb5c928 SeongJae Park 2021-09-07  194  
-1971bd630452e9 SeongJae Park 2022-03-22  195  	t = damon_new_target();
-17ccae8bb5c928 SeongJae Park 2021-09-07  196  	for (i = 0; i < ARRAY_SIZE(sa); i++) {
-17ccae8bb5c928 SeongJae Park 2021-09-07  197  		r = damon_new_region(sa[i], ea[i]);
-17ccae8bb5c928 SeongJae Park 2021-09-07  198  		r->nr_accesses = nrs[i];
-17ccae8bb5c928 SeongJae Park 2021-09-07  199  		damon_add_region(r, t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  200  	}
-17ccae8bb5c928 SeongJae Park 2021-09-07  201  
-17ccae8bb5c928 SeongJae Park 2021-09-07  202  	damon_merge_regions_of(t, 9, 9999);
-17ccae8bb5c928 SeongJae Park 2021-09-07  203  	/* 0-112, 114-130, 130-156, 156-170 */
-17ccae8bb5c928 SeongJae Park 2021-09-07  204  	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), 5u);
-17ccae8bb5c928 SeongJae Park 2021-09-07  205  	for (i = 0; i < 5; i++) {
-17ccae8bb5c928 SeongJae Park 2021-09-07  206  		r = __nth_region_of(t, i);
-17ccae8bb5c928 SeongJae Park 2021-09-07  207  		KUNIT_EXPECT_EQ(test, r->ar.start, saddrs[i]);
-17ccae8bb5c928 SeongJae Park 2021-09-07  208  		KUNIT_EXPECT_EQ(test, r->ar.end, eaddrs[i]);
-17ccae8bb5c928 SeongJae Park 2021-09-07  209  	}
-17ccae8bb5c928 SeongJae Park 2021-09-07  210  	damon_free_target(t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  211  }
-17ccae8bb5c928 SeongJae Park 2021-09-07  212  
-17ccae8bb5c928 SeongJae Park 2021-09-07  213  static void damon_test_split_regions_of(struct kunit *test)
-17ccae8bb5c928 SeongJae Park 2021-09-07  214  {
-17ccae8bb5c928 SeongJae Park 2021-09-07  215  	struct damon_ctx *c = damon_new_ctx();
-17ccae8bb5c928 SeongJae Park 2021-09-07  216  	struct damon_target *t;
-17ccae8bb5c928 SeongJae Park 2021-09-07  217  	struct damon_region *r;
-17ccae8bb5c928 SeongJae Park 2021-09-07  218  
-1971bd630452e9 SeongJae Park 2022-03-22  219  	t = damon_new_target();
-17ccae8bb5c928 SeongJae Park 2021-09-07  220  	r = damon_new_region(0, 22);
-17ccae8bb5c928 SeongJae Park 2021-09-07  221  	damon_add_region(r, t);
-17ccae8bb5c928 SeongJae Park 2021-09-07 @222  	damon_split_regions_of(c, t, 2);
-2e014660b3e4b7 SeongJae Park 2021-10-28  223  	KUNIT_EXPECT_LE(test, damon_nr_regions(t), 2u);
-17ccae8bb5c928 SeongJae Park 2021-09-07  224  	damon_free_target(t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  225  
-1971bd630452e9 SeongJae Park 2022-03-22  226  	t = damon_new_target();
-17ccae8bb5c928 SeongJae Park 2021-09-07  227  	r = damon_new_region(0, 220);
-17ccae8bb5c928 SeongJae Park 2021-09-07  228  	damon_add_region(r, t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  229  	damon_split_regions_of(c, t, 4);
-2e014660b3e4b7 SeongJae Park 2021-10-28  230  	KUNIT_EXPECT_LE(test, damon_nr_regions(t), 4u);
-17ccae8bb5c928 SeongJae Park 2021-09-07  231  	damon_free_target(t);
-17ccae8bb5c928 SeongJae Park 2021-09-07  232  	damon_destroy_ctx(c);
-17ccae8bb5c928 SeongJae Park 2021-09-07  233  }
-17ccae8bb5c928 SeongJae Park 2021-09-07  234  
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index a830f7f9aed0..6e64cca30351 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -914,7 +914,7 @@ static void ice_set_dflt_vsi_ctx(struct ice_hw *hw, struct ice_vsi_ctx *ctxt)
+  */
+ static int ice_vsi_setup_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt)
+ {
+-	u16 offset = 0, qmap = 0, tx_count = 0, pow = 0;
++	u16 offset = 0, qmap = 0, tx_count = 0, rx_count = 0, pow = 0;
+ 	u16 num_txq_per_tc, num_rxq_per_tc;
+ 	u16 qcount_tx = vsi->alloc_txq;
+ 	u16 qcount_rx = vsi->alloc_rxq;
+@@ -981,23 +981,25 @@ static int ice_vsi_setup_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt)
+ 	 * at least 1)
+ 	 */
+ 	if (offset)
+-		vsi->num_rxq = offset;
++		rx_count = offset;
+ 	else
+-		vsi->num_rxq = num_rxq_per_tc;
++		rx_count = num_rxq_per_tc;
+ 
+-	if (vsi->num_rxq > vsi->alloc_rxq) {
++	if (rx_count > vsi->alloc_rxq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Rx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_rxq, vsi->alloc_rxq);
++			rx_count, vsi->alloc_rxq);
+ 		return -EINVAL;
+ 	}
+ 
+-	vsi->num_txq = tx_count;
+-	if (vsi->num_txq > vsi->alloc_txq) {
++	if (tx_count > vsi->alloc_txq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Tx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_txq, vsi->alloc_txq);
++			tx_count, vsi->alloc_txq);
+ 		return -EINVAL;
+ 	}
+ 
++	vsi->num_txq = tx_count;
++	vsi->num_rxq = rx_count;
++
+ 	if (vsi->type == ICE_VSI_VF && vsi->num_txq != vsi->num_rxq) {
+ 		dev_dbg(ice_pf_to_dev(vsi->back), "VF VSI should have same number of Tx and Rx queues. Hence making them equal\n");
+ 		/* since there is a chance that num_rxq could have been changed
+@@ -3492,6 +3494,7 @@ ice_vsi_setup_q_map_mqprio(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt,
+ 	int tc0_qcount = vsi->mqprio_qopt.qopt.count[0];
+ 	u8 netdev_tc = 0;
+ 	int i;
++	u16 new_txq, new_rxq;
+ 
+ 	vsi->tc_cfg.ena_tc = ena_tc ? ena_tc : 1;
+ 
+@@ -3530,21 +3533,24 @@ ice_vsi_setup_q_map_mqprio(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt,
+ 		}
+ 	}
+ 
+-	/* Set actual Tx/Rx queue pairs */
+-	vsi->num_txq = offset + qcount_tx;
+-	if (vsi->num_txq > vsi->alloc_txq) {
++	new_txq = offset + qcount_tx;
++	if (new_txq > vsi->alloc_txq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Tx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_txq, vsi->alloc_txq);
++			new_txq, vsi->alloc_txq);
+ 		return -EINVAL;
+ 	}
+ 
+-	vsi->num_rxq = offset + qcount_rx;
+-	if (vsi->num_rxq > vsi->alloc_rxq) {
++	new_rxq = offset + qcount_rx;
++	if (new_rxq > vsi->alloc_rxq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Rx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_rxq, vsi->alloc_rxq);
++			new_rxq, vsi->alloc_rxq);
+ 		return -EINVAL;
+ 	}
+ 
++	/* Set actual Tx/Rx queue pairs */
++	vsi->num_txq = new_txq;
++	vsi->num_rxq = new_rxq;
++
+ 	/* Setup queue TC[0].qmap for given VSI context */
+ 	ctxt->info.tc_mapping[0] = cpu_to_le16(qmap);
+ 	ctxt->info.q_mapping[0] = cpu_to_le16(vsi->rxq_map[0]);
+@@ -3580,6 +3586,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
+ 	struct device *dev;
+ 	int i, ret = 0;
+ 	u8 num_tc = 0;
++	struct ice_tc_cfg old_tc_cfg;
+ 
+ 	dev = ice_pf_to_dev(pf);
+ 	if (vsi->tc_cfg.ena_tc == ena_tc &&
+@@ -3600,6 +3607,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
+ 			max_txqs[i] = vsi->num_txq;
+ 	}
+ 
++	memcpy(&old_tc_cfg, &vsi->tc_cfg, sizeof(old_tc_cfg));
+ 	vsi->tc_cfg.ena_tc = ena_tc;
+ 	vsi->tc_cfg.numtc = num_tc;
+ 
+@@ -3616,8 +3624,10 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
+ 	else
+ 		ret = ice_vsi_setup_q_map(vsi, ctx);
+ 
+-	if (ret)
++	if (ret) {
++		memcpy(&vsi->tc_cfg, &old_tc_cfg, sizeof(vsi->tc_cfg));
+ 		goto out;
++	}
+ 
+ 	/* must to indicate which section of VSI context are being modified */
+ 	ctx->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_RXQ_MAP_VALID);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
