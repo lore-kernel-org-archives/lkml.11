@@ -2,91 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B82E2C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7E6C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237014AbiHLKSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
+        id S238399AbiHLKSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237816AbiHLKSA (ORCPT
+        with ESMTP id S238360AbiHLKSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:18:00 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11172AB4CA
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:17:59 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id o2so750526lfb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=JBdN3TTY+x85cJo9xU+STNsmWxxgCOjlwR8dZZFbZ3s=;
-        b=it93Fcojqit0LSDm39bwjrQBHwb2Xg/hi4qz9c3sAHCyfShJGh+MW5isbblmYcfrdw
-         WYxjGjqceRInUE/owps9tUL9g2+7zXcwRYy26Acp5g2+EUHfiOxb/KdowSx0e1N7AX2l
-         USVjoiXHpbp8LQs3wwax0iF4lScBmtlso2UcdcChmsez8PAtFwvoqhtZnzAwq998Kzbo
-         /2RxeDXaJ6ryKiiSNN1wPFp7oVrwQSVRNXblOvZzOpENXMuS0cKI/ha3UYKuYHBa0hUi
-         pyba2ICfmp/ObiYxSCjycvcnCHdIYUPgi8/HvQYC/9FEAmjxUcqflP1J2f9qZ1rNW9UN
-         4loA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=JBdN3TTY+x85cJo9xU+STNsmWxxgCOjlwR8dZZFbZ3s=;
-        b=MXl+N3ggP03xFo/IqMAagmYbxerAAB06aMdlMKQWtuFbGK2TBv0SlNJ9AcJ5XO6HSB
-         ev9mj3XErGntSb2xvOFSddextYkKVpXhbM54Iy+xhPC2aQ7+4d5aOGWHbcw4qOabdwqp
-         HFs2UECYD7DdsrddZjkb57NHPhNbuTaEs1IeA5306ma0BjLPBxi7CSjJn3dklOZPP0Me
-         cPyOquVzIcibqhu3z3luryYpMVxg7NAs21UiEKNriIoB4njYSrf83SwjpNVdrm2Z1pSL
-         ZgF+RCausGcQ5/GrfHK8x22U+CLRE/j/IM7pRPrG0iGfyilDuc49lLaQ7O4XxmztBl+E
-         9/Nw==
-X-Gm-Message-State: ACgBeo2iOE5haxusZ1Qp5lCkEHHiFOcXKhfy3uyc4YDKyC04/Ljn8r0g
-        loTXwqkxyWlVgbetX+kngJwN0Q==
-X-Google-Smtp-Source: AA6agR62mmgR7MSduKYEvF8c3bd0NGBXjOqFvuYc+OhdGe6rUbRjeGOiqhaKsUKBG7wsid0zUflTCA==
-X-Received: by 2002:a05:6512:10d0:b0:48b:80d:849b with SMTP id k16-20020a05651210d000b0048b080d849bmr1092925lfg.399.1660299477473;
-        Fri, 12 Aug 2022 03:17:57 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id d27-20020ac244db000000b0048d029cb0b6sm164373lfm.112.2022.08.12.03.17.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 03:17:56 -0700 (PDT)
-Message-ID: <26668a74-2867-641d-0e50-52ee5df8123f@linaro.org>
-Date:   Fri, 12 Aug 2022 13:17:51 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 2/4] soc: qcom: stats: Add SDM845 stats config and
- compatible
-Content-Language: en-US
-To:     Abel Vesa <abel.vesa@linaro.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220812101240.1869605-1-abel.vesa@linaro.org>
- <20220812101240.1869605-2-abel.vesa@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220812101240.1869605-2-abel.vesa@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 12 Aug 2022 06:18:08 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2401DABD42;
+        Fri, 12 Aug 2022 03:18:06 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id CDF251E80D97;
+        Fri, 12 Aug 2022 18:15:53 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id AYrO1FPUyuJA; Fri, 12 Aug 2022 18:15:51 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 34F7F1E80D95;
+        Fri, 12 Aug 2022 18:15:51 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     pbonzini@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH 3/5] kvm/kvm_main: The ops pointer variable does not need to be initialized and assigned, it is first allocated a memory address
+Date:   Fri, 12 Aug 2022 18:18:03 +0800
+Message-Id: <20220812101803.8178-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 13:12, Abel Vesa wrote:
-> SDM845 is a special case compared to the other platforms that use RPMh
-> stats, since it only has 2 stats (aosd and cxsd), while the others have
-> a 3rd one (ddr).
-> 
-> So lets add dedicated stats config and compatible for SDM845 to make the
-> driver aware of this num_records difference.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+The ops pointer variable does not need to be initialized, because it
+first allocates a memory address before it is used.
 
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
+---
+ virt/kvm/kvm_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 80f7934c1f59..82f2b90718a9 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -4378,7 +4378,7 @@ void kvm_unregister_device_ops(u32 type)
+ static int kvm_ioctl_create_device(struct kvm *kvm,
+ 				   struct kvm_create_device *cd)
+ {
+-	const struct kvm_device_ops *ops = NULL;
++	const struct kvm_device_ops *ops;
+ 	struct kvm_device *dev;
+ 	bool test = cd->flags & KVM_CREATE_DEVICE_TEST;
+ 	int type;
+-- 
+2.18.2
 
-
-Best regards,
-Krzysztof
