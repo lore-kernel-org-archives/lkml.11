@@ -2,99 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC55BC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 09:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CD2C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 09:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbiHLJuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 05:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37342 "EHLO
+        id S234075AbiHLJuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 05:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiHLJuQ (ORCPT
+        with ESMTP id S236835AbiHLJuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 05:50:16 -0400
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79DAB9F
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 02:50:14 -0700 (PDT)
-Received: by mail-ej1-f47.google.com with SMTP id j8so1114890ejx.9
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 02:50:14 -0700 (PDT)
+        Fri, 12 Aug 2022 05:50:18 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761AF2722;
+        Fri, 12 Aug 2022 02:50:17 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id 21so695889ybf.4;
+        Fri, 12 Aug 2022 02:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Q5LlMwsyUspPj+LtUVoQu26MZFGsOb33CHbaqq1+4jY=;
+        b=HLc75iYp79U1+RfhEBEOhwMlcov52UCcyU+25l5nIgSE4ZPcnkp3oEkZQa1i+IqCy3
+         reG28bNyQGn7hxdj7H/0fK8bSv1k6AnOmynkI2yzau3lzhdKQW3qTM58UQD00qyUNUCh
+         eRApV/QCT8+C50xMZ/WnA9QUkmqnk0PNev9mrqEbnB8/s0Ky59r6NQC9+3bzs72p0rtl
+         wauKGWXFx/3Xfw2XRThy4QMjAJA4mdquushkxg3kt/mvmsRbul11EzI9GuUL9Jbm79Di
+         310jC6boc8ZKwICI780E0W9rybi02aINiEOR5O8CxYz8fC1YopKdcHy7cLthXX4W2G1R
+         QL6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=HGfWnaevDnjU3IQ3+RdJwKSR3tW/9GSGc+g+aLgic7o=;
-        b=e+nYWqDOcx3R3vb+I1PaX2heh5HFdwHqVQ32tRDEZB5dQqDyazrhEq0do+92HwDrrd
-         2XLqpUp0UZqR1eP3MU70H2g2mjNdJFH6bmBcoKjsm327ujDgAXlal9eZHdTTTb4Akwbc
-         C/dPrbQPoiHlSh08Oz/OYY/k/LF8U6coV+7xdrixCFMtOqGNacocvs30BEKsvU1jg2XW
-         jnMyC//tAhQdHKXAjrUFxHpQR7DWmDnhwseWixkRKqVFVbbXovWqtJOLkljZhz3IQ2nB
-         +0Z1S+TcFdsQ9FYt4mnrJrA2YmGXONTw3gFBzNo9SgEIHtKgMukUz1SIa0aVNKcZ+FIc
-         G5bA==
-X-Gm-Message-State: ACgBeo1thQfnNW8Ja2sB4LFc9+ogj+UbJsaFFL5A06DbzLLvcw3rB36C
-        buJkkKgWekvpo2v3gz0Arb4=
-X-Google-Smtp-Source: AA6agR6lMAS0qN9ddYs4JHDbW9YbKlkyvXYWVM8+kmSqDly1XGEGeh+g56gcdRVmxbD8IU2MSXA5nw==
-X-Received: by 2002:a17:906:5d13:b0:733:10e:b957 with SMTP id g19-20020a1709065d1300b00733010eb957mr2147676ejt.452.1660297813246;
-        Fri, 12 Aug 2022 02:50:13 -0700 (PDT)
-Received: from localhost (fwdproxy-cln-020.fbsv.net. [2a03:2880:31ff:14::face:b00c])
-        by smtp.gmail.com with ESMTPSA id e8-20020a17090681c800b0072b8fbc9be1sm595537ejx.187.2022.08.12.02.50.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 02:50:12 -0700 (PDT)
-From:   Breno Leitao <leitao@debian.org>
-To:     arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     scott.branden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, Kernel-team@fb.com
-Subject: [RESEND PATCH] misc: bcm_vk: Remove usage of deprecated functions
-Date:   Fri, 12 Aug 2022 02:47:17 -0700
-Message-Id: <20220812094717.4097179-1-leitao@debian.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <612446a2-5a22-a349-35fc-47f34792b504@broadcom.com>
-References: <612446a2-5a22-a349-35fc-47f34792b504@broadcom.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Q5LlMwsyUspPj+LtUVoQu26MZFGsOb33CHbaqq1+4jY=;
+        b=h/U0LYPR2GbXF9JSEGpF3ssnowOvVL+VrLLufBCLrwOgdELKaNMXJB/MtJ6ohZsIkM
+         Li0ccEE62ESYjielNJ7vQB1YZ5j/+5hDAdYWs1wVeCGG1Keu4vyXcdgCuIjfJiACNjdt
+         0KO0OdSeTSCMAUaEWtE7m4Xk4aQeUi0f9aXZoYW4G53SoyLT1cwgWipe9eQwqWstCiP8
+         jKg2MTk/oGe277fIyJfyNXSiuqmRXdiFt3Ap6nYscRxXWaqdAXcVNb/q6HSTMl5WPDRo
+         2nwf/ltCdGCrWjeSMVsSmk5EyBToHsH5f8aAXaFZSWKrafXfN1Rj24JLEIzo0pMICGlg
+         5VVg==
+X-Gm-Message-State: ACgBeo2FH3sH3WCrDPKswdztqL/5l3ZmPAuvoNqVYYQ0XSAqbEoDEjJo
+        FY938wnZ4mEg48Z0uvtP3pYzzBKZ4TKMYw8UYmY=
+X-Google-Smtp-Source: AA6agR5Qds9HYZib7WpLaLPtA8FNj+szouC4DQXZ2jOMC4iomnaw1mEjO7ET2cQ/CJgVkEcs1O6l22bXprmAG+HAMCA=
+X-Received: by 2002:a25:2245:0:b0:67b:7758:808b with SMTP id
+ i66-20020a252245000000b0067b7758808bmr2793684ybi.279.1660297816681; Fri, 12
+ Aug 2022 02:50:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220726180623.1668-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <636e9214-4b36-e9a6-3c6b-b6edb944335e@linaro.org> <CA+V-a8sTw1qzuTeD2vb7RgDmmNdEP5qEcxXCjrFgkyrBrLrt5Q@mail.gmail.com>
+ <e64cc15e-b31e-876d-b3cf-b60d255c495b@linaro.org> <CA+V-a8u1VW9xaj2KjySyMuegpisLVENO_6uJOpAFZGbKziYLYw@mail.gmail.com>
+ <e31e0c1f-4755-704e-8428-93970877d8f5@linaro.org> <CA+V-a8sX=Frs_cds9MriauTFRvcZUNCvoeZ+SaC0GUpL7L6qhg@mail.gmail.com>
+ <9f32a4a9-66b4-ba2e-1713-436103c2faf8@linaro.org> <OS0PR01MB5922763582B836DA45CDFF0886979@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <80f08089-e3bb-983e-313b-45613364829e@linaro.org> <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
+ <1aa477b2-1d91-066e-5fcd-849ece62388d@linaro.org>
+In-Reply-To: <1aa477b2-1d91-066e-5fcd-849ece62388d@linaro.org>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Fri, 12 Aug 2022 10:49:49 +0100
+Message-ID: <CA+V-a8uK3=Ca_1O_gQOm-5hUB1L95Wh_uXm5fpbAS0cbuVJE2w@mail.gmail.com>
+Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding documentation for
+ Renesas RZ/Five SoC and SMARC EVK
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ida_simple_get() and ida_simple_remove() functions are deprecated now.
-These functions were replaced by ida_alloc() and ida_free()
-respectively. This patch modernize bcm_vk to use the replacement
-functions.
+Hi Krzysztof and Geert,
 
-Signed-off-by: Breno Leitao <leitao@debian.org>
-Acked-by: Scott Branden <scott.branden@broadcom.com>
----
- drivers/misc/bcm-vk/bcm_vk_dev.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On Fri, Aug 12, 2022 at 7:23 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 11/08/2022 18:42, Geert Uytterhoeven wrote:
+> > At the DT validation level, I think the proper solution is to
+> > merge Documentation/devicetree/bindings/arm/renesas.yaml and
+> > Documentation/devicetree/bindings/riscv/renesas.yaml into a single
+> > file under Documentation/devicetree/bindings/soc/renesas/.
+> >
+> > What do other people think?
+>
+> I am ok with it.
+>
+Thanks, I'll move this to the soc folder in v2.
 
-diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
-index a16b99bdaa13..a3a82ebbc699 100644
---- a/drivers/misc/bcm-vk/bcm_vk_dev.c
-+++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
-@@ -1401,7 +1401,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		bcm_vk_tty_set_irq_enabled(vk, i);
- 	}
- 
--	id = ida_simple_get(&bcm_vk_ida, 0, 0, GFP_KERNEL);
-+	id = ida_alloc(&bcm_vk_ida, GFP_KERNEL);
- 	if (id < 0) {
- 		err = id;
- 		dev_err(dev, "unable to get id\n");
-@@ -1500,7 +1500,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	misc_device->name = NULL;
- 
- err_ida_remove:
--	ida_simple_remove(&bcm_vk_ida, id);
-+	ida_free(&bcm_vk_ida, id);
- 
- err_irq:
- 	for (i = 0; i < vk->num_irqs; i++)
-@@ -1573,7 +1573,7 @@ static void bcm_vk_remove(struct pci_dev *pdev)
- 	if (misc_device->name) {
- 		misc_deregister(misc_device);
- 		kfree(misc_device->name);
--		ida_simple_remove(&bcm_vk_ida, vk->devid);
-+		ida_free(&bcm_vk_ida, vk->devid);
- 	}
- 	for (i = 0; i < vk->num_irqs; i++)
- 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, i), vk);
--- 
-2.30.2
-
+Cheers,
+Prabhakar
