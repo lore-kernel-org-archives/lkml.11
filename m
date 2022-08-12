@@ -2,95 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B695EC25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15962C25B0F
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239278AbiHLRSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 13:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
+        id S239298AbiHLRXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 13:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbiHLRSD (ORCPT
+        with ESMTP id S237992AbiHLRXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 13:18:03 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B111DB1BB1;
-        Fri, 12 Aug 2022 10:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660324682; x=1691860682;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yAUb1g8BPPCo00CwCVUUCW/MEhmxy2A/zFgeWAZglu4=;
-  b=YNhocms2E/VMypvzbV9aaGfFEd7JinWt7YgzPuhbJctfbA0gM5kWWwc7
-   lDMHhkaxjlO/gsKLYjy0aNxJ1cNB6iMOvXXNHhajK3MzF6bKR1pW9eFwd
-   K1S4kmCM6ZUPMtL5EBspm89kcCWFBytdXMU4G41ywDJfC0If0+4LqS4NE
-   uGwh9EM0SHhyO4GwYPbYINGnofxcnVcu1zYiabezT7CzrZ6K9dnOyBDxd
-   sO+9TKuUHvif86468fkmiEpPo4B5AOAcBMFVlVCI1AytAcXHM5AtX3vYu
-   2JZ8QyHZswsYoyl6h+3AIVsZUFxkVNC0SCmmRsXB0SGLRsaFiPIGIY5uX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="278593618"
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="278593618"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 10:17:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="748258212"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Aug 2022 10:17:50 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMYI9-0000m3-1Z;
-        Fri, 12 Aug 2022 17:17:49 +0000
-Date:   Sat, 13 Aug 2022 01:17:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
-Cc:     kbuild-all@lists.01.org, rui.zhang@intel.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amit Kucheria <amitk@kernel.org>
-Subject: Re: [PATCH v2 26/26] thermal/drivers/intel: Use generic
- thermal_zone_get_trip() function
-Message-ID: <202208130155.HquqN8f2-lkp@intel.com>
-References: <20220809220436.711020-27-daniel.lezcano@linaro.org>
+        Fri, 12 Aug 2022 13:23:51 -0400
+X-Greylist: delayed 159 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 12 Aug 2022 10:23:51 PDT
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB8BB248F;
+        Fri, 12 Aug 2022 10:23:51 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1oMYNk-00FqJz-8Q; Fri, 12 Aug 2022 17:23:36 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH] arm64: dts: imx8mm-venice-gw7903: add digital I/O ctl gpios
+Date:   Fri, 12 Aug 2022 10:23:34 -0700
+Message-Id: <20220812172334.14171-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220809220436.711020-27-daniel.lezcano@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+The GW7903-C revision introduced two additional GPIO's for controlling
+the digital I/O direction. Add them.
 
-I love your patch! Yet something to improve:
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-[auto build test ERROR on next-20220809]
-[cannot apply to rafael-pm/thermal tegra/for-next linus/master v5.19 v5.19-rc8 v5.19-rc7 v5.19]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Lezcano/Rework-the-trip-points-creation/20220810-060933
-base:    6c8f479764ebe2848589de3249743ea552ed2495
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220813/202208130155.HquqN8f2-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/b38db2fe0562e475bb6240a64e6f6156352d41d1
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Lezcano/Rework-the-trip-points-creation/20220810-060933
-        git checkout b38db2fe0562e475bb6240a64e6f6156352d41d1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "thermal_zone_device_register_with_trips" [drivers/thermal/intel/x86_pkg_temp_thermal.ko] undefined!
-ERROR: modpost: "thermal_zone_device_register_with_trips" [drivers/platform/x86/acerhdf.ko] undefined!
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
+index a7dae9bd4c11..1b69ac0e12b0 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
+@@ -250,7 +250,7 @@ &gpio1 {
+ };
+ 
+ &gpio2 {
+-	gpio-line-names = "dig2_in", "dig2_out#", "", "", "", "", "", "",
++	gpio-line-names = "dig2_in", "dig2_out#", "dig2_ctl", "", "", "", "dig1_ctl", "",
+ 		"dig1_out#", "dig1_in", "", "", "", "", "", "",
+ 		"", "", "", "", "", "", "", "",
+ 		"", "", "", "", "", "", "", "";
+@@ -630,6 +630,8 @@ MX8MM_IOMUXC_GPIO1_IO11_GPIO1_IO11	0x40000041 /* RS485# */
+ 			MX8MM_IOMUXC_GPIO1_IO12_GPIO1_IO12	0x40000041 /* RS232# */
+ 			MX8MM_IOMUXC_SD1_DATA7_GPIO2_IO9	0x40000041 /* DIG1_IN */
+ 			MX8MM_IOMUXC_SD1_DATA6_GPIO2_IO8	0x40000041 /* DIG1_OUT */
++			MX8MM_IOMUXC_SD1_DATA4_GPIO2_IO6	0x40000041 /* DIG1_CTL */
++			MX8MM_IOMUXC_SD1_DATA0_GPIO2_IO2	0x40000041 /* DIG2_CTL */
+ 			MX8MM_IOMUXC_SD1_CLK_GPIO2_IO0		0x40000041 /* DIG2_IN */
+ 			MX8MM_IOMUXC_SD1_CMD_GPIO2_IO1		0x40000041 /* DIG2_OUT */
+ 			MX8MM_IOMUXC_ECSPI1_MOSI_GPIO5_IO7	0x40000041 /* SIM1DET# */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
