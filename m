@@ -2,151 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6808FC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AE6C25B08
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238584AbiHLMNA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 08:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
+        id S238625AbiHLMQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 08:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238588AbiHLMMf (ORCPT
+        with ESMTP id S237181AbiHLMQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 08:12:35 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2059.outbound.protection.outlook.com [40.107.244.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587D1275FD
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 05:12:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P+JtBmSY/Rez9NhncvsXgU1e0IZY1Sc+88IbZ/mRvQer+gvCxuE4WayGXOYYAE0/VUegLEOIFcyBpuuCHdUtvAouzf+H86l1baT/rKlcsxlRwPVOUVQquQrtsfRDM0Vz9kRfmn4ILJOQ7EwGCuoEr+1quOJJ0u5zipV3QToSviaCbB3Cwq9tvpn5LHBQf+xkuCgvkQwRLaq+oScMuQBnmbrRCVIy3HOCMY2TNcj/OQzSM+CPkETsBzXxQeu3NyacdRXTZ7k9QEj/7kvcG0vril+j7CMC5NLpDnKBA4SHhasBUDuhVITHnFs2MkYYvjYLqrr6u23+V+rC2OatPcwl4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GMY39Rqve2SBMryFwjGvCgB0MNPBLYUXYhJ7fU/hv04=;
- b=MMdaRUSDy33AuqUETYSvWlfVCwafyFKQ6yC6IRvNhUpXbIwjxyt3hiIV/1giRFzqDLpOgra2K1xJldZU9dQQoOSiP9++NWrbeFKZTDIigej2hw+kLDxd028b4zPb8c3iOdbTApVtxKKpv87dEzYD2RB1nQa/MASR8lO2bB5J9jojBZ4rFWdBLwXxBezZ1OdpfI0U6nQ865PcxCYo/zfJ8hGSn5wpPEbFu99vrWAC5nhW6XcvgnSBF9rSfabfcO8fo47iLlzt9F4SAU5Kc0hjB9nxz6YvHiYo8yY8P4RfE9ll4c6GWGXQW3G+TACmO3XBC3Xu0sGoepu0k4w6QF2MMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GMY39Rqve2SBMryFwjGvCgB0MNPBLYUXYhJ7fU/hv04=;
- b=gNqNt9LicMft1rq3YxFfuL6DB4DNL2sTqlVVgJ49A/zEZVKYw/vBHbmc9ymoUoFPQud3l7q2OGs0/FOSN802MjFwbKWrMj7zd9QBQ9OAIMBHplXoSOQUNuCSL9KvWe5eTAXRWzP0V+yJfC6vLwEfHacYlKoVuoqvVlzw/iC+z7A=
-Received: from BN8PR04CA0054.namprd04.prod.outlook.com (2603:10b6:408:d4::28)
- by BN8PR12MB3395.namprd12.prod.outlook.com (2603:10b6:408:43::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Fri, 12 Aug
- 2022 12:12:30 +0000
-Received: from BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:d4:cafe::fa) by BN8PR04CA0054.outlook.office365.com
- (2603:10b6:408:d4::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
- Transport; Fri, 12 Aug 2022 12:12:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT059.mail.protection.outlook.com (10.13.177.120) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5525.11 via Frontend Transport; Fri, 12 Aug 2022 12:12:30 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 12 Aug
- 2022 07:12:07 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 12 Aug
- 2022 05:11:46 -0700
-Received: from amd-B450M-DS3H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Fri, 12 Aug 2022 07:11:41 -0500
-From:   Syed Saba kareem <Syed.SabaKareem@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <mario.limonciello@amd.com>,
-        Syed Saba kareem <Syed.SabaKareem@amd.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "Jaroslav Kysela" <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Kai Vehmanen" <kai.vehmanen@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Julian Braha <julianbraha@gmail.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH 13/13] ASoC: amd: enable Pink sardine platform machine driver build.
-Date:   Fri, 12 Aug 2022 17:37:31 +0530
-Message-ID: <20220812120731.788052-14-Syed.SabaKareem@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220812120731.788052-1-Syed.SabaKareem@amd.com>
-References: <20220812120731.788052-1-Syed.SabaKareem@amd.com>
+        Fri, 12 Aug 2022 08:16:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1708F97D46;
+        Fri, 12 Aug 2022 05:16:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 11F02CE1BA4;
+        Fri, 12 Aug 2022 12:16:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B793FC433D6;
+        Fri, 12 Aug 2022 12:16:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660306561;
+        bh=cDPXyw+0tZdATJeb97wbb8Q8vKGfySScZQ9VpUoFvk0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=paLTCH++EckJIU4uEojjfTmtYcEz3socVkzqTh4eohsbCA1/+4U1k/vNZQXLA8q6c
+         N7V78szUNV3pGj+bZbfpXYCD6er1jiC8xkZ2H8cmEZoE0xDdyM5d/he57JEHbwQJO8
+         OyR0Dmf1/TQQ4gy2er5Jav380HFrCA2HDJMOBXw8=
+Date:   Fri, 12 Aug 2022 14:15:58 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzbot+6cb476b7c69916a0caca 
+        <syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        syzbot+f9acff9bf08a845f225d 
+        <syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com>,
+        syzbot+9250865a55539d384347 
+        <syzbot+9250865a55539d384347@syzkaller.appspotmail.com>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Subject: Re: [PATCH v2] wifi: cfg80211: Fix UAF in ieee80211_scan_rx()
+Message-ID: <YvZEfnjGIpH6XjsD@kroah.com>
+References: <20220726123921.29664-1-code@siddh.me>
+ <18291779771.584fa6ab156295.3990923778713440655@siddh.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ad27d460-8ec1-4ceb-febf-08da7c5bede7
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3395:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l/hF5UY7p8Ff3TnD382yaxQAzecZwYwkZEr/e3cl5L+GlOL5aVBQ224FAFhV0su3CB6WW/esrR3vuL2UWTSkzMYyNbzGJ0Y0hEHJ3+z4pS0lMZ5xzB9uU7dP4LkxIO1j5tVDF2+pv/FWNcKAZ9M3CPyiJ9syh4Af+YXaTck8i8d381D51Rq7S7ZXzMux/yD7gDk7aejYla/FrZpv0Ah2WFsXLRcXuwdfwa5E9XDthpkAvg7M+T814mVdia+5DsMoNcQJeevqApy40F32BSDRuxmr6QkAYVVx17PDLZkRAmnMY7+RjJJkv+wCWERpUdjObu/NDJjHOHUGNOfl8XXuDWIliHCG6gN5STC2KDcy4Y9bHA2JCtmqUfUjsFyxnFbL8FamV1jCMD5dDgXxxRZv521QFjkjITFOF0E/MTdImd9DrIJx+vwgCmYdXntzytJELqlZujiBFNyVKrbv/TvFCXR9vKYPsnhmnOYZEYeNrNyhxoOe4WTatWOrKE5dDOJFjN0dxfZ2Z6ux71XH+ChWeWzyLXPflcV3xCP6p03JShyVDxpyfeLw06XsWazc3eA0AMIHH6BWB/AU/98ldt+yDj2icDjLhTY7E0CPrQuM+sNpnzCXdOtVnO769eqDmorcB7/QtpMwHHhD9fs/BWV/WIoMR7FbctlEwEBNOHj3kZOd1OA5zr+PKUIujuQASVgLtZ3+4ty0wBdQXltfhLp1F21YedtSxjwjcAHsAOB/WZqKlc75001aihIbLJYrwL/6qVWYvG5kTzB1UReKvvyIiktmRivJHH8Ixb/AjMaq2Sil+d/L9F+hBu/z4ducfYwKBbxIMuAxsTmOYkrZQP/8Lg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(136003)(376002)(346002)(46966006)(36840700001)(40470700004)(70206006)(316002)(5660300002)(4326008)(478600001)(40460700003)(54906003)(110136005)(82310400005)(8676002)(86362001)(40480700001)(36756003)(70586007)(2906002)(7416002)(8936002)(36860700001)(83380400001)(82740400003)(81166007)(47076005)(356005)(6666004)(41300700001)(7696005)(426003)(336012)(1076003)(186003)(26005)(2616005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2022 12:12:30.0056
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad27d460-8ec1-4ceb-febf-08da7c5bede7
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3395
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <18291779771.584fa6ab156295.3990923778713440655@siddh.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch enables Pink Sardine platform machine driver build.
+On Fri, Aug 12, 2022 at 03:21:50PM +0530, Siddh Raman Pant via Linux-kernel-mentees wrote:
+> On Tue, 26 Jul 2022 18:09:21 +0530  Siddh Raman Pant  wrote:
+> > ieee80211_scan_rx() tries to access scan_req->flags after a null check
+> > (see line 303 of mac80211/scan.c), but ___cfg80211_scan_done() uses
+> > kfree() on the scan_req (see line 991 of wireless/scan.c).
+> > 
+> > This results in a UAF.
+> > 
+> > ieee80211_scan_rx() is called inside a RCU read-critical section
+> > initiated by ieee80211_rx_napi() (see line 5044 of mac80211/rx.c).
+> > 
+> > Thus, add an rcu_head to the scan_req struct, so that we can use
+> > kfree_rcu() instead of kfree() and thus not free during the critical
+> > section.
+> > 
+> > We can clear the pointer before freeing here, since scan_req is
+> > accessed using rcu_dereference().
+> > 
+> > Bug report (3): https://syzkaller.appspot.com/bug?extid=f9acff9bf08a845f225d
+> > Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
+> > Reported-by: syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com
+> > Reported-by: syzbot+9250865a55539d384347@syzkaller.appspotmail.com
+> > 
+> > Signed-off-by: Siddh Raman Pant code@siddh.me>
+> > ---
+> > Changes since v1 as requested:
+> > - Fixed commit heading and better commit message.
+> > - Clear pointer before freeing.
+> > 
+> >  include/net/cfg80211.h | 2 ++
+> >  net/wireless/scan.c    | 2 +-
+> >  2 files changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+> > index 80f41446b1f0..7e0b448c4cdb 100644
+> > --- a/include/net/cfg80211.h
+> > +++ b/include/net/cfg80211.h
+> > @@ -2368,6 +2368,7 @@ struct cfg80211_scan_6ghz_params {
+> >   * @n_6ghz_params: number of 6 GHz params
+> >   * @scan_6ghz_params: 6 GHz params
+> >   * @bssid: BSSID to scan for (most commonly, the wildcard BSSID)
+> > + * @rcu_head: (internal) RCU head to use for freeing
+> >   */
+> >  struct cfg80211_scan_request {
+> >  	struct cfg80211_ssid *ssids;
+> > @@ -2397,6 +2398,7 @@ struct cfg80211_scan_request {
+> >  	bool scan_6ghz;
+> >  	u32 n_6ghz_params;
+> >  	struct cfg80211_scan_6ghz_params *scan_6ghz_params;
+> > +	struct rcu_head rcu_head;
+> >  
+> >  	/* keep last */
+> >  	struct ieee80211_channel *channels[];
+> > diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+> > index 6d82bd9eaf8c..6cf58fe6dea0 100644
+> > --- a/net/wireless/scan.c
+> > +++ b/net/wireless/scan.c
+> > @@ -988,8 +988,8 @@ void ___cfg80211_scan_done(struct cfg80211_registered_device *rdev,
+> >  	kfree(rdev->int_scan_req);
+> >  	rdev->int_scan_req = NULL;
+> >  
+> > -	kfree(rdev->scan_req);
+> >  	rdev->scan_req = NULL;
+> > +	kfree_rcu(rdev_req, rcu_head);
+> >  
+> >  	if (!send_message)
+> >  		rdev->scan_msg = msg;
+> > -- 
+> > 2.35.1
+> > 
+> 
+> Hello,
+> 
+> Probably the above quoted patch was missed, which can be found on
+> https://lore.kernel.org/linux-wireless/20220726123921.29664-1-code@siddh.me/
+> 
+> This patch was posted more than 2 weeks ago, with changes as requested.
+> 
+> With the merge window almost ending, may I request for another look at
+> this patch?
 
-Signed-off-by: Syed Saba Kareem <Syed.SabaKareem@amd.com>
----
- sound/soc/amd/Kconfig     | 11 +++++++++++
- sound/soc/amd/ps/Makefile |  2 ++
- 2 files changed, 13 insertions(+)
+The merge window is for new features to be added, bugfixes can be merged
+at any point in time, but most maintainers close their trees until after
+the merge window is closed before accepting new fixes, like this one.
 
-diff --git a/sound/soc/amd/Kconfig b/sound/soc/amd/Kconfig
-index 0f461beca274..883b132a87e5 100644
---- a/sound/soc/amd/Kconfig
-+++ b/sound/soc/amd/Kconfig
-@@ -137,3 +137,14 @@ config SND_SOC_AMD_PS
-           triggered for ACP PCI driver, ACP PDM DMA driver.
-           Say m if you have such a device.
-           If unsure select "N".
-+
-+config SND_SOC_AMD_PS_MACH
-+        tristate "AMD PINK SARDINE support for DMIC"
-+        select SND_SOC_DMIC
-+        depends on SND_SOC_AMD_PS
-+        help
-+          This option enables machine driver for Pink Sardine platform
-+          using dmic. ACP IP has PDM Decoder block with DMA controller.
-+          DMIC can be connected directly to ACP IP.
-+          Say m if you have such a device.
-+          If unsure select "N".
-diff --git a/sound/soc/amd/ps/Makefile b/sound/soc/amd/ps/Makefile
-index 23afa5e32ffa..383973a12f6a 100644
---- a/sound/soc/amd/ps/Makefile
-+++ b/sound/soc/amd/ps/Makefile
-@@ -2,6 +2,8 @@
- # Pink Sardine platform Support
- snd-pci-ps-objs := pci-ps.o
- snd-ps-pdm-dma-objs := ps-pdm-dma.o
-+snd-soc-ps-mach-objs := ps-mach.o
- 
- obj-$(CONFIG_SND_SOC_AMD_PS) += snd-pci-ps.o
- obj-$(CONFIG_SND_SOC_AMD_PS) += snd-ps-pdm-dma.o
-+obj-$(CONFIG_SND_SOC_AMD_PS_MACH)   += snd-soc-ps-mach.o
--- 
-2.25.1
+So just relax, wait another week or so, and if there's no response,
+resend it then.
 
+Personally, this patch seems very incorrect, but hey, I'm not the wifi
+subsystem maintainer :)
+
+thanks,
+
+greg k-h
