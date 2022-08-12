@@ -2,176 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 887ADC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CEFC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbiHLONw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 10:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34146 "EHLO
+        id S239150AbiHLOOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 10:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239031AbiHLONs (ORCPT
+        with ESMTP id S239132AbiHLON7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 10:13:48 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC7018E1E
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:13:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660313627; x=1691849627;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=22YQUqkc0i/CvWkkdtsS780mUlph5ByO4MPEPu5nFgg=;
-  b=Bly8+8RX0SFdNP3Aogv2ieRMPsBlzg/ttqlV4Drb9PmKAbjG5wCBlUx+
-   g/HMZRUoalnug5nKr0lcSxsSK3PpADS3RE5b3J7LbnWPYHopB3iK7tUu6
-   GqqaZGU6UNPDKTd862t+Sj8gS50HanO+LcFFn8ip8nb5Ly02YX3UoVtrn
-   PMa7ratDcFWhR2qGNXHkv46AWVr5HLmJh33vpxE1M1bZ4K5r7n0G7EKpJ
-   rtJQ3Qp/W72QtQBJf2Lj1gTxENqwSkNi+NVLMAXXO+HRebjLPg8g2pVEK
-   N//KGo0JloN0LIO0mVCgFxleyLsbZwf2gm+TwJPhDoVTdsHDS2ndvIjj3
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="353343625"
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="353343625"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 07:13:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="634654362"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 12 Aug 2022 07:13:45 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMVQ0-0000bz-23;
-        Fri, 12 Aug 2022 14:13:44 +0000
-Date:   Fri, 12 Aug 2022 22:12:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: block/blk-map.c:254:16: warning: variable 'added' set but not used
-Message-ID: <202208122209.qe4Bg8hH-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Fri, 12 Aug 2022 10:13:59 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783B21F2F4
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:13:57 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id z16so1331995wrh.12
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:13:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jrtc27.com; s=gmail.jrtc27.user;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc;
+        bh=E4JPtvsTDamtMFqwau0g/GY/W4zUAlwh1hRHFDce25k=;
+        b=c6nHRRoj/+2Dqa1s2A5U+L2edwSBxY52Lr7JUJnYsSn+M/jIlR7yUrl8oIztURxFPG
+         MdvxQIxbF5PrXWzBHT8SuEHPKHYfZ7EfS+SDza250wY6DrPKVvL4jQyFUSiiBbarWBOo
+         Ur422oX44qtxqPDFZEsg+naMASIjpODyOe0nQx2DDYx18ddjO4s6DdF60LoaK0/WO3sl
+         bikkX8BezC6vTqt2eRac6vilxae1ORVubzVVCFLhSJJZ0DykBkWLC1UAgf4Jync5wJQm
+         zwM6VqEMhjNMRawBwrU7PZ48jv1Y+91aQoRj9lyIOf7VkyEbeRIf1nj3gEopb3JsviKr
+         CWDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc;
+        bh=E4JPtvsTDamtMFqwau0g/GY/W4zUAlwh1hRHFDce25k=;
+        b=yErA8hQcXgJv+/Hc8tSU+5X7yJpwiZ7SIqXigOV2d17j80VkYT6AeTcXv1393O7Kq5
+         JuDkdrILu1eKGPGozMk8fiLOuPuZ/RLrQDOZ9vaZLPq8dWAyqGw4+shLEsJz6ky1FxHH
+         e3ZZsA2QEHigdNOfqqANIzlr7iF24YwdX1AoqKI7LGCtR/122m9VCWXB3XJyN00FqsDg
+         7NSXuADYqz9T05NiOE7RrZHjDtjiZm0WTOlQTvz44HO7+HGQY6+lUue04CYhfRaUrULx
+         m23SveqO7yjl8n5YfisEhTTOzeawlV9lYDrzdwXEthJQa+rNVMDL/Y5fVH9xT4K4t+a4
+         Ioag==
+X-Gm-Message-State: ACgBeo0rs72TJ/6Z1edOhP8Q050Me2ltIuqOqFrxp7c2spTirXXz9CBY
+        oUrN3k/vwi4V3N48Iuaxd5hoSg==
+X-Google-Smtp-Source: AA6agR4CRKUeJvXj9MfeYDX1d2OqDrZn9NbmbzCxoJBiRuZRrRhMvwNKsxx0TCWg9VxF4XAwAmreIA==
+X-Received: by 2002:a05:6000:c1:b0:220:5c10:5c51 with SMTP id q1-20020a05600000c100b002205c105c51mr2181769wrx.668.1660313635838;
+        Fri, 12 Aug 2022 07:13:55 -0700 (PDT)
+Received: from smtpclient.apple (global-5-141.n-2.net.cam.ac.uk. [131.111.5.141])
+        by smtp.gmail.com with ESMTPSA id r13-20020a5d494d000000b0021e4f595590sm2001393wrs.28.2022.08.12.07.13.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 12 Aug 2022 07:13:54 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] perf: riscv: fix broken build due to struct redefinition
+From:   Jessica Clarke <jrtc27@jrtc27.com>
+In-Reply-To: <20220812135119.1648940-1-conor.dooley@microchip.com>
+Date:   Fri, 12 Aug 2022 15:13:54 +0100
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <2055040C-D443-47FD-B6E2-C4C6B3E600B4@jrtc27.com>
+References: <20220812135119.1648940-1-conor.dooley@microchip.com>
+To:     Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   7ebfc85e2cd7b08f518b526173e9a33b56b3913b
-commit: 480cb846c27bda4e14d98a45a9f50c250f38f266 block: convert to advancing variants of iov_iter_get_pages{,_alloc}()
-date:   4 days ago
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220812/202208122209.qe4Bg8hH-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=480cb846c27bda4e14d98a45a9f50c250f38f266
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 480cb846c27bda4e14d98a45a9f50c250f38f266
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On 12 Aug 2022, at 14:51, Conor Dooley <conor.dooley@microchip.com> =
+wrote:
+>=20
+> Building riscv/for-next produces following error:
+> drivers/perf/riscv_pmu_sbi.c:44:7: error: redefinition of =
+'sbi_pmu_ctr_info'
+> union sbi_pmu_ctr_info {
+>      ^
+> arch/riscv/include/asm/sbi.h:125:7: note: previous definition is here
+> union sbi_pmu_ctr_info {
+>=20
+> This appears to have been caused by a merge conflict resolution =
+between
+> riscv/for-next & riscv/fixes, causing the struct define not being
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+union, not struct
 
-All warnings (new ones prefixed by >>):
+Jess
 
->> block/blk-map.c:254:16: warning: variable 'added' set but not used [-Wunused-but-set-variable]
-                   size_t offs, added = 0;
-                                ^
-   1 warning generated.
+> properly moved to its header.
+>=20
+> Fixes: 9a7ccac63f9c ("perf: riscv_pmu{,_sbi}: Miscallenous improvement =
+& fixes")
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+> drivers/perf/riscv_pmu_sbi.c | 14 --------------
+> 1 file changed, 14 deletions(-)
+>=20
+> diff --git a/drivers/perf/riscv_pmu_sbi.c =
+b/drivers/perf/riscv_pmu_sbi.c
+> index e7c6fecbf061..6f6681bbfd36 100644
+> --- a/drivers/perf/riscv_pmu_sbi.c
+> +++ b/drivers/perf/riscv_pmu_sbi.c
+> @@ -41,20 +41,6 @@ static const struct attribute_group =
+*riscv_pmu_attr_groups[] =3D {
+> 	NULL,
+> };
+>=20
+> -union sbi_pmu_ctr_info {
+> -	unsigned long value;
+> -	struct {
+> -		unsigned long csr:12;
+> -		unsigned long width:6;
+> -#if __riscv_xlen =3D=3D 32
+> -		unsigned long reserved:13;
+> -#else
+> -		unsigned long reserved:45;
+> -#endif
+> -		unsigned long type:1;
+> -	};
+> -};
+> -
+> /*
+>  * RISC-V doesn't have hetergenous harts yet. This need to be part of
+>  * per_cpu in case of harts with different pmu counters
+> --=20
+> 2.36.1
+>=20
+>=20
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
 
-
-vim +/added +254 block/blk-map.c
-
-130879f1ee0e25 Christoph Hellwig 2020-03-27  233  
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  234  static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  235  		gfp_t gfp_mask)
-130879f1ee0e25 Christoph Hellwig 2020-03-27  236  {
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  237  	unsigned int max_sectors = queue_max_hw_sectors(rq->q);
-066ff571011d84 Christoph Hellwig 2022-04-06  238  	unsigned int nr_vecs = iov_iter_npages(iter, BIO_MAX_VECS);
-393bb12e00580a Christoph Hellwig 2021-03-31  239  	struct bio *bio;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  240  	int ret;
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  241  	int j;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  242  
-130879f1ee0e25 Christoph Hellwig 2020-03-27  243  	if (!iov_iter_count(iter))
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  244  		return -EINVAL;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  245  
-066ff571011d84 Christoph Hellwig 2022-04-06  246  	bio = bio_kmalloc(nr_vecs, gfp_mask);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  247  	if (!bio)
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  248  		return -ENOMEM;
-066ff571011d84 Christoph Hellwig 2022-04-06  249  	bio_init(bio, NULL, bio->bi_inline_vecs, nr_vecs, req_op(rq));
-130879f1ee0e25 Christoph Hellwig 2020-03-27  250  
-130879f1ee0e25 Christoph Hellwig 2020-03-27  251  	while (iov_iter_count(iter)) {
-130879f1ee0e25 Christoph Hellwig 2020-03-27  252  		struct page **pages;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  253  		ssize_t bytes;
-130879f1ee0e25 Christoph Hellwig 2020-03-27 @254  		size_t offs, added = 0;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  255  		int npages;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  256  
-480cb846c27bda Al Viro           2022-06-09  257  		bytes = iov_iter_get_pages_alloc2(iter, &pages, LONG_MAX, &offs);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  258  		if (unlikely(bytes <= 0)) {
-130879f1ee0e25 Christoph Hellwig 2020-03-27  259  			ret = bytes ? bytes : -EFAULT;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  260  			goto out_unmap;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  261  		}
-130879f1ee0e25 Christoph Hellwig 2020-03-27  262  
-130879f1ee0e25 Christoph Hellwig 2020-03-27  263  		npages = DIV_ROUND_UP(offs + bytes, PAGE_SIZE);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  264  
-7ab89db9790172 Michal Orzel      2022-04-23  265  		if (unlikely(offs & queue_dma_alignment(rq->q)))
-130879f1ee0e25 Christoph Hellwig 2020-03-27  266  			j = 0;
-7ab89db9790172 Michal Orzel      2022-04-23  267  		else {
-130879f1ee0e25 Christoph Hellwig 2020-03-27  268  			for (j = 0; j < npages; j++) {
-130879f1ee0e25 Christoph Hellwig 2020-03-27  269  				struct page *page = pages[j];
-130879f1ee0e25 Christoph Hellwig 2020-03-27  270  				unsigned int n = PAGE_SIZE - offs;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  271  				bool same_page = false;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  272  
-130879f1ee0e25 Christoph Hellwig 2020-03-27  273  				if (n > bytes)
-130879f1ee0e25 Christoph Hellwig 2020-03-27  274  					n = bytes;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  275  
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  276  				if (!bio_add_hw_page(rq->q, bio, page, n, offs,
-e4581105771b35 Christoph Hellwig 2020-05-12  277  						     max_sectors, &same_page)) {
-130879f1ee0e25 Christoph Hellwig 2020-03-27  278  					if (same_page)
-130879f1ee0e25 Christoph Hellwig 2020-03-27  279  						put_page(page);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  280  					break;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  281  				}
-130879f1ee0e25 Christoph Hellwig 2020-03-27  282  
-130879f1ee0e25 Christoph Hellwig 2020-03-27  283  				added += n;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  284  				bytes -= n;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  285  				offs = 0;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  286  			}
-130879f1ee0e25 Christoph Hellwig 2020-03-27  287  		}
-130879f1ee0e25 Christoph Hellwig 2020-03-27  288  		/*
-130879f1ee0e25 Christoph Hellwig 2020-03-27  289  		 * release the pages we didn't map into the bio, if any
-130879f1ee0e25 Christoph Hellwig 2020-03-27  290  		 */
-130879f1ee0e25 Christoph Hellwig 2020-03-27  291  		while (j < npages)
-130879f1ee0e25 Christoph Hellwig 2020-03-27  292  			put_page(pages[j++]);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  293  		kvfree(pages);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  294  		/* couldn't stuff something into bio? */
-480cb846c27bda Al Viro           2022-06-09  295  		if (bytes) {
-480cb846c27bda Al Viro           2022-06-09  296  			iov_iter_revert(iter, bytes);
-130879f1ee0e25 Christoph Hellwig 2020-03-27  297  			break;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  298  		}
-480cb846c27bda Al Viro           2022-06-09  299  	}
-130879f1ee0e25 Christoph Hellwig 2020-03-27  300  
-393bb12e00580a Christoph Hellwig 2021-03-31  301  	ret = blk_rq_append_bio(rq, bio);
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  302  	if (ret)
-393bb12e00580a Christoph Hellwig 2021-03-31  303  		goto out_unmap;
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  304  	return 0;
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  305  
-130879f1ee0e25 Christoph Hellwig 2020-03-27  306   out_unmap:
-130879f1ee0e25 Christoph Hellwig 2020-03-27  307  	bio_release_pages(bio, false);
-066ff571011d84 Christoph Hellwig 2022-04-06  308  	bio_uninit(bio);
-066ff571011d84 Christoph Hellwig 2022-04-06  309  	kfree(bio);
-7589ad6729d6a7 Christoph Hellwig 2020-08-27  310  	return ret;
-130879f1ee0e25 Christoph Hellwig 2020-03-27  311  }
-130879f1ee0e25 Christoph Hellwig 2020-03-27  312  
-
-:::::: The code at line 254 was first introduced by commit
-:::::: 130879f1ee0e25b0391b8c78b3baac6fe41f4d38 block: move bio_map_* to blk-map.c
-
-:::::: TO: Christoph Hellwig <hch@lst.de>
-:::::: CC: Jens Axboe <axboe@kernel.dk>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
