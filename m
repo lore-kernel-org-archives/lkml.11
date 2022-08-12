@@ -2,108 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4BAC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD854C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234090AbiHLKzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        id S237578AbiHLK4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiHLKzU (ORCPT
+        with ESMTP id S237438AbiHLK4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:55:20 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB35DF44
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:55:18 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id a9so818368lfm.12
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:55:18 -0700 (PDT)
+        Fri, 12 Aug 2022 06:56:03 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41976AA3D0
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:56:02 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id h204-20020a1c21d5000000b003a5b467c3abso3597582wmh.5
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=aaNl+ijT1LjwDfHOCxRP8aD4iO5jOkHMfS/PbY8NG5o=;
-        b=vxyPj+cWREDjzPfHlMEI4ETGGS++oBpkkT/Z8ItZIeGbY/auOJ9VffjXi3vILLOXOD
-         Mo4fOrJX19n83rdKW55y3kMoxJXPsW3VNDMufG/BYD9YgGQXmwHnmVezKLYcSGjilxPr
-         uTtUnjgaFRPTeCuer2xpXcUcR4Iw1HiDwKfM5sin/m7ISRpv1gn7LOs3dkOCFjorV73C
-         ICUKRGn9+UdbtjCNfViIond8iPgwL+QYjeZNWrAKBWo1QSEULnQppVROKOfORzgCTplG
-         9Igbk9lj21TDOx4yUz2dBCthY4WnoQWvta6ymrNWlz2t6jYvzUu865fqNAfTrbZsVquO
-         Ms0w==
+        bh=wCpuZt7zsXJCv3TvvAq6C8ZRf18JeBZLzSKLyeoAOvA=;
+        b=fnS1IPb0E6N1C98wxeCMIWt6EtshUj7O+SNyhhr57QZBHDadvq4q27+uS9ThH0DE7v
+         MCxkfL+z13JSzOaI7VdqGJqXXe+vibHJ4cAM28KU7yo5nsCVQsmbpN6unHBGUDsb6/Gq
+         i6A+pa9Kq7qkyErb7k4tHbzu8NxB1toJu09kR68HSincaHrgUUU4in19ra3LCidpG1z0
+         gJIpje3PsxPgNmKNDG5coEyNNl2fVnrYNnfkxakrZhvd+qTLeCyPLp/Rdvl5t6zDUJZC
+         wiS42T3nbhVS56q6c0k7YFG5i0zIdFqBE6zsCaZBbW9p69kIO9iSVOiAOkFv/QGPQ5S+
+         Qikg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=aaNl+ijT1LjwDfHOCxRP8aD4iO5jOkHMfS/PbY8NG5o=;
-        b=q5I/rARL56lmo9cqrAYwOZh8xoBlYBYKxqZFDjKTrtgxU5nXcvUjS2jcPyVxenGpNT
-         fnN6g3IhEdYS4BHY+2pZuPpOuQ9JfWsprZLI6X8oItXJC1djniVZn/55TwMrCTzZmfCe
-         tw5rYkWAmt9HN8Fl3iSwebJhOix3a6jZ5QT1gybX5lovhyc8nDvgpmTnmwOH3V/CYtaC
-         0+oVtU+SATkXSGv/Yt49BqhklMNw9ztW7GGeXU4eQoFKKAJ2USARzfkqUvebJPCoxMEF
-         yeMAai4ZxBuUzi08xeChghiZy7wSKVxNR33EWaQCJus07MZsyvfD05+yAlrcV4JJM6eF
-         qhmg==
-X-Gm-Message-State: ACgBeo3y+XXA7nixnyHmtvSsizNjO2XM1j7xVjRRgOyPKGWvkkZvutie
-        TjJh2BfItlKxUy/xDW0YVUvrLQ==
-X-Google-Smtp-Source: AA6agR6nxVAvP/ztJ9CWdcMb5byQai/Ut0mSg3vYquS5IM5ugPUQ8jhyJXPddJBUAd9gQCzcpJbNfA==
-X-Received: by 2002:a05:6512:2313:b0:48a:e615:289b with SMTP id o19-20020a056512231300b0048ae615289bmr1069198lfu.201.1660301716964;
-        Fri, 12 Aug 2022 03:55:16 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id l9-20020a056512110900b0048af3154456sm173419lfg.146.2022.08.12.03.55.11
+        bh=wCpuZt7zsXJCv3TvvAq6C8ZRf18JeBZLzSKLyeoAOvA=;
+        b=WYXRazf8GIKm5pRj1L9ZZwV3IyFea8d2j/bI0aZmDMyg+m2IPC0kxaCbO+8jcXYBGX
+         S1HlZs+ggwd4D7G91ca55HTWuNQEbDatpmPxaEn7mi2Lf5U2AoQDTTYI4Gw6sj3iDBdN
+         bCCUwswwZFDB2x0zYBYr7vyKxMM81GbFqyqxhe9MhXfZdUeST/2MA9GpixpCHjdGlNjn
+         /SjVmf2o8S0qfNzlWvZTOU1It3IbGGYmS54y392LcQHwqxeBoMhFT2rmUWkcL8d2mHou
+         CZQo0LjUXDIDrMAKeDEUQuFQzM8j6Mn+sLKGvK3ZI0zJ/hiTFjJt8pnHLH1JKDSIqmxW
+         cwrw==
+X-Gm-Message-State: ACgBeo2GzzS7WVvrMOdtxs+eTYpThJRRoU9fhiFCR7jnefNfb+UlKGlo
+        xLyIjgHgRn/V9nycMTg7JnlbLammbfU=
+X-Google-Smtp-Source: AA6agR7d5inXLGzsnj4k2QyMbh37IJq1TJbdxWbcr3Zz8PUpaIsqBHZlXkkbkDbpsRtZaYoT2BbxjA==
+X-Received: by 2002:a1c:cc11:0:b0:3a4:c032:c44 with SMTP id h17-20020a1ccc11000000b003a4c0320c44mr9006222wmb.84.1660301760738;
+        Fri, 12 Aug 2022 03:56:00 -0700 (PDT)
+Received: from [192.168.178.21] (p57b0bd9f.dip0.t-ipconnect.de. [87.176.189.159])
+        by smtp.gmail.com with ESMTPSA id t5-20020a5d4605000000b0021b956da1dcsm1586433wrq.113.2022.08.12.03.55.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 03:55:16 -0700 (PDT)
-Message-ID: <cbe761af-5011-83a2-0509-2b3c4fe0a79c@linaro.org>
-Date:   Fri, 12 Aug 2022 13:55:10 +0300
+        Fri, 12 Aug 2022 03:56:00 -0700 (PDT)
+Message-ID: <b23e4037-2030-32d0-d626-b5a846fcafeb@gmail.com>
+Date:   Fri, 12 Aug 2022 12:55:58 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3 1/1] regulator: dt-bindings: mediatek: add mt6366
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] drm/radeon: add a force flush to delay work when radeon
 Content-Language: en-US
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>, lee.jones@linaro.org,
-        robh+dt@kernel.org, matthias.bgg@gmail.com, lgirdwood@gmail.com,
-        broonie@kernel.org, eddie.huang@mediatek.com, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, fshao@chromium.org
-Cc:     sen.chu@mediatek.com, hui.liu@mediatek.com,
-        allen-kh.cheng@mediatek.com, hsin-hsiung.wang@mediatek.com,
-        sean.wang@mediatek.com, macpaul.lin@mediatek.com,
-        wen.su@mediatek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220812092901.6429-1-zhiyong.tao@mediatek.com>
- <20220812092901.6429-2-zhiyong.tao@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220812092901.6429-2-zhiyong.tao@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Zhenneng Li <lizhenneng@kylinos.cn>,
+        Alex Deucher <alexander.deucher@amd.com>
+Cc:     David Airlie <airlied@linux.ie>, Pan Xinhui <Xinhui.Pan@amd.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+References: <20220811072540.964309-1-lizhenneng@kylinos.cn>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <20220811072540.964309-1-lizhenneng@kylinos.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 12:29, Zhiyong Tao wrote:
-> Add mt6366 regulator document
-> 
+Am 11.08.22 um 09:25 schrieb Zhenneng Li:
+> Although radeon card fence and wait for gpu to finish processing current batch rings,
+> there is still a corner case that radeon lockup work queue may not be fully flushed,
+> and meanwhile the radeon_suspend_kms() function has called pci_set_power_state() to
+> put device in D3hot state.
 
-> +
-> +properties:
-> +  compatible:
-> +    const: mediatek,mt6366-regulator
-> +
-> +  regulators:
-> +    type: object
-> +    description: List of regulators and its properties
-> +
-> +    patternProperties:
-> +      "^buck-v(dram1|core|coresshub|proc11|proc12|gpu|s2|modem|s1)$":
-> +        type: object
-> +        $ref: regulator.yaml#
-> +        unevaluatedProperties: false
-> +
-> +      "^ldo-v(dram2|sim1|ibr|rf12|usb|camio|camd|cn18|fe28)$":
-> +        type: object
-> +        $ref: regulator.yaml#
+If I'm not completely mistaken the reset worker uses the suspend/resume 
+functionality as well to get the hardware into a working state again.
 
-You miss unevaluatedProperties in most of the places.
+So if I'm not completely mistaken this here would lead to a deadlock, 
+please double check that.
 
+Regards,
+Christian.
 
-Best regards,
-Krzysztof
+> Per PCI spec rev 4.0 on 5.3.1.4.1 D3hot State.
+>> Configuration and Message requests are the only TLPs accepted by a Function in
+>> the D3hot state. All other received Requests must be handled as Unsupported Requests,
+>> and all received Completions may optionally be handled as Unexpected Completions.
+> This issue will happen in following logs:
+> Unable to handle kernel paging request at virtual address 00008800e0008010
+> CPU 0 kworker/0:3(131): Oops 0
+> pc = [<ffffffff811bea5c>]  ra = [<ffffffff81240844>]  ps = 0000 Tainted: G        W
+> pc is at si_gpu_check_soft_reset+0x3c/0x240
+> ra is at si_dma_is_lockup+0x34/0xd0
+> v0 = 0000000000000000  t0 = fff08800e0008010  t1 = 0000000000010000
+> t2 = 0000000000008010  t3 = fff00007e3c00000  t4 = fff00007e3c00258
+> t5 = 000000000000ffff  t6 = 0000000000000001  t7 = fff00007ef078000
+> s0 = fff00007e3c016e8  s1 = fff00007e3c00000  s2 = fff00007e3c00018
+> s3 = fff00007e3c00000  s4 = fff00007fff59d80  s5 = 0000000000000000
+> s6 = fff00007ef07bd98
+> a0 = fff00007e3c00000  a1 = fff00007e3c016e8  a2 = 0000000000000008
+> a3 = 0000000000000001  a4 = 8f5c28f5c28f5c29  a5 = ffffffff810f4338
+> t8 = 0000000000000275  t9 = ffffffff809b66f8  t10 = ff6769c5d964b800
+> t11= 000000000000b886  pv = ffffffff811bea20  at = 0000000000000000
+> gp = ffffffff81d89690  sp = 00000000aa814126
+> Disabling lock debugging due to kernel taint
+> Trace:
+> [<ffffffff81240844>] si_dma_is_lockup+0x34/0xd0
+> [<ffffffff81119610>] radeon_fence_check_lockup+0xd0/0x290
+> [<ffffffff80977010>] process_one_work+0x280/0x550
+> [<ffffffff80977350>] worker_thread+0x70/0x7c0
+> [<ffffffff80977410>] worker_thread+0x130/0x7c0
+> [<ffffffff80982040>] kthread+0x200/0x210
+> [<ffffffff809772e0>] worker_thread+0x0/0x7c0
+> [<ffffffff80981f8c>] kthread+0x14c/0x210
+> [<ffffffff80911658>] ret_from_kernel_thread+0x18/0x20
+> [<ffffffff80981e40>] kthread+0x0/0x210
+>   Code: ad3e0008  43f0074a  ad7e0018  ad9e0020  8c3001e8  40230101
+>   <88210000> 4821ed21
+> So force lockup work queue flush to fix this problem.
+>
+> Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+> ---
+>   drivers/gpu/drm/radeon/radeon_device.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+> index 15692cb241fc..e608ca26780a 100644
+> --- a/drivers/gpu/drm/radeon/radeon_device.c
+> +++ b/drivers/gpu/drm/radeon/radeon_device.c
+> @@ -1604,6 +1604,9 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
+>   		if (r) {
+>   			/* delay GPU reset to resume */
+>   			radeon_fence_driver_force_completion(rdev, i);
+> +		} else {
+> +			/* finish executing delayed work */
+> +			flush_delayed_work(&rdev->fence_drv[i].lockup_work);
+>   		}
+>   	}
+>   
+
