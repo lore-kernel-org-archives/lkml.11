@@ -2,126 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ECBC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 06:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14804C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 06:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237025AbiHLGVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 02:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        id S237254AbiHLGXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 02:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHLGVL (ORCPT
+        with ESMTP id S237088AbiHLGXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 02:21:11 -0400
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73E383AB1A;
-        Thu, 11 Aug 2022 23:21:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=JGPSn
-        sJUeHGrj1k5i6Iut36C0p2uCQrpqlgvRnQxyYQ=; b=GZahsZSYES4Mhj+GgczGy
-        hCWQZTGRlvAuvvMNUGNLobjyxOWkDJYngequwSKRgePB7FRJpFcuhH2o1/hdJf6e
-        yvWox7IgoptrLaC8gEANBn24WN2Ih5SMIJdAmlMvwCkOtheSQelfKyUOzJeX1jd8
-        Gz+QNDwVKioY7naN61gbq8=
-Received: from localhost.localdomain (unknown [39.99.236.58])
-        by smtp10 (Coremail) with SMTP id NuRpCgC3U4FGy_Vi57sbAA--.20935S2;
-        Fri, 12 Aug 2022 11:38:47 +0800 (CST)
-From:   Hongbin Wang <wh_bin@126.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        sahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ip6_tunnel: Fix the type of functions
-Date:   Thu, 11 Aug 2022 23:38:33 -0400
-Message-Id: <20220812033833.1872176-1-wh_bin@126.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 12 Aug 2022 02:23:18 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B74CA50DC
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 23:23:17 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id e15so107828lfs.0
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 23:23:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ln6uw5ECmV28MFsRRMGsJGz2XJAnhGBl8re7vmnEV8c=;
+        b=MnAnni1V95VJawZPTkqbeLMdNF/YKCDZcS2uW/XjWF4HSyfJiiAfJIWg/oNpEFwpKH
+         hWBASb0RPRXLE+colDEWxscBM7uzEP8PJexmdvUtNeg0EiXqgQa+YMZpf8TGzkAN6WDQ
+         Mq6opWU7BEzmHw2eYm4OZl05q6OQPlXoHG5J7OsMVYlL/ACcnklJfUpJh6XuBLAnsksf
+         FP0QfhyCbWLhoj4ddbNcYhkCXDm2wnU8IHla6im5noKuHMc6ji7+ua+mdcs16unB5P2z
+         LRFMpwA6hAyOH3oIaIFOBJA3zylvYxZMOC8PqeacxC+5YmlGqs7rlmZs0Ge9I6c0Zc26
+         5nZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ln6uw5ECmV28MFsRRMGsJGz2XJAnhGBl8re7vmnEV8c=;
+        b=vGkZSLgZskrUlanJ9v0IBhyW2cP1+r27Nx+2TXR/RHo2F88O+UyrBTW11uGx20ZHrJ
+         uEU77AkbQOVjRksGBRQ5DVTH16OQ6KWZpaZz68+yp87q7c026dmVgqE4etuIKL4/qTIP
+         97sIXp985a8eDrhTWCurYei5/f4F8LInB8H38+QW+6LLqpFyEkj7Z8Gn3WRbH3mBqM5r
+         PRmiRVUHwrcOm9H1e0896/ByJ21SrBBQ6G+dVvUU2QyeJJSI8zC9eUa0IrP+I6hRZrI4
+         o4ubi1w6SMWHgrw/CSL6GNstayu+e254nrXDz4KjWHKQkHZKa6XfuPJrjQ897EPWqx3j
+         8/ag==
+X-Gm-Message-State: ACgBeo3Z7e04vD65B9soKcjDRgThTCYAzH11nTQVLeF9tSyO9mEfcmQo
+        K1k70Yk5f34XFNRjuBBxwj0RSQ==
+X-Google-Smtp-Source: AA6agR7W63XlCIJIdN24LYjn/IGHmyDjWxE/5M6IHSTSJK/mD87XUhFWMBUAXQaLEajW0bxFJGvCYA==
+X-Received: by 2002:a05:6512:3d10:b0:48b:223d:da9b with SMTP id d16-20020a0565123d1000b0048b223dda9bmr791528lfv.332.1660285395758;
+        Thu, 11 Aug 2022 23:23:15 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id d5-20020a056512368500b00485caa0f5dfsm104504lfs.44.2022.08.11.23.23.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Aug 2022 23:23:15 -0700 (PDT)
+Message-ID: <1aa477b2-1d91-066e-5fcd-849ece62388d@linaro.org>
+Date:   Fri, 12 Aug 2022 09:23:10 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgC3U4FGy_Vi57sbAA--.20935S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Cry8WF48CFy3WF4kAFyfCrg_yoW8tFWxpF
-        15Ca18KF45Xw4DWF1Utr1kAry3KF42y34xX3WfGa4rK3ZrJw4rtF1Iq34kWF4YyFyfGFWf
-        ZF15tr17Kr48Zr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UGtCcUUUUU=
-X-Originating-IP: [39.99.236.58]
-X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbi7gdboltC-N+5FwAAsE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding documentation for
+ Renesas RZ/Five SoC and SMARC EVK
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220726180623.1668-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <636e9214-4b36-e9a6-3c6b-b6edb944335e@linaro.org>
+ <CA+V-a8sTw1qzuTeD2vb7RgDmmNdEP5qEcxXCjrFgkyrBrLrt5Q@mail.gmail.com>
+ <e64cc15e-b31e-876d-b3cf-b60d255c495b@linaro.org>
+ <CA+V-a8u1VW9xaj2KjySyMuegpisLVENO_6uJOpAFZGbKziYLYw@mail.gmail.com>
+ <e31e0c1f-4755-704e-8428-93970877d8f5@linaro.org>
+ <CA+V-a8sX=Frs_cds9MriauTFRvcZUNCvoeZ+SaC0GUpL7L6qhg@mail.gmail.com>
+ <9f32a4a9-66b4-ba2e-1713-436103c2faf8@linaro.org>
+ <OS0PR01MB5922763582B836DA45CDFF0886979@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <80f08089-e3bb-983e-313b-45613364829e@linaro.org>
+ <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAMuHMdWOdQ5HNU8CuWYXHqYs-UfdggTuCf1AARdJC-3WMTy7Hg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Functions ip6_tnl_change, ip6_tnl_update and ip6_tnl0_update do always
-return 0, change the type of functions to void.
+On 11/08/2022 18:42, Geert Uytterhoeven wrote:
+> At the DT validation level, I think the proper solution is to
+> merge Documentation/devicetree/bindings/arm/renesas.yaml and
+> Documentation/devicetree/bindings/riscv/renesas.yaml into a single
+> file under Documentation/devicetree/bindings/soc/renesas/.
+> 
+> What do other people think?
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
----
- net/ipv6/ip6_tunnel.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+I am ok with it.
 
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 3fda5634578c..79c6a827dea9 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -1517,7 +1517,7 @@ static void ip6_tnl_link_config(struct ip6_tnl *t)
-  *   ip6_tnl_change() updates the tunnel parameters
-  **/
- 
--static int
-+static void
- ip6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p)
- {
- 	t->parms.laddr = p->laddr;
-@@ -1531,29 +1531,25 @@ ip6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p)
- 	t->parms.fwmark = p->fwmark;
- 	dst_cache_reset(&t->dst_cache);
- 	ip6_tnl_link_config(t);
--	return 0;
- }
- 
--static int ip6_tnl_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
-+static void ip6_tnl_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
- {
- 	struct net *net = t->net;
- 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
--	int err;
- 
- 	ip6_tnl_unlink(ip6n, t);
- 	synchronize_net();
--	err = ip6_tnl_change(t, p);
-+	ip6_tnl_change(t, p);
- 	ip6_tnl_link(ip6n, t);
- 	netdev_state_change(t->dev);
--	return err;
- }
- 
--static int ip6_tnl0_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
-+static void ip6_tnl0_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
- {
- 	/* for default tnl0 device allow to change only the proto */
- 	t->parms.proto = p->proto;
- 	netdev_state_change(t->dev);
--	return 0;
- }
- 
- static void
-@@ -1667,9 +1663,9 @@ ip6_tnl_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
- 			} else
- 				t = netdev_priv(dev);
- 			if (dev == ip6n->fb_tnl_dev)
--				err = ip6_tnl0_update(t, &p1);
-+				ip6_tnl0_update(t, &p1);
- 			else
--				err = ip6_tnl_update(t, &p1);
-+				ip6_tnl_update(t, &p1);
- 		}
- 		if (!IS_ERR(t)) {
- 			err = 0;
-@@ -2091,7 +2087,8 @@ static int ip6_tnl_changelink(struct net_device *dev, struct nlattr *tb[],
- 	} else
- 		t = netdev_priv(dev);
- 
--	return ip6_tnl_update(t, &p);
-+	ip6_tnl_update(t, &p);
-+	return 0;
- }
- 
- static void ip6_tnl_dellink(struct net_device *dev, struct list_head *head)
--- 
-2.25.1
-
+Best regards,
+Krzysztof
