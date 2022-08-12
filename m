@@ -2,138 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE25C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 07:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB51C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 07:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237557AbiHLHp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 03:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50460 "EHLO
+        id S237606AbiHLHuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 03:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237221AbiHLHp5 (ORCPT
+        with ESMTP id S237221AbiHLHuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 03:45:57 -0400
-Received: from out199-18.us.a.mail.aliyun.com (out199-18.us.a.mail.aliyun.com [47.90.199.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B7CA6C0E
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 00:45:55 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VM0lU6C_1660290349;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VM0lU6C_1660290349)
-          by smtp.aliyun-inc.com;
-          Fri, 12 Aug 2022 15:45:51 +0800
-Date:   Fri, 12 Aug 2022 15:45:48 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Yue Hu <zbestahu@gmail.com>
-Cc:     xiang@kernel.org, chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, huyue2@coolpad.com,
-        zhangwen@coolpad.com
-Subject: Re: [PATCH] erofs: avoid the potentially wrong m_plen for big
- pcluster
-Message-ID: <YvYFLF2DHDuRoTpT@B-P7TQMD6M-0146.local>
-References: <20220812060150.8510-1-huyue2@coolpad.com>
+        Fri, 12 Aug 2022 03:50:22 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C22EF39;
+        Fri, 12 Aug 2022 00:50:21 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id e13so335059edj.12;
+        Fri, 12 Aug 2022 00:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=PbDmuCCKzyRWwV8QvEQk0Rlp9mi8auTSVSuf8xoS7Cc=;
+        b=HbKrQw+8JKGp3PXqegOBmVGvjTbQ78gJOZHgTnCRX7fwUoWe4Pfa94dweOR13sKavP
+         9OFdMxYSaNgfjE1JUIv1nOo3mRcJ3uYYTSwtpIEqjUN6UnQW04it9SRkODE4jkGu9nfx
+         1cyIOyQ8dIQqnOdjWpT7oKMdO9bzFWiGkD5PNoM0ke9JvAQIM38+pYcx7Engka/mBMFn
+         4qsK/nUIvJIiPU4wzH/Hi/5v7IgzHXdnoXh+CIX480u9jZ/E9fiJiaG2hlxcTuRR/KeB
+         MHkLtp/KYoMCWCJtZtx9eDsgFcNVq46giBO0bm+2/6tVquA8lsEiweU8Tnnb0kwXpErl
+         Z8TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=PbDmuCCKzyRWwV8QvEQk0Rlp9mi8auTSVSuf8xoS7Cc=;
+        b=rx1mR8yfTbIYb7feJ1idebVOASo/GSESJMPsZ6zR8lHtjZGfntWIW0OVFFZJszHyhk
+         qn0wkR8F7x5SexCbHYLcUqO4jtBCjPpHnoNkYjGbi/gExh3P7v3WLU51qoxlo0Gcac8e
+         bpceS4rBZBVxVbrm2Eo2sKqIn9Own7QTws9QfJKLwaY3Qqo6oUpz54noPcGYXfFvlwkh
+         PQ+EYCD8Dx5qJtf2DqRbi4Kwdj/kVrUVWVAlo8UOZhI4Q05FlVPrpzicSu7WpahOKQB8
+         DgfjlRIRotjv2JU90qdLZAkqjgYYU9x8E/5bZyQNXyrWvcbwnI0CJiwwE4D5zzjkfwLH
+         8O5w==
+X-Gm-Message-State: ACgBeo2B7fVAPYrPItysqPqLWlOcHRomriSF1xTuBB/1FOEFaT3cNeKr
+        T1sGvjq9NV4B6mMG1DY5CuU=
+X-Google-Smtp-Source: AA6agR7P7YP0YhQyYsLESfYmj9z03Jl0/PAT5zjN1y1OddquPRebDzZCrhq4G+9BUUZZ1SZaQw1Vsw==
+X-Received: by 2002:a05:6402:5289:b0:43b:69a9:38c8 with SMTP id en9-20020a056402528900b0043b69a938c8mr2554553edb.263.1660290619770;
+        Fri, 12 Aug 2022 00:50:19 -0700 (PDT)
+Received: from debian64.daheim (pd9e292f4.dip0.t-ipconnect.de. [217.226.146.244])
+        by smtp.gmail.com with ESMTPSA id jx27-20020a170907761b00b0072b55713daesm515099ejc.56.2022.08.12.00.50.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 00:50:19 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1])
+        by debian64.daheim with esmtp (Exim 4.96)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1oMNYi-0006Th-0d;
+        Fri, 12 Aug 2022 09:50:18 +0200
+Message-ID: <4666c90f-b119-b283-7f6d-ad7b97a754b4@gmail.com>
+Date:   Fri, 12 Aug 2022 09:50:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220812060150.8510-1-huyue2@coolpad.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.1
+Subject: Re: [PATCH] wifi: p54: Fix comment typo
+To:     Jason Wang <wangborong@cdjrlc.com>, kvalo@kernel.org
+Cc:     chunkeey@googlemail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220811120340.12968-1-wangborong@cdjrlc.com>
+Content-Language: de-DE, en-US
+From:   Christian Lamparter <chunkeey@gmail.com>
+In-Reply-To: <20220811120340.12968-1-wangborong@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yue,
+On 11/08/2022 14:03, Jason Wang wrote:
+> The double `to' is duplicated in the comment, remove one.
 
-On Fri, Aug 12, 2022 at 02:01:50PM +0800, Yue Hu wrote:
-> Actually, 'compressedlcs' stores compressed block count rather than
-> lcluster count. Therefore, the number of bits for shifting the count
-> should be 'LOG_BLOCK_SIZE' rather than 'lclusterbits' although current
-> lcluster size is 4K. The value of 'm_plen' will be wrong once we enable
-> the non 4K-sized lcluster.
+Oh, there might be more errors... much more.
 
-I'd like to make the last sentence into a separate paragraph.
-I could update it when applying.
+If you can, please aggregated spelling and grammar errors.
+
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
 
 > 
-> Signed-off-by: Yue Hu <huyue2@coolpad.com>
-
-Otherwise it looks good to me,
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-
-Thanks,
-Gao Xiang
-
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 > ---
->  fs/erofs/zmap.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+>   drivers/net/wireless/intersil/p54/main.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/fs/erofs/zmap.c b/fs/erofs/zmap.c
-> index 572f0b8151ba..d58549ca1df9 100644
-> --- a/fs/erofs/zmap.c
-> +++ b/fs/erofs/zmap.c
-> @@ -141,7 +141,7 @@ struct z_erofs_maprecorder {
->  	u8  type, headtype;
->  	u16 clusterofs;
->  	u16 delta[2];
-> -	erofs_blk_t pblk, compressedlcs;
-> +	erofs_blk_t pblk, compressedblks;
->  	erofs_off_t nextpackoff;
->  };
->  
-> @@ -192,7 +192,7 @@ static int legacy_load_cluster_from_disk(struct z_erofs_maprecorder *m,
->  				DBG_BUGON(1);
->  				return -EFSCORRUPTED;
->  			}
-> -			m->compressedlcs = m->delta[0] &
-> +			m->compressedblks = m->delta[0] &
->  				~Z_EROFS_VLE_DI_D0_CBLKCNT;
->  			m->delta[0] = 1;
->  		}
-> @@ -293,7 +293,7 @@ static int unpack_compacted_index(struct z_erofs_maprecorder *m,
->  				DBG_BUGON(1);
->  				return -EFSCORRUPTED;
->  			}
-> -			m->compressedlcs = lo & ~Z_EROFS_VLE_DI_D0_CBLKCNT;
-> +			m->compressedblks = lo & ~Z_EROFS_VLE_DI_D0_CBLKCNT;
->  			m->delta[0] = 1;
->  			return 0;
->  		} else if (i + 1 != (int)vcnt) {
-> @@ -497,7 +497,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
->  		return 0;
->  	}
->  	lcn = m->lcn + 1;
-> -	if (m->compressedlcs)
-> +	if (m->compressedblks)
->  		goto out;
->  
->  	err = z_erofs_load_cluster_from_disk(m, lcn, false);
-> @@ -506,7 +506,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
->  
->  	/*
->  	 * If the 1st NONHEAD lcluster has already been handled initially w/o
-> -	 * valid compressedlcs, which means at least it mustn't be CBLKCNT, or
-> +	 * valid compressedblks, which means at least it mustn't be CBLKCNT, or
->  	 * an internal implemenatation error is detected.
->  	 *
->  	 * The following code can also handle it properly anyway, but let's
-> @@ -523,12 +523,12 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
->  		 * if the 1st NONHEAD lcluster is actually PLAIN or HEAD type
->  		 * rather than CBLKCNT, it's a 1 lcluster-sized pcluster.
->  		 */
-> -		m->compressedlcs = 1;
-> +		m->compressedblks = 1 << (lclusterbits - LOG_BLOCK_SIZE);
->  		break;
->  	case Z_EROFS_VLE_CLUSTER_TYPE_NONHEAD:
->  		if (m->delta[0] != 1)
->  			goto err_bonus_cblkcnt;
-> -		if (m->compressedlcs)
-> +		if (m->compressedblks)
->  			break;
->  		fallthrough;
->  	default:
-> @@ -539,7 +539,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
->  		return -EFSCORRUPTED;
->  	}
->  out:
-> -	map->m_plen = (u64)m->compressedlcs << lclusterbits;
-> +	map->m_plen = (u64)m->compressedblks << LOG_BLOCK_SIZE;
->  	return 0;
->  err_bonus_cblkcnt:
->  	erofs_err(m->inode->i_sb,
-> -- 
-> 2.17.1
+> diff --git a/drivers/net/wireless/intersil/p54/main.c b/drivers/net/wireless/intersil/p54/main.c
+> index b925e327e091..e127453ab51a 100644
+> --- a/drivers/net/wireless/intersil/p54/main.c
+> +++ b/drivers/net/wireless/intersil/p54/main.c
+> @@ -635,7 +635,7 @@ static int p54_get_survey(struct ieee80211_hw *dev, int idx,
+>   				/*
+>   				 * hw/fw has not accumulated enough sample sets.
+>   				 * Wait for 100ms, this ought to be enough to
+> -				 * to get at least one non-null set of channel
+> +				 * get at least one non-null set of channel
+>   				 * usage statistics.
+>   				 */
+>   				msleep(100);
+
