@@ -2,83 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D50C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 06:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ECBC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 06:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236948AbiHLGUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 02:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
+        id S237025AbiHLGVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 02:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiHLGU1 (ORCPT
+        with ESMTP id S229524AbiHLGVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 02:20:27 -0400
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C13C1409D;
-        Thu, 11 Aug 2022 23:20:25 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 27C6J36d031128-27C6J36h031128
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 12 Aug 2022 14:19:12 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] USB: trancevibrator: simplify tv_probe
-Date:   Fri, 12 Aug 2022 14:18:02 +0800
-Message-Id: <20220812061805.88627-2-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220812061805.88627-1-dzm91@hust.edu.cn>
-References: <20220812061805.88627-1-dzm91@hust.edu.cn>
+        Fri, 12 Aug 2022 02:21:11 -0400
+Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73E383AB1A;
+        Thu, 11 Aug 2022 23:21:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=JGPSn
+        sJUeHGrj1k5i6Iut36C0p2uCQrpqlgvRnQxyYQ=; b=GZahsZSYES4Mhj+GgczGy
+        hCWQZTGRlvAuvvMNUGNLobjyxOWkDJYngequwSKRgePB7FRJpFcuhH2o1/hdJf6e
+        yvWox7IgoptrLaC8gEANBn24WN2Ih5SMIJdAmlMvwCkOtheSQelfKyUOzJeX1jd8
+        Gz+QNDwVKioY7naN61gbq8=
+Received: from localhost.localdomain (unknown [39.99.236.58])
+        by smtp10 (Coremail) with SMTP id NuRpCgC3U4FGy_Vi57sbAA--.20935S2;
+        Fri, 12 Aug 2022 11:38:47 +0800 (CST)
+From:   Hongbin Wang <wh_bin@126.com>
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        sahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ip6_tunnel: Fix the type of functions
+Date:   Thu, 11 Aug 2022 23:38:33 -0400
+Message-Id: <20220812033833.1872176-1-wh_bin@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+X-CM-TRANSID: NuRpCgC3U4FGy_Vi57sbAA--.20935S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Cry8WF48CFy3WF4kAFyfCrg_yoW8tFWxpF
+        15Ca18KF45Xw4DWF1Utr1kAry3KF42y34xX3WfGa4rK3ZrJw4rtF1Iq34kWF4YyFyfGFWf
+        ZF15tr17Kr48Zr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UGtCcUUUUU=
+X-Originating-IP: [39.99.236.58]
+X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbi7gdboltC-N+5FwAAsE
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+Functions ip6_tnl_change, ip6_tnl_update and ip6_tnl0_update do always
+return 0, change the type of functions to void.
 
-The function tv_probe does not need to invoke kfree when the
-allocation fails. So let's simplify the code of tv_probe.
-
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
 ---
-v2->v3: fix the truncated subject of PATCH 2/2.
-v1->v2: no change
+ net/ipv6/ip6_tunnel.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
- drivers/usb/misc/trancevibrator.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/usb/misc/trancevibrator.c b/drivers/usb/misc/trancevibrator.c
-index 55cb63652eda..30d4d774d448 100644
---- a/drivers/usb/misc/trancevibrator.c
-+++ b/drivers/usb/misc/trancevibrator.c
-@@ -84,22 +84,15 @@ static int tv_probe(struct usb_interface *interface,
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index 3fda5634578c..79c6a827dea9 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -1517,7 +1517,7 @@ static void ip6_tnl_link_config(struct ip6_tnl *t)
+  *   ip6_tnl_change() updates the tunnel parameters
+  **/
+ 
+-static int
++static void
+ ip6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p)
  {
- 	struct usb_device *udev = interface_to_usbdev(interface);
- 	struct trancevibrator *dev;
--	int retval;
- 
- 	dev = kzalloc(sizeof(struct trancevibrator), GFP_KERNEL);
--	if (!dev) {
--		retval = -ENOMEM;
--		goto error;
--	}
-+	if (!dev)
-+		return -ENOMEM;
- 
- 	dev->udev = usb_get_dev(udev);
- 	usb_set_intfdata(interface, dev);
- 
- 	return 0;
--
--error:
--	kfree(dev);
--	return retval;
+ 	t->parms.laddr = p->laddr;
+@@ -1531,29 +1531,25 @@ ip6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p)
+ 	t->parms.fwmark = p->fwmark;
+ 	dst_cache_reset(&t->dst_cache);
+ 	ip6_tnl_link_config(t);
+-	return 0;
  }
  
- static void tv_disconnect(struct usb_interface *interface)
+-static int ip6_tnl_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
++static void ip6_tnl_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
+ {
+ 	struct net *net = t->net;
+ 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
+-	int err;
+ 
+ 	ip6_tnl_unlink(ip6n, t);
+ 	synchronize_net();
+-	err = ip6_tnl_change(t, p);
++	ip6_tnl_change(t, p);
+ 	ip6_tnl_link(ip6n, t);
+ 	netdev_state_change(t->dev);
+-	return err;
+ }
+ 
+-static int ip6_tnl0_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
++static void ip6_tnl0_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
+ {
+ 	/* for default tnl0 device allow to change only the proto */
+ 	t->parms.proto = p->proto;
+ 	netdev_state_change(t->dev);
+-	return 0;
+ }
+ 
+ static void
+@@ -1667,9 +1663,9 @@ ip6_tnl_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+ 			} else
+ 				t = netdev_priv(dev);
+ 			if (dev == ip6n->fb_tnl_dev)
+-				err = ip6_tnl0_update(t, &p1);
++				ip6_tnl0_update(t, &p1);
+ 			else
+-				err = ip6_tnl_update(t, &p1);
++				ip6_tnl_update(t, &p1);
+ 		}
+ 		if (!IS_ERR(t)) {
+ 			err = 0;
+@@ -2091,7 +2087,8 @@ static int ip6_tnl_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	} else
+ 		t = netdev_priv(dev);
+ 
+-	return ip6_tnl_update(t, &p);
++	ip6_tnl_update(t, &p);
++	return 0;
+ }
+ 
+ static void ip6_tnl_dellink(struct net_device *dev, struct list_head *head)
 -- 
-2.35.1
+2.25.1
 
