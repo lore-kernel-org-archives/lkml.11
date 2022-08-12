@@ -2,131 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C3EC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 05:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5081C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 05:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237019AbiHLFyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 01:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        id S237039AbiHLFzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 01:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236848AbiHLFyw (ORCPT
+        with ESMTP id S237017AbiHLFzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 01:54:52 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E48A222C
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 22:54:51 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id 17so9443174pli.0
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 22:54:51 -0700 (PDT)
+        Fri, 12 Aug 2022 01:55:11 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D94A4053
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 22:55:09 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-f2a4c51c45so24009229fac.9
+        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 22:55:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=to:from:cc:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:to:cc;
-        bh=HEmnO6gKg/Ny8un1UXhsJJIoNDtb7QUrGLbN/Rj+U2s=;
-        b=S6h2JsqkYWxvS7jC1PPYrCoWtVa1c7jhqkVfdgVTRawsQeU2o7qd8syCitbKL3Igry
-         a2vspnYwiX6atjvhYOj/vgZm9OOs8OD2WVJ/uQMFT1JSzXM/f6+wpg5tjONYx5mXVrYk
-         QMx5u3F0tiwy+Pgj/g0dpXjvsnBKPsStW07oA+hI2mlUWmshJ9YYA8VYd58ZYpT9Sff+
-         soe+nCeH5MvE3QIats2gqq3natPebdib/4PCZ+ZVA3LIKmcaYBq9+ZZ0aGOcCufe2Zbk
-         1agEwVe66MkKDSIryjo+6X+jlL2BoyUqn4gP4pMrGcv3ahE2DIJVIeuNibm5w0pb9rjy
-         ysqw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=vyDd5sdlW/fZbgb+P03HOQJNhHBEtM6dR0OmvEFJUas=;
+        b=I2/tiLRGP+vTpPDSKssy8o+Alz0OX7R/A3w9bOoDvAefBVZg2WUBaeodhnOr3hiGaA
+         C04lqW+K8FeMIotWwAYLyg8E5ojZ3X7V58PA3OGDkS2s5HXA8CcsfN8h3sjas6rIUleU
+         giqCAQ4zXY9ghm1tlpBs2gp+I3qBkz4zDQk4m/JU7vU9NM/7y7EGQcxs8Fq6rO21x9hU
+         mzqdGWg0Ru1JpXeTBq7fi3JBhZxeStXalldJLDMlITlqGE441bSs3GGUX7TISbU9juQh
+         tLVzG5erCe/QiDQMh/RfwLGgAqL5pl/2TO6UXqGZaMOthb9Dfl2EhnNVtaSEBi648iL9
+         EEtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:cc:content-transfer-encoding:mime-version:message-id:date
-         :subject:x-gm-message-state:from:to:cc;
-        bh=HEmnO6gKg/Ny8un1UXhsJJIoNDtb7QUrGLbN/Rj+U2s=;
-        b=VYt7B1OFelR5ZeSX6jHKSfiUei162ligK+eJ+nIKWLPXgFMFspxHGQj5Gz8B8T02rg
-         SpV4p8AIdC/1QwqMm6Db0FU4mytgJH/wn1Ay2v9lr+SwdJ03xCUvUuhj30KD5fNHE3p/
-         CTekscJWlaMHJMy3upL9EE1qNyPOFgGs/knBtUDVltnGm/8dJ6eX0Asd2KQZpMoTkLSa
-         RpEyRFltZvdFOZvf6GMEHeo22muHwKeVjpyTR1O4NipznXS6z17gPdGCvDRkiVQxHAwb
-         69QI/G99KD2krWFyDyhMFw+fHlptPL9iobbja4czODRjD0dwJ7a65dtnWGg2HTe02YuR
-         9Tgw==
-X-Gm-Message-State: ACgBeo2JM/MMVy5pK39oQLxLIMmTEI8KuvUbe0dzlj/OATGFBo6vOw78
-        SX/SvD7HqnKd6iZaxivBMOBOYlkUjVa1Rw==
-X-Google-Smtp-Source: AA6agR6wDPIXSDkF+CszeF/rMBh6TQvpmXARS1enqN+Ysw0cl5HOZUKV33pVKo+76S2g+k+swpD2Cg==
-X-Received: by 2002:a17:902:b607:b0:170:c7fc:388a with SMTP id b7-20020a170902b60700b00170c7fc388amr2474205pls.29.1660283690611;
-        Thu, 11 Aug 2022 22:54:50 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id z185-20020a6333c2000000b0041aeb36088asm659096pgz.16.2022.08.11.22.54.49
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=vyDd5sdlW/fZbgb+P03HOQJNhHBEtM6dR0OmvEFJUas=;
+        b=1MyRHZxmKv9Dj57TYrmF+VWCGt+IgyNq8aU961bPuDoiqordlXUfFWBH4k5KvIbDQK
+         g6221Nb5zFSYJi460Lffe2zvUHuZVN7IwQud32WcqffGHlgOuD5x9nnyInM6dX0FPthg
+         FfrsNN5hL2bsQQag0NZpPPhAc9FuSAyY7tL0x7fIUKcR9gW1ei0FrSMMiYxG7ID2IpWc
+         FtWVs6yFRzOL3g/l65StEywpXvjHRw51AbB/2mvtJXCvNVloDNkhG2Hn0As3BKTpPWnI
+         MlwTMZ3AqqZl7htG6JyzyjC174qQZC5i/IUa1l9KxpsRSEQYj50icTv0ucuhb/r+yt8C
+         EG/A==
+X-Gm-Message-State: ACgBeo1dVkDVV89LspEvNWz7RFrGqgNWNl4X9GN+ciM5EftPw7+toDB6
+        smLvqHqK7slJLkWNsuPTLoSFPAGEb3E=
+X-Google-Smtp-Source: AA6agR5aGXyyJ3+GJIotsDJnqcx75qV+eYnnEhlGhhbARGSbHE48VYmsi9Yyo1+DSijFHW4fZANiZA==
+X-Received: by 2002:a05:6870:220a:b0:113:fae9:18bf with SMTP id i10-20020a056870220a00b00113fae918bfmr4915811oaf.66.1660283708323;
+        Thu, 11 Aug 2022 22:55:08 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id h5-20020a05683040c500b00616d25dc933sm214380otu.69.2022.08.11.22.55.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 22:54:50 -0700 (PDT)
-Subject: [PATCH] Bluetooth: L2CAP: Elide a string overflow warning
-Date:   Thu, 11 Aug 2022 22:52:49 -0700
-Message-Id: <20220812055249.8037-1-palmer@rivosinc.com>
+        Thu, 11 Aug 2022 22:55:08 -0700 (PDT)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linuxppc-dev@lists.ozlabs.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Subject: [PATCH] lib: remove lib/nodemask.c
+Date:   Thu, 11 Aug 2022 22:55:05 -0700
+Message-Id: <20220812055505.2502077-1-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Cc:     luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rivosinc.com,
-        Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+Commit 36d4b36b69590 (lib/nodemask: inline next_node_in() and
+node_random()) removed the lib/nodemask.c file, but the remove
+didn't happen when the patch was applied.
 
-Without this I get a string op warning related to copying from a
-possibly NULL pointer.  I think the warning is spurious, but it's
-tripping up allmodconfig.
-
-In file included from /scratch/merges/ko-linux-next/linux/include/linux/string.h:253,
-                 from /scratch/merges/ko-linux-next/linux/include/linux/bitmap.h:11,
-                 from /scratch/merges/ko-linux-next/linux/include/linux/cpumask.h:12,
-                 from /scratch/merges/ko-linux-next/linux/include/linux/mm_types_task.h:14,
-                 from /scratch/merges/ko-linux-next/linux/include/linux/mm_types.h:5,
-                 from /scratch/merges/ko-linux-next/linux/include/linux/buildid.h:5,
-                 from /scratch/merges/ko-linux-next/linux/include/linux/module.h:14,
-                 from /scratch/merges/ko-linux-next/linux/net/bluetooth/l2cap_core.c:31:
-In function 'memcmp',
-    inlined from 'bacmp' at /scratch/merges/ko-linux-next/linux/include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at /scratch/merges/ko-linux-next/linux/net/bluetooth/l2cap_core.c:2003:15:
-/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-In function 'memcmp',
-    inlined from 'bacmp' at /scratch/merges/ko-linux-next/linux/include/net/bluetooth/bluetooth.h:347:9,
-    inlined from 'l2cap_global_chan_by_psm' at /scratch/merges/ko-linux-next/linux/net/bluetooth/l2cap_core.c:2004:15:
-/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-   44 | #define __underlying_memcmp     __builtin_memcmp
-      |                                 ^
-/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
-  420 |         return __underlying_memcmp(p, q, size);
-      |                ^~~~~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reported-by: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- net/bluetooth/l2cap_core.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ lib/nodemask.c | 23 -----------------------
+ 1 file changed, 23 deletions(-)
+ delete mode 100644 lib/nodemask.c
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index cbe0cae73434..be7f47e52119 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -2000,11 +2000,13 @@ static struct l2cap_chan *l2cap_global_chan_by_psm(int state, __le16 psm,
- 			}
- 
- 			/* Closest match */
--			src_any = !bacmp(&c->src, BDADDR_ANY);
--			dst_any = !bacmp(&c->dst, BDADDR_ANY);
--			if ((src_match && dst_any) || (src_any && dst_match) ||
--			    (src_any && dst_any))
--				c1 = c;
-+			if (c) {
-+				src_any = !bacmp(&c->src, BDADDR_ANY);
-+				dst_any = !bacmp(&c->dst, BDADDR_ANY);
-+				if ((src_match && dst_any) || (src_any && dst_match) ||
-+				    (src_any && dst_any))
-+					c1 = c;
-+			}
- 		}
- 	}
- 
+diff --git a/lib/nodemask.c b/lib/nodemask.c
+deleted file mode 100644
+index b8a433d16b51..000000000000
+--- a/lib/nodemask.c
++++ /dev/null
+@@ -1,23 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <linux/nodemask.h>
+-#include <linux/module.h>
+-#include <linux/random.h>
+-
+-EXPORT_SYMBOL(__next_node_in);
+-
+-#ifdef CONFIG_NUMA
+-/*
+- * Return the bit number of a random bit set in the nodemask.
+- * (returns NUMA_NO_NODE if nodemask is empty)
+- */
+-int node_random(const nodemask_t *maskp)
+-{
+-	int w, bit = NUMA_NO_NODE;
+-
+-	w = nodes_weight(*maskp);
+-	if (w)
+-		bit = bitmap_ord_to_pos(maskp->bits,
+-			get_random_int() % w, MAX_NUMNODES);
+-	return bit;
+-}
+-#endif
 -- 
 2.34.1
 
