@@ -2,183 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DAA5C19F2D
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 06:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEE3C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 06:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236747AbiHLGyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 02:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        id S230270AbiHLG4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 02:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiHLGyS (ORCPT
+        with ESMTP id S229519AbiHLG4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 02:54:18 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE6BA5988
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 23:54:17 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id w5so144931lfq.5
-        for <linux-kernel@vger.kernel.org>; Thu, 11 Aug 2022 23:54:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=t3EERWAoHc/0sJzUnWIG/VXJqbeUHXe35Iq8kCfIwJ8=;
-        b=H0Rll6qOqs0V2BmA7/rXq8aEvL568CpvV8lKQ3Rn5KRJjcfJsvnHeU6JN6ie3e+jQb
-         KqVSjL28MvNTNAeD+f9a7p92RM33993ChXnC30O2V4iPLa4A0OpxfXLo6VnZD5mVX8j9
-         /mMs1KTE0M5xc5WVU0k7fH5YQbXIq4fBoNpYtztfLhZSob7Gk0NpSsvY9YNaagKTiGwM
-         I9EcusoqsELsaNje/phNRiMzW2n/gsxSKDzrAhAbT3hRUa8n5dP4+yPB2DKjvPF9yX6S
-         VR67nq/yClD4vERkuYuOmMD9YpDMf1R7iQqS3gt/3m2V+g6B3KzEgh87FPpqJAw6wbYc
-         Hzvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=t3EERWAoHc/0sJzUnWIG/VXJqbeUHXe35Iq8kCfIwJ8=;
-        b=flf07/ppUlYq5lKCF/EWZAQH+uCyAwJr8wGZ4qz007aq4+6yu6omtotarDn06RTrO3
-         oYrKMEAw25caxhMUEJ83QsDROSwYE1U/hei5N1viNtikhn+2dwyxHpJRop6QOZER6/qt
-         v9SiNDR1o+503fKzygkngMXg2qJqJFOE5f2mnvOVwE7cixbAicizIKWJaxNsWnDi48I1
-         s4jDy7FoW0272P0YoJsa82MbH1tcIRskPFkuJ3VSsOLMv4Fsn+vJ1Vm5/k/j+P3t7JB5
-         6s9Lp9aFEynWcZUHAzNHZc5W9eBBLO69O7xBj1sPNwU46NHsNfdZYKiv+/O/LQOXmejP
-         qXhA==
-X-Gm-Message-State: ACgBeo2X3x4c4Ehb1nvjQ3MfptBC7MyH2dPLY7ddHo+2E9qLA276N+vy
-        98nDkQ2i2BnuMXru5PCwUcsNbQ==
-X-Google-Smtp-Source: AA6agR6TWxarEea/EB4pqn9N8km5hXjJnqltHNgS5yLpYpMOPAOSyNuQ9fhHFdZxk7o0iINjK3m8vw==
-X-Received: by 2002:a05:6512:ac3:b0:48a:fa85:7b20 with SMTP id n3-20020a0565120ac300b0048afa857b20mr801551lfu.340.1660287255892;
-        Thu, 11 Aug 2022 23:54:15 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id q30-20020ac2511e000000b0048dacaa8c36sm107895lfb.149.2022.08.11.23.54.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 23:54:15 -0700 (PDT)
-Message-ID: <40261b95-637a-1304-2e06-8c8ff7fc377b@linaro.org>
-Date:   Fri, 12 Aug 2022 09:54:11 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/2] dt-bindings: power: supply: Add Richtek RT9471
- battery charger
-Content-Language: en-US
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        =?UTF-8?B?5ri45a2Q6aao?= <alina_yu@richtek.com>,
-        cy_huang <cy_huang@richtek.com>, alinayu829@gmail.com,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>
-References: <1660225318-4063-1-git-send-email-u0084500@gmail.com>
- <1660225318-4063-2-git-send-email-u0084500@gmail.com>
- <3cae9d60-4012-1dfd-abd9-4d0b9379e6bb@linaro.org>
- <CADiBU3_depGDZtiyizU3MB939A3oH1uTWzTMyruUy0z=u6BZkQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CADiBU3_depGDZtiyizU3MB939A3oH1uTWzTMyruUy0z=u6BZkQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Fri, 12 Aug 2022 02:56:04 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA219A9AF;
+        Thu, 11 Aug 2022 23:56:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JvNLA+vKS05zEjMOjmoQgo6H4t3atz6C9slU8CLMnPY8L21q3VxxEzky0v+KAKuLBapyt/AlYsSmcl4xDJQdkv33VKn38YB/Oa/UMULFK9jw4EjzJBO8z6Mol6b9yIWVudJpaXP0B5kIZ2nG8x5uUV9ExEjpa8K/3m3ozBrs58bggavXhCO6kvOXFNginc9vif3dyEccIsyPQrauTmE2vTizF2JyVq5tGiaj0esDsZS2caC6u/G3YIJ6y/gXzWWFcQzZAuEgvyHlsoX7Cik1dQZ0U6f69vYdAuyyXxeRao4m3j3YCvhMP2DN4T2W3wRoaGdI9Nhwo4bIyQ5hZk+yhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IYlbY3q62BYY1g9+wOLJHOzFxXIIicaV0IbKyxqmz2A=;
+ b=KQjVzoqyTk++N3iXYZ+g7bv7fauqXc/WCzjexh+ZG7aS9xzuDPho8D7CfMwi73WBu0JbyWq0MlOBVDp6o2A+P1TX4Bs/+BdX2msXcJXSlN7BnXx/BpDm6rPRe73IBpiLsKxcuo9fLaFAVUF8ox8wik3ve7kRYlMKOZ2lGAHt85wIz5Yq7aNp6etmVnADRMhBqt9ahmQMlxX4PMG3Ftwj/HxDKooBEmUCCudVBNQNOCuoclFSZj07ZTbhRkMeobk58M77hwknVmehtb3sDCiNtkO1NjdfaPNXf54hoAyY9r4v+n8c9c/k/8+2sOB8tv7vjteKUPWEvG2JnqaemUjfbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IYlbY3q62BYY1g9+wOLJHOzFxXIIicaV0IbKyxqmz2A=;
+ b=jEH1Vmm3zoxUSiCj5QrlxYZX5kSTZOcOWxXGqaoGHGo8bZI/vy8FNDPyX3xn9wRuBFAdnFUV8GQjhzUewUkv+RFEQU429IZI9GmaPm1dE+A5QMDcalcY1+h1Rxsx0NGCwbOdXbVgjkzDAOMbM1JjCF3T7td9Z5ZiVQ5s+7Z6eCI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by DU2PR04MB8616.eurprd04.prod.outlook.com (2603:10a6:10:2db::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Fri, 12 Aug
+ 2022 06:56:00 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::5598:eebf:2288:f279]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::5598:eebf:2288:f279%9]) with mapi id 15.20.5525.010; Fri, 12 Aug 2022
+ 06:56:00 +0000
+From:   wei.fang@nxp.com
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, f.fainelli@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/2] Add DT property to disable hibernation mode
+Date:   Sat, 13 Aug 2022 00:50:07 +1000
+Message-Id: <20220812145009.1229094-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0207.apcprd06.prod.outlook.com
+ (2603:1096:4:68::15) To DB9PR04MB8106.eurprd04.prod.outlook.com
+ (2603:10a6:10:24b::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: efc2b412-6b2d-4f6f-2416-08da7c2fb6fc
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8616:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Nff4V+9hLuZwSBSKDK3tzZSxDTKE9LqzK0z1/7nWS8s92TAy9OwIeaNbI9ewwpOEVFYmQznkECoLCzjKTZamN4vCSvpzPqbbE1263DmhzTlPNQfnGFwWRUjsnGGRzXAOwj3tDJR5LKd4VOS7vZs3gcpziwn3XmDAW+qTd4ThXIQVGBERvpOWrsDN74e38DYRdVqBUrgSma8wOVbR/WyBqHK5Ar8R3XUlmGsBPxS0qgZlXi0PXP8Zs5I1vhw4Jp/1/RKccIQoCvtnZvj2E98qSu+8/U866JOD6IWgzZ1SQhxP+1qs3xD+zzl+HYXp3DAD6n0/VJsLgBCri9DF/BJXbNbFgsMbBVj5vkyxS/fy5W9AG+so/I+yl3si3PS2xQ0Fa3hYIqTFVoS/1WuJeZhJRi0c8ULljlGYvKS8XAk3kn+Yqb7I/7bxqg/RMUq6GHMJ0Ipm69liD/qBGD252Q3kPxqecd8L4Nr/htShFFsZYWeNdFjDueWfEbBoEco0w1n0HDAi2YK1Tjz+ufQDTkBYr04kz4w6JRHO66CDUHlTN10kJVO4Cuw2et/WZhI2QR5fFPXcMXHqL02DjpQHKzpFkirt2b4WufTn+18faug5P4PM2SsRvQd42J2OZDNdbt29imP6n5jBR38DNGMwhjSFzVoTmDvW49fEBef83qIhhnhIBfvyxRBz6p7o7PAAa3Sa0xa2UnRL5YHAQnb8jJHzCYl61cFeZhPd7eeRkECnMAE4ED+F0V3GqUPoIetsCavW9sV5PXM2QCyPuMuGh3VytZlwXAcqDLnAIXtBXI+7hzJpCu6FdBK3+Ol/MCPmZZMvKktzSb66KgKmYE+GQ1M7iA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(346002)(376002)(39860400002)(136003)(8676002)(66476007)(66556008)(66946007)(5660300002)(316002)(4744005)(7416002)(2906002)(8936002)(38100700002)(38350700002)(921005)(26005)(36756003)(6506007)(6512007)(86362001)(478600001)(9686003)(41300700001)(83380400001)(6486002)(52116002)(2616005)(1076003)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4VsDFIRJp8jS0YNM8QSC88Fiy9tdEaX/euHRglsVQEodkOJm3EytOvS46jzQ?=
+ =?us-ascii?Q?EYCHmqL8wL1uUuquApcmUvjxcnCyeRVYp7dUx3kUYteoN1FRtbgu9Ju3nB4h?=
+ =?us-ascii?Q?XYUmZMuOcdbXgr9fSgsXYq011YREXoOO1aZPO/DteHwtY5L9q++7ESejRnT/?=
+ =?us-ascii?Q?eBYUXA61KP3Acj/cn5WF1BYihzs8atsw3rO3JHwfBJsFZeBYty/SaSITdZDP?=
+ =?us-ascii?Q?CwY5xr9cfNBhC3vEVjDMTA3LDYUI0oc7I4/+B0gvCpICo5PL8xdbjxylfrgM?=
+ =?us-ascii?Q?HRYdCtK1nDTVoVH4l2URwFFk1VZpQnBDKcKDpi+zv0o9vqE1AbBZrEFYId/H?=
+ =?us-ascii?Q?NEM/fwkveECNTtgiTHVm5PrLTzv0CRAYSooJYB0R4kZtmlfPnQwIOOD69FtK?=
+ =?us-ascii?Q?D7hogx5B3/HOKRu+rMaNI9fGkmOHhCeEhYR5GgXXg4F6IgpkxI1tw0EcaPRn?=
+ =?us-ascii?Q?greUsZQRyPhkkX+5Tic/Te0KK1pk7Aevz7tvVmeIri0JaBItVLnyzzvffrlg?=
+ =?us-ascii?Q?UIovdPuJ1Ngos9hau+48+p/qdL3TFhDdgBE4loqC0vg2wbIuaT/LBNUWVD+b?=
+ =?us-ascii?Q?AkUb8qE99AxF32UaQbtADAXEBX8wFathUYuXw/secIPHE5hvD4ZQrgFkMmnt?=
+ =?us-ascii?Q?PXb6UfNcIuTX28Q4zHZZV6u3ZYnqZX894a7nCl3RApIApR0dHoUht5HYIcV1?=
+ =?us-ascii?Q?ksxIpeDkHGIxZY7W+4a1uILSApZahnGrfkBoJYKkqR/3PPSSuy9P+kmt6sD/?=
+ =?us-ascii?Q?l7us3uZUiLaCpfvHFmt3eiezEDkM5i0E4A5IQIKnXFEJHKmA4MNr0sp795Zb?=
+ =?us-ascii?Q?noectaY/4i1un9HxyLjT55yGPeTdGR4I+KcIOthMXNgu081YTWHbqE04zzPr?=
+ =?us-ascii?Q?/K8anmCs4zfFvnkLcxLVcFATQuyTeTdImTD75U7ZtY4XaP0aejjmDrOOO5YS?=
+ =?us-ascii?Q?wwmL9fJ0PT5I+jkTw8xNiVqn+TVPDTYlnbxgF9j1pR5VJfSqP6/6jrdXnpeR?=
+ =?us-ascii?Q?X8TNPwk6/W9jtjm+6yqpzb3DZ+nk0V4eSWg8GWZ+h19kN1NaEzBmhkKYpQ/P?=
+ =?us-ascii?Q?w5rwBKftCQ5DsdAUOZu9QxqdBJrOXo02kiZwcFEYg3U0Syj8snFq11sW+7GZ?=
+ =?us-ascii?Q?pUPVPjwbHU3Ej8nBVsECkPcE3NM0/7Sul9J9NH2KE6V2Rht0N0S9cdzjpWGT?=
+ =?us-ascii?Q?LMYcBZY2h0RYeY7Mqq2IHBFteTwaOP9c//IVDIu7DGi2QP4NfGIcKZgmgc6t?=
+ =?us-ascii?Q?42Sd2CtAD99nGNE2HYbGWaTXtgd6h6XNhJuqYqX/gl6UR4L4gvglTwdvAxAl?=
+ =?us-ascii?Q?2mUAdpZ4084WrFaT2EhYy3DD0OVEOGSs+Z1fSYaIIpPQc5ZfJxbBEKNwe0Sh?=
+ =?us-ascii?Q?eViniPOxHrDEnVvr5mxZuHuV7uFWMz3DI+AZAwY8qgi1q8Tl00l3cVFgnA1T?=
+ =?us-ascii?Q?D2KXWnh0Y3cr7AmUq2TufPdQuJXCatHYtNlCWtTVTrOgffZSQiXEK7vUxqgP?=
+ =?us-ascii?Q?p15lMF68fvHURhuIU/J9eEhF+to4BZaZzmu7DpEm4f0Le3b5FqDNOBBvvvJX?=
+ =?us-ascii?Q?tF6HsyzmxF0rnN0JKRq4i3vF8czzUFvB9e/4wyd/?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: efc2b412-6b2d-4f6f-2416-08da7c2fb6fc
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2022 06:56:00.4911
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WWIsUj5asRjvStYVYbe60+iW+0xqqJdggLwg+/qOYHpYaYAGqBMgJXm5et6v+VrG0C1r6xymtn/0/mAVS6hNvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8616
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 04:32, ChiYuan Huang wrote:
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年8月11日 週四 晚上10:12寫道：
->>
->> On 11/08/2022 16:41, cy_huang wrote:
->>> From: ChiYuan Huang <cy_huang@richtek.com>
->>>
->>> Add bindings for the Richtek RT9471 I2C controlled battery charger.
->>>
->>
->> Thank you for your patch. There is something to discuss/improve.
->>
->>> +properties:
->>> +  compatible:
->>> +    const: richtek,rt9471
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  ceb-gpios:
->>> +    maxItems: 1
->>
->> This looks not standard, so please provide a description.
-> It's the external 'charge enable' pin that's used to control battery charging.
-> The priority is higher than the register 'CHG_EN' control.
-> In the word, 'b' means it's reverse logic, low to allow charging, high
-> to force disable charging.
+From: Wei Fang <wei.fang@nxp.com>
 
-Isn't this standard enable-gpios property?
+The patches add the ability to disable the hibernation mode of AR803x
+PHYs. Hibernation mode defaults to enabled after hardware reset on
+these PHYs. If the AR803x PHYs enter hibernation mode, they will not
+provide any clock. For some MACs, they might need the clocks which
+provided by the PHYs to support their own hardware logic.
+So, the patches add the supoort to disable hibernation mode by adding
+a boolean:
+	qca,disable-hibernation
+If one wished to disable hibernation mode to better match with the
+specifical MAC, just add this property in the phy node of DT.
 
-> 
-> description:
->   External charge enable pin that can force control not to charge the battery.
->   Low to allow charging, high to disable charging.
-> 
->>
->>> +
->>> +  wakeup-source: true
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +  interrupt-controller: true
->>> +
->>> +  "#interrupt-cells":
->>> +    const: 1
->>
->> Why a charger driver is a interrupt-controller?
-> There're 32 nested IRQs from RT9471.
-> The original thought is to make the user easy to bind the interrupt
-> into their driver.
+Wei Fang (2):
+  dt: ar803x: Document disable-hibernation property
+  net: phy: at803x: Add disable hibernation mode support
 
-Bindings are not related to the driver but to hardware...
+ .../devicetree/bindings/net/qca,ar803x.yaml   |  6 +++++
+ drivers/net/phy/at803x.c                      | 25 +++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-> 
-> For charger driver, does it mean legacy IRQ handler is more preferred?
+-- 
+2.25.1
 
-Who is the consumer of these interrupts? Can you show the DTS with the
-interrupt consumer?
-
->>
->>> +
->>> +  usb-otg-vbus-regulator:
->>> +    type: object
->>> +    unevaluatedProperties: false
->>> +    $ref: /schemas/regulator/regulator.yaml#
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - wakeup-source
->>> +  - interrupts
->>> +  - interrupt-controller
->>> +  - "#interrupt-cells"
->>> +
->>> +additionalProperties: false
->>> +
->>> +examples:
->>> +  - |
->>> +    #include <dt-bindings/interrupt-controller/irq.h>
->>> +    i2c {
->>> +      #address-cells = <1>;
->>> +      #size-cells = <0>;
->>> +
->>> +      charger@53 {
->>> +        compatible = "richtek,rt9471";
->>> +        reg = <0x53>;
->>> +        ceb-gpios = <&gpio26 1 0>;
->>
->> Isn't the last value a GPIO flag? If yes, use appropriate define.
-> I already specify GPIOD_OUT_LOW in the gpiod_request flag.
-
-It is not related to the DTS. Anyway writing "low" for a meaning of high
-is not correct usually...
-
-> Do I need to convert the gpio request code to GPIOD_OUT_HIGH,
-> and specify here as GPIO_ACTIVE_LOW?
-
-You need to properly describe the hardware. The polarity of logical
-signal is defined by DTS, not by driver. It does not make sense to do it
-in driver. What if on some board the signal is inverted?
-
-Best regards,
-Krzysztof
