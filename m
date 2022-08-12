@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFE0C48BE4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC249C2BB43
 	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239480AbiHLRcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 13:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        id S239499AbiHLRcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 13:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239443AbiHLRbf (ORCPT
+        with ESMTP id S239478AbiHLRbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 13:31:35 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9CBB248D;
-        Fri, 12 Aug 2022 10:31:34 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id e28so1278782qts.1;
-        Fri, 12 Aug 2022 10:31:34 -0700 (PDT)
+        Fri, 12 Aug 2022 13:31:39 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260C5A74CD;
+        Fri, 12 Aug 2022 10:31:38 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id m10so1103857qvu.4;
+        Fri, 12 Aug 2022 10:31:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=sjab8NUtyjy7A2QDJ5EJm8tKiQk79yMcDvt2JCTAsw0=;
-        b=nVfrYlWRzDUck1DebjdefJaXAbtcBFycnp3gtj02ghP5oPhHFZt3ezQehqJREv5ZBH
-         hjAIiGNKIPyzrDTKrdg8pcNUYIAX+JZSq2dV9m8UnBvk46J2grPf4MDis6AKTQjm4fa7
-         ZDV+izdVleyUaPxVcz26pGnsyWBeX+b41v4RD5p2RYmdD6c/naCfAMTGDcQt5JEppgha
-         +YF6FnFNY4IjO7K9wuGWRVNi8nqyDItYrspckF9/9DdfsNHJOUYTKmdbcfytFzbXozcw
-         qARmUeUWRQWaqrNPY4rRJMimxsLepF8cPymk4EMV9qLx6ktPnPR5X0B3cTz7/z/goAX4
-         fyyw==
+        bh=cnGlLj7kED+0umSEXRpR16vGmIvX7t6d2KRAOcwODhM=;
+        b=MGA99ssFFqlEVlrOGCKGkOxcIkvMYXSafVJRuJkbjSRW6ZQZXrQO8bH63MLzzAWuj3
+         0sZrhgA/IjEywdx7USDWyWU8kkDXua6VydU9Yppf2xRoowV+uAmM4y/MtIAQO1wmj3Le
+         zD1rUnbLmwqudrVN/kZjkUzxs2pqTplH8tpwsrgAXLafKuv8br//BydSOucAwCaRux++
+         AUpWd0qSRIOtM61n+ZPxIys/chEzTPXBtqfha5sG7el0HeePfiUl4UF+wI9GqlaenAPm
+         dB6zilZYacmosdv2m+fGOBq0LkCdWNTTInb9MuNdDU34ISpoNmk/ZWzSiNZLAkffZLlP
+         yRzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=sjab8NUtyjy7A2QDJ5EJm8tKiQk79yMcDvt2JCTAsw0=;
-        b=svWFdSDal9u1T7yoNv8y6NB5WGETJ2HdGR+p9UOogGNEhMCHh4Jq68+05QFlSbSHS8
-         ltOo3yZrTKjIqvE/kefuo/iRxSbzVfOKpGa7OLRt5qQteyl497EmhAaZX8YT/+mAxmoL
-         85jxcVpt3eO6zAGMkeyVIXX/1/aUG5wo2oU46g5OE0et6IlMLdqUxr2zVrKCP3AlveXj
-         zh4tnROGtpy1x7ac813oU2OIixBnCqNesBFE74e8V1TVf4gWmQl695gIHC32ApGObnJ3
-         l9WWOppOnuImzlzUFxhKsTAjdEjMb/mTazZcXuJyaP1+sQZwMxmTSGUjhaa7djjL48bB
-         0kqA==
-X-Gm-Message-State: ACgBeo20m4THIDLBbrT7VI610KPQFs4UNuU1Efrh6jFGXENHHUnTemOC
-        R8mdEds4KnteSM+yfiSnqRZ1dc1tevk=
-X-Google-Smtp-Source: AA6agR6veVPiUF+nEdr/188KNF2vU9BS5nI9czYnLmdhXiGGtIpVOVA6S42K7vjG48rnySciwI63sw==
-X-Received: by 2002:a05:622a:48d:b0:343:7386:8b6f with SMTP id p13-20020a05622a048d00b0034373868b6fmr3162397qtx.280.1660325493535;
-        Fri, 12 Aug 2022 10:31:33 -0700 (PDT)
+        bh=cnGlLj7kED+0umSEXRpR16vGmIvX7t6d2KRAOcwODhM=;
+        b=GeUS/h1j3cBRlANbXlWY/1Vx8ww81glVdOauKvfkwbja8Gs8wgw2k9vKvayLJELGXK
+         3eLwluDxpO8HaT7Gpy6nKv2TXSFVzliqZ4ni3HCOfNv44K00YZtF99XOcdK08rAJJNEy
+         jxFBCWolscvX4FsOGCnv8AVikhp+5eztwq9Bfpn7KPh2edzsi52mX3t/zrkBk53B5elF
+         lfpiaLm8AjHVBslW5MptCisBuoVMiYeqVJ2js5JCe5NB603c1p50mal38uF6GOiDqhns
+         GBfveimbRlC36HJfXAOPu8rWS+gUta7xvZRiqeVPK7q/N1ETZMa/2r4X+3WnLLT+u/0a
+         gW+A==
+X-Gm-Message-State: ACgBeo3db620u+ZFn4Z5hg7P6hhbzK4YJe+35bVtWPis+KBCkdZmr9b0
+        ZulCzAQ+Q7drQ1C2wc32GU8iJJJAjO0=
+X-Google-Smtp-Source: AA6agR5kfmGbiogVJ0hhJaTlzcrxGrG6qZnCaVjbES36ieV6xOVRdmh/miB/l4dHYh4ov9v1IfXaqQ==
+X-Received: by 2002:a05:6214:d66:b0:476:a5d7:57e5 with SMTP id 6-20020a0562140d6600b00476a5d757e5mr4558989qvs.113.1660325496734;
+        Fri, 12 Aug 2022 10:31:36 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t201-20020a37aad2000000b006b9b7879964sm2369300qke.28.2022.08.12.10.31.31
+        by smtp.gmail.com with ESMTPSA id t201-20020a37aad2000000b006b9b7879964sm2369300qke.28.2022.08.12.10.31.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 10:31:32 -0700 (PDT)
+        Fri, 12 Aug 2022 10:31:36 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -60,9 +59,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         ARM ARCHITECTURE),
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
         DEVICE TREE BINDINGS)
-Subject: [PATCH v4 1/3] dt-bindings: memory-controller: Document Broadcom STB MEMC
-Date:   Fri, 12 Aug 2022 10:31:23 -0700
-Message-Id: <20220812173125.2410536-2-f.fainelli@gmail.com>
+Subject: [PATCH v4 3/3] memory: Add Broadcom STB memory controller driver
+Date:   Fri, 12 Aug 2022 10:31:25 -0700
+Message-Id: <20220812173125.2410536-4-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220812173125.2410536-1-f.fainelli@gmail.com>
 References: <20220812173125.2410536-1-f.fainelli@gmail.com>
@@ -72,101 +71,357 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the Broadcom STB memory controller which is a trivial binding
-for now with a set of compatible strings and single register.
+Add support for configuring the Self Refresh Power Down (SRPD)
+inactivity timeout on Broadcom STB chips. This is used to conserve power
+when the DRAM activity is reduced.
 
-Since we introduce this binding, the section in
-Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt is removed
-and this binding is referenced instead.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../bindings/arm/bcm/brcm,brcmstb.txt         | 11 +---
- .../brcm,brcmstb-memc-ddr.yaml                | 52 +++++++++++++++++++
- 2 files changed, 54 insertions(+), 9 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml
+ drivers/memory/Kconfig        |   9 +
+ drivers/memory/Makefile       |   1 +
+ drivers/memory/brcmstb_memc.c | 301 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 311 insertions(+)
+ create mode 100644 drivers/memory/brcmstb_memc.c
 
-diff --git a/Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt b/Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt
-index 104cc9b41df4..e797d2f69f3b 100644
---- a/Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt
-+++ b/Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt
-@@ -187,15 +187,8 @@ Required properties:
- Sequencer DRAM parameters and control registers. Used for Self-Refresh
- Power-Down (SRPD), among other things.
+diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+index ac1a411648d8..fac290e48e0b 100644
+--- a/drivers/memory/Kconfig
++++ b/drivers/memory/Kconfig
+@@ -66,6 +66,15 @@ config BRCMSTB_DPFE
+ 	  for the DRAM's temperature. Slower refresh rate means cooler RAM,
+ 	  higher refresh rate means hotter RAM.
  
--Required properties:
--- compatible     : should contain one of these
--	"brcm,brcmstb-memc-ddr-rev-b.2.1"
--	"brcm,brcmstb-memc-ddr-rev-b.2.2"
--	"brcm,brcmstb-memc-ddr-rev-b.2.3"
--	"brcm,brcmstb-memc-ddr-rev-b.3.0"
--	"brcm,brcmstb-memc-ddr-rev-b.3.1"
--	"brcm,brcmstb-memc-ddr"
--- reg            : the MEMC DDR register range
-+See Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml for a
-+full list of supported compatible strings and properties.
- 
- Example:
- 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml b/Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml
++config BRCMSTB_MEMC
++	tristate "Broadcom STB MEMC driver"
++	default ARCH_BRCMSTB
++	depends on ARCH_BRCMSTB || COMPILE_TEST
++	help
++	  This driver provides a way to configure the Broadcom STB memory
++	  controller and specifically control the Self Refresh Power Down
++	  (SRPD) inactivity timeout.
++
+ config BT1_L2_CTL
+ 	bool "Baikal-T1 CM2 L2-RAM Cache Control Block"
+ 	depends on MIPS_BAIKAL_T1 || COMPILE_TEST
+diff --git a/drivers/memory/Makefile b/drivers/memory/Makefile
+index bc7663ed1c25..e148f636c082 100644
+--- a/drivers/memory/Makefile
++++ b/drivers/memory/Makefile
+@@ -11,6 +11,7 @@ obj-$(CONFIG_ARM_PL172_MPMC)	+= pl172.o
+ obj-$(CONFIG_ATMEL_SDRAMC)	+= atmel-sdramc.o
+ obj-$(CONFIG_ATMEL_EBI)		+= atmel-ebi.o
+ obj-$(CONFIG_BRCMSTB_DPFE)	+= brcmstb_dpfe.o
++obj-$(CONFIG_BRCMSTB_MEMC)	+= brcmstb_memc.o
+ obj-$(CONFIG_BT1_L2_CTL)	+= bt1-l2-ctl.o
+ obj-$(CONFIG_TI_AEMIF)		+= ti-aemif.o
+ obj-$(CONFIG_TI_EMIF)		+= emif.o
+diff --git a/drivers/memory/brcmstb_memc.c b/drivers/memory/brcmstb_memc.c
 new file mode 100644
-index 000000000000..4b072c879b02
+index 000000000000..5705b346b1f5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/memory-controllers/brcm,brcmstb-memc-ddr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/memory/brcmstb_memc.c
+@@ -0,0 +1,301 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * DDR Self-Refresh Power Down (SRPD) support for Broadcom STB SoCs
++ *
++ */
 +
-+title: Memory controller (MEMC) for Broadcom STB
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
 +
-+maintainers:
-+  - Florian Fainelli <f.fainelli@gmail.com>
++#define REG_MEMC_CNTRLR_CONFIG		0x00
++#define  CNTRLR_CONFIG_LPDDR4_SHIFT	5
++#define  CNTRLR_CONFIG_MASK		0xf
++#define REG_MEMC_SRPD_CFG_21		0x20
++#define REG_MEMC_SRPD_CFG_20		0x34
++#define REG_MEMC_SRPD_CFG_1x		0x3c
++#define INACT_COUNT_SHIFT		0
++#define INACT_COUNT_MASK		0xffff
++#define SRPD_EN_SHIFT			16
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - brcm,brcmstb-memc-ddr-rev-b.1.x
-+          - brcm,brcmstb-memc-ddr-rev-b.2.0
-+          - brcm,brcmstb-memc-ddr-rev-b.2.1
-+          - brcm,brcmstb-memc-ddr-rev-b.2.2
-+          - brcm,brcmstb-memc-ddr-rev-b.2.3
-+          - brcm,brcmstb-memc-ddr-rev-b.2.5
-+          - brcm,brcmstb-memc-ddr-rev-b.2.6
-+          - brcm,brcmstb-memc-ddr-rev-b.2.7
-+          - brcm,brcmstb-memc-ddr-rev-b.2.8
-+          - brcm,brcmstb-memc-ddr-rev-b.3.0
-+          - brcm,brcmstb-memc-ddr-rev-b.3.1
-+          - brcm,brcmstb-memc-ddr-rev-c.1.0
-+          - brcm,brcmstb-memc-ddr-rev-c.1.1
-+          - brcm,brcmstb-memc-ddr-rev-c.1.2
-+          - brcm,brcmstb-memc-ddr-rev-c.1.3
-+          - brcm,brcmstb-memc-ddr-rev-c.1.4
-+      - const: brcm,brcmstb-memc-ddr
++struct brcmstb_memc_data {
++	u32 srpd_offset;
++};
 +
-+  reg:
-+    maxItems: 1
++struct brcmstb_memc {
++	struct device *dev;
++	void __iomem *ddr_ctrl;
++	unsigned int timeout_cycles;
++	u32 frequency;
++	u32 srpd_offset;
++};
 +
-+  clock-frequency:
-+    description: DDR PHY frequency in Hz
++static int brcmstb_memc_uses_lpddr4(struct brcmstb_memc *memc)
++{
++	void __iomem *config = memc->ddr_ctrl + REG_MEMC_CNTRLR_CONFIG;
++	u32 reg;
 +
-+required:
-+  - compatible
-+  - reg
++	reg = readl_relaxed(config) & CNTRLR_CONFIG_MASK;
 +
-+additionalProperties: false
++	return reg == CNTRLR_CONFIG_LPDDR4_SHIFT;
++}
 +
-+examples:
-+  - |
-+    memory-controller@9902000 {
-+        compatible = "brcm,brcmstb-memc-ddr-rev-c.1.1", "brcm,brcmstb-memc-ddr";
-+        reg = <0x9902000 0x600>;
-+        clock-frequency = <2133000000>;
-+    };
++static int brcmstb_memc_srpd_config(struct brcmstb_memc *memc,
++				    unsigned int cycles)
++{
++	void __iomem *cfg = memc->ddr_ctrl + memc->srpd_offset;
++	u32 val;
++
++	/* Max timeout supported in HW */
++	if (cycles > INACT_COUNT_MASK)
++		return -EINVAL;
++
++	memc->timeout_cycles = cycles;
++
++	val = (cycles << INACT_COUNT_SHIFT) & INACT_COUNT_MASK;
++	if (cycles)
++		val |= BIT(SRPD_EN_SHIFT);
++
++	writel_relaxed(val, cfg);
++	/* Ensure the write is committed to the controller */
++	(void)readl_relaxed(cfg);
++
++	return 0;
++}
++
++static ssize_t frequency_show(struct device *dev,
++			      struct device_attribute *attr, char *buf)
++{
++	struct brcmstb_memc *memc = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", memc->frequency);
++}
++
++static ssize_t srpd_show(struct device *dev,
++			 struct device_attribute *attr, char *buf)
++{
++	struct brcmstb_memc *memc = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", memc->timeout_cycles);
++}
++
++static ssize_t srpd_store(struct device *dev, struct device_attribute *attr,
++			  const char *buf, size_t count)
++{
++	struct brcmstb_memc *memc = dev_get_drvdata(dev);
++	unsigned int val;
++	int ret;
++
++	/*
++	 * Cannot change the inactivity timeout on LPDDR4 chips because the
++	 * dynamic tuning process will also get affected by the inactivity
++	 * timeout, thus making it non functional.
++	 */
++	if (brcmstb_memc_uses_lpddr4(memc))
++		return -EOPNOTSUPP;
++
++	ret = kstrtouint(buf, 10, &val);
++	if (ret < 0)
++		return ret;
++
++	ret = brcmstb_memc_srpd_config(memc, val);
++	if (ret)
++		return ret;
++
++	return count;
++}
++
++static DEVICE_ATTR_RO(frequency);
++static DEVICE_ATTR_RW(srpd);
++
++static struct attribute *dev_attrs[] = {
++	&dev_attr_frequency.attr,
++	&dev_attr_srpd.attr,
++	NULL,
++};
++
++static struct attribute_group dev_attr_group = {
++	.attrs = dev_attrs,
++};
++
++static const struct of_device_id brcmstb_memc_of_match[];
++
++static int brcmstb_memc_probe(struct platform_device *pdev)
++{
++	const struct brcmstb_memc_data *memc_data;
++	const struct of_device_id *of_id;
++	struct device *dev = &pdev->dev;
++	struct brcmstb_memc *memc;
++	int ret;
++
++	memc = devm_kzalloc(dev, sizeof(*memc), GFP_KERNEL);
++	if (!memc)
++		return -ENOMEM;
++
++	dev_set_drvdata(dev, memc);
++
++	of_id = of_match_device(brcmstb_memc_of_match, dev);
++	memc_data = of_id->data;
++	memc->srpd_offset = memc_data->srpd_offset;
++
++	memc->ddr_ctrl = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(memc->ddr_ctrl))
++		return PTR_ERR(memc->ddr_ctrl);
++
++	of_property_read_u32(pdev->dev.of_node, "clock-frequency",
++			     &memc->frequency);
++
++	ret = sysfs_create_group(&dev->kobj, &dev_attr_group);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int brcmstb_memc_remove(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++
++	sysfs_remove_group(&dev->kobj, &dev_attr_group);
++
++	return 0;
++}
++
++enum brcmstb_memc_hwtype {
++	BRCMSTB_MEMC_V21,
++	BRCMSTB_MEMC_V20,
++	BRCMSTB_MEMC_V1X,
++};
++
++static const struct brcmstb_memc_data brcmstb_memc_versions[] = {
++	{ .srpd_offset = REG_MEMC_SRPD_CFG_21 },
++	{ .srpd_offset = REG_MEMC_SRPD_CFG_20 },
++	{ .srpd_offset = REG_MEMC_SRPD_CFG_1x },
++};
++
++static const struct of_device_id brcmstb_memc_of_match[] = {
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.1.x",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V1X]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.0",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V20]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.1",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.2",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.3",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.5",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.6",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.7",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.2.8",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.3.0",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-b.3.1",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.0",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.1",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.2",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.3",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	{
++		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.4",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
++	},
++	/* default to the original offset */
++	{
++		.compatible = "brcm,brcmstb-memc-ddr",
++		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V1X]
++	},
++	{}
++};
++
++static int __maybe_unused brcmstb_memc_suspend(struct device *dev)
++{
++	struct brcmstb_memc *memc = dev_get_drvdata(dev);
++	void __iomem *cfg = memc->ddr_ctrl + memc->srpd_offset;
++	u32 val;
++
++	if (memc->timeout_cycles == 0)
++		return 0;
++
++	/*
++	 * Disable SRPD prior to suspending the system since that can
++	 * cause issues with other memory clients managed by the ARM
++	 * trusted firmware to access memory.
++	 */
++	val = readl_relaxed(cfg);
++	val &= ~BIT(SRPD_EN_SHIFT);
++	writel_relaxed(val, cfg);
++	/* Ensure the write is committed to the controller */
++	(void)readl_relaxed(cfg);
++
++	return 0;
++}
++
++static int __maybe_unused brcmstb_memc_resume(struct device *dev)
++{
++	struct brcmstb_memc *memc = dev_get_drvdata(dev);
++
++	if (memc->timeout_cycles == 0)
++		return 0;
++
++	return brcmstb_memc_srpd_config(memc, memc->timeout_cycles);
++}
++
++static SIMPLE_DEV_PM_OPS(brcmstb_memc_pm_ops, brcmstb_memc_suspend,
++			 brcmstb_memc_resume);
++
++static struct platform_driver brcmstb_memc_driver = {
++	.probe = brcmstb_memc_probe,
++	.remove = brcmstb_memc_remove,
++	.driver = {
++		.name		= "brcmstb_memc",
++		.of_match_table	= brcmstb_memc_of_match,
++		.pm		= pm_ptr(&brcmstb_memc_pm_ops),
++	},
++};
++module_platform_driver(brcmstb_memc_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Broadcom");
++MODULE_DESCRIPTION("DDR SRPD driver for Broadcom STB chips");
 -- 
 2.25.1
 
