@@ -2,200 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99004C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 22:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F416C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 22:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236473AbiHLWNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 18:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56124 "EHLO
+        id S236613AbiHLWPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 18:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiHLWNn (ORCPT
+        with ESMTP id S230114AbiHLWPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 18:13:43 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0F8B56C9;
-        Fri, 12 Aug 2022 15:13:37 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id t11so1812270qkt.6;
-        Fri, 12 Aug 2022 15:13:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=1WmEuleUtKFzhNcHuOsLdMzAycKl9X7Wf9lbyjW+VWM=;
-        b=mLW8T3W/9epz8BVUrUfp6XlTYkUoFDiiBChX8bppqJQ0TnnPqVmvO10uGlk8p9LF+A
-         9cvNiag3MgzvfqKRPl1BrEpPecQUiYfwtp3NVTneOVwlKHtysEDmr7WOE96+AfV2vDXR
-         w9AUmlUwU/Fm/eE8Cf93HZUcaMvIp/FAOipG3L/WNlz3ULVyw8zC2bYhDuEAu0/lwuqA
-         vhUcHbj0eRzSGJ4T/YAyCreDxbedgCyJnQOGOFNKbwMENFzIBgm0i0C/gvW/bCZO0MjH
-         TodSTineiBRY2P8qyTiVx0pdjBhzBJL/a6om1IEQMY8p4K7X3IJPlH5XaWHgYqEzU2C+
-         BPXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=1WmEuleUtKFzhNcHuOsLdMzAycKl9X7Wf9lbyjW+VWM=;
-        b=LDjIpY7bag/7KWGYeCqh99opB68qQFV7PV84mjuRtMryG4bs+ctPSBpNegYdPm7aYf
-         jeDGEelcIjW0d4dJcmc0Yd+/x+sm02Y7fZHURNhWWsB/yQhwzmGZxV+GsOUlC/2UlmKa
-         Wn7Faz8lzuweKvTi+Hj+8SMN3Wd5jeM37NukAK1LX32aCiAgcWBX+FXHTVUTzfoLyd64
-         67KAGEzIOaO7IzDJwFjrztFnFCURpkcrPJkdeGEDaXKodORkY6qctuybfB6szxL6MCvp
-         5cR4ympRoYjnGfxZQokqGOuRISgArCGkCVP+GT3pdk0WaLGbjVMcHUZY5QC6QJRVKqSJ
-         t9iw==
-X-Gm-Message-State: ACgBeo3gyCLg4FdELX6cHkDXdg7hMbq7+pHc/6hruYFkGwHaMT9WiCdd
-        AzBWtN7d4/OgJCEd/orowxBdX7y+oEsPPgfHPOqzrAlu
-X-Google-Smtp-Source: AA6agR7puMvpGoIfdye97PZAuaPYIeCZ+wxBUmcWePY+V8f+x/WY72LP2bkHDVgAwPX9fZliO5QozDXO+zctOhpmdRc=
-X-Received: by 2002:a05:620a:2987:b0:6ba:dc04:11ae with SMTP id
- r7-20020a05620a298700b006badc0411aemr2596449qkp.748.1660342416467; Fri, 12
- Aug 2022 15:13:36 -0700 (PDT)
+        Fri, 12 Aug 2022 18:15:00 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F28B56D2
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 15:15:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660342500; x=1691878500;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lrur/oeSbsziFfhl/Azs7jLuzFoEl0QHcQ43sDsdO1w=;
+  b=S1xxk5/I5TfeH1fjMDzH/5TMLaqTeBtoTJB08/BkEwvCOHWl9NLi5EKD
+   waVNELYSmvI6Q6a8wnIxdYvcsFko7GxRKKvXFKlBzQ7q/I2tA2kWsZy0h
+   5Orsuj34VWLWR9EmnqIoDXAPudmGqaj9NeYdRz/U0Hgvtcr1T7W9o/yFP
+   PAgYcPtlXJwyAb6BcboPLY0rbZW3PTd/XeLcurgGnC+W/zzVjQVvIu/Ax
+   LAhJvbxzosW6Z/YSmZ60jGmfS5D5UGtcmKAsghRmNcqgcQPOr3ipRveSR
+   akYVdQ6b7ZMd4KueOBl23pclqF0sjTyGqiHa2Mn0V3OwedOWHiXN6KJxc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="292494249"
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="292494249"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 15:14:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="665993174"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Aug 2022 15:14:58 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMcvh-00010B-2k;
+        Fri, 12 Aug 2022 22:14:57 +0000
+Date:   Sat, 13 Aug 2022 06:14:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:master] BUILD SUCCESS
+ cf020a9648c5c18be3a38d4576d7a8fe8a1cb5c6
+Message-ID: <62f6d0c2.OK+tfcY3QH4NPucs%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20220809211246.251006-1-eajames@linux.ibm.com> <20220809211246.251006-3-eajames@linux.ibm.com>
-In-Reply-To: <20220809211246.251006-3-eajames@linux.ibm.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 13 Aug 2022 01:13:00 +0300
-Message-ID: <CAHp75VdbRiWxxbnW61SNdj+pC4skeRF3prXgPvKB+btjW3dLKw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 12:12 AM Eddie James <eajames@linux.ibm.com> wrote:
->
-> Corruption of the MEAS_CFG register has been observed soon after
-> system boot. In order to recover this scenario, check MEAS_CFG if
-> measurement isn't ready, and if it's incorrect, reset the DPS310
-> and execute the startup procedure.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+branch HEAD: cf020a9648c5c18be3a38d4576d7a8fe8a1cb5c6  Merge branch into tip/master: 'x86/platform'
 
-Looks like both patches miss the Fixes tag. Can you add them?
+elapsed time: 719m
 
-...
+configs tested: 80
+configs skipped: 4
 
-> +/*
-> + * Called with lock held. Returns a negative value on error, a positive value
-> + * when the device is not ready, and zero when the device is ready.
-> + */
-> +static int dps310_check_reset_meas_cfg(struct dps310_data *data, int ready_bit)
-> +{
-> +       int meas_cfg;
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> +       int rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &meas_cfg);
-> +
-> +       if (rc < 0)
-> +               return rc;
+gcc tested configs:
+x86_64                              defconfig
+i386                                defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                    rhel-8.3-kselftests
+i386                          randconfig-a014
+x86_64                           rhel-8.3-syz
+x86_64                           rhel-8.3-kvm
+i386                             allyesconfig
+x86_64                           allyesconfig
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+um                             i386_defconfig
+um                           x86_64_defconfig
+i386                          randconfig-a012
+x86_64                        randconfig-a015
+i386                          randconfig-a016
+arc                  randconfig-r043-20220812
+powerpc                           allnoconfig
+s390                 randconfig-r044-20220812
+powerpc                          allmodconfig
+i386                          randconfig-a001
+sh                               allmodconfig
+riscv                randconfig-r042-20220812
+i386                          randconfig-a003
+i386                          randconfig-a005
+mips                             allyesconfig
+arm                                 defconfig
+ia64                             allmodconfig
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+m68k                             allmodconfig
+alpha                            allyesconfig
+arm                              allyesconfig
+arc                              allyesconfig
+m68k                             allyesconfig
+arm64                            allyesconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+arm                        clps711x_defconfig
+m68k                        m5407c3_defconfig
+powerpc                       eiger_defconfig
+sh                     magicpanelr2_defconfig
+powerpc                   currituck_defconfig
+arc                         haps_hs_defconfig
+m68k                            q40_defconfig
+m68k                        m5272c3_defconfig
+loongarch                           defconfig
+loongarch                         allnoconfig
+arc                           tb10x_defconfig
+sh                          sdk7780_defconfig
+xtensa                          iss_defconfig
+m68k                          atari_defconfig
+sh                           se7780_defconfig
+openrisc                       virt_defconfig
+m68k                           virt_defconfig
+mips                  maltasmvp_eva_defconfig
+sparc                       sparc32_defconfig
+xtensa                  cadence_csp_defconfig
+sh                        edosk7705_defconfig
 
-Please, split definition and assignment.
-
-> +       /* Device is ready, proceed to measurement */
-> +       if (meas_cfg & ready_bit)
-> +               return 0;
-> +
-> +       /* Device is OK, just not ready */
-> +       if (meas_cfg & (DPS310_PRS_EN | DPS310_TEMP_EN | DPS310_BACKGROUND))
-> +               return 1;
-> +
-> +       /* DPS310 register state corrupt, better start from scratch */
-> +       rc = regmap_write(data->regmap, DPS310_RESET, DPS310_RESET_MAGIC);
-> +       if (rc < 0)
-> +               return rc;
-> +
-> +       /* Wait for device chip access: 2.5ms in specification */
-> +       usleep_range(2500, 12000);
-> +
-> +       /* Reinitialize the chip */
-> +       rc = dps310_startup(data);
-> +       if (rc)
-> +               return rc;
-> +
-> +       dev_info(&data->client->dev,
-> +                "recovered from corrupted MEAS_CFG=%02x\n", meas_cfg);
-> +       return 1;
-> +}
-> +
->  static int dps310_read_pres_raw(struct dps310_data *data)
->  {
->         int rc;
-> @@ -405,16 +443,26 @@ static int dps310_read_pres_raw(struct dps310_data *data)
->         if (mutex_lock_interruptible(&data->lock))
->                 return -EINTR;
->
-> -       rate = dps310_get_pres_samp_freq(data);
-> -       timeout = DPS310_POLL_TIMEOUT_US(rate);
-> -
-> -       /* Poll for sensor readiness; base the timeout upon the sample rate. */
-> -       rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
-> -                                     ready & DPS310_PRS_RDY,
-> -                                     DPS310_POLL_SLEEP_US(timeout), timeout);
-> -       if (rc)
-> +       rc = dps310_check_reset_meas_cfg(data, DPS310_PRS_RDY);
-> +       if (rc < 0)
->                 goto done;
->
-> +       if (rc > 0) {
-> +               rate = dps310_get_pres_samp_freq(data);
-> +               timeout = DPS310_POLL_TIMEOUT_US(rate);
-> +
-> +               /*
-> +                * Poll for sensor readiness; base the timeout upon the sample
-> +                * rate.
-> +                */
-> +               rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-> +                                             ready, ready & DPS310_PRS_RDY,
-> +                                             DPS310_POLL_SLEEP_US(timeout),
-> +                                             timeout);
-> +               if (rc)
-> +                       goto done;
-> +       }
-
-If you split the condition body to a helper, it can be rewritten like
-(also note special definition for positive returned numbers):
-
-  rc = ..._reset_meas_cfg(...);
-  if (rc  == DPS310_MEAS_NOT_READY)
-    rc = ..._new_helper_func(...);
-  if (rc)
-    goto done;
-
-and looking at this it might be worth considering calling that
-conditional in the middle in the _reset_meas_cfg(), so the latter will
-return either 0 or negative error code.
-
-> +       rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY);
->         if (rc < 0)
->                 goto done;
->
-> +       if (rc > 0) {
-> +               rate = dps310_get_temp_samp_freq(data);
-
-Okay, I see this function is different, but still you may realize a
-helper from below and something like above suggestion can still be
-achieved.
-
-> +               timeout = DPS310_POLL_TIMEOUT_US(rate);
-> +
-> +               /*
-> +                * Poll for sensor readiness; base the timeout upon the sample
-> +                * rate.
-> +                */
-> +               rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-> +                                             ready, ready & DPS310_TMP_RDY,
-> +                                             DPS310_POLL_SLEEP_US(timeout),
-> +                                             timeout);
-> +               if (rc < 0)
-
-Why out of a sudden ' < 0'?
-
-> +                       goto done;
-> +       }
-
-As per above.
-
->         rc = dps310_read_temp_ready(data);
-
+clang tested configs:
+i386                          randconfig-a013
+i386                          randconfig-a011
+x86_64                        randconfig-a014
+x86_64                        randconfig-a012
+x86_64                        randconfig-a016
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220812
+hexagon              randconfig-r041-20220812
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+powerpc                      ppc44x_defconfig
+arm                         s3c2410_defconfig
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
