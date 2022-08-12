@@ -2,166 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B28FC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A2AC25B08
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238819AbiHLODV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 10:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
+        id S238836AbiHLOFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 10:05:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238692AbiHLODS (ORCPT
+        with ESMTP id S238360AbiHLOFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 10:03:18 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EA3A2866
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:03:16 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id x21so1474074edd.3
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:03:16 -0700 (PDT)
+        Fri, 12 Aug 2022 10:05:50 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A64A28722
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:05:49 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id w27so748537qki.5
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=duolXcn7gQG7XKIBN9ehMYZsLClpDQ/6ICkqLMlWWbE=;
-        b=KW4gMJdGbWo9mDn74e4uTWIobzc3VGOXPPZe1gFA2raZ+rOgwf/DtjkHiiLIVJ3Qa1
-         CHS42qQEYDwJYGXXQbn08sSnjm/yhJohRtE2A4luI5pufE+/p0dh+mTVCyL6U0KObtRq
-         YRUhPr7ToxVNmrPzF2pJJHu/KcubDC8NdyW+2ONVFsDN1qRAtID8EEhDZUR8xKqLBIOv
-         sv8IZSQ8iuwK4xsR3X6VLzxr1VzYF8jm0D3taPxzxXiGMRVRhuUy8wKV+Brb8NM7Ttfl
-         qy/5y9nU2lt7AKclWTrHQCDC4Ryt2gKtreXYqaiShmzNgl4zixUcqTOxYpQhB/735FHw
-         2rqA==
+        d=kudzu-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=3Fi1VTtDFgyZAXD5ict/NicDWj9+d/F9avdnvytM5Yo=;
+        b=CqKUxs9HWvgk5EACnCWAc4IABQ81zQ5HxyhhzOwel9K82MNYA5ZpimTG2n/G/CZoj6
+         2biBPqLvZGzKN2QgBG2PshKuMmlgoUKalrEXqoJiew9yNntYLZEydSpxMikj9pMOOJys
+         XkRg28HFxcvZt+BJ/xCbkaKj3xS8nheYn78igbl1YBwN6BI7jV3Pb9uIZEHaHSu6e7TJ
+         FtRUyZe27glwYb/yHjMHO1+kfD2xl6BCSDpP+RcBVWff/GaeKp90oupVNBtu/VY7oJi3
+         8aItvPHy5I1E36ul/9VLB5dM9uGH9wLmJT/Mr4T7l15k40Ep82PClCmYUGEVGTd26Ba3
+         kAhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=duolXcn7gQG7XKIBN9ehMYZsLClpDQ/6ICkqLMlWWbE=;
-        b=TSM1osFs8Wh5/P2PjiBXQ2KAtfVtoJj5prYDVkIAyR9fbMZ9El6UICYpUESRdugs24
-         pnJgYnuNGCLFoaKgPLlShwGuvu8VaVfofbLJfNhV9T2SrhgAkQwCItMAG3A8AjKZB69F
-         cAWLRvq+RpLrnsPdrxv61moPtX2xw9PtWazMTL8nkOPg5/E/NtmiVaRdVq6U3Db25VAT
-         HmepPoPUSgoW6qVun3ffvpS3SwVcrmYo/AsPSHd5I7qelG6sGQs1pocCUKX3qNC3L9Fx
-         uZHTzoS69nTqLjdkAu45bMoGwkZp3ZPz1duNqI4M19FH10aPliJguL93SL9zcfB33VZn
-         3DTA==
-X-Gm-Message-State: ACgBeo0nnATmyOp8wpw4F3J/yLZHIQZ7QvIPSuGZOdqLwJ+Nj8lSLFqv
-        IbQQ+HNRb9kaO/mTbAOSt6SZ9zYjVVk2ov3aQ8f63imRoRSMjg==
-X-Google-Smtp-Source: AA6agR7YZrmLDKgWIt8R7Sd8Gz6SutOzgFBqePyN5lSfc1M1R1frOWC6w7s/Zufpfx9KQFNV+QjaVyf1BQCJuSrP2jw=
-X-Received: by 2002:a05:6402:268a:b0:43e:84d:c5cc with SMTP id
- w10-20020a056402268a00b0043e084dc5ccmr3782168edd.372.1660312995388; Fri, 12
- Aug 2022 07:03:15 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=3Fi1VTtDFgyZAXD5ict/NicDWj9+d/F9avdnvytM5Yo=;
+        b=exMGQklrm1m4McSSOhsMaWs33+H7RHudF9zZLBILuER+eyLegpx1TKCfxYtZTadgN0
+         YkYziz7l5Bdznv+jQw3KwytZLOqFEd91VEWdIK76ZLrXKpvAGjtMAeGB7PnOMK9hwFAJ
+         ak89L1msQ5YT4jxFvl6Wv5BEecPNHDy3KnGQpgsFnnA0pK9nt3SO0sqKMXXa7e5DGlR/
+         no9DIzI3TJBG2kx87KedPDhyiUhMINfiTkID94bALNS56SDuEutIsV0988tkRQhk3j1I
+         ERab1OOEqRYkx7/iKToXIkc8XPwT1gyTwLhcO60YxudAjMo3WPZTB+srcG0DvCudQZDg
+         Q92Q==
+X-Gm-Message-State: ACgBeo21GkylEuMNHiaPxPa29KB2ff/N2t7nILBkaM3W2u/mJzHYY5cT
+        DKo2q71zb+wNWVYlzaK8BO38Xw==
+X-Google-Smtp-Source: AA6agR6rVO/mlp2whKyQ+m6Evhgl5o+7HirB+451gg9nOuhJ3xNjn898fYAaT1rtyGmDyk6Q4LMiEA==
+X-Received: by 2002:a37:a853:0:b0:6ba:ceba:9656 with SMTP id r80-20020a37a853000000b006baceba9656mr1704225qke.466.1660313148548;
+        Fri, 12 Aug 2022 07:05:48 -0700 (PDT)
+Received: from kudzu.us ([2605:a601:a608:5600::59])
+        by smtp.gmail.com with ESMTPSA id h5-20020a05620a400500b006b615cd8c13sm1173685qko.106.2022.08.12.07.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 07:05:48 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 10:05:46 -0400
+From:   Jon Mason <jdmason@kudzu.us>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Colin Ian King <colin.i.king@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] NTB: EPF: set pointer addr to null using NULL
+ rather than 0
+Message-ID: <YvZeOkd1wrdYJXqs@kudzu.us>
+References: <20220623165709.77229-1-colin.i.king@gmail.com>
+ <20220627202858.GA1776067@bhelgaas>
 MIME-Version: 1.0
-References: <20220812132124.2053673-1-dzm91@hust.edu.cn> <YvZYmprZ1NiMkynp@kroah.com>
- <CAD-N9QWU_tcnHMtP3iWcQogSWwDET4nhK5AQKDbh2KJQzwfF9A@mail.gmail.com>
-In-Reply-To: <CAD-N9QWU_tcnHMtP3iWcQogSWwDET4nhK5AQKDbh2KJQzwfF9A@mail.gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Fri, 12 Aug 2022 22:02:36 +0800
-Message-ID: <CAD-N9QUfJTKFGvkNN9AZbwogxogOc7cWKetMV-CEvnROrLxvZA@mail.gmail.com>
-Subject: Re: [PATCH] drivers: binderfs: fix memory leak in binderfs_fill_super
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627202858.GA1776067@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 9:56 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> On Fri, Aug 12, 2022 at 9:41 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Fri, Aug 12, 2022 at 09:21:24PM +0800, Dongliang Mu wrote:
-> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > >
-> > > In binderfs_fill_super, if s_root is not successfully initialized by
-> > > d_make_root, the previous allocated s_sb_info will not be freed since
-> > > generic_shutdown_super first checks if sb->s_root and then does
-> > > put_super operation. The put_super operation calls binderfs_put_super
-> > > to deallocate s_sb_info and put ipc_ns. This will lead to memory leak
-> > > in binderfs_fill_super.
-> > >
-> > > Fix this by invoking binderfs_put_super at error sites before s_root
-> > > is successfully initialized.
-> > >
-> > > Fixes: 095cf502b31e ("binderfs: port to new mount api")
-> > > Reported-by: syzkaller <syzkaller@googlegroups.com>
-> >
-> > Where is the specific syzkaller link for this report?  It would be good
-> > to reference it so it can be properly checked.
-> >
-> > Also, how did you test this change?
->
-> I found this memory leak in my local syzkaller, and there is no any
-> syzbot report about this crash, therefore I use such a Reported-by to
-> indicate.
->
-> Although my local syzkaller does generate any reproducer, this bug can
-> be triggered by injecting faults at new_inode and d_make_root (i.e.,
-> between s_sb_info allocation and code after d_make_root).
->
-> >
-> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > ---
-> > >  drivers/android/binderfs.c | 8 ++++++--
-> > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-> > > index 588d753a7a19..20f5bc77495f 100644
-> > > --- a/drivers/android/binderfs.c
-> > > +++ b/drivers/android/binderfs.c
-> > > @@ -710,8 +710,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> > >       info->mount_opts.stats_mode = ctx->stats_mode;
-> > >
-> > >       inode = new_inode(sb);
-> > > -     if (!inode)
-> > > +     if (!inode) {
-> > > +             binderfs_put_super(sb);
-> > >               return -ENOMEM;
-> > > +     }
-> > >
-> > >       inode->i_ino = FIRST_INODE;
-> > >       inode->i_fop = &simple_dir_operations;
-> > > @@ -721,8 +723,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> > >       set_nlink(inode, 2);
-> > >
-> > >       sb->s_root = d_make_root(inode);
-> > > -     if (!sb->s_root)
-> > > +     if (!sb->s_root) {
-> > > +             binderfs_put_super(sb);
-> > >               return -ENOMEM;
-> > > +     }
-> >
-> > How did you test this change to verify that you are not now just leaking
-> > memory?  It looks to me like you just changed one problem for another
-> > one :(
->
-> As mentioned above, I just tested my change by injecting faults at
-> new_inode and d_make_root.
+On Mon, Jun 27, 2022 at 03:28:58PM -0500, Bjorn Helgaas wrote:
+> On Thu, Jun 23, 2022 at 05:57:09PM +0100, Colin Ian King wrote:
+> > The pointer addr is being set to null using 0. Use NULL instead.
+> > 
+> > Cleans up sparse warning:
+> > warning: Using plain integer as NULL pointer
+> 
+> Another one for Jon; fixes this commit:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=ff32fac00d97
+> 
+> > Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> > ---
+> >  drivers/pci/endpoint/functions/pci-epf-vntb.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> > index ebf7e243eefa..fb31c868af6a 100644
+> > --- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> > +++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> > @@ -605,7 +605,7 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+> >  
+> >  		ntb->epf->bar[barno].barno = barno;
+> >  		ntb->epf->bar[barno].size = size;
+> > -		ntb->epf->bar[barno].addr = 0;
+> > +		ntb->epf->bar[barno].addr = NULL;
+> >  		ntb->epf->bar[barno].phys_addr = 0;
+> >  		ntb->epf->bar[barno].flags |= upper_32_bits(size) ?
+> >  				PCI_BASE_ADDRESS_MEM_TYPE_64 :
+> > -- 
+> > 2.35.3
+> > 
 
-The following is a reproducer I extracted from syzkaller log. The
-fail_nth needs revision according to your own environment.
+Sorry for the extremely long delay in response.  This series is in my
+ntb branch and will be in my pull request for v5.20 which should be
+going out later today.
 
-syz_mount_image$adfs(0x0, &(0x7f0000000180)='./file0\x00', 0x0, 0x0,
-0x0, 0x0, 0x0)
-syz_mount_image$afs(0x0, &(0x7f0000000040)='./file0/file0\x00', 0x0,
-0x0, 0x0, 0x0, 0x0)
-mount(&(0x7f0000000100)=@nbd={'/dev/nbd', 0x0},
-&(0x7f0000000140)='./file0/file0\x00', &(0x7f0000000280)='binder\x00',
-0x0, 0x0) (fail_nth: 40)
-
->
-> Can you explain more about "changed one problem for another one"? I
-> don't quite understand this statement.
->
-> >
-> > Please always be very very careful when making these types of changes,
-> > and verify and test that they are correct.
-> >
-> > thanks,
-> >
-> > greg k-h
+Thanks,
+Jon
