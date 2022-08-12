@@ -2,105 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B910C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 22:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56121C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 22:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237438AbiHLW0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 18:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
+        id S237553AbiHLW0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 18:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233587AbiHLWZo (ORCPT
+        with ESMTP id S237164AbiHLWZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 18:25:44 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BAB12D0E;
+        Fri, 12 Aug 2022 18:25:48 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC80B11C3D;
         Fri, 12 Aug 2022 15:25:42 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id j11so1596360qvt.10;
-        Fri, 12 Aug 2022 15:25:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=QGLoUgJ2TVf85FNO9ppA71x6uLHjiN5oNLDyUkLBWZY=;
-        b=BrPUuTuvsEMuz7vINzRyesoXiEsXiAG4JppuAC4kMz7UCBYJ8ahAQXKB+aJiI77n29
-         LPzIciOpQoUV+5dKx9IOLSBjI8Tz+1nrNhNmaRKuLT/gLxE/Hwg9rNr1k/XBcdVGGjBo
-         zAsgrM8kK20KDW3vNQmoqonEYshf1SscUHWErdnzifzMtadOxnueA8jwczjDVVAKlkLh
-         gsmm5onid+sFhlw6PhL2admYH6ddlgT149osiQw+HStaJ+eGMjQIUQ2WemYqzgHAd1qK
-         9ovsA/lyAvujtnTSzNoK3ayMYyfLWSkqEZExzuesS8Z7wo/g2b6fqMcz2gBeyzAwS+qf
-         9YQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=QGLoUgJ2TVf85FNO9ppA71x6uLHjiN5oNLDyUkLBWZY=;
-        b=V4aVNKyIU9Laa6f9jcBFGcszPvz65qTAzFN15aKiVgqO1EJk1jtsHa4XQOt2nA51fd
-         HMMS4Xa8o742oiVEA/BA/pqBTga/Ne5ygY7yAQDFG54MAmfkYMHCW2n0Yg+ploYBKZu2
-         k3gZ9QDOQRARAV7iDPqFtkK21eCnviZBwcCRX3JCwIg7nsbZrSUfwy3EDN7d2jiAzE2+
-         UtC6+X8HcDR2aVCVJSjcjBQigb3i+Xx7F1/8wcP7OV8wbQQn37rCfIXO7vLYlXVSpnaA
-         5iZyQvMj/Lko7uB1benpozyefWnHBclblNM5ozvjHQZ0LMX1Q4xbVhx9DF0kSpdfD0KY
-         TL7Q==
-X-Gm-Message-State: ACgBeo0mrrAmgS2X9qX1oJLl3H1hpJf3azEWzmLpa1wty+ToS/UkwC/S
-        7oxKRCq2qqarizbvIQOJdECBn6REsA4=
-X-Google-Smtp-Source: AA6agR7cuDyIxJDxuMPYAKka6etc7s1OxIxNb1oPVVEcqVr1Xi/DUaqCZ7zmyWTd4J1E+MBtvBtwZw==
-X-Received: by 2002:a0c:f0d1:0:b0:47b:36df:b1ed with SMTP id d17-20020a0cf0d1000000b0047b36dfb1edmr5287327qvl.7.1660343141047;
-        Fri, 12 Aug 2022 15:25:41 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f17-20020a05620a409100b006b942ae928bsm2788878qko.71.2022.08.12.15.25.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 15:25:40 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM BCM7XXX
-        ARM ARCHITECTURE),
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS)
-Subject: [PATCH v5 2/3] Documentation: sysfs: Document Broadcom STB memc sysfs knobs
-Date:   Fri, 12 Aug 2022 15:25:32 -0700
-Message-Id: <20220812222533.2428033-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220812222533.2428033-1-f.fainelli@gmail.com>
-References: <20220812222533.2428033-1-f.fainelli@gmail.com>
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 266D85C00D7;
+        Fri, 12 Aug 2022 18:25:42 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 12 Aug 2022 18:25:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660343142; x=1660429542; bh=eZ
+        uPw2SQFgh1mWTwJWJZNQBE+LeJoM1X4oFRjAj7Xew=; b=bt29gbav/Md945DtqI
+        NKESz2gvizfztEqqqcc6KvSyAxea1sLRRqnKNQ0QBWFTZa9iunvc/lsdceL5oSlW
+        Zf018+F82GiyD1JgD32jC3ItTZBwUqPHA13reby86f/KDtkRzaiSx+kVZ1VVDF8t
+        VWvwIb2RJWqVoz3fzMTWdEeQDHw2wejvmwQJm5AUL6LO96GYtFiSma2SCn0IFj3p
+        2PQTgjLtrV4j5hXC+6cvVJsp4RvQ1ziyooRepxGuFAzbkO9M4aTVQqjHSU+K6xuv
+        I4Z03qXWr/tWqRTCgrMBAnLhr3uoPz2qCFLN5gLwPtDS2JkbJJX5hd3rdqCg2/x2
+        MQrA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1660343142; x=1660429542; bh=eZuPw2SQFgh1m
+        WTwJWJZNQBE+LeJoM1X4oFRjAj7Xew=; b=ThqxP7tIA/GcOg4lWiq0ofmyUjfVm
+        NPl2QpzmQ4aS/+q7Aevovgpj52H6qNAfV3YCiYmiDOjB9h2RdHm76Egej1lylJiH
+        JuDcVLc0GuDtOjMPfrlC88PnlQRbrImNvRaf6bsZKpvWkgKoOL/ehCEfbEI69NRT
+        oGKETpSrYHtN42cC5cBXfkJ8dqyCCC0bno+sn4bl/Cb2KCfS5mksmgp7JDhxm7WD
+        3/d2rNX0erU1cuROFre7+xfKtpqi5IGvy6a48Ehy4+sSM2z9EkFuQWQpm+w+Kncl
+        pgVCSXpZ+aEIqg7jceEARrGy2vLmll5v32Vj4PsYRNrzMU+R8mUDBohAQ==
+X-ME-Sender: <xms:ZdP2YppUUBc_as_DgNOVj1d3gfByOboCuElKV8hguYufg0ae8kATuw>
+    <xme:ZdP2Yrp9JOvJK9R26U9fLzxdhaAGq6UCJP643qh7Ysxr_bQ7ENROHIK4yCd5hX7vW
+    2khLf7SZVR6KHc5Tdw>
+X-ME-Received: <xmr:ZdP2YmP8VhLc4GetHzZsI8kj0EFKuULjjlCL74B-003Tu90BMWT0dkMLPmxj>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegjedgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
+    ertdertddtnecuhfhrohhmpedfnfhukhgvucffrdculfhonhgvshdfuceolhhukhgvsehl
+    jhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnhepgfetfedugfetudeuheetjefhue
+    fggfelleetvdevtefhueeujeefvdegleevhefgnecuvehluhhsthgvrhfuihiivgepuden
+    ucfrrghrrghmpehmrghilhhfrhhomheplhhukhgvsehljhhonhgvshdruggvvh
+X-ME-Proxy: <xmx:ZtP2Yk7U8b8dwCnuCjesg-QunxFG8Pqz5_2Dc_YYsWoxZkRI_8_L7A>
+    <xmx:ZtP2Yo494ZbZ3Evu_j4k3UQ5xt4JDjgX_mED4ZG7CDobhsKIdLBT1Q>
+    <xmx:ZtP2YshlA_9ywQAXUe2OhEMA6Jy2qfcP3XJlTQMJ6WwVAS77iuGDDQ>
+    <xmx:ZtP2YoEulSwvBXbB_PZRpxXDnaO-haUEHoLhqE3KVbWJq2Q3S4286w>
+Feedback-ID: i5ec1447f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 12 Aug 2022 18:25:39 -0400 (EDT)
+From:   "Luke D. Jones" <luke@ljones.dev>
+To:     hdegoede@redhat.com
+Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "Luke D. Jones" <luke@ljones.dev>
+Subject: [PATCH 6/6] asus-wmi: Refactor panel_od attribute
+Date:   Sat, 13 Aug 2022 10:25:09 +1200
+Message-Id: <20220812222509.292692-7-luke@ljones.dev>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220812222509.292692-1-luke@ljones.dev>
+References: <20220812222509.292692-1-luke@ljones.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the "srpd" and "frequency" sysfs attributes exposed by
-the brcmstb_memc driver.
+The settings for these attributes can be read from the device, this
+is now done instead of reading a stored value from module. The stored
+value is also removed.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+This means the simpler asus_wmi_dev_is_present() can be used in
+*_check_present() - it is not an error for these methods to be
+missing.
+
+The _write() functions have their bodies shifted in to *_store()
+which simplifies things further.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- .../ABI/testing/sysfs-platform-brcmstb-memc       | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-platform-brcmstb-memc
+ drivers/platform/x86/asus-wmi.c | 74 +++++++++++----------------------
+ 1 file changed, 25 insertions(+), 49 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-platform-brcmstb-memc b/Documentation/ABI/testing/sysfs-platform-brcmstb-memc
-new file mode 100644
-index 000000000000..2f2b750ac2fd
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-platform-brcmstb-memc
-@@ -0,0 +1,15 @@
-+What:		/sys/bus/platform/devices/*/srpd
-+Date:		July 2022
-+KernelVersion:	5.21
-+Contact:	Florian Fainelli <f.fainelli@gmail.com>
-+Description:
-+		Self Refresh Power Down (SRPD) inactivity timeout counted in
-+		internal DDR controller clock cycles. Possible values range
-+		from 0 (disable inactivity timeout) to 65535 (0xffff).
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 87b042fac1ce..b2595a2d1b0a 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -245,7 +245,6 @@ struct asus_wmi {
+ 	bool battery_rsoc_available;
+ 
+ 	bool panel_overdrive_available;
+-	bool panel_overdrive;
+ 
+ 	struct hotplug_slot hotplug_slot;
+ 	struct mutex hotplug_lock;
+@@ -1475,48 +1474,10 @@ static int asus_wmi_rfkill_init(struct asus_wmi *asus)
+ /* Panel Overdrive ************************************************************/
+ static int panel_od_check_present(struct asus_wmi *asus)
+ {
+-	u32 result;
+-	int err;
+-
+ 	asus->panel_overdrive_available = false;
+ 
+-	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_PANEL_OD, &result);
+-	if (err) {
+-		if (err == -ENODEV)
+-			return 0;
+-		return err;
+-	}
+-
+-	if (result & ASUS_WMI_DSTS_PRESENCE_BIT) {
++	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_PANEL_OD))
+ 		asus->panel_overdrive_available = true;
+-		asus->panel_overdrive = result & ASUS_WMI_DSTS_STATUS_BIT;
+-	}
+-
+-	return 0;
+-}
+-
+-static int panel_od_write(struct asus_wmi *asus)
+-{
+-	u32 retval;
+-	u8 value;
+-	int err;
+-
+-	/* Don't rely on type conversion */
+-	value = asus->panel_overdrive ? 1 : 0;
+-
+-	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_PANEL_OD, value, &retval);
+-
+-	if (err) {
+-		pr_warn("Failed to set panel overdrive: %d\n", err);
+-		return err;
+-	}
+-
+-	if (retval > 1) {
+-		pr_warn("Failed to set panel overdrive (retval): 0x%x\n", retval);
+-		return -EIO;
+-	}
+-
+-	sysfs_notify(&asus->platform_device->dev.kobj, NULL, "panel_od");
+ 
+ 	return 0;
+ }
+@@ -1525,32 +1486,47 @@ static ssize_t panel_od_show(struct device *dev,
+ 				   struct device_attribute *attr, char *buf)
+ {
+ 	struct asus_wmi *asus = dev_get_drvdata(dev);
++	int result;
+ 
+-	return sysfs_emit(buf, "%d\n", asus->panel_overdrive);
++	result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_PANEL_OD);
++	if (result < 0)
++		return result;
 +
-+What:		/sys/bus/platform/devices/*/frequency
-+Date:		July 2022
-+KernelVersion:	5.21
-+Contact:	Florian Fainelli <f.fainelli@gmail.com>
-+Description:
-+		DDR PHY frequency in Hz.
++	return sysfs_emit(buf, "%d\n", result);
+ }
+ 
+ static ssize_t panel_od_store(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    const char *buf, size_t count)
+ {
+-	bool overdrive;
+-	int result;
++	int result, err;
++	u32 overdrive;
+ 
+ 	struct asus_wmi *asus = dev_get_drvdata(dev);
+ 
+-	result = kstrtobool(buf, &overdrive);
++	result = kstrtou32(buf, 10, &overdrive);
+ 	if (result)
+ 		return result;
+ 
+-	asus->panel_overdrive = overdrive;
+-	result = panel_od_write(asus);
++	if (overdrive > 1)
++		return -EINVAL;
+ 
+-	if (result)
+-		return result;
++	err = asus_wmi_set_devstate(ASUS_WMI_DEVID_PANEL_OD, overdrive, &result);
++
++	if (err) {
++		pr_warn("Failed to set panel overdrive: %d\n", err);
++		return err;
++	}
++
++	if (result > 1) {
++		pr_warn("Failed to set panel overdrive (result): 0x%x\n", result);
++		return -EIO;
++	}
++
++	sysfs_notify(&asus->platform_device->dev.kobj, NULL, "panel_od");
+ 
+ 	return count;
+ }
+-
+ static DEVICE_ATTR_RW(panel_od);
+ 
+ /* Quirks *********************************************************************/
 -- 
-2.25.1
+2.37.1
 
