@@ -2,140 +2,339 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E18CC25B06
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 03:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D3DC25B06
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 03:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236868AbiHLDXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 23:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
+        id S237036AbiHLDXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 23:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235689AbiHLDXN (ORCPT
+        with ESMTP id S236917AbiHLDX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 23:23:13 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A71A3475;
-        Thu, 11 Aug 2022 20:23:12 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id g5so31098602ybg.11;
-        Thu, 11 Aug 2022 20:23:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=eZSj7ETI+iuiscrTI6+l4FTa1GjyXd9wkrgxBXiniks=;
-        b=kmfXn4pWniW5YaVUVmQJRgxp4P0vztk0rDkk1n7MkgohYDbPwkWOylHKvStBaBM9He
-         nuWiA3vqkXRP8uAMY0i8pk+iWIMhbQOk30vBCCfvJ5ST57loqYXGamTyzI39CVZ3KNQj
-         btt0hmkINxeGbiCJNHUioE2xMhMDpi5dTA0nbtJHOpvZKWL3Q0+kVV31FLZAbb+d7izr
-         Jb7YStTIoXHSacjYfBNshQ1s+ovjPWdzLCj9n2LLgwY8VS4G6viqqHDJ53rTGMHkFeDA
-         ESQ7NrtFBXOTzWes/2l2LpdXWdxSCpdyBz1RTC1hOOnxVYCqEkImdZDhkAhO9NM8Qml0
-         NjNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=eZSj7ETI+iuiscrTI6+l4FTa1GjyXd9wkrgxBXiniks=;
-        b=VNLmfHLmHs6PERWGvcm9kDawf7M9rVH6CBPYD9qzvIfJe4Z5ewu95fTNbcBsg21ZXh
-         fyEB7WJHX1DazykgvpZGnbK90knn5j2tw4QdlO80mLSWQ60f8HWF3xTvegQOKdu+TgGp
-         ziUfVyqgZG7PU1xhRnS5xh/GApEYbOVHlhcJvISE5myajIgfY5nQDIaJR98eFumOLBGP
-         D3Ow675uvzSI2unn5F4BaLaBAuwjwXku+87Rk5pstAzuIVbz3gjtubivELXw1en/lF8O
-         AZg9naQNsJ5guyUgi+vT0WmKp08evFnjSArlmOImFTy/PXVFpzZuUm3CYvCVdxAEV+9d
-         kG4Q==
-X-Gm-Message-State: ACgBeo3+gmuF9sw3lLyMHjQF62QMvvrUv5RyHzzovezEgTtHfPIpAuRD
-        +XFeg0tNoC+zFMzNoo6VyyQotvn/HDRyXv4ulbs=
-X-Google-Smtp-Source: AA6agR6+0FuRGI5TkiB4BlZTULVdxm6BPysYRXCjl1Lvw21aXjGFDJcxkUrwkO1xgExZUY+iSDkf0QG3Iz/sfn/N41A=
-X-Received: by 2002:a25:d658:0:b0:67b:37ca:dc04 with SMTP id
- n85-20020a25d658000000b0067b37cadc04mr1944514ybg.431.1660274591570; Thu, 11
- Aug 2022 20:23:11 -0700 (PDT)
+        Thu, 11 Aug 2022 23:23:29 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DA1A346A;
+        Thu, 11 Aug 2022 20:23:27 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27C3NChV053088;
+        Thu, 11 Aug 2022 22:23:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660274592;
+        bh=/ILrLLMrJAFaMZATpOR2wZM00euBK5sFXu979Ha7kTg=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=eB1zhDTcQlHqAKL85r7coGvppl7a6JYoOTEUD3cViqaVhoeCtC+9+wp0puVSjoAEY
+         YOaY1Lw+G5CbG/A8wG0FAD/FU2kVw37vLBulOhFj0PZdK2AfzBozTKyIkKPIngNES4
+         AeWs5sbOB24994ON71u8OyHXsvP2Bn3UjJkS/ZSc=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27C3NCL9020623
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 11 Aug 2022 22:23:12 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 11
+ Aug 2022 22:23:12 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 11 Aug 2022 22:23:12 -0500
+Received: from ubuntu.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27C3MkOs096105;
+        Thu, 11 Aug 2022 22:23:05 -0500
+From:   Matt Ranostay <mranostay@ti.com>
+To:     <nm@ti.com>, <j-keerthy@ti.com>, <lee@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Matt Ranostay <mranostay@ti.com>
+Subject: [PATCH v2 2/6] MFD: TPS6594x: Add new PMIC device driver for TPS6594x chips
+Date:   Thu, 11 Aug 2022 20:22:38 -0700
+Message-ID: <20220812032242.564026-3-mranostay@ti.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220812032242.564026-1-mranostay@ti.com>
+References: <20220812032242.564026-1-mranostay@ti.com>
 MIME-Version: 1.0
-References: <7aab2990-9c57-2456-b08d-299ae96ac919@apertussolutions.com>
- <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
- <b1e7b545-8e66-5dc0-ff5a-9f69d1751a5f@apertussolutions.com>
- <CAELHeEcEN=4YrPJROvzHoOiqqe5Bk0f8pDCZDnQ6aS=2LdwNow@mail.gmail.com>
- <f09fe749-e139-db6a-b2ad-45db76da04ae@apertussolutions.com>
- <CAELHeEe5H8BNf8K22XRm3hXf=_imHBnf-MHcFYvPCXX7GYkt4w@mail.gmail.com>
- <203110bb-b70b-b4f1-9453-46136659f84c@apertussolutions.com>
- <CAELHeEe2CiTXfMf3OYu3bzc_kH=rs4qzC-4XQL12AM=Nq8Csjw@mail.gmail.com>
- <20220810174638.GA7906@srcf.ucam.org> <CAELHeEdNgYCh_kQwWpEc4aXw-YL-KGrAeDCL-VaG3ChFs6LNVw@mail.gmail.com>
- <20220811182502.GA32433@srcf.ucam.org>
-In-Reply-To: <20220811182502.GA32433@srcf.ucam.org>
-From:   Brendan Trotter <btrotter@gmail.com>
-Date:   Fri, 12 Aug 2022 12:52:58 +0930
-Message-ID: <CAELHeEcfHSXewFCywsYeN_g8Q_BNG+4tP-QENO5QBw8Dj91yMA@mail.gmail.com>
-Subject: Re: Linux DRTM on UEFI platforms
-To:     Matthew Garrett <mjg59@srcf.ucam.org>
-Cc:     The development of GNU GRUB <grub-devel@gnu.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        James Morris <jmorris@namei.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Keerthy <j-keerthy@ti.com>
 
-On Fri, Aug 12, 2022 at 3:55 AM Matthew Garrett <mjg59@srcf.ucam.org> wrote:
-> On Thu, Aug 11, 2022 at 07:25:58PM +0930, Brendan Trotter wrote:
-> > On Thu, Aug 11, 2022 at 3:16 AM Matthew Garrett <mjg59@srcf.ucam.org> wrote:
-> > > The kernel has no way to know this - *any* code you've run before
-> > > performing a measurement could tamper with the kernel such that it
-> > > believes it's fine. This is just as true in DRTM as it is in SRTM. But
-> > > you know what the expected measurements should be, so you're able to
-> > > either seal secrets to those PCR values or rely on remote attestation.
-> >
-> > In this scenario the kernel has no idea what the measurement should
-> > be, it only knows the measurement that a potentially malicious boot
-> > loader felt like giving the kernel previously (e.g. when the kernel
-> > was installed).
->
-> Even if the kernel has an idea of what the measurement should be, it has
-> no way to verify that what it believes to be true is true - any
-> malicious code could simply have modified the kernel to believe that
-> anything it asks the TPM returns the "correct" answer.
+The TPS6594x chip is a PMIC, and contains the following components:
 
-Right. To achieve the best possible security; you'd need Secure Boot
-to ensure that the kernel itself wasn't modified, and then the kernel
-establishes a dynamic root of trust itself.
+- Regulators
+- GPIO controller
+- RTC
 
-Anything involving a boot loader (e.g. Secure Boot ensure's boot
-loader wasn't modified, then boot loader ensure's kernel wasn't
-modified, then ....) increases the attack surface for no benefit.
+However initially only RTC is supported.
 
-> > > Measurements are not opaque objects. If you're not able to reconstruct
-> > > the expected measurement then you're doing it wrong.
-> >
-> > OK; so to detect if boot loader has always given kernel a bad/forged
-> > measurement; the kernel repeats all of the steps involved in creating
-> > the measurement itself exactly the same as the boot loader should have
-> > (but might not have) so that kernel can compare a "known
-> > good/trustworthy" measurement with the useless measurement that the
-> > boot loader created for no sane reason whatsoever?
->
-> No, some external agent does. Code running on the local machine can
-> never determine whether the machine is trustworthy.
+Signed-off-by: Keerthy <j-keerthy@ti.com>
+Signed-off-by: Matt Ranostay <mranostay@ti.com>
+---
+ drivers/mfd/Kconfig          |  14 ++++
+ drivers/mfd/Makefile         |   1 +
+ drivers/mfd/tps6594x.c       | 121 +++++++++++++++++++++++++++++++++++
+ include/linux/mfd/tps6594x.h |  84 ++++++++++++++++++++++++
+ 4 files changed, 220 insertions(+)
+ create mode 100644 drivers/mfd/tps6594x.c
+ create mode 100644 include/linux/mfd/tps6594x.h
 
-This part of the conversation evolved from "there's no way for kernel
-to detect a MiTM boot loader (that provides a bad/forged
-measurement)".
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index abb58ab1a1a4..4845683ae1d0 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -1547,6 +1547,20 @@ config MFD_TI_LP873X
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called lp873x.
+ 
++config MFD_TPS6594X
++	tristate "TI TPS6594X Power Management IC"
++	depends on I2C && OF
++	select MFD_CORE
++	select REGMAP_I2C
++	help
++	  If you say yes here then you get support for the TPS6594X series of
++	  Power Management Integrated Circuits (PMIC).
++	  These include voltage regulators, RTS, configurable
++	  General Purpose Outputs (GPO) that are used in portable devices.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called tps6594x.
++
+ config MFD_TI_LP87565
+ 	tristate "TI LP87565 Power Management IC"
+ 	depends on I2C && OF
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 858cacf659d6..7ff6a8a57d55 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -105,6 +105,7 @@ obj-$(CONFIG_MFD_TPS65910)	+= tps65910.o
+ obj-$(CONFIG_MFD_TPS65912)	+= tps65912-core.o
+ obj-$(CONFIG_MFD_TPS65912_I2C)	+= tps65912-i2c.o
+ obj-$(CONFIG_MFD_TPS65912_SPI)  += tps65912-spi.o
++obj-$(CONFIG_MFD_TPS6594X)	+= tps6594x.o
+ obj-$(CONFIG_MENELAUS)		+= menelaus.o
+ 
+ obj-$(CONFIG_TWL4030_CORE)	+= twl-core.o twl4030-irq.o twl6030-irq.o
+diff --git a/drivers/mfd/tps6594x.c b/drivers/mfd/tps6594x.c
+new file mode 100644
+index 000000000000..ff265b91db3e
+--- /dev/null
++++ b/drivers/mfd/tps6594x.c
+@@ -0,0 +1,121 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Driver for tps6594x PMIC chips
++ *
++ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
++ * Author: Keerthy <j-keerthy@ti.com>
++ */
++
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/tps6594x.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++
++static const struct regmap_config tps6594x_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = TPS6594X_REG_MAX,
++};
++
++static const struct mfd_cell tps6594x_cells[] = {
++	{ .name = "tps6594x-gpio" },
++	{ .name = "tps6594x-regulator" },
++	{ .name = "tps6594x-rtc" },
++};
++
++static struct tps6594x *tps;
++
++static void tps6594x_power_off(void)
++{
++	regmap_write(tps->regmap, TPS6594X_FSM_NSLEEP_TRIGGERS,
++		TPS6594X_FSM_NSLEEP_NSLEEP1B | TPS6594X_FSM_NSLEEP_NSLEEP2B);
++
++	regmap_write(tps->regmap, TPS6594X_INT_STARTUP,
++		TPS6594X_INT_STARTUP_NPWRON_START_INT |
++		TPS6594X_INT_STARTUP_ENABLE_INT | TPS6594X_INT_STARTUP_RTC_INT |
++		TPS6594X_INT_STARTUP_SOFT_REBOOT_INT);
++
++	regmap_write(tps->regmap, TPS6594X_INT_MISC,
++		TPS6594X_INT_MISC_BIST_PASS_INT |
++		TPS6594X_INT_MISC_EXT_CLK_INT | TPS6594X_INT_MISC_TWARN_INT);
++
++	regmap_write(tps->regmap, TPS6594X_CONFIG_1,
++		TPS6594X_CONFIG_NSLEEP1_MASK | TPS6594X_CONFIG_NSLEEP2_MASK);
++
++	regmap_write(tps->regmap, TPS6594X_FSM_I2C_TRIGGERS,
++		TPS6594X_FSM_I2C_TRIGGERS_I2C0);
++}
++
++static int tps6594x_probe(struct i2c_client *client)
++{
++	struct tps6594x *ddata;
++	struct device_node *node = client->dev.of_node;
++	unsigned int otpid;
++	int ret;
++
++	ddata = devm_kzalloc(&client->dev, sizeof(*ddata), GFP_KERNEL);
++	if (!ddata)
++		return -ENOMEM;
++
++	ddata->dev = &client->dev;
++
++	ddata->regmap = devm_regmap_init_i2c(client, &tps6594x_regmap_config);
++	if (IS_ERR(ddata->regmap)) {
++		ret = PTR_ERR(ddata->regmap);
++		dev_err(ddata->dev,
++			"Failed to initialize register map: %d\n", ret);
++		return ret;
++	}
++
++	ret = regmap_read(ddata->regmap, TPS6594X_REG_DEV_REV, &otpid);
++	if (ret) {
++		dev_err(ddata->dev, "Failed to read OTP ID\n");
++		return ret;
++	}
++
++	ddata->rev = otpid;
++	i2c_set_clientdata(client, ddata);
++
++	ret = mfd_add_devices(ddata->dev, PLATFORM_DEVID_AUTO, tps6594x_cells,
++			      ARRAY_SIZE(tps6594x_cells), NULL, 0, NULL);
++	if (ret) {
++		dev_err(ddata->dev, "Failed to register cells\n");
++		return ret;
++	}
++
++	tps = ddata;
++
++	if (of_property_read_bool(node, "ti,system-power-controller"))
++		pm_power_off = tps6594x_power_off;
++
++	return 0;
++}
++
++static const struct of_device_id of_tps6594x_match_table[] = {
++	{ .compatible = "ti,tps6594x", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, of_tps6594x_match_table);
++
++static const struct i2c_device_id tps6594x_id_table[] = {
++	{ "tps6594x", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, tps6594x_id_table);
++
++static struct i2c_driver tps6594x_driver = {
++	.driver	= {
++		.name	= "tps6594x",
++		.of_match_table = of_tps6594x_match_table,
++	},
++	.probe_new	= tps6594x_probe,
++	.id_table	= tps6594x_id_table,
++};
++module_i2c_driver(tps6594x_driver);
++
++MODULE_AUTHOR("J Keerthy <j-keerthy@ti.com>");
++MODULE_DESCRIPTION("TPS6594X PMIC device driver");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/mfd/tps6594x.h b/include/linux/mfd/tps6594x.h
+new file mode 100644
+index 000000000000..5a6af0da9223
+--- /dev/null
++++ b/include/linux/mfd/tps6594x.h
+@@ -0,0 +1,84 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Core driver interface for TI TPS6594x PMIC family
++ *
++ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
++ */
++
++#ifndef __MFD_TPS6594X_H
++#define __MFD_TPS6594X_H
++
++#include <linux/bits.h>
++
++/* TPS6594x chip ID list */
++#define TPS6594X			0x00
++
++/* All register addresses */
++#define TPS6594X_REG_DEV_REV			0x01
++#define TPS6594X_INT_STARTUP			0x65
++#define TPS6594X_INT_MISC			0x66
++#define TPS6594X_CONFIG_1			0x7d
++#define TPS6594X_FSM_I2C_TRIGGERS		0x85
++#define TPS6594X_FSM_NSLEEP_TRIGGERS		0x86
++
++#define TPS6594X_RTC_SECONDS			0xb5
++#define TPS6594X_RTC_MINUTES			0xb6
++#define TPS6594X_RTC_HOURS			0xb7
++#define TPS6594X_RTC_DAYS			0xb8
++#define TPS6594X_RTC_MONTHS			0xb9
++#define TPS6594X_RTC_YEARS			0xba
++#define TPS6594X_RTC_WEEKS			0xbb
++#define TPS6594X_ALARM_SECONDS			0xbc
++#define TPS6594X_ALARM_MINUTES			0xbd
++#define TPS6594X_ALARM_HOURS			0xbe
++#define TPS6594X_ALARM_DAYS			0xbf
++#define TPS6594X_ALARM_MONTHS			0xc0
++#define TPS6594X_ALARM_YEARS			0xc1
++#define TPS6594X_RTC_CTRL_1			0xc2
++#define TPS6594X_RTC_CTRL_2			0xc3
++#define TPS6594X_RTC_STATUS			0xc4
++#define TPS6594X_RTC_INTERRUPTS			0xc5
++#define TPS6594X_REG_MAX			0xd0
++
++/* Register field definitions */
++#define TPS6594X_DEV_REV_DEV_ID			0xff
++
++#define TPS6594X_INT_STARTUP_NPWRON_START_INT	BIT(0)
++#define TPS6594X_INT_STARTUP_ENABLE_INT		BIT(1)
++#define TPS6594X_INT_STARTUP_RTC_INT		BIT(2)
++#define TPS6594X_INT_STARTUP_FSD_INT		BIT(4)
++#define TPS6594X_INT_STARTUP_SOFT_REBOOT_INT	BIT(5)
++
++#define TPS6594X_INT_MISC_BIST_PASS_INT		BIT(0)
++#define TPS6594X_INT_MISC_EXT_CLK_INT		BIT(1)
++#define TPS6594X_INT_MISC_TWARN_INT		BIT(3)
++
++#define TPS6594X_CONFIG_NSLEEP1_MASK		BIT(6)
++#define TPS6594X_CONFIG_NSLEEP2_MASK		BIT(7)
++
++#define TPS6594X_FSM_I2C_TRIGGERS_I2C0		BIT(0)
++
++#define TPS6594X_FSM_NSLEEP_NSLEEP1B		BIT(0)
++#define TPS6594X_FSM_NSLEEP_NSLEEP2B		BIT(1)
++
++#define TPS6594X_RTC_CTRL_REG_GET_TIME		BIT(6)
++#define TPS6594X_RTC_CTRL_REG_STOP_RTC		BIT(0)
++#define TPS6594X_RTC_INTERRUPTS_REG_IT_ALARM	BIT(3)
++
++#define TPS6594X_RTC_STATUS_RUN			BIT(1)
++
++/**
++ * struct tps6594x - state holder for the tps6594x driver
++ * @dev: struct device pointer for MFD device
++ * @rev: revision of the tps6594x
++ * @lock: lock guarding the data structure
++ * @regmap: register map of the tps6594x PMIC
++ *
++ * Device data may be used to access the TPS6594X chip
++ */
++struct tps6594x {
++	struct device *dev;
++	u8 rev;
++	struct regmap *regmap;
++};
++#endif /* __MFD_TPS6594X_H */
+-- 
+2.36.1
 
-I'm not convinced an external agent can detect "bad/forged
-measurement" either. E.g. if a MiTM boot loader always provided a
-bad/forged measurement the external agent won't detect it (as the
-measurement always matches the expected measurement), and then if the
-MiTM boot loader is replaced by a good/honest boot loader the external
-agent will decide that the good/honest boot loader is malicious
-because its measurement doesn't match the expected bad/forged
-measurement.
-
-- Brendan
