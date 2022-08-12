@@ -2,68 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E038C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 16:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3324C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239486AbiHLQ7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 12:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        id S238952AbiHLRBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 13:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239559AbiHLQ7i (ORCPT
+        with ESMTP id S239515AbiHLRBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 12:59:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC1DB0B37
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 09:59:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A76861638
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 16:59:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B0D11C4347C;
-        Fri, 12 Aug 2022 16:59:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660323576;
-        bh=bu/qKn1ajo3Yvaa4ti2xtnTzrmq8LgTcz4if1cYeQko=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=lTzVoe6RNo+wPERqzRHsNPYaJh4ww/OIvRvsCZdP/5riuruYXvBziyYg6I9MFIGAp
-         VRad0lLmVXzC80mH/AFokubt6f6IvsLkGJvtLeFf6EFCGWfXp8AoGkSrpj5NkjamDN
-         UNxF9hcxF0Y6GuHXJK0JjWgWu0YfaopSZGxxt5+V0IfJqbjsZyoio1JeMYTVUyldeh
-         hbFZEIhDzcIXGVk8iTue2dAFXxwWNiLCQoSdXmf9TSCbPz4Kjl5Quy3Ieir+1/KxHh
-         c4IKLcMQdX/4xW9x/QzjLraNiTwA0QK+ygytt26+UGqu6LF7twFNpbDhQ6XBiLg2O4
-         pKnlE4P5fw1XA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9DBAAC43141;
-        Fri, 12 Aug 2022 16:59:36 +0000 (UTC)
-Subject: Re: [GIT PULL] sound fixes for 6.0-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <87edxlvlkk.wl-tiwai@suse.de>
-References: <87edxlvlkk.wl-tiwai@suse.de>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <87edxlvlkk.wl-tiwai@suse.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-fix-6.0-rc1
-X-PR-Tracked-Commit-Id: 636aa8807b5780b76609b40cd3d3e1b5a225471c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4a9350597aff50bbd0f4b80ccf49d2e02d1111f5
-Message-Id: <166032357664.14629.9813361828565389213.pr-tracker-bot@kernel.org>
-Date:   Fri, 12 Aug 2022 16:59:36 +0000
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Fri, 12 Aug 2022 13:01:24 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9219977559;
+        Fri, 12 Aug 2022 10:01:23 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27CGhbCS005850;
+        Fri, 12 Aug 2022 17:01:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=k4rfDl5sjXMkFxZKUuEqZdOSLHex7NUKzrZWhtsr1fw=;
+ b=IdsRWAodbLf5S6DRZec/JyCO3UhO8kpJrlXb1jRiH4vZ3zQz4WbjEnINbUwjHJYXKPdN
+ 7+tnf+LLW+cYqCaKzf7Y3+O1BbpzraVryHhf6zHVXGNI7mjHkF5JZmyvsCR/JpDZNWNO
+ AJqPVm8y9Sn55R07BcXftE2No4VnHnU8/P/gDH4YbLq8K01sAag+lc9nltqvQ//Dwy59
+ Wmfb7dGF4QIUrGVyYQRBqG5cPhDIdXB+dxx7wz1Rr2/i8R1IDNXCCBSh0eQeeGI7IeXL
+ Ap1yAFW/vTcfGwmRGsjSy5E6CRxcb/AMFtsWe13DVe0yTE4Q5nYql2oWFHzUuQxbxddy pQ== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hwtmn8ejx-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Aug 2022 17:01:08 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27CGad3c004857;
+        Fri, 12 Aug 2022 16:43:12 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma03wdc.us.ibm.com with ESMTP id 3huww6j67m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Aug 2022 16:43:12 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27CGhBek524800
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 12 Aug 2022 16:43:11 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5FB772805E;
+        Fri, 12 Aug 2022 16:43:11 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 46B8F2805A;
+        Fri, 12 Aug 2022 16:43:11 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 12 Aug 2022 16:43:11 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     nayna@linux.ibm.com, nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Rob Herring <robh@kernel.org>, Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH v7 2/6] drivers: of: kexec ima: Support 32-bit platforms
+Date:   Fri, 12 Aug 2022 12:43:01 -0400
+Message-Id: <20220812164305.2056641-3-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220812164305.2056641-1-stefanb@linux.ibm.com>
+References: <20220812164305.2056641-1-stefanb@linux.ibm.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: P20OgIJxfTKAti3Kpge_wkB5Cr85HOrG
+X-Proofpoint-GUID: P20OgIJxfTKAti3Kpge_wkB5Cr85HOrG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-12_10,2022-08-11_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
+ mlxlogscore=999 spamscore=0 impostorscore=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 priorityscore=1501 clxscore=1015
+ mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208120044
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 12 Aug 2022 11:48:59 +0200:
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-fix-6.0-rc1
+RISC-V recently added kexec_file() support, which uses enables kexec
+IMA.  We're the first 32-bit platform to support this, so we found a
+build bug.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4a9350597aff50bbd0f4b80ccf49d2e02d1111f5
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+ drivers/of/kexec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index 91b04b04eec4..c4f9b6655a2e 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -253,8 +253,8 @@ static int setup_ima_buffer(const struct kimage *image, void *fdt,
+ 	if (ret)
+ 		return -EINVAL;
+ 
+-	pr_debug("IMA buffer at 0x%llx, size = 0x%zx\n",
+-		 image->ima_buffer_addr, image->ima_buffer_size);
++	pr_debug("IMA buffer at 0x%pa, size = 0x%zx\n",
++		 &image->ima_buffer_addr, image->ima_buffer_size);
+ 
+ 	return 0;
+ }
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.1
+
