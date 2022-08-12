@@ -2,175 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6A4C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 21:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4B6C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 21:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbiHLVYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 17:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        id S235304AbiHLVYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 17:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231424AbiHLVYA (ORCPT
+        with ESMTP id S231424AbiHLVYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 17:24:00 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C95B275C
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 14:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660339439; x=1691875439;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=E5wH/HDtGvZxjOWsBANoq8k/TU0gaAbz6fHXCwRwwN0=;
-  b=IMOn0/I1jpCHYtbXJFIjw/szdvS7o7kGbm/rQmmbDGsQQZ7QHFTpxuwX
-   mMNLX3dZlCxvgSPcmsL+PCgHIttOIRgwhXi+0LA9yQ/psXHFwcAN8YO/c
-   /90bdhHvfXdWFt3zNtLY2M/tp4A9v+4B7Thi57Ckva80EUQEZzvCDtqy2
-   d6QemRMqzoClg6NTrUTIYPSf/Q29qCTAYk+tHqXTxC5/5Kbi6sDAM1AoI
-   9/tKekeUrT4YfmtroANLtGC5MIvD1Vsq2zhU0epMfQciERBNbvcC5hVWX
-   QjbXu96qytm7MaqqbMjohqyfp293aiLa4eLkDJmmz/i4M5UGBbZ/FDeJA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="292486296"
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="292486296"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 14:23:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="606049905"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 12 Aug 2022 14:23:57 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMc8K-0000xT-1g;
-        Fri, 12 Aug 2022 21:23:56 +0000
-Date:   Sat, 13 Aug 2022 05:23:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Justin M. Forbes" <jforbes@fedoraproject.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Jason A. Donenfeld" <zx2c4@kernel.org>
-Subject: [stable:linux-5.15.y 6874/9027] arch/arm/include/asm/xor.h:60:3:
- error: write to reserved register 'R7'
-Message-ID: <202208130550.28NTRtkj-lkp@intel.com>
+        Fri, 12 Aug 2022 17:24:15 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5F8B275C
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 14:24:14 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id w19so4008093ejc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 14:24:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:date:to:from
+         :subject:message-id:from:to:cc;
+        bh=6sLlVa5bv9fddso3aGZXeVZ815lIACQU4NMr1Arbw3I=;
+        b=lEdQfwoArxfCfMAR18cTK/A5mRqpYXHouEGdAeFgaZHI5J+0clpLhoGdGjAV3iTOtY
+         pI/d9J2GW9q06oUIU742rxvN0COvVArLEQfU00WEymfvyEYFWhCLLpDUevpr1yTrLPQg
+         dYvD36O1VSE0SBj/iUEllEX8oLfVKDrj5XJxzVEBr7I2fbLYG6Xo7Q+IHXVPRg0r90ZR
+         m+UPWB8qPo/Mp6HsDXvRIFwJ1Cdo3ULIa/++631BpCO2bmiWw18HCRktpM9Oznq2uuWT
+         eVULc8Sm9tnqGhRfm7fvANvN/+RQqdVmvUAGbUQDZ7qwJUw5gz2pvsIIIR/3noHSGbDS
+         JK+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:date:to:from
+         :subject:message-id:x-gm-message-state:from:to:cc;
+        bh=6sLlVa5bv9fddso3aGZXeVZ815lIACQU4NMr1Arbw3I=;
+        b=HDLlFzEQ0LUmMWMXrM9kSoGQZZEDPO0cD3NKxSnVl5VbjCGsZ2Cl65mTYgkFDOpsK2
+         raWi7BR6NYqL3j3ceuK2TiE29Hr+QLyFepbZu4WAj8uW+Y/CVLQ/kxWjRfAUlJpjJj5y
+         B8TcK74I1qJrzfS1jV0sFW5amZdbVUXigPo3Zxu6LZTOfbs++gX/RCLfq7tglB6qARQl
+         3BOyCj7XNvOsxATJ8yYj8AVcwhOHAqaluhj83aRUhgRGGZuFutEcn+6gOh1b7UUH3Ycw
+         7fHOiR5cWCSTY0NZE6VLXZMP0CUqemAkQ5OXS4az82BaJ/TD2ZGurqC96VYlro1QXKKm
+         VTpQ==
+X-Gm-Message-State: ACgBeo20J7oKEWb+QG+IIYXtvQY1ri0073y3P0Ww3GDZenngoW92OicM
+        o0sIqWxrpMjS4p0vcDy5asnL7IjhGJA=
+X-Google-Smtp-Source: AA6agR6FyVpEWJ9cff6A2kT9fDL3qtYQtOu1Nxl3xr2q87+yuRn8onOCdC3hdlK7y5iXl0qCa6rF3g==
+X-Received: by 2002:a17:907:a068:b0:731:366a:6005 with SMTP id ia8-20020a170907a06800b00731366a6005mr3856039ejc.344.1660339452881;
+        Fri, 12 Aug 2022 14:24:12 -0700 (PDT)
+Received: from [192.168.11.137] (188-143-71-136.pool.digikabel.hu. [188.143.71.136])
+        by smtp.gmail.com with ESMTPSA id ky21-20020a170907779500b00730453877b1sm1176197ejc.217.2022.08.12.14.24.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 14:24:12 -0700 (PDT)
+Message-ID: <4e478787ecbee62b8c2d420df895f5a8b531eb6b.camel@gmail.com>
+Subject: Intel gpu memory corruption
+From:   =?ISO-8859-1?Q?Baltaz=E1r?= Radics <baltazar.radics@gmail.com>
+To:     intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Date:   Fri, 12 Aug 2022 23:24:11 +0200
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
-head:   7217df81279835a7aee62a07aabb7b8fb8c766f2
-commit: e16cc79b0f916069de223bdb567fa0bc2ccd18a5 [6874/9027] lib/crypto: add prompts back to crypto libraries
-config: arm-randconfig-r021-20220812 (https://download.01.org/0day-ci/archive/20220813/202208130550.28NTRtkj-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=e16cc79b0f916069de223bdb567fa0bc2ccd18a5
-        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-        git fetch --no-tags stable linux-5.15.y
-        git checkout e16cc79b0f916069de223bdb567fa0bc2ccd18a5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Hello!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+My laptop (ThinkPad T460) seems to have a memory corruption issue that
+only occures when the gpu is in use (it has `Intel Corporation Skylake
+GT2 [HD Graphics 520] (rev 07)` as reported by lspci).
 
-All errors (new ones prefixed by >>):
+I haven't been able to reproduce the corruption with standard memory
+testing utilities like lenovo's builtin hardware diagnostic tool,
+memtest86+, or even the user-space program memtester when it's the only
+thing running.
 
-   In file included from crypto/xor.c:17:
->> arch/arm/include/asm/xor.h:60:3: error: write to reserved register 'R7'
-                   GET_BLOCK_4(p1);
-                   ^
-   arch/arm/include/asm/xor.h:20:10: note: expanded from macro 'GET_BLOCK_4'
-           __asm__("ldmia  %0, {%1, %2, %3, %4}" \
-                   ^
-   arch/arm/include/asm/xor.h:62:3: error: write to reserved register 'R7'
-                   PUT_BLOCK_4(p1);
-                   ^
-   arch/arm/include/asm/xor.h:42:23: note: expanded from macro 'PUT_BLOCK_4'
-           __asm__ __volatile__("stmia     %0!, {%2, %3, %4, %5}" \
-                                ^
-   arch/arm/include/asm/xor.h:81:3: error: write to reserved register 'R7'
-                   GET_BLOCK_4(p1);
-                   ^
-   arch/arm/include/asm/xor.h:20:10: note: expanded from macro 'GET_BLOCK_4'
-           __asm__("ldmia  %0, {%1, %2, %3, %4}" \
-                   ^
-   arch/arm/include/asm/xor.h:84:3: error: write to reserved register 'R7'
-                   PUT_BLOCK_4(p1);
-                   ^
-   arch/arm/include/asm/xor.h:42:23: note: expanded from macro 'PUT_BLOCK_4'
-           __asm__ __volatile__("stmia     %0!, {%2, %3, %4, %5}" \
-                                ^
-   4 errors generated.
+However, running memtester alongside vkmark for example can reproduce
+it quite consistently. It will always be a single address for a given
+instance of memtester, but looking into /proc/[pid]/pagemap revealed
+that seemingly it's always the same hardware address.
 
+With this information, I think I managed to stop it from happening by
+appending `memmap=3D4K$0x1F9D7C000` to my kernel commandline to stop that
+address from being allocated. Since then I haven't been able to catch
+it with memtester, but I did have a crash that kinda resembled the ones
+I had earlier. Many processes segfaulted and I had some `Bad swap file
+entry` errors in my dmesg.
 
-vim +/R7 +60 arch/arm/include/asm/xor.h
+I haven't been able to do testing on other OSes yet, but since none of
+the regular memtests have found any issues, I'm fairly certain this is
+not a hardware issue with my ram. Could still be a hardware issue with
+the gpu itself, but for now I'm guessing this is a gpu driver bug.
 
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  13  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  14  #define GET_BLOCK_2(dst) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  15  	__asm__("ldmia	%0, {%1, %2}" \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  16  		: "=r" (dst), "=r" (a1), "=r" (a2) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  17  		: "0" (dst))
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  18  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  19  #define GET_BLOCK_4(dst) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  20  	__asm__("ldmia	%0, {%1, %2, %3, %4}" \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  21  		: "=r" (dst), "=r" (a1), "=r" (a2), "=r" (a3), "=r" (a4) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  22  		: "0" (dst))
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  23  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  24  #define XOR_BLOCK_2(src) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  25  	__asm__("ldmia	%0!, {%1, %2}" \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  26  		: "=r" (src), "=r" (b1), "=r" (b2) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  27  		: "0" (src)); \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  28  	__XOR(a1, b1); __XOR(a2, b2);
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  29  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  30  #define XOR_BLOCK_4(src) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  31  	__asm__("ldmia	%0!, {%1, %2, %3, %4}" \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  32  		: "=r" (src), "=r" (b1), "=r" (b2), "=r" (b3), "=r" (b4) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  33  		: "0" (src)); \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  34  	__XOR(a1, b1); __XOR(a2, b2); __XOR(a3, b3); __XOR(a4, b4)
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  35  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  36  #define PUT_BLOCK_2(dst) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  37  	__asm__ __volatile__("stmia	%0!, {%2, %3}" \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  38  		: "=r" (dst) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  39  		: "0" (dst), "r" (a1), "r" (a2))
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  40  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  41  #define PUT_BLOCK_4(dst) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  42  	__asm__ __volatile__("stmia	%0!, {%2, %3, %4, %5}" \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  43  		: "=r" (dst) \
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  44  		: "0" (dst), "r" (a1), "r" (a2), "r" (a3), "r" (a4))
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  45  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  46  static void
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  47  xor_arm4regs_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  48  {
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  49  	unsigned int lines = bytes / sizeof(unsigned long) / 4;
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  50  	register unsigned int a1 __asm__("r4");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  51  	register unsigned int a2 __asm__("r5");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  52  	register unsigned int a3 __asm__("r6");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  53  	register unsigned int a4 __asm__("r7");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  54  	register unsigned int b1 __asm__("r8");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  55  	register unsigned int b2 __asm__("r9");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  56  	register unsigned int b3 __asm__("ip");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  57  	register unsigned int b4 __asm__("lr");
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  58  
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  59  	do {
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16 @60  		GET_BLOCK_4(p1);
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  61  		XOR_BLOCK_4(p2);
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  62  		PUT_BLOCK_4(p1);
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  63  	} while (--lines);
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  64  }
-^1da177e4c3f41 include/asm-arm/xor.h Linus Torvalds 2005-04-16  65  
+Is there anything else I can test to confirm that this is i915's fault,
+and if so, anything I can do to help track down the bug?
 
-:::::: The code at line 60 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks!
