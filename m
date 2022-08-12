@@ -2,149 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2AEC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C892FC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238173AbiHLOch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 10:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
+        id S237772AbiHLOdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 10:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiHLOcd (ORCPT
+        with ESMTP id S236950AbiHLOdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 10:32:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54007901B1
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:32:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 12 Aug 2022 10:33:21 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271C2A4B37
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:33:18 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98b3329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b3:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E278F60B3D
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 14:32:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9C96C433C1;
-        Fri, 12 Aug 2022 14:32:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660314751;
-        bh=/rqqYC6tk7WxEyqeuTVLmmFiz/8xN6QAqZLGMUp+wTM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=z8UAxovAeKkD/UvhTS1dZAqysq7Hj8/ptOwtPyUkSqqRKJRgmLymHLPPPxpf5x/9H
-         gk9tfEkHXBVaXhKahZIvBJXpZxsbyIOiFuJv74N8eCF1uf36763N4fiqs3PZbTYMv1
-         a3tQ/MhZ2k+M9rLa0SdFZmzio7oOhezZjmD6pQI8=
-Date:   Fri, 12 Aug 2022 16:32:28 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drivers: binderfs: fix memory leak in binderfs_fill_super
-Message-ID: <YvZkfPak2UMSc1tS@kroah.com>
-References: <20220812132124.2053673-1-dzm91@hust.edu.cn>
- <YvZYmprZ1NiMkynp@kroah.com>
- <CAD-N9QWU_tcnHMtP3iWcQogSWwDET4nhK5AQKDbh2KJQzwfF9A@mail.gmail.com>
- <YvZfEwFL7GSHEzs8@kroah.com>
- <20220812142423.33wnvnjg6v2h2m3y@wittgenstein>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6DB971EC054C;
+        Fri, 12 Aug 2022 16:33:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660314793;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=FunQRTUpDRWrn775UlH9qw4r9DD2TH89OT1Qf+BxEAU=;
+        b=gEOZE9gv6b/i2qzz94i4sFzqm5XYoFNfTia14Mre5p0A2pq1D5rQl4bsWjHgCTtRxN0d72
+        BCIkmJmxwOFPvL3w+KAFCUrFCDmzOaLGsd3rugBXlbuLI1HMW3MURckOIS2/gsHF64Jm1r
+        DloTXwtsSbOXX5MqhVKRZ6jwBKZ1dyg=
+Date:   Fri, 12 Aug 2022 16:33:09 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2 1/2] x86/sev: Put PSC struct on the stack in prep for
+ unaccepted memory support
+Message-ID: <YvZkpYRfrgPLLoJV@zn.tnic>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <cover.1659978985.git.thomas.lendacky@amd.com>
+ <21d5d55640ee1c5d66501b9398858b6a6bd6546f.1659978985.git.thomas.lendacky@amd.com>
+ <YvZPoEm6PSeoflAz@zn.tnic>
+ <6d9d433f-779d-7531-02b5-382796acceef@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220812142423.33wnvnjg6v2h2m3y@wittgenstein>
+In-Reply-To: <6d9d433f-779d-7531-02b5-382796acceef@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 04:24:23PM +0200, Christian Brauner wrote:
-> On Fri, Aug 12, 2022 at 04:09:23PM +0200, Greg Kroah-Hartman wrote:
-> > On Fri, Aug 12, 2022 at 09:56:46PM +0800, Dongliang Mu wrote:
-> > > On Fri, Aug 12, 2022 at 9:41 PM Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Fri, Aug 12, 2022 at 09:21:24PM +0800, Dongliang Mu wrote:
-> > > > > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > > >
-> > > > > In binderfs_fill_super, if s_root is not successfully initialized by
-> > > > > d_make_root, the previous allocated s_sb_info will not be freed since
-> > > > > generic_shutdown_super first checks if sb->s_root and then does
-> > > > > put_super operation. The put_super operation calls binderfs_put_super
-> > > > > to deallocate s_sb_info and put ipc_ns. This will lead to memory leak
-> > > > > in binderfs_fill_super.
-> > > > >
-> > > > > Fix this by invoking binderfs_put_super at error sites before s_root
-> > > > > is successfully initialized.
-> > > > >
-> > > > > Fixes: 095cf502b31e ("binderfs: port to new mount api")
-> > > > > Reported-by: syzkaller <syzkaller@googlegroups.com>
-> > > >
-> > > > Where is the specific syzkaller link for this report?  It would be good
-> > > > to reference it so it can be properly checked.
-> > > >
-> > > > Also, how did you test this change?
-> > > 
-> > > I found this memory leak in my local syzkaller, and there is no any
-> > > syzbot report about this crash, therefore I use such a Reported-by to
-> > > indicate.
-> > > 
-> > > Although my local syzkaller does generate any reproducer, this bug can
-> > > be triggered by injecting faults at new_inode and d_make_root (i.e.,
-> > > between s_sb_info allocation and code after d_make_root).
-> > > 
-> > > >
-> > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > > > ---
-> > > > >  drivers/android/binderfs.c | 8 ++++++--
-> > > > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-> > > > > index 588d753a7a19..20f5bc77495f 100644
-> > > > > --- a/drivers/android/binderfs.c
-> > > > > +++ b/drivers/android/binderfs.c
-> > > > > @@ -710,8 +710,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> > > > >       info->mount_opts.stats_mode = ctx->stats_mode;
-> > > > >
-> > > > >       inode = new_inode(sb);
-> > > > > -     if (!inode)
-> > > > > +     if (!inode) {
-> > > > > +             binderfs_put_super(sb);
-> > > > >               return -ENOMEM;
-> > > > > +     }
-> > > > >
-> > > > >       inode->i_ino = FIRST_INODE;
-> > > > >       inode->i_fop = &simple_dir_operations;
-> > > > > @@ -721,8 +723,10 @@ static int binderfs_fill_super(struct super_block *sb, struct fs_context *fc)
-> > > > >       set_nlink(inode, 2);
-> > > > >
-> > > > >       sb->s_root = d_make_root(inode);
-> > > > > -     if (!sb->s_root)
-> > > > > +     if (!sb->s_root) {
-> > > > > +             binderfs_put_super(sb);
-> > > > >               return -ENOMEM;
-> > > > > +     }
-> > > >
-> > > > How did you test this change to verify that you are not now just leaking
-> > > > memory?  It looks to me like you just changed one problem for another
-> > > > one :(
-> > > 
-> > > As mentioned above, I just tested my change by injecting faults at
-> > > new_inode and d_make_root.
-> > > 
-> > > Can you explain more about "changed one problem for another one"? I
-> > > don't quite understand this statement.
-> > 
-> > I think you are leaking memory in at least your second change here,
-> > possibly the first, I didn't look at the code very closely.
-> 
-> It's a bit tricky to follow but d_make_root() always consumes the inode.
-> On success via d_instantiate() and on failure via iput(). So when
-> d_make_root() has been called the inode is off limits. And as soon as
-> d_make_root() has returned successfully we're guaranteed that
-> sb->s_fs_info is cleaned up if a ->put_super() method has been defined.
-> Just fyi.
+On Fri, Aug 12, 2022 at 09:11:25AM -0500, Tom Lendacky wrote:
+> There was a whole discussion on this
 
-Ah, thanks, that wasn't obvious at all.
+Pointer to it?
 
-greg k-h
+> and I would prefer to keep the ability to parallelize PSC without
+> locking.
+
+So smaller, on-stack PSC but lockless is still better than a bigger one
+but with synchronized accesses to it?
+
+> Well when we don't know which GHCB is in use, using that reserved area in
+> the GHCB doesn't help.
+
+What do you mean?
+
+The one which you read with
+
+	data = this_cpu_read(runtime_data);
+
+in snp_register_per_cpu_ghcb() is the one you register.
+
+> Also, I don't want to update the GHCB specification for a single bit
+> that is only required because of the way Linux went about establishing
+> the GHCB usage.
+
+Linux?
+
+You mean, you did it this way: 885689e47dfa1499b756a07237eb645234d93cf9
+
+:-)
+
+"The runtime handler needs one GHCB per-CPU. Set them up and map them
+unencrypted."
+
+Why does that handler need one GHCB per CPU?
+
+As to the field, I was thinking along the lines of
+
+	struct ghcb.vendor_flags
+
+field which each virt vendor can use however they like.
+
+It might be overkill but a random bool ain't pretty either. Especially
+if those things start getting added for all kinds of other things.
+
+If anything, you could make this a single u64 sev_flags which can at
+least collect all that gunk in one variable ... at least...
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
