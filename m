@@ -2,105 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92322C25B0E
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 16:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B023EC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 16:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239313AbiHLQXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 12:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52084 "EHLO
+        id S239325AbiHLQ2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 12:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239305AbiHLQXa (ORCPT
+        with ESMTP id S238193AbiHLQ2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 12:23:30 -0400
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28EBAE9DF;
-        Fri, 12 Aug 2022 09:23:28 -0700 (PDT)
-Received: by mail-qk1-f181.google.com with SMTP id m5so1147207qkk.1;
-        Fri, 12 Aug 2022 09:23:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=bWlB4yJzlVgm2Y+PItz5RfsQXB1Bc3Sb4QZFJeft64o=;
-        b=s3kU7QrB1rtf/4ky2DlubagE5QCGssZNoZidiVN7TclER0QFU2u8l9008f5dNfJclL
-         d/9X7Tlvtsxhhc69Jck4ZH/SKq/aVnQz2s8aEyOLSQMpF2cBH85LJ76m3JS75dhA5qtM
-         VS1CBxZaiiOd+lRmnhbTE6NIO4kuGGX4/PoLaDOrO1ZYa8ELqWQAoauZVN9EY6yu8sb2
-         9+/sytaL31+HkoSsMGhHo/BW/ws5hjLAz8H2aL/3WDLmiKJc5mw3CJS0FuijBeMgUMiz
-         nk7vVV888Lz36M/1d/k5FXJ1C2lYRccyS+D8H348pqML7e54yIhXRfo2Mr1a1aF49Rn+
-         VLKQ==
-X-Gm-Message-State: ACgBeo2n2l0fLnRCXYMAWyXjFCgpQVR/7ziBD/lvGOiaWcTpHUL/ZMhu
-        QjxsH1tOu8dx27aQAyAgaPw=
-X-Google-Smtp-Source: AA6agR5i1SbkC10FHr5uJ0FlZ+c7om/PSdKiG0ZOs47VEP+UM4S3MqgWCohzgdQrpALQVi3CuVpF2g==
-X-Received: by 2002:a05:620a:d8c:b0:6a7:91a2:c827 with SMTP id q12-20020a05620a0d8c00b006a791a2c827mr3318533qkl.407.1660321407739;
-        Fri, 12 Aug 2022 09:23:27 -0700 (PDT)
-Received: from maniforge.dhcp.thefacebook.com ([2620:10d:c091:480::9c4])
-        by smtp.gmail.com with ESMTPSA id l23-20020a37f917000000b006b97151d2b3sm2217123qkj.67.2022.08.12.09.23.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 09:23:27 -0700 (PDT)
-Date:   Fri, 12 Aug 2022 11:23:24 -0500
-From:   David Vernet <void@manifault.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, john.fastabend@gmail.com, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, tj@kernel.org,
-        joannelkoong@gmail.com, linux-kernel@vger.kernel.org,
-        Kernel-team@fb.com
-Subject: Re: [PATCH 2/5] bpf: Define new BPF_MAP_TYPE_USER_RINGBUF map type
-Message-ID: <YvZ+fHcKUnUk8jhc@maniforge.dhcp.thefacebook.com>
-References: <20220808155341.2479054-1-void@manifault.com>
- <20220808155341.2479054-2-void@manifault.com>
- <CAEf4BzZdOQwym4Q2QXtWF9uKhtKEb8cya-eQvLU3h3+7wES8UA@mail.gmail.com>
+        Fri, 12 Aug 2022 12:28:20 -0400
+Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7DFABF2C;
+        Fri, 12 Aug 2022 09:28:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660321662; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=TIgpFcuFRXdiCpes87hIIXQ1Wghp5OVWIe4nAx5WXJaOYHU9wRXjYHq3Se3qitu8+FUy+VvTryNkdXB6pXzkBDapNgLU7zvNwh13zsz+sxzsnwnzYKsXBJ2sKjbYK6L6D+PPlvkDFehWxOL0djZHrok1BQ8/CS9Lyt+8p916rDo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1660321662; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=MJyv8/T3AsC5yGTNAapmuhGn+zH2Um3nfzqkYfPuPP8=; 
+        b=Lrf/qyekzRv0v+9jKCySkNuvUn1IS8CAvJSuYwlSNV7ieNCRblN+ZJuTt2izrO1H/iApvFU9hvfUl23azD0fgTbNuQOcUltGloqoA7MObnsHa2QqQ+RG5B09qQvZeQ7IMhTAt0j69vI6Gm9jBi2pKjXQhQtKI9pPa592naQC4vg=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660321662;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=MJyv8/T3AsC5yGTNAapmuhGn+zH2Um3nfzqkYfPuPP8=;
+        b=eHNSW7WorTicEALoMtyy5z1MibmL3rbRlfw6YRakdsUSHN9KNBEsrQBwtZlk54dh
+        +uPa8hy4gYw/wXbS6Tgy7Rcz3eGgiRYJiZuBcPov+m4YgdYxdfJ0zer8vc+zsYKFjly
+        7/EBC+S49yXN3O1VKRs+Ru/ULy7EEDWsmGnFo6Y4=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1660321651956275.37477643119485; Fri, 12 Aug 2022 21:57:31 +0530 (IST)
+Date:   Fri, 12 Aug 2022 21:57:31 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     "johannes berg" <johannes@sipsolutions.net>,
+        "david s. miller" <davem@davemloft.net>,
+        "eric dumazet" <edumazet@google.com>,
+        "jakub kicinski" <kuba@kernel.org>,
+        "paolo abeni" <pabeni@redhat.com>,
+        "netdev" <netdev@vger.kernel.org>,
+        "syzbot+6cb476b7c69916a0caca" 
+        <syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com>,
+        "linux-wireless" <linux-wireless@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "syzbot+f9acff9bf08a845f225d" 
+        <syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com>,
+        "syzbot+9250865a55539d384347" 
+        <syzbot+9250865a55539d384347@syzkaller.appspotmail.com>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <18292e1dcd8.2359a549180213.8185874405406307019@siddh.me>
+In-Reply-To: <YvZxfpY4JUqvsOG5@kroah.com>
+References: <20220726123921.29664-1-code@siddh.me>
+ <18291779771.584fa6ab156295.3990923778713440655@siddh.me>
+ <YvZEfnjGIpH6XjsD@kroah.com>
+ <18292791718.88f48d22175003.6675210189148271554@siddh.me> <YvZxfpY4JUqvsOG5@kroah.com>
+Subject: Re: [PATCH v2] wifi: cfg80211: Fix UAF in ieee80211_scan_rx()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZdOQwym4Q2QXtWF9uKhtKEb8cya-eQvLU3h3+7wES8UA@mail.gmail.com>
-User-Agent: Mutt/2.2.7 (2022-08-07)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 04:29:02PM -0700, Andrii Nakryiko wrote:
+On Fri, 12 Aug 2022 20:57:58 +0530  Greg KH  wrote:
+> rcu just delays freeing of an object, you might just be delaying the
+> race condition.  Just moving a single object to be freed with rcu feels
+> very odd if you don't have another reference somewhere.
 
-[...]
+As mentioned in patch message, in net/mac80211/scan.c, we have:
+        void ieee80211_scan_rx(struct ieee80211_local *local, struct sk_buff *skb)
+        {
+                ...
+                scan_req = rcu_dereference(local->scan_req);
+                sched_scan_req = rcu_dereference(local->sched_scan_req);
 
-> > -       /* Consumer and producer counters are put into separate pages to allow
-> > -        * mapping consumer page as r/w, but restrict producer page to r/o.
-> > -        * This protects producer position from being modified by user-space
-> > -        * application and ruining in-kernel position tracking.
-> > +       /* Consumer and producer counters are put into separate pages to
-> > +        * allow each position to be mapped with different permissions.
-> > +        * This prevents a user-space application from modifying the
-> > +        * position and ruining in-kernel tracking. The permissions of the
-> > +        * pages depend on who is producing samples: user-space or the
-> > +        * kernel.
-> > +        *
-> > +        * Kernel-producer
-> > +        * ---------------
-> > +        * The producer position and data pages are mapped as r/o in
-> > +        * userspace. For this approach, bits in the header of samples are
-> > +        * used to signal to user-space, and to other producers, whether a
-> > +        * sample is currently being written.
-> > +        *
-> > +        * User-space producer
-> > +        * -------------------
-> > +        * Only the page containing the consumer position, and whether the
-> > +        * ringbuffer is currently being consumed via a 'busy' bit, are
-> > +        * mapped r/o in user-space. Sample headers may not be used to
-> > +        * communicate any information between kernel consumers, as a
-> > +        * user-space application could modify its contents at any time.
-> >          */
-> > -       unsigned long consumer_pos __aligned(PAGE_SIZE);
-> > +       struct {
-> > +               unsigned long consumer_pos;
-> > +               atomic_t busy;
-> 
-> one more thing, why does busy have to be exposed into user-space
-> mapped memory at all? Can't it be just a private variable in
-> bpf_ringbuf?
+                if (scan_req)
+                        scan_req_flags = scan_req->flags;
+                ...
+        }
 
-It could be moved elsewhere in the struct. I put it here to avoid
-increasing the size of struct bpf_ringbuf unnecessarily, as we had all of
-this extra space on the consumer_pos page. Specifically, I was trying to
-avoid taxing kernel-producer ringbuffers. If you'd prefer, I can just put
-it elsewhere in the struct.
+So scan_req is probably supposed to be protected by RCU.
+
+Also, in ieee80211_local's definition at net/mac80211/ieee80211_i.h, we have:
+        struct cfg80211_scan_request __rcu *scan_req;
+
+Thus, scan_req is indeed supposed to be protected by RCU, which this patch
+addresses by adding a RCU head to the type's struct, and using kfree_rcu().
+
+The above snippet is where the UAF happens (you can refer to syzkaller's log),
+because __cfg80211_scan_done() is called and frees the pointer.
+
+Thanks,
+Siddh
+
