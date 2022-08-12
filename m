@@ -2,111 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB7DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFC1C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 11:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238376AbiHLK6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
+        id S234441AbiHLLIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 07:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbiHLK6r (ORCPT
+        with ESMTP id S232003AbiHLLIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:58:47 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB12ACA10;
-        Fri, 12 Aug 2022 03:58:45 -0700 (PDT)
+        Fri, 12 Aug 2022 07:08:42 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16444A8CE5
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:08:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660301925; x=1691837925;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pf+Ur3Mk1CkKkMyfVrI4PlDfV4MGfMJmTcIeuz/L5cE=;
-  b=IypEzPVtvSY1FFJB8d9rFbOYOQVnPLhR498Ac99GEecBxOK74W+1mZZO
-   4THeVQdf9KoyRj8qcU8m09YI9E3xA5BoLrkIdVHyxk2EaFkYNeNuLg4hE
-   MRUcKJMhRRV53resMsm5cxgYk2AwSlar1tO/mYR9eaUz/rucB+wxvAzaS
-   HJObVkbLsWZSXGR41jUc/umJIRqTV/PWBmNZtzajoP18yvPH8wEl80R+p
-   syz8kAVMouDsxQrHfLLwr1wuWFC/R9undS8Ak33xRo9EpjP2cXsBCb6JE
-   QfNKzQZfU54pegLpVJAxWwn8EqcTJgA47VrxMsklc/enRe0DNQVyv26yF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="292367141"
+  t=1660302522; x=1691838522;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4ktXzE5RQq0eGiQ1PdlQTV7GNdfQqf9bXxcMzZPMB48=;
+  b=IpKqqJjmw+/lyX2cd6MRaoc2iRbCOx2vkba/Wr4pta7iHuvGdukT94MD
+   55KWahgRGVCG6Alv08G0W6zF1gy984e7xnm+CUtyJaxyC/WU6aBR0nsja
+   RaAGHn28uGr68Uf8OMrieerbKLlJrGYNFaof2Ueql/G/UQTtduECVGQGB
+   UnvYG1WUFG6SdAORpJ+NWK31kjEYqMfXWlUe8lYo4ujl37sBZMOvqBuEw
+   xYRkDRM7Q2PxZ5sFGMERV63e1XFPM1OT+POpNIMCHTrQNyPrCAO22iIC9
+   I7f3ht1OLcrtsJRJKokFt9UqTQnfDWMgOEdI5FIWdjVxDunURDk6hd4Id
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="271348061"
 X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="292367141"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 03:58:44 -0700
+   d="scan'208";a="271348061"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 04:08:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="748159622"
+   d="scan'208";a="638864363"
 Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Aug 2022 03:58:40 -0700
+  by orsmga001.jf.intel.com with ESMTP; 12 Aug 2022 04:08:40 -0700
 Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oMSND-0000S7-1V;
-        Fri, 12 Aug 2022 10:58:39 +0000
-Date:   Fri, 12 Aug 2022 18:58:06 +0800
+        id 1oMSWt-0000Sg-2B;
+        Fri, 12 Aug 2022 11:08:39 +0000
+Date:   Fri, 12 Aug 2022 19:08:25 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Jia He <justin.he@arm.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Robert Moore <robert.moore@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-edac@vger.kernel.org, devel@acpica.org,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Shuai Xue <xueshuai@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>, linux-efi@vger.kernel.org,
-        nd@arm.com, toshi.kani@hpe.com, Jia He <justin.he@arm.com>,
-        stable@kernel.org
-Subject: Re: [PATCH 2/2] EDAC/ghes: Modularize ghes_edac driver to remove the
- dependency on ghes
-Message-ID: <202208121802.AQBiO8LK-lkp@intel.com>
-References: <20220811091713.10427-3-justin.he@arm.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/arm/mach-mmp/devices.c:262:17: sparse: sparse: symbol
+ 'pxa168_u2o_resources' was not declared. Should it be static?
+Message-ID: <202208121852.EWOy4J0A-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220811091713.10427-3-justin.he@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jia,
+Hi Stephen,
 
-Thank you for the patch! Perhaps something to improve:
+First bad commit (maybe != root cause):
 
-[auto build test WARNING on rafael-pm/linux-next]
-[also build test WARNING on ras/edac-for-next efi/next linus/master v5.19 next-20220812]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Jia-He/Modularize-ghes_edac-driver/20220811-171953
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
-config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220812/202208121802.AQBiO8LK-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   7ebfc85e2cd7b08f518b526173e9a33b56b3913b
+commit: 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8 ARM: dove: multiplatform support
+date:   4 months ago
+config: arm-randconfig-s041-20220812 (https://download.01.org/0day-ci/archive/20220812/202208121852.EWOy4J0A-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
 reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
         # apt-get install sparse
         # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/9cf68330d4fa626e09c8cbc3be9910751e94508c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jia-He/Modularize-ghes_edac-driver/20220811-171953
-        git checkout 9cf68330d4fa626e09c8cbc3be9910751e94508c
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/acpi/apei/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mach-mmp/ arch/arm/mach-socfpga/ drivers/usb/gadget/udc/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 sparse warnings: (new ones prefixed by >>)
->> drivers/acpi/apei/ghes.c:97:1: sparse: sparse: symbol 'ghes_report_chain' was not declared. Should it be static?
-   drivers/acpi/apei/ghes.c:733:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/acpi/apei/ghes.c:733:25: sparse:    struct ghes_estatus_cache [noderef] __rcu *
-   drivers/acpi/apei/ghes.c:733:25: sparse:    struct ghes_estatus_cache *
-   drivers/acpi/apei/ghes.c:813:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/acpi/apei/ghes.c:813:25: sparse:    struct ghes_estatus_cache [noderef] __rcu *
-   drivers/acpi/apei/ghes.c:813:25: sparse:    struct ghes_estatus_cache *
+   arch/arm/mach-mmp/devices.c:241:17: sparse: sparse: symbol 'pxa168_usb_phy_resources' was not declared. Should it be static?
+>> arch/arm/mach-mmp/devices.c:262:17: sparse: sparse: symbol 'pxa168_u2o_resources' was not declared. Should it be static?
+--
+>> arch/arm/mach-socfpga/pm.c:75:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *[assigned] suspend_ocram_base @@
+   arch/arm/mach-socfpga/pm.c:75:25: sparse:     expected void const *
+   arch/arm/mach-socfpga/pm.c:75:25: sparse:     got void [noderef] __iomem *[assigned] suspend_ocram_base
+>> arch/arm/mach-socfpga/pm.c:75:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *[assigned] suspend_ocram_base @@
+   arch/arm/mach-socfpga/pm.c:75:25: sparse:     expected void const *
+   arch/arm/mach-socfpga/pm.c:75:25: sparse:     got void [noderef] __iomem *[assigned] suspend_ocram_base
+>> arch/arm/mach-socfpga/pm.c:75:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem *[assigned] suspend_ocram_base @@
+   arch/arm/mach-socfpga/pm.c:75:25: sparse:     expected void *
+   arch/arm/mach-socfpga/pm.c:75:25: sparse:     got void [noderef] __iomem *[assigned] suspend_ocram_base
+--
+>> drivers/usb/gadget/udc/atmel_usba_udc.c:1314:32: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned short [usertype] status @@     got restricted __le16 [usertype] @@
+   drivers/usb/gadget/udc/atmel_usba_udc.c:1314:32: sparse:     expected unsigned short [usertype] status
+   drivers/usb/gadget/udc/atmel_usba_udc.c:1314:32: sparse:     got restricted __le16 [usertype]
+   drivers/usb/gadget/udc/atmel_usba_udc.c:1317:32: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned short [usertype] status @@     got restricted __le16 [usertype] @@
+   drivers/usb/gadget/udc/atmel_usba_udc.c:1317:32: sparse:     expected unsigned short [usertype] status
+   drivers/usb/gadget/udc/atmel_usba_udc.c:1317:32: sparse:     got restricted __le16 [usertype]
+>> drivers/usb/gadget/udc/atmel_usba_udc.c:1328:40: sparse: sparse: invalid assignment: |=
+>> drivers/usb/gadget/udc/atmel_usba_udc.c:1328:40: sparse:    left side has type unsigned short
+>> drivers/usb/gadget/udc/atmel_usba_udc.c:1328:40: sparse:    right side has type restricted __le16
+
+vim +/pxa168_u2o_resources +262 arch/arm/mach-mmp/devices.c
+
+a225daf72ee788 Lubomir Rintel 2018-11-28  260  
+3524080826c289 Arnd Bergmann  2014-03-12  261  #if IS_ENABLED(CONFIG_USB_MV_UDC)
+75b1bdf51c4b5c Neil Zhang     2012-05-03 @262  struct resource pxa168_u2o_resources[] = {
+75b1bdf51c4b5c Neil Zhang     2012-05-03  263  	/* regbase */
+75b1bdf51c4b5c Neil Zhang     2012-05-03  264  	[0] = {
+75b1bdf51c4b5c Neil Zhang     2012-05-03  265  		.start	= PXA168_U2O_REGBASE + U2x_CAPREGS_OFFSET,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  266  		.end	= PXA168_U2O_REGBASE + USB_REG_RANGE,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  267  		.flags	= IORESOURCE_MEM,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  268  		.name	= "capregs",
+75b1bdf51c4b5c Neil Zhang     2012-05-03  269  	},
+75b1bdf51c4b5c Neil Zhang     2012-05-03  270  	/* phybase */
+75b1bdf51c4b5c Neil Zhang     2012-05-03  271  	[1] = {
+75b1bdf51c4b5c Neil Zhang     2012-05-03  272  		.start	= PXA168_U2O_PHYBASE,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  273  		.end	= PXA168_U2O_PHYBASE + USB_PHY_RANGE,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  274  		.flags	= IORESOURCE_MEM,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  275  		.name	= "phyregs",
+75b1bdf51c4b5c Neil Zhang     2012-05-03  276  	},
+75b1bdf51c4b5c Neil Zhang     2012-05-03  277  	[2] = {
+75b1bdf51c4b5c Neil Zhang     2012-05-03  278  		.start	= IRQ_PXA168_USB1,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  279  		.end	= IRQ_PXA168_USB1,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  280  		.flags	= IORESOURCE_IRQ,
+75b1bdf51c4b5c Neil Zhang     2012-05-03  281  	},
+75b1bdf51c4b5c Neil Zhang     2012-05-03  282  };
+75b1bdf51c4b5c Neil Zhang     2012-05-03  283  
+
+:::::: The code at line 262 was first introduced by commit
+:::::: 75b1bdf51c4b5c383296de2df9ad83b1b8dd287f ARM: mmp: add usb device support for PXA910
+
+:::::: TO: Neil Zhang <zhangwm@marvell.com>
+:::::: CC: Haojian Zhuang <haojian.zhuang@gmail.com>
 
 -- 
 0-DAY CI Kernel Test Service
