@@ -2,132 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E51BFC25B06
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 03:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E18CC25B06
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 03:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236969AbiHLDXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 11 Aug 2022 23:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S236868AbiHLDXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 11 Aug 2022 23:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236961AbiHLDXM (ORCPT
+        with ESMTP id S235689AbiHLDXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 11 Aug 2022 23:23:12 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE739A346F;
-        Thu, 11 Aug 2022 20:23:11 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27C3N4ta073657;
-        Thu, 11 Aug 2022 22:23:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1660274584;
-        bh=ybRbRZ6XB/9I3M+k9jxHso72fMEjppEg2Jzo3Gg/Ci0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=t9xdV5DE+53kwx2mWKohA0OJLNiI6EeXAiD4LBZ3UCtHbvA6mp22jMz4qO5QXaPs3
-         zrzC3ZAV5KzWAP1UsnxVra+o2PAGjq2YeCiFZqy4xjlLRs9c+LNfGN9WcGP+yMXugY
-         AFKD6kaZH6Jwjl8NYc9M5H0ZqQ3nnDAOBq48nM+c=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27C3N4oL119559
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 11 Aug 2022 22:23:04 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 11
- Aug 2022 22:23:04 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Thu, 11 Aug 2022 22:23:04 -0500
-Received: from ubuntu.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27C3MkOr096105;
-        Thu, 11 Aug 2022 22:22:57 -0500
-From:   Matt Ranostay <mranostay@ti.com>
-To:     <nm@ti.com>, <j-keerthy@ti.com>, <lee@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Matt Ranostay <mranostay@ti.com>
-Subject: [PATCH v2 1/6] Documentation: tps6594x: Add DT bindings for the TPS6594x PMIC
-Date:   Thu, 11 Aug 2022 20:22:37 -0700
-Message-ID: <20220812032242.564026-2-mranostay@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220812032242.564026-1-mranostay@ti.com>
-References: <20220812032242.564026-1-mranostay@ti.com>
+        Thu, 11 Aug 2022 23:23:13 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A71A3475;
+        Thu, 11 Aug 2022 20:23:12 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id g5so31098602ybg.11;
+        Thu, 11 Aug 2022 20:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=eZSj7ETI+iuiscrTI6+l4FTa1GjyXd9wkrgxBXiniks=;
+        b=kmfXn4pWniW5YaVUVmQJRgxp4P0vztk0rDkk1n7MkgohYDbPwkWOylHKvStBaBM9He
+         nuWiA3vqkXRP8uAMY0i8pk+iWIMhbQOk30vBCCfvJ5ST57loqYXGamTyzI39CVZ3KNQj
+         btt0hmkINxeGbiCJNHUioE2xMhMDpi5dTA0nbtJHOpvZKWL3Q0+kVV31FLZAbb+d7izr
+         Jb7YStTIoXHSacjYfBNshQ1s+ovjPWdzLCj9n2LLgwY8VS4G6viqqHDJ53rTGMHkFeDA
+         ESQ7NrtFBXOTzWes/2l2LpdXWdxSCpdyBz1RTC1hOOnxVYCqEkImdZDhkAhO9NM8Qml0
+         NjNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=eZSj7ETI+iuiscrTI6+l4FTa1GjyXd9wkrgxBXiniks=;
+        b=VNLmfHLmHs6PERWGvcm9kDawf7M9rVH6CBPYD9qzvIfJe4Z5ewu95fTNbcBsg21ZXh
+         fyEB7WJHX1DazykgvpZGnbK90knn5j2tw4QdlO80mLSWQ60f8HWF3xTvegQOKdu+TgGp
+         ziUfVyqgZG7PU1xhRnS5xh/GApEYbOVHlhcJvISE5myajIgfY5nQDIaJR98eFumOLBGP
+         D3Ow675uvzSI2unn5F4BaLaBAuwjwXku+87Rk5pstAzuIVbz3gjtubivELXw1en/lF8O
+         AZg9naQNsJ5guyUgi+vT0WmKp08evFnjSArlmOImFTy/PXVFpzZuUm3CYvCVdxAEV+9d
+         kG4Q==
+X-Gm-Message-State: ACgBeo3+gmuF9sw3lLyMHjQF62QMvvrUv5RyHzzovezEgTtHfPIpAuRD
+        +XFeg0tNoC+zFMzNoo6VyyQotvn/HDRyXv4ulbs=
+X-Google-Smtp-Source: AA6agR6+0FuRGI5TkiB4BlZTULVdxm6BPysYRXCjl1Lvw21aXjGFDJcxkUrwkO1xgExZUY+iSDkf0QG3Iz/sfn/N41A=
+X-Received: by 2002:a25:d658:0:b0:67b:37ca:dc04 with SMTP id
+ n85-20020a25d658000000b0067b37cadc04mr1944514ybg.431.1660274591570; Thu, 11
+ Aug 2022 20:23:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <7aab2990-9c57-2456-b08d-299ae96ac919@apertussolutions.com>
+ <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
+ <b1e7b545-8e66-5dc0-ff5a-9f69d1751a5f@apertussolutions.com>
+ <CAELHeEcEN=4YrPJROvzHoOiqqe5Bk0f8pDCZDnQ6aS=2LdwNow@mail.gmail.com>
+ <f09fe749-e139-db6a-b2ad-45db76da04ae@apertussolutions.com>
+ <CAELHeEe5H8BNf8K22XRm3hXf=_imHBnf-MHcFYvPCXX7GYkt4w@mail.gmail.com>
+ <203110bb-b70b-b4f1-9453-46136659f84c@apertussolutions.com>
+ <CAELHeEe2CiTXfMf3OYu3bzc_kH=rs4qzC-4XQL12AM=Nq8Csjw@mail.gmail.com>
+ <20220810174638.GA7906@srcf.ucam.org> <CAELHeEdNgYCh_kQwWpEc4aXw-YL-KGrAeDCL-VaG3ChFs6LNVw@mail.gmail.com>
+ <20220811182502.GA32433@srcf.ucam.org>
+In-Reply-To: <20220811182502.GA32433@srcf.ucam.org>
+From:   Brendan Trotter <btrotter@gmail.com>
+Date:   Fri, 12 Aug 2022 12:52:58 +0930
+Message-ID: <CAELHeEcfHSXewFCywsYeN_g8Q_BNG+4tP-QENO5QBw8Dj91yMA@mail.gmail.com>
+Subject: Re: Linux DRTM on UEFI platforms
+To:     Matthew Garrett <mjg59@srcf.ucam.org>
+Cc:     The development of GNU GRUB <grub-devel@gnu.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        Alec Brown <alec.r.brown@oracle.com>,
+        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
+        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
+        "persaur@gmail.com" <persaur@gmail.com>,
+        "Yoder, Stuart" <stuart.yoder@arm.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        James Morris <jmorris@namei.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Matt Ranostay <mranostay@ti.com>
----
- .../devicetree/bindings/mfd/ti,tps6594x.yaml  | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/ti,tps6594x.yaml
+Hi,
 
-diff --git a/Documentation/devicetree/bindings/mfd/ti,tps6594x.yaml b/Documentation/devicetree/bindings/mfd/ti,tps6594x.yaml
-new file mode 100644
-index 000000000000..9b5e17f63709
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/ti,tps6594x.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/ti,tps6594x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TPS6594x Power Management Integrated Circuit (PMIC)
-+
-+maintainers:
-+  - Keerthy <j-keerthy@ti.com>
-+
-+properties:
-+  compatible:
-+    contains:
-+      enum:
-+        - ti,tps6594x
-+
-+  reg:
-+    const: 0x48
-+    description: I2C slave address
-+
-+  ti,system-power-controller:
-+    type: boolean
-+    description: PMIC is controlling the system power.
-+
-+  rtc:
-+    type: object
-+    $ref: /schemas/rtc/rtc.yaml#
-+    unevaluatedProperties: false
-+    properties:
-+      compatible:
-+        const: ti,tps6594x-rtc
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    i2c0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pmic: pmic@48 {
-+            compatible = "ti,tps6594x";
-+            reg = <0x48>;
-+
-+            rtc {
-+                compatible = "ti,tps6594x-rtc";
-+            };
-+        };
-+    };
-+
-+...
--- 
-2.36.1
+On Fri, Aug 12, 2022 at 3:55 AM Matthew Garrett <mjg59@srcf.ucam.org> wrote:
+> On Thu, Aug 11, 2022 at 07:25:58PM +0930, Brendan Trotter wrote:
+> > On Thu, Aug 11, 2022 at 3:16 AM Matthew Garrett <mjg59@srcf.ucam.org> wrote:
+> > > The kernel has no way to know this - *any* code you've run before
+> > > performing a measurement could tamper with the kernel such that it
+> > > believes it's fine. This is just as true in DRTM as it is in SRTM. But
+> > > you know what the expected measurements should be, so you're able to
+> > > either seal secrets to those PCR values or rely on remote attestation.
+> >
+> > In this scenario the kernel has no idea what the measurement should
+> > be, it only knows the measurement that a potentially malicious boot
+> > loader felt like giving the kernel previously (e.g. when the kernel
+> > was installed).
+>
+> Even if the kernel has an idea of what the measurement should be, it has
+> no way to verify that what it believes to be true is true - any
+> malicious code could simply have modified the kernel to believe that
+> anything it asks the TPM returns the "correct" answer.
 
+Right. To achieve the best possible security; you'd need Secure Boot
+to ensure that the kernel itself wasn't modified, and then the kernel
+establishes a dynamic root of trust itself.
+
+Anything involving a boot loader (e.g. Secure Boot ensure's boot
+loader wasn't modified, then boot loader ensure's kernel wasn't
+modified, then ....) increases the attack surface for no benefit.
+
+> > > Measurements are not opaque objects. If you're not able to reconstruct
+> > > the expected measurement then you're doing it wrong.
+> >
+> > OK; so to detect if boot loader has always given kernel a bad/forged
+> > measurement; the kernel repeats all of the steps involved in creating
+> > the measurement itself exactly the same as the boot loader should have
+> > (but might not have) so that kernel can compare a "known
+> > good/trustworthy" measurement with the useless measurement that the
+> > boot loader created for no sane reason whatsoever?
+>
+> No, some external agent does. Code running on the local machine can
+> never determine whether the machine is trustworthy.
+
+This part of the conversation evolved from "there's no way for kernel
+to detect a MiTM boot loader (that provides a bad/forged
+measurement)".
+
+I'm not convinced an external agent can detect "bad/forged
+measurement" either. E.g. if a MiTM boot loader always provided a
+bad/forged measurement the external agent won't detect it (as the
+measurement always matches the expected measurement), and then if the
+MiTM boot loader is replaced by a good/honest boot loader the external
+agent will decide that the good/honest boot loader is malicious
+because its measurement doesn't match the expected bad/forged
+measurement.
+
+- Brendan
