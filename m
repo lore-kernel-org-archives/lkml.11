@@ -2,249 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A4AC25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2311FC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238300AbiHLKQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        id S238247AbiHLKRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238244AbiHLKQb (ORCPT
+        with ESMTP id S238242AbiHLKRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:16:31 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E5A4275CF;
-        Fri, 12 Aug 2022 03:16:28 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 739AB106F;
-        Fri, 12 Aug 2022 03:16:29 -0700 (PDT)
-Received: from pierre123.arm.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2E76C3F70D;
-        Fri, 12 Aug 2022 03:16:25 -0700 (PDT)
-From:   Pierre Gondois <pierre.gondois@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com,
-        Pierre Gondois <Pierre.Gondois@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        linux-doc@vger.kernel.org
-Subject: [PATCH] sched/topology: Remove EM_MAX_COMPLEXITY limit
-Date:   Fri, 12 Aug 2022 12:16:19 +0200
-Message-Id: <20220812101620.627838-1-pierre.gondois@arm.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 12 Aug 2022 06:17:13 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D747A723F
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:17:12 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id z20so509859ljq.3
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:17:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=3EuQ0CN8gezdE1pLa5bohB3s+q1EfiKeLKioA/7ZW00=;
+        b=WKYYtNr/fa3IFP/Or/737fG9GGEhxZxmhu02n1Q9c4HHLYb2q91fSOrxynDFym8xVb
+         n9oL8meW0KxtjHKtbLCvJSHd2xOGiFTFkm1+rN57utNFwMCRa2ydVYDIf0L9k9t27Im0
+         McpJFKCy9D3tWMGYDQOcT/BIFHhMF8sa2ET0rm0zKWJrNvKPeezxtIwRFAq+rFfqR0Hy
+         vLzV811iUKC1/ZwKmTjtdw0JkuUbvvQyyMhgSksbtLEIt1OgSr96xDbwYcXY3Cf9YjMJ
+         ql/MHAatWTLbVitN5uoVKW5iDWluTxIEiMB0iEZh1790XvR+9Xkx1dGI1Kq39m7GlSz3
+         qkig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=3EuQ0CN8gezdE1pLa5bohB3s+q1EfiKeLKioA/7ZW00=;
+        b=hMUABExQEwfba9Hk71qkUwMycMTlZpKsIhAydiEKaxf5z6IXFaCSHmfQq06Gchfhs8
+         YmVATUmlbslRROaisSby8NPo0v/W3tSMNBW2oP3vL1CJw2ADiz950b7FD2DgEuCdI2tv
+         Qo1FDHoV/AjRER7iFQ7D0duokC/gURQI7U1fqveePKWYOrNPw/lwufgi6vWtMUrxhAnM
+         pCkQWcSJPM+wWWrLsZUF2gCasE4Pya5RH9zCSsMmi88ka3aUf3IvO40UMsInBxNYVlmK
+         pWf28TvHlDZTLBf/bOrr7tLvZq4qD61bQ/NTPw4JDDbj/+mEsbR/C3BphBwA6zBOsuA6
+         KPoA==
+X-Gm-Message-State: ACgBeo3rEYlykq8qhsLz+Kgcuw6CPW24a1ITZ6c27s7Y9oh0YJaypI+r
+        S/juN0uumCCQIugBarzkjigroA==
+X-Google-Smtp-Source: AA6agR6/eKxyf9cCc2YXWWqIL4n4jU5prTkHu2Rbp6sqmc8P5deaTbYdRI6xrB/8qoK93hfORnbFow==
+X-Received: by 2002:a05:651c:1544:b0:25f:5036:ece2 with SMTP id y4-20020a05651c154400b0025f5036ece2mr1022900ljp.73.1660299430454;
+        Fri, 12 Aug 2022 03:17:10 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id h18-20020ac24d32000000b0048b304d2a75sm156644lfk.292.2022.08.12.03.17.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 03:17:10 -0700 (PDT)
+Message-ID: <0ce8b731-6cbb-ee3d-0075-b24332deceae@linaro.org>
+Date:   Fri, 12 Aug 2022 13:17:06 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 4/4] dt-bindings: soc: qcom: stats: Document SDM845
+ compatible
+Content-Language: en-US
+To:     Abel Vesa <abel.vesa@linaro.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220812101240.1869605-1-abel.vesa@linaro.org>
+ <20220812101240.1869605-4-abel.vesa@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220812101240.1869605-4-abel.vesa@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+On 12/08/2022 13:12, Abel Vesa wrote:
+> SDM845 is a special case compared to the other platforms that use RPMh
+> stats, since it only has 2 stats (aosd and cxsd), while the others have
+> a 3rd one (ddr).
+> 
+> So in order for the driver to use the dedicated stats config, we added
+> the SDM845 dedicated compatible, which we document here.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 
-The Energy Aware Scheduler (EAS) estimates the energy consumption
-of placing a task on different CPUs. The goal is to minimize this
-energy consumption. Estimating the energy of different task placements
-is increasingly complex with the size of the platform. To avoid having
-a slow wake-up path, EAS is only enabled if this complexity is low
-enough.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-The current complexity limit was set in:
-commit b68a4c0dba3b1 ("sched/topology: Disable EAS on inappropriate
-platforms").
-base on the first implementation of EAS, which was re-computing
-the power of the whole platform for each task placement scenario, cf:
-commit 390031e4c309 ("sched/fair: Introduce an energy estimation helper
-function").
-but the complexity of EAS was reduced in:
-commit eb92692b2544d ("sched/fair: Speed-up energy-aware wake-ups")
-and find_energy_efficient_cpu() (feec) algorithm was updated in:
-commit 3e8c6c9aac42 ("sched/fair: Remove task_util from effective
-utilization in feec()")
 
-find_energy_efficient_cpu() (feec) is now doing:
-feec()
-\_ for_each_pd(pd) [0]
-  // get max_spare_cap_cpu and compute_prev_delta
-  \_ for_each_cpu(pd) [1]
-
-  \_ get_pd_busy_time(pd) [2]
-    \_ for_each_cpu(pd)
-
-  // evaluate pd energy without the task
-  \_ get_pd_max_util(pd, -1) [3.0]
-    \_ for_each_cpu(pd)
-  \_ compute_energy(pd, -1)
-    \_ for_each_ps(pd)
-
-  // evaluate pd energy with the task on prev_cpu
-  \_ get_pd_max_util(pd, prev_cpu) [3.1]
-    \_ for_each_cpu(pd)
-  \_ compute_energy(pd, prev_cpu)
-    \_ for_each_ps(pd)
-
-  // evaluate pd energy with the task on max_spare_cap_cpu
-  \_ get_pd_max_util(pd, max_spare_cap_cpu) [3.2]
-    \_ for_each_cpu(pd)
-  \_ compute_energy(pd, max_spare_cap_cpu)
-    \_ for_each_ps(pd)
-
-[3.1] happens only once since prev_cpu is unique. To have an upper
-bound of the complexity, [3.1] is taken into account for all pds.
-So with the same definitions for nr_pd, nr_cpus and nr_ps,
-the complexity is of:
-nr_pd * (2 * [nr_cpus in pd] + 3 * ([nr_cpus in pd] + [nr_ps in pd]))
- [0]  * (     [1] + [2]      +       [3.0] + [3.1] + [3.2]          )
-= 5 * nr_cpus + 3 * nr_ps
-
-The complexity limit was set to 2048 in:
-commit b68a4c0dba3b1 ("sched/topology: Disable EAS on inappropriate
-platforms")
-to make "EAS usable up to 16 CPUs with per-CPU DVFS and less than 8
-performance states each". For the same platform, the complexity would
-actually be of:
-5 * 16 + 3 * 7 = 101
-
-Since the EAS complexity was greatly reduced, bigger platforms can
-handle EAS. For instance, a platform with 256 CPUs with 256
-performance states each would reach it. To reflect this improvement,
-remove the EAS complexity check.
-
-Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
----
- Documentation/scheduler/sched-energy.rst | 37 ++--------------------
- kernel/sched/topology.c                  | 39 ++----------------------
- 2 files changed, 6 insertions(+), 70 deletions(-)
-
-diff --git a/Documentation/scheduler/sched-energy.rst b/Documentation/scheduler/sched-energy.rst
-index 8fbce5e767d9..3d1d71134d16 100644
---- a/Documentation/scheduler/sched-energy.rst
-+++ b/Documentation/scheduler/sched-energy.rst
-@@ -356,38 +356,7 @@ placement. For EAS it doesn't matter whether the EM power values are expressed
- in milli-Watts or in an 'abstract scale'.
- 
- 
--6.3 - Energy Model complexity
--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
--
--The task wake-up path is very latency-sensitive. When the EM of a platform is
--too complex (too many CPUs, too many performance domains, too many performance
--states, ...), the cost of using it in the wake-up path can become prohibitive.
--The energy-aware wake-up algorithm has a complexity of:
--
--	C = Nd * (Nc + Ns)
--
--with: Nd the number of performance domains; Nc the number of CPUs; and Ns the
--total number of OPPs (ex: for two perf. domains with 4 OPPs each, Ns = 8).
--
--A complexity check is performed at the root domain level, when scheduling
--domains are built. EAS will not start on a root domain if its C happens to be
--higher than the completely arbitrary EM_MAX_COMPLEXITY threshold (2048 at the
--time of writing).
--
--If you really want to use EAS but the complexity of your platform's Energy
--Model is too high to be used with a single root domain, you're left with only
--two possible options:
--
--    1. split your system into separate, smaller, root domains using exclusive
--       cpusets and enable EAS locally on each of them. This option has the
--       benefit to work out of the box but the drawback of preventing load
--       balance between root domains, which can result in an unbalanced system
--       overall;
--    2. submit patches to reduce the complexity of the EAS wake-up algorithm,
--       hence enabling it to cope with larger EMs in reasonable time.
--
--
--6.4 - Schedutil governor
-+6.3 - Schedutil governor
- ^^^^^^^^^^^^^^^^^^^^^^^^
- 
- EAS tries to predict at which OPP will the CPUs be running in the close future
-@@ -405,7 +374,7 @@ frequency requests and energy predictions.
- Using EAS with any other governor than schedutil is not supported.
- 
- 
--6.5 Scale-invariant utilization signals
-+6.4 Scale-invariant utilization signals
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
- In order to make accurate prediction across CPUs and for all performance
-@@ -417,7 +386,7 @@ Using EAS on a platform that doesn't implement these two callbacks is not
- supported.
- 
- 
--6.6 Multithreading (SMT)
-+6.5 Multithreading (SMT)
- ^^^^^^^^^^^^^^^^^^^^^^^^
- 
- EAS in its current form is SMT unaware and is not able to leverage
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index 8739c2a5a54e..ce2fa85b2362 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -346,32 +346,13 @@ static void sched_energy_set(bool has_eas)
-  *    1. an Energy Model (EM) is available;
-  *    2. the SD_ASYM_CPUCAPACITY flag is set in the sched_domain hierarchy.
-  *    3. no SMT is detected.
-- *    4. the EM complexity is low enough to keep scheduling overheads low;
-- *    5. schedutil is driving the frequency of all CPUs of the rd;
-- *    6. frequency invariance support is present;
-- *
-- * The complexity of the Energy Model is defined as:
-- *
-- *              C = nr_pd * (nr_cpus + nr_ps)
-- *
-- * with parameters defined as:
-- *  - nr_pd:    the number of performance domains
-- *  - nr_cpus:  the number of CPUs
-- *  - nr_ps:    the sum of the number of performance states of all performance
-- *              domains (for example, on a system with 2 performance domains,
-- *              with 10 performance states each, nr_ps = 2 * 10 = 20).
-- *
-- * It is generally not a good idea to use such a model in the wake-up path on
-- * very complex platforms because of the associated scheduling overheads. The
-- * arbitrary constraint below prevents that. It makes EAS usable up to 16 CPUs
-- * with per-CPU DVFS and less than 8 performance states each, for example.
-+ *    4. schedutil is driving the frequency of all CPUs of the rd;
-+ *    5. frequency invariance support is present;
-  */
--#define EM_MAX_COMPLEXITY 2048
--
- extern struct cpufreq_governor schedutil_gov;
- static bool build_perf_domains(const struct cpumask *cpu_map)
- {
--	int i, nr_pd = 0, nr_ps = 0, nr_cpus = cpumask_weight(cpu_map);
-+	int i;
- 	struct perf_domain *pd = NULL, *tmp;
- 	int cpu = cpumask_first(cpu_map);
- 	struct root_domain *rd = cpu_rq(cpu)->rd;
-@@ -429,20 +410,6 @@ static bool build_perf_domains(const struct cpumask *cpu_map)
- 			goto free;
- 		tmp->next = pd;
- 		pd = tmp;
--
--		/*
--		 * Count performance domains and performance states for the
--		 * complexity check.
--		 */
--		nr_pd++;
--		nr_ps += em_pd_nr_perf_states(pd->em_pd);
--	}
--
--	/* Bail out if the Energy Model complexity is too high. */
--	if (nr_pd * (nr_ps + nr_cpus) > EM_MAX_COMPLEXITY) {
--		WARN(1, "rd %*pbl: Failed to start EAS, EM complexity is too high\n",
--						cpumask_pr_args(cpu_map));
--		goto free;
- 	}
- 
- 	perf_domain_debug(cpu_map, pd);
--- 
-2.25.1
-
+Best regards,
+Krzysztof
