@@ -2,114 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6515C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 19:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B775BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 19:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233779AbiHLT2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 15:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        id S235730AbiHLTa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 15:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237455AbiHLT2W (ORCPT
+        with ESMTP id S234475AbiHLTa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 15:28:22 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10ED1B08AD
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 12:28:21 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id u1so2586533lfq.4
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 12:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kudzu-us.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=WmUtPVXDzYYViofItgm5OWBWBvLbosAnVrRqXx4fzYg=;
-        b=2OV8PHEgsh0BJ5akjEDeqMXgSBv3lwpcGO9G5PjBy08miozmpeXKh75fG9k6rxrbWY
-         F86FbNj3txn9ys2fmeriUzcpI2z2hEL/wYym7Xo5drjG3rKHuLFz1JdqktIzlYNrpSCe
-         yMk/AzWYrgF8MqYY9jv6huCp9EgVzd+K2WQccCp7xucTrnnMeQIgq6M+aua3NCIIBSPB
-         3ikS1DlidVuk8HjkT8bfem9J08Kle7B1xn2JIl2G8NaVLTrkOoHs/fY9A198AVjXWAuf
-         pwFYrAVd+Iupxqr3wnx8o4xREWLamHDikpX/NvObOYzoAMy8pFkx3QHJkt/GngwId5h+
-         w+QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=WmUtPVXDzYYViofItgm5OWBWBvLbosAnVrRqXx4fzYg=;
-        b=4viuu+sd+6kxjEW8Qui6wKzKc3aurz41lOg5q7KSrtfVsKPSMaXMxouyz7lJhOzCZT
-         vOa6B2My3219XYMnbWBzz2jRO6uAmGaY6mmOBJ32Yo4jP4eVID0TMfqt2sFWa7V8UDnx
-         zwhTTZFatWYlHweJa1QDDnFUCnze5lTwp8Cr3v+yS5CqoRj1HxJTdUTyPNRx4USL7jKu
-         zGVU2wOoJquFEenWs0+jwv4B1IvvtSoumv/jiDBlu3xj7LvFOQcbvir3Lco/kThUF6L2
-         tysalgM2cmf+DZFUIjt2XFmT3VCRFDEJhOotVvn1f5KDdlHpvu2+28DfLgDiNl62Krzx
-         1Y3Q==
-X-Gm-Message-State: ACgBeo0CIYoj4CCmgoH/wy0k2gvNNA+v8BGpM2U9+2vDh0JZ9Er+t+CV
-        nf4NM9bx0PwnPZIhczUqMSsUY6/FzqvpDWQMo3uoPg==
-X-Google-Smtp-Source: AA6agR5E8qo2iM9exMW3SiYuxVnODbdG1EDkqjmcZGLxU36XqU0w6V0nGASn7tM9/yFp1PEAYkGVx4FhfZU5ed54eAE=
-X-Received: by 2002:a05:6512:e8b:b0:48a:d7f8:a102 with SMTP id
- bi11-20020a0565120e8b00b0048ad7f8a102mr1610719lfb.60.1660332499310; Fri, 12
- Aug 2022 12:28:19 -0700 (PDT)
+        Fri, 12 Aug 2022 15:30:57 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3058D9926A
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 12:30:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660332656; x=1691868656;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GlbJXtp1pQ/j4T73SprLl7OSfQKxTVMN6a3ZI775+EA=;
+  b=BdqGG+W0Cc+8lXYCnvIdTVg7M1Fi0+SuNhAEP6jsDJYPYOo9mH2bg01V
+   IpErTKcfCzxvttMCxJiL9G5/TS6eqcBQQOA1HNV/AsxSf314RgPB9tlVX
+   XV5nPHtgLTfPoexl7gChhc4ks6eerZBz/fvIAIXgNWWXr/RPa+eq3k5mG
+   6Frv2RQySb3HY8KMixUv/V1JaMeKYP+0Tg0tcqS7wagh59zmqBt8840Rn
+   Vx2d7s20fvBfobuCV48AB6GkFo3HJzcC6euAfyIrNq4pelOCYswEyKNpR
+   KEA7bsAY3Bg2SnShB5GaZ5D26pQcSal9W0q8Pty4LQjW+w6jSVfL4yWA3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="355679513"
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="355679513"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 12:30:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="695370860"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Aug 2022 12:30:53 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMaMu-0000rZ-2y;
+        Fri, 12 Aug 2022 19:30:52 +0000
+Date:   Sat, 13 Aug 2022 03:30:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     xiakaixu1987@gmail.com, sj@kernel.org, akpm@linux-foundation.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        damon@lists.linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Kaixu Xia <kaixuxia@tencent.com>
+Subject: Re: [PATCH] mm/damon/core: simplify the parameter passing for region
+ split operation
+Message-ID: <202208130308.8rYWTL9U-lkp@intel.com>
+References: <1660290073-26347-1-git-send-email-kaixuxia@tencent.com>
 MIME-Version: 1.0
-References: <YvZgJ4IGEG8levOA@kudzu.us> <20220812192124.GA1678588@bhelgaas>
-In-Reply-To: <20220812192124.GA1678588@bhelgaas>
-From:   Jon Mason <jdmason@kudzu.us>
-Date:   Fri, 12 Aug 2022 15:28:05 -0400
-Message-ID: <CAPoiz9wzCSRtxZ404BpLM-SA0Mv3OAZwJopreiH84ZuE1rVJKg@mail.gmail.com>
-Subject: Re: [PATCH v3] PCI: endpoint: pci-epf-vntb: reduce several globals to statics
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Tom Rix <trix@redhat.com>, kishon@ti.com, lpieralisi@kernel.org,
-        kw@linux.com, bhelgaas@google.com, Frank.Li@nxp.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1660290073-26347-1-git-send-email-kaixuxia@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 3:21 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Fri, Aug 12, 2022 at 10:13:59AM -0400, Jon Mason wrote:
-> > On Tue, Jul 12, 2022 at 03:05:27PM -0500, Bjorn Helgaas wrote:
-> > > Handled via Jon, I guess?
-> > >
-> > > I'm unclear on the future direction of pci-epf-vntb.c.  Jon, are you
-> > > signing up to maintain this?  MAINTAINERS doesn't seem to reflect
-> > > that, even in next-20220712, so you're not being copied on everything.
-> > >
-> > > If you are planning to merge and maintain this file, it would be
-> > > helpful to me if you acknowledge patches you merge so I know to ignore
-> > > them.
-> >
-> > I massively dropped the ball on all the EPF stuff.  I appologize profusely.
->
-> No worries, sounds like you're getting everything sorted out :)
->
-> > I'm pulling it into my ntb tree bcause of the patch dependencies.  If
-> > you want me to own this stuff because it has ntb in it, then I can do
-> > a matainers entry to reflect it.  My assumption is that because it is
-> > under the drivers/pci umbrella it is yours (unless you want me to own
-> > it).  100% defer to your decision.
->
-> This patch dependency thing feels like a one-time or at least unusual
-> situation.  Unless it becomes a problem, I think it makes sense to
-> keep the drivers/pci umbrella instead of carving bits out of the
-> middle.
->
-> Even if I continue to merge everything under drivers/pci, maybe we
-> should consider an update like this just so you get cc'd on updates to
-> these files?
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 08a5d70ceef9..5bafe7e8c2b2 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -14466,6 +14466,7 @@ W:      https://github.com/jonmason/ntb/wiki
->  T:     git git://github.com/jonmason/ntb.git
->  F:     drivers/net/ntb_netdev.c
->  F:     drivers/ntb/
-> +F:     drivers/pci/endpoint/functions/pci-epf-*ntb.c
->  F:     include/linux/ntb.h
->  F:     include/linux/ntb_transport.h
->  F:     tools/testing/selftests/ntb/
+Hi,
 
-Works for me.  I can do a patch to add this line to maintainers, send
-it to the people on this thread, and pull it into my pending pull
-request.
+Thank you for the patch! Yet something to improve:
 
-Thanks,
-Jon
+[auto build test ERROR on akpm-mm/mm-everything]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/xiakaixu1987-gmail-com/mm-damon-core-simplify-the-parameter-passing-for-region-split-operation/20220812-154316
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
+config: hexagon-randconfig-r045-20220812 (https://download.01.org/0day-ci/archive/20220813/202208130308.8rYWTL9U-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/26b7d93b0f64c71d6d324a4a37d85641b55eaec2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review xiakaixu1987-gmail-com/mm-damon-core-simplify-the-parameter-passing-for-region-split-operation/20220812-154316
+        git checkout 26b7d93b0f64c71d6d324a4a37d85641b55eaec2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from mm/damon/core.c:1218:
+>> mm/damon/core-test.h:129:33: error: too many arguments to function call, expected 3, have 4
+           damon_split_region_at(c, t, r, 25);
+           ~~~~~~~~~~~~~~~~~~~~~          ^~
+   mm/damon/core.c:930:13: note: 'damon_split_region_at' declared here
+   static void damon_split_region_at(struct damon_target *t,
+               ^
+   In file included from mm/damon/core.c:1218:
+   mm/damon/core-test.h:222:31: error: too many arguments to function call, expected 2, have 3
+           damon_split_regions_of(c, t, 2);
+           ~~~~~~~~~~~~~~~~~~~~~~       ^
+   mm/damon/core.c:948:13: note: 'damon_split_regions_of' declared here
+   static void damon_split_regions_of(struct damon_target *t, int nr_subs)
+               ^
+   In file included from mm/damon/core.c:1218:
+   mm/damon/core-test.h:229:31: error: too many arguments to function call, expected 2, have 3
+           damon_split_regions_of(c, t, 4);
+           ~~~~~~~~~~~~~~~~~~~~~~       ^
+   mm/damon/core.c:948:13: note: 'damon_split_regions_of' declared here
+   static void damon_split_regions_of(struct damon_target *t, int nr_subs)
+               ^
+   3 errors generated.
+
+
+vim +129 mm/damon/core-test.h
+
+17ccae8bb5c928 SeongJae Park 2021-09-07  119  
+17ccae8bb5c928 SeongJae Park 2021-09-07  120  static void damon_test_split_at(struct kunit *test)
+17ccae8bb5c928 SeongJae Park 2021-09-07  121  {
+17ccae8bb5c928 SeongJae Park 2021-09-07  122  	struct damon_ctx *c = damon_new_ctx();
+17ccae8bb5c928 SeongJae Park 2021-09-07  123  	struct damon_target *t;
+17ccae8bb5c928 SeongJae Park 2021-09-07  124  	struct damon_region *r;
+17ccae8bb5c928 SeongJae Park 2021-09-07  125  
+1971bd630452e9 SeongJae Park 2022-03-22  126  	t = damon_new_target();
+17ccae8bb5c928 SeongJae Park 2021-09-07  127  	r = damon_new_region(0, 100);
+17ccae8bb5c928 SeongJae Park 2021-09-07  128  	damon_add_region(r, t);
+17ccae8bb5c928 SeongJae Park 2021-09-07 @129  	damon_split_region_at(c, t, r, 25);
+17ccae8bb5c928 SeongJae Park 2021-09-07  130  	KUNIT_EXPECT_EQ(test, r->ar.start, 0ul);
+17ccae8bb5c928 SeongJae Park 2021-09-07  131  	KUNIT_EXPECT_EQ(test, r->ar.end, 25ul);
+17ccae8bb5c928 SeongJae Park 2021-09-07  132  
+17ccae8bb5c928 SeongJae Park 2021-09-07  133  	r = damon_next_region(r);
+17ccae8bb5c928 SeongJae Park 2021-09-07  134  	KUNIT_EXPECT_EQ(test, r->ar.start, 25ul);
+17ccae8bb5c928 SeongJae Park 2021-09-07  135  	KUNIT_EXPECT_EQ(test, r->ar.end, 100ul);
+17ccae8bb5c928 SeongJae Park 2021-09-07  136  
+17ccae8bb5c928 SeongJae Park 2021-09-07  137  	damon_free_target(t);
+17ccae8bb5c928 SeongJae Park 2021-09-07  138  	damon_destroy_ctx(c);
+17ccae8bb5c928 SeongJae Park 2021-09-07  139  }
+17ccae8bb5c928 SeongJae Park 2021-09-07  140  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
