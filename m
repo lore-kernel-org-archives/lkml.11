@@ -2,123 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F23DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 11:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259D7C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 12:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238357AbiHLLz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 07:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37486 "EHLO
+        id S236500AbiHLMDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 08:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236391AbiHLLz0 (ORCPT
+        with ESMTP id S231250AbiHLMDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 07:55:26 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E039913D25
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:55:24 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-31f41584236so7610997b3.5
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 04:55:24 -0700 (PDT)
+        Fri, 12 Aug 2022 08:03:40 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341419A97A;
+        Fri, 12 Aug 2022 05:03:37 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-32194238c77so7835987b3.4;
+        Fri, 12 Aug 2022 05:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=+GekjXTUi66HUPgrzyGJXQiRM5598c+QHeBBcM7EfC4=;
+        b=DrTs1gwaQeh0LzV8JRLL9Lk9r9xlNkpOsnv2ZcrXZQLtdKNmJEHdoS6LdMeaZbcsEM
+         YE/otOdX1krCNyrD+Rv3FUA0JuK24XryjeLVpVYC8r11Nlpk4wwBhq78pELd7wwV+8gF
+         dAUQ9NXVwAYHbL/Q1utJKmw0e+ifYLfXGBkH6tEMATyE9gbMDxFWKMm8Dz9NOdkekgwn
+         ef/oQk5mjIdZpXAhMslmT6n1k2c8MqDD04R0IqhH3h29BQrLl1bhD2/fp+mQtKS22cV1
+         2/q+83sfked2EihA60sclltU6MHhaqWFMbYeqzpykLE5V8W2wdjKxRWvMAkxUiXBkYke
+         5dFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=PNBikb0xhnt9Fd0jSSfSSfR2sxz3CzKFgt8jDKr0/dw=;
-        b=lcUo442ghrp/dS1Q0h7zM135PL6rH+C4IpSqejJVhX0NsF2xPlMMf7Q1JMh0eR+b3I
-         wCOBDIW86dnxUVzhS+u/IX2LcN5RMovhf6S9y6PC0tIgGbroVCS8pQlOMVkfOwHKa7TT
-         VtLqvzYBP5wR33sgCk/ckYp4UwAb6axmKBjR26viS++M1wgKWmjXGVBVIRCk5GDinReT
-         SrFISwDEIUfs5yX/fHaF3DWWLA65Nkm4uQ0AFhM9SQBFtg/W6klR5hjxsDI/XYWjVuXu
-         rppgFtBUIvEv3sWU3dS4LHS5HzcPwxLc9d0Oio2RIxtcLC86r0YE0gwaNaeRU1GTzcJr
-         1Aow==
-X-Gm-Message-State: ACgBeo0JfshLWVxerXMoTHZGdQma0+/SKxD3px6RSClVGlVT2JK6tBon
-        dP9AsJ2w/2LbW4WS/l/ULxphZQe61FQjWjTayB6rsJ6Sf5cjhQFy
-X-Google-Smtp-Source: AA6agR5mr6Qg2/yIsE9vf+WvDD+w6wxmNJ+ViiqI3LaJ4g0funJYgF5sa8xR3gFlg+YxXSNd2uwbYac6mnjauNeJJQk=
-X-Received: by 2002:a81:11c2:0:b0:31f:5a44:c0b7 with SMTP id
- 185-20020a8111c2000000b0031f5a44c0b7mr3537115ywr.518.1660305324059; Fri, 12
- Aug 2022 04:55:24 -0700 (PDT)
+        bh=+GekjXTUi66HUPgrzyGJXQiRM5598c+QHeBBcM7EfC4=;
+        b=35LK5v6ofbdnL85yO4yB71UCjhISdt+/9CULmcfA5O30fH1qL76/J+Ss2u+iIRDS72
+         e6r579QSTw5yJpGtvrK1yW3tZTuburt/5a3uN1ZcGyT1193zpIEcHgPfa5EV9m4KJTbg
+         i/RkxFr4sN8xED17wLSw23FiAY+gV+hDQ+zwS3GOpcU6qnL9gsEG+eeZ5KOO1dFoBphM
+         rm7UXxUiM56bk40RsQ8zhswBlZsZar6WVueGZw9y3c+JGkXd3ppop53rWnNsSKL0Npw9
+         cRdGg2qspjWyRoc9px5ORRayVmD7lB5/hsUHfl8iVJhOKSrUSwxUOSy85cV+pXa6RPpP
+         qekQ==
+X-Gm-Message-State: ACgBeo0vMReOhY9kH90eDCt3ezEOKXEnb50h2n5Erb0bQkuRNz0jJv1Q
+        goA4FyTZQ3seud74jDUUBR+Nh1t6FBpa/k4wsSU=
+X-Google-Smtp-Source: AA6agR5mZLcNYry70OgTHxs7ixri5iGVBMzDvxELIwWtB1t0f4XsJo5eCYIBnRulBqOns6RjNySZMFPFGhHXRbKvaPk=
+X-Received: by 2002:a81:928c:0:b0:324:7008:1390 with SMTP id
+ j134-20020a81928c000000b0032470081390mr3524259ywg.39.1660305816360; Fri, 12
+ Aug 2022 05:03:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
- <20220723151521.51451-1-mailhol.vincent@wanadoo.fr> <20220723151521.51451-2-mailhol.vincent@wanadoo.fr>
- <YvUZVYxbOMcZtR5G@zn.tnic>
-In-Reply-To: <YvUZVYxbOMcZtR5G@zn.tnic>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 12 Aug 2022 20:55:11 +0900
-Message-ID: <CAMZ6Rq+k-5PKesdW7z9DdDMUNSKQR-c1qmQADvJ6VKZA2CM8nw@mail.gmail.com>
-Subject: Re: [RESEND PATCH v4 1/2] x86/asm/bitops: ffs: use __builtin_ffs to
- evaluate constant expressions
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
-        Jan Beulich <JBeulich@suse.com>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
-        Joe Perches <joe@perches.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
+References: <YvY4xdZEWAPosFdJ@debian> <f0a6f8cc-e8a5-ff72-b8f0-ed25fcf03b47@molgen.mpg.de>
+In-Reply-To: <f0a6f8cc-e8a5-ff72-b8f0-ed25fcf03b47@molgen.mpg.de>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Fri, 12 Aug 2022 13:03:00 +0100
+Message-ID: <CADVatmO8S-_k8ySktH9-GT7G_AC-UDRH=5D88XVYo_vu7qfEjg@mail.gmail.com>
+Subject: Re: mainline build failure due to 332f1795ca20 ("Bluetooth: L2CAP:
+ Fix l2cap_global_chan_by_psm regression")
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Borislav,
+Hi Paul,
 
-On Thu. 11 Aug 2022 at 23:59, Borislav Petkov <bp@alien8.de> wrote:
-> On Sun, Jul 24, 2022 at 12:15:20AM +0900, Vincent Mailhol wrote:
-> > For x86_64, the current ffs() implementation does not produce
-> > optimized code when called with a constant expression. On the
-> > contrary, the __builtin_ffs() function of both GCC and clang is able
-> > to simplify the expression into a single instruction.
+On Fri, Aug 12, 2022 at 12:44 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Dear Sudip,
+>
+>
+> Am 12.08.22 um 13:25 schrieb Sudip Mukherjee (Codethink):
+>
+> > The latest mainline kernel branch fails to build csky and mips allmodconfig
+> > with gcc-12.
 > >
-> > * Example *
-> >
-> > Let's consider two dummy functions foo() and bar() as below:
-> >
-> > | #include <linux/bitops.h>
-> > | #define CONST 0x01000000
->
-> Those code examples you can simply indent with two spaces.
->
-> > In both examples, we clearly see the benefit of using __builtin_ffs()
->
-> Who's "we"?
->
-> Please use passive voice in your commit message: no "we" or "I", etc,
-> and describe your changes in imperative mood.
->
-> > instead of the kernel's asm implementation for constant expressions.
-> >
-> > However, for non constant expressions, the ffs() asm version of the
-> > kernel remains better for x86_64 because, contrary to GCC, it doesn't
-> > emit the CMOV assembly instruction, c.f. [1] (noticeably, clang is
-> > able optimize out the CMOV call).
-> >
-> > This patch uses the __builtin_constant_p() to select between the
->
-> Avoid having "This patch" or "This commit" in the commit message. It is
-> tautologically useless.
->
-> Also, do
->
-> $ git grep 'This patch' Documentation/process
->
-> for more details.
->
-> > kernel's ffs() and the __builtin_ffs() depending on whether the
-> > argument is constant or not.
->
-> In general, you don't have to say what the patch does - that should be
-> visible from the diff. The more important part is the *why*. And that
-> you do.
->
-> Rest looks ok.
 
-Thank you for the review!
-I addressed all your comments and sent a v5:
-https://lore.kernel.org/all/20220812114438.1574-1-mailhol.vincent@wanadoo.fr/
+<snip>
+
+>
+> Does *[PATCH] Bluetooth: L2CAP: Elide a string overflow warning* [1] fix it?
+
+Yes, this patch fixes the failure.
+
+>
+>
+> > --
+> > Regards
+> > Sudip
+>
+> Only if you care, your signature delimiter is missing a trailing space [2].
+
+Thanks. Should be fixed now.
 
 
-Yours sincerely,
-Vincent Mailhol
+-- 
+Regards
+Sudip
