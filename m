@@ -2,112 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C877C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6285C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239536AbiHLRhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 13:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
+        id S239570AbiHLRhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 13:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239596AbiHLRhE (ORCPT
+        with ESMTP id S239540AbiHLRhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 13:37:04 -0400
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94D0915DF
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 10:37:02 -0700 (PDT)
-Received: by mail-ua1-x92f.google.com with SMTP id z5so579301uav.0
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 10:37:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:reply-to:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=dizPcrD7xaXzAQLAnOvA/lJAJfB2ho1YY43Lw3GIZ2w=;
-        b=Lq3WwTdrt3jfthJq/u97yFXe4RHqde540SLRAxlnszttUC7h5f60tyX14x0KSDc5LX
-         4r0zkBPbxqJXcnnsJ4ZCBXJvdBw9RVCuhLMIdoAY7UqsTDGaqJdqWVXVgSn7RzkaLGAp
-         jObndePyxg+TK2DFK/BdCyLVIaFg/UuyX2a+WKIuaMi3ZQJ0aF00PCaQMTSc6n32iPTc
-         AxpmSQeswsUV1kS3nnQt+sp1rLUHCLv9b5AJQSsrudXvlk13uhOz2VVfAQO/x5OiM8x4
-         7mD/gT7dsrRvKAjl+zD0iZdCCXAHLWRxIKe+92BWgZe+69WQWAKkllth9/Y9qRuIX+iy
-         Kkvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:reply-to:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=dizPcrD7xaXzAQLAnOvA/lJAJfB2ho1YY43Lw3GIZ2w=;
-        b=oti5OOba/YdhnTwJ6pNO653bYi8vC5j50WSNuKsPHMQ6o823lFQHWA8AzyY6P6PY7d
-         2/sc2wEOP8KIXCz+YO5UUk148WZeDNWcf6xV3Bdtgj4NLGXNh7muo8lB4FPzWh4ofCnw
-         3sGnmmHqHq2b8MGL8dWq3XqGgbH0+L/KByD5jiieoYVUrqiI3YlyEBU7xQKMf9Cd351X
-         PeuXBvUP+37IUh9qcF8acjSMqJVVWvsuWwPi8BN4txroK9teI/4IrLAuQP+JWawzZwgH
-         nSR+W5cOAabXVDz8hmcdkq42SGHeBzVEsPuE/8URW7gXRjZjOdYzWeoGUFSt9rB0lpLJ
-         68EA==
-X-Gm-Message-State: ACgBeo3rvTuEFNgdq1DC1hZQbKVs9fOcGOwB4V4KrSXcAKZvv4Jjnavx
-        UE3upjCSPGtDet0QMdrUpYp9xCwvl3hdIw==
-X-Google-Smtp-Source: AA6agR7Tv5COQ1lJT43XUNgNFNdFg+u4AY4yoTnhGQw7c+iaZmZPk2lYqyVssMVzUx77zM9XWUwdUg==
-X-Received: by 2002:ab0:6602:0:b0:38d:539:d611 with SMTP id r2-20020ab06602000000b0038d0539d611mr2406701uam.103.1660325821392;
-        Fri, 12 Aug 2022 10:37:01 -0700 (PDT)
-Received: from ?IPV6:2804:14c:4c2:8202::1003? ([2804:14c:4c2:8202::1003])
-        by smtp.gmail.com with ESMTPSA id g19-20020ab05993000000b00383fbaaa7d2sm121055uad.22.2022.08.12.10.36.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 10:37:01 -0700 (PDT)
-Message-ID: <e95a5040-6cd2-3b74-1b65-50bc7c6b6ddb@gmail.com>
-Date:   Fri, 12 Aug 2022 14:36:56 -0300
+        Fri, 12 Aug 2022 13:37:38 -0400
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FAAAA4EB;
+        Fri, 12 Aug 2022 10:37:38 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1oMYLA-00FqJb-ME; Fri, 12 Aug 2022 17:20:56 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH] arm64: dts: imx8mm-venice-gw7901: fix port/phy validation
+Date:   Fri, 12 Aug 2022 10:20:54 -0700
+Message-Id: <20220812172054.13858-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] drm/amd/display: remove unreachable code
-Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     airlied@linux.ie, Xinhui.Pan@amd.com,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, daniel@ffwll.ch,
-        christian.koenig@amd.com, alexander.deucher@amd.com
-References: <20220812031911.62729-1-jiapeng.chong@linux.alibaba.com>
-From:   Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-Reply-To: 20220812031911.62729-1-jiapeng.chong@linux.alibaba.com
-In-Reply-To: <20220812031911.62729-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Since commit 65ac79e18120 ("net: dsa: microchip: add the phylink
+get_caps") the phy-mode must be set otherwise the switch driver will
+assume "NA" mode and invalidate the port.
 
-On 12/08/2022 00:19, Jiapeng Chong wrote:
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_util_32.c:1658 dml32_TruncToValidBPP() warn: ignoring unreachable code.
-> 
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1894
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->   .../drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c   | 4 ----
->   1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-> index 05fc14a47fba..0758e1da55a9 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-> @@ -1654,10 +1654,6 @@ double dml32_TruncToValidBPP(
->   		else
->   			return DesiredBPP;
->   	}
-> -
-> -	*RequiredSlots = dml_ceil(DesiredBPP / MaxLinkBPP * 64, 1);
-> -
-> -	return BPP_INVALID;
->   } // TruncToValidBPP
->   
->   double dml32_RequiredDTBCLK(
+Fixes: 65ac79e18120 ("net: dsa: microchip: add the phylink get_caps")
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Seems correct.
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
+index 24737e89038a..96cac0f969a7 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
+@@ -626,24 +626,28 @@ ports {
+ 			lan1: port@0 {
+ 				reg = <0>;
+ 				label = "lan1";
++				phy-mode = "internal";
+ 				local-mac-address = [00 00 00 00 00 00];
+ 			};
+ 
+ 			lan2: port@1 {
+ 				reg = <1>;
+ 				label = "lan2";
++				phy-mode = "internal";
+ 				local-mac-address = [00 00 00 00 00 00];
+ 			};
+ 
+ 			lan3: port@2 {
+ 				reg = <2>;
+ 				label = "lan3";
++				phy-mode = "internal";
+ 				local-mac-address = [00 00 00 00 00 00];
+ 			};
+ 
+ 			lan4: port@3 {
+ 				reg = <3>;
+ 				label = "lan4";
++				phy-mode = "internal";
+ 				local-mac-address = [00 00 00 00 00 00];
+ 			};
+ 
+-- 
+2.25.1
 
-Reviewed-by: Tales Aparecida <tales.aparecida@gmail.com>
-
-I feel like RequiredSlots is not actually used anywhere in the code, 
-just passed around dml32_TruncToValidBPP() and 
-dml32_CalculateOutputLink(). I've looked for any mentions of it in the 
-mailing list, but could not find anything that implied it's part of 
-ground working. I wonder if it's something outside the Linux tree for 
-other platforms or related to HW gospel.
