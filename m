@@ -2,52 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F40ABC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D661C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiHLKad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
+        id S238575AbiHLKaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237891AbiHLKaT (ORCPT
+        with ESMTP id S238141AbiHLKaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:30:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267095FC5;
-        Fri, 12 Aug 2022 03:30:17 -0700 (PDT)
+        Fri, 12 Aug 2022 06:30:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A23BDF;
+        Fri, 12 Aug 2022 03:30:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7873C61689;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9EB26168E;
         Fri, 12 Aug 2022 10:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B1229C433D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D41EFC43144;
         Fri, 12 Aug 2022 10:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660300216;
-        bh=zoMxktHDBNu8QE4ud535AwHCKvUVP9fcADl0Pb6Pss8=;
+        bh=3UdYeGSkfRt7bhIUCMvtX7SLzRbUb9e/hzXAFHyI4IA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IMbBvtmCBylTG+WyyvXfEyhWMPShYQC44Rt7qJZZT9Unbb6vz7bFM8rRLHoMxCsfs
-         elmmlFYfFm5wLQmmEqH853Avqzf0+3hHWggGiKkZ8kOJlRXEpS6RPHdWXoBun9bedv
-         xoAlecZ1+3R+hVXiyTTtqSmhn3FwME4HpD+KoFlpvj9XfNYSzY6es+iFNnVpt5zZnu
-         uW3SN5QDKhW25XnAIqsdIzFqU18n1LbaLIRYWwTsV1EgVWpy9Nycgkqj/F5IAUB0Xh
-         5GdSSOl8bRC//wRgY12wvFVbKr1CVYk4oTjIr/dcMs7Y4+Urzuu6bFdRUAnSDO+tAS
-         8BYKMckq9OLoQ==
+        b=NMUHoqip6g7aWom9aOi1sXK3c8rcqSIwBcf3IRo+kLkSjSi0J4lGgq3dGuO219xQq
+         qD4t3MVU+rRUM+waEW73+JLuTQTHTuC0RQBs7euKvgc3lLB3/Y+xC1FbGTN+mGCL11
+         K5OX1KseYPNFUokabPZIzmUCvxMpsUlxjuz5jVd3+wSOPX1AdO/oIIvd3XhwVTILqS
+         f5MO75VlNGKrScuv5UphXzgyVKDvNOdPXNFgX1OS2UH95Bds8bl8I9E2TV87fRY2h6
+         9Y754A7cfvKN+mQ7HPURSrpKRoqPGkCEqNsyQKlkUmMhBMRhxDECgWzMWlHqr+ofoa
+         tgWCJ8EuuphPg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9597EC43143;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF549C43148;
         Fri, 12 Aug 2022 10:30:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] skfp/h: fix repeated words in comments
+Subject: Re: [PATCH] net/sunrpc: fix potential memory leaks in
+ rpc_sysfs_xprt_state_change()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166030021660.10916.17181010521478361071.git-patchwork-notify@kernel.org>
+Message-Id: <166030021671.10916.13511850314728459485.git-patchwork-notify@kernel.org>
 Date:   Fri, 12 Aug 2022 10:30:16 +0000
-References: <20220810135901.17400-1-yuanjilin@cdjrlc.com>
-In-Reply-To: <20220810135901.17400-1-yuanjilin@cdjrlc.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220810152909.25149-1-xiongx18@fudan.edu.cn>
+In-Reply-To: <20220810152909.25149-1-xiongx18@fudan.edu.cn>
+To:     Xin Xiong <xiongx18@fudan.edu.cn>
+Cc:     trond.myklebust@hammerspace.com, anna@kernel.org,
+        chuck.lever@oracle.com, jlayton@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        kolga@netapp.com, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yuanxzhang@fudan.edu.cn, tanxin.ctf@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -57,17 +61,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 10 Aug 2022 21:59:01 +0800 you wrote:
-> Delete the redundant word 'the'.
+On Wed, 10 Aug 2022 23:29:13 +0800 you wrote:
+> The issue happens on some error handling paths. When the function
+> fails to grab the object `xprt`, it simply returns 0, forgetting to
+> decrease the reference count of another object `xps`, which is
+> increased by rpc_sysfs_xprt_kobj_get_xprt_switch(), causing refcount
+> leaks. Also, the function forgets to check whether `xps` is valid
+> before using it, which may result in NULL-dereferencing issues.
 > 
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->  drivers/net/fddi/skfp/h/hwmtm.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> [...]
 
 Here is the summary with links:
-  - skfp/h: fix repeated words in comments
-    https://git.kernel.org/netdev/net/c/86d2155e48f6
+  - net/sunrpc: fix potential memory leaks in rpc_sysfs_xprt_state_change()
+    https://git.kernel.org/netdev/net/c/bfc48f1b0505
 
 You are awesome, thank you!
 -- 
