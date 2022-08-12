@@ -2,147 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5C2C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 09:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC55BC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 09:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237948AbiHLJtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 05:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
+        id S236539AbiHLJuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 05:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiHLJti (ORCPT
+        with ESMTP id S229966AbiHLJuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 05:49:38 -0400
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BEDAA4DE;
-        Fri, 12 Aug 2022 02:49:37 -0700 (PDT)
-Received: by mail-qt1-f181.google.com with SMTP id h22so385609qtu.2;
-        Fri, 12 Aug 2022 02:49:37 -0700 (PDT)
+        Fri, 12 Aug 2022 05:50:16 -0400
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79DAB9F
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 02:50:14 -0700 (PDT)
+Received: by mail-ej1-f47.google.com with SMTP id j8so1114890ejx.9
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 02:50:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=84EvJYe5/gB9MvzhwVIbaAf2+0yNVDv4HY17IxGY5sE=;
-        b=lXZSXclDVpiOxqb8zStNCMQn8pAjuw+YJ/Ov692WZMxsnAE2j9ZJBRRSn+Yb6qmHMw
-         WkuPBpatUsT9A3uWh0S4oaWcW5d7fyssSvGOuwSwU/5zkx/1Qp1fNDAKvLq3aHhvEaLq
-         RlQ/OshZ/BvthyAgciVYRUP6qDX2TEQ7r70rY4/G4GnQHi1X03b4oILhREgNgfDNhzOY
-         1DgY19lIrY+Pdh8UbPkdQOeig4lbSiVY0Az66Xcdv3x0UAUBpbBB62roH3JisgxnPxut
-         F1bIQA0cuROEbqV7OZ6yRv1nLWJ/OHp5jlq+RV6MtfOOnewqWEdrbWV0pFJM5f3k0fgI
-         VD6A==
-X-Gm-Message-State: ACgBeo3YI7Wo0RB0njpdXEZWeHfVQ/8UewZDek1u2ouQBKa8Zg0t5a0l
-        /y5kAar9EeOWsKzaaIg50dFyMsYrt6D1PQ==
-X-Google-Smtp-Source: AA6agR52P4Z1alayH6a8t1l9xheDMIINoCnoyQTX2jLfzRoWOqOI7vDenjSSgVZS3vT+BNxY20iueQ==
-X-Received: by 2002:a05:622a:d:b0:31f:3fc:c5c7 with SMTP id x13-20020a05622a000d00b0031f03fcc5c7mr2719045qtw.411.1660297776357;
-        Fri, 12 Aug 2022 02:49:36 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id h17-20020ac85e11000000b003430589dd34sm1450322qtx.57.2022.08.12.02.49.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 02:49:35 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id 21so693635ybf.4;
-        Fri, 12 Aug 2022 02:49:35 -0700 (PDT)
-X-Received: by 2002:a25:2d4:0:b0:674:b112:4f37 with SMTP id
- 203-20020a2502d4000000b00674b1124f37mr2830842ybc.202.1660297775213; Fri, 12
- Aug 2022 02:49:35 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=HGfWnaevDnjU3IQ3+RdJwKSR3tW/9GSGc+g+aLgic7o=;
+        b=e+nYWqDOcx3R3vb+I1PaX2heh5HFdwHqVQ32tRDEZB5dQqDyazrhEq0do+92HwDrrd
+         2XLqpUp0UZqR1eP3MU70H2g2mjNdJFH6bmBcoKjsm327ujDgAXlal9eZHdTTTb4Akwbc
+         C/dPrbQPoiHlSh08Oz/OYY/k/LF8U6coV+7xdrixCFMtOqGNacocvs30BEKsvU1jg2XW
+         jnMyC//tAhQdHKXAjrUFxHpQR7DWmDnhwseWixkRKqVFVbbXovWqtJOLkljZhz3IQ2nB
+         +0Z1S+TcFdsQ9FYt4mnrJrA2YmGXONTw3gFBzNo9SgEIHtKgMukUz1SIa0aVNKcZ+FIc
+         G5bA==
+X-Gm-Message-State: ACgBeo1thQfnNW8Ja2sB4LFc9+ogj+UbJsaFFL5A06DbzLLvcw3rB36C
+        buJkkKgWekvpo2v3gz0Arb4=
+X-Google-Smtp-Source: AA6agR6lMAS0qN9ddYs4JHDbW9YbKlkyvXYWVM8+kmSqDly1XGEGeh+g56gcdRVmxbD8IU2MSXA5nw==
+X-Received: by 2002:a17:906:5d13:b0:733:10e:b957 with SMTP id g19-20020a1709065d1300b00733010eb957mr2147676ejt.452.1660297813246;
+        Fri, 12 Aug 2022 02:50:13 -0700 (PDT)
+Received: from localhost (fwdproxy-cln-020.fbsv.net. [2a03:2880:31ff:14::face:b00c])
+        by smtp.gmail.com with ESMTPSA id e8-20020a17090681c800b0072b8fbc9be1sm595537ejx.187.2022.08.12.02.50.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 02:50:12 -0700 (PDT)
+From:   Breno Leitao <leitao@debian.org>
+To:     arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     scott.branden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, Kernel-team@fb.com
+Subject: [RESEND PATCH] misc: bcm_vk: Remove usage of deprecated functions
+Date:   Fri, 12 Aug 2022 02:47:17 -0700
+Message-Id: <20220812094717.4097179-1-leitao@debian.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <612446a2-5a22-a349-35fc-47f34792b504@broadcom.com>
+References: <612446a2-5a22-a349-35fc-47f34792b504@broadcom.com>
 MIME-Version: 1.0
-References: <20220804061133.4110734-1-victor.liu@nxp.com> <20220804061133.4110734-3-victor.liu@nxp.com>
-In-Reply-To: <20220804061133.4110734-3-victor.liu@nxp.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 12 Aug 2022 11:49:23 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWLJ4t0GVXNWONwcSWuEBV6EuGTm4a2fumA_8dpD7TQuA@mail.gmail.com>
-Message-ID: <CAMuHMdWLJ4t0GVXNWONwcSWuEBV6EuGTm4a2fumA_8dpD7TQuA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] drivers: bus: simple-pm-bus: Use clocks
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liu,
+ida_simple_get() and ida_simple_remove() functions are deprecated now.
+These functions were replaced by ida_alloc() and ida_free()
+respectively. This patch modernize bcm_vk to use the replacement
+functions.
 
-On Thu, Aug 4, 2022 at 8:10 AM Liu Ying <victor.liu@nxp.com> wrote:
-> Simple Power-Managed bus controller may need functional clock(s)
-> to be enabled before child devices connected to the bus can be
-> accessed.  Get the clock(s) as a bulk and enable/disable the
-> clock(s) when the bus is being power managed.
->
-> One example is that Freescale i.MX8qxp pixel link MSI bus controller
-> needs MSI clock and AHB clock to be enabled before accessing child
-> devices.
->
-> Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> ---
-> v1->v3:
-> * No change.
+Signed-off-by: Breno Leitao <leitao@debian.org>
+Acked-by: Scott Branden <scott.branden@broadcom.com>
+---
+ drivers/misc/bcm-vk/bcm_vk_dev.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thanks for your patch!
+diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
+index a16b99bdaa13..a3a82ebbc699 100644
+--- a/drivers/misc/bcm-vk/bcm_vk_dev.c
++++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
+@@ -1401,7 +1401,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		bcm_vk_tty_set_irq_enabled(vk, i);
+ 	}
+ 
+-	id = ida_simple_get(&bcm_vk_ida, 0, 0, GFP_KERNEL);
++	id = ida_alloc(&bcm_vk_ida, GFP_KERNEL);
+ 	if (id < 0) {
+ 		err = id;
+ 		dev_err(dev, "unable to get id\n");
+@@ -1500,7 +1500,7 @@ static int bcm_vk_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	misc_device->name = NULL;
+ 
+ err_ida_remove:
+-	ida_simple_remove(&bcm_vk_ida, id);
++	ida_free(&bcm_vk_ida, id);
+ 
+ err_irq:
+ 	for (i = 0; i < vk->num_irqs; i++)
+@@ -1573,7 +1573,7 @@ static void bcm_vk_remove(struct pci_dev *pdev)
+ 	if (misc_device->name) {
+ 		misc_deregister(misc_device);
+ 		kfree(misc_device->name);
+-		ida_simple_remove(&bcm_vk_ida, vk->devid);
++		ida_free(&bcm_vk_ida, vk->devid);
+ 	}
+ 	for (i = 0; i < vk->num_irqs; i++)
+ 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, i), vk);
+-- 
+2.30.2
 
-> --- a/drivers/bus/simple-pm-bus.c
-> +++ b/drivers/bus/simple-pm-bus.c
-
-> @@ -72,6 +89,42 @@ static int simple_pm_bus_remove(struct platform_device *pdev)
->         return 0;
->  }
->
-> +static int simple_pm_bus_runtime_suspend(struct device *dev)
-> +{
-> +       struct simple_pm_bus *bus = dev_get_drvdata(dev);
-> +
-> +       if (!bus)
-> +               return 0;
-
-Can this really happen?
-
-> +
-> +       clk_bulk_disable_unprepare(bus->num_clks, bus->clks);
-> +
-> +       return 0;
-> +}
-> +
-> +static int simple_pm_bus_runtime_resume(struct device *dev)
-> +{
-> +       struct simple_pm_bus *bus = dev_get_drvdata(dev);
-> +       int ret;
-> +
-> +       if (!bus)
-> +               return 0;
-
-Likewise.
-
-> +
-> +       ret = clk_bulk_prepare_enable(bus->num_clks, bus->clks);
-> +       if (ret) {
-> +               dev_err(dev, "failed to enable clocks: %d\n", ret);
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-
-The rest LGTM, so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
