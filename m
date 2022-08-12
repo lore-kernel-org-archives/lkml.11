@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E39C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 11:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF186C25B08
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 11:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiHLLpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 07:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51374 "EHLO
+        id S237505AbiHLLpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 07:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238303AbiHLLof (ORCPT
+        with ESMTP id S238206AbiHLLpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 07:44:35 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0265AAF0EF;
-        Fri, 12 Aug 2022 04:44:10 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 12 Aug 2022 07:45:25 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE05AFAF2;
+        Fri, 12 Aug 2022 04:44:49 -0700 (PDT)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2872E38E85;
-        Fri, 12 Aug 2022 11:43:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660304634; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rE08NAcCuF+IEl0otRKm+fJbFUf5aCYLvwBhKGbE2Us=;
-        b=rTkn5pAgUu+j0/ZBum6QeAA6awTHnQYSGsucr1PPOZtvDgonEyH6RvdFRRqjE5GtWVcfIJ
-        T+5xLauWU/t+OzoKLxarOPXCNH268rz6Z6KACBW9Fi3FO0CqwV3Q+w229CrMCJO1oob0LF
-        UgkQ8KseEkOJ6wvNGyP6KV3L2WgyzMY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660304634;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rE08NAcCuF+IEl0otRKm+fJbFUf5aCYLvwBhKGbE2Us=;
-        b=MO+oGP+79woBgXP3/TgAkt4ipgBnUv3yB5G9ozRq1PWRLZeqiOhu1Wy7lFLq8GQg2apumx
-        mUMaX/LuPUSJe4Cw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0FBC913AAE;
-        Fri, 12 Aug 2022 11:43:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id CLzDAvo89mLmfAAAMHmgww
-        (envelope-from <mliska@suse.cz>); Fri, 12 Aug 2022 11:43:54 +0000
-Message-ID: <325871cf-b71f-6237-8793-82182272ece8@suse.cz>
-Date:   Fri, 12 Aug 2022 13:43:53 +0200
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 261F361EA1929;
+        Fri, 12 Aug 2022 13:44:45 +0200 (CEST)
+Message-ID: <f0a6f8cc-e8a5-ff72-b8f0-ed25fcf03b47@molgen.mpg.de>
+Date:   Fri, 12 Aug 2022 13:44:44 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.1.2
-From:   =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>
-Subject: [PATCH] perf: Print debuginfod queries if -v option is used
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-References: <2983e2e0-6850-ad59-79d8-efe83b22cffe@suse.cz>
+Subject: Re: mainline build failure due to 332f1795ca20 ("Bluetooth: L2CAP:
+ Fix l2cap_global_chan_by_psm regression")
 Content-Language: en-US
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>
-In-Reply-To: <2983e2e0-6850-ad59-79d8-efe83b22cffe@suse.cz>
-Content-Type: text/plain; charset=UTF-8
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     torvalds@linux-foundation.org, Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
+References: <YvY4xdZEWAPosFdJ@debian>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <YvY4xdZEWAPosFdJ@debian>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When ending a perf record session, the querying of a debuginfod
-server can take quite some time. Inform a user about it when
--v options is used.
+Dear Sudip,
 
-Signed-off-by: Martin Liska <mliska@suse.cz>
----
- tools/perf/util/build-id.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/util/build-id.c b/tools/perf/util/build-id.c
-index 0cc68cdd84c8..d1cfce0613ee 100644
---- a/tools/perf/util/build-id.c
-+++ b/tools/perf/util/build-id.c
-@@ -653,7 +653,9 @@ static char *build_id_cache__find_debug(const char *sbuild_id,
- 
- #ifdef HAVE_DEBUGINFOD_SUPPORT
- 	if (realname == NULL) {
--		debuginfod_client* c = debuginfod_begin();
-+		debuginfod_client* c;
-+		pr_debug("Downloading debug info with build id %s\n", sbuild_id);
-+		c = debuginfod_begin();
- 		if (c != NULL) {
- 			int fd = debuginfod_find_debuginfo(c,
- 					(const unsigned char*)sbuild_id, 0,
--- 
-2.37.1
+Am 12.08.22 um 13:25 schrieb Sudip Mukherjee (Codethink):
 
+> The latest mainline kernel branch fails to build csky and mips allmodconfig
+> with gcc-12.
+> 
+> mips error is:
+> 
+> In function 'memcmp',
+>      inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+>      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
+> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>     44 | #define __underlying_memcmp     __builtin_memcmp
+>        |                                 ^
+> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
+>    420 |         return __underlying_memcmp(p, q, size);
+>        |                ^~~~~~~~~~~~~~~~~~~
+> In function 'memcmp',
+>      inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+>      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
+> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>     44 | #define __underlying_memcmp     __builtin_memcmp
+>        |                                 ^
+> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
+>    420 |         return __underlying_memcmp(p, q, size);
+>        |                ^~~~~~~~~~~~~~~~~~~
+> 
+> 
+> csky error is:
+> 
+> In file included from net/bluetooth/l2cap_core.c:37:
+> In function 'bacmp',
+>      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
+> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>    347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
+>        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'bacmp',
+>      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
+> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>    347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
+>        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> git bisect pointed to 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression").
+> And, reverting that commit has fixed the build failure.
+> 
+> Already reported at https://lore.kernel.org/lkml/YvVQEDs75pxSgxjM@debian/
+> and Jacub is looking at a fix, but this is just my usual build failure
+> mail of mainline branch for Linus's information.
+
+Does *[PATCH] Bluetooth: L2CAP: Elide a string overflow warning* [1] fix it?
+
+
+Kind regards,
+
+Paul
+
+
+PS:
+
+> --
+> Regards
+> Sudip
+
+Only if you care, your signature delimiter is missing a trailing space [2].
+
+
+[1]: 
+https://lore.kernel.org/linux-bluetooth/20220812055249.8037-1-palmer@rivosinc.com/T/#t
+[2]: https://en.wikipedia.org/wiki/Signature_block#Standard_delimiter
