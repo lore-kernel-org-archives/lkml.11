@@ -2,132 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CE6C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A73C25B0E
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 14:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238759AbiHLOG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 10:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53946 "EHLO
+        id S239087AbiHLOHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 10:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239050AbiHLOGv (ORCPT
+        with ESMTP id S239095AbiHLOHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 10:06:51 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456A97C76A
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:06:50 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id dc19so2197334ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:06:50 -0700 (PDT)
+        Fri, 12 Aug 2022 10:07:05 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0EB8E450
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:07:00 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id a4so810406qto.10
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 07:07:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc;
-        bh=Pv1Kl4JS+ZMoTNGLHszpnd7VfT3QEgm6cYLyuxdf2mQ=;
-        b=ovrc2tsidM2Puk4E7t0O/YjnXHqLxj+xQuv1Ttuai8VY3eJF0YSy0FPL3vorntUW2B
-         0QZn6B/Ie8Ofbcepoqnh3FkHCFrw6j/32xfhLo0b7u3aysa4h7i4K507OnTChayDA1+A
-         fRCTefwionwJDUlj1Sg+yvkiyDaCM6/ya/2XQR7/8GOlvm3dvQqSwLR9vmTBWLqlmwYk
-         fMh6Ts45sPJFmDmDYdjTe3DN9goZ5aZtEbb9xe/38FgBJ/J4JVXxXz0JNjV9Fk/Hdtaq
-         qo3lK2imkdAmhxjlKtFpkjM+4DUSHBzrz/70/fCMJCjbXpeB+KqJPC0WKnnYs/xv3AAV
-         omUw==
+        d=kudzu-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=o4cCmpae5Idf9m29hglIkfFTnBFWQVCZxl7mM3GbfcU=;
+        b=B3yaLfs9Wy7dodnPS67DfPjojKeP/JGGel7gsgyzSoXI8lwU3k3smrdy/iqw0vpBmt
+         naTNFw3+feF9dkb2/Sd4AjglFJoIxWleV54qkIjmBHMeJ6LSTgOIzRIiPAFVBlr5gC59
+         v+kozDyx9Sav+v5z9Cu0dUSH0tbGISETEOOwWHQt7v0lmzXIlxJ2ni1D4uxIaJ7hbL9b
+         YV9vRtbsR8zhz1K3THK38vdRKmxtOO9/sC0/VnXEJr/bQ422VJ1GiDSsHI+RNVQzC0+Z
+         +vO9g3L7ZLS36fdcBURDgnAUKaKM4rqHOF3VQZUb2ADaT54MBg0Z6DfHkYF48X6YD7NK
+         TP8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc;
-        bh=Pv1Kl4JS+ZMoTNGLHszpnd7VfT3QEgm6cYLyuxdf2mQ=;
-        b=xAlpmCUs+x0X8if221JWIqv0XH2kXioEqo9qBKBxH/Npq6hbpKekhOrC6dJyhmptea
-         0DY7dIO8d1FE21Y2BT/zR//3UX/bmJL3OqVXdWP5sEkKWIRSqLM8YCAzjy9DBvXx/ys3
-         wpclVbjkS9vSqlITdL/vqhv/qUjQQm+EJ7L+a6znP/XVs4Ganpy1qyMqxb0Hw8dN0FqK
-         pDOfuu0Of3yqxLNnroRS9VUfnwyWQqNiD4eEul9XLyhUDSpRABfwe9p1jkP6ZCzhm4fr
-         CMMPHerzzHzBwLoLYLrRyviEHa0oyRDeIH2sho6u4/N0vVXOJJn6f0oU4xu+8rWQKsJG
-         1mLA==
-X-Gm-Message-State: ACgBeo1S3KlZO+M7LlBKz08SDW/5ovUVb8mDyljkMhZhAe5do1EjMzXS
-        Cc3suUrVLTmmY/RW15zfVZGkOaN44zHUng==
-X-Google-Smtp-Source: AA6agR6jRgNj+aT1UFQqpNRlUCku/01/4MHvqLsJFEpTOd0bsqzM73svFr8xWsCn2iRCHnaJmzahqQ==
-X-Received: by 2002:a17:907:9710:b0:731:67b1:dc3b with SMTP id jg16-20020a170907971000b0073167b1dc3bmr2831119ejc.709.1660313208660;
-        Fri, 12 Aug 2022 07:06:48 -0700 (PDT)
-Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id d24-20020a17090694d800b007030c97ae62sm802745ejy.191.2022.08.12.07.06.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 07:06:48 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Fri, 12 Aug 2022 16:06:47 +0200
-Message-Id: <CM43WTWNP8MM.3145TGVN4208B@otso>
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        <linux-arm-msm@vger.kernel.org>
-Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
-        <phone-devel@vger.kernel.org>, "Andy Gross" <agross@kernel.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        "Konrad Dybcio" <konrad.dybcio@somainline.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>
-Subject: Re: [PATCH] arm64: dts: qcom: pm6350: add temp sensor and thermal
- zone config
-From:   "Luca Weiss" <luca.weiss@fairphone.com>
-X-Mailer: aerc 0.11.0
-References: <20220812114421.1195044-1-luca.weiss@fairphone.com>
- <81ae6a31-1f37-a677-f8f8-2340e37d3a63@linaro.org>
-In-Reply-To: <81ae6a31-1f37-a677-f8f8-2340e37d3a63@linaro.org>
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=o4cCmpae5Idf9m29hglIkfFTnBFWQVCZxl7mM3GbfcU=;
+        b=ljdStvB75njJAJefNYaYJHsmPyFoJm/Zm272jdUgTi92aCarh32URcpgw18mBwHJRv
+         YCZz3W1J0iXp3qoO9LQlqGp4MXsgLTKUHZRf5UUFpNjjAUet9DvyTNw9BCWAhb5ogDYt
+         4CkdtLRlO9j+C6b3XhKhBbUuyK1vYYmtezYFEH6U1Xq52tFpGuBf69VSeKX4Z6bjD9uh
+         h85+eK0XMKKen9UL6luYYsla3BfGnGFj3wnnHaHl1Wsobat83SPxL0+iH7aZAeW76yvn
+         4e+2sEVaAY3Apjwq2omkyS2gGJa4oBAe4qKjX5PWONxotREijWyrO9Q2gKrOZnp3PMZi
+         MigA==
+X-Gm-Message-State: ACgBeo0LKJmLAWE5rL4W8CKCdCyakBBWseJBC6SiM3PSxa17Tr5g/t5b
+        QrP5U3okXWFj1FwQIV2HP30kvg==
+X-Google-Smtp-Source: AA6agR4YuIPl4rmACKJQ36o7TO+IeIUSBODJJr3K7YFMV9Zrpd9l7IJHYIgIYA5RCSIb4R/ZZ4vlhg==
+X-Received: by 2002:ac8:5f4c:0:b0:320:795c:b414 with SMTP id y12-20020ac85f4c000000b00320795cb414mr3754593qta.302.1660313219471;
+        Fri, 12 Aug 2022 07:06:59 -0700 (PDT)
+Received: from kudzu.us ([2605:a601:a608:5600::59])
+        by smtp.gmail.com with ESMTPSA id i21-20020a05620a249500b006b8fb2a1145sm1830463qkn.124.2022.08.12.07.06.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 07:06:58 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 10:06:57 -0400
+From:   Jon Mason <jdmason@kudzu.us>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Frank.Li@nxp.com, kishon@ti.com, lpieralisi@kernel.org,
+        kw@linux.com, bhelgaas@google.com
+Subject: Re: [PATCH -next v2] PCI: endpoint: pci-epf-vntb: fix error handle
+ in epf_ntb_mw_bar_init()
+Message-ID: <YvZegcACgf5vKTB1@kudzu.us>
+References: <20220625021516.431473-1-yangyingliang@huawei.com>
+ <20220627202704.GA1775928@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627202704.GA1775928@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+On Mon, Jun 27, 2022 at 03:27:04PM -0500, Bjorn Helgaas wrote:
+> On Sat, Jun 25, 2022 at 10:15:16AM +0800, Yang Yingliang wrote:
+> > In error case of epf_ntb_mw_bar_init(), memory window BARs should be
+> > cleared, so add 'num_mws' parameter in epf_ntb_mw_bar_clear() and
+> > calling it in error path to clear the BARs. Also add missing error
+> > code when pci_epc_mem_alloc_addr() fails.
+> 
+> Another one for Jon, since ff32fac00d97 appeared in -next via his
+> tree
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=ff32fac00d97
 
-+CC Matthias Kaehlcke (author of patch mentioned further below)
+Sorry for the extremely long delay in response.  This series is in my
+ntb branch and will be in my pull request for v5.20 which should be
+going out later today.
 
-On Fri Aug 12, 2022 at 3:36 PM CEST, Krzysztof Kozlowski wrote:
-> On 12/08/2022 14:44, Luca Weiss wrote:
-> > Add temp-alarm device tree node and a default configuration for the
-> > corresponding thermal zone for this PMIC. Temperatures are based on
-> > downstream values.
-> >=20
-> > Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+Thanks,
+Jon
+
+> 
+> > Fixes: ff32fac00d97 ("NTB: EPF: support NTB transfer between PCI RC and EP connection")
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > > ---
-> > With this config I'm getting this in dmesg, not sure if it's a warning
-> > that should be solved or just an informative warning.
-> >=20
-> > [    0.268256] spmi-temp-alarm c440000.spmi:pmic@0:temp-alarm@2400: No =
-ADC is configured and critical temperature is above the maximum stage 2 thr=
-eshold of 140 C! Configuring stage 2 shutdown at 140 C.
-> >=20
-> > As far as I can tell, based on downstream dts this PMIC doesn't have an
-> > ADC.
->
-> You configure 145 and driver believes 140 is the limit, so it seems
-> warning should be addressed.
-
-Hm...
-
->
-> From where did you get 145 degrees as limit? Downstream DTS?
-
-Yes, downstream dts[0].
-
-From what I can see in the downstream driver, it always disabled this
-"software override of stage 2 and 3 shutdowns"[1]
-
-In mainline only since f1599f9e4cd6 ("thermal: qcom-spmi: Use PMIC
-thermal stage 2 for critical trip points") this check exists, which is
-not part of downstream (wasn't in 4.19 yet), where this software
-override tries to get enabled so that thermal core can handle this.
-
-Any suggestion what I can do here? Maybe looking at msm-5.4 sources (and
-associated dts) might reveal something..? Maybe newer SoCs/PMICs have a
-different config?
-
-Regards
-Luca
-
-[0] https://android.googlesource.com/kernel/msm-extra/devicetree/+/refs/hea=
-ds/android-msm-barbet-4.19-android12L/qcom/pm6350.dtsi#126
-[1] https://gerrit-public.fairphone.software/plugins/gitiles/kernel/msm-4.1=
-9/+/refs/heads/kernel/11/fp4/drivers/thermal/qcom-spmi-temp-alarm.c#251
-
->
-> Best regards,
-> Krzysztof
-
+> > v2:
+> >   add error label err_set_bar and move pci_epc_clear_bar() to it
+> > ---
+> >  drivers/pci/endpoint/functions/pci-epf-vntb.c | 20 ++++++++++++++-----
+> >  1 file changed, 15 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> > index ebf7e243eefa..ee9fee167d48 100644
+> > --- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> > +++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+> > @@ -567,6 +567,8 @@ static int epf_ntb_db_bar_init(struct epf_ntb *ntb)
+> >  	return -1;
+> >  }
+> >  
+> > +static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws);
+> > +
+> >  /**
+> >   * epf_ntb_db_bar_clear() - Clear doorbell BAR and free memory
+> >   *   allocated in peers outbound address space
+> > @@ -625,13 +627,21 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+> >  							      &ntb->vpci_mw_phy[i],
+> >  							      size);
+> >  		if (!ntb->vpci_mw_addr[i]) {
+> > +			ret = -ENOMEM;
+> >  			dev_err(dev, "Failed to allocate source address\n");
+> > -			goto err_alloc_mem;
+> > +			goto err_set_bar;
+> >  		}
+> >  	}
+> >  
+> >  	return ret;
+> > +
+> > +err_set_bar:
+> > +	pci_epc_clear_bar(ntb->epf->epc,
+> > +			  ntb->epf->func_no,
+> > +			  ntb->epf->vfunc_no,
+> > +			  &ntb->epf->bar[barno]);
+> >  err_alloc_mem:
+> > +	epf_ntb_mw_bar_clear(ntb, i);
+> >  	return ret;
+> >  }
+> >  
+> > @@ -640,12 +650,12 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
+> >   * @ntb: NTB device that facilitates communication between HOST and vHOST
+> >   *
+> >   */
+> > -static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb)
+> > +static void epf_ntb_mw_bar_clear(struct epf_ntb *ntb, int num_mws)
+> >  {
+> >  	enum pci_barno barno;
+> >  	int i;
+> >  
+> > -	for (i = 0; i < ntb->num_mws; i++) {
+> > +	for (i = 0; i < num_mws; i++) {
+> >  		barno = ntb->epf_ntb_bar[BAR_MW0 + i];
+> >  		pci_epc_clear_bar(ntb->epf->epc,
+> >  				  ntb->epf->func_no,
+> > @@ -774,7 +784,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
+> >  	return 0;
+> >  
+> >  err_write_header:
+> > -	epf_ntb_mw_bar_clear(ntb);
+> > +	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
+> >  err_mw_bar_init:
+> >  	epf_ntb_db_bar_clear(ntb);
+> >  err_db_bar_init:
+> > @@ -794,7 +804,7 @@ static int epf_ntb_epc_init(struct epf_ntb *ntb)
+> >  static void epf_ntb_epc_cleanup(struct epf_ntb *ntb)
+> >  {
+> >  	epf_ntb_db_bar_clear(ntb);
+> > -	epf_ntb_mw_bar_clear(ntb);
+> > +	epf_ntb_mw_bar_clear(ntb, ntb->num_mws);
+> >  }
+> >  
+> >  #define EPF_NTB_R(_name)						\
+> > -- 
+> > 2.25.1
+> > 
