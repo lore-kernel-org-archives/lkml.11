@@ -2,238 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 958E4C25B0F
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9752C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 17:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239322AbiHLRQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 13:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
+        id S236938AbiHLRRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 13:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbiHLRQG (ORCPT
+        with ESMTP id S231250AbiHLRRp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 13:16:06 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148748C00A;
-        Fri, 12 Aug 2022 10:16:04 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so1501913pjl.0;
-        Fri, 12 Aug 2022 10:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=iBEBZOechpa068VAHtNj8j6pUKrVkIcPB+LaVmGFPJk=;
-        b=q2P4M2g7xhfvoWiknLxrbXjpXu69d/q4zhXchpjqRMFuB8WfNu3aEc0JZ5vt0onlDE
-         o4vacFIcyRes3YDJeaU38A1dusmvCpZkLrv/r5CpfZTs8J6Piau2OnUOO5SbgUdFQMZU
-         K2NfbFreCifvFbgsk+qdUSAvBrPhRCBLvlgftrlocMmSlL9oXWnCQRnGhmDU5R/2ijAc
-         hVX4oEsBUvjcm5E0LXSj6yW24jK0S9ffosCBv33iskAPjqO++hpaP42FpHkQH9wjDKXY
-         c7NNEo5kTP3zMKjawwCq81akmCfw2B6JYiYcZqRoGzNX4d2+a6aaPOVoP765k/tb2eYL
-         Bvzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=iBEBZOechpa068VAHtNj8j6pUKrVkIcPB+LaVmGFPJk=;
-        b=axVUfdHLlOY0TLViGIm2h70HV7OtAARfSYRMZv4/2QYMdLmibChwGX8EtugNO1hmDG
-         VTo63UX1qp/OrwPOHGi2BieFE/EznFsWuzpJXm2SAXVQM76qRdoFR9820FRU2ukyj7qx
-         bkOkbcFcj20x+QnXPvsgVkRCVNYg5xNeeg/94gIdANY/0U6vYQ73QArYHt9rIK8MERMa
-         EVcMIcd8h5FScKiPzECFy7/IqlRVaotFZrwP9aqBIRmt8pSQ8gZv+q0GwrAW2ue733/3
-         riRe4CMr/uGrg5+xHJt4pfrs6HLQzvpTIAXD4Z3qNM+eQRZ/8e7bdYvAcnG8mKaWYHrg
-         o0cA==
-X-Gm-Message-State: ACgBeo0JIOPiZRMie45LrF4923z41v72Q+8NmTA4PSE1q9ZatRUuVIc8
-        BUftIlfKB8F3qCAQ1jCYgYg=
-X-Google-Smtp-Source: AA6agR5TcwLaaYiS3fv6nwUccF/8tTFa00FNi/5axnOHKok9uu3CLL6jemxN9EMrWe5EeHRUdR0cNA==
-X-Received: by 2002:a17:90b:4f8e:b0:1f4:ed30:d286 with SMTP id qe14-20020a17090b4f8e00b001f4ed30d286mr5353525pjb.66.1660324563450;
-        Fri, 12 Aug 2022 10:16:03 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id w1-20020a631601000000b004129741dd9dsm1579909pgl.51.2022.08.12.10.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 10:16:01 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Fri, 12 Aug 2022 10:16:00 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Zhang Rui <rui.zhang@intel.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-hwmon@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        corbet@lwn.net, fenghua.yu@intel.com, jdelvare@suse.com,
-        len.brown@intel.com
-Subject: Re: [PATCH 3/7] hwmon/coretemp: Handle large core id value
-Message-ID: <20220812171600.GB2960077@roeck-us.net>
-References: <20220812164144.30829-1-rui.zhang@intel.com>
- <20220812164144.30829-4-rui.zhang@intel.com>
+        Fri, 12 Aug 2022 13:17:45 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D28B1BAF;
+        Fri, 12 Aug 2022 10:17:44 -0700 (PDT)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M49H26jFGz67Mkv;
+        Sat, 13 Aug 2022 01:13:02 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 12 Aug 2022 19:17:41 +0200
+Received: from [10.48.157.254] (10.48.157.254) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 12 Aug 2022 18:17:40 +0100
+Message-ID: <fd2b1dbe-8482-cb89-2568-4909db1239b0@huawei.com>
+Date:   Fri, 12 Aug 2022 18:17:39 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220812164144.30829-4-rui.zhang@intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0%
+ regression
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Oliver Sang <oliver.sang@intel.com>
+CC:     Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Linux Memory Management List" <linux-mm@kvack.org>,
+        <linux-ide@vger.kernel.org>, <lkp@lists.01.org>, <lkp@intel.com>,
+        <ying.huang@intel.com>, <feng.tang@intel.com>,
+        <zhengjun.xing@linux.intel.com>, <fengwei.yin@intel.com>
+References: <YuzPMMnnY739Tnit@xsang-OptiPlex-9020>
+ <1f498d4a-f93f-ceb4-b713-753196e5e08d@opensource.wdc.com>
+ <3451fa5a-6229-073f-ae18-0c232cd48ed5@huawei.com>
+ <e4106ffa-3842-45c0-9756-5226cfcfa17d@opensource.wdc.com>
+ <YvXeuCAK780OuJPz@xsang-OptiPlex-9020>
+ <2e9cf5a6-c043-5ccf-e363-097c6c941891@huawei.com>
+ <4642848c-a386-d6a0-6255-8b16800e0548@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <4642848c-a386-d6a0-6255-8b16800e0548@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.48.157.254]
+X-ClientProxiedBy: lhrpeml100002.china.huawei.com (7.191.160.241) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 12:41:40AM +0800, Zhang Rui wrote:
-> The coretemp driver supports up to a hard-coded limit of 128 cores.
+On 12/08/2022 16:41, Damien Le Moal wrote:
+>>> we noticed the commit is already in mainline now, and in our tests, there is
+>>> still similar regression and also on other platforms.
+>>> could you guide us how to check "which host driver is being used for this
+>>> test"? hope to supply some useful information.
+>>>
+>> For me, a complete kernel log may help.
+> I had a look yesterday with my test rig. I did not see any difference in the
+> default max_sectors_kb values for various drives between 5.18 and 5.19 (current
+> linus tree). The test machine has 2 AHCI adapters: Intel and Marvell. Both use
+> the regular AHCI driver. I have another rig with different ATA adapters but it
+> is powered down and I am traveling... So cannot test that right now.
 > 
-> Today, the driver can not support a core with an id above that limit.
-> Yet, the encoding of core_id's is arbitrary (BIOS APIC-id) and so they
-> may be sparse and they may be large.
-> 
-> Update the driver to map arbitrary core_id numbers into appropriate
-> array indexes so that 128 cores can be supported, no matter the encoding
-> of core_ids's.
-> 
-> Acked-by: Len Brown <len.brown@intel.com>
-> Signed-off-by: Zhang Rui <rui.zhang@intel.com>
-> ---
->  drivers/hwmon/coretemp.c | 55 +++++++++++++++++++++++++++++-----------
->  1 file changed, 40 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/hwmon/coretemp.c b/drivers/hwmon/coretemp.c
-> index ccf0af5b988a..3f0f7d7612ae 100644
-> --- a/drivers/hwmon/coretemp.c
-> +++ b/drivers/hwmon/coretemp.c
-> @@ -46,9 +46,6 @@ MODULE_PARM_DESC(tjmax, "TjMax value in degrees Celsius");
->  #define TOTAL_ATTRS		(MAX_CORE_ATTRS + 1)
->  #define MAX_CORE_DATA		(NUM_REAL_CORES + BASE_SYSFS_ATTR_NO)
->  
-> -#define TO_CORE_ID(cpu)		(cpu_data(cpu).cpu_core_id)
-> -#define TO_ATTR_NO(cpu)		(TO_CORE_ID(cpu) + BASE_SYSFS_ATTR_NO)
-> -
->  #ifdef CONFIG_SMP
->  #define for_each_sibling(i, cpu) \
->  	for_each_cpu(i, topology_sibling_cpumask(cpu))
-> @@ -91,6 +88,8 @@ struct temp_data {
->  struct platform_data {
->  	struct device		*hwmon_dev;
->  	u16			pkg_id;
-> +	u16			cpu_map[NUM_REAL_CORES];
-> +	struct ida		ida;
->  	struct cpumask		cpumask;
->  	struct temp_data	*core_data[MAX_CORE_DATA];
->  	struct device_attribute name_attr;
-> @@ -441,7 +440,7 @@ static struct temp_data *init_temp_data(unsigned int cpu, int pkg_flag)
->  							MSR_IA32_THERM_STATUS;
->  	tdata->is_pkg_data = pkg_flag;
->  	tdata->cpu = cpu;
-> -	tdata->cpu_core_id = TO_CORE_ID(cpu);
-> +	tdata->cpu_core_id = topology_core_id(cpu);
->  	tdata->attr_size = MAX_CORE_ATTRS;
->  	mutex_init(&tdata->update_lock);
->  	return tdata;
-> @@ -454,7 +453,7 @@ static int create_core_data(struct platform_device *pdev, unsigned int cpu,
->  	struct platform_data *pdata = platform_get_drvdata(pdev);
->  	struct cpuinfo_x86 *c = &cpu_data(cpu);
->  	u32 eax, edx;
-> -	int err, attr_no;
-> +	int err, index, attr_no;
->  
->  	/*
->  	 * Find attr number for sysfs:
-> @@ -462,14 +461,26 @@ static int create_core_data(struct platform_device *pdev, unsigned int cpu,
->  	 * The attr number is always core id + 2
->  	 * The Pkgtemp will always show up as temp1_*, if available
->  	 */
-> -	attr_no = pkg_flag ? PKG_SYSFS_ATTR_NO : TO_ATTR_NO(cpu);
-> +	if (pkg_flag)
-> +		attr_no = PKG_SYSFS_ATTR_NO;
-> +	else {
-> +		index = ida_alloc(&pdata->ida, GFP_KERNEL);
-> +		if (index < 0)
-> +			return index;
-> +		pdata->cpu_map[index] = topology_core_id(cpu);
-> +		attr_no = index + BASE_SYSFS_ATTR_NO;
-> +	}
->  
-> -	if (attr_no > MAX_CORE_DATA - 1)
-> -		return -ERANGE;
-> +	if (attr_no > MAX_CORE_DATA - 1) {
-> +		err = -ERANGE;
-> +		goto ida_free;
-> +	}
->  
->  	tdata = init_temp_data(cpu, pkg_flag);
-> -	if (!tdata)
-> -		return -ENOMEM;
-> +	if (!tdata) {
-> +		err = -ENOMEM;
-> +		goto ida_free;
-> +	}
->  
->  	/* Test if we can access the status register */
->  	err = rdmsr_safe_on_cpu(cpu, tdata->status_reg, &eax, &edx);
-> @@ -505,6 +516,9 @@ static int create_core_data(struct platform_device *pdev, unsigned int cpu,
->  exit_free:
->  	pdata->core_data[attr_no] = NULL;
->  	kfree(tdata);
-> +ida_free:
-> +	if (!pkg_flag)
-> +		ida_free(&pdata->ida, index);
->  	return err;
->  }
->  
-> @@ -524,6 +538,8 @@ static void coretemp_remove_core(struct platform_data *pdata, int indx)
->  
->  	kfree(pdata->core_data[indx]);
->  	pdata->core_data[indx] = NULL;
-> +
-> +	ida_free(&pdata->ida, indx - BASE_SYSFS_ATTR_NO);
->  }
->  
->  static int coretemp_probe(struct platform_device *pdev)
-> @@ -537,6 +553,7 @@ static int coretemp_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  
->  	pdata->pkg_id = pdev->id;
-> +	ida_init(&pdata->ida);
->  	platform_set_drvdata(pdev, pdata);
->  
->  	pdata->hwmon_dev = devm_hwmon_device_register_with_groups(dev, DRVNAME,
-> @@ -553,6 +570,7 @@ static int coretemp_remove(struct platform_device *pdev)
->  		if (pdata->core_data[i])
->  			coretemp_remove_core(pdata, i);
->  
-> +	ida_destroy(&pdata->ida);
->  	return 0;
->  }
->  
-> @@ -647,7 +665,7 @@ static int coretemp_cpu_offline(unsigned int cpu)
->  	struct platform_device *pdev = coretemp_get_pdev(cpu);
->  	struct platform_data *pd;
->  	struct temp_data *tdata;
-> -	int indx, target;
-> +	int i, indx = -1, target;
->  
->  	/*
->  	 * Don't execute this on suspend as the device remove locks
-> @@ -660,12 +678,19 @@ static int coretemp_cpu_offline(unsigned int cpu)
->  	if (!pdev)
->  		return 0;
->  
-> -	/* The core id is too big, just return */
-> -	indx = TO_ATTR_NO(cpu);
-> -	if (indx > MAX_CORE_DATA - 1)
-> +	pd = platform_get_drvdata(pdev);
-> +
-> +	for (i = 0; i < NUM_REAL_CORES; i++) {
-> +		if (pd->cpu_map[i] == topology_core_id(cpu)) {
-> +			indx = i + BASE_SYSFS_ATTR_NO;
-> +			break;
-> +		}
-> +	}
-> +
-> +	/* Too many cores and this core is not pupolated, just return */
 
-populated
+FWIW, on QEMU I get a difference for IDE disk for ata_piix host.
 
-Other than that looks good.
+Interestingly ata dev max_sectors kb also gets capped from 32MB (LBA48) 
+-> 256KB due to swiotlb max mapping size. (It would be capped by shost 
+default max sectors 512KB without that swiotlb limit). I assume capping 
+due to swiotlb limit is not occuring on Oliver's machine.
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+thanks,
+John
 
-> +	if (indx < 0)
->  		return 0;
->  
-> -	pd = platform_get_drvdata(pdev);
->  	tdata = pd->core_data[indx];
->  
->  	cpumask_clear_cpu(cpu, &pd->cpumask);
-> -- 
-> 2.34.1
-> 
+[    1.497233] ata7: found unknown device (class 0)
+[    1.498341] ata7.00: ATA-7: QEMU HARDDISK, 2.5+, max UDMA/100
+[    1.499030] ata7.00: 209716 sectors, multi 16: LBA48
+[    1.623795] ata2: SATA link down (SStatus 0 SControl 300)
+[    1.624633] ata1: SATA link down (SStatus 0 SControl 300)
+[    1.633395] ata6: SATA link down (SStatus 0 SControl 300)
+[    1.634200] ata5: SATA link down (SStatus 0 SControl 300)
+[    1.635094] ata4: SATA link down (SStatus 0 SControl 300)
+[    1.635887] ata3: SATA link down (SStatus 0 SControl 300)
+[    1.636748] scsi 6:0:0:0: Direct-Access     ATA      QEMU HARDDISK 
+  2.5+ PQ: 0 ANSI: 5
+[    1.641298] sd 6:0:0:0: [sda] 209716 512-byte logical blocks: (107 
+MB/102 MiB)
+[    1.642188] sd 6:0:0:0: [sda] Write Protect is off
+[    1.642770] sd 6:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[    1.642783] sd 6:0:0:0: [sda] Write cache: enabled, read cache: 
+enabled, doesn't support DPO or FUA
+[    1.644149] sd 6:0:0:0: [sda] Preferred minimum I/O size 512 bytes
+[    1.645142] sd 6:0:0:0: Attached scsi generic sg0 type 0
+[    1.655145] sd 6:0:0:0: [sda] Attached SCSI disk
