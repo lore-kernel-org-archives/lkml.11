@@ -2,238 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A29D9C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D793FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239495AbiHMN21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 09:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
+        id S239494AbiHMNhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 09:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239451AbiHMN2W (ORCPT
+        with ESMTP id S235278AbiHMNg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 09:28:22 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60C75C9E1
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 06:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660397300; x=1691933300;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XtMFkYHY/cD350rDxfXGg6FL4eS2ZlT/y400Kyk5TwM=;
-  b=OK0AeB/FOz1HSkh8UwAKNV/1gwajCEHiSvDXbl0XExwn7CceNPgR8PBL
-   t90JOcEwXVXObQfm0t4/IMhR60HgbEtP1u+KgPoX+RwFOtHur4m11KmaR
-   WXmP6K4gcddNOm40f2cAMoKa1TiqbLReERwadS+dknnMS2keB+S7b/GOq
-   unUlhszMlZ0H5cghnFtRmFPpck8h95dgMUCJ26n+Q2bk6ZWK2qaNkc6qj
-   XQkvdneUajrs8My7evSd1eZl5xEgc2fy5A8TGWA7SOF0pjSYQq/stpoB8
-   H6DFw9OLYjfbS4CztoaFSbKLIDfSdUB5L3Qz9lsa8/3tA2lqvEDDB6lui
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="317729641"
-X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
-   d="scan'208";a="317729641"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 06:28:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
-   d="scan'208";a="851834770"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 13 Aug 2022 06:28:19 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMrBa-0001hd-1g;
-        Sat, 13 Aug 2022 13:28:18 +0000
-Date:   Sat, 13 Aug 2022 21:27:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kbusch:io_uring/dma-register-v3 3/8] include/linux/fs.h:3610:60:
- warning: 'struct bio_vec' declared inside parameter list will not be visible
- outside of this definition or declaration
-Message-ID: <202208132106.JaGpr7MH-lkp@intel.com>
+        Sat, 13 Aug 2022 09:36:58 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1FFB7C1;
+        Sat, 13 Aug 2022 06:36:57 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id z2so4362545edc.1;
+        Sat, 13 Aug 2022 06:36:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=AKVBfO32rmZq1r8Xc6WkO9jk42SoifdEhyas0O7uhTs=;
+        b=UdYffYR5Uny5GwXXCuOgQYee354sCFqcXWa8z7kGVw5IRH/AsBzPh3vXxLy4J9F18F
+         +WT6wBUCx2Vtmirlt3mJ+Q2rMV2lujZ+TcoXk0LVC1fsy/JcHD8V3Yx+WVx1nWJ6cnFf
+         78v+kx7JV0b5Luaz5QjVH7z+PC9tYnreYMHc2flMcZvlHaYGNdv4LOnXZlCvuhM2AUhr
+         Fl4ES1oH9dUPEdbDnf5aGteXKSb+dHbqcbPOkmfDkeTJ/kdccMspkmqU9QMBJmFZNU8W
+         SpxOBWj7oeWuysx7qEvgQsMeolLYfFZjUq5UCJhlOjpngmGLWOHteJSwUvNUZ3lPisw3
+         HclQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=AKVBfO32rmZq1r8Xc6WkO9jk42SoifdEhyas0O7uhTs=;
+        b=1let7A/Sdl1bAt/8H8MK3vAQNkh0DPJi9kNuSNOcq8fHkOkYsUP1WI4QY0ysi9CtIx
+         z5ECxwUZT/L1W68o+UGS0VA8V6SkTKztw/8GjRR7mVpy6PVQ2BupP9xs2Bu2w0Za5gqK
+         QKguhXF9RCXAAXFHddoQX4mUceKbPTQMtzt/vUhsN1nC4Q/N+jTAzW8uJwFL/UJfML1u
+         52Ea1HWhVDpFnRzFJEaXPMaNEs6ImDCHJv9bwDqQN13Wd3mjiULVP6g/QAP2+KFKUKwi
+         v4arIKe8YTQdUitsDgPCIkHZ5UNR+xpSl9NieN74f0aZfCdN0zurXfQET5Svtzyvv/Tg
+         O0Jg==
+X-Gm-Message-State: ACgBeo3RNc1FabayiOs8QIVbqUs2LMC0aPKz4FcE25vhsdu813xGYQlh
+        GGwzIe6cRhanUN0ddkNvH9o=
+X-Google-Smtp-Source: AA6agR6YHmhuU6n1HU6pRDZIWiUpUQGG2w90iwTEUs1ezspDX/TPu4VgLorkbgMHhQ4p/0u7Tm1uRg==
+X-Received: by 2002:aa7:c9c2:0:b0:440:b458:9403 with SMTP id i2-20020aa7c9c2000000b00440b4589403mr7604816edt.132.1660397816004;
+        Sat, 13 Aug 2022 06:36:56 -0700 (PDT)
+Received: from opensuse.localnet (host-79-53-105-123.retail.telecomitalia.it. [79.53.105.123])
+        by smtp.gmail.com with ESMTPSA id w22-20020a17090633d600b0072b33e91f96sm1875765eja.190.2022.08.13.06.36.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Aug 2022 06:36:54 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Eric Biederman <ebiederm@xmission.com>,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
+Subject: Re: [PATCH v2] fs: Replace kmap{,_atomic}() with kmap_local_page()
+Date:   Sat, 13 Aug 2022 15:36:53 +0200
+Message-ID: <8143586.NyiUUSuA9g@opensuse>
+In-Reply-To: <20220803182856.28246-1-fmdefrancesco@gmail.com>
+References: <20220803182856.28246-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git io_uring/dma-register-v3
-head:   e1c6d38d05e532b3aaf12a5ab8707929bcdc1180
-commit: 59f51e67d3aa45e21c693f274e516a8e307ac829 [3/8] file: add ops to dma map bvec
-config: m68k-buildonly-randconfig-r001-20220804 (https://download.01.org/0day-ci/archive/20220813/202208132106.JaGpr7MH-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=59f51e67d3aa45e21c693f274e516a8e307ac829
-        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
-        git fetch --no-tags kbusch io_uring/dma-register-v3
-        git checkout 59f51e67d3aa45e21c693f274e516a8e307ac829
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash arch/m68k/kernel/ io_uring/
+On mercoled=C3=AC 3 agosto 2022 20:28:56 CEST Fabio M. De Francesco wrote:
+> The use of kmap() and kmap_atomic() are being deprecated in favor of
+> kmap_local_page().
+>=20
+> There are two main problems with kmap(): (1) It comes with an overhead as
+> mapping space is restricted and protected by a global lock for
+> synchronization and (2) it also requires global TLB invalidation when the
+> kmap=E2=80=99s pool wraps and it might block when the mapping space is fu=
+lly
+> utilized until a slot becomes available.
+>=20
+> With kmap_local_page() the mappings are per thread, CPU local, can take
+> page faults, and can be called from any context (including interrupts).
+> It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+> the tasks can be preempted and, when they are scheduled to run again, the
+> kernel virtual addresses are restored and are still valid.
+>=20
+> Since the use of kmap_local_page() in exec.c is safe, it should be
+> preferred everywhere in exec.c.
+>=20
+> As said, since kmap_local_page() can be also called from atomic context,
+> and since remove_arg_zero() doesn't (and shouldn't ever) rely on an
+> implicit preempt_disable(), this function can also safely replace
+> kmap_atomic().
+>=20
+> Therefore, replace kmap() and kmap_atomic() with kmap_local_page() in
+> fs/exec.c.
+>=20
+> Tested with xfstests on a QEMU/KVM x86_32 VM, 6GB RAM, booting a kernel
+> with HIGHMEM64GB enabled.
+>=20
+> Cc: Eric W. Biederman <ebiederm@xmission.com>
+> Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>=20
+> v1->v2: Added more information to the commit log to address some
+> objections expressed by Eric W. Biederman[1] in reply to v1. No changes
+> have been made to the code. Forwarded a tag from Ira Weiny (thanks!).
+>=20
+> [1]
+> https://lore.kernel.org/lkml/8735fmqcfz.fsf@email.froward.int.ebiederm.or=
+g/
+>
+>  fs/exec.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>=20
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Kees,
 
-All warnings (new ones prefixed by >>):
+After that thread about the report from Syzbot, and the subsequent discussi=
+on,=20
+I noticed that you didn't yet take this other patch for exec.c.
 
-   In file included from include/linux/seq_file.h:12,
-                    from arch/m68k/kernel/irq.c:17:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/m68k/kernel/process.c:21:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/process.c:114:16: warning: no previous prototype for 'm68k_clone' [-Wmissing-prototypes]
-     114 | asmlinkage int m68k_clone(struct pt_regs *regs)
-         |                ^~~~~~~~~~
-   arch/m68k/kernel/process.c:135:16: warning: no previous prototype for 'm68k_clone3' [-Wmissing-prototypes]
-     135 | asmlinkage int m68k_clone3(struct pt_regs *regs)
-         |                ^~~~~~~~~~~
-   arch/m68k/kernel/process.c:216:5: warning: no previous prototype for 'dump_fpu' [-Wmissing-prototypes]
-     216 | int dump_fpu (struct pt_regs *regs, struct user_m68kfp_struct *fpu)
-         |     ^~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/m68k/kernel/ptrace.c:16:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/ptrace.c:275:16: warning: no previous prototype for 'syscall_trace_enter' [-Wmissing-prototypes]
-     275 | asmlinkage int syscall_trace_enter(void)
-         |                ^~~~~~~~~~~~~~~~~~~
-   arch/m68k/kernel/ptrace.c:284:17: warning: no previous prototype for 'syscall_trace_leave' [-Wmissing-prototypes]
-     284 | asmlinkage void syscall_trace_leave(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/m68k/kernel/signal.c:32:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/signal.c:756:18: warning: no previous prototype for 'do_sigreturn' [-Wmissing-prototypes]
-     756 | asmlinkage void *do_sigreturn(struct pt_regs *regs, struct switch_stack *sw)
-         |                  ^~~~~~~~~~~~
-   arch/m68k/kernel/signal.c:783:18: warning: no previous prototype for 'do_rt_sigreturn' [-Wmissing-prototypes]
-     783 | asmlinkage void *do_rt_sigreturn(struct pt_regs *regs, struct switch_stack *sw)
-         |                  ^~~~~~~~~~~~~~~
-   arch/m68k/kernel/signal.c:1106:6: warning: no previous prototype for 'do_notify_resume' [-Wmissing-prototypes]
-    1106 | void do_notify_resume(struct pt_regs *regs)
-         |      ^~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/m68k/kernel/sys_m68k.c:13:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/sys_m68k.c:535:1: warning: no previous prototype for 'sys_cacheflush' [-Wmissing-prototypes]
-     535 | sys_cacheflush (unsigned long addr, int scope, int cache, unsigned long len)
-         | ^~~~~~~~~~~~~~
-   arch/m68k/kernel/sys_m68k.c:544:1: warning: no previous prototype for 'sys_atomic_cmpxchg_32' [-Wmissing-prototypes]
-     544 | sys_atomic_cmpxchg_32(unsigned long newval, int oldval, int d3, int d4, int d5,
-         | ^~~~~~~~~~~~~~~~~~~~~
-   arch/m68k/kernel/sys_m68k.c:562:16: warning: no previous prototype for 'sys_getpagesize' [-Wmissing-prototypes]
-     562 | asmlinkage int sys_getpagesize(void)
-         |                ^~~~~~~~~~~~~~~
-   arch/m68k/kernel/sys_m68k.c:567:26: warning: no previous prototype for 'sys_get_thread_area' [-Wmissing-prototypes]
-     567 | asmlinkage unsigned long sys_get_thread_area(void)
-         |                          ^~~~~~~~~~~~~~~~~~~
-   arch/m68k/kernel/sys_m68k.c:572:16: warning: no previous prototype for 'sys_set_thread_area' [-Wmissing-prototypes]
-     572 | asmlinkage int sys_set_thread_area(unsigned long tp)
-         |                ^~~~~~~~~~~~~~~~~~~
-   arch/m68k/kernel/sys_m68k.c:578:16: warning: no previous prototype for 'sys_atomic_barrier' [-Wmissing-prototypes]
-     578 | asmlinkage int sys_atomic_barrier(void)
-         |                ^~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/m68k/kernel/time.c:22:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/time.c:154:13: warning: no previous prototype for 'time_init' [-Wmissing-prototypes]
-     154 | void __init time_init(void)
-         |             ^~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/m68k/kernel/traps.c:25:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/traps.c:752:17: warning: no previous prototype for 'buserr_c' [-Wmissing-prototypes]
-     752 | asmlinkage void buserr_c(struct frame *fp)
-         |                 ^~~~~~~~
-   arch/m68k/kernel/traps.c:966:6: warning: no previous prototype for 'bad_super_trap' [-Wmissing-prototypes]
-     966 | void bad_super_trap (struct frame *fp)
-         |      ^~~~~~~~~~~~~~
-   arch/m68k/kernel/traps.c:1138:17: warning: no previous prototype for 'set_esp0' [-Wmissing-prototypes]
-    1138 | asmlinkage void set_esp0(unsigned long ssp)
-         |                 ^~~~~~~~
-   arch/m68k/kernel/traps.c:1147:17: warning: no previous prototype for 'fpsp040_die' [-Wmissing-prototypes]
-    1147 | asmlinkage void fpsp040_die(void)
-         |                 ^~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from include/linux/pid_namespace.h:7,
-                    from include/linux/ptrace.h:10,
-                    from include/linux/elfcore.h:11,
-                    from include/linux/crash_core.h:6,
-                    from include/linux/kexec.h:18,
-                    from arch/m68k/kernel/machine_kexec.c:6:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   arch/m68k/kernel/machine_kexec.c:26:6: warning: no previous prototype for 'machine_shutdown' [-Wmissing-prototypes]
-      26 | void machine_shutdown(void)
-         |      ^~~~~~~~~~~~~~~~
-   arch/m68k/kernel/machine_kexec.c:30:6: warning: no previous prototype for 'machine_crash_shutdown' [-Wmissing-prototypes]
-      30 | void machine_crash_shutdown(struct pt_regs *regs)
-         |      ^~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/uapi/linux/aio_abi.h:31,
-                    from include/linux/syscalls.h:77,
-                    from io_uring/io_uring.c:45:
->> include/linux/fs.h:3610:60: warning: 'struct bio_vec' declared inside parameter list will not be visible outside of this definition or declaration
-    3610 | static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-         |                                                            ^~~~~~~
-   io_uring/io_uring.c: In function '__io_submit_flush_completions':
-   io_uring/io_uring.c:1183:40: warning: variable 'prev' set but not used [-Wunused-but-set-variable]
-    1183 |         struct io_wq_work_node *node, *prev;
-         |                                        ^~~~
+I suppose that the two patches would better go out together. So I'm writing=
+=20
+for sending a gentle ping.
+
+As I said, no changes have been made to the code with respect to v1 (which =
+I=20
+submitted in June). However, later I thought that adding more information=20
+might have helped reviewers and maintainers to better understand the why of=
+=20
+this patch.
+
+Thanks,
+
+=46abio
+=20
 
 
-vim +3610 include/linux/fs.h
 
-  3599	
-  3600	/* mm/fadvise.c */
-  3601	extern int vfs_fadvise(struct file *file, loff_t offset, loff_t len,
-  3602			       int advice);
-  3603	extern int generic_fadvise(struct file *file, loff_t offset, loff_t len,
-  3604				   int advice);
-  3605	
-  3606	#ifdef CONFIG_HAS_DMA
-  3607	void *file_dma_map(struct file *file, struct bio_vec *bvec, int nr_vecs);
-  3608	void file_dma_unmap(struct file *file, void *dma_tag);
-  3609	#else
-> 3610	static inline void *file_dma_map(struct file *file, struct bio_vec *bvec,
-  3611					 int nr_vecs)
-  3612	{
-  3613		return ERR_PTR(-ENOTSUPP);
-  3614	}
-  3615	static inline void file_dma_unmap(struct file *file, void *dma_tag) {}
-  3616	#endif
-  3617	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
