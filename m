@@ -2,222 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 095D9C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D73B7C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239833AbiHMPmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 11:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
+        id S239841AbiHMPnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 11:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239835AbiHMPmn (ORCPT
+        with ESMTP id S239780AbiHMPnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 11:42:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CBF2B1A9;
-        Sat, 13 Aug 2022 08:42:40 -0700 (PDT)
+        Sat, 13 Aug 2022 11:43:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4572B265;
+        Sat, 13 Aug 2022 08:43:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 512BB60ED5;
-        Sat, 13 Aug 2022 15:42:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0F61C433C1;
-        Sat, 13 Aug 2022 15:42:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76D8DB80689;
+        Sat, 13 Aug 2022 15:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5571DC433C1;
+        Sat, 13 Aug 2022 15:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660405359;
-        bh=BbzZODyb1pf8b8cbccDz5DrfY4BrAZboveA10mzxo/0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=l/LWI2H4QEtJLoOeSCUuGIcrVIXsaMQrFXH1IBhSs/uelt1JLJWqcwWRLZZzNuU0L
-         +PlB9biNuAiRF7LPPKUoTyUWuL+SOhWsGCZswMc3m55b6W4WLEbfgKcWyA7UDH4zIY
-         oWDNFwY8xhsZaURbyBTRSjFSFbPiYpdNB6IPpOYE3Vr2dOt7gB+gIWv3GX6iSGSY4T
-         ETYnDSWApFqVNeOGZoqmmIfDilrdkEz1E6cBMcBrrYn+ajsfmJESkpG4uM45Mo4rVl
-         P4LmnrZwjJMSZuLUGfwp3PFC/6Cml4Mk0nbkU2efntPVU0srp8Fxcqn/2GPqn6f71g
-         nuqbB2NDl8sKA==
-Date:   Sat, 13 Aug 2022 17:42:27 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Peter Rosin <peda@axentia.se>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PULL REQUEST] i2c-for-5.20-part2
-Message-ID: <YvfGY2qnl2YXrUgX@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Peter Rosin <peda@axentia.se>, Bartosz Golaszewski <brgl@bgdev.pl>
+        s=k20201202; t=1660405388;
+        bh=7np7mJqPeBgv041i57B2DM02CHOQuh0GruFHQCNsAZQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g8NX46prV5L64TYWoXuLSki7hBqvTAPMfFav3YUVIqZ2j6vUrtRmcq3fxPTvNrF6A
+         y9sYm3CWSgNN+Pyw3DarW1QW44u3pKDjflPsdI5ozsM0BeH0J6UYTliC+Q6F5dlqqz
+         IxaSrYxkY1rTsBPrKwGbhFXwwDdVxo85PPD2LvbUwIirwEz6JO+SyJVjrOTyx82/c/
+         Ybu3MYTBEeC6Dtlt6JWlfwR2rDH5u0cLHcnH5UyUfR2XE5mL0QvZbQrRbDJm7+fXDH
+         ed02TYnRMcn/S4QOKgpccJTiz/RpcUDdOUkzUSWP8PuXBUMHblYqBNasQ9uAnFVsYB
+         FKp3L9eunhwPg==
+Date:   Sat, 13 Aug 2022 16:53:36 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: iio: gyroscope: bosch,bmg160: correct
+ number of pins
+Message-ID: <20220813165336.40870468@jic23-huawei>
+In-Reply-To: <1ab7b38d-e356-6cb8-f101-9499eb34e026@linaro.org>
+References: <20220805075503.16983-1-krzysztof.kozlowski@linaro.org>
+        <20220806153221.1a90bd28@jic23-huawei>
+        <1ab7b38d-e356-6cb8-f101-9499eb34e026@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4NrrYtAf6bYih70P"
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 8 Aug 2022 07:48:31 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
---4NrrYtAf6bYih70P
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On 06/08/2022 16:32, Jonathan Cameron wrote:
+> > On Fri,  5 Aug 2022 09:55:03 +0200
+> > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+> >   
+> >> BMG160 has two interrupt pins to which interrupts can be freely mapped.
+> >> Correct the schema to express such case and fix warnings like:
+> >>
+> >>   qcom/msm8916-alcatel-idol347.dtb: gyroscope@68: interrupts: [[97, 1], [98, 1]] is too long
+> >>
+> >> However the basic issue still persists - the interrupts should come in a
+> >> defined order.
+> >>
+> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >>
+> >> ---
+> >>
+> >> Changes since v1:
+> >> 1. Accept also INT2 as one interrupt (Jonathan).  
+> > 
+> > This doesn't work. If we are going to support either interrupt, at the very least
+> > we need to require interrupt-names if the first one isn't INT1.  So your fix
+> > is right but not enough.
+> > 
+> > Driver may ignore interrupt-names for now (would be good to have a sanity check in driver
+> > though so the driver explicitly checks for INT2 and doesn't use the interrupt if
+> > it is INT2 - support for that being for a future 'feature' addition).
+> > 
+> > A hacky solution would be to require the first one to always be INT1 but that
+> > gives us no (backwards compatible) path forwards if someone does have a board
+> > where only INT2 is wired.
+> > 
+> > So minimum change I think will be to provide interrupt-names allowing any of
+> > INT1 (default if not specified)
+> > INT1, INT2
+> > INT2  
+> 
+> This is exactly what my fix is doing. What else do you need?
+> interrupt-names is just a helper which anyway driver does not use, so
+> enforcing it now does not change much.
 
-The following changes since commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136:
+Ok. I guess this sort of papers over it in a vague fashion and
+avoids pointing out there that there is breakage in the one interrupt case
+beyond a hint in the commit message.
 
-  x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments (2022-08-10 18:30:09 -0700)
+Better than nothing but only a partial fix for the actual issue
+(where that issue isn't a binding warning!)
 
-are available in the Git repository at:
+Applied to the fixes-togreg branch of iio.git
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git tags/i2c-for-5.20-part2
+Thanks,
 
-for you to fetch changes up to fe99b819487dba848cddd3d4bf4beb8e653d7e9c:
-
-  docs: i2c: i2c-sysfs: fix hyperlinks (2022-08-11 23:25:05 +0200)
-
-----------------------------------------------------------------
-* two driver fixes for issues introduced this cycle
-* one trivial driver improvement regarding ACPI
-* more DTS conversion and additions
-* documentation updates
-* subsystem-wide move from strlcpy to strscpy
-
-----------------------------------------------------------------
-Chris Pringle (1):
-      i2c: kempld: Support ACPI I2C device declaration
-
-Conor Dooley (1):
-      i2c: microchip-corei2c: fix erroneous late ack send
-
-Kewei Xu (2):
-      dt-bindings: i2c: update bindings for mt8188 soc
-      i2c: mediatek: add i2c compatible for MT8188
-
-Krzysztof Kozlowski (1):
-      dt-bindings: i2c: qcom,i2c-cci: convert to dtschema
-
-Luca Ceresoli (7):
-      docs: i2c: i2c-protocol: update introductory paragraph
-      docs: i2c: i2c-protocol,smbus-protocol: remove nonsense words
-      docs: i2c: i2c-protocol: remove unused legend items
-      docs: i2c: smbus-protocol: improve DataLow/DataHigh definition
-      docs: i2c: instantiating-devices: add syntax coloring to dts and C blocks
-      docs: i2c: i2c-sysfs: improve wording
-      docs: i2c: i2c-sysfs: fix hyperlinks
-
-Robin Reckmann (1):
-      i2c: qcom-geni: Fix GPI DMA buffer sync-back
-
-Wolfram Sang (2):
-      i2c: move drivers from strlcpy to strscpy
-      i2c: move core from strlcpy to strscpy
+Jonathan
 
 
-with much appreciated quality assurance from
-----------------------------------------------------------------
-AngeloGioacchino Del Regno (1):
-      (Rev.) i2c: mediatek: add i2c compatible for MT8188
+> 
+> 
+> Best regards,
+> Krzysztof
 
-Bagas Sanjaya (1):
-      (Rev.) docs: i2c: smbus-protocol: improve DataLow/DataHigh definition
-
-Caleb Connolly (1):
-      (Test) i2c: qcom-geni: Fix GPI DMA buffer sync-back
-
-Konrad Dybcio (1):
-      (Rev.) i2c: qcom-geni: Fix GPI DMA buffer sync-back
-
-Lewis Hanly (1):
-      (Test) i2c: microchip-corei2c: fix erroneous late ack send
-
-Luca Weiss (1):
-      (Test) i2c: qcom-geni: Fix GPI DMA buffer sync-back
-
-Matthias Brugger (1):
-      (Rev.) dt-bindings: i2c: update bindings for mt8188 soc
-
-Qii Wang (2):
-      (Rev.) i2c: mediatek: add i2c compatible for MT8188
-      (Rev.) dt-bindings: i2c: update bindings for mt8188 soc
-
-Rob Herring (1):
-      (Rev.) dt-bindings: i2c: qcom,i2c-cci: convert to dtschema
-
- .../devicetree/bindings/i2c/i2c-mt65xx.yaml        |   1 +
- .../devicetree/bindings/i2c/i2c-qcom-cci.txt       |  96 --------
- .../devicetree/bindings/i2c/qcom,i2c-cci.yaml      | 242 +++++++++++++++++++++
- Documentation/i2c/i2c-protocol.rst                 |  11 +-
- Documentation/i2c/i2c-sysfs.rst                    |  24 +-
- Documentation/i2c/instantiating-devices.rst        |  16 +-
- Documentation/i2c/smbus-protocol.rst               |   6 +-
- MAINTAINERS                                        |   2 +-
- drivers/i2c/busses/i2c-altera.c                    |   2 +-
- drivers/i2c/busses/i2c-aspeed.c                    |   2 +-
- drivers/i2c/busses/i2c-au1550.c                    |   2 +-
- drivers/i2c/busses/i2c-axxia.c                     |   2 +-
- drivers/i2c/busses/i2c-bcm-kona.c                  |   2 +-
- drivers/i2c/busses/i2c-brcmstb.c                   |   2 +-
- drivers/i2c/busses/i2c-cbus-gpio.c                 |   2 +-
- drivers/i2c/busses/i2c-cht-wc.c                    |   2 +-
- drivers/i2c/busses/i2c-cros-ec-tunnel.c            |   2 +-
- drivers/i2c/busses/i2c-davinci.c                   |   2 +-
- drivers/i2c/busses/i2c-digicolor.c                 |   2 +-
- drivers/i2c/busses/i2c-eg20t.c                     |   2 +-
- drivers/i2c/busses/i2c-emev2.c                     |   2 +-
- drivers/i2c/busses/i2c-exynos5.c                   |   2 +-
- drivers/i2c/busses/i2c-gpio.c                      |   2 +-
- drivers/i2c/busses/i2c-highlander.c                |   2 +-
- drivers/i2c/busses/i2c-hix5hd2.c                   |   2 +-
- drivers/i2c/busses/i2c-i801.c                      |   4 +-
- drivers/i2c/busses/i2c-ibm_iic.c                   |   2 +-
- drivers/i2c/busses/i2c-icy.c                       |   2 +-
- drivers/i2c/busses/i2c-imx-lpi2c.c                 |   2 +-
- drivers/i2c/busses/i2c-kempld.c                    |   1 +
- drivers/i2c/busses/i2c-lpc2k.c                     |   2 +-
- drivers/i2c/busses/i2c-meson.c                     |   2 +-
- drivers/i2c/busses/i2c-microchip-corei2c.c         |   2 +-
- drivers/i2c/busses/i2c-mt65xx.c                    |  45 +++-
- drivers/i2c/busses/i2c-mt7621.c                    |   2 +-
- drivers/i2c/busses/i2c-mv64xxx.c                   |   2 +-
- drivers/i2c/busses/i2c-mxs.c                       |   2 +-
- drivers/i2c/busses/i2c-nvidia-gpu.c                |   2 +-
- drivers/i2c/busses/i2c-omap.c                      |   2 +-
- drivers/i2c/busses/i2c-opal.c                      |   4 +-
- drivers/i2c/busses/i2c-parport.c                   |   2 +-
- drivers/i2c/busses/i2c-pxa.c                       |   2 +-
- drivers/i2c/busses/i2c-qcom-geni.c                 |   7 +-
- drivers/i2c/busses/i2c-qup.c                       |   2 +-
- drivers/i2c/busses/i2c-rcar.c                      |   2 +-
- drivers/i2c/busses/i2c-riic.c                      |   2 +-
- drivers/i2c/busses/i2c-rk3x.c                      |   2 +-
- drivers/i2c/busses/i2c-s3c2410.c                   |   2 +-
- drivers/i2c/busses/i2c-sh_mobile.c                 |   2 +-
- drivers/i2c/busses/i2c-simtec.c                    |   2 +-
- drivers/i2c/busses/i2c-taos-evm.c                  |   2 +-
- drivers/i2c/busses/i2c-tegra-bpmp.c                |   2 +-
- drivers/i2c/busses/i2c-tegra.c                     |   2 +-
- drivers/i2c/busses/i2c-uniphier-f.c                |   2 +-
- drivers/i2c/busses/i2c-uniphier.c                  |   2 +-
- drivers/i2c/busses/i2c-versatile.c                 |   2 +-
- drivers/i2c/busses/i2c-wmt.c                       |   2 +-
- drivers/i2c/i2c-core-base.c                        |   2 +-
- drivers/i2c/i2c-smbus.c                            |   2 +-
- 59 files changed, 370 insertions(+), 181 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-cci.txt
- create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml
-
---4NrrYtAf6bYih70P
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmL3xmMACgkQFA3kzBSg
-KbZ7Xw//c0/XgVl2+BpduIx49HDGc29u0QWc5i3eaj5PLLEYJfIfZglpEkhVaftA
-+O8CLC/y+d7U+XUEzlNuD3xNHqIPR9dlvgH09vbBzAXmdC4gedOjQCLst7lT3gmI
-0OQMP9gUIkjAEZ8LwVXQr1vr1tspacioxVRTAPhkhrGrxGtWgnB1o4YiuZlXMMcB
-pB6GbX/w+vUa0KXzbkT0Ynw1zpbi1BLSgsCyFFBL47OULNiUZ+yPd3CiHHp9aQBJ
-Tv4pfD84QFolhpCyD1wW3BE3HvvDVJOzf9Dxe+CMpBRv5GL7o/DTi6HaziCzSZy9
-3exvaWFNNm36BJrmu3hsYr9UWdjL3jTTNGzJPN5kzzL0kVRk1k8yWmGfcIWqXaXd
-UIb3c32Z4yNZ1EFjqglxs3qDd9SMDcBoM+M1ecLcxDdYYFd9mC//ZLu0Yfx4qVDV
-M2RrVwIQ7AAaEILDzzrlJ0j9KU9sSrgjKCWqJ3oYEgmYwAKH08J8hhSW10guS7ca
-wRPBxdEvQMIccgP2j9TDW2Iwijc1Vz6Y2O9u7EbnyfpIDpjyVan2iyfx+KY74W7a
-ba1oI3qrS0gLbdc/yneXYLUhaK0w6o+Nrsv6uz7baBxkurDLZGYRKjeyF9t5e3Qy
-a2VzjIl1cK7oAXhDWPZSngBQ92F1a0tdFB1u/UpCePcMbZrLNOE=
-=Vtqy
------END PGP SIGNATURE-----
-
---4NrrYtAf6bYih70P--
