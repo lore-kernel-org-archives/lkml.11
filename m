@@ -2,67 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5E7C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 21:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F0BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 21:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240166AbiHMVs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 17:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
+        id S240171AbiHMVsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 17:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240126AbiHMVsL (ORCPT
+        with ESMTP id S240122AbiHMVsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 17:48:11 -0400
+        Sat, 13 Aug 2022 17:48:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0B025E90;
-        Sat, 13 Aug 2022 14:48:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546CB25C4F
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 14:48:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52B38B80ACA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA597B80AD3
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 21:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B12FC43144;
         Sat, 13 Aug 2022 21:48:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DF187C433C1;
-        Sat, 13 Aug 2022 21:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660427287;
-        bh=w01MTOJAXMx0A0gnLiCYME8/dgjk9cw1LhnBpPsuFjo=;
+        s=k20201202; t=1660427289;
+        bh=7F6OxNu5sBRh8h/+PyaQmodcIh634vFAX8jeq6owV+Q=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ezsFT7GP/HC4kUOBomJ2F2KeWn3jeZJHl0jmgcmBb5PiALSnoyRGXBBF3hgDlkSkN
-         exFgecx8HXI/wwTKC8686wSScOR03aO9dC+gJe0/C18GMOZZSdJTFLcghO5uQHZ6hE
-         LQIg9sScQS0mlRQQz+g9Cu8o+JphHGlwpEwGNdeNBPUTj9KC9b5LLc6KSjEA7HAQqk
-         2Q176AUTm4A7e50MGDLKYZyYhHRWh6Pbq0iF9/BNdAN0tYBH5VTyeto0N4SGTtyqJM
-         engQYozvt3lQQds5NwKVPWRRDwQlnTIQRtmNkX0eavb88Q9fT6AVJy8L2Qv/TgTn7V
-         IETZGjCRw/UYg==
+        b=jZbSm+c21vyB+lb330af8MD2hVG7EnSrTC+kgBQ/m2lNLp6VnQYXtKQLkJKkIjgV6
+         o4gT1668EdagOul1LA7j03+/5o5qNriKFMtmTbND+P95g/G09CNDLpyt51ossArb/v
+         PMrB6b9Kr+ynwuQz0LeULlVTUOzaMCF3UPSnxNcON1hZpphKQbMINcihDrMX3itUBT
+         y6IbYuWGdcsHJKlGE2RQ6dLx25raVUx05hL8nycPB06XmC0RtjSrY8N1dvqjnVfSEt
+         0xp4KkhJeMAiYfOpcuMFUGJ63tpnApjQz2IFkgcxksgIQuwlY/cxePun+4o6pqPif0
+         O9FitE5OSMaPw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CD0FAC43141;
-        Sat, 13 Aug 2022 21:48:07 +0000 (UTC)
-Subject: Re: [GIT PULL] final round of SCSI updates for the 5.19+ merge window
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 655F8C43141;
+        Sat, 13 Aug 2022 21:48:09 +0000 (UTC)
+Subject: Re: [GIT PULL] x86 fix
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <62ef6e3d028a5182f4485d6201a126bbf4ca659c.camel@HansenPartnership.com>
-References: <62ef6e3d028a5182f4485d6201a126bbf4ca659c.camel@HansenPartnership.com>
-X-PR-Tracked-List-Id: <linux-scsi.vger.kernel.org>
-X-PR-Tracked-Message-Id: <62ef6e3d028a5182f4485d6201a126bbf4ca659c.camel@HansenPartnership.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-misc
-X-PR-Tracked-Commit-Id: c6380f9924270d51cc233cfd592b279be3881e6d
+In-Reply-To: <Yvd/g8RODN/pSkCX@gmail.com>
+References: <Yvd/g8RODN/pSkCX@gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yvd/g8RODN/pSkCX@gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86-urgent-2022-08-13
+X-PR-Tracked-Commit-Id: e6cfcdda8cbe81eaf821c897369a65fec987b404
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e140f731f9807035e967c401198171f316744696
-Message-Id: <166042728783.29926.7997145025146579249.pr-tracker-bot@kernel.org>
-Date:   Sat, 13 Aug 2022 21:48:07 +0000
-To:     James Bottomley <James.Bottomley@HansenPartnership.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+X-PR-Merge-Commit-Id: c5f1e32e323157c71eacc6fe087db8d586ff6cb5
+Message-Id: <166042728941.29926.8488885026542611743.pr-tracker-bot@kernel.org>
+Date:   Sat, 13 Aug 2022 21:48:09 +0000
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 13 Aug 2022 13:55:46 +0100:
+The pull request you sent on Sat, 13 Aug 2022 12:40:03 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-misc
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86-urgent-2022-08-13
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e140f731f9807035e967c401198171f316744696
+https://git.kernel.org/torvalds/c/c5f1e32e323157c71eacc6fe087db8d586ff6cb5
 
 Thank you!
 
