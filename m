@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6754EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE179C28B2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239883AbiHMPpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 11:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
+        id S239917AbiHMPpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 11:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239845AbiHMPpZ (ORCPT
+        with ESMTP id S239901AbiHMPpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 11:45:25 -0400
+        Sat, 13 Aug 2022 11:45:42 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103432AE38;
-        Sat, 13 Aug 2022 08:45:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660405487; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF532FFE4;
+        Sat, 13 Aug 2022 08:45:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660405501; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=MOtjIfr3lBKlwNsilG+bg0DCAzHQcyUHp/+z2mPnOaIS2vlZKhnT3TXgXX1g6SWVAFtm+Rg6vzG6jUnmJO1rCbk6Qb8kp77uT/s48y9ZZ0dEkkxJwE2UasYboGNsqYGaqC805ao00z3xs6rXT9kBU9cicQSLvmlkOlCOZfmC81g=
+        b=ErqpvuYoieUM4bDr40iitvrnhevKZD1muIBJaJW10Cvzxuvzfeaab4OIRdOIlzAWGlaXSVad4cFrChjbEys+XdiRoCZtgz6wnoBgE2Sl/Bi4JYDSMvvaaXMpvDfA4Cw9HdzRge8DW7VtMqzmpI6KWu7duCg+NWit3QjyKYzLNqQ=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660405487; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=QNV0gWhZJF/IPokV0kiDV9FDuQzarKvTyBPl2WTKlk4=; 
-        b=dwQMeLCBlwoN7Q2EKTJcNGV539v0IS1wAxjMYgU8Iu3VjJScJO3PWj+xJEAqT4EK60QU2tOk4XGPKVWf0FhPj4G8+eaOaDGBifBRcyUz+JLmvYzAPdpwUlL6A74CbWWTIo1QQDL4MuMJqgOsCQoMDTB5EqCiuLGkXQLcsAfC5EU=
+        t=1660405501; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=2jeVUYQX9J/2owiK6eAWTqPnBtbCS5zQ8DbyaccFKw4=; 
+        b=dgyzKOuqGpcvUgaeqi8tLo9TqVzFnNp5sfyuvARuehEijDND8GpMGGAMz7qrywxcROGC72cj0AiD8bsi28I7gRWM902Mes0/jV3wCQbf1oY2eoV+ZxbcVRtnKnJPjJ6oNrp4qUVoXciwLzvBVsnW+ZX8Q/9memcs8OihdMLJKrs=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660405487;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660405501;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=QNV0gWhZJF/IPokV0kiDV9FDuQzarKvTyBPl2WTKlk4=;
-        b=GQoUAq1ej10sAsMAehYwiNxXon7NBe3r8M/KCrDNKfOYjkROWIiJ2pzPUwKTutVf
-        rP9LcZIsbOaD03ufVq9m3b01Intt7zY/YZ/XQOUXrw4+f4g44Vrd3ZBqEz+kSZ9Yd8F
-        nrjErHOn4jgTINlbqz8pxRt7VfUnxRNi4S28R4NY=
+        bh=2jeVUYQX9J/2owiK6eAWTqPnBtbCS5zQ8DbyaccFKw4=;
+        b=HIhGksqYfYrSyXo1fZDr2KdRk1HnkOVjwFMiLGaNpe6G3o+wZP4G2wf6kcvHvhfl
+        rqIOt/5yM0gDAVmUPHVC8OpuZ5vOgH1BADx7n5oPP+Lj5LJNuF0aLGXZkdVTFMM843s
+        PQLbrJWGgmfOT1u50KrebK6zKfktkSQhZnr7kEMo=
 Received: from arinc9-PC.lan (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1660405486581113.96185653513157; Sat, 13 Aug 2022 08:44:46 -0700 (PDT)
+        with SMTPS id 1660405500648584.308589731525; Sat, 13 Aug 2022 08:45:00 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -60,9 +60,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v2 2/7] dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
-Date:   Sat, 13 Aug 2022 18:44:10 +0300
-Message-Id: <20220813154415.349091-3-arinc.unal@arinc9.com>
+Subject: [PATCH v2 4/7] dt-bindings: net: dsa: mediatek,mt7530: define port binding per compatible
+Date:   Sat, 13 Aug 2022 18:44:12 +0300
+Message-Id: <20220813154415.349091-5-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220813154415.349091-1-arinc.unal@arinc9.com>
 References: <20220813154415.349091-1-arinc.unal@arinc9.com>
@@ -74,72 +74,158 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
-- Add description for reset-gpios.
-- Invalidate reset-gpios if mediatek,mcm is used.
-- Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
-- Require mediatek,mcm for the described MT7621 SoCs as the compatible
-string is only used for MT7530 which is a part of the multi-chip module.
+Define DSA port binding under each compatible device as each device
+requires different values for certain properties.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
- 1 file changed, 28 insertions(+), 3 deletions(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 116 +++++++++++++-----
+ 1 file changed, 87 insertions(+), 29 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index edf48e917173..4c99266ce82a 100644
+index cc87f48d4d07..ff51a2f6875f 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -110,11 +110,15 @@ properties:
-   mediatek,mcm:
-     type: boolean
-     description:
--      if defined, indicates that either MT7530 is the part on multi-chip
--      module belong to MT7623A has or the remotely standalone chip as the
--      function MT7623N reference board provided for.
-+      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
-+      switch is a part of the multi-chip module.
- 
-   reset-gpios:
-+    description:
-+      GPIO to reset the switch. Use this if mediatek,mcm is not used.
-+      This property is optional because some boards share the reset line with
-+      other components which makes it impossible to probe the switch if the
-+      reset line is used.
+@@ -130,35 +130,6 @@ properties:
+       ethsys.
      maxItems: 1
  
-   reset-names:
-@@ -165,6 +169,9 @@ allOf:
-       required:
-         - mediatek,mcm
-     then:
-+      properties:
-+        reset-gpios: false
-+
-       required:
-         - resets
-         - reset-names
-@@ -182,6 +189,24 @@ allOf:
+-patternProperties:
+-  "^(ethernet-)?ports$":
+-    type: object
+-
+-    patternProperties:
+-      "^(ethernet-)?port@[0-9]+$":
+-        type: object
+-        description: Ethernet switch ports
+-
+-        unevaluatedProperties: false
+-
+-        properties:
+-          reg:
+-            description:
+-              Port address described must be 5 or 6 for CPU port and from 0
+-              to 5 for user ports.
+-
+-        allOf:
+-          - $ref: dsa-port.yaml#
+-          - if:
+-              properties:
+-                label:
+-                  items:
+-                    - const: cpu
+-            then:
+-              required:
+-                - reg
+-                - phy-mode
+-
+ required:
+   - compatible
+   - reg
+@@ -189,6 +160,35 @@ allOf:
          - core-supply
          - io-supply
  
-+  - if:
-+      properties:
-+        compatible:
-+          items:
-+            - const: mediatek,mt7531
-+    then:
-+      properties:
-+        mediatek,mcm: false
++      patternProperties:
++        "^(ethernet-)?ports$":
++          type: object
 +
-+  - if:
-+      properties:
-+        compatible:
-+          items:
-+            - const: mediatek,mt7621
-+    then:
-+      required:
-+        - mediatek,mcm
++          patternProperties:
++            "^(ethernet-)?port@[0-9]+$":
++              type: object
++              description: Ethernet switch ports
++
++              unevaluatedProperties: false
++
++              properties:
++                reg:
++                  description:
++                    Port address described must be 5 or 6 for CPU port and from
++                    0 to 5 for user ports.
++
++              allOf:
++                - $ref: dsa-port.yaml#
++                - if:
++                    properties:
++                      label:
++                        items:
++                          - const: cpu
++                  then:
++                    required:
++                      - reg
++                      - phy-mode
++
+   - if:
+       properties:
+         compatible:
+@@ -198,6 +198,35 @@ allOf:
+       properties:
+         mediatek,mcm: false
+ 
++      patternProperties:
++        "^(ethernet-)?ports$":
++          type: object
++
++          patternProperties:
++            "^(ethernet-)?port@[0-9]+$":
++              type: object
++              description: Ethernet switch ports
++
++              unevaluatedProperties: false
++
++              properties:
++                reg:
++                  description:
++                    Port address described must be 5 or 6 for CPU port and from
++                    0 to 5 for user ports.
++
++              allOf:
++                - $ref: dsa-port.yaml#
++                - if:
++                    properties:
++                      label:
++                        items:
++                          - const: cpu
++                  then:
++                    required:
++                      - reg
++                      - phy-mode
++
+   - if:
+       properties:
+         compatible:
+@@ -207,6 +236,35 @@ allOf:
+       required:
+         - mediatek,mcm
+ 
++      patternProperties:
++        "^(ethernet-)?ports$":
++          type: object
++
++          patternProperties:
++            "^(ethernet-)?port@[0-9]+$":
++              type: object
++              description: Ethernet switch ports
++
++              unevaluatedProperties: false
++
++              properties:
++                reg:
++                  description:
++                    Port address described must be 5 or 6 for CPU port and from
++                    0 to 5 for user ports.
++
++              allOf:
++                - $ref: dsa-port.yaml#
++                - if:
++                    properties:
++                      label:
++                        items:
++                          - const: cpu
++                  then:
++                    required:
++                      - reg
++                      - phy-mode
 +
  unevaluatedProperties: false
  
