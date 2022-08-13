@@ -2,123 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1EE6C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 00:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BA1C00140
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 00:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237169AbiHMAxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 20:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S237198AbiHMA6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 20:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232816AbiHMAxp (ORCPT
+        with ESMTP id S232816AbiHMA6E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 20:53:45 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9743832BA4
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 17:53:43 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-3246910dac3so24419447b3.12
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 17:53:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=36BlJ/HsCSRIMIGdfkPkYgLTxa2hQ9NSNPcVB/JXrLw=;
-        b=I8A6WblWDTfttpwEjzWX2ZfKNP3Vit8ls7jbhoGQdskcFbRQiYEaLoFlEK90L9x1fX
-         XSqL8vEkEchRdSyyoXYsbD46FtMAQMXpEcnp2z290EFBt4eiTqGRLv9J9GfqYadFClKs
-         fWHyFAryo1OTZpRzoOKZg1mKiaficZ78ksaXJ2BUHZo1B8VtznkkvM2Hcl+ila/B1TJG
-         RcX42R6aQcRREbdXjHlO1PIB8cq18IyfZpsWO0Wmoc7rYASB2wZvEtFFNuysvi28qWbP
-         MCrEXNh7HQ47kVsBTk7hIQll3+3FhBu7k56c2gx+33wR+9vG/KJ9FSVlhZb8pdP7+iUh
-         XUIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=36BlJ/HsCSRIMIGdfkPkYgLTxa2hQ9NSNPcVB/JXrLw=;
-        b=Fp/hVxfcUbVjmVh4QQH8PsYbTPeruXukQEzYOqyID7NTIQcApMhOzvvfrNt8ACSj4W
-         g3f0SznzkVpZo4Qk19cDiNVuqfrqjGIhY1SMnWNtI2bWoq7/VAiFqPxyDYCB/p2OeD4z
-         lyQJ79QTN1DpQNPC2HgAuMgV+7N7sHh6A8VXIRgXSovmA/scoAmVMb4KHJEAUNu4qTzo
-         CSctRu45kDOs/32jAMZ+iX57zsLHD0j4aPo970CY9PGVTNq5M0KLVaMVZW6tx0ZSLEvM
-         aUHL6R+VeU5YMKIBdd4oTSXG89TuvOzBVTjwKe8MgfpzlX8z1QaYUsVCj4Nsx7X/5YsI
-         azqQ==
-X-Gm-Message-State: ACgBeo16d5CRAgPBDIUD93TLuYnH3rj/lZR2CSRXsxl/Tf+yvTDPcPf7
-        jJF1RUMQtZyszHvlouIbigZy8sswVBNBL3oVREnEBw==
-X-Google-Smtp-Source: AA6agR6onfzJ7FRispH2xbJsvurzqkwlJ9rKreeSUVQHLLNnnn5qj4+gH3uHUu4DGwsbO/e1Rm8eGBC5RBa2lWrxI3g=
-X-Received: by 2002:a0d:fd05:0:b0:329:3836:53ac with SMTP id
- n5-20020a0dfd05000000b00329383653acmr6042709ywf.455.1660352022736; Fri, 12
- Aug 2022 17:53:42 -0700 (PDT)
+        Fri, 12 Aug 2022 20:58:04 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AAC4B4AC
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 17:58:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660352283; x=1691888283;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=GqyOW4leQ2nz+DRKS+Yb5uj7Wm6Y4VqGQHqmdBbkWzk=;
+  b=ORYnSS6thcD+yoBrP6/5blV91xlLWPT5xmOxSo+vBybPwAcQHxLT3Kq5
+   jCJo7g8LPMz5pk08VCHwncssmhy+lPNGay/gy3FvW3H/MNtBW1DDMLsOI
+   HYdg5On5tLW4aQVer/6/wMmv3x+ZCM5LWaFmfag31lc+/Qn+N5B/J6BMP
+   DcVwnRI1rLkZ583gPFNeV3Ip6QZjGieB2lhMm1wga7tj2/t/0aQplcB3p
+   gHl5bw8ny2twLdsK9pbij6z1uenN2eNOTh1HWRXqfe+tOtl6NKhCd2LOb
+   l7F+KXOPoZ2NtCnwymfk2m+Rl9JRx5c/uHX9SSX0qBmLJwccZxk3EhYDZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="292984177"
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="292984177"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 17:58:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="933908113"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 12 Aug 2022 17:58:01 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMfTV-00018T-1G;
+        Sat, 13 Aug 2022 00:58:01 +0000
+Date:   Sat, 13 Aug 2022 08:57:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/xtensa/lib/kcsan-stubs.c:6:6: sparse: sparse: symbol
+ '__atomic_store_8' was not declared. Should it be static?
+Message-ID: <202208130854.GerXgHrP-lkp@intel.com>
 MIME-Version: 1.0
-References: <CA+G9fYt_cc5SiNv1Vbse=HYY_+uc+9OYPZuJ-x59bROSaLN6fw@mail.gmail.com>
- <CAGETcx8bGwDkPP=d2MtcY69YmTyckUSa8xAwNVOPOyTR8jPk=A@mail.gmail.com> <CA+G9fYv0DFZi2rMPQTHvK8yD7g0LZTxN76iKZxP4pi4+8Rstxg@mail.gmail.com>
-In-Reply-To: <CA+G9fYv0DFZi2rMPQTHvK8yD7g0LZTxN76iKZxP4pi4+8Rstxg@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 12 Aug 2022 17:53:06 -0700
-Message-ID: <CAGETcx9Fae8tVhf+JrbYTnau5njLmjz75u-gJGkT6f7wjVdCyg@mail.gmail.com>
-Subject: Re: [next] arm: PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 10:35 PM Naresh Kamboju
-<naresh.kamboju@linaro.org> wrote:
->
-> Hi Saravana,
->
-> On Thu, 28 Jul 2022 at 00:19, Saravana Kannan <saravanak@google.com> wrote:
-> >
-> > On Tue, Jul 26, 2022 at 11:44 PM Naresh Kamboju
-> > <naresh.kamboju@linaro.org> wrote:
-> > >
-> > > Linux next arm BeagleBoard x15 device boot failed due to the
-> >
-> > Can you point me to the dts file that corresponds to this board
-> > please? And if you know which devices are power domains, that'd be
-> > handy too. For now, I'm reverting this patch.
-> metadata:
->   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
->   git_sha: 9250d2f72dc46a808b6aa23bf50dd670f1f52ddc
->   git_describe: v5.19-rc7-13490-g9250d2f72dc4
->   git_ref: master
->   kernel_version: 5.19.0-rc8
->   kernel-config: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH/config
->   artifact-location: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH
->   toolchain: gcc-10
->
-> I am sharing a few urls, metadata, test job link and device details link.
->
->       kernel:
->         url: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH/zImage
->       dtb:
->         url: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH/dtbs/am57xx-beagle-x15.dtb
->       modules:
->         url: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH/modules.tar.xz
->
-> Test jobs url:
->        - https://lkft.validation.linaro.org/scheduler/job/5326314#L1982
->
-> Device details link,
->       - https://www.ti.com/tool/BEAGLEBOARD-X15
->
-> metadata:
->   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
->   git_sha: 9250d2f72dc46a808b6aa23bf50dd670f1f52ddc
->   git_describe: v5.19-rc7-13490-g9250d2f72dc4
->   git_ref: master
->   kernel_version: 5.19.0-rc8
->   kernel-config: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH/config
->   artifact-location: https://builds.tuxbuild.com/2CWh3jswUGEkjvfXQPGXdOceMFH
->   toolchain: gcc-10
->
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4a9350597aff50bbd0f4b80ccf49d2e02d1111f5
+commit: 725aea873261e8d986e527838fde2a721f0962d8 xtensa: enable KCSAN
+date:   3 months ago
+config: xtensa-randconfig-s031-20220811 (https://download.01.org/0day-ci/archive/20220813/202208130854.GerXgHrP-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=725aea873261e8d986e527838fde2a721f0962d8
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 725aea873261e8d986e527838fde2a721f0962d8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=xtensa SHELL=/bin/bash
 
-Ah, I forgot to CC you on a series that might fix this. Can you give
-this a shot please?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
+sparse warnings: (new ones prefixed by >>)
+>> arch/xtensa/lib/kcsan-stubs.c:6:6: sparse: sparse: symbol '__atomic_store_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:11:5: sparse: sparse: symbol '__atomic_load_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:16:5: sparse: sparse: symbol '__atomic_exchange_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:21:6: sparse: sparse: symbol '__atomic_compare_exchange_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:26:5: sparse: sparse: symbol '__atomic_fetch_add_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:31:5: sparse: sparse: symbol '__atomic_fetch_sub_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:36:5: sparse: sparse: symbol '__atomic_fetch_and_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:41:5: sparse: sparse: symbol '__atomic_fetch_or_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:46:5: sparse: sparse: symbol '__atomic_fetch_xor_8' was not declared. Should it be static?
+>> arch/xtensa/lib/kcsan-stubs.c:51:5: sparse: sparse: symbol '__atomic_fetch_nand_8' was not declared. Should it be static?
 
-Thanks,
-Saravana
+vim +/__atomic_store_8 +6 arch/xtensa/lib/kcsan-stubs.c
+
+     5	
+   > 6	void __atomic_store_8(volatile void *p, u64 v, int i)
+     7	{
+     8		BUG();
+     9	}
+    10	
+  > 11	u64 __atomic_load_8(const volatile void *p, int i)
+    12	{
+    13		BUG();
+    14	}
+    15	
+  > 16	u64 __atomic_exchange_8(volatile void *p, u64 v, int i)
+    17	{
+    18		BUG();
+    19	}
+    20	
+  > 21	bool __atomic_compare_exchange_8(volatile void *p1, void *p2, u64 v, bool b, int i1, int i2)
+    22	{
+    23		BUG();
+    24	}
+    25	
+  > 26	u64 __atomic_fetch_add_8(volatile void *p, u64 v, int i)
+    27	{
+    28		BUG();
+    29	}
+    30	
+  > 31	u64 __atomic_fetch_sub_8(volatile void *p, u64 v, int i)
+    32	{
+    33		BUG();
+    34	}
+    35	
+  > 36	u64 __atomic_fetch_and_8(volatile void *p, u64 v, int i)
+    37	{
+    38		BUG();
+    39	}
+    40	
+  > 41	u64 __atomic_fetch_or_8(volatile void *p, u64 v, int i)
+    42	{
+    43		BUG();
+    44	}
+    45	
+  > 46	u64 __atomic_fetch_xor_8(volatile void *p, u64 v, int i)
+    47	{
+    48		BUG();
+    49	}
+    50	
+  > 51	u64 __atomic_fetch_nand_8(volatile void *p, u64 v, int i)
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
