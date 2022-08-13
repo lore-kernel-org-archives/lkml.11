@@ -2,140 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D793FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A82C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbiHMNhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 09:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        id S239508AbiHMNiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 09:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235278AbiHMNg6 (ORCPT
+        with ESMTP id S235278AbiHMNiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 09:36:58 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1FFB7C1;
-        Sat, 13 Aug 2022 06:36:57 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id z2so4362545edc.1;
-        Sat, 13 Aug 2022 06:36:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=AKVBfO32rmZq1r8Xc6WkO9jk42SoifdEhyas0O7uhTs=;
-        b=UdYffYR5Uny5GwXXCuOgQYee354sCFqcXWa8z7kGVw5IRH/AsBzPh3vXxLy4J9F18F
-         +WT6wBUCx2Vtmirlt3mJ+Q2rMV2lujZ+TcoXk0LVC1fsy/JcHD8V3Yx+WVx1nWJ6cnFf
-         78v+kx7JV0b5Luaz5QjVH7z+PC9tYnreYMHc2flMcZvlHaYGNdv4LOnXZlCvuhM2AUhr
-         Fl4ES1oH9dUPEdbDnf5aGteXKSb+dHbqcbPOkmfDkeTJ/kdccMspkmqU9QMBJmFZNU8W
-         SpxOBWj7oeWuysx7qEvgQsMeolLYfFZjUq5UCJhlOjpngmGLWOHteJSwUvNUZ3lPisw3
-         HclQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=AKVBfO32rmZq1r8Xc6WkO9jk42SoifdEhyas0O7uhTs=;
-        b=1let7A/Sdl1bAt/8H8MK3vAQNkh0DPJi9kNuSNOcq8fHkOkYsUP1WI4QY0ysi9CtIx
-         z5ECxwUZT/L1W68o+UGS0VA8V6SkTKztw/8GjRR7mVpy6PVQ2BupP9xs2Bu2w0Za5gqK
-         QKguhXF9RCXAAXFHddoQX4mUceKbPTQMtzt/vUhsN1nC4Q/N+jTAzW8uJwFL/UJfML1u
-         52Ea1HWhVDpFnRzFJEaXPMaNEs6ImDCHJv9bwDqQN13Wd3mjiULVP6g/QAP2+KFKUKwi
-         v4arIKe8YTQdUitsDgPCIkHZ5UNR+xpSl9NieN74f0aZfCdN0zurXfQET5Svtzyvv/Tg
-         O0Jg==
-X-Gm-Message-State: ACgBeo3RNc1FabayiOs8QIVbqUs2LMC0aPKz4FcE25vhsdu813xGYQlh
-        GGwzIe6cRhanUN0ddkNvH9o=
-X-Google-Smtp-Source: AA6agR6YHmhuU6n1HU6pRDZIWiUpUQGG2w90iwTEUs1ezspDX/TPu4VgLorkbgMHhQ4p/0u7Tm1uRg==
-X-Received: by 2002:aa7:c9c2:0:b0:440:b458:9403 with SMTP id i2-20020aa7c9c2000000b00440b4589403mr7604816edt.132.1660397816004;
-        Sat, 13 Aug 2022 06:36:56 -0700 (PDT)
-Received: from opensuse.localnet (host-79-53-105-123.retail.telecomitalia.it. [79.53.105.123])
-        by smtp.gmail.com with ESMTPSA id w22-20020a17090633d600b0072b33e91f96sm1875765eja.190.2022.08.13.06.36.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Aug 2022 06:36:54 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Biederman <ebiederm@xmission.com>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [PATCH v2] fs: Replace kmap{,_atomic}() with kmap_local_page()
-Date:   Sat, 13 Aug 2022 15:36:53 +0200
-Message-ID: <8143586.NyiUUSuA9g@opensuse>
-In-Reply-To: <20220803182856.28246-1-fmdefrancesco@gmail.com>
-References: <20220803182856.28246-1-fmdefrancesco@gmail.com>
+        Sat, 13 Aug 2022 09:38:22 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4949DB7D2
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 06:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660397901; x=1691933901;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=KiBWmdwpCRItEUdENhqfv8yltxc1wlV3phZO95W28rg=;
+  b=cvOjyoemnTYMwv/qBLVF6M8C5OC3DQTtImUtEVjBZpJhhMxj3tZW+Hs5
+   Ovv30aS5S0NQc32UsQbZ4xVfZ8sSQGTJjVgAqXrMm2wQAsIIUFLcARrfR
+   ZNR/Xp7A1gsFlJYkTjzDTQtdaoPvAlRsaDoyNpeYAbAfg2zZHItLfg3tV
+   gX+OEuoOYIo32ibUO2GtOf6lx8Vtub+X9/tOvdeXTLC1VgEDO9gbqTPCx
+   /888iy8YaQQw3b05CJJ0VUgITVWebujxEQsXBjx9tMJYFMoKSeLx9iLAM
+   tnmGHZH9FurLKpEfVcpBiW1HlNSpvcVpWIxeAufF/kH5tTvcdyhfF+DsI
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="292548618"
+X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
+   d="scan'208";a="292548618"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 06:38:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
+   d="scan'208";a="582390113"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 13 Aug 2022 06:38:19 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMrLG-0001iY-30;
+        Sat, 13 Aug 2022 13:38:18 +0000
+Date:   Sat, 13 Aug 2022 21:37:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: drivers/iio/light/cm32181.c:508:1: sparse: sparse: symbol
+ 'cm32181_pm_ops' was not declared. Should it be static?
+Message-ID: <202208132158.Lo65077F-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On mercoled=C3=AC 3 agosto 2022 20:28:56 CEST Fabio M. De Francesco wrote:
-> The use of kmap() and kmap_atomic() are being deprecated in favor of
-> kmap_local_page().
->=20
-> There are two main problems with kmap(): (1) It comes with an overhead as
-> mapping space is restricted and protected by a global lock for
-> synchronization and (2) it also requires global TLB invalidation when the
-> kmap=E2=80=99s pool wraps and it might block when the mapping space is fu=
-lly
-> utilized until a slot becomes available.
->=20
-> With kmap_local_page() the mappings are per thread, CPU local, can take
-> page faults, and can be called from any context (including interrupts).
-> It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
-> the tasks can be preempted and, when they are scheduled to run again, the
-> kernel virtual addresses are restored and are still valid.
->=20
-> Since the use of kmap_local_page() in exec.c is safe, it should be
-> preferred everywhere in exec.c.
->=20
-> As said, since kmap_local_page() can be also called from atomic context,
-> and since remove_arg_zero() doesn't (and shouldn't ever) rely on an
-> implicit preempt_disable(), this function can also safely replace
-> kmap_atomic().
->=20
-> Therefore, replace kmap() and kmap_atomic() with kmap_local_page() in
-> fs/exec.c.
->=20
-> Tested with xfstests on a QEMU/KVM x86_32 VM, 6GB RAM, booting a kernel
-> with HIGHMEM64GB enabled.
->=20
-> Cc: Eric W. Biederman <ebiederm@xmission.com>
-> Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
->=20
-> v1->v2: Added more information to the commit log to address some
-> objections expressed by Eric W. Biederman[1] in reply to v1. No changes
-> have been made to the code. Forwarded a tag from Ira Weiny (thanks!).
->=20
-> [1]
-> https://lore.kernel.org/lkml/8735fmqcfz.fsf@email.froward.int.ebiederm.or=
-g/
->
->  fs/exec.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->=20
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   69dac8e431af26173ca0a1ebc87054e01c585bcc
+commit: 68c1b3dd5c48b2323067f8c1f0649ae2f31ab20b iio: light: cm32181: Add PM support
+date:   5 weeks ago
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220813/202208132158.Lo65077F-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=68c1b3dd5c48b2323067f8c1f0649ae2f31ab20b
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 68c1b3dd5c48b2323067f8c1f0649ae2f31ab20b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/iio/light/
 
-Hi Kees,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-After that thread about the report from Syzbot, and the subsequent discussi=
-on,=20
-I noticed that you didn't yet take this other patch for exec.c.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/iio/light/cm32181.c:508:1: sparse: sparse: symbol 'cm32181_pm_ops' was not declared. Should it be static?
 
-I suppose that the two patches would better go out together. So I'm writing=
-=20
-for sending a gentle ping.
+vim +/cm32181_pm_ops +508 drivers/iio/light/cm32181.c
 
-As I said, no changes have been made to the code with respect to v1 (which =
-I=20
-submitted in June). However, later I thought that adding more information=20
-might have helped reviewers and maintainers to better understand the why of=
-=20
-this patch.
+   507	
+ > 508	DEFINE_SIMPLE_DEV_PM_OPS(cm32181_pm_ops, cm32181_suspend, cm32181_resume);
+   509	
 
-Thanks,
-
-=46abio
-=20
-
-
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
