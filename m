@@ -2,192 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77732C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 17:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D57D5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 18:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240019AbiHMRpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 13:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
+        id S239718AbiHMSEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 14:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiHMRpa (ORCPT
+        with ESMTP id S230103AbiHMSEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 13:45:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C6712A82
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 10:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660412728; x=1691948728;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=q0tC28WPRGUcU+qYm66yryIpRrYvgf8rGBkp633lJK0=;
-  b=Oxq8otu0ZjnILzx+/mC3lB+r6EaMTVy+UXrzETlf+cVEqgGi9nLjIx2Q
-   r3Jru/lHRHUWAU1bxDoQDw2/T1HxcW+vOdg9IEHlRs0+whSibLxo+Htv7
-   9PDiaUSR0ORqY5AoZwtjJ314DHpN0U47c+XQP18C7irm5qmlQLgkuXEUl
-   FBlcxvDzi7XSkMex2vUsYbiNfT2w2xg9LIlKcxaNTeZGchH5d0b2jltzD
-   orOxv9hDfeCwN4D2dsQKjXY0/WP7U/nW1EXGDHrCImTNVlEoWNpou+Ken
-   0Co9UFwbJUpDMOUnlgyx5kcfEezygC03aDG8g136/ngWIGbvV5+Fk/+Jf
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="278723001"
-X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
-   d="scan'208";a="278723001"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 10:45:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
-   d="scan'208";a="606232617"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 13 Aug 2022 10:45:26 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMvCP-0001vl-2b;
-        Sat, 13 Aug 2022 17:45:25 +0000
-Date:   Sun, 14 Aug 2022 01:44:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [stable:linux-5.4.y 384/4798] drivers/scsi/BusLogic.c:2005:47:
- error: 'DMA_MODE_CASCADE' undeclared; did you mean 'DMA_MODE_READ'?
-Message-ID: <202208140106.w24QUdFP-lkp@intel.com>
+        Sat, 13 Aug 2022 14:04:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C5024BC7;
+        Sat, 13 Aug 2022 11:03:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E63E60F21;
+        Sat, 13 Aug 2022 18:03:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96221C433D6;
+        Sat, 13 Aug 2022 18:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660413838;
+        bh=LW0WsvI44YjlO0JrIFH51DdrccN4k9zbLcQRC93MHhY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qn4yvixeKZFr5T5fEX1GJwmHbENG8132bO+Ok6f0tlgUsGPFHA1forgYS1MRWIsKh
+         my2aP/qrS7w3cB0CqIz9lHe314Hv6YCKr5KCHgzUeOt3A+sf+fGoagHhYkhsYZ7gKR
+         0OIZMuhViZVTH0tc+MjTy8X5S/pzVTEbVvwny5IxQL/c5s3m+2+nocgPuOvvuRbPKH
+         kPFyvywB4oB9DGrqh47spKgPKYvTScufkc1aNQiVw1/vAxof8wntKp/hpV/RLQ07zL
+         d4E0tSmBuNL9y2qx857BO2TZScthnMfat8KUn0UXan7kmxM8eiB+wFhDSuxctB7hok
+         bNyng5BYXAUQw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id A3F7E4035A; Sat, 13 Aug 2022 15:03:55 -0300 (-03)
+Date:   Sat, 13 Aug 2022 15:03:55 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v5 00/14] Compress the pmu_event tables
+Message-ID: <Yvfni9lsQ9HljF49@kernel.org>
+References: <20220812230949.683239-1-irogers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220812230949.683239-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+Em Fri, Aug 12, 2022 at 04:09:35PM -0700, Ian Rogers escreveu:
+> jevents.py creates a number of large arrays from the json events. The
+> arrays contain pointers to strings that need relocating. The
+> relocations have file size, run time and memory costs. These changes
+> refactor the pmu_events API so that the storage of the pmu_event
+> struct isn't exposed. The format is then changed to an offset within a
+> combined big string, with adjacent pmu_event struct variables being
+> next to each other in the string separated by \0 - meaning only the
+> first variable of the struct needs its offset recording.
+> 
+> Some related fixes are contained with the patches. The architecture
+> jevents.py creates tables for can now be set by the JEVENTS_ARCH make
+> variable, with a new 'all' that generates the events and metrics for
+> all architectures.
+> 
+> An example of the improvement to the file size on x86 is:
+> no jevents - the same 19,788,464bytes
+> x86 jevents - ~16.7% file size saving 23,744,288bytes vs 28,502,632bytes
+> all jevents - ~19.5% file size saving 24,469,056bytes vs 30,379,920bytes
+> default build options plus NO_LIBBFD=1.
 
-First bad commit (maybe != root cause):
+Applied locally, going thru further tests.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
-head:   de0cd3ea700d1e8ed76705d02e33b524cbb84cf3
-commit: 53a72858bcae7eaa7df8d167dbf60682d70f82a6 [384/4798] m68knommu: only set CONFIG_ISA_DMA_API for ColdFire sub-arch
-config: m68k-randconfig-r015-20220812 (https://download.01.org/0day-ci/archive/20220814/202208140106.w24QUdFP-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=53a72858bcae7eaa7df8d167dbf60682d70f82a6
-        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-        git fetch --no-tags stable linux-5.4.y
-        git checkout 53a72858bcae7eaa7df8d167dbf60682d70f82a6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/scsi/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/kernel.h:11,
-                    from include/linux/list.h:9,
-                    from include/linux/module.h:9,
-                    from drivers/scsi/BusLogic.c:25:
-   include/linux/scatterlist.h: In function 'sg_set_buf':
-   arch/m68k/include/asm/page_mm.h:169:50: warning: ordered comparison of pointer with null pointer [-Wextra]
-     169 | #define virt_addr_valid(kaddr)  ((void *)(kaddr) >= (void *)PAGE_OFFSET && (void *)(kaddr) < high_memory)
-         |                                                  ^~
-   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
-      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
-         |                                             ^
-   include/linux/scatterlist.h:143:9: note: in expansion of macro 'BUG_ON'
-     143 |         BUG_ON(!virt_addr_valid(buf));
-         |         ^~~~~~
-   include/linux/scatterlist.h:143:17: note: in expansion of macro 'virt_addr_valid'
-     143 |         BUG_ON(!virt_addr_valid(buf));
-         |                 ^~~~~~~~~~~~~~~
-   In file included from arch/m68k/include/asm/bug.h:32,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:12,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/m68k/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:51,
-                    from include/linux/seqlock.h:36,
-                    from include/linux/time.h:6,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:10:
-   include/linux/dma-mapping.h: In function 'dma_map_resource':
-   arch/m68k/include/asm/page_mm.h:169:50: warning: ordered comparison of pointer with null pointer [-Wextra]
-     169 | #define virt_addr_valid(kaddr)  ((void *)(kaddr) >= (void *)PAGE_OFFSET && (void *)(kaddr) < high_memory)
-         |                                                  ^~
-   include/asm-generic/bug.h:139:34: note: in definition of macro 'WARN_ON_ONCE'
-     139 |         int __ret_warn_once = !!(condition);                    \
-         |                                  ^~~~~~~~~
-   arch/m68k/include/asm/page_mm.h:170:33: note: in expansion of macro 'virt_addr_valid'
-     170 | #define pfn_valid(pfn)          virt_addr_valid(pfn_to_virt(pfn))
-         |                                 ^~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:355:26: note: in expansion of macro 'pfn_valid'
-     355 |         if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
-         |                          ^~~~~~~~~
-   drivers/scsi/BusLogic.c: In function 'blogic_rdconfig':
-   drivers/scsi/BusLogic.c:1734:46: warning: ordered comparison of pointer with null pointer [-Wextra]
-    1734 |                         (void *) high_memory > (void *) MAX_DMA_ADDRESS)
-         |                                              ^
-   drivers/scsi/BusLogic.c:1747:46: warning: ordered comparison of pointer with null pointer [-Wextra]
-    1747 |                         (void *) high_memory > (void *) MAX_DMA_ADDRESS)
-         |                                              ^
-   drivers/scsi/BusLogic.c: In function 'blogic_getres':
->> drivers/scsi/BusLogic.c:2005:47: error: 'DMA_MODE_CASCADE' undeclared (first use in this function); did you mean 'DMA_MODE_READ'?
-    2005 |                 set_dma_mode(adapter->dma_ch, DMA_MODE_CASCADE);
-         |                                               ^~~~~~~~~~~~~~~~
-         |                                               DMA_MODE_READ
-   drivers/scsi/BusLogic.c:2005:47: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/scsi/BusLogic.c: In function 'blogic_msg':
-   drivers/scsi/BusLogic.c:3589:9: warning: function 'blogic_msg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-    3589 |         len = vsprintf(buf, fmt, args);
-         |         ^~~
-
-
-vim +2005 drivers/scsi/BusLogic.c
-
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1979  
-839cb99e8f7483 Khalid Aziz    2013-05-16  1980  static bool __init blogic_getres(struct blogic_adapter *adapter)
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1981  {
-839cb99e8f7483 Khalid Aziz    2013-05-16  1982  	if (adapter->irq_ch == 0) {
-839cb99e8f7483 Khalid Aziz    2013-05-16  1983  		blogic_err("NO LEGAL INTERRUPT CHANNEL ASSIGNED - DETACHING\n",
-839cb99e8f7483 Khalid Aziz    2013-05-16  1984  				adapter);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1985  		return false;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1986  	}
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1987  	/*
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1988  	   Acquire shared access to the IRQ Channel.
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1989  	 */
-839cb99e8f7483 Khalid Aziz    2013-05-16  1990  	if (request_irq(adapter->irq_ch, blogic_inthandler, IRQF_SHARED,
-839cb99e8f7483 Khalid Aziz    2013-05-16  1991  				adapter->full_model, adapter) < 0) {
-839cb99e8f7483 Khalid Aziz    2013-05-16  1992  		blogic_err("UNABLE TO ACQUIRE IRQ CHANNEL %d - DETACHING\n",
-839cb99e8f7483 Khalid Aziz    2013-05-16  1993  				adapter, adapter->irq_ch);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1994  		return false;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1995  	}
-839cb99e8f7483 Khalid Aziz    2013-05-16  1996  	adapter->irq_acquired = true;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1997  	/*
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1998  	   Acquire exclusive access to the DMA Channel.
-^1da177e4c3f41 Linus Torvalds 2005-04-16  1999  	 */
-839cb99e8f7483 Khalid Aziz    2013-05-16  2000  	if (adapter->dma_ch > 0) {
-839cb99e8f7483 Khalid Aziz    2013-05-16  2001  		if (request_dma(adapter->dma_ch, adapter->full_model) < 0) {
-839cb99e8f7483 Khalid Aziz    2013-05-16  2002  			blogic_err("UNABLE TO ACQUIRE DMA CHANNEL %d - DETACHING\n", adapter, adapter->dma_ch);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2003  			return false;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2004  		}
-839cb99e8f7483 Khalid Aziz    2013-05-16 @2005  		set_dma_mode(adapter->dma_ch, DMA_MODE_CASCADE);
-839cb99e8f7483 Khalid Aziz    2013-05-16  2006  		enable_dma(adapter->dma_ch);
-839cb99e8f7483 Khalid Aziz    2013-05-16  2007  		adapter->dma_chan_acquired = true;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2008  	}
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2009  	/*
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2010  	   Indicate the System Resource Acquisition completed successfully,
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2011  	 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2012  	return true;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2013  }
-^1da177e4c3f41 Linus Torvalds 2005-04-16  2014  
-
-:::::: The code at line 2005 was first introduced by commit
-:::::: 839cb99e8f748391059d10388c8aea48a88c142c [SCSI] BusLogic: Fix style issues
-
-:::::: TO: Khalid Aziz <khalid.aziz@oracle.com>
-:::::: CC: James Bottomley <JBottomley@Parallels.com>
+- Arnaldo
+ 
+> I originally suggested fixing this problem in:
+> https://lore.kernel.org/linux-perf-users/CAP-5=fVB8G4bdb9T=FncRTh9oBVKCS=+=eowAO+YSgAhab+Dtg@mail.gmail.com/
+> 
+> v5. Renamed two functions to be more inline with the code and added
+>     extra commit message detail on the event sorting order as
+>     suggested by John Garry <john.garry@huawei.com>.
+> v4. Fixed an issue with the empty-pmu-events.c spotted by John Garry
+>     <john.garry@huawei.com>.
+> v3. Fix an ARM build issue with a missed weak symbol. Perform some
+>     pytype clean up.
+> v2. Split the substring folding optimization to its own patch and
+>     comment tweaks as suggested by Namhyung Kim
+>     <namhyung@kernel.org>. Recompute the file size savings with the
+>     latest json events and metrics.
+> 
+> Ian Rogers (14):
+>   perf jevent: Add an 'all' architecture argument
+>   perf jevents: Remove the type/version variables
+>   perf jevents: Provide path to json file on error
+>   perf jevents: Sort json files entries
+>   perf pmu-events: Hide pmu_sys_event_tables
+>   perf pmu-events: Avoid passing pmu_events_map
+>   perf pmu-events: Hide pmu_events_map
+>   perf test: Use full metric resolution
+>   perf pmu-events: Move test events/metrics to json
+>   perf pmu-events: Don't assume pmu_event is an array
+>   perf pmu-events: Hide the pmu_events
+>   perf metrics: Copy entire pmu_event in find metric
+>   perf jevents: Compress the pmu_events_table
+>   perf jevents: Fold strings optimization
+> 
+>  tools/perf/arch/arm64/util/pmu.c              |   4 +-
+>  .../arch/test/test_soc/cpu/metrics.json       |  64 +++
+>  tools/perf/pmu-events/empty-pmu-events.c      | 204 +++++++-
+>  tools/perf/pmu-events/jevents.py              | 478 +++++++++++++++---
+>  tools/perf/pmu-events/pmu-events.h            |  40 +-
+>  tools/perf/tests/expand-cgroup.c              |  25 +-
+>  tools/perf/tests/parse-metric.c               |  77 +--
+>  tools/perf/tests/pmu-events.c                 | 466 +++++++----------
+>  tools/perf/util/metricgroup.c                 | 275 ++++++----
+>  tools/perf/util/metricgroup.h                 |   5 +-
+>  tools/perf/util/pmu.c                         | 139 ++---
+>  tools/perf/util/pmu.h                         |  10 +-
+>  tools/perf/util/s390-sample-raw.c             |  50 +-
+>  13 files changed, 1131 insertions(+), 706 deletions(-)
+>  create mode 100644 tools/perf/pmu-events/arch/test/test_soc/cpu/metrics.json
+> 
+> -- 
+> 2.37.1.595.g718a3a8f04-goog
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+- Arnaldo
