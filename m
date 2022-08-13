@@ -2,297 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C17C00140
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 00:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97205C00140
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 00:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235854AbiHMAeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 20:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
+        id S236232AbiHMAhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 20:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiHMAeV (ORCPT
+        with ESMTP id S229617AbiHMAhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 20:34:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1AE5A285E
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 17:34:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660350859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=peRfAvWIP7FDZjD9LS6PUCSHBhipHIZbT/wujjdYk4M=;
-        b=HeMien+OMONP2RauGp5B4GziYR09GhIAMMW0/ZZErnhMRmWhOtzoRbNUUtIOXqyEiAMABG
-        g5fgmmQ284I6xqqDvx2UgkbFwy2sPzwl54uZDH+VhKoRZjcU51GyUP8sBL7E5mgXbOZBZe
-        OODx+3Q4+Bq0QXMe9bP+J2JVH9TqyeM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-101-pusrxSxtNjmQQNpKUc6RaQ-1; Fri, 12 Aug 2022 20:34:15 -0400
-X-MC-Unique: pusrxSxtNjmQQNpKUc6RaQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A7BAC85A581;
-        Sat, 13 Aug 2022 00:34:14 +0000 (UTC)
-Received: from localhost (ovpn-12-29.pek2.redhat.com [10.72.12.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8A9C040CF8E5;
-        Sat, 13 Aug 2022 00:34:13 +0000 (UTC)
-Date:   Sat, 13 Aug 2022 08:34:10 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        sourabhjain@linux.ibm.com, konrad.wilk@oracle.com,
-        boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v10 8/8] x86/crash: Add x86 crash hotplug support
-Message-ID: <Yvbxgvk+5HqEl7J2@MiWiFi-R3L-srv>
-References: <20220721181747.1640-1-eric.devolder@oracle.com>
- <20220721181747.1640-9-eric.devolder@oracle.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721181747.1640-9-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+        Fri, 12 Aug 2022 20:37:09 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E76CA8949
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 17:37:07 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id p18so2043337plr.8
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 17:37:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:to:from:cc:subject:date:from:to:cc;
+        bh=rAs3NBbQcUvUkTtp5EDK6hxoyJZSazQ2aBPoau5vXjg=;
+        b=LicZsNy9gsi9hx3djmXGxuNoljRdyeHC7yg9v1rwNSyR8aatvC1im/Ie7tYmFgMcQd
+         eUaOVXRVPFFBnow7NoGDtUf4hfEmIZ4iqXSviGsvsTWkDccN/5be8MdB4zWco4qzB8TA
+         0+kVKFy4FeBAkqLbJuGyQmjkRnioYjyQt9rFZRixelrVf2ruLKvLilcDLutCUrrByNQT
+         VSMt1DHRyrwAhPOrgA9v67Bcpgvpx5Giq8ng8yPuE7uuZ3JbrO2rkoZYJw2WvUU3EsLk
+         NtIPRnrREgxhP3uNs/A9Fk6lLkFBtzCA25Yro8oKUg3gXQlijmVfyttvBxl0yBqY86h7
+         eTKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:to:from:cc:subject:date:x-gm-message-state:from:to:cc;
+        bh=rAs3NBbQcUvUkTtp5EDK6hxoyJZSazQ2aBPoau5vXjg=;
+        b=wv1AtCQg7QUtflmWlDSJzCg828OJZ4WnrC+PnEZWBUGx/Pig1LnREzoUGVOz2jFIwj
+         Wa1iNUP7cLT+Hf2YqlFeOtJI2CfgjdhI/NZLhXBXpOw/p7SzLNMe8gVSwwq8OJvoH3vK
+         +BVXHXllJzJgCILFHbzZJJy1nMbuDNirrIFYbuFTdMJNXQSVJiQlBLYexTHo/3iZL0gi
+         xs1Q3oTc5x/SrC2g397uVaLWcoHn4aOoyne45d1ZCoDJiNQkxXphrBcpHJ/2mUHpcfb6
+         v/u8mCygIQCMY9qWzAAtZjkdOQDVxEspXSRXxmfaMGs7Sr6V14MLGLjzQvkfO5VCSTl2
+         zmYA==
+X-Gm-Message-State: ACgBeo2753XSELtOqnJPgzGHgZwrwGTt3SBpP+XB7faXYUclz0P1e4is
+        rdMOm9e1Cqc0AxX0jgdCm09Rd65ilMxsBQ==
+X-Google-Smtp-Source: AA6agR4cf3awoVbX/x4zXy9r/2cEP0BqJ/gaogKQhSfXQeJllh7r27aJZKueJ8iEG01TyqZWX7LsLg==
+X-Received: by 2002:a17:903:124f:b0:171:4c36:a6bf with SMTP id u15-20020a170903124f00b001714c36a6bfmr6482261plh.0.1660351026472;
+        Fri, 12 Aug 2022 17:37:06 -0700 (PDT)
+Received: from localhost ([50.221.140.186])
+        by smtp.gmail.com with ESMTPSA id o27-20020aa7979b000000b0052d481032a7sm2223441pfp.26.2022.08.12.17.37.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 17:37:06 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 17:37:06 -0700 (PDT)
+X-Google-Original-Date: Fri, 12 Aug 2022 17:36:01 PDT (-0700)
+Subject: [GIT PULL] RISC-V Patches for the 5.20 Merge Window, Part 2
+CC:        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Message-ID: <mhng-563e7d68-e504-4e0a-b666-f7c2fbab62db@palmer-ri-x1c9>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/21/22 at 02:17pm, Eric DeVolder wrote:
-...snip.... 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index e58798f636d4..bb59596c8bea 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -2065,6 +2065,17 @@ config CRASH_DUMP
->  	  (CONFIG_RELOCATABLE=y).
->  	  For more details see Documentation/admin-guide/kdump/kdump.rst
->  
-> +config CRASH_MAX_MEMORY_RANGES
-> +	depends on CRASH_DUMP && KEXEC_FILE && (HOTPLUG_CPU || MEMORY_HOTPLUG)
-> +	int
-> +	default 32768
+The following changes since commit 4d1044fcb996e8de9b9ab392f4a767890e45202d:
 
-Do we need to enforce the value with page align and minimal size? I
-checked crash_load_segments() in arch/x86/kernel/crash.c, it does the
-page size aligning in kexec_add_buffer(). And in
-load_crashdump_segments() of
-kexec-tools/kexec/arch/i386/crashdump-x86.c, it creates elfcorehdr at
-below code, the align is 1024, and in generic add_buffer()
-implementation, it enforces the memsz page aligned, and changes the
-passed align as page alignment.
+  Merge tag 'riscv-for-linus-5.20-mw0' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux (2022-08-06 15:04:48 -0700)
 
+are available in the Git repository at:
 
-	elfcorehdr = add_buffer(info, tmp, bufsz, memsz, align, min_base,
-                                                        max_addr, -1);
+  git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.20-mw2
 
-Maybe we should at least mention this in the help text to notice people.
+for you to fetch changes up to 5cef38dd03f33ef206eb792df0fb3b200d762546:
 
-> +	help
-> +	  For the kexec_file_load path, specify the maximum number of
-> +	  memory regions, eg. as represented by the 'System RAM' entries
-> +	  in /proc/iomem, that the elfcorehdr buffer/segment can accommodate.
-> +	  This value is combined with NR_CPUS and multiplied by Elf64_Phdr
-> +	  size to determine the final buffer size.
-> +
->  config KEXEC_JUMP
->  	bool "kexec jump"
->  	depends on KEXEC && HIBERNATION
-> diff --git a/arch/x86/include/asm/crash.h b/arch/x86/include/asm/crash.h
-> index 8b6bd63530dc..96051d8e4b45 100644
-> --- a/arch/x86/include/asm/crash.h
-> +++ b/arch/x86/include/asm/crash.h
-> @@ -9,4 +9,24 @@ int crash_setup_memmap_entries(struct kimage *image,
->  		struct boot_params *params);
->  void crash_smp_send_stop(void);
->  
-> +void *arch_map_crash_pages(unsigned long paddr, unsigned long size);
-> +#define arch_map_crash_pages arch_map_crash_pages
-> +
-> +void arch_unmap_crash_pages(void **ptr);
-> +#define arch_unmap_crash_pages arch_unmap_crash_pages
-> +
-> +void arch_crash_handle_hotplug_event(struct kimage *image,
-> +		unsigned int hp_action, unsigned int cpu);
-> +#define arch_crash_handle_hotplug_event arch_crash_handle_hotplug_event
-> +
-> +#ifdef CONFIG_HOTPLUG_CPU
-> +static inline int crash_hotplug_cpu_support(void) { return 1; }
-> +#define crash_hotplug_cpu_support crash_hotplug_cpu_support
-> +#endif
-> +
-> +#ifdef CONFIG_MEMORY_HOTPLUG
-> +static inline int crash_hotplug_memory_support(void) { return 1; }
-> +#define crash_hotplug_memory_support crash_hotplug_memory_support
-> +#endif
-> +
->  #endif /* _ASM_X86_CRASH_H */
-> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-> index 9ceb93c176a6..55dda4fcde6e 100644
-> --- a/arch/x86/kernel/crash.c
-> +++ b/arch/x86/kernel/crash.c
-> @@ -25,6 +25,7 @@
->  #include <linux/slab.h>
->  #include <linux/vmalloc.h>
->  #include <linux/memblock.h>
-> +#include <linux/highmem.h>
->  
->  #include <asm/processor.h>
->  #include <asm/hardirq.h>
-> @@ -397,7 +398,17 @@ int crash_load_segments(struct kimage *image)
->  	image->elf_headers = kbuf.buffer;
->  	image->elf_headers_sz = kbuf.bufsz;
->  
-> +#if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_MEMORY_HOTPLUG)
-> +	/* Ensure elfcorehdr segment large enough for hotplug changes */
-> +	kbuf.memsz = (CONFIG_NR_CPUS_DEFAULT + CONFIG_CRASH_MAX_MEMORY_RANGES) * sizeof(Elf64_Phdr);
+  dt-bindings: gpio: sifive: add gpio-line-names (2022-08-12 09:00:01 -0700)
 
-Do we need to break the line to 80 chars?
+----------------------------------------------------------------
+RISC-V Patches for the 5.20 Merge Window, Part 2
 
-> +	/* For marking as usable to crash kernel */
-> +	image->elf_headers_sz = kbuf.memsz;
+There's still a handful of new features in here, but there are a lot of
+fixes/cleanups as well:
 
-Do we need this code comment?
+* Support for the Zicbom for explicit cache-block management, along with
+  the necessary bits to make the non-standard cache management ops on
+  the Allwinner D1 function.
+* Support for the Zihintpause extension, which codifies a go-slow
+  instruction used for cpu_relax().
+* Support for the Sstc extension for supervisor-mode timer/counter
+  management.
+* Many device tree fixes and cleanups, including a large set for the
+  Canaan device trees.
+* A handful of fixes and cleanups for the PMU driver.
 
-> +	/* Record the index of the elfcorehdr segment */
-> +	image->elfcorehdr_index = image->nr_segments;
+----------------------------------------------------------------
+These all pass for me, but they do require some sparse patches that I just
+posted to handle the new ISA strings.  There are a handful of warnings, but
+they're all in various stages of being fixed and the only one that's
+reproducing locally for me is the bluetooth issue that's not related to any of
+these.
 
-And this place?
+----------------------------------------------------------------
+Atish Patra (9):
+      RISC-V: Add SSTC extension CSR details
+      RISC-V: Enable sstc extension parsing from DT
+      RISC-V: Prefer sstc extension if available
+      RISC-V: Fix counter restart during overflow for RV32
+      RISC-V: Update user page mapping only once during start
+      RISC-V: Fix SBI PMU calls for RV32
+      RISC-V: Move counter info definition to sbi header file
+      RISC-V: Improve SBI definitions
+      RISC-V: KVM: Support sstc extension
 
-> +	image->elfcorehdr_index_valid = true;
-> +#else
->  	kbuf.memsz = kbuf.bufsz;
-> +#endif
->  	kbuf.buf_align = ELF_CORE_HEADER_ALIGN;
->  	kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
->  	ret = kexec_add_buffer(&kbuf);
-> @@ -412,3 +423,107 @@ int crash_load_segments(struct kimage *image)
->  	return ret;
->  }
->  #endif /* CONFIG_KEXEC_FILE */
-> +
-> +#if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_MEMORY_HOTPLUG)
-> +void *arch_map_crash_pages(unsigned long paddr, unsigned long size)
-> +{
-> +	/*
-> +	 * NOTE: The addresses and sizes passed to this routine have
-> +	 * already been fully aligned on page boundaries. There is no
-> +	 * need for massaging the address or size.
-> +	 */
+Atul Khare (1):
+      dt-bindings: gpio: sifive: add gpio-line-names
 
-Can we move the code comment above function interface?
+Ben Dooks (2):
+      RISC-V: Declare cpu_ops_spinwait in <asm/cpu_ops.h>
+      RISC-V: cpu_ops_spinwait.c should include head.h
 
-> +	void *ptr = NULL;
-> +
-> +	/* NOTE: requires arch_kexec_[un]protect_crashkres() for write access */
+Chen Lifu (1):
+      riscv: lib: uaccess: fix CSR_STATUS SR_SUM bit
 
-Do we need this code comment? On ARCH where proctionion is made, we
-surely need to the protect/unprotect.
+Conor Dooley (14):
+      dt-bindings: display: convert ilitek,ili9341.txt to dt-schema
+      dt-bindings: display: ili9341: document canaan kd233's lcd
+      dt-bindings: memory-controllers: add canaan k210 sram controller
+      riscv: dts: canaan: fix the k210's memory node
+      riscv: dts: canaan: fix the k210's timer nodes
+      riscv: dts: canaan: fix mmc node names
+      riscv: dts: canaan: fix kd233 display spi frequency
+      riscv: dts: canaan: use custom compatible for k210 i2s
+      riscv: dts: canaan: remove spi-max-frequency from controllers
+      riscv: dts: canaan: fix bus {ranges,reg} warnings
+      riscv: dts: canaan: add specific compatible for kd233's LCD
+      riscv: dts: canaan: build all devicetress if SOC_CANAAN
+      riscv: ensure cpu_ops_sbi is declared
+      dt-bindings: riscv: fix SiFive l2-cache's cache-sets
 
-> +	if (size > 0) {
-> +		struct page *page = pfn_to_page(paddr >> PAGE_SHIFT);
-> +
-> +		ptr = kmap_local_page(page);
-> +	}
-> +
-> +	return ptr;
-> +}
-> +
-> +void arch_unmap_crash_pages(void **ptr)
-> +{
-> +	if (ptr) {
-> +		if (*ptr)
-> +			kunmap_local(*ptr);
-> +		*ptr = NULL;
-> +	}
-> +}
-> +
-> +/**
-> + * arch_crash_handle_hotplug_event() - Handle hotplug elfcorehdr changes
-> + * @image: the active struct kimage
-> + * @hp_action: the hot un/plug action being handled
-> + * @cpu: when KEXEC_CRASH_HP_ADD/REMOVE_CPU, the cpu affected
-> + *
-> + * To accurately reflect hot un/plug changes, the elfcorehdr (which
-> + * is passed to the crash kernel via the elfcorehdr= parameter)
-> + * must be updated with the new list of CPUs and memories. The new
-> + * elfcorehdr is prepared in a kernel buffer, and then it is
-> + * written on top of the existing/old elfcorehdr.
-> + *
-> + * For hotplug changes to elfcorehdr to work, two conditions are
-> + * needed:
-> + * First, the segment containing the elfcorehdr must be large enough
-> + * to permit a growing number of resources. See the
-> + * CONFIG_CRASH_MAX_MEMORY_RANGES description.
-> + * Second, purgatory must explicitly exclude the elfcorehdr from the
-> + * list of segments it checks (since the elfcorehdr changes and thus
-> + * would require an update to purgatory itself to update the digest).
+Dao Lu (1):
+      arch/riscv: add Zihintpause support
 
-Isn't this generic concept to crash hotplug? Should we move it out to
-some generic place?
+Emil Renner Berthing (1):
+      riscv: dts: sifive unmatched: Add PWM controlled LEDs
 
-> + *
-> + */
-> +void arch_crash_handle_hotplug_event(struct kimage *image,
-> +	unsigned int hp_action, unsigned int cpu)
+Heiko Stuebner (4):
+      of: also handle dma-noncoherent in of_dma_is_coherent()
+      dt-bindings: riscv: document cbom-block-size
+      riscv: Add support for non-coherent devices using zicbom extension
+      riscv: implement cache-management errata for T-Head SoCs
 
-The passed in 'cpu' is not used at all, what is it added for? I didn't
-see explanation about it.
+Jason A. Donenfeld (1):
+      wireguard: selftests: set CONFIG_NONPORTABLE on riscv32
 
-> +{
-> +	struct kexec_segment *ksegment;
-> +	unsigned char *ptr = NULL;
-> +	unsigned long elfsz = 0;
-> +	void *elfbuf = NULL;
-> +	unsigned long mem, memsz;
-> +
-> +	/*
-> +	 * Elfcorehdr_index_valid checked in crash_core:handle_hotplug_event()
-> +	 */
-> +	ksegment = &image->segment[image->elfcorehdr_index];
-> +	mem = ksegment->mem;
-> +	memsz = ksegment->memsz;
-> +
-> +	/*
-> +	 * Create the new elfcorehdr reflecting the changes to CPU and/or
-> +	 * memory resources.
-> +	 */
-> +	if (prepare_elf_headers(image, &elfbuf, &elfsz)) {
-> +		pr_err("crash hp: unable to prepare elfcore headers");
-> +		goto out;
-> +	}
-> +	if (elfsz > memsz) {
-> +		pr_err("crash hp: update elfcorehdr elfsz %lu > memsz %lu",
-> +			elfsz, memsz);
-> +		goto out;
-> +	}
-> +
-> +	/*
-> +	 * At this point, we are all but assured of success.
-> +	 * Copy new elfcorehdr into destination.
-> +	 */
-> +	ptr = arch_map_crash_pages(mem, memsz);
-> +	if (ptr) {
-> +		/*
-> +		 * Temporarily invalidate the crash image while the
-> +		 * elfcorehdr is updated.
-> +		 */
-> +		xchg(&kexec_crash_image, NULL);
-> +		memcpy_flushcache((void *)ptr, elfbuf, elfsz);
-> +		xchg(&kexec_crash_image, image);
-> +	}
-> +	arch_unmap_crash_pages((void **)&ptr);
-> +	pr_debug("crash hp: re-loaded elfcorehdr at 0x%lx\n", mem);
-> +
-> +out:
-> +	if (elfbuf)
-> +		vfree(elfbuf);
-> +}
-> +#endif
-> -- 
-> 2.31.1
-> 
+Krzysztof Kozlowski (1):
+      riscv: traps_misaligned: do not duplicate stringify
 
+Mark Kettenis (1):
+      riscv: dts: starfive: correct number of external interrupts
+
+Masahiro Yamada (2):
+      riscv/purgatory: hard-code obj-y in Makefile
+      riscv/purgatory: Omit use of bin2c
+
+Palmer Dabbelt (5):
+      RISC-V: Canaan devicetree fixes
+      riscv: implement Zicbom-based CMO instructions + the t-head variant
+      RISC-V: fixups to work with crash tool
+      RISC-V: Add Sstc extension support
+      perf: riscv_pmu{,_sbi}: Miscallenous improvement & fixes
+
+Xianting Tian (4):
+      RISC-V: kexec: Fixup use of smp_processor_id() in preemptible context
+      RISC-V: Fixup get incorrect user mode PC for kernel mode regs
+      RISC-V: Fixup schedule out issue in machine_crash_shutdown()
+      RISC-V: Add modules to virtual kernel memory layout dump
+
+Yipeng Zou (1):
+      riscv:uprobe fix SR_SPIE set/clear handling
+
+ .../devicetree/bindings/display/ilitek,ili9341.txt |  27 ----
+ .../bindings/display/panel/ilitek,ili9341.yaml     |  49 +++++--
+ .../devicetree/bindings/gpio/sifive,gpio.yaml      |   4 +
+ .../memory-controllers/canaan,k210-sram.yaml       |  52 ++++++++
+ Documentation/devicetree/bindings/riscv/cpus.yaml  |   5 +
+ .../devicetree/bindings/riscv/sifive-l2-cache.yaml |   6 +-
+ arch/riscv/Kconfig                                 |  32 ++++-
+ arch/riscv/Kconfig.erratas                         |  11 ++
+ arch/riscv/Makefile                                |   8 ++
+ arch/riscv/boot/dts/canaan/Makefile                |  10 +-
+ arch/riscv/boot/dts/canaan/canaan_kd233.dts        |   6 +-
+ arch/riscv/boot/dts/canaan/k210.dtsi               |  73 +++++++----
+ arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts     |   2 +-
+ arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts    |   2 +-
+ arch/riscv/boot/dts/canaan/sipeed_maix_go.dts      |   2 +-
+ arch/riscv/boot/dts/canaan/sipeed_maixduino.dts    |   2 +-
+ .../riscv/boot/dts/sifive/hifive-unmatched-a00.dts |  42 ++++++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi           |   2 +-
+ arch/riscv/errata/thead/errata.c                   |  20 +++
+ arch/riscv/include/asm/cache.h                     |   4 +
+ arch/riscv/include/asm/cacheflush.h                |  10 ++
+ arch/riscv/include/asm/cpu_ops.h                   |   1 +
+ arch/riscv/include/asm/cpu_ops_sbi.h               |   2 +
+ arch/riscv/include/asm/csr.h                       |   5 +
+ arch/riscv/include/asm/errata_list.h               |  59 ++++++++-
+ arch/riscv/include/asm/hwcap.h                     |   7 +
+ arch/riscv/include/asm/kvm_vcpu_timer.h            |   7 +
+ arch/riscv/include/asm/sbi.h                       |  32 ++++-
+ arch/riscv/include/asm/vdso/processor.h            |  21 ++-
+ arch/riscv/include/uapi/asm/kvm.h                  |   1 +
+ arch/riscv/kernel/cpu.c                            |   3 +
+ arch/riscv/kernel/cpu_ops.c                        |   5 +-
+ arch/riscv/kernel/cpu_ops_spinwait.c               |   2 +
+ arch/riscv/kernel/cpufeature.c                     |  26 ++++
+ arch/riscv/kernel/crash_save_regs.S                |   2 +-
+ arch/riscv/kernel/machine_kexec.c                  |  28 +++-
+ arch/riscv/kernel/probes/uprobes.c                 |   6 -
+ arch/riscv/kernel/setup.c                          |   2 +
+ arch/riscv/kernel/traps_misaligned.c               |   8 +-
+ arch/riscv/kvm/vcpu.c                              |   8 +-
+ arch/riscv/kvm/vcpu_timer.c                        | 144 ++++++++++++++++++++-
+ arch/riscv/lib/uaccess.S                           |   4 +-
+ arch/riscv/mm/Makefile                             |   1 +
+ arch/riscv/mm/dma-noncoherent.c                    | 116 +++++++++++++++++
+ arch/riscv/mm/init.c                               |   4 +
+ arch/riscv/purgatory/.gitignore                    |   1 -
+ arch/riscv/purgatory/Makefile                      |  10 +-
+ arch/riscv/purgatory/kexec-purgatory.S             |  14 ++
+ drivers/clocksource/timer-riscv.c                  |  25 +++-
+ drivers/of/address.c                               |  17 ++-
+ drivers/perf/riscv_pmu.c                           |   1 -
+ drivers/perf/riscv_pmu_sbi.c                       |  30 +++--
+ scripts/remove-stale-files                         |   2 +
+ .../selftests/wireguard/qemu/arch/riscv32.config   |   1 +
+ 54 files changed, 821 insertions(+), 143 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/display/ilitek,ili9341.txt
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/canaan,k210-sram.yaml
+ create mode 100644 arch/riscv/mm/dma-noncoherent.c
+ create mode 100644 arch/riscv/purgatory/kexec-purgatory.S
