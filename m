@@ -2,72 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C66BFC25B0F
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8135CC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239685AbiHMOhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 10:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
+        id S239710AbiHMOih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 10:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiHMOhR (ORCPT
+        with ESMTP id S239707AbiHMOif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 10:37:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B16B32B81
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 07:37:15 -0700 (PDT)
+        Sat, 13 Aug 2022 10:38:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA744D169;
+        Sat, 13 Aug 2022 07:38:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1ED8B802BE
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 14:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 883A2C433D6;
-        Sat, 13 Aug 2022 14:37:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5667760E33;
+        Sat, 13 Aug 2022 14:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57D9BC433C1;
+        Sat, 13 Aug 2022 14:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660401432;
-        bh=eUt5WPk2oDTRX7G+NlG6mkjLwzzTqD0BB5QjKnscQNU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AQwiGH7vJLTxQzv0F5T8WYPWfRmnackfU27q69GDawH+EAy6YzVQykTVtQTdEu6vP
-         pft1aI4mfP5MbxkSNiK1S6PZ0eDPQKCxmPYpOGF27Z/iEHN8GbuLHaipFk8p02E3h0
-         9NViWrL+ezh7DnqIVm6F2d4+OKEHUR8zK+mWneqtESc8NHllz0pzuJW3/o1w3IMPzy
-         X3jZvhq2cjoV8+UYmfN2O8ej0vhcKHH/gxwxXDlWzvFYdXgThQYlwYf5aC5Rjm8pGN
-         j2wb1Gq9SxB6rWhIfyArW4Wi9ekxnrnSQ9f1wJSHHEZ2B7khqzo/wl3432WGiRBzC6
-         G+lOJUue56tWg==
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>, stable@kernel.org
-Subject: [PATCH] f2fs: fix wrong continue condition in GC
-Date:   Sat, 13 Aug 2022 07:37:09 -0700
-Message-Id: <20220813143709.11909-1-jaegeuk@kernel.org>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+        s=k20201202; t=1660401513;
+        bh=EKm6UMNGX8mdhZmpYHDE+bTq5uWnRM26kpuIGfSdk1s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E7PN2ylnRtG29W+A9eWyW65QPAKIE6pYRm8JWX9VLxcx8GMQ1lLfrYrAqOSXYboOR
+         WBOk7somqC0Oc0/KyBoqJnwGhLC02Pf9bqwgyh5ekhMmCTkFVZ/Swh2I4caHw/k/EI
+         cWU4/GPC801JVtt9gAaCihJBfLziiK7Uo7YzlQ3ylmIFv3axiJ7f6D3Jk+5CNkdlwU
+         AYbs/u4PNhss1B8xUyWkGt8Ns2XUMzsIjISHUOpbcXiXp9rDPpEZFWdUnWZTcusmCE
+         WEa1IIuYcvGn3yN/s3p5Ck+tpHB8PRJ3M442R+vk0l+1Qr0muMX+MEN6T8evcS3z2L
+         RFaTid8vhauDQ==
+Date:   Sat, 13 Aug 2022 15:49:02 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux-pm <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH v2 01/30] pm: Improve EXPORT_*_DEV_PM_OPS macros
+Message-ID: <20220813154902.32f86ee2@jic23-huawei>
+In-Reply-To: <20220808174107.38676-2-paul@crapouillou.net>
+References: <20220808174107.38676-1-paul@crapouillou.net>
+        <20220808174107.38676-2-paul@crapouillou.net>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We should decrease the frozen counter.
+On Mon,  8 Aug 2022 19:40:38 +0200
+Paul Cercueil <paul@crapouillou.net> wrote:
 
-Cc: stable@kernel.org
-Fixes: 325163e9892b ("f2fs: add gc_urgent_high_remaining sysfs node")
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
----
- fs/f2fs/gc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Update the _EXPORT_DEV_PM_OPS() internal macro. It was not used anywhere
+> outside pm.h and pm_runtime.h, so it is safe to update it.
+> 
+> Before, this macro would take a few parameters to be used as sleep and
+> runtime callbacks. This made it unsuitable to use with different
+> callbacks, for instance the "noirq" ones.
+> 
+> It is now semantically different: instead of creating a conditionally
+> exported dev_pm_ops structure, it only contains part of the definition.
+> 
+> This macro should however never be used directly (hence the trailing
+> underscore). Instead, the following four macros are provided:
+> - EXPORT_DEV_PM_OPS(name)
+> - EXPORT_GPL_DEV_PM_OPS(name)
+> - EXPORT_NS_DEV_PM_OPS(name, ns)
+> - EXPORT_NS_GPL_DEV_PM_OPS(name, ns)
+> 
+> For instance, it is now possible to conditionally export noirq
+> suspend/resume PM functions like this:
+> 
+> EXPORT_GPL_DEV_PM_OPS(foo_pm_ops) = {
+>     NOIRQ_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
+> };
+> 
+> The existing helper macros EXPORT_*_SIMPLE_DEV_PM_OPS() and
+> EXPORT_*_RUNTIME_DEV_PM_OPS() have been updated to use these new macros.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Looks good to me and much nicer than me making the situation worse
+as I did in the proposal to have a macro that took even more callbacks
+as it's parameters.
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index 6da21d405ce1..7e4b41240d59 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -102,7 +102,7 @@ static int gc_thread_func(void *data)
- 					sbi->gc_urgent_high_limited = false;
- 					spin_unlock(&sbi->gc_urgent_high_lock);
- 					sbi->gc_mode = GC_NORMAL;
--					continue;
-+					goto next;
- 				}
- 				sbi->gc_urgent_high_remaining--;
- 			}
--- 
-2.37.1.595.g718a3a8f04-goog
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Rafael J. Wysocki <rafael@kernel.org>
+> Cc: linux-pm <linux-pm@vger.kernel.org>
+> 
+>  include/linux/pm.h         | 37 +++++++++++++++++++++++--------------
+>  include/linux/pm_runtime.h | 20 ++++++++++++--------
+>  2 files changed, 35 insertions(+), 22 deletions(-)
+> 
+> diff --git a/include/linux/pm.h b/include/linux/pm.h
+> index 871c9c49ec9d..93cd34f00822 100644
+> --- a/include/linux/pm.h
+> +++ b/include/linux/pm.h
+> @@ -375,19 +375,20 @@ const struct dev_pm_ops name = { \
+>  }
+>  
+>  #ifdef CONFIG_PM
+> -#define _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
+> -			   runtime_resume_fn, idle_fn, sec, ns)		\
+> -	_DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
+> -			   runtime_resume_fn, idle_fn); \
+> -	__EXPORT_SYMBOL(name, sec, ns)
+> +#define _EXPORT_DEV_PM_OPS(name, sec, ns)				\
+> +	const struct dev_pm_ops name;					\
+> +	__EXPORT_SYMBOL(name, sec, ns);					\
+> +	const struct dev_pm_ops name
+>  #else
+> -#define _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
+> -			   runtime_resume_fn, idle_fn, sec, ns) \
+> -static __maybe_unused _DEFINE_DEV_PM_OPS(__static_##name, suspend_fn, \
+> -					 resume_fn, runtime_suspend_fn, \
+> -					 runtime_resume_fn, idle_fn)
+> +#define _EXPORT_DEV_PM_OPS(name, sec, ns)				\
+> +	static __maybe_unused const struct dev_pm_ops __static_##name
+>  #endif
+>  
+> +#define EXPORT_DEV_PM_OPS(name) _EXPORT_DEV_PM_OPS(name, "", "")
+> +#define EXPORT_GPL_DEV_PM_OPS(name) _EXPORT_DEV_PM_OPS(name, "_gpl", "")
+> +#define EXPORT_NS_DEV_PM_OPS(name, ns) _EXPORT_DEV_PM_OPS(name, "", #ns)
+> +#define EXPORT_NS_GPL_DEV_PM_OPS(name, ns) _EXPORT_DEV_PM_OPS(name, "_gpl", #ns)
+> +
+>  /*
+>   * Use this if you want to use the same suspend and resume callbacks for suspend
+>   * to RAM and hibernation.
+> @@ -399,13 +400,21 @@ static __maybe_unused _DEFINE_DEV_PM_OPS(__static_##name, suspend_fn, \
+>  	_DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL)
+>  
+>  #define EXPORT_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
+> -	_EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "", "")
+> +	EXPORT_DEV_PM_OPS(name) = { \
+> +		SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+> +	}
+>  #define EXPORT_GPL_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
+> -	_EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "_gpl", "")
+> +	EXPORT_GPL_DEV_PM_OPS(name) = { \
+> +		SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+> +	}
+>  #define EXPORT_NS_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn, ns)	\
+> -	_EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "", #ns)
+> +	EXPORT_NS_DEV_PM_OPS(name, ns) = { \
+> +		SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+> +	}
+>  #define EXPORT_NS_GPL_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn, ns)	\
+> -	_EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "_gpl", #ns)
+> +	EXPORT_NS_GPL_DEV_PM_OPS(name, ns) = { \
+> +		SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+> +	}
+>  
+>  /* Deprecated. Use DEFINE_SIMPLE_DEV_PM_OPS() instead. */
+>  #define SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
+> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+> index 9e4d056967c6..ba2077d9e366 100644
+> --- a/include/linux/pm_runtime.h
+> +++ b/include/linux/pm_runtime.h
+> @@ -40,17 +40,21 @@
+>  			   resume_fn, idle_fn)
+>  
+>  #define EXPORT_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn) \
+> -	_EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
+> -			   suspend_fn, resume_fn, idle_fn, "", "")
+> +	EXPORT_DEV_PM_OPS(name) = { \
+> +		RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
+> +	}
+>  #define EXPORT_GPL_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn) \
+> -	_EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
+> -			   suspend_fn, resume_fn, idle_fn, "_gpl", "")
+> +	EXPORT_GPL_DEV_PM_OPS(name) = { \
+> +		RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
+> +	}
+>  #define EXPORT_NS_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn, ns) \
+> -	_EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
+> -			   suspend_fn, resume_fn, idle_fn, "", #ns)
+> +	EXPORT_NS_DEV_PM_OPS(name, ns) = { \
+> +		RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
+> +	}
+>  #define EXPORT_NS_GPL_RUNTIME_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn, ns) \
+> -	_EXPORT_DEV_PM_OPS(name, pm_runtime_force_suspend, pm_runtime_force_resume, \
+> -			   suspend_fn, resume_fn, idle_fn, "_gpl", #ns)
+> +	EXPORT_NS_GPL_DEV_PM_OPS(name, ns) = { \
+> +		RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
+> +	}
+>  
+>  #ifdef CONFIG_PM
+>  extern struct workqueue_struct *pm_wq;
 
