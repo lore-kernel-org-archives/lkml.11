@@ -2,93 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A225AC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF5CC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 12 Aug 2022 10:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238079AbiHLKDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 06:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51918 "EHLO
+        id S237062AbiHLKD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 06:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231637AbiHLKDG (ORCPT
+        with ESMTP id S231637AbiHLKDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 06:03:06 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D975AA4E3
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:03:04 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id o2so702948lfb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 03:03:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=7XCMouDowcv3LrNhIXPQ3Y5PTFI9QQ/MPyoPgacMrBE=;
-        b=rhZ1Y8wuTv6tETnnEUcu4kXuxhUVCd0Qjj2ZcY6rurXdhS0cLI1z94igGIm1ACF9CQ
-         eI6hgdo1Qcy7RHQWrPDQq8qKRYy79Rg7NCZfQqcjXDPQx+bd7NsgAOChY7HIwgjrDQ/A
-         m3XCgqp6t4YfllXTM4SSGuEjUd7FPs7E26XM9jtnd1xIxFSQlwNZx2gCGeTVTZrVaLmp
-         lZjFMuDC3Gtr7WtmrzP8hlATvkxtQJn3MUyPZ/32g7w0cixe0KS6a6ArHfsrREbTQMoV
-         PXD6UNO7f1+eoOijDjSFWQziCeRYlpR2qQuNorYAmPQS3WvJk2CRQZLwXZWNVKh+bKUr
-         G9xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=7XCMouDowcv3LrNhIXPQ3Y5PTFI9QQ/MPyoPgacMrBE=;
-        b=6/NO9OvTWXZifmc7vcE/mWQOjQu1ffwPXpzSIgUbfWM1azwEDpdTRd3peJ1Jnm0bU6
-         2DwpidEL324/ji6jr5htlZCQibDvWyeGKipnuXhm5S2xz+3C6kjeA5SysGQCg4XCsUZM
-         EAshXMc+ZpeyTbrs1HJH5Lp+o8wcN5C3Df03CRclZC/wsl4YcpK2IzMbrZ19AHTLGxlp
-         sFP5moOb3OuSzcwtlrACr3l3+sQ0MwTfqtM7bXO7vDHmWqTMQRthLuJXN2y3av2DrYce
-         aSCanuyDlOfCKwD0raOqC3x9Hvi7LiuIXrYobB60UisdzDApopKNs+SFxxRsQ6c7cFxC
-         SMHQ==
-X-Gm-Message-State: ACgBeo0EVyNj+az11dTsCiyI5OiwKLVOWzULdcnKBjdSoHf4T578IGmP
-        IGJ0KrESllMgP/JxNYlXGXIx2Q==
-X-Google-Smtp-Source: AA6agR4Q2zKJuK5lITEVBPgcjvjTJoOGAyrwneRqBBawJ91Q6mMigIMsYYnZ8xwOnk8YuaziOl5CDQ==
-X-Received: by 2002:a05:6512:a8f:b0:48b:685b:4ebc with SMTP id m15-20020a0565120a8f00b0048b685b4ebcmr976744lfu.258.1660298582823;
-        Fri, 12 Aug 2022 03:03:02 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id l6-20020a19c206000000b0048a9f1933f2sm155333lfc.247.2022.08.12.03.02.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 03:03:02 -0700 (PDT)
-Message-ID: <a9a0e625-6476-02b4-18ba-9ab2e4e9925b@linaro.org>
-Date:   Fri, 12 Aug 2022 13:02:57 +0300
+        Fri, 12 Aug 2022 06:03:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9A3AA4E3;
+        Fri, 12 Aug 2022 03:03:53 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M3zg318qszXdVQ;
+        Fri, 12 Aug 2022 17:59:43 +0800 (CST)
+Received: from huawei.com (10.67.174.191) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 12 Aug
+ 2022 18:03:50 +0800
+From:   Li Hua <hucool.lihua@huawei.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
+        <vschneid@redhat.com>
+CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
+Subject: [PATCH -next] sched/cputime: Fix the bug of reading time backward from /proc/stat
+Date:   Sat, 13 Aug 2022 08:01:02 +0800
+Message-ID: <20220813000102.42051-1-hucool.lihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 18/26] thermal/drivers/exynos: Replace
- of_thermal_is_trip_valid() by thermal_zone_get_trip()
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        "open list:SAMSUNG THERMAL DRIVER" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "moderated list:ARM/SAMSUNG S3C, S5P AND EXYNOS ARM ARCHITECTURES" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220809220436.711020-1-daniel.lezcano@linaro.org>
- <20220809220436.711020-19-daniel.lezcano@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220809220436.711020-19-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.174.191]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/08/2022 01:04, Daniel Lezcano wrote:
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+The problem that the statistical time goes backward, the value read first is 319, and the value read again is 318. As follows：
+first：
+cat /proc/stat |  grep cpu1
+cpu1    319    0    496    41665    0    0    0    0    0    0
+then：
+cat /proc/stat |  grep cpu1
+cpu1    318    0    497    41674    0    0    0    0    0    0
 
-Missing commit msg.
+Time goes back, which is counterintuitive.
 
-> ---
->  drivers/thermal/samsung/exynos_tmu.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
+After debug this, The problem is caused by the implementation of kcpustat_cpu_fetch_vtime. As follows：
 
+                              CPU0                                                                          CPU1
+First:
+show_stat():
+    ->kcpustat_cpu_fetch()
+        ->kcpustat_cpu_fetch_vtime()
+            ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu) + vtime->utime + delta;              rq->curr is in user mod
+             ---> When CPU1 rq->curr running on userspace, need add utime and delta
+                                                                                             --->  rq->curr->vtime->utime is less than 1 tick
+Then:
+show_stat():
+    ->kcpustat_cpu_fetch()
+        ->kcpustat_cpu_fetch_vtime()
+            ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu);                                     rq->curr is in kernel mod
+            ---> When CPU1 rq->curr running on kernel space, just got kcpustat
 
+Fixes: 74722bb223d0 ("sched/vtime: Bring up complete kcpustat accessor")
+Signed-off-by: Li Hua <hucool.lihua@huawei.com>
+---
+ kernel/sched/core.c    |  1 +
+ kernel/sched/cputime.c | 33 ++++++++++++++++++++++++++++++++-
+ kernel/sched/sched.h   |  6 ++++++
+ 3 files changed, 39 insertions(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 189999007f32..c542b61cab54 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -9753,6 +9753,7 @@ void __init sched_init(void)
+ 
+ 		rq->core_cookie = 0UL;
+ #endif
++		cputime_cpu_init(i);
+ 	}
+ 
+ 	set_load_weight(&init_task, false);
+diff --git a/kernel/sched/cputime.c b/kernel/sched/cputime.c
+index 95fc77853743..ba3bcb40795e 100644
+--- a/kernel/sched/cputime.c
++++ b/kernel/sched/cputime.c
+@@ -1060,6 +1060,19 @@ static int kcpustat_cpu_fetch_vtime(struct kernel_cpustat *dst,
+ 	return 0;
+ }
+ 
++/*
++ * Stores the time of the last acquisition, which is used to handle the case of
++ * time backwards.
++ */
++static DEFINE_PER_CPU(struct kernel_cpustat, cpustat_prev);
++static DEFINE_PER_CPU(raw_spinlock_t, cpustat_prev_lock);
++
++void cputime_cpu_init(int cpu)
++{
++	raw_spin_lock_init(per_cpu_ptr(&cpustat_prev_lock, cpu));
++}
++
++
+ void kcpustat_cpu_fetch(struct kernel_cpustat *dst, int cpu)
+ {
+ 	const struct kernel_cpustat *src = &kcpustat_cpu(cpu);
+@@ -1087,8 +1100,26 @@ void kcpustat_cpu_fetch(struct kernel_cpustat *dst, int cpu)
+ 		err = kcpustat_cpu_fetch_vtime(dst, src, curr, cpu);
+ 		rcu_read_unlock();
+ 
+-		if (!err)
++		if (!err) {
++			int i;
++			int map[5] = {CPUTIME_USER, CPUTIME_SYSTEM, CPUTIME_NICE,
++				CPUTIME_GUEST, CPUTIME_GUEST_NICE};
++			struct kernel_cpustat *prev = &per_cpu(cpustat_prev, cpu);
++			raw_spinlock_t *cpustat_lock = &per_cpu(cpustat_prev_lock, cpu);
++			u64 *dst_stat = dst->cpustat;
++			u64 *prev_stat = prev->cpustat;
++
++			raw_spin_lock(cpustat_lock);
++			for (i = 0; i < 5; i++) {
++				int idx = map[i];
++
++				if (dst_stat[idx] < prev_stat[idx])
++					dst_stat[idx] = prev_stat[idx];
++			}
++			*prev = *dst;
++			raw_spin_unlock(cpustat_lock);
+ 			return;
++		}
+ 
+ 		cpu_relax();
+ 	}
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index a6f071b2acac..cbe09795a394 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -3156,4 +3156,10 @@ extern int sched_dynamic_mode(const char *str);
+ extern void sched_dynamic_update(int mode);
+ #endif
+ 
++#ifdef CONFIG_VIRT_CPU_ACCOUNTING_GEN
++extern void cputime_cpu_init(int cpu);
++#else
++static inline void cputime_cpu_init(int cpu) {}
++#endif
++
+ #endif /* _KERNEL_SCHED_SCHED_H */
+-- 
+2.17.1
+
