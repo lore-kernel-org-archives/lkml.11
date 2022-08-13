@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E5FC28B2C
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 05:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79748C25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 05:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237455AbiHMFcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 01:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        id S237649AbiHMFc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 01:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiHMFcs (ORCPT
+        with ESMTP id S230190AbiHMFct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 01:32:48 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38453DF9E;
-        Fri, 12 Aug 2022 22:32:47 -0700 (PDT)
+        Sat, 13 Aug 2022 01:32:49 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3199715FE2;
+        Fri, 12 Aug 2022 22:32:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660368767; x=1691904767;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tmicp3+kpfzbTsvkNaEOyBuVCc8qYON6duVW3+Q/kzI=;
-  b=h7tAnusI/x/PffFpQcSt+5kzmY5N0Aa9rTG/9LDZKxyKHMPllJBxOk9k
-   +UCqgzerEcFEOVhU4CayCsOtf1CgpBA6qGFEkOOyoy9x/PF0lXhT67GVI
-   J4YsBcrW8cxF04xoI/UzUpZrXh1YSpelQOq/fShPoC9Ttl5rWDohSA7LU
-   ES7BWBOdMCKvZ3Fvft6K+w71L0Sw9XwTxluJCJ2LIzrclrX8+OXNghaHL
-   6ERANUIjrSJN9Afvt3kFBpZCbPW/4IMcgg2WfYkaiq4GHz+T4ZTWfxcIk
-   OucvFgfdE/ezoImaiHtLV3XWOc/3X0COpE4lq7sLM2R/yTWnMBd9IgAjs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="292999041"
+  t=1660368768; x=1691904768;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=d1DTy5vEq7Z1cMY93je0MYyE4ahLNdbBXKCQ9gUZFu4=;
+  b=nPffqWBYyUBKOXtEZmVFfIZUaPRt0Ki85P/jz+p5EVr0qAAXZuyDCPLl
+   Az2BBl4NMOlWoVi/SSLFQTZ0DGxkakeiudkl9TzDZ03Mg7RU2l41yGvUb
+   BWjGpqyDfKBdK2Md1NFope3OS3VHG/7sEMbbMiNBYLUmovTh+AjaVVGsH
+   FhqyEQ5DCXi6gF8MtmKL1GMZdLtdE9yFZdWviobcaLtODkzF4kntxGhX4
+   9kw62JXn2tWXR7T4OMwy0E2Jgr1E+tLQCUxXwu7weaowE13ateaUn53hi
+   L1RyWNklQLBIxTAvI8h3PpG6Hi/PKCUFrGWHK9y2frcTFIc4U9dlhqfnf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="274784582"
 X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="292999041"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:32:46 -0700
+   d="scan'208";a="274784582"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:32:47 -0700
 X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="851775408"
+   d="scan'208";a="732440532"
 Received: from jchen8-mobl.amr.corp.intel.com (HELO localhost) ([10.212.10.85])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:32:45 -0700
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:32:47 -0700
 From:   ira.weiny@intel.com
 To:     Dan Williams <dan.j.williams@intel.com>
 Cc:     Ira Weiny <ira.weiny@intel.com>,
@@ -47,10 +47,12 @@ Cc:     Ira Weiny <ira.weiny@intel.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Davidlohr Bueso <dave@stgolabs.net>,
         linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org
-Subject: [RFC PATCH 0/9] CXL: Read and clear event logs
-Date:   Fri, 12 Aug 2022 22:32:34 -0700
-Message-Id: <20220813053243.757363-1-ira.weiny@intel.com>
+Subject: [RFC PATCH 2/9] cxl/mem: Implement Clear Event Records command
+Date:   Fri, 12 Aug 2022 22:32:36 -0700
+Message-Id: <20220813053243.757363-3-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220813053243.757363-1-ira.weiny@intel.com>
+References: <20220813053243.757363-1-ira.weiny@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -59,49 +61,136 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Event records inform the OS of various device events.  Events are not needed
-for any kernel operation but various user level software will want to track
-events.
+CXL v3.0 section 8.2.9.2.3 defines the Clear Event Records mailbox
+command.  After an event record is read it needs to be cleared from the
+event log.
 
-Add event reporting through the trace event mechanism.  On driver load read and
-clear all device events.
+Implement cxl_clear_event_record() and call it for each record retrieved
+from the device.
 
-Normally interrupts will trigger new events to be reported as they occur.
-Because the interrupt code is still being worked on this series provides a
-cxl-test mechanism to create a series of events and trigger the reporting of
-those events.
+Each record is cleared individually.  A clear all bit is specified but
+events could arrive between a get and the final clear all operation.
+Therefore each event is cleared specifically.
 
-This series is submitted as an RFC for a few reasons:
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+---
+ drivers/cxl/core/mbox.c      | 31 ++++++++++++++++++++++++++++---
+ drivers/cxl/cxlmem.h         | 15 +++++++++++++++
+ include/uapi/linux/cxl_mem.h |  1 +
+ 3 files changed, 44 insertions(+), 3 deletions(-)
 
-	1) Interrupt support is still missing
-	2) I'd like to get comments on the format of the trace events
-	3) Some of the event formats are badly aligned and I would like to see
-	   if there is any clarification on how the data will be formatted
-	   (See individual patches for details)
-
-Ira Weiny (9):
-  cxl/mem: Implement Get Event Records command
-  cxl/mem: Implement Clear Event Records command
-  cxl/mem: Clear events on driver load
-  cxl/mem: Trace General Media Event Record
-  cxl/mem: Trace DRAM Event Record
-  cxl/mem: Trace Memory Module Event Record
-  cxl/test: Add generic mock events
-  cxl/test: Add specific events
-  cxl/test: Simulate event log overflow
-
- MAINTAINERS                       |   1 +
- drivers/cxl/core/mbox.c           | 143 ++++++++
- drivers/cxl/cxlmem.h              | 149 +++++++++
- drivers/cxl/pci.c                 |   2 +
- include/trace/events/cxl-events.h | 521 ++++++++++++++++++++++++++++++
- include/uapi/linux/cxl_mem.h      |   2 +
- tools/testing/cxl/test/mem.c      | 399 +++++++++++++++++++++++
- 7 files changed, 1217 insertions(+)
- create mode 100644 include/trace/events/cxl-events.h
-
-
-base-commit: 1cd8a2537eb07751d405ab7e2223f20338a90506
+diff --git a/drivers/cxl/core/mbox.c b/drivers/cxl/core/mbox.c
+index 2cceed8608dc..493f5ceb5d1c 100644
+--- a/drivers/cxl/core/mbox.c
++++ b/drivers/cxl/core/mbox.c
+@@ -52,6 +52,7 @@ static struct cxl_mem_command cxl_mem_commands[CXL_MEM_COMMAND_ID_MAX] = {
+ #endif
+ 	CXL_CMD(GET_SUPPORTED_LOGS, 0, CXL_VARIABLE_PAYLOAD, CXL_CMD_FLAG_FORCE_ENABLE),
+ 	CXL_CMD(GET_EVENT_RECORD, 1, CXL_VARIABLE_PAYLOAD, 0),
++	CXL_CMD(CLEAR_EVENT_RECORD, CXL_VARIABLE_PAYLOAD, 0, 0),
+ 	CXL_CMD(GET_FW_INFO, 0, 0x50, 0),
+ 	CXL_CMD(GET_PARTITION_INFO, 0, 0x20, 0),
+ 	CXL_CMD(GET_LSA, 0x8, CXL_VARIABLE_PAYLOAD, 0),
+@@ -708,6 +709,26 @@ int cxl_enumerate_cmds(struct cxl_dev_state *cxlds)
+ }
+ EXPORT_SYMBOL_NS_GPL(cxl_enumerate_cmds, CXL);
+ 
++static int cxl_clear_event_record(struct cxl_dev_state *cxlds,
++				  enum cxl_event_log_type log,
++				  __le16 handle)
++{
++	struct cxl_mbox_clear_event_payload payload;
++	int rc;
++
++	memset(&payload, 0, sizeof(payload));
++	payload.event_log = log;
++	payload.nr_recs = 1;
++	payload.handle = handle;
++
++	rc = cxl_mbox_send_cmd(cxlds, CXL_MBOX_OP_CLEAR_EVENT_RECORD,
++			       &payload, sizeof(payload), NULL, 0);
++	if (rc)
++		return rc;
++
++	return 0;
++}
++
+ static int cxl_mem_get_records_log(struct cxl_dev_state *cxlds,
+ 				   enum cxl_event_log_type type)
+ {
+@@ -725,9 +746,12 @@ static int cxl_mem_get_records_log(struct cxl_dev_state *cxlds,
+ 			return rc;
+ 
+ 		record_count = le16_to_cpu(payload.record_count);
+-		if (record_count > 0)
++		if (record_count > 0) {
+ 			trace_cxl_event(dev_name(cxlds->dev), type,
+ 					&payload.record);
++			cxl_clear_event_record(cxlds, type,
++					       payload.record.hdr.handle);
++		}
+ 
+ 		if (payload.flags & CXL_GET_EVENT_FLAG_OVERFLOW)
+ 			trace_cxl_event_overflow(dev_name(cxlds->dev), type,
+@@ -742,10 +766,11 @@ static int cxl_mem_get_records_log(struct cxl_dev_state *cxlds,
+  * cxl_mem_get_event_records - Get Event Records from the device
+  * @cxlds: The device data for the operation
+  *
+- * Retrieve all event records available on the device and report them as trace
+- * events.
++ * Retrieve all event records available on the device, report them as trace
++ * events, and clear them.
+  *
+  * See CXL v3.0 @8.2.9.2.2 Get Event Records
++ * See CXL v3.0 @8.2.9.2.3 Clear Event Records
+  */
+ void cxl_mem_get_event_records(struct cxl_dev_state *cxlds)
+ {
+diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
+index f83634f3bc8d..5506e7210cf6 100644
+--- a/drivers/cxl/cxlmem.h
++++ b/drivers/cxl/cxlmem.h
+@@ -255,6 +255,7 @@ enum cxl_opcode {
+ 	CXL_MBOX_OP_INVALID		= 0x0000,
+ 	CXL_MBOX_OP_RAW			= CXL_MBOX_OP_INVALID,
+ 	CXL_MBOX_OP_GET_EVENT_RECORD	= 0x0100,
++	CXL_MBOX_OP_CLEAR_EVENT_RECORD	= 0x0101,
+ 	CXL_MBOX_OP_GET_FW_INFO		= 0x0200,
+ 	CXL_MBOX_OP_ACTIVATE_FW		= 0x0202,
+ 	CXL_MBOX_OP_GET_SUPPORTED_LOGS	= 0x0400,
+@@ -387,6 +388,20 @@ static inline char *cxl_event_log_type_str(enum cxl_event_log_type type)
+ 	return "<unknown>";
+ }
+ 
++/*
++ * Clear Event Records input payload
++ * CXL v3.0 section 8.2.9.2.3; Table 8-51
++ *
++ * Space given for 1 record
++ */
++struct cxl_mbox_clear_event_payload {
++	u8 event_log;		/* enum cxl_event_log_type */
++	u8 clear_flags;
++	u8 nr_recs;		/* 1 for this struct */
++	u8 reserved[3];
++	__le16 handle;
++};
++
+ struct cxl_mbox_get_partition_info {
+ 	__le64 active_volatile_cap;
+ 	__le64 active_persistent_cap;
+diff --git a/include/uapi/linux/cxl_mem.h b/include/uapi/linux/cxl_mem.h
+index 70459be5bdd4..7c1ad8062792 100644
+--- a/include/uapi/linux/cxl_mem.h
++++ b/include/uapi/linux/cxl_mem.h
+@@ -25,6 +25,7 @@
+ 	___C(RAW, "Raw device command"),                                  \
+ 	___C(GET_SUPPORTED_LOGS, "Get Supported Logs"),                   \
+ 	___C(GET_EVENT_RECORD, "Get Event Record"),                       \
++	___C(CLEAR_EVENT_RECORD, "Clear Event Record"),                   \
+ 	___C(GET_FW_INFO, "Get FW Info"),                                 \
+ 	___C(GET_PARTITION_INFO, "Get Partition Information"),            \
+ 	___C(GET_LSA, "Get Label Storage Area"),                          \
 -- 
 2.35.3
 
