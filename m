@@ -2,143 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AA3C25B08
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 05:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EEDC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 05:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238384AbiHMFdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 01:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        id S238787AbiHMFeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 01:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiHMFcy (ORCPT
+        with ESMTP id S238528AbiHMFdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 01:32:54 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A87815FF6;
-        Fri, 12 Aug 2022 22:32:53 -0700 (PDT)
+        Sat, 13 Aug 2022 01:33:50 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE15979E6
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 22:33:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660368773; x=1691904773;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tWwKqwlwjZMGb4gFh11czex8oobZlhqsXrYY+JH8bzQ=;
-  b=k2SeLI8BW4s66qIdMeTUiac8ca7zsVjL06Kq1wlKObVflXzdLmWXiD/3
-   aW+bW7H9vSzb5y422cjIu5wB8Lr85JXj/ACCBM6HMkiAMUekejNCCsChG
-   6e4jndccIfnQUGpC/NceurTmgVxVhjqsiPiMzlkuMJZEAHcJqqD03Imwe
-   JU4wmmmHJM0yFclIPgEOPmHPw3RALJt//YSKcx3ChRIn3IEuiOoGR4BE6
-   nE2HYyoKDA+GV5LY9wOpDDJ771bbpeeSNngNhNkjpslF+LL1ysnpNAAXf
-   vX2ld4HHSQmDGWruYpgBOSB6ibTu6vSqpzKnLsmjWyI2v1DZGMvNi4qur
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="278684328"
+  t=1660368791; x=1691904791;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=hMnryVYeFDtALetXD12TG+Eg8Uw+lXmQZEkKo2pjS5c=;
+  b=d7qsKAigSo/Kp6sF+j3wwxinob4eEViVUfRmVKdMh9QgToQdScI7IIMp
+   t/6Fc1Y1MnHaAEzFddj7uGnL9WrYietCpXzS4kc48xVWfsd3WrrH50P6F
+   GLfL8y5hswagymUVNAqXYZ68odUPYr1xFCA2W7/MqDARzZOD8tIG3qswM
+   I82LOQfSt8hSGmzzW7fXAtDrfZzCqoPAU/zLxbXJ7RnbR4T733mRs+/rI
+   LjYh/ObB20jw97uq8Hxak9G7nlvVBV3Zts0Eqtt9Hu9v8Up0NLLS7Iw3H
+   qbKYdSWPrd+++lmX68koOu5WJXMskgs/8WYT1zSy8uapBK8ipSVE5Bvzi
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="274784620"
 X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="278684328"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:32:52 -0700
+   d="scan'208";a="274784620"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:33:10 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="582320729"
-Received: from jchen8-mobl.amr.corp.intel.com (HELO localhost) ([10.212.10.85])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 22:32:52 -0700
-From:   ira.weiny@intel.com
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org
-Subject: [RFC PATCH 9/9] cxl/test: Simulate event log overflow
-Date:   Fri, 12 Aug 2022 22:32:43 -0700
-Message-Id: <20220813053243.757363-10-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220813053243.757363-1-ira.weiny@intel.com>
-References: <20220813053243.757363-1-ira.weiny@intel.com>
+   d="scan'208";a="695472804"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Aug 2022 22:33:09 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMjlk-0001Lj-3C;
+        Sat, 13 Aug 2022 05:33:08 +0000
+Date:   Sat, 13 Aug 2022 13:32:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>
+Subject: arch/s390/kvm/pci.h:47:69: sparse: sparse: Using plain integer as
+ NULL pointer
+Message-ID: <202208131353.8ChUuYVb-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   69dac8e431af26173ca0a1ebc87054e01c585bcc
+commit: 73f91b004321f2510fa79e66035dbbf1870fcf56 KVM: s390: pci: enable host forwarding of Adapter Event Notifications
+date:   5 weeks ago
+config: s390-randconfig-s053-20220811 (https://download.01.org/0day-ci/archive/20220813/202208131353.8ChUuYVb-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=73f91b004321f2510fa79e66035dbbf1870fcf56
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 73f91b004321f2510fa79e66035dbbf1870fcf56
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
 
-Log overflow is marked by a separate trace message.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Simulate a log with lots of messages and flag overflow until it is
-drained a bit.
+sparse warnings: (new ones prefixed by >>)
+   arch/s390/kvm/interrupt.c: note: in included file:
+>> arch/s390/kvm/pci.h:47:69: sparse: sparse: Using plain integer as NULL pointer
+   arch/s390/kvm/pci.h:48:32: sparse: sparse: Using plain integer as NULL pointer
+   arch/s390/kvm/pci.h:49:24: sparse: sparse: Using plain integer as NULL pointer
 
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
----
- tools/testing/cxl/test/mem.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+vim +47 arch/s390/kvm/pci.h
 
-diff --git a/tools/testing/cxl/test/mem.c b/tools/testing/cxl/test/mem.c
-index c5d7857ae2e5..87e6b10896c9 100644
---- a/tools/testing/cxl/test/mem.c
-+++ b/tools/testing/cxl/test/mem.c
-@@ -244,6 +244,15 @@ static void event_store_add_event(struct mock_event_store *es,
- 	log->nr_events++;
- }
- 
-+static u16 log_overflow(struct mock_event_log *log)
-+{
-+	int cnt = log_rec_left(log) - 5;
-+
-+	if (cnt < 0)
-+		return 0;
-+	return cnt;
-+}
-+
- /*
-  * Get and clear event only handle 1 record at a time as this is what is
-  * currently implemented in the main code.
-@@ -253,6 +262,7 @@ static int mock_get_event(struct cxl_dev_state *cxlds, struct cxl_mbox_cmd *cmd)
- 	struct cxl_get_event_payload *pl;
- 	struct mock_event_log *log;
- 	u8 log_type;
-+	u16 nr_overflow;
- 
- 	/* Valid request? */
- 	if (cmd->size_in != 1)
-@@ -278,6 +288,20 @@ static int mock_get_event(struct cxl_dev_state *cxlds, struct cxl_mbox_cmd *cmd)
- 	if (log_rec_left(log) > 1)
- 		pl->flags |= CXL_GET_EVENT_FLAG_MORE_RECORDS;
- 
-+	nr_overflow = log_overflow(log);
-+	if (nr_overflow) {
-+		u64 ns;
-+
-+		pl->flags |= CXL_GET_EVENT_FLAG_OVERFLOW;
-+		pl->overflow_err_count = cpu_to_le16(nr_overflow);
-+		ns = ktime_get_real_ns();
-+		ns -= 5000000000; /* 5s ago */
-+		pl->first_overflow_timestamp = cpu_to_le64(ns);
-+		ns = ktime_get_real_ns();
-+		ns -= 1000000000; /* 1s ago */
-+		pl->last_overflow_timestamp = cpu_to_le64(ns);
-+	}
-+
- 	memcpy(&pl->record, get_cur_event(log), sizeof(pl->record));
- 	pl->record.hdr.handle = get_cur_event_handle(log);
- 	return 0;
-@@ -483,6 +507,18 @@ static void devm_cxl_mock_event_logs(struct cxl_memdev *cxlmd)
- 	event_store_add_event(es, CXL_EVENT_TYPE_INFO,
- 			      (struct cxl_event_record_raw *)&mem_mod_rec);
- 
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL, &maint_needed);
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL, &hardware_replace);
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL,
-+			      (struct cxl_event_record_raw *)&dram_rec);
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL,
-+			      (struct cxl_event_record_raw *)&gen_media);
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL,
-+			      (struct cxl_event_record_raw *)&mem_mod_rec);
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL, &hardware_replace);
-+	event_store_add_event(es, CXL_EVENT_TYPE_FAIL,
-+			      (struct cxl_event_record_raw *)&dram_rec);
-+
- 	event_store_add_event(es, CXL_EVENT_TYPE_FATAL, &hardware_replace);
- 	event_store_add_event(es, CXL_EVENT_TYPE_FATAL,
- 			      (struct cxl_event_record_raw *)&dram_rec);
+    43	
+    44	static inline struct kvm *kvm_s390_pci_si_to_kvm(struct zpci_aift *aift,
+    45							 unsigned long si)
+    46	{
+  > 47		if (!IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM) || aift->kzdev == 0 ||
+    48		    aift->kzdev[si] == 0)
+    49			return 0;
+    50		return aift->kzdev[si]->kvm;
+    51	};
+    52	
+
 -- 
-2.35.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
