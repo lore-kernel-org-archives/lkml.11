@@ -2,498 +2,411 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7883EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A14C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239783AbiHMPfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 11:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48786 "EHLO
+        id S239789AbiHMPgj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 11:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239671AbiHMPfs (ORCPT
+        with ESMTP id S239671AbiHMPgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 11:35:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC6520BC5;
-        Sat, 13 Aug 2022 08:35:46 -0700 (PDT)
+        Sat, 13 Aug 2022 11:36:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E841822BCB
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 08:36:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6363B801BF;
-        Sat, 13 Aug 2022 15:35:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65329C433D6;
-        Sat, 13 Aug 2022 15:35:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90A2C60EDC
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 15:36:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 532E0C433C1;
+        Sat, 13 Aug 2022 15:36:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660404943;
-        bh=H+193s9DhJA+Fo+1yQtUSKQ/Q5LCMqL5XgyPBlKN9iM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=awR9jlAgHn06cl1vhF3zgZ4uZsd98vev6ArN5JzdTNjlXO3+QBqNbjBNOi0fhFqGz
-         G5xETOIQbS4eacFez5N3d0j1uw6kH5WKR5zSp0Nrp713gqnQjtBPCtO0kxGnmKjY0f
-         JD+CQejRE5uTr+J/Ba19U9PMtT3dvxdAYw5X8+bRQlfgRkIZnuKnsl1RQDmCKRdQhz
-         poVbpv0LRHsvzGAW2khsaoJXWSdgxnm1zKGTGcw3liaDhdN/u5ZE9v6ZsSGppbKgUb
-         vxYeoZ1y3DOWoRlK56myGWtVQMUT5gkiXrk8D5Nnwch4G+00BcZEwgQ8/zE+q7+/Tt
-         5O5IYB13Ysc0g==
-Date:   Sat, 13 Aug 2022 16:46:06 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        cy_huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        szuni chen <szunichen@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v7 09/13] iio: adc: mt6370: Add MediaTek MT6370 support
-Message-ID: <20220813164606.3ed93322@jic23-huawei>
-In-Reply-To: <CAHp75VexyNqEFKY4PG_jYQxQGmdvE12SeuvMzHThfPY-gB4f7A@mail.gmail.com>
-References: <20220805070610.3516-1-peterwu.pub@gmail.com>
-        <20220805070610.3516-10-peterwu.pub@gmail.com>
-        <CAHp75VexyNqEFKY4PG_jYQxQGmdvE12SeuvMzHThfPY-gB4f7A@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1660404996;
+        bh=aIkHSHxyHwfpffFyo2wXcqTzAgNp9HHRy9jdwm5R2+M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tigCy1ZdHbuXYvL7rmE0z2jDiIUUhfp2lQHp1lr5ifcr27+BUHOhIDK4DRwOiXe0B
+         3QdP/vL1vHNdQtHlHGT/7pP2u6ZTZaEpfJ8KFdVGW7o4gQWB8luHJ8/mM6EUfloHxr
+         5RDLEjFDA0aIJuMvW4FSE44c+XdXbCgOMGqGGwIzHB4AKOs9QzzqhicYjRtubrngRt
+         IhiBWHrXYlo8S1CwC4Jwunrut6R1M9SBcGXhRJTTl130QJqMHtfiObm3Hi2/7IfTca
+         VoQTjnlkA0wQ1K6wGCgsLf2rrJfWCBd0uTfsa0xWtY1tf0CcizfcVjdqPqtNSq+RH7
+         mbzZgqYcNiP8A==
+Date:   Sat, 13 Aug 2022 18:36:20 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Zi Yan <ziy@nvidia.com>
+Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>,
+        David Rientjes <rientjes@google.com>,
+        James Houghton <jthoughton@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 01/12] arch: mm: rename FORCE_MAX_ZONEORDER to
+ ARCH_FORCE_MAX_ORDER
+Message-ID: <YvfE9JT5XEPDUcAg@kernel.org>
+References: <20220811231643.1012912-1-zi.yan@sent.com>
+ <20220811231643.1012912-2-zi.yan@sent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220811231643.1012912-2-zi.yan@sent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 5 Aug 2022 12:54:04 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> On Fri, Aug 5, 2022 at 9:07 AM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
-> >
-> > From: ChiaEn Wu <chiaen_wu@richtek.com>
-> >
-> > MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
-> > with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
-> > driver, display bias voltage supply, one general purpose LDO, and the
-> > USB Type-C & PD controller complies with the latest USB Type-C and PD
-> > standards.
-> >
-> > Add a support for the MT6370 ADC driver for system monitoring, including
-> > charger current, voltage, and temperature.  
+On Thu, Aug 11, 2022 at 07:16:32PM -0400, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
 > 
-> On Fri, Aug 5, 2022 at 9:07 AM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
-> >
-> > From: ChiYuan Huang <cy_huang@richtek.com>
-> >
-> > The MediaTek MT6370 is a highly-integrated smart power management IC,
-> > which includes a single cell Li-Ion/Li-Polymer switching battery
-> > charger, a USB Type-C & Power Delivery (PD) controller, dual
-> > Flash LED current sources, a RGB LED driver, a backlight WLED driver,
-> > a display bias driver and a general LDO for portable devices.
-> >
-> > Add a support for the Type-C & Power Delivery controller in
-> > MediaTek MT6370 IC.  
+> This Kconfig option is used by individual arch to set its desired
+> MAX_ORDER. Rename it to reflect its actual use.
 > 
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Oops. I just noticed I replied only to Andy due to a misclick.
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
+> Cc: Vineet Gupta <vgupta@synopsys.com>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Guo Ren <guoren@kernel.org>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: Ley Foon Tan <ley.foon.tan@intel.com>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Chris Zankel <chris@zankel.net>
+> Cc: linux-snps-arc@lists.infradead.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-oxnas@groups.io
+> Cc: linux-csky@vger.kernel.org
+> Cc: linux-ia64@vger.kernel.org
+> Cc: linux-m68k@lists.linux-m68k.org
+> Cc: linux-mips@vger.kernel.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-sh@vger.kernel.org
+> Cc: sparclinux@vger.kernel.org
+> Cc: linux-xtensa@linux-xtensa.org
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  arch/arc/Kconfig                             | 2 +-
+>  arch/arm/Kconfig                             | 2 +-
+>  arch/arm/configs/imx_v6_v7_defconfig         | 2 +-
+>  arch/arm/configs/milbeaut_m10v_defconfig     | 2 +-
+>  arch/arm/configs/oxnas_v6_defconfig          | 2 +-
+>  arch/arm/configs/sama7_defconfig             | 2 +-
+>  arch/arm64/Kconfig                           | 2 +-
+>  arch/csky/Kconfig                            | 2 +-
+>  arch/ia64/Kconfig                            | 2 +-
+>  arch/ia64/include/asm/sparsemem.h            | 6 +++---
+>  arch/m68k/Kconfig.cpu                        | 2 +-
+>  arch/mips/Kconfig                            | 2 +-
+>  arch/nios2/Kconfig                           | 2 +-
+>  arch/powerpc/Kconfig                         | 2 +-
+>  arch/powerpc/configs/85xx/ge_imp3a_defconfig | 2 +-
+>  arch/powerpc/configs/fsl-emb-nonhw.config    | 2 +-
+>  arch/sh/configs/ecovec24_defconfig           | 2 +-
+>  arch/sh/mm/Kconfig                           | 2 +-
+>  arch/sparc/Kconfig                           | 2 +-
+>  arch/xtensa/Kconfig                          | 2 +-
+>  include/linux/mmzone.h                       | 4 ++--
+>  21 files changed, 24 insertions(+), 24 deletions(-)
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This misses arch/loongarch.
 
-I took a quick glance through, and with Andy's comments now all answered
-to his satisfaction I'm fine with this going through the MFD tree
-(or another path if one makes more sense).
+Other than that I think its a good cleanup regardless of the rest of the
+series.
 
-Thanks to Andy for his reviewing effort on this one!
-
-Note that because of the bindings header I think this has a build dependency on the
-MFD binding patch.
-
-Jonathan
-
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 
 > 
-> > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
-> > ---
-> >
-> > v7
-> > - Add AICR(100mA ~ 350mA), ICHG(100mA ~ 800mA) macros
-> > - Remove 400mA AICR and 900mA ICHG macros
-> > - Revise using 'if-else' to 'switch-case' in mt6370_adc_read_scale()
-> >   where the adc channel is ibus or ibat
-> > ---
-> >  drivers/iio/adc/Kconfig      |  12 ++
-> >  drivers/iio/adc/Makefile     |   1 +
-> >  drivers/iio/adc/mt6370-adc.c | 305 +++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 318 insertions(+)
-> >  create mode 100644 drivers/iio/adc/mt6370-adc.c
-> >
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index 7fe5930..995cbb5 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -736,6 +736,18 @@ config MEDIATEK_MT6360_ADC
-> >           is used in smartphones and tablets and supports a 11 channel
-> >           general purpose ADC.
-> >
-> > +config MEDIATEK_MT6370_ADC
-> > +       tristate "MediaTek MT6370 ADC driver"
-> > +       depends on MFD_MT6370
-> > +       help
-> > +         Say yes here to enable MediaTek MT6370 ADC support.
-> > +
-> > +         This ADC driver provides 9 channels for system monitoring (charger
-> > +         current, voltage, and temperature).
-> > +
-> > +         This driver can also be built as a module. If so, the module
-> > +         will be called "mt6370-adc".
-> > +
-> >  config MEDIATEK_MT6577_AUXADC
-> >         tristate "MediaTek AUXADC driver"
-> >         depends on ARCH_MEDIATEK || COMPILE_TEST
-> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> > index 1772a54..c6bc35f 100644
-> > --- a/drivers/iio/adc/Makefile
-> > +++ b/drivers/iio/adc/Makefile
-> > @@ -68,6 +68,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
-> >  obj-$(CONFIG_MCP3422) += mcp3422.o
-> >  obj-$(CONFIG_MCP3911) += mcp3911.o
-> >  obj-$(CONFIG_MEDIATEK_MT6360_ADC) += mt6360-adc.o
-> > +obj-$(CONFIG_MEDIATEK_MT6370_ADC) += mt6370-adc.o
-> >  obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
-> >  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
-> >  obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
-> > diff --git a/drivers/iio/adc/mt6370-adc.c b/drivers/iio/adc/mt6370-adc.c
-> > new file mode 100644
-> > index 0000000..2a46471
-> > --- /dev/null
-> > +++ b/drivers/iio/adc/mt6370-adc.c
-> > @@ -0,0 +1,305 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2022 Richtek Technology Corp.
-> > + *
-> > + * Author: ChiaEn Wu <chiaen_wu@richtek.com>
-> > + */
-> > +
-> > +#include <linux/bits.h>
-> > +#include <linux/bitfield.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/mod_devicetable.h>
-> > +#include <linux/module.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/regmap.h>
-> > +#include <linux/sysfs.h>
-> > +#include <linux/units.h>
-> > +
-> > +#include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
-> > +
-> > +#define MT6370_REG_CHG_CTRL3           0x113
-> > +#define MT6370_REG_CHG_CTRL7           0x117
-> > +#define MT6370_REG_CHG_ADC             0x121
-> > +#define MT6370_REG_ADC_DATA_H          0x14C
-> > +
-> > +#define MT6370_ADC_START_MASK          BIT(0)
-> > +#define MT6370_ADC_IN_SEL_MASK         GENMASK(7, 4)
-> > +#define MT6370_AICR_ICHG_MASK          GENMASK(7, 2)
-> > +
-> > +#define MT6370_AICR_100_mA             0x0
-> > +#define MT6370_AICR_150_mA             0x1
-> > +#define MT6370_AICR_200_mA             0x2
-> > +#define MT6370_AICR_250_mA             0x3
-> > +#define MT6370_AICR_300_mA             0x4
-> > +#define MT6370_AICR_350_mA             0x5
-> > +
-> > +#define MT6370_ICHG_100_mA             0x0
-> > +#define MT6370_ICHG_200_mA             0x1
-> > +#define MT6370_ICHG_300_mA             0x2
-> > +#define MT6370_ICHG_400_mA             0x3
-> > +#define MT6370_ICHG_500_mA             0x4
-> > +#define MT6370_ICHG_600_mA             0x5
-> > +#define MT6370_ICHG_700_mA             0x6
-> > +#define MT6370_ICHG_800_mA             0x7
-> > +
-> > +#define ADC_CONV_TIME_MS               35
-> > +#define ADC_CONV_POLLING_TIME_US       1000
-> > +
-> > +struct mt6370_adc_data {
-> > +       struct device *dev;
-> > +       struct regmap *regmap;
-> > +       /*
-> > +        * This mutex lock is for preventing the different ADC channels
-> > +        * from being read at the same time.
-> > +        */
-> > +       struct mutex adc_lock;
-> > +};
-> > +
-> > +static int mt6370_adc_read_channel(struct mt6370_adc_data *priv, int chan,
-> > +                                  unsigned long addr, int *val)
-> > +{
-> > +       unsigned int reg_val;
-> > +       __be16 be_val;
-> > +       int ret;
-> > +
-> > +       mutex_lock(&priv->adc_lock);
-> > +
-> > +       reg_val = MT6370_ADC_START_MASK |
-> > +                 FIELD_PREP(MT6370_ADC_IN_SEL_MASK, addr);
-> > +       ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, reg_val);
-> > +       if (ret)
-> > +               goto adc_unlock;
-> > +
-> > +       msleep(ADC_CONV_TIME_MS);
-> > +
-> > +       ret = regmap_read_poll_timeout(priv->regmap,
-> > +                                      MT6370_REG_CHG_ADC, reg_val,
-> > +                                      !(reg_val & MT6370_ADC_START_MASK),
-> > +                                      ADC_CONV_POLLING_TIME_US,
-> > +                                      ADC_CONV_TIME_MS * MILLI * 3);
-> > +       if (ret) {
-> > +               dev_err(priv->dev, "Failed to read ADC register (%d)\n", ret);
-> > +               goto adc_unlock;
-> > +       }
-> > +
-> > +       ret = regmap_raw_read(priv->regmap, MT6370_REG_ADC_DATA_H,
-> > +                             &be_val, sizeof(be_val));
-> > +       if (ret)
-> > +               goto adc_unlock;
-> > +
-> > +       *val = be16_to_cpu(be_val);
-> > +       ret = IIO_VAL_INT;
-> > +
-> > +adc_unlock:
-> > +       mutex_unlock(&priv->adc_lock);
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +static int mt6370_adc_read_scale(struct mt6370_adc_data *priv,
-> > +                                int chan, int *val1, int *val2)
-> > +{
-> > +       unsigned int reg_val;
-> > +       int ret;
-> > +
-> > +       switch (chan) {
-> > +       case MT6370_CHAN_VBAT:
-> > +       case MT6370_CHAN_VSYS:
-> > +       case MT6370_CHAN_CHG_VDDP:
-> > +               *val1 = 5;
-> > +               return IIO_VAL_INT;
-> > +       case MT6370_CHAN_IBUS:
-> > +               ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL3, &reg_val);
-> > +               if (ret)
-> > +                       return ret;
-> > +
-> > +               reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
-> > +               switch (reg_val) {
-> > +               case MT6370_AICR_100_mA:
-> > +               case MT6370_AICR_150_mA:
-> > +               case MT6370_AICR_200_mA:
-> > +               case MT6370_AICR_250_mA:
-> > +               case MT6370_AICR_300_mA:
-> > +               case MT6370_AICR_350_mA:
-> > +                       *val1 = 3350;
-> > +                       break;
-> > +               default:
-> > +                       *val1 = 5000;
-> > +                       break;
-> > +               }
-> > +
-> > +               *val2 = 100;
-> > +
-> > +               return IIO_VAL_FRACTIONAL;
-> > +       case MT6370_CHAN_IBAT:
-> > +               ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL7, &reg_val);
-> > +               if (ret)
-> > +                       return ret;
-> > +
-> > +               reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
-> > +               switch (reg_val) {
-> > +               case MT6370_ICHG_100_mA:
-> > +               case MT6370_ICHG_200_mA:
-> > +               case MT6370_ICHG_300_mA:
-> > +               case MT6370_ICHG_400_mA:
-> > +                       *val1 = 2375;
-> > +                       break;
-> > +               case MT6370_ICHG_500_mA:
-> > +               case MT6370_ICHG_600_mA:
-> > +               case MT6370_ICHG_700_mA:
-> > +               case MT6370_ICHG_800_mA:
-> > +                       *val1 = 2680;
-> > +                       break;
-> > +               default:
-> > +                       *val1 = 5000;
-> > +                       break;
-> > +               }
-> > +
-> > +               *val2 = 100;
-> > +
-> > +               return IIO_VAL_FRACTIONAL;
-> > +       case MT6370_CHAN_VBUSDIV5:
-> > +               *val1 = 25;
-> > +               return IIO_VAL_INT;
-> > +       case MT6370_CHAN_VBUSDIV2:
-> > +               *val1 = 50;
-> > +               return IIO_VAL_INT;
-> > +       case MT6370_CHAN_TS_BAT:
-> > +               *val1 = 25;
-> > +               *val2 = 10000;
-> > +               return IIO_VAL_FRACTIONAL;
-> > +       case MT6370_CHAN_TEMP_JC:
-> > +               *val1 = 2000;
-> > +               return IIO_VAL_FRACTIONAL;
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +}
-> > +
-> > +static int mt6370_adc_read_offset(struct mt6370_adc_data *priv,
-> > +                                 int chan, int *val)
-> > +{
-> > +       *val = -20;
-> > +
-> > +       return IIO_VAL_INT;
-> > +}
-> > +
-> > +static int mt6370_adc_read_raw(struct iio_dev *iio_dev,
-> > +                              const struct iio_chan_spec *chan,
-> > +                              int *val, int *val2, long mask)
-> > +{
-> > +       struct mt6370_adc_data *priv = iio_priv(iio_dev);
-> > +
-> > +       switch (mask) {
-> > +       case IIO_CHAN_INFO_RAW:
-> > +               return mt6370_adc_read_channel(priv, chan->channel,
-> > +                                              chan->address, val);
-> > +       case IIO_CHAN_INFO_SCALE:
-> > +               return mt6370_adc_read_scale(priv, chan->channel, val, val2);
-> > +       case IIO_CHAN_INFO_OFFSET:
-> > +               return mt6370_adc_read_offset(priv, chan->channel, val);
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +}
-> > +
-> > +static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] = {
-> > +       [MT6370_CHAN_VBUSDIV5] = "vbusdiv5",
-> > +       [MT6370_CHAN_VBUSDIV2] = "vbusdiv2",
-> > +       [MT6370_CHAN_VSYS] = "vsys",
-> > +       [MT6370_CHAN_VBAT] = "vbat",
-> > +       [MT6370_CHAN_TS_BAT] = "ts_bat",
-> > +       [MT6370_CHAN_IBUS] = "ibus",
-> > +       [MT6370_CHAN_IBAT] = "ibat",
-> > +       [MT6370_CHAN_CHG_VDDP] = "chg_vddp",
-> > +       [MT6370_CHAN_TEMP_JC] = "temp_jc",
-> > +};
-> > +
-> > +static int mt6370_adc_read_label(struct iio_dev *iio_dev,
-> > +                                struct iio_chan_spec const *chan, char *label)
-> > +{
-> > +       return sysfs_emit(label, "%s\n", mt6370_channel_labels[chan->channel]);
-> > +}
-> > +
-> > +static const struct iio_info mt6370_adc_iio_info = {
-> > +       .read_raw = mt6370_adc_read_raw,
-> > +       .read_label = mt6370_adc_read_label,
-> > +};
-> > +
-> > +#define MT6370_ADC_CHAN(_idx, _type, _addr, _extra_info) {     \
-> > +       .type = _type,                                          \
-> > +       .channel = MT6370_CHAN_##_idx,                          \
-> > +       .address = _addr,                                       \
-> > +       .scan_index = MT6370_CHAN_##_idx,                       \
-> > +       .indexed = 1,                                           \
-> > +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
-> > +                             BIT(IIO_CHAN_INFO_SCALE) |        \
-> > +                             _extra_info,                      \
-> > +}
-> > +
-> > +static const struct iio_chan_spec mt6370_adc_channels[] = {
-> > +       MT6370_ADC_CHAN(VBUSDIV5, IIO_VOLTAGE, 1, 0),
-> > +       MT6370_ADC_CHAN(VBUSDIV2, IIO_VOLTAGE, 2, 0),
-> > +       MT6370_ADC_CHAN(VSYS, IIO_VOLTAGE, 3, 0),
-> > +       MT6370_ADC_CHAN(VBAT, IIO_VOLTAGE, 4, 0),
-> > +       MT6370_ADC_CHAN(TS_BAT, IIO_VOLTAGE, 6, 0),
-> > +       MT6370_ADC_CHAN(IBUS, IIO_CURRENT, 8, 0),
-> > +       MT6370_ADC_CHAN(IBAT, IIO_CURRENT, 9, 0),
-> > +       MT6370_ADC_CHAN(CHG_VDDP, IIO_VOLTAGE, 11, 0),
-> > +       MT6370_ADC_CHAN(TEMP_JC, IIO_TEMP, 12, BIT(IIO_CHAN_INFO_OFFSET)),
-> > +};
-> > +
-> > +static int mt6370_adc_probe(struct platform_device *pdev)
-> > +{
-> > +       struct device *dev = &pdev->dev;
-> > +       struct mt6370_adc_data *priv;
-> > +       struct iio_dev *indio_dev;
-> > +       struct regmap *regmap;
-> > +       int ret;
-> > +
-> > +       regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> > +       if (!regmap)
-> > +               return dev_err_probe(dev, -ENODEV, "Failed to get regmap\n");
-> > +
-> > +       indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
-> > +       if (!indio_dev)
-> > +               return -ENOMEM;
-> > +
-> > +       priv = iio_priv(indio_dev);
-> > +       priv->dev = dev;
-> > +       priv->regmap = regmap;
-> > +       mutex_init(&priv->adc_lock);
-> > +
-> > +       ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, 0);
-> > +       if (ret)
-> > +               return dev_err_probe(dev, ret, "Failed to reset ADC\n");
-> > +
-> > +       indio_dev->name = "mt6370-adc";
-> > +       indio_dev->info = &mt6370_adc_iio_info;
-> > +       indio_dev->modes = INDIO_DIRECT_MODE;
-> > +       indio_dev->channels = mt6370_adc_channels;
-> > +       indio_dev->num_channels = ARRAY_SIZE(mt6370_adc_channels);
-> > +
-> > +       return devm_iio_device_register(dev, indio_dev);
-> > +}
-> > +
-> > +static const struct of_device_id mt6370_adc_of_id[] = {
-> > +       { .compatible = "mediatek,mt6370-adc", },
-> > +       {}
-> > +};
-> > +MODULE_DEVICE_TABLE(of, mt6370_adc_of_id);
-> > +
-> > +static struct platform_driver mt6370_adc_driver = {
-> > +       .driver = {
-> > +               .name = "mt6370-adc",
-> > +               .of_match_table = mt6370_adc_of_id,
-> > +       },
-> > +       .probe = mt6370_adc_probe,
-> > +};
-> > +module_platform_driver(mt6370_adc_driver);
-> > +
-> > +MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
-> > +MODULE_DESCRIPTION("MT6370 ADC Driver");
-> > +MODULE_LICENSE("GPL v2");
-> > --
-> > 2.7.4
-> >  
-> 
+> diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+> index 9e3653253ef2..d9a13ccf89a3 100644
+> --- a/arch/arc/Kconfig
+> +++ b/arch/arc/Kconfig
+> @@ -554,7 +554,7 @@ config ARC_BUILTIN_DTB_NAME
+>  
+>  endmenu	 # "ARC Architecture Configuration"
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	default "12" if ARC_HUGEPAGE_16M
+>  	default "11"
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 87badeae3181..e6c8ee56ac52 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -1434,7 +1434,7 @@ config ARM_MODULE_PLTS
+>  	  Disabling this is usually safe for small single-platform
+>  	  configurations. If unsure, say y.
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	default "12" if SOC_AM33XX
+>  	default "9" if SA1111
+> diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
+> index 01012537a9b9..fb283059daa0 100644
+> --- a/arch/arm/configs/imx_v6_v7_defconfig
+> +++ b/arch/arm/configs/imx_v6_v7_defconfig
+> @@ -31,7 +31,7 @@ CONFIG_SOC_VF610=y
+>  CONFIG_SMP=y
+>  CONFIG_ARM_PSCI=y
+>  CONFIG_HIGHMEM=y
+> -CONFIG_FORCE_MAX_ZONEORDER=14
+> +CONFIG_ARCH_FORCE_MAX_ORDER=14
+>  CONFIG_CMDLINE="noinitrd console=ttymxc0,115200"
+>  CONFIG_KEXEC=y
+>  CONFIG_CPU_FREQ=y
+> diff --git a/arch/arm/configs/milbeaut_m10v_defconfig b/arch/arm/configs/milbeaut_m10v_defconfig
+> index 58810e98de3d..8620061e19a8 100644
+> --- a/arch/arm/configs/milbeaut_m10v_defconfig
+> +++ b/arch/arm/configs/milbeaut_m10v_defconfig
+> @@ -26,7 +26,7 @@ CONFIG_THUMB2_KERNEL=y
+>  # CONFIG_THUMB2_AVOID_R_ARM_THM_JUMP11 is not set
+>  # CONFIG_ARM_PATCH_IDIV is not set
+>  CONFIG_HIGHMEM=y
+> -CONFIG_FORCE_MAX_ZONEORDER=12
+> +CONFIG_ARCH_FORCE_MAX_ORDER=12
+>  CONFIG_SECCOMP=y
+>  CONFIG_KEXEC=y
+>  CONFIG_EFI=y
+> diff --git a/arch/arm/configs/oxnas_v6_defconfig b/arch/arm/configs/oxnas_v6_defconfig
+> index 600f78b363dd..5c163a9d1429 100644
+> --- a/arch/arm/configs/oxnas_v6_defconfig
+> +++ b/arch/arm/configs/oxnas_v6_defconfig
+> @@ -12,7 +12,7 @@ CONFIG_ARCH_OXNAS=y
+>  CONFIG_MACH_OX820=y
+>  CONFIG_SMP=y
+>  CONFIG_NR_CPUS=16
+> -CONFIG_FORCE_MAX_ZONEORDER=12
+> +CONFIG_ARCH_FORCE_MAX_ORDER=12
+>  CONFIG_SECCOMP=y
+>  CONFIG_ARM_APPENDED_DTB=y
+>  CONFIG_ARM_ATAG_DTB_COMPAT=y
+> diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
+> index 0384030d8b25..8b2cf6ddd568 100644
+> --- a/arch/arm/configs/sama7_defconfig
+> +++ b/arch/arm/configs/sama7_defconfig
+> @@ -19,7 +19,7 @@ CONFIG_ATMEL_CLOCKSOURCE_TCB=y
+>  # CONFIG_CACHE_L2X0 is not set
+>  # CONFIG_ARM_PATCH_IDIV is not set
+>  # CONFIG_CPU_SW_DOMAIN_PAN is not set
+> -CONFIG_FORCE_MAX_ZONEORDER=15
+> +CONFIG_ARCH_FORCE_MAX_ORDER=15
+>  CONFIG_UACCESS_WITH_MEMCPY=y
+>  # CONFIG_ATAGS is not set
+>  CONFIG_CMDLINE="console=ttyS0,115200 earlyprintk ignore_loglevel"
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 571cc234d0b3..c6fcd8746f60 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -1401,7 +1401,7 @@ config XEN
+>  	help
+>  	  Say Y if you want to run Linux in a Virtual Machine on Xen on ARM64.
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int
+>  	default "14" if ARM64_64K_PAGES
+>  	default "12" if ARM64_16K_PAGES
+> diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
+> index 3cbc2dc62baf..adee6ab36862 100644
+> --- a/arch/csky/Kconfig
+> +++ b/arch/csky/Kconfig
+> @@ -332,7 +332,7 @@ config HIGHMEM
+>  	select KMAP_LOCAL
+>  	default y
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	default "11"
+>  
+> diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
+> index 26ac8ea15a9e..c6e06cdc738f 100644
+> --- a/arch/ia64/Kconfig
+> +++ b/arch/ia64/Kconfig
+> @@ -200,7 +200,7 @@ config IA64_CYCLONE
+>  	  Say Y here to enable support for IBM EXA Cyclone time source.
+>  	  If you're unsure, answer N.
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "MAX_ORDER (11 - 17)"  if !HUGETLB_PAGE
+>  	range 11 17  if !HUGETLB_PAGE
+>  	default "17" if HUGETLB_PAGE
+> diff --git a/arch/ia64/include/asm/sparsemem.h b/arch/ia64/include/asm/sparsemem.h
+> index 42ed5248fae9..84e8ce387b69 100644
+> --- a/arch/ia64/include/asm/sparsemem.h
+> +++ b/arch/ia64/include/asm/sparsemem.h
+> @@ -11,10 +11,10 @@
+>  
+>  #define SECTION_SIZE_BITS	(30)
+>  #define MAX_PHYSMEM_BITS	(50)
+> -#ifdef CONFIG_FORCE_MAX_ZONEORDER
+> -#if ((CONFIG_FORCE_MAX_ZONEORDER - 1 + PAGE_SHIFT) > SECTION_SIZE_BITS)
+> +#ifdef CONFIG_ARCH_FORCE_MAX_ORDER
+> +#if ((CONFIG_ARCH_FORCE_MAX_ORDER - 1 + PAGE_SHIFT) > SECTION_SIZE_BITS)
+>  #undef SECTION_SIZE_BITS
+> -#define SECTION_SIZE_BITS (CONFIG_FORCE_MAX_ZONEORDER - 1 + PAGE_SHIFT)
+> +#define SECTION_SIZE_BITS (CONFIG_ARCH_FORCE_MAX_ORDER - 1 + PAGE_SHIFT)
+>  #endif
+>  #endif
+>  
+> diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+> index e0e9e31339c1..3b2f39508524 100644
+> --- a/arch/m68k/Kconfig.cpu
+> +++ b/arch/m68k/Kconfig.cpu
+> @@ -399,7 +399,7 @@ config SINGLE_MEMORY_CHUNK
+>  	  order" to save memory that could be wasted for unused memory map.
+>  	  Say N if not sure.
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order" if ADVANCED
+>  	depends on !SINGLE_MEMORY_CHUNK
+>  	default "11"
+> diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+> index ec21f8999249..70d28976a40d 100644
+> --- a/arch/mips/Kconfig
+> +++ b/arch/mips/Kconfig
+> @@ -2140,7 +2140,7 @@ config PAGE_SIZE_64KB
+>  
+>  endchoice
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	range 14 64 if MIPS_HUGE_TLB_SUPPORT && PAGE_SIZE_64KB
+>  	default "14" if MIPS_HUGE_TLB_SUPPORT && PAGE_SIZE_64KB
+> diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
+> index 4167f1eb4cd8..a582f72104f3 100644
+> --- a/arch/nios2/Kconfig
+> +++ b/arch/nios2/Kconfig
+> @@ -44,7 +44,7 @@ menu "Kernel features"
+>  
+>  source "kernel/Kconfig.hz"
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	range 9 20
+>  	default "11"
+> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> index 4c466acdc70d..39d71d7701bd 100644
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -845,7 +845,7 @@ config DATA_SHIFT
+>  	  in that case. If PIN_TLB is selected, it must be aligned to 8M as
+>  	  8M pages will be pinned.
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	range 8 9 if PPC64 && PPC_64K_PAGES
+>  	default "9" if PPC64 && PPC_64K_PAGES
+> diff --git a/arch/powerpc/configs/85xx/ge_imp3a_defconfig b/arch/powerpc/configs/85xx/ge_imp3a_defconfig
+> index f29c166998af..e7672c186325 100644
+> --- a/arch/powerpc/configs/85xx/ge_imp3a_defconfig
+> +++ b/arch/powerpc/configs/85xx/ge_imp3a_defconfig
+> @@ -30,7 +30,7 @@ CONFIG_PREEMPT=y
+>  # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
+>  CONFIG_BINFMT_MISC=m
+>  CONFIG_MATH_EMULATION=y
+> -CONFIG_FORCE_MAX_ZONEORDER=17
+> +CONFIG_ARCH_FORCE_MAX_ORDER=17
+>  CONFIG_PCI=y
+>  CONFIG_PCIEPORTBUS=y
+>  CONFIG_PCI_MSI=y
+> diff --git a/arch/powerpc/configs/fsl-emb-nonhw.config b/arch/powerpc/configs/fsl-emb-nonhw.config
+> index f14c6dbd7346..ab8a8c4530d9 100644
+> --- a/arch/powerpc/configs/fsl-emb-nonhw.config
+> +++ b/arch/powerpc/configs/fsl-emb-nonhw.config
+> @@ -41,7 +41,7 @@ CONFIG_FIXED_PHY=y
+>  CONFIG_FONT_8x16=y
+>  CONFIG_FONT_8x8=y
+>  CONFIG_FONTS=y
+> -CONFIG_FORCE_MAX_ZONEORDER=13
+> +CONFIG_ARCH_FORCE_MAX_ORDER=13
+>  CONFIG_FRAMEBUFFER_CONSOLE=y
+>  CONFIG_FRAME_WARN=1024
+>  CONFIG_FTL=y
+> diff --git a/arch/sh/configs/ecovec24_defconfig b/arch/sh/configs/ecovec24_defconfig
+> index e699e2e04128..b52e14ccb450 100644
+> --- a/arch/sh/configs/ecovec24_defconfig
+> +++ b/arch/sh/configs/ecovec24_defconfig
+> @@ -8,7 +8,7 @@ CONFIG_MODULES=y
+>  CONFIG_MODULE_UNLOAD=y
+>  # CONFIG_BLK_DEV_BSG is not set
+>  CONFIG_CPU_SUBTYPE_SH7724=y
+> -CONFIG_FORCE_MAX_ZONEORDER=12
+> +CONFIG_ARCH_FORCE_MAX_ORDER=12
+>  CONFIG_MEMORY_SIZE=0x10000000
+>  CONFIG_FLATMEM_MANUAL=y
+>  CONFIG_SH_ECOVEC=y
+> diff --git a/arch/sh/mm/Kconfig b/arch/sh/mm/Kconfig
+> index ba569cfb4368..411fdc0901f7 100644
+> --- a/arch/sh/mm/Kconfig
+> +++ b/arch/sh/mm/Kconfig
+> @@ -18,7 +18,7 @@ config PAGE_OFFSET
+>  	default "0x80000000" if MMU
+>  	default "0x00000000"
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	range 9 64 if PAGE_SIZE_16KB
+>  	default "9" if PAGE_SIZE_16KB
+> diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
+> index 1c852bb530ec..4d3d1af90d52 100644
+> --- a/arch/sparc/Kconfig
+> +++ b/arch/sparc/Kconfig
+> @@ -269,7 +269,7 @@ config ARCH_SPARSEMEM_ENABLE
+>  config ARCH_SPARSEMEM_DEFAULT
+>  	def_bool y if SPARC64
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	default "13"
+>  	help
+> diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+> index 12ac277282ba..bcb0c5d2abc2 100644
+> --- a/arch/xtensa/Kconfig
+> +++ b/arch/xtensa/Kconfig
+> @@ -771,7 +771,7 @@ config HIGHMEM
+>  
+>  	  If unsure, say Y.
+>  
+> -config FORCE_MAX_ZONEORDER
+> +config ARCH_FORCE_MAX_ORDER
+>  	int "Maximum zone order"
+>  	default "11"
+>  	help
+> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> index 8f571dc7c524..ca285ed3c6e0 100644
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -24,10 +24,10 @@
+>  #include <asm/page.h>
+>  
+>  /* Free memory management - zoned buddy allocator.  */
+> -#ifndef CONFIG_FORCE_MAX_ZONEORDER
+> +#ifndef CONFIG_ARCH_FORCE_MAX_ORDER
+>  #define MAX_ORDER 11
+>  #else
+> -#define MAX_ORDER CONFIG_FORCE_MAX_ZONEORDER
+> +#define MAX_ORDER CONFIG_ARCH_FORCE_MAX_ORDER
+>  #endif
+>  #define MAX_ORDER_NR_PAGES (1 << (MAX_ORDER - 1))
+>  
+> -- 
+> 2.35.1
 > 
 
+-- 
+Sincerely yours,
+Mike.
