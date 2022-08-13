@@ -2,109 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC43C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4068C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237148AbiHMNHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 09:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
+        id S239280AbiHMNLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 09:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231698AbiHMNHV (ORCPT
+        with ESMTP id S231698AbiHMNLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 09:07:21 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB3E20BD8
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 06:07:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660396040; x=1691932040;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cUOuYYmFZ1yXtRQnZTcMgqIg8bxhiNrr+paGz0eVMNk=;
-  b=anO2FtLXttjW7MWY9mrOl4CH/U0x3qhn9wG7Nr0qyX6pzdfdGlE2ivLI
-   Z2d2N6pcobMs/KefGa1n7M5nPg911RJ9HzIa4T4SdIXQ5BIW4efsy0PqI
-   sANOi6TgjYkzoOhmt9gIMLZLA8di9zGD1Zg7kdsleq9p313v6dMECMgdX
-   fkxosqE9na6ZF9ZPjF8qPduNskailvUYXWikXrwCKF/veWtdFjza+GwoZ
-   C1M8sLPsrB2aUmQffiyNi7mM15orFtPMzcLmhBAY+dzgSwNTxrMvuYrI2
-   cFei6bac+qPg0bKsDuyHGnMm8RDvPRv3AnNNchpCsJoSFiLwFej8EdylM
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="291750795"
-X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
-   d="scan'208";a="291750795"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 06:07:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,235,1654585200"; 
-   d="scan'208";a="606195688"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 13 Aug 2022 06:07:18 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMqrG-0001gx-0l;
-        Sat, 13 Aug 2022 13:07:18 +0000
-Date:   Sat, 13 Aug 2022 21:06:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Yan <andy.yan@rock-chips.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: drivers/gpu/drm/rockchip/rockchip_vop2_reg.c:248:34: warning: unused
- variable 'vop2_dt_match'
-Message-ID: <202208132039.pkv1RWWz-lkp@intel.com>
+        Sat, 13 Aug 2022 09:11:01 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F302F24F28;
+        Sat, 13 Aug 2022 06:10:56 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M4gqV1b3MzGpKw;
+        Sat, 13 Aug 2022 21:09:26 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 13 Aug 2022 21:10:54 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 13 Aug 2022 21:10:54 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Pu Lehui <pulehui@huawei.com>
+Subject: [PATCH bpf] bpf: Fix kernel BUG in purge_effective_progs
+Date:   Sat, 13 Aug 2022 21:40:30 +0800
+Message-ID: <20220813134030.1972696-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Syzkaller reported kernel BUG as follows:
 
-FYI, the error/warning still remains.
+------------[ cut here ]------------
+kernel BUG at kernel/bpf/cgroup.c:925!
+invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 1 PID: 194 Comm: detach Not tainted 5.19.0-14184-g69dac8e431af #8
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+RIP: 0010:__cgroup_bpf_detach+0x1f2/0x2a0
+Code: 00 e8 92 60 30 00 84 c0 75 d8 4c 89 e0 31 f6 85 f6 74 19 42 f6 84
+28 48 05 00 00 02 75 0e 48 8b 80 c0 00 00 00 48 85 c0 75 e5 <0f> 0b 48
+8b 0c5
+RSP: 0018:ffffc9000055bdb0 EFLAGS: 00000246
+RAX: 0000000000000000 RBX: ffff888100ec0800 RCX: ffffc900000f1000
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff888100ec4578
+RBP: 0000000000000000 R08: ffff888100ec0800 R09: 0000000000000040
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff888100ec4000
+R13: 000000000000000d R14: ffffc90000199000 R15: ffff888100effb00
+FS:  00007f68213d2b80(0000) GS:ffff88813bc80000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055f74a0e5850 CR3: 0000000102836000 CR4: 00000000000006e0
+Call Trace:
+ <TASK>
+ cgroup_bpf_prog_detach+0xcc/0x100
+ __sys_bpf+0x2273/0x2a00
+ __x64_sys_bpf+0x17/0x20
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f68214dbcb9
+Code: 08 44 89 e0 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 48 89 f8 48 89
+f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+f0 ff8
+RSP: 002b:00007ffeb487db68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 000000000000000b RCX: 00007f68214dbcb9
+RDX: 0000000000000090 RSI: 00007ffeb487db70 RDI: 0000000000000009
+RBP: 0000000000000003 R08: 0000000000000012 R09: 0000000b00000003
+R10: 00007ffeb487db70 R11: 0000000000000246 R12: 00007ffeb487dc20
+R13: 0000000000000004 R14: 0000000000000001 R15: 000055f74a1011b0
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   69dac8e431af26173ca0a1ebc87054e01c585bcc
-commit: 604be85547ce4d61b89292d2f9a78c721b778c16 drm/rockchip: Add VOP2 driver
-date:   3 months ago
-config: hexagon-randconfig-r034-20220812 (https://download.01.org/0day-ci/archive/20220813/202208132039.pkv1RWWz-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=604be85547ce4d61b89292d2f9a78c721b778c16
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 604be85547ce4d61b89292d2f9a78c721b778c16
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/rockchip/
+Repetition steps:
+For the following cgroup tree,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+root
+ |
+cg1
+ |
+cg2
 
-All warnings (new ones prefixed by >>):
+1. attach prog2 to cg2, and then attach prog1 to cg1, both bpf progs
+attach type is NONE or OVERRIDE.
+2. write 1 to /proc/thread-self/fail-nth for failslab.
+3. detach prog1 for cg1, and then kernel BUG occur.
 
->> drivers/gpu/drm/rockchip/rockchip_vop2_reg.c:248:34: warning: unused variable 'vop2_dt_match' [-Wunused-const-variable]
-   static const struct of_device_id vop2_dt_match[] = {
-                                    ^
-   1 warning generated.
+Failslab injection will cause kmalloc fail and fall back to
+purge_effective_progs. The problem is that cg2 have attached another prog,
+so when go through cg2 layer, iteration will add pos to 1, and subsequent
+operations will be skipped by the following condition, and cg will meet
+NULL in the end.
 
+`if (pos && !(cg->bpf.flags[atype] & BPF_F_ALLOW_MULTI))`
 
-vim +/vop2_dt_match +248 drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
+The NULL cg means no link or prog match, this is as expected, and it's not
+a bug. So here just skip the no match situation.
 
-   247	
- > 248	static const struct of_device_id vop2_dt_match[] = {
-   249		{
-   250			.compatible = "rockchip,rk3566-vop",
-   251			.data = &rk3566_vop,
-   252		}, {
-   253			.compatible = "rockchip,rk3568-vop",
-   254			.data = &rk3568_vop,
-   255		}, {
-   256		},
-   257	};
-   258	MODULE_DEVICE_TABLE(of, vop2_dt_match);
-   259	
+Fixes: 4c46091ee985 ("bpf: Fix KASAN use-after-free Read in compute_effective_progs")
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+---
+ kernel/bpf/cgroup.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 59b7eb60d5b4..4a400cd63731 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -921,8 +921,10 @@ static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
+ 				pos++;
+ 			}
+ 		}
++
++		/* no link or prog match, skip the cgroup of this layer */
++		continue;
+ found:
+-		BUG_ON(!cg);
+ 		progs = rcu_dereference_protected(
+ 				desc->bpf.effective[atype],
+ 				lockdep_is_held(&cgroup_mutex));
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
