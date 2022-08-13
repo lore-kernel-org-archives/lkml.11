@@ -2,164 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B3EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 10:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97945C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 10:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239217AbiHMKpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 06:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        id S239331AbiHMKst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 06:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239331AbiHMKpK (ORCPT
+        with ESMTP id S238945AbiHMKsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 06:45:10 -0400
-Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8644627FF9;
-        Sat, 13 Aug 2022 03:45:09 -0700 (PDT)
-Date:   Sat, 13 Aug 2022 10:44:49 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail3; t=1660387504; x=1660646704;
-        bh=mr68/NsAdXC+G9X9bG8jF/vpINHVnEQJpv90ExGKKdA=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
-         Feedback-ID:Message-ID;
-        b=sPTb7QdnrMFKFLTxJiv9LuHcKHXbKBlTYsJHejRrkAUAV5Vmpih9IN1+QZNDG4Za3
-         ImsN0zxdTjD0AmiHohdOyBA42ulCa+cMR9Y6Nxed8ee01z7X6JNvTazf9IV9xakLI+
-         LuQ31sYYBz1r1Y5kW+7lFK2CP7jprsDtqME8lSzDjeGTmWUSyIuChl06+HxZrpU667
-         I/y763WUz1i4bHA3C9TXJLiw4rl1M7rUKhGEBknQMjZDRKDgn64BpeaVfDqsGKpGBh
-         PQzjAZVRAUkXlpN8MvfKyaxXE/1jB0OYtWhXTc7yZ/YsOvP3g42wjJocCdFu0Oej0F
-         RKC+f4Dekb9Aw==
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-From:   Yassine Oudjana <y.oudjana@protonmail.com>
-Cc:     Miles Chen <miles.chen@mediatek.com>, yassine.oudjana@gmail.com,
-        bgolaszewski@baylibre.com, chun-jie.chen@mediatek.com,
-        devicetree@vger.kernel.org, ikjn@chromium.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        matthias.bgg@gmail.com, mturquette@baylibre.com,
-        p.zabel@pengutronix.de, robh+dt@kernel.org, sam.shih@mediatek.com,
-        sboyd@kernel.org, tinghan.shen@mediatek.com, weiyi.lu@mediatek.com,
-        wenst@chromium.org, ~postmarketos/upstreaming@lists.sr.ht
-Reply-To: Yassine Oudjana <y.oudjana@protonmail.com>
-Subject: Re: [PATCH v2 4/4] clk: mediatek: Add drivers for MediaTek MT6735 main clock drivers
-Message-ID: <lAB8fLfWTwUu6FUqPZWoKNEC0ZPYHnvo05u6BGriYQVjanlTzorHaZAflEbzoml-0UVZe-02r6CfzKwGdBCp7E0YeT_hF86P26r-Zeivda4=@protonmail.com>
-In-Reply-To: <c7b98ee4-cd4f-d7b7-726d-1acd4fafd50a@collabora.com>
-References: <NJC6CR.M4CF312LSXXV1@gmail.com> <20220520093501.28758-1-miles.chen@mediatek.com> <c7b98ee4-cd4f-d7b7-726d-1acd4fafd50a@collabora.com>
-Feedback-ID: 6882736:user:proton
+        Sat, 13 Aug 2022 06:48:39 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CC93AB34;
+        Sat, 13 Aug 2022 03:48:38 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id dc19so5821096ejb.12;
+        Sat, 13 Aug 2022 03:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=mMWgQnVhxyKG7itB8lVZQwS2syLLp6WBoeNq+Oay1xY=;
+        b=ZKPgQ4mxaY6YwrzzNZFxzYe72YJVNF8lEUtStRtdapl4QnuFuUvesb910Z3T1ZfFs7
+         HAGgulQ/yWNHqrJGmd1r5rQCU2RMZrzMQ4CfEMOmPXyLykk3JTWhssMQ0fEA0xJbzxmY
+         Sf8/739aU4qH0O+5WtXnB1pS6uVkRkRHpRVCLvqZYaGGrM23EbdFO22eSIRcPvT8ObJG
+         8kv6swFgbmLRpfaPugi3BadXAr5Pz88oVzVzbN+HnmmHB5rBEg7F6gMzAEXZd8tCtUYm
+         QKrvDgATDMj6/lRlgHjW43OH4/RZC/BDTiMNCc1r6K7f8dQEABVUhzU+C1TjFREKymr+
+         DaJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=mMWgQnVhxyKG7itB8lVZQwS2syLLp6WBoeNq+Oay1xY=;
+        b=fVK9jN3sTK4VaId8YI0o3Y2OiTXQcg1k1ftvrXc11GOwJ0YFwnko+9iAMiDAmggvif
+         J18ayHY7aXd69ZyGoMmOW7k7mZaY/dAhO4WK5MU4J4Pw+0eh+k5uYEKex2z7Z/PW3kDW
+         baPrzLxaANuNJA2Skw1rFAj20MdSFJJbDdNpIoSFI916fbds8+Qje5Ihffw92/jD8Jkn
+         Zbr0VpwJxIHHKkopl1RzbgH9RCE5CFBf+gBmZ2dACDk7ovRkYlYjeQfJesMGfVMBxLyE
+         aSZn1i29kEKmZnFR482/0s0/4PCGFdxN/EZOybXOUS2nHzoFUav7gNYQdm+z9rrNmFPU
+         bvFw==
+X-Gm-Message-State: ACgBeo12kmiATKxnuWERWzU6erNGDsbSkAy9GLW/3kb2bfsOd/4gVmZu
+        ZCYtjD+ZdapwD/aNZNF+Ua0=
+X-Google-Smtp-Source: AA6agR42RFziShLmuVcrMSrxYhxU9/TeAw/SX9/7q8bSPbdWwMxFMsnU7Xdm8UhOhj8QCnVt+FeOmA==
+X-Received: by 2002:a17:907:a056:b0:730:ce15:842d with SMTP id gz22-20020a170907a05600b00730ce15842dmr5184843ejc.275.1660387717009;
+        Sat, 13 Aug 2022 03:48:37 -0700 (PDT)
+Received: from gmail.com (84-236-113-143.pool.digikabel.hu. [84.236.113.143])
+        by smtp.gmail.com with ESMTPSA id p22-20020a056402045600b00435a62d35b5sm2828661edw.45.2022.08.13.03.48.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Aug 2022 03:48:36 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Sat, 13 Aug 2022 12:48:34 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Zhang Rui <rui.zhang@intel.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-hwmon@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        corbet@lwn.net, fenghua.yu@intel.com, jdelvare@suse.com,
+        linux@roeck-us.net, len.brown@intel.com
+Subject: Re: [PATCH 3/7] hwmon/coretemp: Handle large core id value
+Message-ID: <YveBgsVINyKjXW9g@gmail.com>
+References: <20220812164144.30829-1-rui.zhang@intel.com>
+ <20220812164144.30829-4-rui.zhang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220812164144.30829-4-rui.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Friday, May 20th, 2022 at 11:26 AM, AngeloGioacchino Del Regno <angelogi=
-oacchino.delregno@collabora.com> wrote:
 
-> Il 20/05/22 11:35, Miles Chen ha scritto:
->
-> > > > Thanks for submitting this patch.
-> > > >
-> > > > I compare this with drivers/clk/mediatek/clk-mt7986-apmixed.c,
-> > > > and other clk files are using macros to make the mtk_pll_data array
-> > > > more readable.
-> > >
-> > > I'd actually argue that macros make it less readable. While reading
-> > > other drivers I had a lot of trouble figuring out which argument
-> > > is which field of the struct, and had to constantly go back to the
-> > > macro definitions and count arguments to find it. Having it this
-> > > way, each value is labeled clearly with the field it's in. I think
-> > > the tradeoff between line count and readability here is worth it.
-> >
-> > It is easier for multiple developers to work together if we have a comm=
-on style.
-> >
-> > How do you think?
->
->
-> In my opinion, Yassine is definitely right about this one: unrolling thes=
-e macros
-> will make the code more readable, even though this has the side effect of=
- making
-> it bigger in the source code form (obviously, when compiled, it's going t=
-o be the
-> exact same size).
->
-> I wouldn't mind getting this clock driver in without the usage of macros,=
- as much
-> as I wouldn't mind converting all of the existing drivers to open-code ev=
-erything
-> instead of using macros that you have to find in various headers... this =
-practice
-> was done in multiple drivers (clock or elsewhere), so I don't think that =
-it would
-> actually be a bad idea to do it here on MediaTek too, even though I'm not=
- aware of
-> any rule that may want us to do that: if you check across drivers/clk/*, =
-there's
-> a big split in how drivers are made, where some are using macros (davinci=
-, renesas,
-> samsung, sprd, etc), and some are not (bcm, sunxi-ng, qcom, tegra, versat=
-ile, etc),
-> so it's really "do it as you wish"...
->
-> ... but:
->
-> Apart from that, I also don't think that it is a good idea to convert the=
- other
-> MTK clock drivers right now, as this would make the upstreaming of MediaT=
-ek clock
-> drivers harder for some of the community in this moment... especially whe=
-n we look
-> at how many MTK SoCs are out there in the wild, and how many we have upst=
-ream:
-> something like 10% of them, or less.
->
-> I see the huge benefit of having a bigger community around MediaTek platf=
-orms as
-> that's beneficial to get a way better support and solidity for all SoCs a=
-s they
-> are sharing the same drivers and same framework, and expanding the suppor=
-t to more
-> of them will only make it better with highly valuable community contribut=
-ions.
->
->
-> That said, Yassine, you should've understood that you have my full suppor=
-t on
-> unrolling these macros - but it's not time to do that yet: you definitely=
- know
-> that MediaTek clock drivers are going through a big cleanup phase which i=
-s, at
-> this point, unavoidable... if we are able to get the aid of scripts (cocc=
-i and
-> others), that will make our life easier in this cleanup, and will also ma=
-ke us
-> able to perform the entire cleanup with less effort and in less overall t=
-ime.
->
-> With that, I'm sad but I have to support Miles' decision on this one, and=
- I also
-> have to ask you to use macros in this driver.
+* Zhang Rui <rui.zhang@intel.com> wrote:
 
-I'm picking up this series again now after taking a long break to allow for
-ongoing cleanup and refactoring work to settle down. I was going to make th=
-is
-change but then I couldn't find the PLL macro defined in any common header.
-It seems that it is defined in every driver that uses it, with slight varia=
-tions
-in some of them. Should I just do the same, or would it be better to define=
- it
-in clk-pll.h? Also, would now be a good time to unroll the macros in all dr=
-ivers,
-or is it still too soon?
+> The coretemp driver supports up to a hard-coded limit of 128 cores.
+> 
+> Today, the driver can not support a core with an id above that limit.
+> Yet, the encoding of core_id's is arbitrary (BIOS APIC-id) and so they
+> may be sparse and they may be large.
+> 
+> Update the driver to map arbitrary core_id numbers into appropriate
+> array indexes so that 128 cores can be supported, no matter the encoding
+> of core_ids's.
 
-Another thing: Since I've been out of touch with the cleanup work for a whi=
-le,
-it would be great if someone makes me aware of any pending cleanup patches =
-that
-I should know of so that I base my patches on them and avoid duplicating wo=
-rk.
+Please capitalize 'ID' consistently throughout the series.
 
-> ...
+> -	attr_no = pkg_flag ? PKG_SYSFS_ATTR_NO : TO_ATTR_NO(cpu);
+> +	if (pkg_flag)
+> +		attr_no = PKG_SYSFS_ATTR_NO;
+> +	else {
+> +		index = ida_alloc(&pdata->ida, GFP_KERNEL);
+> +		if (index < 0)
+> +			return index;
+> +		pdata->cpu_map[index] = topology_core_id(cpu);
+> +		attr_no = index + BASE_SYSFS_ATTR_NO;
+> +	}
+
+Unbalanced curly braces.
+
+> -	int err, attr_no;
+> +	int err, index, attr_no;
+
+So it's 'index' here.
+
+> @@ -524,6 +538,8 @@ static void coretemp_remove_core(struct platform_data *pdata, int indx)
+
+But 'indx' here.
+
+> -	int indx, target;
+> +	int i, indx = -1, target;
+
+And 'indx' again. Did we run out of the letter 'e'? Either use 'index' 
+naming consistently, or 'idx' if it has to be abbreviated.
+
+Thanks,
+
+	Ingo
