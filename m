@@ -2,235 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3B1C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EB3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239504AbiHMPW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 11:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
+        id S239754AbiHMPYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 11:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239670AbiHMPW4 (ORCPT
+        with ESMTP id S239739AbiHMPYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 11:22:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C67F14D28
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 08:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660404173;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RVMwJe4+GMGVO5clzI02Ln4CTIby0mMjXhru50oXHBg=;
-        b=ZGxTnAI1t88PjZ20xAZYNO+HyNL9x+vf4sMnXNORDrgeBaG92/uHudg+knQzg7miI+iZDH
-        ifs15ED0DCGiJ2QaFZHjp4+4N55Rqwr6G+mIFHHBWEIJMjQMia+d0P4hHpNKhAt2JymltR
-        B+3GnyIY0SchH4BjX7fnIDa0PXaaQUU=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-335-_813o6oQMO2ogHkkEB3NxQ-1; Sat, 13 Aug 2022 11:22:52 -0400
-X-MC-Unique: _813o6oQMO2ogHkkEB3NxQ-1
-Received: by mail-pg1-f197.google.com with SMTP id d1-20020a636801000000b0042225d15472so1093498pgc.13
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 08:22:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to:from
-         :subject:cc:to:message-id:date:x-gm-message-state:from:to:cc;
-        bh=RVMwJe4+GMGVO5clzI02Ln4CTIby0mMjXhru50oXHBg=;
-        b=jXW43Vn01Bmrs9uhPrA+iVs+3CXEdPC5nWV43sCXRonsFM69xI/mGVQCZdMoTW5ePD
-         2EpGu5gRmKHPzucQivbecvST+jXAdWYzoX7dsPU7Jns3S/KB7jUVzPbbgJUMYXVEyF4y
-         IVFLcvuK/LlThI1mkq7gtJBo8ZOOhRviFgeFJ74naYJL/WtAjNC50pgpykA0yIiLwoBs
-         e3yyu1FuCEMm9K0uZ3RxGzjhpZOAQoIDKygxasS4Ia+25vgAcp5e6KmwiVVh7mw1haLW
-         x6TnPZJeWQ78prEKp4FBp9NhQ8qQjEoNDaPLAIBbUhxmcZvGIzIpfXY+XA/hNykZVo/o
-         K7Mw==
-X-Gm-Message-State: ACgBeo39dDpGanWFk73Ampz0e/jru/Rtl8Cr6hktjacdVLHq/ZB/7mqr
-        ArDr5vs9UnomsAMYv7n4oQ3dYeGEI/sOkgJyg9zg6wRfygzh3exCr+4C7czrmDTX064Zwt43Rn4
-        T9DOPDvYpbwbMYEZT5DiJss8e
-X-Received: by 2002:a63:9141:0:b0:41d:22d:1910 with SMTP id l62-20020a639141000000b0041d022d1910mr7173188pge.145.1660404170975;
-        Sat, 13 Aug 2022 08:22:50 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5F7/5TrfFR/Qz9s2FhtlkoyVquAMHgc0VZZlNxvafI0TX82gPLJrFPw3NsTWIZZZorYBFWQw==
-X-Received: by 2002:a63:9141:0:b0:41d:22d:1910 with SMTP id l62-20020a639141000000b0041d022d1910mr7173168pge.145.1660404170659;
-        Sat, 13 Aug 2022 08:22:50 -0700 (PDT)
-Received: from localhost ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
-        by smtp.gmail.com with ESMTPSA id u4-20020a170902714400b0016ee26224a4sm3778222plm.305.2022.08.13.08.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Aug 2022 08:22:50 -0700 (PDT)
-Date:   Sun, 14 Aug 2022 00:22:42 +0900 (JST)
-Message-Id: <20220814.002242.1890726681929865782.syoshida@redhat.com>
-To:     shuah@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, syoshida@redhat.com
-Subject: Re: [PATCH] selftests/proc: Add support for vsyscall=xonly
-From:   Shigeru Yoshida <syoshida@redhat.com>
-In-Reply-To: <20220806135749.47168-1-syoshida@redhat.com>
-References: <20220806135749.47168-1-syoshida@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 28.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        Sat, 13 Aug 2022 11:24:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927E115700;
+        Sat, 13 Aug 2022 08:24:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48DAAB80689;
+        Sat, 13 Aug 2022 15:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B258C433C1;
+        Sat, 13 Aug 2022 15:23:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660404241;
+        bh=b6AqnPbsc+T59VwdyA+H2w9UZXXLMHRrYjnllS8rbtw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LXjzyKktxW6qtiUqZhuABTD6e+W9SgXhFOm7CTkonETMs0ilXL+Sx+lrlfcyK5WBj
+         3YZ4d1wNFk2ef5monqna1n32jsoMms/LYSG0krOgxbsuq4IHlPypLJlv+tLgqccw20
+         Z/Pjn0GZoLhIU3NlxWjKW4K97Yr+LlaHVgVXiBDDaI8LoNs+ZylGAVgiBXb24CEZXB
+         H1VHhcgUei99peiXwDh17qqFprlOrSPtbcisEHWjmx42UfzNa+F50DRjHy/GEcup/7
+         AA84TCHZMJ+bBE5ub2s8/+I/4TbGp2xeO56IslnVhoROfS/2zKfOuPu/CFRZa7M/r0
+         Cs43rkIwptZHg==
+Date:   Sat, 13 Aug 2022 16:34:28 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Message-ID: <20220813163428.0a181cc3@jic23-huawei>
+In-Reply-To: <20220809094754.akfed7hxcdvxoacj@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220803131132.19630-1-ddrokosov@sberdevices.ru>
+        <20220803131132.19630-3-ddrokosov@sberdevices.ru>
+        <20220806163204.3262c0e7@jic23-huawei>
+        <20220809094754.akfed7hxcdvxoacj@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ping?
+On Tue, 9 Aug 2022 09:47:54 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-On Sat,  6 Aug 2022 22:57:49 +0900, Shigeru Yoshida wrote:
-> There are 3 vsyscall modes: emulate, xonly, and none.  proc-pid-vm
-> detects the existence of the vsyscall with memory load on the vsyscall
-> page.
+> Hello Jonathan,
 > 
-> This works for emulate and none vsyscall modes, but fails for xonly
-> because read permission is omitted with xonly vsyscall page, and it
-> results in the following error:
+> On Sat, Aug 06, 2022 at 04:32:04PM +0100, Jonathan Cameron wrote:
 > 
->   # ./proc-pid-vm
->   proc-pid-vm: proc-pid-vm.c:328: main: Assertion `rv == len' failed.
->   Aborted (core dumped)
+> [...]
 > 
-> This patch fixes this issue with introducing the following rule:
+> > > +/**
+> > > + * struct msa311_priv - MSA311 internal private state
+> > > + * @regs: Underlying I2C bus adapter used to abstract slave
+> > > + *        register accesses
+> > > + * @fields: Abstract objects for each registers fields access
+> > > + * @dev: Device handler associated with appropriate bus client
+> > > + * @lock: Protects msa311 device state between setup and data access routines
+> > > + *        (power transitions, samp_freq/scale tune, retrieving axes data, etc)
+> > > + * @new_data_trig: Optional NEW_DATA interrupt driven trigger used
+> > > + *                 to notify external consumers a new sample is ready
+> > > + * @vdd: Optional external voltage regulator for the device power supply
+> > > + */
+> > > +struct msa311_priv {
+> > > +	struct regmap *regs;
+> > > +	struct regmap_field *fields[F_MAX_FIELDS];
+> > > +
+> > > +	struct device *dev;
+> > > +	struct mutex lock; /* state guard */  
+> > 
+> > Shouldn't need this comment given documentation above that provides
+> > more information.  
 > 
->   1. vsyscall mode is emulate if it can load memory
->   2. vsyscall mode is xonly if it can call gettimeofday() on vsyscall
->   3. vsyscall mode is node otherwise
+> Without this comment checkpatch.pl raises a warning about uncommented
+> lock definition.
+> I agree with you, above comment is redundant, but is it okay to ignore
+> such warnings before sending the patch?
 > 
-> Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
-> ---
->  tools/testing/selftests/proc/proc-pid-vm.c | 77 ++++++++++++++++++----
->  1 file changed, 65 insertions(+), 12 deletions(-)
+> I'm talking about below checkpatch condition:
+> =====
+> # check for spinlock_t definitions without a comment.
+> 		if ($line =~ /^.\s*(struct\s+mutex|spinlock_t)\s+\S+;/ ||
+> 		    $line =~ /^.\s*(DEFINE_MUTEX)\s*\(/) {
+> 			my $which = $1;
+> 			if (!ctx_has_comment($first_line, $linenr)) {
+> 				CHK("UNCOMMENTED_DEFINITION",
+> 				    "$1 definition without comment\n" . $herecurr);
+> 			}
+> 		}
+> =====
+
+Hmm. I guess checkpatch is more stupid than I thought on this. Definitely
+fine to ignore that shortcoming of checkpatch.
+
 > 
-> diff --git a/tools/testing/selftests/proc/proc-pid-vm.c b/tools/testing/selftests/proc/proc-pid-vm.c
-> index 28604c9f805c..dffd263beef3 100644
-> --- a/tools/testing/selftests/proc/proc-pid-vm.c
-> +++ b/tools/testing/selftests/proc/proc-pid-vm.c
-> @@ -211,10 +211,16 @@ static int make_exe(const uint8_t *payload, size_t len)
->  }
->  #endif
->  
-> -static bool g_vsyscall = false;
-> -
-> -static const char str_vsyscall[] =
-> -"ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n";
-> +static enum { EMULATE, XONLY, NONE } g_vsyscall_mode;
-> +
-> +static const char * const str_vsyscall[] = {
-> +	/* emulate */
-> +	"ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n",
-> +	/* xonly */
-> +	"ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]\n",
-> +	/* none */
-> +	"",
-> +};
->  
->  #ifdef __x86_64__
->  static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
-> @@ -225,7 +231,33 @@ static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
->  /*
->   * vsyscall page can't be unmapped, probe it with memory load.
->   */
-> -static void vsyscall(void)
-> +static bool vsyscall_emulate(void)
-> +{
-> +	*(volatile int *)0xffffffffff600000UL;
-> +	return true;
-> +}
-> +
-> +/*
-> + * vsyscall page can't be unmapped, probe it with calling gettimeofday().
-> + */
-> +static bool vsyscall_xonly(void)
-> +{
-> +	int ret;
-> +	struct timeval tv;
-> +	int (*f)(struct timeval *tv, struct timezone *tz);
-> +
-> +	/* Try to call gettimeofday() on vsyscall*/
-> +	f = (void *)0xffffffffff600000UL;
-> +	ret = f(&tv, NULL);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "gettimeofday() on vsyscall, ret %d\n", ret);
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +static bool vsyscall_test(bool (*test)(void))
->  {
->  	pid_t pid;
->  	int wstatus;
-> @@ -246,13 +278,27 @@ static void vsyscall(void)
->  		act.sa_sigaction = sigaction_SIGSEGV;
->  		(void)sigaction(SIGSEGV, &act, NULL);
->  
-> -		*(volatile int *)0xffffffffff600000UL;
-> +		if (!test())
-> +			exit(1);
-> +
->  		exit(0);
->  	}
->  	waitpid(pid, &wstatus, 0);
->  	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0) {
-> -		g_vsyscall = true;
-> +		return true;
->  	}
-> +
-> +	return false;
-> +}
-> +
-> +static void vsyscall(void)
-> +{
-> +	if (vsyscall_test(vsyscall_emulate))
-> +		g_vsyscall_mode = EMULATE;
-> +	else if (vsyscall_test(vsyscall_xonly))
-> +		g_vsyscall_mode = XONLY;
-> +	else
-> +		g_vsyscall_mode = NONE;
->  }
->  
->  int main(void)
-> @@ -314,11 +360,14 @@ int main(void)
->  
->  	/* Test /proc/$PID/maps */
->  	{
-> -		const size_t len = strlen(buf0) + (g_vsyscall ? strlen(str_vsyscall) : 0);
-> +		size_t len = strlen(buf0);
->  		char buf[256];
->  		ssize_t rv;
->  		int fd;
->  
-> +		if (g_vsyscall_mode != NONE)
-> +			len += strlen(str_vsyscall[g_vsyscall_mode]);
-> +
->  		snprintf(buf, sizeof(buf), "/proc/%u/maps", pid);
->  		fd = open(buf, O_RDONLY);
->  		if (fd == -1) {
-> @@ -327,8 +376,10 @@ int main(void)
->  		rv = read(fd, buf, sizeof(buf));
->  		assert(rv == len);
->  		assert(memcmp(buf, buf0, strlen(buf0)) == 0);
-> -		if (g_vsyscall) {
-> -			assert(memcmp(buf + strlen(buf0), str_vsyscall, strlen(str_vsyscall)) == 0);
-> +		if (g_vsyscall_mode != NONE) {
-> +			assert(memcmp(buf + strlen(buf0),
-> +				      str_vsyscall[g_vsyscall_mode],
-> +				      strlen(str_vsyscall[g_vsyscall_mode])) == 0);
->  		}
->  	}
->  
-> @@ -374,8 +425,10 @@ int main(void)
->  			assert(memmem(buf, rv, S[i], strlen(S[i])));
->  		}
->  
-> -		if (g_vsyscall) {
-> -			assert(memmem(buf, rv, str_vsyscall, strlen(str_vsyscall)));
-> +		if (g_vsyscall_mode != NONE) {
-> +			assert(memmem(buf, rv,
-> +				      str_vsyscall[g_vsyscall_mode],
-> +				      strlen(str_vsyscall[g_vsyscall_mode])));
->  		}
->  	}
->  
-> -- 
-> 2.37.1
+> >   
+> > > +
+> > > +	struct iio_trigger *new_data_trig;
+> > > +	struct regulator *vdd;
+> > > +};
+> > >  
+> > 
+> >   
+> > > +static irqreturn_t msa311_irq_thread(int irq, void *p)
+> > > +{
+> > > +	struct msa311_priv *msa311 = iio_priv(p);
+> > > +	unsigned int new_data_int_enabled;
+> > > +	struct device *dev = msa311->dev;
+> > > +	int err;
+> > > +
+> > > +	mutex_lock(&msa311->lock);  
+> >   
+> > > +
+> > > +	/*
+> > > +	 * We do not check NEW_DATA int status, because of based on
+> > > +	 * specification it's cleared automatically after a fixed time.
+> > > +	 * So just check that is enabled by driver logic.  
+> > 
+> > That is going to be very problematic if we can have this and events coming
+> > through the same interrupt pin.  Not harmful for now though given you are
+> > only supporting NEW_DATA for now.  Just something to watch out for.
+> >   
+> 
+> Actually, I have run some experiments with NEW_DATA status bits. And
+> looks like we can't determince actual status of NEW_DATA virtual
+> interrupt when physical IRQ is raised. I will back to this problem when
+> begin Motion Events feature implementation.
+> 
+> [...]
+> 
+> > > +	err = devm_pm_runtime_enable(dev);
+> > > +	if (err)
+> > > +		return err;
+> > > +
+> > > +	pm_runtime_get_noresume(dev);
+> > > +	pm_runtime_set_autosuspend_delay(dev, MSA311_PWR_SLEEP_DELAY_MS);
+> > > +	pm_runtime_use_autosuspend(dev);
+> > > +
+> > > +	err = msa311_chip_init(msa311);
+> > > +	if (err)
+> > > +		return err;
+> > > +
+> > > +	indio_dev->modes = 0; /* setup buffered mode later */  
+> > 
+> > As per other branch, I led you astray here it seems.
+> >   
+> 
+> Sorry, I've made a mistake. Comment about INDIO_DIRECT_MODE was left
+> by Andy here:
+> 
+> https://lore.kernel.org/linux-iio/CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNShFRG3kP8b6w@mail.gmail.com/
+> 
+> [...]
+
+No problem. That's an odd historical corner case.   I liked having
+clear values for 'currentmode' (now in iio_opaque) and those matching
+the bits set in available modes.  So even if we didn't set it we'd end up
+with a reserved bit which would add extra confusion.
+
+The direct mode is currently just used as a placeholder for 'not a buffered mode',
+rather than the state variable has never been set.
+
+Jonathan
+
 > 
 
