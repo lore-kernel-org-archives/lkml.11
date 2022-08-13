@@ -2,106 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14758C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 08:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6992C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 08:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238461AbiHMIe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 04:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S231569AbiHMImV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 04:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiHMIew (ORCPT
+        with ESMTP id S229507AbiHMImT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 04:34:52 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17106B664;
-        Sat, 13 Aug 2022 01:34:51 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id l22so3419053wrz.7;
-        Sat, 13 Aug 2022 01:34:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=IkARQOyCkbKRyiQVo0E+3fF3PnzXAw1PITXNc7Jpyh0=;
-        b=iy2tGlJJWOePjP4JMIf2lWvBMTtWcxBCklDT3Rer6sFEgnlJJEM8z97vQMqav6pmT4
-         Is04EhSQMJadSQuv0fQj0oYzHiIpgrfvRQ2ZvQFvsdsnkk4gSZk/N3G1jAwUMHp71imR
-         kimdykDY14s0nu8Enb9f9vSCxCHQzqjYVfmjceGisBBurTmDOI4G6A4/MLrow2KUmh7p
-         6I8BLVpwbxceUC7ozfY62oeon/v9MJ9RtG++gaUugVc938y4pSUotBSwG7Egl5CAv0/s
-         dLSRQ9l4/yS2jxQI0GEYexvHn3vk/iRdZTKI12cTYXen00JY58bnctTmka273oG6i1Ue
-         fEiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=IkARQOyCkbKRyiQVo0E+3fF3PnzXAw1PITXNc7Jpyh0=;
-        b=VeGzH/AWH0YaFoTPNgh4q2GODouZRGQpehsLfcsP1Bk9nCZNmYuoooeUnUJiHjUuuQ
-         ofsrRBymS2zOiXgr0lX1LQ3nfR6PAM9SaDduBZyjS2qLMzP8jNY5T9v9tYUQ5Nb4UvDX
-         PCBT9GNwpQZWjyUi+WSw8Zyk2BiPfoQ31fVD4hPU0zeoqKAF0JkIAxAq7k96IbvwyMQL
-         8FZ5Ex+f5QoaGI+5BEOjIhl7yhHM4JgrM8u0LuQGkjGrDI5WRjwNnaSuBLgUWMkZ3WXy
-         6t8vsdY9THVpKpU61FmCNCudbyc2Olt7tkbeo0r8l/SzInCnOg5p5KHylmPvu4DRdywi
-         u2Ew==
-X-Gm-Message-State: ACgBeo2lOpNafZi00ka6Sbk+E8qelSextO++jqKGHxxhg+7JK2t62ThZ
-        alzvgFH/iSoMTeFOAEvgb0A=
-X-Google-Smtp-Source: AA6agR7rr8NCgKEiWScS7tmJrKZ0xvzCBH96rM1Fx03ZPKypl/m1UJj5NiIZA8ksFaWKOBT90pXuGA==
-X-Received: by 2002:a05:6000:547:b0:218:5f6a:f5db with SMTP id b7-20020a056000054700b002185f6af5dbmr4024036wrf.480.1660379690470;
-        Sat, 13 Aug 2022 01:34:50 -0700 (PDT)
-Received: from localhost.localdomain ([105.235.129.49])
-        by smtp.gmail.com with ESMTPSA id q4-20020a05600000c400b0021e8d205705sm1471365wrx.51.2022.08.13.01.34.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Aug 2022 01:34:50 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] clk: mediatek: Use mtk_clk_register_gates_with_dev in simple probe
-Date:   Sat, 13 Aug 2022 09:33:20 +0100
-Message-Id: <20220813083319.45455-1-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.37.1
+        Sat, 13 Aug 2022 04:42:19 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D007C771
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 01:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660380137; x=1691916137;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=dje4Bwu5WhwsdCPS9deeYtrDdGTX8BgieA63nTu7tK8=;
+  b=nV2mJ4f6WhkBciiPs24OR2dppfMnf53TsTjxYJva93XNGOgESGl/meIN
+   gWiQCo0SslopLZHWGoDhIdFf6SYwZj0bNAK0gQfx9p9fHdqMRcW9KEon5
+   QoC3TzU13WeHXn+HaYg3ORqL8cr8jkeP8BXKQY05VzMjqTlnficPqdD/b
+   PmTFPS5iL7Xb3Yzd7/P1jCD6lorxhb6gEGECpF75lUnHPAiozJ3kbwTbv
+   dxxZCN34F9/5UCsuCxax7Nzx0cbynuI4KpKe+/xFmsa7PfNjveD4W+wN1
+   SVQG0TDuYxogfaA6F5rmexaSqq6Z5f9fMyA6s0uchhGKCDIbpuhskEOuT
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="355746921"
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="355746921"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 01:42:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
+   d="scan'208";a="602725412"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 13 Aug 2022 01:42:13 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMmij-0001VH-09;
+        Sat, 13 Aug 2022 08:42:13 +0000
+Date:   Sat, 13 Aug 2022 16:41:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marco Elver <elver@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [stable:linux-5.15.y 5773/9027] <instantiation>:5:8: error: expected
+ relocatable expression
+Message-ID: <202208131620.5cpNx6DK-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+Hi Kees,
 
-Register gates with dev in mtk_clk_simple_probe.
+FYI, the error/warning still remains.
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
-This patch was originally part of a series, and is sent alone now since
-it doesn't depend on the rest of it and can be applied directly:
-https://lore.kernel.org/linux-clk/20220519134728.456643-1-y.oudjana@protonmail.com/
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
+head:   7217df81279835a7aee62a07aabb7b8fb8c766f2
+commit: 33db9912ff7c491f839c89a08e98f755aa09598f [5773/9027] ubsan: remove CONFIG_UBSAN_OBJECT_SIZE
+config: s390-randconfig-r031-20220812 (https://download.01.org/0day-ci/archive/20220813/202208131620.5cpNx6DK-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 3329cec2f79185bafd678f310fafadba2a8c76d2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=33db9912ff7c491f839c89a08e98f755aa09598f
+        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+        git fetch --no-tags stable linux-5.15.y
+        git checkout 33db9912ff7c491f839c89a08e98f755aa09598f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
- drivers/clk/mediatek/clk-mtk.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 05a188c62119..4977870912b1 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -434,7 +434,8 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 	if (!clk_data)
- 		return -ENOMEM;
- 
--	r = mtk_clk_register_gates(node, mcd->clks, mcd->num_clks, clk_data);
-+	r = mtk_clk_register_gates_with_dev(node, mcd->clks, mcd->num_clks,
-+					    clk_data, &pdev->dev);
- 	if (r)
- 		goto free_data;
- 
+All errors (new ones prefixed by >>):
+
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   <instantiation>:3:19: error: too many positional arguments
+           GR_NUM  b2, 1       /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:73:16: note: while in macro instantiation
+           asm volatile ("VSTM %2,%3,0,1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VSTM 0,7,0,1
+           ^
+   <instantiation>:3:19: error: too many positional arguments
+           GR_NUM  b2, 1       /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:73:16: note: while in macro instantiation
+           asm volatile ("VSTM %2,%3,0,1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VSTM 8,15,0,1
+           ^
+   <instantiation>:3:21: error: too many positional arguments
+           GR_NUM  b2, %r1     /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:63:16: note: while in macro instantiation
+           asm volatile ("VLM %2,%3,0,%1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VLM 0,7,0,%r1
+           ^
+   <instantiation>:3:21: error: too many positional arguments
+           GR_NUM  b2, %r1     /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:63:16: note: while in macro instantiation
+           asm volatile ("VLM %2,%3,0,%1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VLM 16,23,0,%r1
+           ^
+   <instantiation>:3:21: error: too many positional arguments
+           GR_NUM  b2, %r1     /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:63:16: note: while in macro instantiation
+           asm volatile ("VLM %2,%3,0,%1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VLM 16,23,0,%r1
+           ^
+   <instantiation>:3:19: error: too many positional arguments
+           GR_NUM  b2, 1       /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:73:16: note: while in macro instantiation
+           asm volatile ("VSTM %2,%3,0,1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VSTM 16,23,0,1
+           ^
+   <instantiation>:3:21: error: too many positional arguments
+           GR_NUM  b2, %r1     /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:63:16: note: while in macro instantiation
+           asm volatile ("VLM %2,%3,0,%1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VLM 16,23,0,%r1
+           ^
+   <instantiation>:3:19: error: too many positional arguments
+           GR_NUM  b2, 1       /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:73:16: note: while in macro instantiation
+           asm volatile ("VSTM %2,%3,0,1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VSTM 16,23,0,1
+           ^
+   <instantiation>:3:21: error: too many positional arguments
+           GR_NUM  b2, %r1     /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:63:16: note: while in macro instantiation
+           asm volatile ("VLM %2,%3,0,%1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VLM 0,7,0,%r1
+           ^
+   <instantiation>:3:21: error: too many positional arguments
+           GR_NUM  b2, %r1     /* Base register */
+                               ^
+   lib/raid6/s390vx8.c:63:16: note: while in macro instantiation
+           asm volatile ("VLM %2,%3,0,%1"
+                         ^
+   <inline asm>:1:2: note: instantiated into assembly here
+           VLM 16,23,0,%r1
+           ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+>> <instantiation>:5:8: error: expected relocatable expression
+           .word   (b2 << 12) | (0)
+                   ^
+   fatal error: too many errors emitted, stopping now [-ferror-limit=]
+   12 warnings and 20 errors generated.
+
 -- 
-2.37.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
