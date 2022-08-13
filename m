@@ -2,235 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B68C00140
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 00:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 799CFC00140
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 01:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237439AbiHMA6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 20:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
+        id S237218AbiHMBI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 21:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237218AbiHMA6H (ORCPT
+        with ESMTP id S229507AbiHMBIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 20:58:07 -0400
+        Fri, 12 Aug 2022 21:08:55 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74844B4AC;
-        Fri, 12 Aug 2022 17:58:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B1F73304
+        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 18:08:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660352286; x=1691888286;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=p0lq8pAlLxDsJstetxbWP2fNSNOWHlbrdqrjxTDoBmI=;
-  b=GTdyH4YxUNR/fXSUsHPF6DDpR1y9pgFs9Pow8migDPIcLpfbELA18e+G
-   XmbLbZhbixL7a9t3tbPrmVWA6NTI9/qPyDNDn7wFSSQFwD5PP/fUomOKj
-   XqvfLE/x1LZfCF7Csc6A+fj5L+ITEUTUJfyvuykaGmpN4ZwoM06s+BL6I
-   jThMbXkXntZL6as4Anw0NcUZmwPLfZTYxYRpjMtHicDRElTNx4jSm2XD0
-   G9HGpfacmxXEnzCPTeMBShF8ClnZZja0LZ3aQlJGYatdw5eJKwduFFi1A
-   /es/FrK/SWf/rZ8DyavdNuij7vT2uLHVJ02US77CCSvFwWcQ22H0tnRVV
+  t=1660352934; x=1691888934;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HLunQmAbfM6k9dfCw48hXixZNPl2EXujtQCvIYiaJmU=;
+  b=ZqWVUvm9RbJ5bnZU302o4wjdC3dKbxEsH41VYzIl8m8qRu14aZOe4VjU
+   RxnIQe2XJnF75GhRQKCdxp/abVSTbRrv/2+pP3iqugryKj7CSbr6e2UCC
+   67UXksHx09aLaOi3ZtgZeB43yi2ugVPN6qc40FgpqOJ8Rpp5Wovwg4VDJ
+   Q12lR2B00Y7WgjI+trAknyja7XQmNFvmubpE02gwe3fnKtl6S0XEreFOV
+   dyWMxbHsujas2WIHbHINTatKZyIu/I3vTyxZT41HbO7cfmicRAJMQEeKU
+   94upukslYzg9SG/tY3725I2AMClwVACQ6PWu8IPtyREFTTnJLEv4S3vcx
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="271487896"
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="271488701"
 X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="271487896"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 17:58:05 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="271488701"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 18:08:54 -0700
 X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="606098191"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 12 Aug 2022 17:58:02 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMfTV-00018W-1I;
-        Sat, 13 Aug 2022 00:58:01 +0000
-Date:   Sat, 13 Aug 2022 08:57:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ravi Gunasekaran <r-gunasekaran@ti.com>, davem@davemloft.net
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, andrew@lunn.ch,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kishon@ti.com, vigneshr@ti.com, r-gunasekaran@ti.com
-Subject: Re: [PATCH v2 net-next] net: ethernet: ti: davinci_mdio: Add
- workaround for errata i2329
-Message-ID: <202208130814.216FrNfX-lkp@intel.com>
-References: <20220810111345.31200-1-r-gunasekaran@ti.com>
+   d="scan'208";a="666038320"
+Received: from akoska-mobl1.ger.corp.intel.com (HELO hades.ger.corp.intel.com) ([10.252.36.156])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 18:08:51 -0700
+From:   Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+To:     intel-gfx@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        mchehab@kernel.org, chris@chris-wilson.co.uk,
+        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
+        jani.nikula@intel.com, nirmoy.das@intel.com, airlied@linux.ie,
+        daniel@ffwll.ch, andi.shyti@linux.intel.com,
+        andrzej.hajda@intel.com
+Subject: [PATCH v6 0/8] Fixes integer overflow or integer truncation issues in page lookups, ttm place configuration and scatterlist creation
+Date:   Sat, 13 Aug 2022 04:08:49 +0300
+Message-Id: <20220813010857.4043956-1-gwan-gyeong.mun@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810111345.31200-1-r-gunasekaran@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ravi,
+This patch series fixes integer overflow or integer truncation issues in
+page lookups, ttm place configuration and scatterlist creation, etc.
+We need to check that we avoid integer overflows when looking up a page,
+and so fix all the instances where we have mistakenly used a plain integer
+instead of a more suitable long.
+And there is an impedance mismatch between the scatterlist API using
+unsigned int and our memory/page accounting in unsigned long. That is we
+may try to create a scatterlist for a large object that overflows returning
+a small table into which we try to fit very many pages. As the object size
+is under the control of userspace, we have to be prudent and catch the
+conversion errors. To catch the implicit truncation as we switch from
+unsigned long into the scatterlist's unsigned int, we use our overflows_type
+check and report E2BIG prior to the operation. This is already used in
+our create ioctls to indicate if the uABI request is simply too large for
+the backing store. 
+And ttm place also has the same problem with scatterlist creation,
+and we fix the integer truncation problem with the way approached by
+scatterlist creation.
+And It corrects the error code to return -E2BIG when creating gem objects
+using ttm or shmem, if the size is too large in each case.
+In order to provide a common macro, it moves and adds a few utility macros
+into overflow/util_macros header
 
-Thank you for the patch! Yet something to improve:
+v6: Move macro addition location so that it can be used by other than drm subsystem (Jani, Mauro, Andi)
+    Fix to follow general use case for GEM_BUG_ON(). (Jani)
+v5: Fix an alignment to match open parenthesis
+    Fix macros to be enclosed in parentheses for complex values
+    Fix too long line warning
+v4: Fix build warnins that reported by kernel test robot. (kernel test robot <lkp@intel.com>)
+    Add kernel-doc markups to the kAPI functions and macros (Mauoro)
+v3: Modify overflows_type() macro to consider signed data types and
+	add is_type_unsigned() macro (Mauro)
+    Make not use the same macro name on a function. (Mauro)
+    For kernel-doc, macros and functions are handled in the same namespace,
+    the same macro name on a function prevents ever adding documentation for it.
+    Not to change execution inside a macro. (Mauro)
+    Fix the problem that safe_conversion() macro always returns true (G.G)
+    Add safe_conversion_gem_bug_on() macro and remove temporal SAFE_CONVERSION() macro. (G.G.)
 
-[auto build test ERROR on net-next/master]
+Chris Wilson (3):
+  drm/i915/gem: Typecheck page lookups
+  drm/i915: Check for integer truncation on scatterlist creation
+  drm/i915: Remove truncation warning for large objects
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ravi-Gunasekaran/net-ethernet-ti-davinci_mdio-Add-workaround-for-errata-i2329/20220810-191718
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git f86d1fbbe7858884d6754534a0afbb74fc30bc26
-config: arm-randconfig-r026-20220810 (https://download.01.org/0day-ci/archive/20220813/202208130814.216FrNfX-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/c62c93111418d5468f6add98d244f0a594dbe352
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ravi-Gunasekaran/net-ethernet-ti-davinci_mdio-Add-workaround-for-errata-i2329/20220810-191718
-        git checkout c62c93111418d5468f6add98d244f0a594dbe352
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/ethernet/ti/
+Gwan-gyeong Mun (5):
+  overflow: Move and add few utility macros into overflow
+  util_macros: Add exact_type macro to catch type mis-match while
+    compiling
+  drm/i915: Check for integer truncation on the configuration of ttm
+    place
+  drm/i915: Check if the size is too big while creating shmem file
+  drm/i915: Use error code as -E2BIG when the size of gem ttm object is
+    too large
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/ethernet/ti/davinci_mdio.c:548:37: error: use of undeclared identifier 'k3_mdio_socinfo'
-                   soc_match_data = soc_device_match(k3_mdio_socinfo);
-                                                     ^
->> drivers/net/ethernet/ti/davinci_mdio.c:553:31: error: incomplete definition of type 'struct k3_mdio_soc_data'
-                           data->manual_mode = socdata->manual_mode;
-                                               ~~~~~~~^
-   drivers/net/ethernet/ti/davinci_mdio.c:550:17: note: forward declaration of 'struct k3_mdio_soc_data'
-                           const struct k3_mdio_soc_data *socdata =
-                                        ^
-   2 errors generated.
-
-
-vim +/k3_mdio_socinfo +548 drivers/net/ethernet/ti/davinci_mdio.c
-
-   528	
-   529	static int davinci_mdio_probe(struct platform_device *pdev)
-   530	{
-   531		struct mdio_platform_data *pdata = dev_get_platdata(&pdev->dev);
-   532		struct device *dev = &pdev->dev;
-   533		struct davinci_mdio_data *data;
-   534		struct resource *res;
-   535		struct phy_device *phy;
-   536		int ret, addr;
-   537		int autosuspend_delay_ms = -1;
-   538		const struct soc_device_attribute *soc_match_data;
-   539	
-   540		data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-   541		if (!data)
-   542			return -ENOMEM;
-   543	
-   544		data->manual_mode = false;
-   545		data->bb_ctrl.ops = &davinci_mdiobb_ops;
-   546	
-   547		if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
- > 548			soc_match_data = soc_device_match(k3_mdio_socinfo);
-   549			if (soc_match_data && soc_match_data->data) {
-   550				const struct k3_mdio_soc_data *socdata =
-   551							soc_match_data->data;
-   552	
- > 553				data->manual_mode = socdata->manual_mode;
-   554			}
-   555		}
-   556	
-   557		if (data->manual_mode)
-   558			data->bus = alloc_mdio_bitbang(&data->bb_ctrl);
-   559		else
-   560			data->bus = devm_mdiobus_alloc(dev);
-   561	
-   562		if (!data->bus) {
-   563			dev_err(dev, "failed to alloc mii bus\n");
-   564			return -ENOMEM;
-   565		}
-   566	
-   567		if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
-   568			const struct davinci_mdio_of_param *of_mdio_data;
-   569	
-   570			ret = davinci_mdio_probe_dt(&data->pdata, pdev);
-   571			if (ret)
-   572				return ret;
-   573			snprintf(data->bus->id, MII_BUS_ID_SIZE, "%s", pdev->name);
-   574	
-   575			of_mdio_data = of_device_get_match_data(&pdev->dev);
-   576			if (of_mdio_data) {
-   577				autosuspend_delay_ms =
-   578						of_mdio_data->autosuspend_delay_ms;
-   579			}
-   580		} else {
-   581			data->pdata = pdata ? (*pdata) : default_pdata;
-   582			snprintf(data->bus->id, MII_BUS_ID_SIZE, "%s-%x",
-   583				 pdev->name, pdev->id);
-   584		}
-   585	
-   586		data->bus->name		= dev_name(dev);
-   587	
-   588		if (data->manual_mode) {
-   589			data->bus->read		= davinci_mdiobb_read;
-   590			data->bus->write	= davinci_mdiobb_write;
-   591			data->bus->reset	= davinci_mdiobb_reset;
-   592	
-   593			dev_info(dev, "Configuring MDIO in manual mode\n");
-   594		} else {
-   595			data->bus->read		= davinci_mdio_read;
-   596			data->bus->write	= davinci_mdio_write;
-   597			data->bus->reset	= davinci_mdio_reset;
-   598			data->bus->priv		= data;
-   599		}
-   600		data->bus->parent	= dev;
-   601	
-   602		data->clk = devm_clk_get(dev, "fck");
-   603		if (IS_ERR(data->clk)) {
-   604			dev_err(dev, "failed to get device clock\n");
-   605			return PTR_ERR(data->clk);
-   606		}
-   607	
-   608		dev_set_drvdata(dev, data);
-   609		data->dev = dev;
-   610	
-   611		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-   612		if (!res)
-   613			return -EINVAL;
-   614		data->regs = devm_ioremap(dev, res->start, resource_size(res));
-   615		if (!data->regs)
-   616			return -ENOMEM;
-   617	
-   618		davinci_mdio_init_clk(data);
-   619	
-   620		pm_runtime_set_autosuspend_delay(&pdev->dev, autosuspend_delay_ms);
-   621		pm_runtime_use_autosuspend(&pdev->dev);
-   622		pm_runtime_enable(&pdev->dev);
-   623	
-   624		/* register the mii bus
-   625		 * Create PHYs from DT only in case if PHY child nodes are explicitly
-   626		 * defined to support backward compatibility with DTs which assume that
-   627		 * Davinci MDIO will always scan the bus for PHYs detection.
-   628		 */
-   629		if (dev->of_node && of_get_child_count(dev->of_node))
-   630			data->skip_scan = true;
-   631	
-   632		ret = of_mdiobus_register(data->bus, dev->of_node);
-   633		if (ret)
-   634			goto bail_out;
-   635	
-   636		/* scan and dump the bus */
-   637		for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
-   638			phy = mdiobus_get_phy(data->bus, addr);
-   639			if (phy) {
-   640				dev_info(dev, "phy[%d]: device %s, driver %s\n",
-   641					 phy->mdio.addr, phydev_name(phy),
-   642					 phy->drv ? phy->drv->name : "unknown");
-   643			}
-   644		}
-   645	
-   646		return 0;
-   647	
-   648	bail_out:
-   649		pm_runtime_dont_use_autosuspend(&pdev->dev);
-   650		pm_runtime_disable(&pdev->dev);
-   651		return ret;
-   652	}
-   653	
+ drivers/gpu/drm/i915/gem/i915_gem_internal.c  |   6 +-
+ drivers/gpu/drm/i915/gem/i915_gem_object.c    |   7 +-
+ drivers/gpu/drm/i915/gem/i915_gem_object.h    | 303 +++++++++++++++---
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c     |  27 +-
+ drivers/gpu/drm/i915/gem/i915_gem_phys.c      |   4 +
+ drivers/gpu/drm/i915/gem/i915_gem_shmem.c     |  19 +-
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c       |  23 +-
+ drivers/gpu/drm/i915/gem/i915_gem_userptr.c   |   5 +-
+ .../drm/i915/gem/selftests/i915_gem_context.c |  12 +-
+ .../drm/i915/gem/selftests/i915_gem_mman.c    |   8 +-
+ .../drm/i915/gem/selftests/i915_gem_object.c  |   8 +-
+ drivers/gpu/drm/i915/gvt/dmabuf.c             |   9 +-
+ drivers/gpu/drm/i915/i915_gem.c               |  18 +-
+ drivers/gpu/drm/i915/i915_scatterlist.h       |  11 +
+ drivers/gpu/drm/i915/i915_utils.h             |   6 +-
+ drivers/gpu/drm/i915/i915_vma.c               |   8 +-
+ drivers/gpu/drm/i915/intel_region_ttm.c       |  22 +-
+ include/linux/overflow.h                      |  54 ++++
+ include/linux/util_macros.h                   |  25 ++
+ 19 files changed, 482 insertions(+), 93 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
