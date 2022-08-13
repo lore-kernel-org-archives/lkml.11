@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E2BC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 22:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE512C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 22:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239835AbiHMWjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 18:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
+        id S239962AbiHMWjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 18:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiHMWix (ORCPT
+        with ESMTP id S230041AbiHMWix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 13 Aug 2022 18:38:53 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB52C6CD11
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 15:38:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51366CD19
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 15:38:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660430331; x=1691966331;
+  t=1660430332; x=1691966332;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=O38mwLkr/xGj2TuCsbHRlP99zod9IRJU32RP0Fml5/Q=;
-  b=Y++h1C766ffQYLZdBrUnk8kSsgnbQLDYFcgr1kkAZKlG2apfVJp5lhQH
-   UbyRRZEU3MzkoEhCXFHSfZR7CwopeqthkxecW9tX8Iuu1Lium+INzxwkJ
-   W0Eng4bc3lQTR12fz/qQ+MGXorEcUIHau0h30bq4QC5QN/23hoyM2s5pj
-   IqTlysq1gOEF/d/ZXv+5MveX5uJ3NQFBOVUFirsJSiSNDYVhTslE8P5hX
-   r05czPW47DjSDM+hIPepvEFd4Hyo+/upioNfAZmK/zPaZaPn/rmFt4dmI
-   dRvphPPIs+W3/FrxlCrcU4d7SswDcMu8GEWOMTvv/QpMThcydCEPXbGGm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="353523719"
+  bh=FW9xRisc1P87Bo7EmCsCCev95LdEfxwofPWBD0JqoS0=;
+  b=WtM88sYA0VRwowq6BX9JVnMiz8wePf+KjhAoRnOnyRJjgl0PXQJgqeJ+
+   AX+6evNmZairFdJGCNJrJlHk6qmIwR9mevIE26OOp2Tlcv0GXnMXPmaZG
+   OePH2XttXtLK2i1MY5RzpVCPlnKh8kLODisjsdq5AVSEXL+p220hSZKd6
+   GEImg7pv690bk3K8E2/UtwbKxO1k3B8BBHWXSXTpcY8CL5FNyq6hTKi2y
+   0Hv+Dgn9Z/piXyto/OZDq9geWIM70Mc83FBAG4kUqG8TeG+idgX3yT6RZ
+   A+iV7cpSK2vBBWqMigL86bdKZ/jmjRqdpJ/Crj+CgdyVwqpIJHy6WtQP4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="353523721"
 X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="353523719"
+   d="scan'208";a="353523721"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 15:38:49 -0700
 X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="556890226"
+   d="scan'208";a="556890231"
 Received: from araj-dh-work.jf.intel.com ([10.165.157.158])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 15:38:49 -0700
 From:   Ashok Raj <ashok.raj@intel.com>
@@ -47,9 +47,9 @@ Cc:     Tony Luck <tony.luck@intel.com>,
         Andy Lutomirski <luto@amacapital.net>,
         Tom Lendacky <thomas.lendacky@amd.com>,
         Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH 1/5] x86/microcode: Add missing documentation that late-load will taint kernel
-Date:   Sat, 13 Aug 2022 22:38:21 +0000
-Message-Id: <20220813223825.3164861-2-ashok.raj@intel.com>
+Subject: [PATCH 3/5] x86/microcode/intel: Allow a late-load only if a min rev is specified
+Date:   Sat, 13 Aug 2022 22:38:23 +0000
+Message-Id: <20220813223825.3164861-4-ashok.raj@intel.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220813223825.3164861-1-ashok.raj@intel.com>
 References: <20220813223825.3164861-1-ashok.raj@intel.com>
@@ -59,169 +59,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d23d33ea0fcd made late-load taint the kernel. Documentation for
-tainted kernels was missed.
+In general users don't have the necessary information to determine
+whether a late-load of a new microcode version has removed any feature
+(MSR, CPUID etc) between what is currently loaded and this new microcode.
+To address this issue, Intel has added a "minimum required version" field to
+a previously reserved field in the file header. Microcode updates
+should only be applied if the current microcode version is equal
+to, or greater than this minimum required version.
 
-There is some history behind why x86 microcode started doing the late_load
-stop_machine() rendezvous. It was suggested that it would be good
-background to document.
+https://lore.kernel.org/linux-kernel/alpine.DEB.2.21.1909062237580.1902@nanos.tec.linutronix.de/
 
-No other functional change.
+Thomas made some suggestions on how meta-data in the microcode file could
+provide Linux with information to decide if the new microcode is suitable
+candidate for late-load. But even the "simpler" option#1 requires a lot of
+metadata and corresponding kernel code to parse it.
 
+The proposal here is an even simpler option. The criteria for a microcode to
+be a viable late-load candidate is that no CPUID or OS visible MSR features
+are removed with respect to an earlier version of the microcode.
+
+Pseudocode for late-load is as follows:
+
+if header.min_required_id == 0
+	This is old format microcode, block late-load
+else if current_ucode_version < header.min_required_id
+	Current version is too old, block late-load of this microcode.
+else
+	OK to proceed with late-load.
+
+Any microcode that removes a feature will set the min_version to itself.
+This will enforce this microcode is not suitable for late-loading.
+
+The enforcement is not in hardware and limited to kernel loader enforcing
+the requirement. It is not required for early loading of microcode to
+enforce this requirement, since the new features are only
+evaluated after early loading in the boot process.
+
+
+Test cases covered:
+
+1. With new kernel, attempting to load an older format microcode with the
+   min_rev=0 should be blocked by kernel.
+
+   [  210.541802] microcode: Header MUST specify min version for late-load
+
+2. New microcode with a non-zero min_rev in the header, but the specified
+   min_rev is greater than what is currently loaded in the CPU should be
+   blocked by kernel.
+
+   245.139828] microcode: Current revision 0x8f685300 is too old to update,
+must be at 0xaa000050 version or higher
+
+3. New microcode with a min_rev < currently loaded should allow loading the
+   microcode
+
+4. Build initrd with microcode that has min_rev=0, or min_rev > currently
+   loaded should permit early loading microcode from initrd.
+
+
+Tested-by: William Xie <william.xie@intel.com>
 Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- Documentation/admin-guide/tainted-kernels.rst |  8 +-
- Documentation/x86/microcode.rst               | 95 ++++++++++++++++++-
- 2 files changed, 97 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/microcode_intel.h |  4 +++-
+ arch/x86/kernel/cpu/microcode/intel.c  | 20 ++++++++++++++++++++
+ 2 files changed, 23 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/tainted-kernels.rst b/Documentation/admin-guide/tainted-kernels.rst
-index ceeed7b0798d..3513182b5dec 100644
---- a/Documentation/admin-guide/tainted-kernels.rst
-+++ b/Documentation/admin-guide/tainted-kernels.rst
-@@ -133,7 +133,13 @@ More detailed explanation for tainting
-        scsi/snic on something else than x86_64, scsi/ips on non
-        x86/x86_64/itanium, have broken firmware settings for the
-        irqchip/irq-gic on arm64 ...).
--
-+     - x86/x86_64: kernel "late-loads" of a microcode update
-+       is dangerous and will result in tainting the kernel. Late loading
-+       requires rendezvous to make sure we update when the system is
-+       quiesce and not executing anything else. But the presence of
-+       MCE/SMI/NMI can cause control flow away from the rendezvous
-+       that can't be controlled
-+e
-  3)  ``R`` if a module was force unloaded by ``rmmod -f``, ``' '`` if all
-      modules were unloaded normally.
+diff --git a/arch/x86/include/asm/microcode_intel.h b/arch/x86/include/asm/microcode_intel.h
+index 4c92cea7e4b5..16b8715e0984 100644
+--- a/arch/x86/include/asm/microcode_intel.h
++++ b/arch/x86/include/asm/microcode_intel.h
+@@ -14,7 +14,9 @@ struct microcode_header_intel {
+ 	unsigned int            pf;
+ 	unsigned int            datasize;
+ 	unsigned int            totalsize;
+-	unsigned int            reserved[3];
++	unsigned int            reserved1;
++	unsigned int		min_req_id;
++	unsigned int            reserved3;
+ };
  
-diff --git a/Documentation/x86/microcode.rst b/Documentation/x86/microcode.rst
-index a320d37982ed..941c48c26d84 100644
---- a/Documentation/x86/microcode.rst
-+++ b/Documentation/x86/microcode.rst
-@@ -6,6 +6,7 @@ The Linux Microcode Loader
+ struct microcode_intel {
+diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
+index c4b11e2fbe33..1eb202ec2302 100644
+--- a/arch/x86/kernel/cpu/microcode/intel.c
++++ b/arch/x86/kernel/cpu/microcode/intel.c
+@@ -178,6 +178,7 @@ static int microcode_sanity_check(void *mc, int print_err)
+ 	struct extended_sigtable *ext_header = NULL;
+ 	u32 sum, orig_sum, ext_sigcount = 0, i;
+ 	struct extended_signature *ext_sig;
++	struct ucode_cpu_info uci;
  
- :Authors: - Fenghua Yu <fenghua.yu@intel.com>
-           - Borislav Petkov <bp@suse.de>
-+	  - Ashok Raj <ashok.raj@intel.com>
+ 	total_size = get_totalsize(mc_header);
+ 	data_size = get_datasize(mc_header);
+@@ -248,6 +249,25 @@ static int microcode_sanity_check(void *mc, int print_err)
+ 		return -EINVAL;
+ 	}
  
- The kernel has a x86 microcode loading facility which is supposed to
- provide microcode loading methods in the OS. Potential use cases are
-@@ -92,12 +93,10 @@ vendor's site.
- Late loading
- ============
++	/*
++	 * Enforce for late-load that min_req_id is specified in the header.
++	 * Otherwise its an old format microcode, reject it.
++	 */
++	if (print_err) {
++		if (!mc_header->min_req_id) {
++			pr_warn("Header MUST specify min version for late-load\n");
++			return -EINVAL;
++		}
++
++		intel_cpu_collect_info(&uci);
++		if (uci.cpu_sig.rev < mc_header->min_req_id) {
++			pr_warn("Current revision 0x%x is too old to update,"
++				"must  be at 0x%x version or higher\n",
++				uci.cpu_sig.rev, mc_header->min_req_id);
++			return -EINVAL;
++		}
++	}
++
+ 	if (!ext_table_size)
+ 		return 0;
  
--There are two legacy user space interfaces to load microcode, either through
--/dev/cpu/microcode or through /sys/devices/system/cpu/microcode/reload file
-+Loading microcode is through /sys/devices/system/cpu/microcode/reload file
- in sysfs.
- 
--The /dev/cpu/microcode method is deprecated because it needs a special
--userspace tool for that.
-+The /dev/cpu/microcode method is deprecated and removed since 5.19.
- 
- The easier method is simply installing the microcode packages your distro
- supplies and running::
-@@ -110,6 +109,92 @@ The loading mechanism looks for microcode blobs in
- /lib/firmware/{intel-ucode,amd-ucode}. The default distro installation
- packages already put them there.
- 
-+Why is late loading dangerous?
-+==============================
-+Starting 5.19, kernel configuration was changed to not compile
-+late-loading by default.  Even if one were to enable the CONFIG, it
-+will end up tainting the kernel.  Some of the reasons are explained
-+below.
-+
-+Rendezvous all CPUs
-+-------------------
-+Microcode is a core resource, hence both threads of HT share the same
-+microcode resource.  Updating on one thread of the core, the sibling
-+automatically gets the update. There are some MSR's that are flow control
-+(virtual) MSR's.  While the microcode update is in progress, these MSR's
-+cease to exist.  This can result in unpredictable results, if the second
-+sibling thread happens to be in the middle of an access to an MSR that
-+is being patched at the same time. MSR's are just one common issue we
-+trip over, but any other instruction that's being patched, can also result 
-+in similar behavior.
-+
-+To eliminate this case, we introduced stop_machine() as a way to guarantee
-+that the thread sibling will not execute any code  and just waits in a spin
-+loop polling an atomic variable.
-+
-+While this took care of device or external interrupts, IPI's include LVT ones,
-+such as CMCI etc, there are other special interrupts that can't be shut off.
-+Those are Machine Checks (#MC), Systems Management Interrupt (#SMI) and
-+Non-Maskable interrupts (#NMI).
-+
-+Machine Checks
-+--------------
-+Machine Checks (#MC) are non-maskable. There are two kinds of MCEs. Fatal
-+un-recoverable MCEs and recoverable MCEs. While un-recoverable errors
-+are fatal in behavior, recoverable errors can also happen in kernel context
-+are also treated as fatal by the kernel.
-+
-+#MCE's are also broadcast to all threads in a system. If one thread is in
-+the middle of wrmsr() MCE will be taken at the end of the flow. Either they will
-+wait for this thread performing the wrmsr(0x79) to rendezvous in MCE handler
-+and shutdown eventually if any of the threads in the system fail to checkin
-+to the MCE rendezvous.
-+
-+To be paranoid and get predictable behavior, OS can choose to set
-+MCG_STATUS.MCIP. Since MCE's can be at most one in a system, 
-+if an MCE was signaled, the above condition will promote to a system reset
-+automatically. OS can turn off MCIP at the end of the update for that core.
-+
-+System Management Interrupt
-+---------------------------
-+#SMI's are also broadcast via HW to all CPUs in the platform. Microcode
-+updates requests exclusive access to the core before a wrmsr 0x79. So if it
-+does happen such that, one thread is in wrmsr flow, and the 2nd got an SMI,
-+that thread will be stopped in the first instruction in SMI handler.
-+
-+Since the secondary thread is stopped in the first instruction in SMI,
-+there is very little chance that it would be in the middle of executing an
-+instruction being patched. Plus OS has no way to stop SMI's from happening.
-+
-+Since there seems some reasonable behavior micro-architecturally (for
-+Intel CPUs), it seems benign.
-+
-+Non-Maskable Interrupts
-+-----------------------
-+When thread0 of a core is doing the microcode update, if thread1 is pulled
-+into NMI, that can cause unpredictable behavior due to reasons sighted
-+above.
-+
-+OS can choose a variety of methods to avoid running into this situation.
-+
-+Is the microcode suitable for late loading?
-+-------------------------------------------
-+Late loading is done when system is fully operational and running real
-+workloads. Late-loads behavior depends on what the base patch on the CPU is
-+before upgrading to the new patch.
-+
-+This is true for Intel CPUs.
-+
-+For e.g. Consider CPU is on patch1 and we are updating to patch3.
-+Between patch1 and patch3, patch2 might have deprecated a user visible
-+feature. This can cause unexpected behavior in the kernel if the kernel
-+happened to be using those features. For instance say MSR_X is no longer
-+available after an update, accessing that MSR can cause #GP fault.
-+
-+Basically there is no way to declare a new microcode update suitable for
-+late-loading. This is another one of the problems that caused late-loads to
-+be disabled from being default enabled.
-+
- Builtin microcode
- =================
- 
-@@ -134,7 +219,7 @@ This basically means, you have the following tree structure locally::
-   |   |-- 06-3a-09
-   ...
- 
--so that the build system can find those files and integrate them into
-+So that the build system can find those files and integrate them into
- the final kernel image. The early loader finds them and applies them.
- 
- Needless to say, this method is not the most flexible one because it
 -- 
 2.32.0
 
