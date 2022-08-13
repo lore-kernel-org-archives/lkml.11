@@ -2,89 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4873DC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C66BFC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239655AbiHMOdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 10:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
+        id S239685AbiHMOhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 10:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239636AbiHMOdd (ORCPT
+        with ESMTP id S239676AbiHMOhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 10:33:33 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9F92F010
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 07:33:30 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id a89so4447413edf.5
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 07:33:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=za38B/WdiKJtfUmwIszIpVR/GOOwQNFkxMaiPO2BEsE=;
-        b=SRS5VX4DgFVtp+A0rN1JhpRO941soVLdg90ecmG+XQ0O0Pk71FW0Pnz8yHfIzncjfm
-         w9vBr4X/fCJunIlmhImV1SN4JHWF76kgYCXcIiI1d3N9VGZpSUARDumzbJr1NyXQ/y2c
-         xl4sdAP3i5O12b6Ip2R/jya5p6xu5xMddi8Pxlw7eq/IEQ6HD+3yv8y+lu+TMSGolZmy
-         T1my/uu5mISAvK1SJnfKyo4UErW6OWGA38vCibiC0oR7zQJqP/8REV5No7LCotDsP6w/
-         5aNp4dTcnSdt2zTERyY/We+lAkR6JSCN2UFnjtWSoP/0ZZaPfZmJJe4TyS7j9xKwOFfG
-         vjWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=za38B/WdiKJtfUmwIszIpVR/GOOwQNFkxMaiPO2BEsE=;
-        b=uf/Su2dz7J54TMtXXslJRYVZkYWDez7Hy0zKwc45smK8KPEXtDthaO5+WVOZ3YFCEN
-         zL0rMU7TAPedVX8Thmx28IkLUntlpHUCq+USICfNl2LCaZKPCicwwDeOhQZBj37fcwkO
-         aSez8LVT9SgFAGUpugQDSVI+5PFiQxYkyB4ZSeyUIawPXBf3gLbk1627m18HmDdc72Uw
-         cRcLjJepLvThkoyG6PTMwkPVgkkKI3uvxgYRKqFXUsGZw5R/FfpFu3bXflZzHJCVBr89
-         r+4DiT9ccnBtdMCRrQ3x9B7+RePLPN+A2vvEGFTcI1rChur8IpuQTzqmF42MczZ/l3H7
-         nA4w==
-X-Gm-Message-State: ACgBeo3TmM76jxCRtjjjqzxbEYNHEOkNVb2xGJsd0JhLIZBlfPMjOnnx
-        oFNyNgUPJ0tVw+ziphVwoWkxO5afxEkhXjaOAA==
-X-Google-Smtp-Source: AA6agR7/0O5iWzCnwrOz4bhtktALLvhmcNbjjxALsSbZe0aAZ1sGeKW6/lTWKsM2lcpAxJVv05nSRWz+4CDpDtjIXfY=
-X-Received: by 2002:a05:6402:240a:b0:437:d2b6:3dde with SMTP id
- t10-20020a056402240a00b00437d2b63ddemr7723134eda.62.1660401209608; Sat, 13
- Aug 2022 07:33:29 -0700 (PDT)
+        Sat, 13 Aug 2022 10:37:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B16B32B81
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 07:37:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1ED8B802BE
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 14:37:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 883A2C433D6;
+        Sat, 13 Aug 2022 14:37:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660401432;
+        bh=eUt5WPk2oDTRX7G+NlG6mkjLwzzTqD0BB5QjKnscQNU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AQwiGH7vJLTxQzv0F5T8WYPWfRmnackfU27q69GDawH+EAy6YzVQykTVtQTdEu6vP
+         pft1aI4mfP5MbxkSNiK1S6PZ0eDPQKCxmPYpOGF27Z/iEHN8GbuLHaipFk8p02E3h0
+         9NViWrL+ezh7DnqIVm6F2d4+OKEHUR8zK+mWneqtESc8NHllz0pzuJW3/o1w3IMPzy
+         X3jZvhq2cjoV8+UYmfN2O8ej0vhcKHH/gxwxXDlWzvFYdXgThQYlwYf5aC5Rjm8pGN
+         j2wb1Gq9SxB6rWhIfyArW4Wi9ekxnrnSQ9f1wJSHHEZ2B7khqzo/wl3432WGiRBzC6
+         G+lOJUue56tWg==
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>, stable@kernel.org
+Subject: [PATCH] f2fs: fix wrong continue condition in GC
+Date:   Sat, 13 Aug 2022 07:37:09 -0700
+Message-Id: <20220813143709.11909-1-jaegeuk@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
-References: <1660290073-26347-1-git-send-email-kaixuxia@tencent.com> <20220812154841.116570-1-sj@kernel.org>
-In-Reply-To: <20220812154841.116570-1-sj@kernel.org>
-From:   Kaixu Xia <xiakaixu1987@gmail.com>
-Date:   Sat, 13 Aug 2022 22:33:18 +0800
-Message-ID: <CAGjdHukHNavhfTB+uff_9F3+VPhzXzP9bPnUV1Mcz4dX7rF87w@mail.gmail.com>
-Subject: Re: [PATCH] mm/damon/core: simplify the parameter passing for region
- split operation
-To:     SeongJae Park <sj@kernel.org>
-Cc:     akpm@linux-foundation.org, damon@lists.linux.dev,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Kaixu Xia <kaixuxia@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 12, 2022 at 11:48 PM SeongJae Park <sj@kernel.org> wrote:
->
-> Hi Kaixu,
->
-> On Fri, 12 Aug 2022 15:41:13 +0800 xiakaixu1987@gmail.com wrote:
->
-> > From: Kaixu Xia <kaixuxia@tencent.com>
-> >
-> > The parameter 'struct damon_target *t' is unnecessary in damon region
-> > split operation, so we can remove it.
->
-> Good finding.  But, 't' is used while 'ctx' is unused in
-> 'damon_split_region_at()' and 'damon_split_regions_of'.  Below code change is
-> also removing 'ctx', not 't'.  Could you please update the commit message for
-> that?
->
-> Also, please fix the kernel test robot reported issues together:
-> https://lore.kernel.org/damon/202208121823.8YTRPB1J-lkp@intel.com/
->
->
-Thanks. Will fix them in the next version.
+We should decrease the frozen counter.
 
-> Thanks,
-> SJ
->
-> [...]
+Cc: stable@kernel.org
+Fixes: 325163e9892b ("f2fs: add gc_urgent_high_remaining sysfs node")
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+ fs/f2fs/gc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index 6da21d405ce1..7e4b41240d59 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -102,7 +102,7 @@ static int gc_thread_func(void *data)
+ 					sbi->gc_urgent_high_limited = false;
+ 					spin_unlock(&sbi->gc_urgent_high_lock);
+ 					sbi->gc_mode = GC_NORMAL;
+-					continue;
++					goto next;
+ 				}
+ 				sbi->gc_urgent_high_remaining--;
+ 			}
+-- 
+2.37.1.595.g718a3a8f04-goog
+
