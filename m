@@ -2,81 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B71C25B0E
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF773C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 15:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239682AbiHMPMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 11:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
+        id S239690AbiHMPQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 11:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239634AbiHMPME (ORCPT
+        with ESMTP id S239504AbiHMPQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 11:12:04 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1FF13CED;
-        Sat, 13 Aug 2022 08:12:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WapydjWUane8f3QxMtubXs/QK0ODLAdb+vKaEJ8bjAc=; b=w+HL5WiPOhI4wdFgzMqzxODMzZ
-        FaUvcyPj8Umu+d/o1TGjTG3+SNxVVsOnGM4leP0g54Quyi5u8qvypyfOjhrViRJG0iPMDNNBdt2Yi
-        aHmclgf/RHGyBeOms2YKq7nd6R51Nft+lyT+qOOaczBAWZgAWLA2Gk+DzQmthbI/f31A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oMsnh-00DDzY-3j; Sat, 13 Aug 2022 17:11:45 +0200
-Date:   Sat, 13 Aug 2022 17:11:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 07/10] net: dsa: microchip: warn about not
- supported synclko properties on KSZ9893 chips
-Message-ID: <Yve/MSMc/4klJPFL@lunn.ch>
-References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
- <20220729130346.2961889-8-o.rempel@pengutronix.de>
- <20220802113633.73rxlb2kmihivwpx@skbuf>
- <20220805115601.GB10667@pengutronix.de>
- <20220805134234.ps4qfjiachzm7jv4@skbuf>
- <20220813143215.GA12534@pengutronix.de>
+        Sat, 13 Aug 2022 11:16:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D29E13F56;
+        Sat, 13 Aug 2022 08:16:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A3EF60EB8;
+        Sat, 13 Aug 2022 15:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE57C433C1;
+        Sat, 13 Aug 2022 15:16:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660403808;
+        bh=6tGOO1ijE7S/GiCxvtc4LOcQt/od6M5Es+DFz4ypggg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hCPIv1A0+PRvMgeCTjHm0C7GbnEcgf/9GdrrZ4v5evuH0s7eYudk5dSq1EL8w2cqs
+         oT18bzgcPEcPkwWjN2h0/w4AS6aV0miPMdxq2HUnSTPWgNGNOgPeY0no9AdwEOny9f
+         NfAsT+xjLGFY8cWHpfYYwoLljxrTjxz/mYT1mvx7cvAzPrQ35kKl7XQEe4izB2L23e
+         qf8nZZL0Ivfp+AUDaht5E7FuLguS5ygbGFoWKor5iZ3URLt5vYOLZfQ+qPGkkissLv
+         IsJ6hxty2LG/IkLviKNlotcCOzkWGNjc5XDDUDpOhpmGMzCFo9OdP2KJbCeFSynQhY
+         P4usbuCbddqvw==
+Date:   Sat, 13 Aug 2022 16:27:15 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Message-ID: <20220813162715.2c8bdc47@jic23-huawei>
+In-Reply-To: <20220809103519.437rcude7fstxyy4@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220803131132.19630-1-ddrokosov@sberdevices.ru>
+        <20220803131132.19630-3-ddrokosov@sberdevices.ru>
+        <CAHp75VcVuC6yVoB1kycCOfqMa=JfCtbe3WYSK5qndtYcJy3vpg@mail.gmail.com>
+        <20220803191621.tzrmndkygfe7nlpx@CAB-WSD-L081021.sigma.sbrf.ru>
+        <20220806155523.37c3e587@jic23-huawei>
+        <20220809095251.vpp6arac3pkntdlo@CAB-WSD-L081021.sigma.sbrf.ru>
+        <CAHp75Vc9LGX-=Y2smOrKuAgSRrhA0AgGuBE-0=_-q78FpSB6ag@mail.gmail.com>
+        <20220809103519.437rcude7fstxyy4@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220813143215.GA12534@pengutronix.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 04:32:15PM +0200, Oleksij Rempel wrote:
-> On Fri, Aug 05, 2022 at 04:42:34PM +0300, Vladimir Oltean wrote:
-> > On Fri, Aug 05, 2022 at 01:56:01PM +0200, Oleksij Rempel wrote:
-> > > Hm, if we will have any random not support OF property in the switch
-> > > node. We won't be able to warn about it anyway. So, if it is present
-> > > but not supported, we will just ignore it.
-> > > 
-> > > I'll drop this patch.
+On Tue, 9 Aug 2022 10:35:19 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+
+> On Tue, Aug 09, 2022 at 12:05:12PM +0200, Andy Shevchenko wrote:
+> > > > > > > +       indio_dev->modes = 0; /* setup buffered mode later */  
+> > > > > >
+> > > > > > Why explicit assignment to 0? Doesn't kzalloc() do it for you?  
+> > > > >
+> > > > > kzalloc() will do it for me, of course. Previously, I initialized modes to
+> > > > > INDIO_DIRECT_MODE to just provide default value for that. Jonathan
+> > > > > suggested to replace it with 0.  
+> > > >
+> > > > I did?  I wonder what I was smoking that day.
+> > > > Should be set to INDIO_DIRECT_MODE as you had it previously.
+> > > >
+> > > > (From what I recall it will work either way but we have in the past had
+> > > > core code that checked this and may do again in the future so drivers should
+> > > > still be setting it to specify they provide sysfs interfaces to directly read
+> > > > the channels).  
+> > >
+> > > Jonathan, really sorry I referred to you. I'm confused. This comment was
+> > > from Andy in the v3 discussion:
+> > >
+> > > https://lore.kernel.org/linux-iio/CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNShFRG3kP8b6w@mail.gmail.com/  
 > > 
-> > To continue, I think the right way to go about this is to edit the
-> > dt-schema to say that these properties are only applicable to certain
-> > compatible strings, rather than for all. Then due to the
-> > "unevaluatedProperties: false", you'd get the warnings you want, at
-> > validation time.
+> > Indeed. I was confused by the comment. My understanding at that time
+> > was that the triggered mode is inevitable and hence assigning to
+> > something which _will_ be reassigned later makes a little sense. So,
+> > does it mean that triggered mode is optional and might not be set? In
+> > such a case the comment is misleading.  
 > 
-> Hm, with "unevaluatedProperties: false" i have no warnings. Even if I
-> create examples with random strings as properties. Are there some new
-> json libraries i should use?
+> Actually, this comment was introduced in the early MSA311 driver
+> versions, when I have made buffer setup only if HW irq is enabled. In
+> the newest versions buffer is setup unconditionally, because buffer mode
+> can be used based on hrtimer software trigger.
+> 
+> Jonathan, why we shouldn't delete INDIO_DIRECT_MODE initialization if
+> after couple of lines we always setup buffer mode?
+> 
 
-Try
+The buffered mode setup does
+modes |= INDIO_BUFFER_TRIGGERED;
+https://elixir.bootlin.com/linux/latest/source/drivers/iio/buffer/industrialio-triggered-buffer.c#L71
 
-additionalProperties: False
+Direct mode indicates that it is possible to read the channels without
+using any of the triggered modes (there are devices - though rare - where
+it is not set as they are only accessible through FIFOs for example).
 
-	Andrew
+We don't make much use of IIO_DIRECT_MODE today (though we did until fairly
+recently).  It could be replaced with a specific check on provision of
+raw / processed channels I guess - but I'm not that keen to see it go without
+thinking hard about whether we should be using that flag to catch misconfiguration
+in some cases.  So I'd rather postpone any changes in that for now.
+
+Jonathan
