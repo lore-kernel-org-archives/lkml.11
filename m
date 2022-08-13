@@ -2,57 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA08C00140
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 01:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E72AC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 01:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233770AbiHMBVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 12 Aug 2022 21:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38200 "EHLO
+        id S238473AbiHMB04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 12 Aug 2022 21:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiHMBV3 (ORCPT
+        with ESMTP id S237356AbiHMB0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 12 Aug 2022 21:21:29 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 12 Aug 2022 18:21:28 PDT
-Received: from cardinal.elronnd.net (cardinal.elronnd.net [71.19.150.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFB40AA3FC
-        for <linux-kernel@vger.kernel.org>; Fri, 12 Aug 2022 18:21:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; s=default; bh=IufNUSwQPmP6
-        0Z06Trf+8MEW5Pfsa4wMWIEBvVYspQw=; h=subject:to:from:date;
-        d=cardinal.elronnd.net; b=hrmMQjuMdDHyx6f6IPTa/XNXOgumZAm5baHYMJahXUwe
-        216wam8y5H8ksZraus2tcYW4L7Dk7l19p1kEEgPBAp6IgYPz6om5BjS+Aoe2VcBjKSgzzV
-        3ZY1JP8O4yLF6IejnHnXpEppuiwnDBac1UX7zQQ7sgcrgXectccN11TX8=
-Received: from localhost (localhost [127.0.0.1])
-        by cardinal.elronnd.net (OpenSMTPD) with ESMTP id c6671b0d
-        for <linux-kernel@vger.kernel.org>;
-        Fri, 12 Aug 2022 18:14:48 -0700 (PDT)
-Date:   Fri, 12 Aug 2022 18:14:48 -0700 (PDT)
-From:   Elijah Stone <elronnd-linux@elronnd.net>
-To:     linux-kernel@vger.kernel.org
-Subject: Futex wait is not interrupted by signals if no timeout is provided
-Message-ID: <88516d10-bd53-9725-77f5-2772a6c784@elronnd.net>
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+        Fri, 12 Aug 2022 21:26:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A88F979D6;
+        Fri, 12 Aug 2022 18:26:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5022BB8254B;
+        Sat, 13 Aug 2022 01:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0309FC433C1;
+        Sat, 13 Aug 2022 01:26:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660354010;
+        bh=kr0NBO0fEJMfjIoMPVV07UBeKAugpWcUVnWu6EVtriM=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=DkbUCUj6cvpq9ckQ9mdUc3YQ2psvw53yDbN9jlbGiDvfoWLpUWFeyRUuCx4JNUdvd
+         bGlqR84F0zunaDStSgxBvd6nyL6myubCFFQV+PgyecndT1vaBgK5OrFYJsYtMCruCx
+         tbfWo3apMetYOmGYMd5oU0umBarbIeWju3FoAYmIQnea1UA+yC9wdyHHOUuCegJXYy
+         7qwJe82hXth2sWnCWCtlKfQTl/wV7FQNFiqbvqcv4wQOzPVbmphbqbDokAFxdzc9VH
+         MX77Zm22jJdejCQAZoHhPhVwD35l842nIdpgG3OKSrZs4TBYh7mG2n5XTWF418BDCw
+         aouVDpC4s7Vfg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E464AC43141;
+        Sat, 13 Aug 2022 01:26:49 +0000 (UTC)
+Subject: Re: [GIT PULL] RTC for 6.0
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YvZ1cz2TBIuyZ0md@mail.local>
+References: <YvZ1cz2TBIuyZ0md@mail.local>
+X-PR-Tracked-List-Id: <linux-rtc.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YvZ1cz2TBIuyZ0md@mail.local>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git tags/rtc-6.0
+X-PR-Tracked-Commit-Id: 03c4cd6f89e074a51e289eb9129ac646f0f2bd29
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3d076fec5a0c3e66e1d8cb16015ea9a59b66ae1b
+Message-Id: <166035400992.11884.6679624176429083904.pr-tracker-bot@kernel.org>
+Date:   Sat, 13 Aug 2022 01:26:49 +0000
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I've observed a strange behaviour of futexes that I believe to be a bug.  If a 
-signal is delivered while a futex wait is in progress, the wait will be 
-interrupted, but only if that wait had a timeout.  I expect it to be 
-interrupted regardless of whether a timeout is provided.  The following 
-runnable snippet demonstrates this:
+The pull request you sent on Fri, 12 Aug 2022 17:44:51 +0200:
 
-void handler(int) { printf("SIGINT\n"); }
-int main() {
- 	signal(SIGINT,handler);
- 	int i=2;
- 	printf("1\n");
- 	syscall(SYS_futex, &i, FUTEX_WAIT, 2, &(struct timespec){.tv_sec=1000});
- 	printf("2\n");
- 	syscall(SYS_futex, &i, FUTEX_WAIT, 2, NULL);
- 	printf("3\n");
-}
+> git://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git tags/rtc-6.0
 
-Pressing ^C once causes the first wait to terminate, and '2' to be printed. 
-But repeatedly pressing it after that does not allow the program to make 
-progress.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3d076fec5a0c3e66e1d8cb16015ea9a59b66ae1b
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
