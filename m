@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFC0C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B66B8C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239517AbiHMOcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 10:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
+        id S239563AbiHMOdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 10:33:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239051AbiHMOcl (ORCPT
+        with ESMTP id S237284AbiHMOc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 10:32:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5178F2E68E
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 07:32:38 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oMsBV-0001St-NT; Sat, 13 Aug 2022 16:32:17 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oMsBT-0008JE-6q; Sat, 13 Aug 2022 16:32:15 +0200
-Date:   Sat, 13 Aug 2022 16:32:15 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 07/10] net: dsa: microchip: warn about not
- supported synclko properties on KSZ9893 chips
-Message-ID: <20220813143215.GA12534@pengutronix.de>
-References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
- <20220729130346.2961889-8-o.rempel@pengutronix.de>
- <20220802113633.73rxlb2kmihivwpx@skbuf>
- <20220805115601.GB10667@pengutronix.de>
- <20220805134234.ps4qfjiachzm7jv4@skbuf>
+        Sat, 13 Aug 2022 10:32:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6205E2ED6E
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 07:32:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 226E7B80092
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 14:32:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A70CDC433D7;
+        Sat, 13 Aug 2022 14:32:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660401172;
+        bh=Nulm8VQKYj+ADEDvGT9ljJgnGY3SDygSUtrXKt8qVak=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=d+SUdhSq9x3ecsRHA6FuBA8WuNG/OLk2RFRR2FlbPQwZC2gz4BI8kVq8E5vKDBcDh
+         OOPOF2xRGQL1NsqDUAk3ATqmBGM+FV6C1W/C3dIWwwEnuG6zYbuz7PGh9MkLRCSpqh
+         SW8RtnZ4lCcGdYjAcmTJ/lYhX+WdYx6B8/O+cfwJ7FvnV42s2HFkhUxZE9G5zhK6Y7
+         6/tTpTmYc4xEM5f1Lc6ZYchsTYv7SoMHEaDHmkkCXR5En0uSH1mI2iqhMkfwQmhd1b
+         wP+XIImipMnjWOnP8Cy6h7TKrptyfj2BxkDVneAeAtaSv8jdNpdpIsJJwEa82u7lsz
+         F/fNkGRkpLaVA==
+Date:   Sat, 13 Aug 2022 15:43:21 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     <linux-kernel@vger.kernel.org>, <nuno.sa@analog.com>,
+        <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH] MAINTAINERS: fix Analog Devices forum links
+Message-ID: <20220813154321.4fa697db@jic23-huawei>
+In-Reply-To: <20220809115747.11303-1-antoniu.miclaus@analog.com>
+References: <20220809115747.11303-1-antoniu.miclaus@analog.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220805134234.ps4qfjiachzm7jv4@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 04:42:34PM +0300, Vladimir Oltean wrote:
-> On Fri, Aug 05, 2022 at 01:56:01PM +0200, Oleksij Rempel wrote:
-> > Hm, if we will have any random not support OF property in the switch
-> > node. We won't be able to warn about it anyway. So, if it is present
-> > but not supported, we will just ignore it.
-> > 
-> > I'll drop this patch.
-> 
-> To continue, I think the right way to go about this is to edit the
-> dt-schema to say that these properties are only applicable to certain
-> compatible strings, rather than for all. Then due to the
-> "unevaluatedProperties: false", you'd get the warnings you want, at
-> validation time.
+On Tue, 9 Aug 2022 14:57:47 +0300
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-Hm, with "unevaluatedProperties: false" i have no warnings. Even if I
-create examples with random strings as properties. Are there some new
-json libraries i should use?
+> Fix the links to redirect to the correct forum subsection for the latest
+> Analog Devices drivers added.
+>=20
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Patch looks fine but please resend +CC linux-iio@vger.kernel.org
+so it's in patchwork before I pick it up.
+> ---
+>  MAINTAINERS | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index b7221f4143cb..2c440f3d90e3 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -615,7 +615,7 @@ ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
+>  M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Supported
+> -W:	http://ez.analog.com/community/linux-device-drivers
+> +W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+>  F:	drivers/iio/accel/adxl367*
+> =20
+> @@ -1147,7 +1147,7 @@ ANALOG DEVICES INC AD74413R DRIVER
+>  M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Supported
+> -W:	http://ez.analog.com/community/linux-device-drivers
+> +W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
+>  F:	drivers/iio/addac/ad74413r.c
+>  F:	include/dt-bindings/iio/addac/adi,ad74413r.h
+> @@ -11913,7 +11913,7 @@ LTC2688 IIO DAC DRIVER
+>  M:	Nuno S=C3=A1 <nuno.sa@analog.com>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Supported
+> -W:	http://ez.analog.com/community/linux-device-drivers
+> +W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/ABI/testing/sysfs-bus-iio-dac-ltc2688
+>  F:	Documentation/devicetree/bindings/iio/dac/adi,ltc2688.yaml
+>  F:	drivers/iio/dac/ltc2688.c
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
