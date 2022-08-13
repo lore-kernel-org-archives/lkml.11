@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D30F0C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 21:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7DCC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 21:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240146AbiHMVsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 17:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
+        id S240152AbiHMVsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 17:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240124AbiHMVsJ (ORCPT
+        with ESMTP id S239760AbiHMVsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 17:48:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6186E25C44;
-        Sat, 13 Aug 2022 14:48:08 -0700 (PDT)
+        Sat, 13 Aug 2022 17:48:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E8E25C74
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 14:48:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E148B80ACA;
-        Sat, 13 Aug 2022 21:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BFA0BC433D6;
-        Sat, 13 Aug 2022 21:48:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E724E60F50
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 21:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 55E5DC433D6;
+        Sat, 13 Aug 2022 21:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660427286;
-        bh=Hnyg17C4t7FdpsEZ22GP6Xnx/A+n/AOUlBYRHRmMX4E=;
+        s=k20201202; t=1660427289;
+        bh=bQNK7tOYuH7gvnx/s4deReEkBoJMvPeV3Kkx07ahcT8=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=QmvFWJUqcSB3ygGcip6ytzOdsh9tfNWBaJblnnG2Lyd5MhKN3/YF21eac5SwhKZil
-         miA35qrneyzFXK0DULHcTngmbD8mp446o2Pw98nq6bHisKk+ixfmIHDvuU2eRuU9Se
-         o5gB0Ci6r8YVoI30j7K7MOsN6jLfLg/jLL0x8NOcivCjw4Eg8+NAd4jCPmm+cFxg01
-         i7816mDY7v1ld0erisiJZXQHpAwBxzGnEKIU68chwAs9ay0X60mONjzF+SmEogG5Q6
-         k6RJfXrKdhr66HWqIhT1Puj2BF9iuitgv7OHH5FZB6mUaHjdtifBOW2flxJOm3gPpR
-         BEga5LfxyG6Mg==
+        b=nY84BRdH7nfTvH3vmhKFfEeMH1mSNylhU1ETahWX4du8ZsqiH38VwdtOPPYNcPtVg
+         vRkGtTOOdWHVmofLxepgTIlXFjKXNhrshwhtC8stMFhwwnQpng3KJ1pQCtO7T0Mx1T
+         JhE6jIux1Ka2aET3kYQE36vKP3NMViTmTz4RE3esKLAx31EYA8DktTSAqY32jRgdfc
+         XxAEZbfk7umgd5VREFAjTz+0pzqTj+nKVF3Tx8jVjkKFi0UU2MnQ72JMCrujK+pyUI
+         ZRlOdhF7auJ3X9rXsaFWYz0X+V8lF+L4ntPK+FhDagRkhiCH3qoYSjGkOvTtAPU0Zk
+         bgngHwwEWhXzw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ADC8AC43142;
-        Sat, 13 Aug 2022 21:48:06 +0000 (UTC)
-Subject: Re: [PULL REQUEST] i2c-for-5.20-part2
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 43931C43142;
+        Sat, 13 Aug 2022 21:48:09 +0000 (UTC)
+Subject: Re: [GIT PULL] timer fixes
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YvfGY2qnl2YXrUgX@shikoro>
-References: <YvfGY2qnl2YXrUgX@shikoro>
-X-PR-Tracked-List-Id: <linux-i2c.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YvfGY2qnl2YXrUgX@shikoro>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git tags/i2c-for-5.20-part2
-X-PR-Tracked-Commit-Id: fe99b819487dba848cddd3d4bf4beb8e653d7e9c
+In-Reply-To: <Yvd8L0qIbLarxrOQ@gmail.com>
+References: <Yvd8L0qIbLarxrOQ@gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yvd8L0qIbLarxrOQ@gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-urgent-2022-08-13
+X-PR-Tracked-Commit-Id: e362359ace6f87c201531872486ff295df306d13
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 04734361953b8cc30d5552c1abe907ccfc8bc0fa
-Message-Id: <166042728670.29926.4726195216529951945.pr-tracker-bot@kernel.org>
-Date:   Sat, 13 Aug 2022 21:48:06 +0000
-To:     Wolfram Sang <wsa@kernel.org>
+X-PR-Merge-Commit-Id: f6eb0fed6a3957c0b93e3a00c1ffaad84d4ffc31
+Message-Id: <166042728927.29926.12591229801523436449.pr-tracker-bot@kernel.org>
+Date:   Sat, 13 Aug 2022 21:48:09 +0000
+To:     Ingo Molnar <mingo@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Peter Rosin <peda@axentia.se>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 13 Aug 2022 17:42:27 +0200:
+The pull request you sent on Sat, 13 Aug 2022 12:25:51 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git tags/i2c-for-5.20-part2
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-urgent-2022-08-13
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/04734361953b8cc30d5552c1abe907ccfc8bc0fa
+https://git.kernel.org/torvalds/c/f6eb0fed6a3957c0b93e3a00c1ffaad84d4ffc31
 
 Thank you!
 
