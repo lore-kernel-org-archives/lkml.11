@@ -2,148 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4068C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5709BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 13:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239280AbiHMNLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 09:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S239363AbiHMNLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 09:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231698AbiHMNLB (ORCPT
+        with ESMTP id S231698AbiHMNLe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 09:11:01 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F302F24F28;
-        Sat, 13 Aug 2022 06:10:56 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M4gqV1b3MzGpKw;
-        Sat, 13 Aug 2022 21:09:26 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 13 Aug 2022 21:10:54 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 13 Aug 2022 21:10:54 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf] bpf: Fix kernel BUG in purge_effective_progs
-Date:   Sat, 13 Aug 2022 21:40:30 +0800
-Message-ID: <20220813134030.1972696-1-pulehui@huawei.com>
+        Sat, 13 Aug 2022 09:11:34 -0400
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C8F26127
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 06:11:31 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 1732 invoked from network); 13 Aug 2022 15:11:27 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1660396288; bh=UdiZebRcg7fc1qTSTF83hQnkuJij3fTbRXrB9lBscoY=;
+          h=From:To:Cc:Subject;
+          b=HQIdpTjBgwRcucFznis3z5PruGpJxj/suy4bBX0V07Xdc9SQ2tmV+k5qLFIId8SFA
+           iYTkUjFP8VqbyGKckUi+jOKTZVFWKWV3cQvVBmz2woADUdKhhfUfknoLrDIFr7FCyL
+           9IFtzRb5nEAb7BFGfDgCnMxwRkky6pPoQ/tVHuVc=
+Received: from aaeq146.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.120.146])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with SMTP
+          for <linux-kernel@vger.kernel.org>; 13 Aug 2022 15:11:27 +0200
+From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+To:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org
+Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v4 1/2] x86/rtc: rewrite mach_get_cmos_time to delete duplicated code
+Date:   Sat, 13 Aug 2022 15:10:33 +0200
+Message-Id: <20220813131034.768527-1-mat.jonczyk@o2.pl>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: 9b9ecbffff635b5a35b94a86c5d74122
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 0000000 [kfP0]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reported kernel BUG as follows:
+There are functions in drivers/rtc/rtc-mc146818-lib.c that handle
+reading from / writing to the CMOS RTC clock. mach_get_cmos_time() in
+arch/x86/kernel/rtc.c did not use them and was mostly a duplicate of
+mc146818_get_time(). Modify mach_get_cmos_time() to use
+mc146818_get_time() and remove the duplicated code.
 
-------------[ cut here ]------------
-kernel BUG at kernel/bpf/cgroup.c:925!
-invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-CPU: 1 PID: 194 Comm: detach Not tainted 5.19.0-14184-g69dac8e431af #8
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-RIP: 0010:__cgroup_bpf_detach+0x1f2/0x2a0
-Code: 00 e8 92 60 30 00 84 c0 75 d8 4c 89 e0 31 f6 85 f6 74 19 42 f6 84
-28 48 05 00 00 02 75 0e 48 8b 80 c0 00 00 00 48 85 c0 75 e5 <0f> 0b 48
-8b 0c5
-RSP: 0018:ffffc9000055bdb0 EFLAGS: 00000246
-RAX: 0000000000000000 RBX: ffff888100ec0800 RCX: ffffc900000f1000
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff888100ec4578
-RBP: 0000000000000000 R08: ffff888100ec0800 R09: 0000000000000040
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff888100ec4000
-R13: 000000000000000d R14: ffffc90000199000 R15: ffff888100effb00
-FS:  00007f68213d2b80(0000) GS:ffff88813bc80000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055f74a0e5850 CR3: 0000000102836000 CR4: 00000000000006e0
-Call Trace:
- <TASK>
- cgroup_bpf_prog_detach+0xcc/0x100
- __sys_bpf+0x2273/0x2a00
- __x64_sys_bpf+0x17/0x20
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f68214dbcb9
-Code: 08 44 89 e0 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 48 89 f8 48 89
-f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
-f0 ff8
-RSP: 002b:00007ffeb487db68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 000000000000000b RCX: 00007f68214dbcb9
-RDX: 0000000000000090 RSI: 00007ffeb487db70 RDI: 0000000000000009
-RBP: 0000000000000003 R08: 0000000000000012 R09: 0000000b00000003
-R10: 00007ffeb487db70 R11: 0000000000000246 R12: 00007ffeb487dc20
-R13: 0000000000000004 R14: 0000000000000001 R15: 000055f74a1011b0
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
+mach_get_cmos_time() used a different algorithm than
+mc146818_get_time(), but these functions are equivalent. The major
+differences are:
 
-Repetition steps:
-For the following cgroup tree,
+- mc146818_get_time() is better refined and handles various edge
+  conditions,
 
-root
- |
-cg1
- |
-cg2
+- when the UIP ("Update in progress") bit of the RTC is set,
+  mach_get_cmos_time() was busy waiting with cpu_relax() while
+  mc146818_get_time() is using mdelay(1) in every loop iteration.
+  (However, there is my commit merged for Linux 5.20 / 6.0 to decrease
+  this period to 100us:
+commit d2a632a8a117 ("rtc: mc146818-lib: reduce RTC_UIP polling period")
+  ),
 
-1. attach prog2 to cg2, and then attach prog1 to cg1, both bpf progs
-attach type is NONE or OVERRIDE.
-2. write 1 to /proc/thread-self/fail-nth for failslab.
-3. detach prog1 for cg1, and then kernel BUG occur.
+- mach_get_cmos_time() assumed that the RTC year is >= 2000, which
+  may not be true on some old boxes with a dead battery,
 
-Failslab injection will cause kmalloc fail and fall back to
-purge_effective_progs. The problem is that cg2 have attached another prog,
-so when go through cg2 layer, iteration will add pos to 1, and subsequent
-operations will be skipped by the following condition, and cg will meet
-NULL in the end.
+- mach_get_cmos_time() was holding the rtc_lock for a long time
+  and could hang if the RTC is broken or not present.
 
-`if (pos && !(cg->bpf.flags[atype] & BPF_F_ALLOW_MULTI))`
+The RTC writing counterpart, mach_set_rtc_mmss() is already using
+mc146818_get_time() from drivers/rtc. This was done in
+        commit 3195ef59cb42 ("x86: Do full rtc synchronization with ntp")
+It appears that mach_get_cmos_time() was simply forgotten.
 
-The NULL cg means no link or prog match, this is as expected, and it's not
-a bug. So here just skip the no match situation.
+mach_get_cmos_time() is really used only in read_persistent_clock64(),
+which is called only in a few places in kernel/time/timekeeping.c .
 
-Fixes: 4c46091ee985 ("bpf: Fix KASAN use-after-free Read in compute_effective_progs")
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: x86@kernel.org
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+
 ---
- kernel/bpf/cgroup.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 59b7eb60d5b4..4a400cd63731 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -921,8 +921,10 @@ static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
- 				pos++;
- 			}
- 		}
-+
-+		/* no link or prog match, skip the cgroup of this layer */
-+		continue;
- found:
--		BUG_ON(!cg);
- 		progs = rcu_dereference_protected(
- 				desc->bpf.effective[atype],
- 				lockdep_is_held(&cgroup_mutex));
+v2:
+  - use pr_err() in place of pr_err_ratelimited(). mach_get_cmos_time()
+    is not called frequently, so ratelimiting is not necessary.
+  - tweak the commit description.
+v3:
+  - update the commit description,
+  - drop the cover letter.
+v4:
+  - slightly update the commit description.
+
+Tested on 3 computers (on top of 5.19.0-rc5), on 5.19.1 tested less
+strictly.
+
+---
+ arch/x86/kernel/rtc.c | 59 +++++--------------------------------------
+ 1 file changed, 7 insertions(+), 52 deletions(-)
+
+diff --git a/arch/x86/kernel/rtc.c b/arch/x86/kernel/rtc.c
+index 586f718b8e95..1cadc8a15267 100644
+--- a/arch/x86/kernel/rtc.c
++++ b/arch/x86/kernel/rtc.c
+@@ -4,11 +4,8 @@
+  */
+ #include <linux/platform_device.h>
+ #include <linux/mc146818rtc.h>
+-#include <linux/acpi.h>
+-#include <linux/bcd.h>
+ #include <linux/export.h>
+ #include <linux/pnp.h>
+-#include <linux/of.h>
+ 
+ #include <asm/vsyscall.h>
+ #include <asm/x86_init.h>
+@@ -20,15 +17,12 @@
+ /*
+  * This is a special lock that is owned by the CPU and holds the index
+  * register we are working with.  It is required for NMI access to the
+- * CMOS/RTC registers.  See include/asm-i386/mc146818rtc.h for details.
++ * CMOS/RTC registers.  See arch/x86/include/asm/mc146818rtc.h for details.
+  */
+ volatile unsigned long cmos_lock;
+ EXPORT_SYMBOL(cmos_lock);
+ #endif /* CONFIG_X86_32 */
+ 
+-/* For two digit years assume time is always after that */
+-#define CMOS_YEARS_OFFS 2000
+-
+ DEFINE_SPINLOCK(rtc_lock);
+ EXPORT_SYMBOL(rtc_lock);
+ 
+@@ -62,8 +56,7 @@ int mach_set_rtc_mmss(const struct timespec64 *now)
+ 
+ void mach_get_cmos_time(struct timespec64 *now)
+ {
+-	unsigned int status, year, mon, day, hour, min, sec, century = 0;
+-	unsigned long flags;
++	struct rtc_time tm;
+ 
+ 	/*
+ 	 * If pm_trace abused the RTC as storage, set the timespec to 0,
+@@ -74,51 +67,13 @@ void mach_get_cmos_time(struct timespec64 *now)
+ 		return;
+ 	}
+ 
+-	spin_lock_irqsave(&rtc_lock, flags);
+-
+-	/*
+-	 * If UIP is clear, then we have >= 244 microseconds before
+-	 * RTC registers will be updated.  Spec sheet says that this
+-	 * is the reliable way to read RTC - registers. If UIP is set
+-	 * then the register access might be invalid.
+-	 */
+-	while ((CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP))
+-		cpu_relax();
+-
+-	sec = CMOS_READ(RTC_SECONDS);
+-	min = CMOS_READ(RTC_MINUTES);
+-	hour = CMOS_READ(RTC_HOURS);
+-	day = CMOS_READ(RTC_DAY_OF_MONTH);
+-	mon = CMOS_READ(RTC_MONTH);
+-	year = CMOS_READ(RTC_YEAR);
+-
+-#ifdef CONFIG_ACPI
+-	if (acpi_gbl_FADT.header.revision >= FADT2_REVISION_ID &&
+-	    acpi_gbl_FADT.century)
+-		century = CMOS_READ(acpi_gbl_FADT.century);
+-#endif
+-
+-	status = CMOS_READ(RTC_CONTROL);
+-	WARN_ON_ONCE(RTC_ALWAYS_BCD && (status & RTC_DM_BINARY));
+-
+-	spin_unlock_irqrestore(&rtc_lock, flags);
+-
+-	if (RTC_ALWAYS_BCD || !(status & RTC_DM_BINARY)) {
+-		sec = bcd2bin(sec);
+-		min = bcd2bin(min);
+-		hour = bcd2bin(hour);
+-		day = bcd2bin(day);
+-		mon = bcd2bin(mon);
+-		year = bcd2bin(year);
++	if (mc146818_get_time(&tm)) {
++		pr_err("Unable to read current time from RTC\n");
++		now->tv_sec = now->tv_nsec = 0;
++		return;
+ 	}
+ 
+-	if (century) {
+-		century = bcd2bin(century);
+-		year += century * 100;
+-	} else
+-		year += CMOS_YEARS_OFFS;
+-
+-	now->tv_sec = mktime64(year, mon, day, hour, min, sec);
++	now->tv_sec = rtc_tm_to_time64(&tm);
+ 	now->tv_nsec = 0;
+ }
+ 
 -- 
 2.25.1
 
