@@ -2,119 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7597C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D4AC282E7
+	for <linux-kernel@archiver.kernel.org>; Sat, 13 Aug 2022 14:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239051AbiHMOwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 10:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
+        id S239613AbiHMOyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 10:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235340AbiHMOwm (ORCPT
+        with ESMTP id S235340AbiHMOyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 10:52:42 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02564BF77;
-        Sat, 13 Aug 2022 07:52:41 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id fy5so6490708ejc.3;
-        Sat, 13 Aug 2022 07:52:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=WMmwkK4k5xPlUVcqJ30C1LHbz/Q/KZcpo7vE9zUN3TE=;
-        b=nRKXeZ7L14mSyhcdUmyRgBqlsZ6lXxai61d/wQCo+vg4gsXvll6mhWyDXK671GhYEV
-         nqGV5+OVXixFCrDwNldbGT6Vr/H/8GrZCeiDKMv1EOyPWWckJQetpsl2BQJNYxy/CJrE
-         vYhPsYIe3rng1dG9cfgEbYtJ7YspLc4jNEYn2Xb48yLk1moz9AJUXv54UZud8iJFv721
-         +WxG6SY1DvWQGSGSxvjnbs5w13Q4J1pnqQiqnkLzcVu0GRySLRhQWxFtqmrC0kSavLow
-         JBmqGkp7Cl/qruzlKA/jg8T0Bt1VwR3Yom53S9RnyJHoTeZfsQiOO+2VWquT8z55peyO
-         4kxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=WMmwkK4k5xPlUVcqJ30C1LHbz/Q/KZcpo7vE9zUN3TE=;
-        b=dblzCyiLeW+2ylVvUVUgMQ7rHjk7oacXxqQnv9CmbTr08I5jbJvY9D8un+Aj/qhMJI
-         /FsiF1rquW5PZ58WQzvLVnumXvX1u3MNVx5rE+BdFCMLekPJ4jZBTDcE1AxDgHDIL0SL
-         7iSnMxu271BNz8MEAdyYCBewc87u4cDxekAxxGGDoHFIULdoF1rxyuh3Sl4wHChxR2in
-         QjpQWolJwb6dyKAzbZnQMauv/IcQsJUdjCNUvr46RSr0/gao6I7F0oMpLJolaZviQO3S
-         gKhS9kGf3uKGHBSAf8ZvH/nSiDLcE1ajGw4jWNTnDYwIo3w1lZlrifQa8TbID1eIuM1O
-         FOHw==
-X-Gm-Message-State: ACgBeo1UvfVdbyEtwZdFKfG7zMeM8rNxNG9JpknoPN08EFO1drGrtN85
-        nIlI1s50qnL+rlRtqQJNFXeQMa8rRteE6YeRM+XzZRJj
-X-Google-Smtp-Source: AA6agR5fuk8Stg8kIwgCTgU+5Y0tz0E0mj6Ap6bzWqblG6xmzKl5Y6/VjZF0bD7C0EZkxkY0+XU3cxp7UJVeokeXKJM=
-X-Received: by 2002:a17:906:9f2a:b0:730:bc30:da30 with SMTP id
- fy42-20020a1709069f2a00b00730bc30da30mr5747794ejc.763.1660402360218; Sat, 13
- Aug 2022 07:52:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <1660225318-4063-1-git-send-email-u0084500@gmail.com>
- <1660225318-4063-2-git-send-email-u0084500@gmail.com> <3cae9d60-4012-1dfd-abd9-4d0b9379e6bb@linaro.org>
- <CADiBU3_depGDZtiyizU3MB939A3oH1uTWzTMyruUy0z=u6BZkQ@mail.gmail.com>
- <40261b95-637a-1304-2e06-8c8ff7fc377b@linaro.org> <CADiBU38+9sR1r20=YWt-9s2+u7maHH+1VudCnV1-0+F4jYKdQQ@mail.gmail.com>
- <CADiBU3_Jt6n6tm=oVvjk5vsoEAneH7t-37S6skepA6v6bVVYUw@mail.gmail.com> <f2a664be-71e9-7a26-2f0c-5f654d9cb3cb@linaro.org>
-In-Reply-To: <f2a664be-71e9-7a26-2f0c-5f654d9cb3cb@linaro.org>
-From:   ChiYuan Huang <u0084500@gmail.com>
-Date:   Sat, 13 Aug 2022 22:52:29 +0800
-Message-ID: <CADiBU3-bKGhW2Yy13svNUykqW+WN3VS6LftWMU0rMeCc+fMySg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: power: supply: Add Richtek RT9471
- battery charger
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sat, 13 Aug 2022 10:54:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F56BF79;
+        Sat, 13 Aug 2022 07:54:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F1A960DEF;
+        Sat, 13 Aug 2022 14:54:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A87AC433D6;
+        Sat, 13 Aug 2022 14:54:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660402479;
+        bh=N4kjUi4PTo0aa0MQR9hcV00wsscIFyN4QydIKOaekVE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vEWAmtylEsAaz9sRfKNI1rrv/BMqyZ4ZJUF1H1orjJXnEyhYNUeE3pI3zpwCr1kTf
+         BmLuFWw3QxsmuiIgUibCYimqbg2pRi0hmXfK27e/S9yKgHbBJyNv51mJiueVzi2pGA
+         U04Lz/yNTfJ1h2u7GBohGoVlEyCHbdbWyAwFeCo1HitQxQgnkZFkNs+lEyjv3eKJkF
+         w2rzkXCU+06L7LJj75hdt5SdpYQjTJ1WUEfwNyWAVdLhR7ATMlyo2vbEfzvOa9jLsO
+         q2wO/uAKz7hjsHqnxzsBIMfc/DtXsmGrO/pyepz98F2HELOBVpaRSx4J4rNPsmiCCD
+         zdQRipfyv2FYg==
+Date:   Sat, 13 Aug 2022 16:05:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        =?UTF-8?B?5ri45a2Q6aao?= <alina_yu@richtek.com>,
-        cy_huang <cy_huang@richtek.com>, alinayu829@gmail.com,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, Lee Jones <lee@kernel.org>
+Subject: Re: [PATCH v2 4/5] dt-bindings: iio: adc: stmpe: Remove node name
+ requirement
+Message-ID: <20220813160506.04be3760@jic23-huawei>
+In-Reply-To: <YvJ/N2zulizbiU6u@google.com>
+References: <20220712163345.445811-1-francesco.dolcini@toradex.com>
+        <20220712163345.445811-5-francesco.dolcini@toradex.com>
+        <20220809134607.GA44926@francesco-nb.int.toradex.com>
+        <YvJ/N2zulizbiU6u@google.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E6=96=BC 2022=E5=B9=
-=B48=E6=9C=8813=E6=97=A5 =E9=80=B1=E5=85=AD =E5=87=8C=E6=99=A82:53=E5=AF=AB=
-=E9=81=93=EF=BC=9A
->
-> On 12/08/2022 19:05, ChiYuan Huang wrote:
-> >> It's the same usage like as TI charger.
-> >>>>
-> >>>> For charger driver, does it mean legacy IRQ handler is more preferre=
-d?
-> >>>
-> >>> Who is the consumer of these interrupts? Can you show the DTS with th=
-e
-> >>> interrupt consumer?
-> >>>
-> > Sorry, I forget to reply this question.
-> > Some battery driver may need to know the 'full', 'recharge' , 'ieoc' st=
-atus.
-> > The usage will  be like as below
-> >
-> > battery {
-> >   interrupts-extended =3D <&rt9471_chg 2 0>, <&rt9471_chg 3 0>, &(rt947=
-1_chg 5 0>;
-> >   interrupt-names =3D "chg-done", "chg-recharge", "chg-ieoc";
-> > };
-> >
-> > Some gauge HW needs this information to enhance the battery capacity ac=
-curacy.
->
-> Other supply stack pieces do it via supplies (supplied to/from in
-> include/linux/power_supply.h) and reporting power_supply_changed().
->
-> With such explanation, your device is an interrupt source, but it is not
-> an interrupt controller. If your device is interrupt controller, it
-> means someone routes the interrupt line to your device. Physical line.
->
-Yap, sure. And so on, just use the SW power supply chain to do this
-kind of event notification.
-To remove it, it doesn't affect the internal interrupt request inside
-the driver.
-Just cannot be used for the outer driver to request the events directly.
+On Tue, 9 Aug 2022 16:37:27 +0100
+Lee Jones <lee.jones@linaro.org> wrote:
 
-If so, I think 'interrupt-controller' and even '#interrupt-cells' need
-to be removed.
-OK?
-> Best regards,
-> Krzysztof
+> On Tue, 09 Aug 2022, Francesco Dolcini wrote:
+> 
+> > Hello Jonathan, can you pick this? Patches 1 and 2 were applied to MFD
+> > tree.  
+> 
+> Sending out nags whilst the merge-window is open is seldom helpful.
+
+Agreed, next week would have been better.  I happen to be queuing stuff
+up ready for a rebase this cycle though so applied this one to what will
+be the togreg branch of iio.git after rc1 is available and I've rebased.
+
+Jonathan
+
+> 
+> Also, please refrain from top-posting.
+> 
+> Thanks.
+> 
+> > On Tue, Jul 12, 2022 at 06:33:44PM +0200, Francesco Dolcini wrote:  
+> > > STMPE driver does not require a specific node name anymore, only the
+> > > compatible is checked, update binding according to this.
+> > > 
+> > > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml | 3 +--
+> > >  1 file changed, 1 insertion(+), 2 deletions(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+> > > index 9049c699152f..333744a2159c 100644
+> > > --- a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+> > > @@ -13,8 +13,7 @@ description:
+> > >    This ADC forms part of an ST microelectronics STMPE multifunction device .
+> > >    The ADC is shared with the STMPE touchscreen. As a result some ADC related
+> > >    settings are specified in the parent node.
+> > > -  The node name myst be stmpe_adc and should be a child node of the stmpe node
+> > > -  to which it belongs.
+> > > +  The node should be a child node of the stmpe node to which it belongs.
+> > >  
+> > >  properties:
+> > >    compatible:  
+> >   
+> 
+
