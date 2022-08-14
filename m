@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8254C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D93F5C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240583AbiHNPb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        id S240594AbiHNPcF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240472AbiHNPbS (ORCPT
+        with ESMTP id S240523AbiHNPb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:31:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0367B1AD85;
-        Sun, 14 Aug 2022 08:29:35 -0700 (PDT)
+        Sun, 14 Aug 2022 11:31:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967DCBE1F;
+        Sun, 14 Aug 2022 08:29:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40FE4B80B4D;
-        Sun, 14 Aug 2022 15:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E261CC43470;
-        Sun, 14 Aug 2022 15:29:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 052CB60C44;
+        Sun, 14 Aug 2022 15:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748CCC433C1;
+        Sun, 14 Aug 2022 15:29:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660490973;
-        bh=xXQAFQ/1p0AoaeHh21LVzZFWzJxzwfUL99cZqTHOlzM=;
+        s=k20201202; t=1660490978;
+        bh=DnHCZ6MVR778lxX4QSavJqGK0Ulp22tBczKwUAb+ndQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nxns9gPim73McSAJyAZMsHtmZIF3pE+ulCqPPG+bOMAKJt7wMf7AUr/X7MLfk/d5h
-         +YdSaqr+APf+vxE053Q6kcyAzZkDXCd+GeuBDoLFtNqOVeV8prMhRShSKPTGZC4lep
-         Q34zgUHsHdx3iqxWNOBfRIVWAO4NwuQnl1ayHSZWCx6pMG4UdR4DQiJfTjU5wv036H
-         LhJcIlgNL3nqoZfHTaE7pDJVvjNiD8xWwR2GvR9WSYdP+mqySNyT0W7jecuQD30IRW
-         N8KAnRf8cPZ2jZkZSDMh/ZEZJ1WpCndVTgpULLV/VNmLIAqBCLVBsepRutzwtypSzA
-         2YwBYDG1a5yeA==
+        b=ONnPfZXWCZECydIGdExLIDo0ANdp2ywxEIvIHILlehnBx4Y1ouU3m64o/mIFL6fny
+         MqnOULrc6wnDBNlUY/p7iY2HCL7iSYrNfco+O6hbMZBl/XH1T4M4gNyJQFaop5Gsp2
+         NieEEsSMh9F6EvzCrzOP7c6OJ4vc8uOxYQbWyycXncjoh7nxiNJFwkF9w0j0z1cu4l
+         0jk+hnd7DSfTPhaR1nIYhqOV0pjcXm+6SGan4D6+aVVg536ZmDSJmybCxAchaS73/9
+         btnJD75PKCWweVdU/yB/S8ICaMZucygFbBFwVp4ZYryddtopBagkBig7k8S4tDR3cs
+         OlcijvMNWa8lw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Henning Schild <henning.schild@siemens.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lee Jones <lee@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        andy@kernel.org, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 39/64] pinctrl: intel: Check against matching data instead of ACPI companion
-Date:   Sun, 14 Aug 2022 11:24:12 -0400
-Message-Id: <20220814152437.2374207-39-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        linux@roeck-us.net, linux-um@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.19 42/64] um: add "noreboot" command line option for PANIC_TIMEOUT=-1 setups
+Date:   Sun, 14 Aug 2022 11:24:15 -0400
+Message-Id: <20220814152437.2374207-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
@@ -55,65 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit c551bd81d198bf1dcd4398d5454acdc0309dbe77 ]
+[ Upstream commit dda520d07b95072a0b63f6c52a8eb566d08ea897 ]
 
-In some cases we may get a platform device that has ACPI companion
-which is different to the pin control described in the ACPI tables.
-This is primarily happens when device is instantiated by board file.
+QEMU has a -no-reboot option, which halts instead of reboots when the
+guest asks to reboot. This is invaluable when used with
+CONFIG_PANIC_TIMEOUT=-1 (and panic_on_warn), because it allows panics
+and warnings to be caught immediately in CI. Implement this in UML too,
+by way of a basic setup param.
 
-In order to allow this device being enumerated, refactor
-intel_pinctrl_get_soc_data() to check the matching data instead of
-ACPI companion.
-
-Reported-by: Henning Schild <henning.schild@siemens.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Henning Schild <henning.schild@siemens.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Lee Jones <lee@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/intel/pinctrl-intel.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ arch/um/os-Linux/skas/process.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index ffc045f7bf00..fd093e36c3a8 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -1641,16 +1641,14 @@ EXPORT_SYMBOL_GPL(intel_pinctrl_probe_by_uid);
+diff --git a/arch/um/os-Linux/skas/process.c b/arch/um/os-Linux/skas/process.c
+index c316c993a949..b24db6017ded 100644
+--- a/arch/um/os-Linux/skas/process.c
++++ b/arch/um/os-Linux/skas/process.c
+@@ -5,6 +5,7 @@
+  */
  
- const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_device *pdev)
+ #include <stdlib.h>
++#include <stdbool.h>
+ #include <unistd.h>
+ #include <sched.h>
+ #include <errno.h>
+@@ -707,10 +708,24 @@ void halt_skas(void)
+ 	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_HALT);
+ }
+ 
++static bool noreboot;
++
++static int __init noreboot_cmd_param(char *str, int *add)
++{
++	noreboot = true;
++	return 0;
++}
++
++__uml_setup("noreboot", noreboot_cmd_param,
++"noreboot\n"
++"    Rather than rebooting, exit always, akin to QEMU's -no-reboot option.\n"
++"    This is useful if you're using CONFIG_PANIC_TIMEOUT in order to catch\n"
++"    crashes in CI\n");
++
+ void reboot_skas(void)
  {
-+	const struct intel_pinctrl_soc_data * const *table;
- 	const struct intel_pinctrl_soc_data *data = NULL;
--	const struct intel_pinctrl_soc_data **table;
--	struct acpi_device *adev;
--	unsigned int i;
+ 	block_signals_trace();
+-	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_REBOOT);
++	UML_LONGJMP(&initial_jmpbuf, noreboot ? INIT_JMP_HALT : INIT_JMP_REBOOT);
+ }
  
--	adev = ACPI_COMPANION(&pdev->dev);
--	if (adev) {
--		const void *match = device_get_match_data(&pdev->dev);
-+	table = device_get_match_data(&pdev->dev);
-+	if (table) {
-+		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
-+		unsigned int i;
- 
--		table = (const struct intel_pinctrl_soc_data **)match;
- 		for (i = 0; table[i]; i++) {
- 			if (!strcmp(adev->pnp.unique_id, table[i]->uid)) {
- 				data = table[i];
-@@ -1664,7 +1662,7 @@ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_
- 		if (!id)
- 			return ERR_PTR(-ENODEV);
- 
--		table = (const struct intel_pinctrl_soc_data **)id->driver_data;
-+		table = (const struct intel_pinctrl_soc_data * const *)id->driver_data;
- 		data = table[pdev->id];
- 	}
- 
+ void __switch_mm(struct mm_id *mm_idp)
 -- 
 2.35.1
 
