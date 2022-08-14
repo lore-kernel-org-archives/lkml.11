@@ -2,131 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B1AC25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA6DC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240494AbiHNQ5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
+        id S241228AbiHNQ6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241827AbiHNQ5B (ORCPT
+        with ESMTP id S243053AbiHNQ6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:57:01 -0400
+        Sun, 14 Aug 2022 12:58:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403D11EC46;
-        Sun, 14 Aug 2022 09:46:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32DB60522
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 09:51:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF6E5603F6;
-        Sun, 14 Aug 2022 16:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0C2C433D6;
-        Sun, 14 Aug 2022 16:46:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4A2D60CF5
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 16:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 11A83C433D7;
+        Sun, 14 Aug 2022 16:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660495588;
-        bh=yyw6coq5uenQ2Z/EFRGEVGSSgqlo1xB9T6OhB8ulWI0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n7vVb891z3+DuQcx4hnlX4aNALJLAaeRVMbG+VkIvLIIKeg9McY+1f7o9Z5b0ELr8
-         99woumZLIk41hUfOg6BLo1VP5+dqCGEDmgWoOFZ5e2Yqr3paMCwg1JKB+p7+Fpsi6U
-         QZgOTM2xoDeAXvr7bI4tv8I6z0NEKh3a24+MYnYdzSnrGVWwGkZg2d5fzaohEvSjpp
-         XsOa4owsGZuYsgcV2vMhw7c1w5QaoeSzGAfyG/r6UvU5WpwJCwSZaeNJ4iLoCi2Rk/
-         1NsI9NIBgklhFBaeQxLZWnViIscHRc+TQf+OnX7vEHf2EvcmAlOz0nX0P3Zec6AEas
-         VW6ymFlWyV0iA==
-Date:   Sun, 14 Aug 2022 17:56:56 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Angel Iglesias <ang.iglesiasg@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/5] iio: pressure: bmp280: Add support for BMP380
- sensor family
-Message-ID: <20220814175656.1d09f897@jic23-huawei>
-In-Reply-To: <53b0132936a98943fb4284c4f72e3f4e6faa402d.camel@gmail.com>
-References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
-        <462251c4bca30b53f06307043ad52d859eb8d5c1.1659872590.git.ang.iglesiasg@gmail.com>
-        <20220814151512.097c7779@jic23-huawei>
-        <53b0132936a98943fb4284c4f72e3f4e6faa402d.camel@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        s=k20201202; t=1660495871;
+        bh=vzVnaFp0971LgW+nI119bBxbVBISBojFw517CMH9Pdk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=RXpvlT8RrQKWejPhsqg/5NOroFl+dtCF6JU5IU2nPLS3SdmBRKtTfn2HGnR+E90DD
+         KC7z1DG/Hv6+dYAvKRU6E5YJRRkkPkbklcQaN9YxVgAqHul9/CdjHkWtC/tZrSmWzE
+         +IBzSCHiX3IYmvOb/eGXXtmuZcpcDQ9YcHGrNAXOqq104pnq1qbBULWfsLwBVvjjlF
+         RZZnvXyCXkTSHvM2duRUaSifRxj7ebkmb7YQ3oWF7XBB9MKxwcmCJ5A9MBQIZIrN6V
+         2jMEzmkKpX00zJjVg2PvnYsQj2s3Xl0waPbyX80bblTNzMRd+bJfaUo52UeDwDK6ia
+         xze+F7+tmkztQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 00F62C43142;
+        Sun, 14 Aug 2022 16:51:11 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-6.0-2 tag
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <87czd3d8ra.fsf@mpe.ellerman.id.au>
+References: <87czd3d8ra.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <87czd3d8ra.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-6.0-2
+X-PR-Tracked-Commit-Id: 83ee9f23763a432a4077bf20624ee35de87bce99
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d785610f052d7456497cdec2a2406f6d4b16569f
+Message-Id: <166049587100.14047.9978212155674014743.pr-tracker-bot@kernel.org>
+Date:   Sun, 14 Aug 2022 16:51:11 +0000
+To:     mpe@ellerman.id.au
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        christophe.leroy@csgroup.eu, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, naveen.n.rao@linux.vnet.ibm.com,
+        ndesaulniers@google.com, ruscur@russell.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 14 Aug 2022 16:37:58 +0200
-Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+The pull request you sent on Sun, 14 Aug 2022 09:27:37 +1000:
 
-> On Sun, 2022-08-14 at 15:15 +0100, Jonathan Cameron wrote:
-> > On Sun,=C2=A0 7 Aug 2022 13:55:52 +0200
-> > Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
-> >  =20
-> > > Adds compatibility with the new generation of this sensor, the BMP380
-> > >=20
-> > > Includes basic sensor initialization to do pressure and temp
-> > > measurements and allows tuning oversampling settings for each channel.
-> > >=20
-> > > The compensation algorithms are adapted from the device datasheet and
-> > > the repository https://github.com/BoschSensortec/BMP3-Sensor-API
-> > >=20
-> > > Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com> =20
-> >=20
-> > One additional comment from me inline.
-> >=20
-> > Thanks,
-> >=20
-> > Jonathan
-> >=20
-> >  =20
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
-> > > @@ -1124,6 +1471,13 @@ int bmp280_common_probe(struct device *dev,
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
-> > > =C2=A0
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* BMP3xx requires soft-re=
-set as part of initialization */
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (chip_id =3D=3D BMP380_=
-CHIP_ID) { =20
-> >=20
-> > I'd prefer this to be based on a flag in chip_info so that we can
-> > trivially add it to future devices by just setting that flag for the
-> > chip_info added for the new device. =20
->=20
-> How a new init or preinit callback? For now only BMP380 chip would use it=
-, but I
-> would like to get my hands on a BMP390 and the new BMP580 and extend the =
-driver
-> to support for them.
+> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-6.0-2
 
-Hmm. Good point, I'd failed to noticed the register is bmp380 specific curr=
-ently.
-Maybe one to leave for a future refactor if you get those newer parts.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d785610f052d7456497cdec2a2406f6d4b16569f
 
-Jonathan
+Thank you!
 
->=20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0ret =3D bmp380_cmd(data, BMP380_CMD_SOFT_RESET);
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0if (ret < 0)
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret=
-urn ret;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
-> > > +
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret =3D data->chip_in=
-fo->chip_config(data);
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (ret < 0)
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0return ret; =20
-> >  =20
->=20
-> Kind regards,
-> Angel
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
