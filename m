@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA913C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F7BC25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241649AbiHNPsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
+        id S241663AbiHNPs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241640AbiHNPqC (ORCPT
+        with ESMTP id S241653AbiHNPqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:46:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDC624BE6;
-        Sun, 14 Aug 2022 08:34:33 -0700 (PDT)
+        Sun, 14 Aug 2022 11:46:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D6F24F23;
+        Sun, 14 Aug 2022 08:34:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B407B80B48;
-        Sun, 14 Aug 2022 15:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB2AC433C1;
-        Sun, 14 Aug 2022 15:34:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F273960C58;
+        Sun, 14 Aug 2022 15:34:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A650DC433C1;
+        Sun, 14 Aug 2022 15:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491270;
-        bh=hATtPbRhhROICJvREv0Q74mJSn5ZaXp7O6py/sCLWM4=;
+        s=k20201202; t=1660491275;
+        bh=+gAVzedRg5hbt6VmclYOGXcGsYYb3fqaVr571ioaz00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONuHcDn8XBVejEWOuJXL+zoC5wA0sof6JOaro6FmDGHt7j5Qz9dDjtLRsdE9H1tHb
-         S6fVAGBmb80MVArtuKp75d1GPgn/gav+We3KWerxVSZ6O9FPSe/HbTp24fcegcsx4t
-         ohgDflCZX9jV8pIVfwum16oRcypSx55G8S9pqdq188Pl88kBjfyN07pRG0ihlxjXS+
-         cJv2W/ar84ZrTk6XV4Fhr9lhcnfYx0VjD9hIny7dU1pKZaqwsNrXImZi9tmthz9xZ2
-         X/4lvokVOxq/i++GA3W5hy9cQaZSeQq+s+wes5bMjsC2GtXzaUUB7ujKwK4JaowZf7
-         YdP/tW5887woA==
+        b=oHhJ7czq3u9efe8bQ5L2jQMufeOvVK0V28OpI/L/iuxe6FcIefiL+PvcRfLwBySpQ
+         8YeRS9V2WQqiqE1RIS9IdtMdjwH0OlQf1hcpjympwFs3vrPypH/L69rZOBUs7/afjk
+         bfGK6gO1DYPTU5ccT0NbdPzdjdMGOFCECZHaqFGu395ZDKfULs34/IxV85JbYYGFrQ
+         wrjHHme0qtPIo5o7in1qstPcn/ufQM0THSNksXnbmIqodllZSF3sqx01TfmT+i+cvx
+         e41U79nxNYO4S6Zi8XYw+Yb3y/nOcPwm4wdOxylhGr04sf7/TfA7g7JGQKIV6OxlIV
+         9uh0Fag30g/EA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Kiselev, Oleg" <okiselev@amazon.com>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 46/46] ext4: avoid resizing to a partial cluster size
-Date:   Sun, 14 Aug 2022 11:32:47 -0400
-Message-Id: <20220814153247.2378312-46-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@kernel.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, bleung@chromium.org,
+        chrome-platform@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 02/31] platform/chrome: cros_ec_proto: don't show MKBP version if unsupported
+Date:   Sun, 14 Aug 2022 11:34:02 -0400
+Message-Id: <20220814153431.2379231-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
-References: <20220814153247.2378312-1-sashal@kernel.org>
+In-Reply-To: <20220814153431.2379231-1-sashal@kernel.org>
+References: <20220814153431.2379231-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,45 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Kiselev, Oleg" <okiselev@amazon.com>
+From: Tzung-Bi Shih <tzungbi@kernel.org>
 
-[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
+[ Upstream commit b36f0643ff14a2fb281b105418e4e73c9d7c11d0 ]
 
-This patch avoids an attempt to resize the filesystem to an
-unaligned cluster boundary.  An online resize to a size that is not
-integral to cluster size results in the last iteration attempting to
-grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
-with a corrupted in-memory superblock.
+It wrongly showed the following message when it doesn't support MKBP:
+"MKBP support version 4294967295".
 
-Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
-Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fix it.
+
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Link: https://lore.kernel.org/r/20220609084957.3684698-14-tzungbi@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/resize.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index 56c9ef0687fc..90e1442f0a63 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1976,6 +1976,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
- 	}
- 	brelse(bh);
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index e1fadf059e05..3a2a78ff3330 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -507,13 +507,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 						    EC_CMD_GET_NEXT_EVENT,
+ 						    &ver_mask);
+-	if (ret < 0 || ver_mask == 0)
++	if (ret < 0 || ver_mask == 0) {
+ 		ec_dev->mkbp_event_supported = 0;
+-	else
++	} else {
+ 		ec_dev->mkbp_event_supported = fls(ver_mask);
  
-+	/*
-+	 * For bigalloc, trim the requested size to the nearest cluster
-+	 * boundary to avoid creating an unusable filesystem. We do this
-+	 * silently, instead of returning an error, to avoid breaking
-+	 * callers that blindly resize the filesystem to the full size of
-+	 * the underlying block device.
-+	 */
-+	if (ext4_has_feature_bigalloc(sb))
-+		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
-+
- retry:
- 	o_blocks_count = ext4_blocks_count(es);
+-	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
+-		ec_dev->mkbp_event_supported - 1);
++		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
++	}
  
+ 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
 -- 
 2.35.1
 
