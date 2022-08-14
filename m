@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9FFC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEDEC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241395AbiHNPoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        id S241401AbiHNPoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241330AbiHNPlT (ORCPT
+        with ESMTP id S241609AbiHNPmB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:41:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386DE1B7A0;
-        Sun, 14 Aug 2022 08:32:53 -0700 (PDT)
+        Sun, 14 Aug 2022 11:42:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FDD1BE99;
+        Sun, 14 Aug 2022 08:33:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB44FB80B7C;
-        Sun, 14 Aug 2022 15:32:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C218AC43470;
-        Sun, 14 Aug 2022 15:32:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 527C5CE0B69;
+        Sun, 14 Aug 2022 15:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2467CC433C1;
+        Sun, 14 Aug 2022 15:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491171;
-        bh=gLh/IqF4UW/uFOYR8tsOEPV+3tgPe4SDpXMVoAg0AvI=;
+        s=k20201202; t=1660491199;
+        bh=9krYIMZkWByFYm0Z2MCMjTdo/cKY77hHZASSi3Elm3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nbuw1FQTVt1vPhEgkoZLMAv0DupQMFUWB3fbNKCkzahF0fZwoaNtu4EV29PuoGn0e
-         V1a+I7KOEzuKi32JA8lq1t2jVPTaBAs4lRc81w1JQm1/6CaG/xKHPCSUk/l6igWHEV
-         fWR+AOiB/R/8WDorPoqriqbqXS/nfZ/FfbJKTxWDw1WLcgKWXaCKMs2SNn7njGbBxo
-         UddH3XHgRInnLsKcwb9hthZsX+bIe+P1Z28vUg991QhY9nrt7nBsDs2hfPxqtZYDqH
-         v1AZFwVD/7J74nkQpsVRBmwOIgxu4F2BNOb+35Sh/e2ZVSRSghgJv2qBEIinDheLTo
-         wHQaRAjpXcOzQ==
+        b=DmU4GXmg4ZJciMWjEy+y1M1P6jnZ5qKsf6aTKeOLAca21iwNbvOHbE6c/4X38CBUn
+         dPBzLgGRhZKTIrhxMgMul5PPAY0/1FDJgZxirHbAWhvANsc9rkO4cxJiKS9WwRLMxe
+         sae1+2uRvt34xM6ksAVC0qo3vYmLNcWgCQIRINgyOUgS7ZVkQCSFUl8MHKxRE5bGFe
+         c3UohzLdz6oyF9B47+KsFRl6RS+A5G0EwS9Ndxlmu4j7rhWqwRsaY9xaUYS4SxANem
+         i5N3o62tI1/cHn0kYFfsGMCfpBPso0AjkqgIBRFOYlqYbWQSZU1QvKzJ/uK8SiT2Ze
+         bK4PyqjRRrwkg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>, linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 02/46] PCI: Add ACS quirk for Broadcom BCM5750x NICs
-Date:   Sun, 14 Aug 2022 11:32:03 -0400
-Message-Id: <20220814153247.2378312-2-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 14/46] usb: renesas: Fix refcount leak bug
+Date:   Sun, 14 Aug 2022 11:32:15 -0400
+Message-Id: <20220814153247.2378312-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
@@ -52,42 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
+[ Upstream commit 9d6d5303c39b8bc182475b22f45504106a07f086 ]
 
-The Broadcom BCM5750x NICs may be multi-function devices.  They do not
-advertise ACS capability. Peer-to-peer transactions are not possible
-between the individual functions, so it is safe to treat them as fully
-isolated.
+In usbhs_rza1_hardware_init(), of_find_node_by_name() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-Add an ACS quirk for these devices so the functions can be in independent
-IOMMU groups and attached individually to userspace applications using
-VFIO.
-
-Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220618023205.4056548-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/quirks.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/renesas_usbhs/rza.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4893b1e82403..a531064233f9 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4923,6 +4923,9 @@ static const struct pci_dev_acs_enabled {
- 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
- 	/* Broadcom multi-function device */
- 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
- 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
- 	/* Amazon Annapurna Labs */
- 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
+diff --git a/drivers/usb/renesas_usbhs/rza.c b/drivers/usb/renesas_usbhs/rza.c
+index 24de64edb674..2d77edefb4b3 100644
+--- a/drivers/usb/renesas_usbhs/rza.c
++++ b/drivers/usb/renesas_usbhs/rza.c
+@@ -23,6 +23,10 @@ static int usbhs_rza1_hardware_init(struct platform_device *pdev)
+ 	extal_clk = of_find_node_by_name(NULL, "extal");
+ 	of_property_read_u32(usb_x1_clk, "clock-frequency", &freq_usb);
+ 	of_property_read_u32(extal_clk, "clock-frequency", &freq_extal);
++
++	of_node_put(usb_x1_clk);
++	of_node_put(extal_clk);
++
+ 	if (freq_usb == 0) {
+ 		if (freq_extal == 12000000) {
+ 			/* Select 12MHz XTAL */
 -- 
 2.35.1
 
