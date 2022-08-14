@@ -2,118 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6163C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 09:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4C1C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 09:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbiHNIuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 04:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
+        id S230393AbiHNJHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 05:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiHNIuu (ORCPT
+        with ESMTP id S229555AbiHNJHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 04:50:50 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A853D13D7A
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:50:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660467049; x=1692003049;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EATcR5VGFUaRuQIi9otJAW1IFr6PQVLIwWz+IQpd4uE=;
-  b=kjYu8eZAiopBHpDbA1rSGq1HjCMbt2oQYwJxChu5rzAghEuvfXBu7v2L
-   62iUeme4ifCd51S/5ZTmg7gyVDBjBa7pbGdxAOrQf/Cr5vjcgTaBRi1Tw
-   ixPv+NLad7oSw0rJt+HgJ0qpuVKhhDl8e/QpPllIGRTEVF88TF0OKi21/
-   BdRcNdjzqoxHQ8bl6zpPY5c4ibzT7QHB8+tlFEKJmv4CVLl54tQ7ru3T1
-   27fKVr49q8vqoitBoH4mlfNu1i6jHM9XdIlbxcpXUIdntFRRO7RUk79Ce
-   4QKRS9CPiy6cJTq5A31xT6NJ7zCdh4bfFlHyWEPaJ3gVZC7ti9m4ZP2tQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="292605257"
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="292605257"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 01:50:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="748620757"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Aug 2022 01:50:47 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oN9KZ-0002fn-0k;
-        Sun, 14 Aug 2022 08:50:47 +0000
-Date:   Sun, 14 Aug 2022 16:50:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: lib/crypto/blake2s-selftest.c:632:1: warning: the frame size of 1120
- bytes is larger than 1024 bytes
-Message-ID: <202208141644.7UxLWkan-lkp@intel.com>
+        Sun, 14 Aug 2022 05:07:40 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BC127FF9
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 02:07:39 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8BA264E2C7;
+        Sun, 14 Aug 2022 09:07:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660468058; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=/3Itj9Hk+TVagievoSV8p71OSN6sgi+RAOHLldUn2iU=;
+        b=Uo/EOJFuGWq+iBJpjLWEyshbgqqhKTVtzIu1csCK3zPWitdkuZClRMx7YwCpXQA9QFVe7n
+        CXawCqgEvMYe1wLakKBAulnAYgkGelCplXyHVbG1FZpoRzfKWov8Hm/YueGyQVbXLlwe/P
+        hLSClo8XxQIqjKjG9zAdytlctXDCxsM=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6119213AAE;
+        Sun, 14 Aug 2022 09:07:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ydY+Flq7+GJ2PgAAMHmgww
+        (envelope-from <jgross@suse.com>); Sun, 14 Aug 2022 09:07:38 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org,
+        sstabellini@kernel.org
+Subject: [GIT PULL] xen: 2nd round of patches for 6.0-rc1
+Date:   Sun, 14 Aug 2022 11:07:37 +0200
+Message-Id: <20220814090737.29335-1-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+Linus,
 
-FYI, the error/warning still remains.
+Please git pull the following tag:
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   aea23e7c464bfdec04b52cf61edb62030e9e0d0a
-commit: 2d16803c562ecc644803d42ba98a8e0aef9c014e crypto: blake2s - remove shash module
-date:   9 weeks ago
-config: i386-buildonly-randconfig-r002-20220808 (https://download.01.org/0day-ci/archive/20220814/202208141644.7UxLWkan-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2d16803c562ecc644803d42ba98a8e0aef9c014e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 2d16803c562ecc644803d42ba98a8e0aef9c014e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash lib/crypto/
+ git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git for-linus-6.0-rc1b-tag
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+xen: 2nd round of patches for 6.0-rc1
 
-All warnings (new ones prefixed by >>):
+It contains the following patches:
 
-   lib/crypto/blake2s-selftest.c: In function 'blake2s_selftest':
->> lib/crypto/blake2s-selftest.c:632:1: warning: the frame size of 1120 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     632 | }
-         | ^
+- a series for fixing the handling of the "persistent grants" feature
+  negotiation between Xen blkfront and Xen blkback drivers
 
+- a cleanup of xen.config and adding xen.config to Xen section in
+  MAINTAINERS
 
-vim +632 lib/crypto/blake2s-selftest.c
+- a patch for supporting HVMOP_set_evtchn_upcall_vector, which is more
+  compliant to "normal" interrupt handling than the global callback used
+  up to now
 
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  614  
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  615  		memcpy(&state1, &state, sizeof(state1));
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  616  		blake2s_compress(&state1, blocks, 1, BLAKE2S_BLOCK_SIZE);
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  617  		for (l = 1; l < TEST_ALIGNMENT; ++l) {
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  618  			memcpy(unaligned_block + l, blocks,
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  619  			       BLAKE2S_BLOCK_SIZE);
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  620  			memcpy(&state2, &state, sizeof(state2));
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  621  			blake2s_compress(&state2, unaligned_block + l, 1,
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  622  					 BLAKE2S_BLOCK_SIZE);
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  623  			if (memcmp(&state1, &state2, sizeof(state1))) {
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  624  				pr_err("blake2s random compress align %d self-test %d: FAIL\n",
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  625  				       l, i + 1);
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  626  				success = false;
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  627  			}
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  628  		}
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  629  	}
-2d16803c562ecc Jason A. Donenfeld 2022-05-28  630  
-66d7fb94e4ffe5 Jason A. Donenfeld 2019-11-08  631  	return success;
-66d7fb94e4ffe5 Jason A. Donenfeld 2019-11-08 @632  }
+- 2 further small cleanups
 
-:::::: The code at line 632 was first introduced by commit
-:::::: 66d7fb94e4ffe5acc589e0b2b4710aecc1f07a28 crypto: blake2s - generic C library implementation and selftest
+Thanks.
 
-:::::: TO: Jason A. Donenfeld <Jason@zx2c4.com>
-:::::: CC: Herbert Xu <herbert@gondor.apana.org.au>
+Juergen
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ Documentation/ABI/testing/sysfs-driver-xen-blkback |  2 +-
+ .../ABI/testing/sysfs-driver-xen-blkfront          |  2 +-
+ MAINTAINERS                                        |  2 +
+ arch/x86/include/asm/xen/cpuid.h                   |  2 +
+ arch/x86/include/asm/xen/events.h                  |  3 +-
+ arch/x86/xen/enlighten.c                           |  2 +-
+ arch/x86/xen/enlighten_hvm.c                       | 24 +++++++---
+ arch/x86/xen/suspend_hvm.c                         | 10 +++-
+ drivers/block/xen-blkback/xenbus.c                 | 20 ++++----
+ drivers/block/xen-blkfront.c                       |  4 +-
+ drivers/xen/events/events_base.c                   | 53 +++++++++++++++++++---
+ drivers/xen/xen-pciback/pciback_ops.c              |  2 +-
+ drivers/xen/xenbus/xenbus_dev_frontend.c           |  4 +-
+ include/xen/hvm.h                                  |  2 +
+ include/xen/interface/hvm/hvm_op.h                 | 19 ++++++++
+ kernel/configs/xen.config                          |  1 -
+ 16 files changed, 116 insertions(+), 36 deletions(-)
+
+Dan Carpenter (1):
+      xen/xenbus: fix return type in xenbus_file_read()
+
+Jane Malalane (1):
+      x86/xen: Add support for HVMOP_set_evtchn_upcall_vector
+
+Jason Wang (1):
+      xen/pciback: Fix comment typo
+
+Lukas Bulwahn (2):
+      xen: remove XEN_SCRUB_PAGES in xen.config
+      MAINTAINERS: add xen config fragments to XEN HYPERVISOR sections
+
+Maximilian Heyne (1):
+      xen-blkback: Apply 'feature_persistent' parameter when connect
+
+SeongJae Park (2):
+      xen-blkback: fix persistent grants negotiation
+      xen-blkfront: Apply 'feature_persistent' parameter when connect
