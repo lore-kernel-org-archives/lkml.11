@@ -2,105 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E791C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 17:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50D3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 17:37:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiHNRYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 13:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
+        id S231187AbiHNRhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 13:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHNRYv (ORCPT
+        with ESMTP id S229555AbiHNRhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 13:24:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CA41CFDE
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 10:24:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B14CD60CFA
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 17:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1435FC433C1;
-        Sun, 14 Aug 2022 17:24:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660497886;
-        bh=p2LxvXFENTwgYcSS5Yn41GhqMEj0WPOKR7omYPD4ZQs=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=ieTX89ubKqkNiVqgx3tNirYvshyeY4ozDpTfYqnTABaYxQmyStC0HEKMfQv8jldHB
-         r8iPx+LptMgJY1IZFo2sMpr4XsQ/NDW+i4JZ+5kAMHFODSK0Tg9eH4Lfbyf3dJRIgm
-         4BURkkmrrfCM/6EJwD3v6U9mefbn10UW368IeMSb/d1h5PyTTqAujQHGylhPClh/Lj
-         GBnouAQvIg6mIzw+5vIfQHO3Hrq94sf2QFZLxgOOooI0QTVnNZpwAk6kAJsLwK+ZWs
-         KC3Z+aT4lye58lCRyagKQVEjMxmiSdvyrzvF51PKXAXRkyWw/ffyd5Zhrh7/ZkjFUX
-         ghkAOFyXR8Ncg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id AFFF55C033A; Sun, 14 Aug 2022 10:24:45 -0700 (PDT)
-Date:   Sun, 14 Aug 2022 10:24:45 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>, x86-ml <x86@kernel.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        Christian Brauner <brauner@kernel.org>
-Subject: Re: [GIT PULL] timer fixes
-Message-ID: <20220814172445.GR2125313@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <Yvd8L0qIbLarxrOQ@gmail.com>
- <YvfQUGLGY7cfZ9gf@zn.tnic>
- <CAHk-=wi+K-LQ121sPbsQonja3Sx-_kXZc6ntauUC2=JPsUrC+g@mail.gmail.com>
- <YvjtkidVZg2sBY0R@zn.tnic>
+        Sun, 14 Aug 2022 13:37:03 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30ED8183BB;
+        Sun, 14 Aug 2022 10:37:03 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id BFB5D32004F8;
+        Sun, 14 Aug 2022 13:37:01 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Sun, 14 Aug 2022 13:37:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660498621; x=1660585021; bh=dg
+        K2r3NnWA/fMz96186veALUGDdZnI4ai/sBIyyzgBw=; b=Ox5iXGAZAvvTwugoov
+        Lx9ZlDx2n/7ZPiAs/SrqqRlxw08NikoDhMHPHRr77nRjDvpMLYZxoGWuqNa8AB7w
+        Rt8xmvyvjVCsO+ArGTVqn9dHUOiDLbyLKA7f7HU78VZ6GcVHKDzHBlRDx0MiVywv
+        617r9jKXROg5VqhZ48gHzEFqTkLvxg+v5oDtGqL1sDwpVI8LupdPOjkpL/i7KsWt
+        B/JplbOtKQfb27Yj9QjnF3ru4VTwcXnTnFIv9INpe3yjH+mNrYkKfHroyKug28fE
+        iMydQpRbDIyarAg9r5dpsvSqkegLeNe9OGpAxLPOG4cDaslB0cSUBETah2MwkBCQ
+        D4Mg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1660498621; x=1660585021; bh=dgK2r3NnWA/fM
+        z96186veALUGDdZnI4ai/sBIyyzgBw=; b=DtOqG70pJkPGoDaHvyP4tN+xEOJS/
+        wZ5vi1IF3AYieercncN5qi0KmqkP6RroCrk5itoeLFXNTV6yWVvQ8NIo8c7pbju5
+        6lxAV1QwEqMGNLYYeBSrXVguZv5+cWRdb+5s1qtjxCyeGmUYp0mTkCvWyrbP+lda
+        H2v6aL9JS664/3si2fNeG7A4/81y/bEoUjar5wD/ZY6P14v1GZ9zGQ35o4jVCOM/
+        gQTR3yEPYzvjgXJSxBHwN1mkiPGbS7+jIlCEgy/2NFA/3o70BQThzzR+61mPL8Ar
+        nLt7ofIspdZCPQ9eiFC5neTnfiXMOeg0w/9EITdiLGcvd4sCqY6Vf/3gA==
+X-ME-Sender: <xms:vTL5YpQCynENEbEO3U2C_9edn-L-SigplgjD1ONkgc26fZuLsy6DkQ>
+    <xme:vTL5YiwtuvECzN_7LUtln598dOSTAc_IoYG070hLcpuLM6xo6HuDNVzAhmvN-Sfkw
+    qX1n11at3hRSUdj6g>
+X-ME-Received: <xmr:vTL5Yu0by_Tu3fKY9SDBt5ulv1919LgHVwXvyzmNWKpVPXtNdahG2M03KqPCjtMtV1IDbbmGm8tqpbLcaYsPYXyo9iBfGbDN8T3GJNRmrqCPlea2cZ6N8k9MJD-etVhGnfHFKg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehtddgudduiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
+    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:vTL5YhA-8T5ApfYuYHvyMD748sdldOzXV0KVccvb6rolfPYjIESSsw>
+    <xmx:vTL5YiiRfd0qx5_YFUQEek8dW6J3D55Q9_PmxqzNJGXyD1lfu4nW0w>
+    <xmx:vTL5YlpapyCNT3umRIdAvID1WHHmP9FWiRlB3TPDQsIO52THwdzqAw>
+    <xmx:vTL5YtMCEhpksO_fYiy87bgEiVT_X6coE2lvzoc73ILqqpl1zBwD6Q>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 14 Aug 2022 13:37:00 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH 1/4] nvmem: sunxi_sid: Always use 32-bit MMIO reads
+Date:   Sun, 14 Aug 2022 12:36:52 -0500
+Message-Id: <20220814173656.11856-2-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814173656.11856-1-samuel@sholland.org>
+References: <20220814173656.11856-1-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvjtkidVZg2sBY0R@zn.tnic>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 02:41:54PM +0200, Borislav Petkov wrote:
-> On Sat, Aug 13, 2022 at 01:27:40PM -0700, Linus Torvalds wrote:
-> > On Sat, Aug 13, 2022 at 9:25 AM Borislav Petkov <bp@alien8.de> wrote:
-> > >
-> > > That task_struct.sighand is marked __rcu and thus noderef and sparse
-> > > complains:
-> > 
-> > I think that RCU marking is misleading.
-> > 
-> > Doing a
-> > 
-> >         git grep -e '->sighand'
-> > 
-> > shows that we basically never treat that as some kind of RCU pointer.
-> > 
-> > Adding a
-> > 
-> >         grep -i rcu
-> > 
-> > to the above shows that we have a couple of places that do this
-> > carefully, but they are the exception rather than the rule.
-> > 
-> > I think the issue is that "current->sighand" is always safe (and that
-> > "me->sighand" is the same thing), and that sighand has RCU-delayed
-> > freeing so that __lock_task_sighand() can safely try to take the lock
-> > of another process' sighand.
-> > 
-> > And we have no real way to explain to sparse that *some* cases are
-> > fine, others are not and need the sighand lock (after that careful
-> > __lock_task_sighand thing).
-> 
-> Sounds to me like that sparse check was not such a good idea in the
-> first place. Especially since the 0day bot is probably warning about all
-> those cases where we try to lock ->sighand.
-> 
-> It was added by
-> 
-> 913292c97d75 ("sched.h: Annotate sighand_struct with __rcu")
-> 
-> Lemme add the involved parties to Cc.
+The SID SRAM on at least some SoCs (A64 and D1) returns different values
+when read with bus cycles narrower than 32 bits. This is not immediately
+obvious, because memcpy_fromio() uses word-size accesses as long as
+enough data is being copied.
 
-If it is causing more trouble than it is worth, then I have not objection
-to taking a different approach.
+The vendor driver always uses 32-bit MMIO reads, so do the same here.
+This is faster than the register-based method, which is currently used
+as a workaround on A64. And it fixes the values returned on D1, where
+the SRAM method was being used.
 
-							Thanx, Paul
+The special case for the last word is needed to maintain .word_size == 1
+for sysfs ABI compatibility, as noted previously in commit de2a3eaea552
+("nvmem: sunxi_sid: Optimize register read-out method").
+
+Fixes: 07ae4fde9efa ("nvmem: sunxi_sid: Add support for D1 variant")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
+
+ drivers/nvmem/sunxi_sid.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nvmem/sunxi_sid.c b/drivers/nvmem/sunxi_sid.c
+index 5750e1f4bcdb..92dfe4cb10e3 100644
+--- a/drivers/nvmem/sunxi_sid.c
++++ b/drivers/nvmem/sunxi_sid.c
+@@ -41,8 +41,21 @@ static int sunxi_sid_read(void *context, unsigned int offset,
+ 			  void *val, size_t bytes)
+ {
+ 	struct sunxi_sid *sid = context;
++	u32 word;
++
++	/* .stride = 4 so offset is guaranteed to be aligned */
++	__ioread32_copy(val, sid->base + sid->value_offset + offset, bytes / 4);
+ 
+-	memcpy_fromio(val, sid->base + sid->value_offset + offset, bytes);
++	val += round_down(bytes, 4);
++	offset += round_down(bytes, 4);
++	bytes = bytes % 4;
++
++	if (!bytes)
++		return 0;
++
++	/* Handle any trailing bytes */
++	word = readl_relaxed(sid->base + sid->value_offset + offset);
++	memcpy(val, &word, bytes);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
+
