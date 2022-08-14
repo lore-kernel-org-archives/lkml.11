@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BA4C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD55C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242262AbiHNQ2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        id S242450AbiHNQ2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242341AbiHNQ1j (ORCPT
+        with ESMTP id S242373AbiHNQ1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:27:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636221A82F;
-        Sun, 14 Aug 2022 09:23:39 -0700 (PDT)
+        Sun, 14 Aug 2022 12:27:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF84310D7;
+        Sun, 14 Aug 2022 09:23:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41FBAB80AEE;
-        Sun, 14 Aug 2022 16:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AFD4C43470;
-        Sun, 14 Aug 2022 16:23:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 748A8B80B7F;
+        Sun, 14 Aug 2022 16:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F97DC433D7;
+        Sun, 14 Aug 2022 16:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494216;
-        bh=wL+I1X6OYqaa+s1yOlsuInujXPWsQqoekriR1F0yces=;
+        s=k20201202; t=1660494220;
+        bh=orAGjlJwzVgk5ZF7dM4scUpZR5ZY+GmzCEngj9bOJ/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LX1vvYxddXiF7Dm0fpmnYAtWJP3OZWh4up2YBmrm/gnjxJDl6/dcf2m0X3ylsoI9m
-         D8TkYrEc/2I9Xjff7ESb3PAVJXbisWpJ6J9QM8hwlvZcbJ4cCvPIDN8L9n6IFSEIMb
-         R701H28M7SUPJn4ugYsi0mOA2Fa7KjhN00pqOuE7K2zgunfJnyZ3SCkGAxw/2c4K9B
-         boGW0ZgyEdTaI6k+JQc3CM6GaJR+n9YTIRS+e7uqE+cTe7xO2dNhOQy0w+7TsTOT+i
-         zMxpVXN3gXjWh71uSgjKRy9N/IM6XtG/SPgjnF/72YMcqgVdc8nLuatt+U92YqZTXs
-         tf4HA8PgWJ9sQ==
+        b=Q2CB7RNh2k3pxWbIrrY7DnTJ2VsGI+2IotjNPpQwMrRFcuBXPWvkVAwFNpcCSqffj
+         GpKvszX74/hmfMKUNq9nR0HVRQrvyL8ut5a/5a73vCcDN0O2CNUYdZJipX6zAZPCvV
+         wPwnKNtZmZTHnGr0Lu6rYUa/KI/M0sINd85f+fk7i/b2d6Fs8SeLJebeSw26r3NiqR
+         oC5gCHc063Dcu8h9msfCUvZu8fZLRdsScFbbCwE/8qkTOBFHVQUr7rrmLLkVU0IN4+
+         ZZc+TNhID9njpi6cHd/GElUsE7s3JQ8eE0Zzoxfx+NmIjk4Ge8j9bneWomdJUGa0rf
+         7M5FC1LZ8QWJA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Timur Tabi <timur@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 02/39] tty: serial: Fix refcount leak bug in ucc_uart.c
-Date:   Sun, 14 Aug 2022 12:22:51 -0400
-Message-Id: <20220814162332.2396012-2-sashal@kernel.org>
+Cc:     Schspa Shi <schspa@gmail.com>, Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 04/39] vfio: Clear the caps->buf to NULL after free
+Date:   Sun, 14 Aug 2022 12:22:53 -0400
+Message-Id: <20220814162332.2396012-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814162332.2396012-1-sashal@kernel.org>
 References: <20220814162332.2396012-1-sashal@kernel.org>
@@ -52,36 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
+[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
 
-In soc_info(), of_find_node_by_type() will return a node pointer
-with refcount incremented. We should use of_node_put() when it is
-not used anymore.
+On buffer resize failure, vfio_info_cap_add() will free the buffer,
+report zero for the size, and return -ENOMEM.  As additional
+hardening, also clear the buffer pointer to prevent any chance of a
+double free.
 
-Acked-by: Timur Tabi <timur@kernel.org>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/ucc_uart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/vfio/vfio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 6000853973c1..3cc9ef08455c 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1137,6 +1137,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
- 		/* No compatible property, so try the name. */
- 		soc_string = np->name;
- 
-+	of_node_put(np);
-+
- 	/* Extract the SOC number from the "PowerPC," string */
- 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
- 		return 0;
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index a4555014bd1e..544403171ba3 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -2034,6 +2034,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
+ 	if (!buf) {
+ 		kfree(caps->buf);
++		caps->buf = NULL;
+ 		caps->size = 0;
+ 		return ERR_PTR(-ENOMEM);
+ 	}
 -- 
 2.35.1
 
