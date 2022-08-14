@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47663C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A05FC25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241818AbiHNPuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
+        id S241831AbiHNPuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241894AbiHNPqg (ORCPT
+        with ESMTP id S241943AbiHNPqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:46:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F15527CE1;
-        Sun, 14 Aug 2022 08:35:03 -0700 (PDT)
+        Sun, 14 Aug 2022 11:46:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF20DEE7;
+        Sun, 14 Aug 2022 08:35:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 031F960DEB;
-        Sun, 14 Aug 2022 15:35:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A64C43142;
-        Sun, 14 Aug 2022 15:35:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AEC160DD3;
+        Sun, 14 Aug 2022 15:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E737AC43140;
+        Sun, 14 Aug 2022 15:35:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491302;
-        bh=kVlUXOCqSVxVL6zHBfQjFoxbj12/c/D87XseBODHvrM=;
+        s=k20201202; t=1660491308;
+        bh=g97XD/pgPbqJ4VwO4uV+VBUuGwCDEvgLc1WAUiTfTeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HhqF+yOEqr5sDBk/lN0sj3hfYNhSF8+MfQEBK4xOZNAoL2PbnT4Rad4vUSz6gRwLB
-         RTjBT/irz7vBOcFb/GO0lK5XRD5Em/6XeAms/kLsqhwyFQEfwFl2kW1zM95HcPNeSj
-         dAYzb6a57t24XgaXfeoVZVR6BqSKflMuaTFacr6fuAWxS0Y1Z+JZOVk16tGwmLbzB6
-         LODbZENAi4K9uZyZDSPFNwpUMGzvh33qsP8GOxmz4Ts+LJjwSlfKJlY1kYMr6nBkW0
-         5DY4jI75TORcNOCrUZbl7sPOVFh/J9KXQGheSETJWrxDxn2P8Pty+tKLCKYdzewVXs
-         ZeVjua1oIPdrQ==
+        b=uQO9KbLXh55fltn/zso1Awz3xEHeI9d9Ij0oxQ7yH+KQXoiAGxMSePsqw05ifgKRQ
+         1MEM4jn6aR+BQoM2mkmHJovodLBs4qaYj3SeYiDFyQO1S40fK8ozIAH+/BoLRaUbvR
+         9+qvuKOep+Gc1ME/pzQYbV0HMre71wwV37eDGoz5pkAxpgDgAYt4kMf0t3SWwT+jhe
+         eqxqregXCXG2ZK+fAR+P+K3RF5LPFp+IXA9ttUdlu3k/60QVrgHtPiys46sfPRRpE5
+         xZ2lQolSWb9hziQqazaBfOSO8PYqpzh9QblkMcKenK6QXPdXeVPCvwbONzYj8PsEZT
+         yB3S+uTXYjqtw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 16/31] scsi: lpfc: Prevent buffer overflow crashes in debugfs with malformed user input
-Date:   Sun, 14 Aug 2022 11:34:16 -0400
-Message-Id: <20220814153431.2379231-16-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, fbarrat@linux.ibm.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 19/31] cxl: Fix a memory leak in an error handling path
+Date:   Sun, 14 Aug 2022 11:34:19 -0400
+Message-Id: <20220814153431.2379231-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153431.2379231-1-sashal@kernel.org>
 References: <20220814153431.2379231-1-sashal@kernel.org>
@@ -54,83 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit f8191d40aa612981ce897e66cda6a88db8df17bb ]
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-Malformed user input to debugfs results in buffer overflow crashes.  Adapt
-input string lengths to fit within internal buffers, leaving space for NULL
-terminators.
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-Link: https://lore.kernel.org/r/20220701211425.2708-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_debugfs.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/misc/cxl/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
-index beaf3a8d206f..fbc76d69ea0b 100644
---- a/drivers/scsi/lpfc/lpfc_debugfs.c
-+++ b/drivers/scsi/lpfc/lpfc_debugfs.c
-@@ -2609,8 +2609,8 @@ lpfc_debugfs_multixripools_write(struct file *file, const char __user *buf,
- 	struct lpfc_sli4_hdw_queue *qp;
- 	struct lpfc_multixri_pool *multixri_pool;
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index 4cb829d5d873..2e4dcfebf19a 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -349,6 +349,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
  
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2690,8 +2690,8 @@ lpfc_debugfs_nvmestat_write(struct file *file, const char __user *buf,
- 	if (!phba->targetport)
- 		return -ENXIO;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2828,8 +2828,8 @@ lpfc_debugfs_ioktime_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2956,8 +2956,8 @@ lpfc_debugfs_nvmeio_trc_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 63)
--		nbytes = 63;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -3062,8 +3062,8 @@ lpfc_debugfs_hdwqstat_write(struct file *file, const char __user *buf,
- 	char *pbuf;
- 	int i;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
+ out:
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
+ }
 -- 
 2.35.1
 
