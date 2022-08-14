@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5C0C2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45608C2BBC5
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242152AbiHNQ0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        id S242040AbiHNQ0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241026AbiHNQZS (ORCPT
+        with ESMTP id S229555AbiHNQZJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:25:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571981901B;
-        Sun, 14 Aug 2022 09:23:08 -0700 (PDT)
+        Sun, 14 Aug 2022 12:25:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A11418E33;
+        Sun, 14 Aug 2022 09:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AFA64CE0B6B;
-        Sun, 14 Aug 2022 16:23:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41372C43140;
-        Sun, 14 Aug 2022 16:23:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D32ADB80B79;
+        Sun, 14 Aug 2022 16:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB38C433D6;
+        Sun, 14 Aug 2022 16:22:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494185;
-        bh=vtUXON8ZPY2JWNUwIGTSBD4cwQhMoCHe7RqNx/KHnSw=;
+        s=k20201202; t=1660494180;
+        bh=X/ZLYxxDnih0e0paGcYJ4tSJ7KVpOyF0ATP2RLTK/q4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LY0AQ9nDheh8kxxaSObkLvC5duFOFR/wG1iNiPmoGWlNM+9hjnk1c5MQNIfQPlj4F
-         DJoWorLW5VxB3dCD9DEQuoKfdvU/ec6SITropKwh0jPNyWva4YkrOKUOTGV72uDCO5
-         NfiVfY2Er7mfZNIM/3/K1b4CzJLKd7u06c+wzIeQZY4sve22fE5L51DGjlJ7O9uyG9
-         EstJc2qxSbx2Itxc2sWdv4QYmdKvpw9oDAMbhH9OwjjQuvk78Ti/cRGJr6vWHOchg3
-         JnpAMsC1ZqB7ZxdKMZinGRM9dxeye0dXbc6Nccdt8efINQn7pq/Hd23e3Pd2cKG8RC
-         9HTWakZxjrv6Q==
+        b=rNgkc2Edr6CfIHuHJc0SdqZusSZJr1+kG3+2ZemK1K9pqrpYY3dxv7O+IFtY2hHNe
+         aeDp/32LVz4Eq+Ac4u6wjXKOtu8dKlqeuNLqMDP/KKNtGJbHiG2fhus4N2cFd1iVGJ
+         Z3/m28Jk9bUre8TjrC9jLy6hBRhTY2DCCnu9Ck1KXgnpVQeH+UrGCHTsBRRg5ztcR9
+         tffaUDv2ogdL/G7iMR+UsoZdqYwZ21EGXVB5vY3o8mKXuaEyC6OohhbZDHgIQhx/6Y
+         7V4IECdlP0uDaryzL4MVsXjeUrd3X0+oeCjqf5d1kAEzsY5oudheC6sR+uXZbcGYLm
+         z39kUQ8PXbj0w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steve French <stfrench@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.19 42/48] smb3: check xattr value length earlier
-Date:   Sun, 14 Aug 2022 12:19:35 -0400
-Message-Id: <20220814161943.2394452-42-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.19 39/48] ALSA: control: Use deferred fasync helper
+Date:   Sun, 14 Aug 2022 12:19:32 -0400
+Message-Id: <20220814161943.2394452-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
 References: <20220814161943.2394452-1-sashal@kernel.org>
@@ -52,49 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 5fa2cffba0b82336a2244d941322eb1627ff787b ]
+[ Upstream commit 4a971e84a7ae10a38d875cd2d4e487c8d1682ca3 ]
 
-Coverity complains about assigning a pointer based on
-value length before checking that value length goes
-beyond the end of the SMB.  Although this is even more
-unlikely as value length is a single byte, and the
-pointer is not dereferenced until laterm, it is clearer
-to check the lengths first.
+For avoiding the potential deadlock via kill_fasync() call, use the
+new fasync helpers to defer the invocation from the control API.  Note
+that it's merely a workaround.
 
-Addresses-Coverity: 1467704 ("Speculative execution data leak")
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Another note: although we haven't received reports about the deadlock
+with the control API, the deadlock is still potentially possible, and
+it's better to align the behavior with other core APIs (PCM and
+timer); so let's move altogether.
+
+Link: https://lore.kernel.org/r/20220728125945.29533-5-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/sound/control.h | 2 +-
+ sound/core/control.c    | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 8802995b2d3d..aa4c1d403708 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -1145,9 +1145,7 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
- 	size_t name_len, value_len, user_name_len;
+diff --git a/include/sound/control.h b/include/sound/control.h
+index 985c51a8fb74..a1fc7e0a47d9 100644
+--- a/include/sound/control.h
++++ b/include/sound/control.h
+@@ -109,7 +109,7 @@ struct snd_ctl_file {
+ 	int preferred_subdevice[SND_CTL_SUBDEV_ITEMS];
+ 	wait_queue_head_t change_sleep;
+ 	spinlock_t read_lock;
+-	struct fasync_struct *fasync;
++	struct snd_fasync *fasync;
+ 	int subscribed;			/* read interface is activated */
+ 	struct list_head events;	/* waiting events for read */
+ };
+diff --git a/sound/core/control.c b/sound/core/control.c
+index a25c0d64d104..f66fe4be30d3 100644
+--- a/sound/core/control.c
++++ b/sound/core/control.c
+@@ -127,6 +127,7 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
+ 			if (control->vd[idx].owner == ctl)
+ 				control->vd[idx].owner = NULL;
+ 	up_write(&card->controls_rwsem);
++	snd_fasync_free(ctl->fasync);
+ 	snd_ctl_empty_read_queue(ctl);
+ 	put_pid(ctl->pid);
+ 	kfree(ctl);
+@@ -181,7 +182,7 @@ void snd_ctl_notify(struct snd_card *card, unsigned int mask,
+ 	_found:
+ 		wake_up(&ctl->change_sleep);
+ 		spin_unlock(&ctl->read_lock);
+-		kill_fasync(&ctl->fasync, SIGIO, POLL_IN);
++		snd_kill_fasync(ctl->fasync, SIGIO, POLL_IN);
+ 	}
+ 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
+ }
+@@ -2002,7 +2003,7 @@ static int snd_ctl_fasync(int fd, struct file * file, int on)
+ 	struct snd_ctl_file *ctl;
  
- 	while (src_size > 0) {
--		name = &src->ea_data[0];
- 		name_len = (size_t)src->ea_name_length;
--		value = &src->ea_data[src->ea_name_length + 1];
- 		value_len = (size_t)le16_to_cpu(src->ea_value_length);
+ 	ctl = file->private_data;
+-	return fasync_helper(fd, file, on, &ctl->fasync);
++	return snd_fasync_helper(fd, file, on, &ctl->fasync);
+ }
  
- 		if (name_len == 0)
-@@ -1159,6 +1157,9 @@ move_smb2_ea_to_cifs(char *dst, size_t dst_size,
- 			goto out;
- 		}
+ /* return the preferred subdevice number if already assigned;
+@@ -2170,7 +2171,7 @@ static int snd_ctl_dev_disconnect(struct snd_device *device)
+ 	read_lock_irqsave(&card->ctl_files_rwlock, flags);
+ 	list_for_each_entry(ctl, &card->ctl_files, list) {
+ 		wake_up(&ctl->change_sleep);
+-		kill_fasync(&ctl->fasync, SIGIO, POLL_ERR);
++		snd_kill_fasync(ctl->fasync, SIGIO, POLL_ERR);
+ 	}
+ 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
  
-+		name = &src->ea_data[0];
-+		value = &src->ea_data[src->ea_name_length + 1];
-+
- 		if (ea_name) {
- 			if (ea_name_len == name_len &&
- 			    memcmp(ea_name, name, name_len) == 0) {
 -- 
 2.35.1
 
