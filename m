@@ -2,120 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955B0C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:31:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BF1C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240431AbiHNPbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
+        id S240449AbiHNPbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiHNP3R (ORCPT
+        with ESMTP id S240413AbiHNP3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:29:17 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A334B1EA;
-        Sun, 14 Aug 2022 08:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660490950; x=1692026950;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3SfdfjNGmlnbCkTHslz5z06m4uI/TDvjfqYOq7HY/3c=;
-  b=NCa8ULDxA/GR12M8xm2SOQHh10PfhPTCEc5Yy89brWF3bkoO+FsT9aU3
-   j+A4gbygYeCLLq1scz42u0D6JBRP25C05nJLJiGgGF6A1CWvy6w3YUxZZ
-   UuhNuX68PGzxPPGLra4+rbQfb0R4/8gEkzuvHjtbYoAY4sVxHpU24nk+p
-   755gKuSebQjp3jYvY8BXYl+YekYsBQizg8A5IRVN0yK/ZlSadYpD8sqKK
-   XmjenapGZ8DES0PMZ5M1fAM3nGkRZ2GavsS1kcYljAHwzUjd183LM2lYt
-   HmxLPEaH+uOQ3gFaqE0uUxyHTDRDVmC5IfKPpp2ajPC8NrJf7xoeYebUc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="378122492"
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="378122492"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 08:29:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="582611215"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 14 Aug 2022 08:29:02 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNFXx-0000EG-1v;
-        Sun, 14 Aug 2022 15:29:01 +0000
-Date:   Sun, 14 Aug 2022 23:28:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jesse Taube <mr.bossman075@gmail.com>, linux-imx@nxp.com
-Cc:     kbuild-all@lists.01.org, robh+dt@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        aisheng.dong@nxp.com, stefan@agner.ch, linus.walleij@linaro.org,
-        daniel.lezcano@linaro.org, tglx@linutronix.de, arnd@arndb.de,
-        olof@lixom.net, soc@kernel.org, linux@armlinux.org.uk,
-        abel.vesa@nxp.com, dev@lynxeye.de, marcel.ziswiler@toradex.com,
-        tharvey@gateworks.com, leoyang.li@nxp.com,
-        sebastian.reichel@collabora.com, cniedermaier@dh-electronics.com,
-        Mr.Bossman075@gmail.com, clin@suse.com,
-        giulio.benetti@benettiengineering.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: Re: [PATCH v5 07/12] clk: imx: Update pllv3 to support i.MXRT1170
-Message-ID: <202208142303.ZxW0QfM2-lkp@intel.com>
-References: <20220723160513.271692-8-Mr.Bossman075@gmail.com>
+        Sun, 14 Aug 2022 11:29:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA98F12745;
+        Sun, 14 Aug 2022 08:29:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13D8060C48;
+        Sun, 14 Aug 2022 15:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B54EC43141;
+        Sun, 14 Aug 2022 15:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660490952;
+        bh=epSUldJ7qZaSa/KN4cH2lvf0JxykKV7qMCXgRU+QuaQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b4Tig7WSAQWE5KjCd8c/waNY0BkHF03iRvWbS70Ff9GPkgNUII0FeM+76+ICg+e69
+         EFfcPc71IjVg7Bt7PbDK3zDZq24KrNOO3YYOh1A8vgIPs/EdVoEkNqBSnGoCZJIK7N
+         oFNC5IiE/NNvNTb6Epkj8JkgtY1yHMzcN14r7J7az32H+ISHjnBhTcUVfljedZYx30
+         LtILdwvu3ltE4SCZmjBMRUsVMuHlHxRYTkuIBDVHMJw0CD0Aco+BYH5Y20J3YVL5m+
+         4lBsRvjQ0DT2tlE+Uy7BTHKOELdsX1NSHDDbbvOXRMTn2iAFZsdZvim9+wImCEqUte
+         CZq1ILQ8w8P6g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Ofir Bitton <obitton@habana.ai>, Oded Gabbay <ogabbay@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        osharabi@habana.ai, ttayar@habana.ai, ynudelman@habana.ai,
+        dliberman@habana.ai, fkassabri@habana.ai, dhirschfeld@habana.ai
+Subject: [PATCH AUTOSEL 5.19 35/64] habanalabs/gaudi: fix shift out of bounds
+Date:   Sun, 14 Aug 2022 11:24:08 -0400
+Message-Id: <20220814152437.2374207-35-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
+References: <20220814152437.2374207-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220723160513.271692-8-Mr.Bossman075@gmail.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jesse,
+From: Ofir Bitton <obitton@habana.ai>
 
-Thank you for the patch! Perhaps something to improve:
+[ Upstream commit 01622098aeb05a5efbb727199bbc2a4653393255 ]
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on abelvesa/clk/imx v5.19]
-[cannot apply to soc/for-next linus/master next-20220812]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+When validating NIC queues, queue offset calculation must be
+performed only for NIC queues.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jesse-Taube/Add-support-for-the-i-MXRT1170-evk/20220724-000710
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220814/202208142303.ZxW0QfM2-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/96413cc0300321ec18d27ca9983f349a41f99706
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jesse-Taube/Add-support-for-the-i-MXRT1170-evk/20220724-000710
-        git checkout 96413cc0300321ec18d27ca9983f349a41f99706
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/clk/
+Signed-off-by: Ofir Bitton <obitton@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/misc/habanalabs/gaudi/gaudi.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/clk/imx/clk-pllv3.c:14:
-   drivers/clk/imx/clk.h:268:74: error: macro "imx_clk_hw_pllv3" requires 8 arguments, but only 5 given
-     268 |                 const char *parent_name, void __iomem *base, u32 div_mask);
-         |                                                                          ^
-   drivers/clk/imx/clk.h:107: note: macro "imx_clk_hw_pllv3" defined here
-     107 | #define imx_clk_hw_pllv3(name, parent_names, num_parents, parent,       \
-         | 
->> drivers/clk/imx/clk-pllv3.c:445:16: warning: no previous prototype for '__imx_clk_hw_pllv3' [-Wmissing-prototypes]
-     445 | struct clk_hw *__imx_clk_hw_pllv3(enum imx_pllv3_type type, const char *name,
-         |                ^~~~~~~~~~~~~~~~~~
-
-
-vim +/__imx_clk_hw_pllv3 +445 drivers/clk/imx/clk-pllv3.c
-
-   444	
- > 445	struct clk_hw *__imx_clk_hw_pllv3(enum imx_pllv3_type type, const char *name,
-
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index e6bfaf55c6b6..3fb221f2e393 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -5654,15 +5654,17 @@ static int gaudi_parse_cb_no_ext_queue(struct hl_device *hdev,
+ {
+ 	struct asic_fixed_properties *asic_prop = &hdev->asic_prop;
+ 	struct gaudi_device *gaudi = hdev->asic_specific;
+-	u32 nic_mask_q_id = 1 << (HW_CAP_NIC_SHIFT +
+-		((parser->hw_queue_id - GAUDI_QUEUE_ID_NIC_0_0) >> 2));
++	u32 nic_queue_offset, nic_mask_q_id;
+ 
+ 	if ((parser->hw_queue_id >= GAUDI_QUEUE_ID_NIC_0_0) &&
+-			(parser->hw_queue_id <= GAUDI_QUEUE_ID_NIC_9_3) &&
+-			(!(gaudi->hw_cap_initialized & nic_mask_q_id))) {
+-		dev_err(hdev->dev, "h/w queue %d is disabled\n",
+-				parser->hw_queue_id);
+-		return -EINVAL;
++			(parser->hw_queue_id <= GAUDI_QUEUE_ID_NIC_9_3)) {
++		nic_queue_offset = parser->hw_queue_id - GAUDI_QUEUE_ID_NIC_0_0;
++		nic_mask_q_id = 1 << (HW_CAP_NIC_SHIFT + (nic_queue_offset >> 2));
++
++		if (!(gaudi->hw_cap_initialized & nic_mask_q_id)) {
++			dev_err(hdev->dev, "h/w queue %d is disabled\n", parser->hw_queue_id);
++			return -EINVAL;
++		}
+ 	}
+ 
+ 	/* For internal queue jobs just check if CB address is valid */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
