@@ -2,347 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D1AC25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86058C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239638AbiHNO0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
+        id S239806AbiHNO1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239384AbiHNO0L (ORCPT
+        with ESMTP id S231743AbiHNO1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:26:11 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376AF10554;
-        Sun, 14 Aug 2022 07:26:06 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id v3so6408879wrp.0;
-        Sun, 14 Aug 2022 07:26:06 -0700 (PDT)
+        Sun, 14 Aug 2022 10:27:41 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACF911C27
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:27:39 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id 11so822025ybu.0
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:27:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
-        bh=JJdgNkw8N9lrgE5ijB3DDNPYn6EuAfhF3HNOQhYGLL4=;
-        b=UasNJ3g5w+Ied296AwMztzqN2dtQUxQbwt+1oADmuTFeBbosR1xU+vsnpRkDmV2Dqu
-         3IOY48D6s0T010aRwpPiaosemoJwXii9xgay0s8lFDNvRsUDZctT/jpSl2tVhTlxhRqX
-         IaPTIRD7dGNEotZZxpH2AHWczdGz5sp8XIwzX3jzF3njukfU5xIpZjfSSdFcZ48KSyWU
-         avKP85XR3Z2zkNfqTvI0oxr2Xwmn5KGe9kfT1w2PQx45xy/mSnQwo6BAiv7EYsc3vcRK
-         TtnVKwuaSJJUIeNfH/Vhw9Zf2et0tEpBLUKf/orhB/YlOVVELjPmtY7RHTP9NtSsAlP9
-         uFPg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=BDAVIhnSkgENDUQ7IfYC3/2QkAEAsNSSEneZku1M24s=;
+        b=p0gfoBw4ZgOT1ksw69dVgdZR0JT7daeCJ16dH8wcxMLnRGqjA3uhDchB1lA7TQfaYX
+         BrQw9XUmookElN0tbP/iD4tNxHbscwSregEaqi3xk9KU+HnauYP7IDU38X3ZZJGiM3hc
+         2cUIIAVEHjFscy2B3j5HOgzkZTsMCx9rw/txu7rZ55uaJm4jlwQc7RspbXg/YAloW0C/
+         0svWUNrFbrZiZ7KzaV5kWEWoFtC/V4k27Ur2X/IFi253YZhnsFFyEBoQ+jjOu06CSB77
+         L5qDaCYzVqdwx8ZM/qx64yS4r691EzmylMr4OT3lTcBSK98a1Kt2wCd0iOF2OHsyy1IV
+         Yv8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=JJdgNkw8N9lrgE5ijB3DDNPYn6EuAfhF3HNOQhYGLL4=;
-        b=jb7NAYFl/9ZlJCAC4yXzDMD95beALTgXmZVRh7PdGUOdMdcrGjZW9qIce/faYiCEQV
-         ZYCDnMNrYO9ftm7hREWlhsgk/q34IGXmsSZBTWHHETeM7kAn5x+UHb6HTqH8iwS0tOcs
-         bgPAB/1T8f7zC7kyG7RfP3ai+f4N9tr1uzORK/1zqobqhn1UWshYvZJxRi7MrArW9CmS
-         R5Ca3EquLok7VsH22+3L1it8kZtbc7DWQ6UpTmkcwMr+cBHNMzktS0YUOFX2uGgodx5P
-         OcMmh7ncA3cb2hDAd+OBzHeUffktbDsY1h5GHuS5UB7fhDa8MNb7eXu6VD5LJkyk3/iY
-         1mIA==
-X-Gm-Message-State: ACgBeo1k2SXXqOBi8wB96f2PAiO0yi6O9Ny8fg8i44Zt5J28ca59NTZZ
-        Dl7vs4lEOFbZC7nDjAB3edQ/o0b0P3o=
-X-Google-Smtp-Source: AA6agR4wArXjLRQaniXk5gf6e9c3hEs1vTUNzlNseEciwsDEIVbcStkzsytezp7v0rBFqMCf6Cz5KQ==
-X-Received: by 2002:a05:6000:1011:b0:220:5a7d:9cd6 with SMTP id a17-20020a056000101100b002205a7d9cd6mr6066432wrx.504.1660487164572;
-        Sun, 14 Aug 2022 07:26:04 -0700 (PDT)
-Received: from [192.168.90.207] (188.red-83-35-57.dynamicip.rima-tde.net. [83.35.57.188])
-        by smtp.gmail.com with ESMTPSA id x11-20020adff0cb000000b002217e3f41f1sm4673800wro.106.2022.08.14.07.26.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 07:26:04 -0700 (PDT)
-Message-ID: <21a1c55d2124d71e1c97e17c28c4f50e5d1ee19e.camel@gmail.com>
-Subject: Re: [PATCH v5 1/5] iio: pressure: bmp280: simplify driver
- initialization logic
-From:   Angel Iglesias <ang.iglesiasg@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org
-Date:   Sun, 14 Aug 2022 16:26:02 +0200
-In-Reply-To: <20220814144350.7d0282e6@jic23-huawei>
-References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
-         <602f032955b56eb367177d1de7536f18ad94bc87.1659872590.git.ang.iglesiasg@gmail.com>
-         <20220814144350.7d0282e6@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.module_f35+14217+587aad52) 
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=BDAVIhnSkgENDUQ7IfYC3/2QkAEAsNSSEneZku1M24s=;
+        b=h8irLGKgl7i64g4joOVZhXaoQYLYl32+tSfAC+TcfRz+dgTiOxUPW2cXf42nYrPWMH
+         +OiNfuvMjQ5YCGFOwmDhgg12b4efiYiSmml1/nus4b6+rHd+FwgitN4xp8xgJriL3Ndg
+         UorelNW8bjR/dr3oMNMfF8643FaVjA/XYotyu9Xr+aKl1SpsroFXS497n0VeaEsk8YTR
+         F2c7Km+BFB1msTdmJ9Nydemuh6ode3RX8jkYxVjxCxaEaOzqeHwii8DTpg4qHmu3+peN
+         VbgubKqciSFUdxuWHhvsuy5Nma0ONBw8Sr8AXMisqfvCCWC2v55Mek6Kpu6LqTMs8edB
+         dIhw==
+X-Gm-Message-State: ACgBeo0X+ewGpCL8moUt/3R6BSC49IoRX98iLjk/oHiYyu2WjHJnUMIg
+        XiPymCugeFR64tAdJhDF3cYJLVShD1U7vvxulp7Pvw==
+X-Google-Smtp-Source: AA6agR5oRn4CSLlwRnezXr30VfLoZdKWLSMB++KAjfSH1Z47K3NbFei2uLb/C/FS4mNgtaqJbSfnADfGVfrcqLFcy4o=
+X-Received: by 2002:a25:cb05:0:b0:67c:29a8:cb9c with SMTP id
+ b5-20020a25cb05000000b0067c29a8cb9cmr9640988ybg.135.1660487259148; Sun, 14
+ Aug 2022 07:27:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1642587791-13222-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1642587791-13222-4-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <5b6d3e7f-c638-fdc7-5080-44d34abed610@ideasonboard.com> <a3ed3a2c-86ce-1c85-e8aa-c08b54ad1a43@gmail.com>
+ <CAMSo37XdZSZUHLWJj373DdtOBA9=uD8SJ7ywWCYF2pU1i4cB_g@mail.gmail.com> <ed4fe238-4fcd-1253-658f-18fe1e1f13b0@gmail.com>
+In-Reply-To: <ed4fe238-4fcd-1253-658f-18fe1e1f13b0@gmail.com>
+From:   Yongqin Liu <yongqin.liu@linaro.org>
+Date:   Sun, 14 Aug 2022 22:27:27 +0800
+Message-ID: <CAMSo37V3U5nYng77jzSnKH73CTLhGYQJu11Q5wRt289se5nFJw@mail.gmail.com>
+Subject: Re: [PATCH 3/3] drm: omapdrm: Do no allocate non-scanout GEMs through DMM/TILER
+To:     Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Cc:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, tomba@kernel.org,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        merlijn@wizzup.org, tony@atomide.com,
+        "Bajjuri, Praneeth" <praneeth@ti.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-08-14 at 14:43 +0100, Jonathan Cameron wrote:
-> On Sun,  7 Aug 2022 13:54:40 +0200
-> Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
-> 
-> > Simplified common initialization logic of different sensor types
-> > unifying calibration and initial configuration recovery.
-> > 
-> > Default config param values of each sensor type are stored inside
-> > chip_info structure and used to initialize sensor data struct instance.
-> > 
-> > The helper functions for read each sensor type calibration are converted
-> > to a callback available on the chip_info struct.
-> > 
-> > Revised BMP180 and BMP280 definitions and code functions to use GENMASK
-> > and FIELD_PREP/FIELD_GET utilities to homogenize structure with more
-> > recent drivers, in preparation for the patches adding support for the
-> > BMP380 sensors.
-> > 
-> > Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> > Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
-> Hi Angel, not sure if I commented on this before, but this patch is doing
-> several different things, so in the ideal case it would be split into
-> 1: FIELD_PREP/FIELD_GET/GENMASK changes. 
-> 2: Chipinfo related changes
-> 3: Maybe the the reordering of defintions of local variables that Andy
->    indirectly referered to.
-> 
-> However, this is short enough to be fairly reviewable as it stands
-> so from my point of view I'll accept leaving 1 and 2 combined if it is
-> going to be a lot of work to separate them. Doesn't look like it will be hard
-> but without trying I'm not totally sure!
+Hi, IvayIo
 
-Sure, splitting the patch and keeping each patch focused on one aspect makes
-total sense to me. Thanks as always for your feedback!
+Thanks very much for the reply!
 
-> One question inline on what the chip parameter to the calibration functions
-> is there for as it appears unused.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> > ---
-> >  drivers/iio/pressure/bmp280-core.c | 120 ++++++++++++++++++-----------
-> >  drivers/iio/pressure/bmp280.h      |  73 +++++++++---------
-> >  2 files changed, 113 insertions(+), 80 deletions(-)
-> > 
-> > diff --git a/drivers/iio/pressure/bmp280-core.c
-> > b/drivers/iio/pressure/bmp280-core.c
-> > index fe7aa81e7cc9..a109c2609896 100644
-> > --- a/drivers/iio/pressure/bmp280-core.c
-> > +++ b/drivers/iio/pressure/bmp280-core.c
-> > @@ -16,6 +16,8 @@
-> >  
-> >  #define pr_fmt(fmt) "bmp280: " fmt
-> >  
-> > +#include <linux/bitops.h>
-> > +#include <linux/bitfield.h>
-> >  #include <linux/device.h>
-> >  #include <linux/module.h>
-> >  #include <linux/regmap.h>
-> > @@ -107,19 +109,28 @@ struct bmp280_data {
-> >  };
-> >  
-> >  struct bmp280_chip_info {
-> > +       unsigned int id_reg;
-> > +
-> > +       int num_channels;
-> > +       unsigned int start_up_time;
-> > +
-> >         const int *oversampling_temp_avail;
-> >         int num_oversampling_temp_avail;
-> > +       int oversampling_temp_default;
-> >  
-> >         const int *oversampling_press_avail;
-> >         int num_oversampling_press_avail;
-> > +       int oversampling_press_default;
-> >  
-> >         const int *oversampling_humid_avail;
-> >         int num_oversampling_humid_avail;
-> > +       int oversampling_humid_default;
-> >  
-> >         int (*chip_config)(struct bmp280_data *);
-> >         int (*read_temp)(struct bmp280_data *, int *);
-> >         int (*read_press)(struct bmp280_data *, int *, int *);
-> >         int (*read_humid)(struct bmp280_data *, int *, int *);
-> > +       int (*read_calib)(struct bmp280_data *, unsigned int);
-> >  };
-> >  
-> >  /*
-> > @@ -147,15 +158,14 @@ static const struct iio_chan_spec bmp280_channels[] =
-> > {
-> >         },
-> >  };
-> >  
-> > -static int bmp280_read_calib(struct bmp280_data *data,
-> > -                            struct bmp280_calib *calib,
-> > -                            unsigned int chip)
-> > +static int bmp280_read_calib(struct bmp280_data *data, unsigned int chip)
-> >  {
-> >         int ret;
-> >         unsigned int tmp;
-> >         __le16 l16;
-> >         __be16 b16;
-> >         struct device *dev = data->dev;
-> > +       struct bmp280_calib *calib = &data->calib.bmp280;
-> >         __le16 t_buf[BMP280_COMP_TEMP_REG_COUNT / 2];
-> >         __le16 p_buf[BMP280_COMP_PRESS_REG_COUNT / 2];
-> >  
-> > @@ -611,8 +621,8 @@ static const struct iio_info bmp280_info = {
-> >  static int bmp280_chip_config(struct bmp280_data *data)
-> >  {
-> >         int ret;
-> > -       u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
-> > -                 BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
-> > +       u8 osrs = FIELD_PREP(BMP280_OSRS_TEMP_MASK, data->oversampling_temp
-> > + 1) |
-> > +                 FIELD_PREP(BMP280_OSRS_PRESS_MASK, data-
-> > >oversampling_press + 1);
-> >  
-> >         ret = regmap_write_bits(data->regmap, BMP280_REG_CTRL_MEAS,
-> >                                  BMP280_OSRS_TEMP_MASK |
-> > @@ -640,21 +650,38 @@ static int bmp280_chip_config(struct bmp280_data
-> > *data)
-> >  static const int bmp280_oversampling_avail[] = { 1, 2, 4, 8, 16 };
-> >  
-> >  static const struct bmp280_chip_info bmp280_chip_info = {
-> > +       .id_reg = BMP280_REG_ID,
-> > +       .start_up_time = 2000,
-> > +       .num_channels = 2,
-> > +
-> >         .oversampling_temp_avail = bmp280_oversampling_avail,
-> >         .num_oversampling_temp_avail =
-> > ARRAY_SIZE(bmp280_oversampling_avail),
-> > +       /*
-> > +        * Oversampling config values on BMx280 have one additional setting
-> > +        * that other generations of the family don't:
-> > +        * The value 0 means the measurement is bypassed instead of
-> > +        * oversampling set to x1.
-> > +        *
-> > +        * To account for this difference, and preserve the same common
-> > +        * config logic, this is handled later on chip_config callback
-> > +        * incrementing one unit the oversampling setting.
-> > +        */
-> > +       .oversampling_temp_default = BMP280_OSRS_TEMP_2X - 1,
-> >  
-> >         .oversampling_press_avail = bmp280_oversampling_avail,
-> >         .num_oversampling_press_avail =
-> > ARRAY_SIZE(bmp280_oversampling_avail),
-> > +       .oversampling_press_default = BMP280_OSRS_PRESS_16X - 1,
-> >  
-> >         .chip_config = bmp280_chip_config,
-> >         .read_temp = bmp280_read_temp,
-> >         .read_press = bmp280_read_press,
-> > +       .read_calib = bmp280_read_calib,
-> >  };
-> >  
-> >  static int bme280_chip_config(struct bmp280_data *data)
-> >  {
-> >         int ret;
-> > -       u8 osrs = BMP280_OSRS_HUMIDITIY_X(data->oversampling_humid + 1);
-> > +       u8 osrs = FIELD_PREP(BMP280_OSRS_HUMIDITY_MASK, data-
-> > >oversampling_humid + 1);
-> >  
-> >         /*
-> >          * Oversampling of humidity must be set before oversampling of
-> > @@ -670,19 +697,27 @@ static int bme280_chip_config(struct bmp280_data
-> > *data)
-> >  }
-> >  
-> >  static const struct bmp280_chip_info bme280_chip_info = {
-> > +       .id_reg = BMP280_REG_ID,
-> > +       .start_up_time = 2000,
-> > +       .num_channels = 3,
-> > +
-> >         .oversampling_temp_avail = bmp280_oversampling_avail,
-> >         .num_oversampling_temp_avail =
-> > ARRAY_SIZE(bmp280_oversampling_avail),
-> > +       .oversampling_temp_default = BMP280_OSRS_TEMP_2X - 1,
-> >  
-> >         .oversampling_press_avail = bmp280_oversampling_avail,
-> >         .num_oversampling_press_avail =
-> > ARRAY_SIZE(bmp280_oversampling_avail),
-> > +       .oversampling_press_default = BMP280_OSRS_PRESS_16X - 1,
-> >  
-> >         .oversampling_humid_avail = bmp280_oversampling_avail,
-> >         .num_oversampling_humid_avail =
-> > ARRAY_SIZE(bmp280_oversampling_avail),
-> > +       .oversampling_humid_default = BMP280_OSRS_HUMIDITY_16X - 1,
-> >  
-> >         .chip_config = bme280_chip_config,
-> >         .read_temp = bmp280_read_temp,
-> >         .read_press = bmp280_read_press,
-> >         .read_humid = bmp280_read_humid,
-> > +       .read_calib = bmp280_read_calib,
-> >  };
-> >  
-> >  static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
-> > @@ -710,7 +745,7 @@ static int bmp180_measure(struct bmp280_data *data, u8
-> > ctrl_meas)
-> >                 if (!ret)
-> >                         dev_err(data->dev, "timeout waiting for
-> > completion\n");
-> >         } else {
-> > -               if (ctrl_meas == BMP180_MEAS_TEMP)
-> > +               if (FIELD_GET(BMP180_MEAS_CTRL_MASK, ctrl_meas) ==
-> > BMP180_MEAS_TEMP)
-> >                         delay_us = 4500;
-> >                 else
-> >                         delay_us =
-> > @@ -735,7 +770,9 @@ static int bmp180_read_adc_temp(struct bmp280_data
-> > *data, int *val)
-> >         __be16 tmp;
-> >         int ret;
-> >  
-> > -       ret = bmp180_measure(data, BMP180_MEAS_TEMP);
-> > +       ret = bmp180_measure(data,
-> > +                            FIELD_PREP(BMP180_MEAS_CTRL_MASK,
-> > BMP180_MEAS_TEMP) |
-> > +                            BMP180_MEAS_SCO);
-> >         if (ret)
-> >                 return ret;
-> >  
-> > @@ -748,11 +785,11 @@ static int bmp180_read_adc_temp(struct bmp280_data
-> > *data, int *val)
-> >         return 0;
-> >  }
-> >  
-> > -static int bmp180_read_calib(struct bmp280_data *data,
-> > -                            struct bmp180_calib *calib)
-> > +static int bmp180_read_calib(struct bmp280_data *data, unsigned int chip)
-> 
-> What is chip used for?  If there will be a need for it in later patches, then
-> it's fine to add the additional parameter now but please say why in the patch
-> description.
+On Sat, 13 Aug 2022 at 14:58, Ivaylo Dimitrov
+<ivo.g.dimitrov.75@gmail.com> wrote:
+>
+> Hi Liu,
+>
+> On 12.08.22 =D0=B3. 7:35 =D1=87., Yongqin Liu wrote:
+> > Hi, Ivaylo, Tomi
+> >
+> > We have one X15 Android AOSP master build, it could not have the home
+> > screen displayed
+> > on the hdmi monitor connected with this change, with the following
+> > message printed on the serial console
+> >      [  607.404205] omapdrm omapdrm.0: Failed to setup plane plane-0
+> >      [  607.410522] omapdrm omapdrm.0: Failed to setup plane plane-1
+> >      [  607.416381] omapdrm omapdrm.0: Failed to setup plane plane-2
+> >      [  607.422088] omapdrm omapdrm.0: Failed to setup plane plane-3
+> >
+> >     # for details, please check the link here: http://ix.io/47m1
+> >
+> > It will work with home screen displayed on the hdmi monitor if this
+> > change is reverted.
+> >
+> > Is this the broken problem you talked about here?
+> >
+> > And could you please give some suggestions on how to have the x15
+> > Android build work with this change?
+> >
+>
+> Make sure scanout (i.e. those to be displayed) buffers are actually
+> allocated as such - OMAP_BO_SCANOUT flag must be set when calling
+> omap_bo_new().
 
-In the codepath BMP/BME 280, chip contains the read chip id and is used to check
-if humidity calibration needs to be loaded when the sensor is a BME280. I took a
-conservative approach and introduced this field on bmp180 and bmp380 codepaths,
-assigning the same signature of the three calibration loading functions and use
-as callbacks.
+I am not familiar with this area, I am sorry if I asked quite silly questio=
+ns:(
+I googled omap_bo_new, and found it's a function of libdrm here[1], is
+it what you meant here?
 
-Having in mind this parameter has no use in two cases out of three, I think I
-could have done better by splitting the BMP/BME280 callback in one shared part
-loading pressure and temperature params for both sensors, and a new callback for
-BME280 invoking first the common code and then loading humidity params. If it
-sounds good, I would include this change for next iteration.
+If it's the omap_bo_new that we should pass OMAP_BO_SCANOUT when it is call=
+ed,
+then is it the correct way to update omap_bo_new to add the OMAP_BO_SCANOUT=
+ flag
+before it calls omap_bo_new_impl?
 
-> >  {
-> >         int ret;
-> >         int i;
-> > +       struct bmp180_calib *calib = &data->calib.bmp180;
-> >         __be16 buf[BMP180_REG_CALIB_COUNT / 2];
-> >  
-> >         ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
-> > @@ -832,7 +869,10 @@ static int bmp180_read_adc_press(struct bmp280_data
-> > *data, int *val)
-> >         __be32 tmp = 0;
-> >         u8 oss = data->oversampling_press;
-> >  
-> > -       ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
-> > +       ret = bmp180_measure(data,
-> > +                            FIELD_PREP(BMP180_MEAS_CTRL_MASK,
-> > BMP180_MEAS_PRESS) |
-> > +                            FIELD_PREP(BMP180_OSRS_PRESS_MASK, oss) |
-> > +                            BMP180_MEAS_SCO);
-> >         if (ret)
-> >                 return ret;
-> >  
+And another question is that, since the userspace(libdrm) will be used
+to work with different kernel versions,
+like the old 4.14, 4.19, etc, do you think there will be problem to
+pass  OMAP_BO_SCANOUT
+from the userspace side with the old kernels(which does not have this chang=
+e)?
+does this change need to be backported to the old kernel versions?
 
-Kind regards,
-Angel 
+And the last question is that, omap_bo_new might be called by some
+property binaries what not everyone
+could get the source to update, for such case what's your suggestions?
+
+[1]: https://gitlab.freedesktop.org/mesa/drm/-/blob/main/omap/omap_drm.c#L2=
+27
+
+Thanks,
+Yongqin Liu
+> > On Thu, 17 Feb 2022 at 23:29, Ivaylo Dimitrov
+> > <ivo.g.dimitrov.75@gmail.com> wrote:
+> >>
+> >>
+> >>
+> >> On 17.02.22 =D0=B3. 14:46 =D1=87., Tomi Valkeinen wrote:
+> >>> Hi,
+> >>>
+> >>> On 19/01/2022 12:23, Ivaylo Dimitrov wrote:
+> >>>> On devices with DMM, all allocations are done through either DMM or
+> >>>> TILER.
+> >>>> DMM/TILER being a limited resource means that such allocations will =
+start
+> >>>> to fail before actual free memory is exhausted. What is even worse i=
+s
+> >>>> that
+> >>>> with time DMM/TILER space gets fragmented to the point that even if =
+we
+> >>>> have
+> >>>> enough free DMM/TILER space and free memory, allocation fails becaus=
+e
+> >>>> there
+> >>>> is no big enough free block in DMM/TILER space.
+> >>>>
+> >>>> Such failures can be easily observed with OMAP xorg DDX, for example=
+ -
+> >>>> starting few GUI applications (so buffers for their windows are
+> >>>> allocated)
+> >>>> and then rotating landscape<->portrait while closing and opening new
+> >>>> windows soon results in allocation failures.
+> >>>>
+> >>>> Fix that by mapping buffers through DMM/TILER only when really neede=
+d,
+> >>>> like, for scanout buffers.
+> >>>
+> >>> Doesn't this break users that get a buffer from omapdrm and expect it=
+ to
+> >>> be contiguous?
+> >>>
+> >>
+> >> If you mean dumb buffer, then no, this does not break users as dumb
+> >> buffers are allocated as scanout:
+> >>
+> >> https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/omapdrm=
+/omap_gem.c#L603
+> >>
+> >> If you mean omap_bo allocated buffers, then if users want
+> >> linear(scanout) buffer, then they request it explicitly by passing
+> >> OMAP_BO_SCANOUT.
+> >>
+> >> Ivo
+> >
+> >
+> >
+
+
+
+--=20
+Best Regards,
+Yongqin Liu
+---------------------------------------------------------------
+#mailing list
+linaro-android@lists.linaro.org
+http://lists.linaro.org/mailman/listinfo/linaro-android
