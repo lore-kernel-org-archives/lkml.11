@@ -2,92 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC5FC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 18:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D88C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 18:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231136AbiHNSfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 14:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
+        id S235615AbiHNSrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 14:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239893AbiHNSfL (ORCPT
+        with ESMTP id S229555AbiHNSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 14:35:11 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD24186DF
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 11:35:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660502110; x=1692038110;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/JU3KlUrNNzdqUWS0jZTN1lj0eDQuosG+RH4omwlcXs=;
-  b=BHHZmO37gAQW5qNUvZi/0Oznu0WZDCmjWsHqdCuU2MHXi8oPWqLjUW2g
-   8Y9fjNuOYGInfXB2Qe7ooSUJdia3giPTsQyeoU/VIzii7Z+HsAiZDusJz
-   Acv45hMwZxI583bABym2OKZwEi6aOiC/YfXLJhmnajOGryRCyDp/WdUz+
-   MltTZ82XkOmADISquJYFaGdZMLqBQDXTVMOQo7lkaM25qFTJPJYNLRC9w
-   rwPZrjl1cZtSgj9u0Q3sKD9EiW12psYbpLjsA90kpqzn7HUd/S/k/Y+x0
-   X5gUJzDdbGnXCuBC6t3N908nvM+8YmICYmzFDz5D5D9O6f2NhutugPk3d
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="355851063"
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="355851063"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 11:35:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="732725599"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2022 11:35:08 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNIS3-0000QZ-1r;
-        Sun, 14 Aug 2022 18:35:07 +0000
-Date:   Mon, 15 Aug 2022 02:34:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Subject: [ammarfaizi2-block:paulmck/linux-rcu/ctxt.2022.06.21a 10/22]
- xtensa-linux-ld: arch/xtensa/kernel/entry.o:undefined reference to
- `context_tracking_user_exit'
-Message-ID: <202208150217.XWuyLscZ-lkp@intel.com>
+        Sun, 14 Aug 2022 14:47:06 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078F9FD3;
+        Sun, 14 Aug 2022 11:47:04 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id l8so4139425qvr.5;
+        Sun, 14 Aug 2022 11:47:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=dudlmWjuSuvNbi9ZYyo/rAhbjJyLDMtzGN5G53OzaMo=;
+        b=ZcNgkuU+zWbAKcAGArBWE8maGMxvPQ7VlP0YNqDbjIPV8BeVbWwnoua6cHVFuLyH4l
+         Y+eaEC5T+XPw1vLxXzcQsWDey3KX78uyEbjfuqi4pwC+42YiT39WsUA628D79tfh6K8d
+         4DY725D0GLL5UQ+8tL59nOSTxuD88uzXAM37WpK1T7DkyyJN4R0TRPKJW10UE5YXaqS6
+         qUDPl03aM301291lSSXaacqjwyNXXJDtlXWf0TNGiKDbQiFzQ0K9B20MCltUdnOy1i+Y
+         z0mGQlMIyw7XXHzaEHp31ukbzY5PON8ezIqMqYl5d4JQW2i4XMjGkbiQjLyDVBSeOjLN
+         6u2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=dudlmWjuSuvNbi9ZYyo/rAhbjJyLDMtzGN5G53OzaMo=;
+        b=3kaq1f6Xw6m8ZIKrT+earLk7Ycnznm/dQZcB6BJkq/EN5FXs5154Kf5HxrQJu5TRPP
+         sCCCfOj37+LR2uJLFR0U4mKqPGqnHC6n0CcmNu2jTL3NMZYRZKNxDUoySfvN7LRI5zJG
+         qNLQl2ER/DAxfjK75/n7OhJgC0rJxQ5chExksyvHBrLwQPbbgXEnoVqTJqckrowD1OUc
+         JLkbRysiNC4Sn44N1qfULiw/HuCn33cvPxtuuD7JN6xYkGwyVml3d96bk390eFADYCXR
+         dztk3ywYUo4QW4TVdKSxCU0tyN+REPxuW/dfK4+7MWKdMH5MrN5pfkWHQV6KaLCfZDlB
+         PszQ==
+X-Gm-Message-State: ACgBeo2seqi0ZQqcIgZ+ATclJ0faLoMs8AxJirqpWWZOdH9T37XLv1Z6
+        18AGK7U4eE1VE5SVfMIJhbBHY7RSIhwixq1qsws=
+X-Google-Smtp-Source: AA6agR4oQuZQwsVyjXb+7L9CQIbO7cRvAMkkYymfXxeLEfz+ouuOzmVVtEFPSsbedtPUWQLE/CKEUbV8wlJCDhKD/P0=
+X-Received: by 2002:a05:6214:5290:b0:479:5df:e654 with SMTP id
+ kj16-20020a056214529000b0047905dfe654mr10935326qvb.97.1660502823159; Sun, 14
+ Aug 2022 11:47:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220814080416.7531-1-khalid.masum.92@gmail.com>
+In-Reply-To: <20220814080416.7531-1-khalid.masum.92@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 14 Aug 2022 21:46:26 +0300
+Message-ID: <CAHp75Ve4UaLsUknGKm14_-f5=qsq1s_Ws+j6h0kAY5_XMkSmQw@mail.gmail.com>
+Subject: Re: [RFC PATCH] Soundwire: Initialize multi_link with fwnode props
+To:     Khalid Masum <khalid.masum.92@gmail.com>
+Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/ctxt.2022.06.21a
-head:   22a297887c103cd0a9a251e546cef7f181bd8ce8
-commit: 1cd9c24e543e060b0c5fdd1b91ad1b349fd4a700 [10/22] context_tracking: Take idle eqs entrypoints over RCU
-config: xtensa-randconfig-r033-20220718 (https://download.01.org/0day-ci/archive/20220815/202208150217.XWuyLscZ-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/1cd9c24e543e060b0c5fdd1b91ad1b349fd4a700
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/ctxt.2022.06.21a
-        git checkout 1cd9c24e543e060b0c5fdd1b91ad1b349fd4a700
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+On Sun, Aug 14, 2022 at 11:31 AM Khalid Masum <khalid.masum.92@gmail.com> wrote:
+>
+> According to the TODO, In sw_bus_master_add, bus->multi_link is to be
+> populated with properties from FW node props. Make this happen by
+> creating a new fwnode_handle flag FWNODE_FLAG_MULTI_LINKED and use
+> the flag to store the multi_link value from intel_link_startup. Use
+> this flag to initialize bus->multi_link.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+...
 
-All errors (new ones prefixed by >>):
+>         /*
+>          * Initialize multi_link flag
+> -        * TODO: populate this flag by reading property from FW node
+>          */
+> -       bus->multi_link = false;
+> +       bus->multi_link = (fwnode->flags & FWNODE_FLAG_MULTI_LINKED)
+> +               == FWNODE_FLAG_MULTI_LINKED;
 
->> xtensa-linux-ld: arch/xtensa/kernel/entry.o:(.text+0x0): undefined reference to `context_tracking_user_exit'
->> xtensa-linux-ld: arch/xtensa/kernel/entry.o:(.text+0xc): undefined reference to `context_tracking_user_enter'
-   xtensa-linux-ld: arch/xtensa/kernel/entry.o: in function `common_exception':
->> (.text+0x16a): undefined reference to `context_tracking_user_exit'
-   xtensa-linux-ld: arch/xtensa/kernel/entry.o: in function `common_exception_return':
->> (.text+0x1dd): undefined reference to `context_tracking_user_enter'
+NAK (as far as I understood the context of the comment and the change itself).
+
+These flags are for devlink, we do not mix FW properties with those
+internal flags anyhow. The comment suggests that this should be a
+property. Also commit message doesn't explain the relation to devlink.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
