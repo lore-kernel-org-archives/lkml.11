@@ -2,288 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6239C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 00:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97499C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 00:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbiHNANu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 20:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
+        id S237459AbiHNAWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 20:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiHNANs (ORCPT
+        with ESMTP id S229555AbiHNAWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 20:13:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BB91CFE5
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 17:13:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CFE1B80AEA
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 00:13:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E72C433C1;
-        Sun, 14 Aug 2022 00:13:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660436024;
-        bh=3/bvDMNO/jZcAOVv4E2gLPeVbB0hP/hG+SHXMbuPssk=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=piJUX90mNjAC1+qqtRfzWFM56KIujtm/9k29BNbO8OgyRnI4KNDOcdQNzw5jlvsUE
-         KyClrX0+a3Ci2I4ca4VPP4SCcfw5kv3/dic0L8okbDF5+cleQl9DoAxqIbRPgA9rOX
-         sVTti0JKHIL+eX14pEIJDSaupWXiiI9Lolw1+XroTCFyfE2CKTwe5iK2/3D6myxZv/
-         SRdeBimE2m17/sbDOXJp77CBSgjtE23fYLtqCnEhmactXB2d4V6icFbM0bcbxhnctg
-         BXskn4nfkfAH1bK/24o2sN3poa+NVt4ZaqAYoCU+BegP4AxiMcrdWFREj4qDF29w4+
-         zgFpoagdb0haQ==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 92E5527C0054;
-        Sat, 13 Aug 2022 20:13:42 -0400 (EDT)
-Received: from imap48 ([10.202.2.98])
-  by compute2.internal (MEProxy); Sat, 13 Aug 2022 20:13:42 -0400
-X-ME-Sender: <xms:NT74YrWSQwQnxLHOZNmgIZpuegxEVq4fDsoF-zUkkLJrDrUui5c8fA>
-    <xme:NT74YjkxZgPRybdDL5cANU60J9emn604PEOiLnHanjQEkIDu6TZHk2VdNFuC5R_zj
-    lAs3KjuoZ-xQyGv-6Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegledgfeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ugihucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepvdfhuedvtdfhudffhfekkefftefghfeltdelgeffteehueegjeff
-    udehgfetiefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudek
-    heeifedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuh
-    igrdhluhhtohdruhhs
-X-ME-Proxy: <xmx:NT74YnaDqAh_P6KLFVyy4-bIPrdzZ5Kc_MGczh5Hh3yN8iNcBwto1A>
-    <xmx:NT74YmVph98S5iZP_YC4H6tgnlo4-q4LKU1uLPu504nnTRHaRE5SFg>
-    <xmx:NT74YlliuNAHJR6ez2bCiLSAJJ6LUxiAk72BWkQy-ulVhK-IGtwMPg>
-    <xmx:Nj74YrV7kkkgoHjz_hiPQrKXoT3bVnrUflagxwxMlVJnQQQdKldi4A>
-Feedback-ID: ieff94742:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id D744031A0062; Sat, 13 Aug 2022 20:13:41 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <0d6afdb6-e546-4ef0-80c2-84827c11f2ce@www.fastmail.com>
-In-Reply-To: <20220813223825.3164861-6-ashok.raj@intel.com>
-References: <20220813223825.3164861-1-ashok.raj@intel.com>
- <20220813223825.3164861-6-ashok.raj@intel.com>
-Date:   Sat, 13 Aug 2022 17:13:13 -0700
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Raj Ashok" <ashok.raj@intel.com>,
-        "Borislav Petkov" <bp@alien8.de>,
-        "Thomas Gleixner" <tglx@linutronix.de>
-Cc:     "Tony Luck" <tony.luck@intel.com>,
-        "Dave Hansen" <dave.hansen@intel.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "Tom Lendacky" <thomas.lendacky@amd.com>,
-        "Andrew Cooper" <andrew.cooper3@citrix.com>
-Subject: Re: [PATCH 5/5] x86/microcode: Handle NMI's during microcode update.
-Content-Type: text/plain
+        Sat, 13 Aug 2022 20:22:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE5A5F99E
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 17:22:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660436556; x=1691972556;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UeDT5LGu4P31kA4VWiTQhVXn9qtgXvNzrxAgItCRGAI=;
+  b=KGJDYQa8aXy0I7vx5dqKbQECNpzjNlfIxpfQuvr/B/tz/QeB/e5qpPi5
+   ZbieBoP9pLNICVQ1cTd3Zf0iMgUqUq6V2QL4ZTzlBz83LGwGf7lvDKOvB
+   BThcQrC6TanY5Hks/Nt/6SmLtSQO1ylKDzc/a78cKJYCZPQYHx6Ww0chh
+   nBNs4ZkoFo0F1re6NfzYGNLqewPa8u0YkvoECXPTXqV/iCWobQ8agJbIv
+   Gb/whXQ1K4fx5q/H/yYGYN4ZMI08+4vlWRRKLRYiNbS0vmmgWMUREWfgY
+   W+14GjUogxt1BlvXKSwZvawnwbJrxqoB2Hup7UY81ylIHP0Nu0WQ5glZB
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="355793560"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="355793560"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 17:22:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="695614090"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Aug 2022 17:22:34 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oN1Oj-0002E5-31;
+        Sun, 14 Aug 2022 00:22:33 +0000
+Date:   Sun, 14 Aug 2022 08:21:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: fs/ntfs/aops.c:378:12: warning: stack frame size (2216) exceeds
+ limit (1024) in 'ntfs_read_folio'
+Message-ID: <202208140835.W6F1j6Da-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Matthew,
+
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f6eb0fed6a3957c0b93e3a00c1ffaad84d4ffc31
+commit: 933906f8e8e4110c56db9bddd1281e4e4983a2bb ntfs: Convert ntfs to read_folio
+date:   3 months ago
+config: hexagon-buildonly-randconfig-r001-20220814 (https://download.01.org/0day-ci/archive/20220814/202208140835.W6F1j6Da-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 3329cec2f79185bafd678f310fafadba2a8c76d2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=933906f8e8e4110c56db9bddd1281e4e4983a2bb
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 933906f8e8e4110c56db9bddd1281e4e4983a2bb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/ntfs/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> fs/ntfs/aops.c:378:12: warning: stack frame size (2216) exceeds limit (1024) in 'ntfs_read_folio' [-Wframe-larger-than]
+   static int ntfs_read_folio(struct file *file, struct folio *folio)
+              ^
+   1 warning generated.
 
 
-On Sat, Aug 13, 2022, at 3:38 PM, Ashok Raj wrote:
-> Microcode updates need a guarantee that the thread sibling that is waiting
-> for the update to finish on the primary core will not execute any
-> instructions until the update is complete. This is required to guarantee
-> any MSR or instruction that's being patched will be executed before the
-> update is complete.
->
-> After the stop_machine() rendezvous, an NMI handler is registered. If an
-> NMI were to happen while the microcode update is not complete, the
-> secondary thread will spin until the ucode update state is cleared.
->
-> Couple of choices discussed are:
->
-> 1. Rendezvous inside the NMI handler, and also perform the update from
->    within the handler. This seemed too risky and might cause instability
->    with the races that we would need to solve. This would be a difficult
->    choice.
+vim +/ntfs_read_folio +378 fs/ntfs/aops.c
 
-I prefer choice 1.  As I understand it, Xen has done this for a while to good effect.
+   359	
+   360	/**
+   361	 * ntfs_read_folio - fill a @folio of a @file with data from the device
+   362	 * @file:	open file to which the folio @folio belongs or NULL
+   363	 * @folio:	page cache folio to fill with data
+   364	 *
+   365	 * For non-resident attributes, ntfs_read_folio() fills the @folio of the open
+   366	 * file @file by calling the ntfs version of the generic block_read_full_folio()
+   367	 * function, ntfs_read_block(), which in turn creates and reads in the buffers
+   368	 * associated with the folio asynchronously.
+   369	 *
+   370	 * For resident attributes, OTOH, ntfs_read_folio() fills @folio by copying the
+   371	 * data from the mft record (which at this stage is most likely in memory) and
+   372	 * fills the remainder with zeroes. Thus, in this case, I/O is synchronous, as
+   373	 * even if the mft record is not cached at this point in time, we need to wait
+   374	 * for it to be read in before we can do the copy.
+   375	 *
+   376	 * Return 0 on success and -errno on error.
+   377	 */
+ > 378	static int ntfs_read_folio(struct file *file, struct folio *folio)
+   379	{
+   380		struct page *page = &folio->page;
+   381		loff_t i_size;
+   382		struct inode *vi;
+   383		ntfs_inode *ni, *base_ni;
+   384		u8 *addr;
+   385		ntfs_attr_search_ctx *ctx;
+   386		MFT_RECORD *mrec;
+   387		unsigned long flags;
+   388		u32 attr_len;
+   389		int err = 0;
+   390	
+   391	retry_readpage:
+   392		BUG_ON(!PageLocked(page));
+   393		vi = page->mapping->host;
+   394		i_size = i_size_read(vi);
+   395		/* Is the page fully outside i_size? (truncate in progress) */
+   396		if (unlikely(page->index >= (i_size + PAGE_SIZE - 1) >>
+   397				PAGE_SHIFT)) {
+   398			zero_user(page, 0, PAGE_SIZE);
+   399			ntfs_debug("Read outside i_size - truncated?");
+   400			goto done;
+   401		}
+   402		/*
+   403		 * This can potentially happen because we clear PageUptodate() during
+   404		 * ntfs_writepage() of MstProtected() attributes.
+   405		 */
+   406		if (PageUptodate(page)) {
+   407			unlock_page(page);
+   408			return 0;
+   409		}
+   410		ni = NTFS_I(vi);
+   411		/*
+   412		 * Only $DATA attributes can be encrypted and only unnamed $DATA
+   413		 * attributes can be compressed.  Index root can have the flags set but
+   414		 * this means to create compressed/encrypted files, not that the
+   415		 * attribute is compressed/encrypted.  Note we need to check for
+   416		 * AT_INDEX_ALLOCATION since this is the type of both directory and
+   417		 * index inodes.
+   418		 */
+   419		if (ni->type != AT_INDEX_ALLOCATION) {
+   420			/* If attribute is encrypted, deny access, just like NT4. */
+   421			if (NInoEncrypted(ni)) {
+   422				BUG_ON(ni->type != AT_DATA);
+   423				err = -EACCES;
+   424				goto err_out;
+   425			}
+   426			/* Compressed data streams are handled in compress.c. */
+   427			if (NInoNonResident(ni) && NInoCompressed(ni)) {
+   428				BUG_ON(ni->type != AT_DATA);
+   429				BUG_ON(ni->name_len);
+   430				return ntfs_read_compressed_block(page);
+   431			}
+   432		}
+   433		/* NInoNonResident() == NInoIndexAllocPresent() */
+   434		if (NInoNonResident(ni)) {
+   435			/* Normal, non-resident data stream. */
+   436			return ntfs_read_block(page);
+   437		}
+   438		/*
+   439		 * Attribute is resident, implying it is not compressed or encrypted.
+   440		 * This also means the attribute is smaller than an mft record and
+   441		 * hence smaller than a page, so can simply zero out any pages with
+   442		 * index above 0.  Note the attribute can actually be marked compressed
+   443		 * but if it is resident the actual data is not compressed so we are
+   444		 * ok to ignore the compressed flag here.
+   445		 */
+   446		if (unlikely(page->index > 0)) {
+   447			zero_user(page, 0, PAGE_SIZE);
+   448			goto done;
+   449		}
+   450		if (!NInoAttr(ni))
+   451			base_ni = ni;
+   452		else
+   453			base_ni = ni->ext.base_ntfs_ino;
+   454		/* Map, pin, and lock the mft record. */
+   455		mrec = map_mft_record(base_ni);
+   456		if (IS_ERR(mrec)) {
+   457			err = PTR_ERR(mrec);
+   458			goto err_out;
+   459		}
+   460		/*
+   461		 * If a parallel write made the attribute non-resident, drop the mft
+   462		 * record and retry the read_folio.
+   463		 */
+   464		if (unlikely(NInoNonResident(ni))) {
+   465			unmap_mft_record(base_ni);
+   466			goto retry_readpage;
+   467		}
+   468		ctx = ntfs_attr_get_search_ctx(base_ni, mrec);
+   469		if (unlikely(!ctx)) {
+   470			err = -ENOMEM;
+   471			goto unm_err_out;
+   472		}
+   473		err = ntfs_attr_lookup(ni->type, ni->name, ni->name_len,
+   474				CASE_SENSITIVE, 0, NULL, 0, ctx);
+   475		if (unlikely(err))
+   476			goto put_unm_err_out;
+   477		attr_len = le32_to_cpu(ctx->attr->data.resident.value_length);
+   478		read_lock_irqsave(&ni->size_lock, flags);
+   479		if (unlikely(attr_len > ni->initialized_size))
+   480			attr_len = ni->initialized_size;
+   481		i_size = i_size_read(vi);
+   482		read_unlock_irqrestore(&ni->size_lock, flags);
+   483		if (unlikely(attr_len > i_size)) {
+   484			/* Race with shrinking truncate. */
+   485			attr_len = i_size;
+   486		}
+   487		addr = kmap_atomic(page);
+   488		/* Copy the data to the page. */
+   489		memcpy(addr, (u8*)ctx->attr +
+   490				le16_to_cpu(ctx->attr->data.resident.value_offset),
+   491				attr_len);
+   492		/* Zero the remainder of the page. */
+   493		memset(addr + attr_len, 0, PAGE_SIZE - attr_len);
+   494		flush_dcache_page(page);
+   495		kunmap_atomic(addr);
+   496	put_unm_err_out:
+   497		ntfs_attr_put_search_ctx(ctx);
+   498	unm_err_out:
+   499		unmap_mft_record(base_ni);
+   500	done:
+   501		SetPageUptodate(page);
+   502	err_out:
+   503		unlock_page(page);
+   504		return err;
+   505	}
+   506	
 
-If I were implementing this, I would rendezvous via stop_machine as usual.  Then I would set a flag or install a handler indicating that we are doing a microcode update, send NMI-to-self, and rendezvous in the NMI handler and do the update.
-
-> 2. Thomas (tglx) suggested that we could look into masking all the LVT
->    originating NMI's. Such as LINT1, Perf control LVT entries and such.
->    Since we are in the rendezvous loop, we don't need to worry about any
->    NMI IPI's generated by the OS.
->
->    The one we didn't have any control over is the ACPI mechanism of sending
->    notifications to kernel for Firmware First Processing (FFM). Apparently
->    it seems there is a PCH register that BIOS in SMI would write to
->    generate such an interrupt (ACPI GHES).
-> 3. This is a simpler option. OS registers an NMI handler and doesn't do any
->    NMI rendezvous dance. But if an NMI were to happen, we check if any of
->    the CPUs thread siblings have an update in progress. Only those CPUs
->    would take an NMI. The thread performing the wrmsr() will only take an
->    NMI after the completion of the wrmsr 0x79 flow.
->
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> ---
->  arch/x86/kernel/cpu/microcode/core.c | 88 +++++++++++++++++++++++++++-
->  1 file changed, 85 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/x86/kernel/cpu/microcode/core.c 
-> b/arch/x86/kernel/cpu/microcode/core.c
-> index d24e1c754c27..ec10fa2db8b1 100644
-> --- a/arch/x86/kernel/cpu/microcode/core.c
-> +++ b/arch/x86/kernel/cpu/microcode/core.c
-> @@ -40,6 +40,7 @@
->  #include <asm/cmdline.h>
->  #include <asm/setup.h>
->  #include <asm/mce.h>
-> +#include <asm/nmi.h>
-> 
->  #define DRIVER_VERSION	"2.2"
-> 
-> @@ -411,6 +412,10 @@ static int check_online_cpus(void)
-> 
->  static atomic_t late_cpus_in;
->  static atomic_t late_cpus_out;
-> +static atomic_t nmi_cpus;
-> +static atomic_t nmi_timeouts;
-> +
-> +static struct cpumask cpus_in_wait;
-> 
->  static int __wait_for_cpus(atomic_t *t, long long timeout)
->  {
-> @@ -433,6 +438,53 @@ static int __wait_for_cpus(atomic_t *t, long long timeout)
->  	return 0;
->  }
-> 
-> +static int ucode_nmi_cb(unsigned int val, struct pt_regs *regs)
-> +{
-> +	int cpu = smp_processor_id();
-> +	int timeout = 100 * NSEC_PER_USEC;
-> +
-> +	atomic_inc(&nmi_cpus);
-> +	if (!cpumask_test_cpu(cpu, &cpus_in_wait))
-> +		return NMI_DONE;
-> +
-> +	while (timeout < NSEC_PER_USEC) {
-> +		if (timeout < NSEC_PER_USEC) {
-> +			atomic_inc(&nmi_timeouts);
-> +			break;
-> +		}
-> +		ndelay(SPINUNIT);
-> +		timeout -= SPINUNIT;
-> +		touch_nmi_watchdog();
-> +		if (!cpumask_test_cpu(cpu, &cpus_in_wait))
-> +			break;
-> +	}
-> +	return NMI_HANDLED;
-> +}
-> +
-> +static void set_nmi_cpus(struct cpumask *wait_mask)
-> +{
-> +	int first_cpu, wait_cpu, cpu = smp_processor_id();
-> +
-> +	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
-> +	for_each_cpu(wait_cpu, topology_sibling_cpumask(cpu)) {
-> +		if (wait_cpu == first_cpu)
-> +			continue;
-> +		cpumask_set_cpu(wait_cpu, wait_mask);
-> +	}
-> +}
-> +
-> +static void clear_nmi_cpus(struct cpumask *wait_mask)
-> +{
-> +	int first_cpu, wait_cpu, cpu = smp_processor_id();
-> +
-> +	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
-> +	for_each_cpu(wait_cpu, topology_sibling_cpumask(cpu)) {
-> +		if (wait_cpu == first_cpu)
-> +			continue;
-> +		cpumask_clear_cpu(wait_cpu, wait_mask);
-> +	}
-> +}
-> +
->  /*
->   * Returns:
->   * < 0 - on error
-> @@ -440,7 +492,7 @@ static int __wait_for_cpus(atomic_t *t, long long timeout)
->   */
->  static int __reload_late(void *info)
->  {
-> -	int cpu = smp_processor_id();
-> +	int first_cpu, cpu = smp_processor_id();
->  	enum ucode_state err;
->  	int ret = 0;
-> 
-> @@ -459,6 +511,7 @@ static int __reload_late(void *info)
->  	 * the platform is taken to reset predictively.
->  	 */
->  	mce_set_mcip();
-> +
->  	/*
->  	 * On an SMT system, it suffices to load the microcode on one sibling of
->  	 * the core because the microcode engine is shared between the threads.
-> @@ -466,9 +519,17 @@ static int __reload_late(void *info)
->  	 * loading attempts happen on multiple threads of an SMT core. See
->  	 * below.
->  	 */
-> +	first_cpu = cpumask_first(topology_sibling_cpumask(cpu));
-> 
-> -	if (cpumask_first(topology_sibling_cpumask(cpu)) == cpu)
-> +	/*
-> +	 * Set the CPUs that we should hold in NMI until the primary has
-> +	 * completed the microcode update.
-> +	 */
-> +	if (first_cpu == cpu) {
-> +		set_nmi_cpus(&cpus_in_wait);
->  		apply_microcode_local(&err);
-> +		clear_nmi_cpus(&cpus_in_wait);
-> +	}
->  	else
->  		goto wait_for_siblings;
-> 
-> @@ -502,20 +563,41 @@ static int __reload_late(void *info)
->   */
->  static int microcode_reload_late(void)
->  {
-> -	int ret;
-> +	int ret = 0;
-> 
->  	pr_err("Attempting late microcode loading - it is dangerous and 
-> taints the kernel.\n");
->  	pr_err("You should switch to early loading, if possible.\n");
-> 
->  	atomic_set(&late_cpus_in,  0);
->  	atomic_set(&late_cpus_out, 0);
-> +	atomic_set(&nmi_cpus, 0);
-> +	atomic_set(&nmi_timeouts, 0);
-> +	cpumask_clear(&cpus_in_wait);
-> +
-> +	ret = register_nmi_handler(NMI_LOCAL, ucode_nmi_cb, NMI_FLAG_FIRST,
-> +				   "ucode_nmi");
-> +	if (ret) {
-> +		pr_err("Unable to register NMI handler\n");
-> +		goto done;
-> +	}
-> 
->  	ret = stop_machine_cpuslocked(__reload_late, NULL, cpu_online_mask);
->  	if (ret == 0)
->  		microcode_check();
-> 
-> +	unregister_nmi_handler(NMI_LOCAL, "ucode_nmi");
-> +
-> +	if (atomic_read(&nmi_cpus))
-> +		pr_info("%d CPUs entered NMI while microcode update"
-> +			"in progress\n", atomic_read(&nmi_cpus));
-> +
-> +	if (atomic_read(&nmi_timeouts))
-> +		pr_err("Some CPUs [%d] entered NMI and timedout waiting for its"
-> +		       " mask to be cleared\n", atomic_read(&nmi_timeouts));
-> +
->  	pr_info("Reload completed, microcode revision: 0x%x\n", 
-> boot_cpu_data.microcode);
-> 
-> +done:
->  	return ret;
->  }
-> 
-> -- 
-> 2.32.0
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
