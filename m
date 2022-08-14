@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D364C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADF0C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241741AbiHNPuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
+        id S241853AbiHNPuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241939AbiHNPqs (ORCPT
+        with ESMTP id S241964AbiHNPqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:46:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889FAE0C3;
-        Sun, 14 Aug 2022 08:35:08 -0700 (PDT)
+        Sun, 14 Aug 2022 11:46:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F269BBF6;
+        Sun, 14 Aug 2022 08:35:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 288D1B80B27;
-        Sun, 14 Aug 2022 15:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C3CC433D7;
-        Sun, 14 Aug 2022 15:35:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3866260DB7;
+        Sun, 14 Aug 2022 15:35:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7424C433C1;
+        Sun, 14 Aug 2022 15:35:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491305;
-        bh=LZIZyf0FE07OAIZ/aPC5nFYOADhyKlFyy9n8rGNcgA8=;
+        s=k20201202; t=1660491312;
+        bh=/MXTzw3n6Y/+W//xvT4vPP3C/U0lrPd6wykSKx+nx6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iuei/dYwZJqkX27h65aNCcVRN3Fw7/yxDjwMVP7swDW9qnrIpwOOIsbqIf6t4R0gr
-         c+rzXKFAvXB8dabvyJHL0GWhNm3nDR1grcgBsdGl2v7IFCme/8kE3+Mvb7H5n0nb/k
-         JJtnqBJdpeZAXHhqaZUmCr+5qo8xbZ7NGVteYz7ZFXxPNiDLQNTeTRfbCpVtqzKoVh
-         L/qyWEu4s+lwMkcUF4oZX7WWPtcX2YGKNxFZ3IgLja+BqLo5xIzJ1F1thj+whXXs95
-         ROvw210m3fgZB1DSVhCf7S1+BsnHew2XFtXFzOS9AwPSJLUqprqzS6d+d/r2AJ8aZB
-         257xYXfqYKuWQ==
+        b=JjJLROSmaCdjGn9gm8ubh9szI9sHXjWgJcRtQbRiOD14/wFrs3du9d8zWot8Q2fax
+         UAOd4t/nmA22VbEB8lRN3C7is1ifHE8aEoOxSAL0WhP08hMgvgwzMtD+0NUc3QqPsO
+         s6NkyZXvtpOVU8DXxAYg1Mbn85duQck35lDZmwmZHz/3DSa+2McCtho3kPreiI/2XC
+         uQFIdoskDWWOXz+SMTiXQ2UdxZYMz0EM6g9VvRNRHTlqCrUnXD0I2dFvVTV+1TPsE0
+         qbAz+gL+6HV1L5FPKpwdwGFEZbDmMcQBa0jNAOw+EfvhQrQZrhY7tN+SpFSNsjpZqg
+         JjV5LRrwyd93g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jozef Martiniak <jomajm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        stern@rowland.harvard.edu, hbh25y@gmail.com, axboe@kernel.dk,
-        ira.weiny@intel.com, rdunlap@infradead.org, mingo@kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/31] gadgetfs: ep_io - wait until IRQ finishes
-Date:   Sun, 14 Aug 2022 11:34:17 -0400
-Message-Id: <20220814153431.2379231-17-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        linux@roeck-us.net, linux-um@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 21/31] um: add "noreboot" command line option for PANIC_TIMEOUT=-1 setups
+Date:   Sun, 14 Aug 2022 11:34:21 -0400
+Message-Id: <20220814153431.2379231-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153431.2379231-1-sashal@kernel.org>
 References: <20220814153431.2379231-1-sashal@kernel.org>
@@ -54,35 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jozef Martiniak <jomajm@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
+[ Upstream commit dda520d07b95072a0b63f6c52a8eb566d08ea897 ]
 
-after usb_ep_queue() if wait_for_completion_interruptible() is
-interrupted we need to wait until IRQ gets finished.
+QEMU has a -no-reboot option, which halts instead of reboots when the
+guest asks to reboot. This is invaluable when used with
+CONFIG_PANIC_TIMEOUT=-1 (and panic_on_warn), because it allows panics
+and warnings to be caught immediately in CI. Implement this in UML too,
+by way of a basic setup param.
 
-Otherwise complete() from epio_complete() can corrupt stack.
-
-Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
-Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/legacy/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/um/os-Linux/skas/process.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index 454860d52ce7..cd097474b6c3 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -362,6 +362,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
- 				spin_unlock_irq (&epdata->dev->lock);
+diff --git a/arch/um/os-Linux/skas/process.c b/arch/um/os-Linux/skas/process.c
+index 94a7c4125ebc..eecde73b2e78 100644
+--- a/arch/um/os-Linux/skas/process.c
++++ b/arch/um/os-Linux/skas/process.c
+@@ -5,6 +5,7 @@
+  */
  
- 				DBG (epdata->dev, "endpoint gone\n");
-+				wait_for_completion(&done);
- 				epdata->status = -ENODEV;
- 			}
- 		}
+ #include <stdlib.h>
++#include <stdbool.h>
+ #include <unistd.h>
+ #include <sched.h>
+ #include <errno.h>
+@@ -644,10 +645,24 @@ void halt_skas(void)
+ 	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_HALT);
+ }
+ 
++static bool noreboot;
++
++static int __init noreboot_cmd_param(char *str, int *add)
++{
++	noreboot = true;
++	return 0;
++}
++
++__uml_setup("noreboot", noreboot_cmd_param,
++"noreboot\n"
++"    Rather than rebooting, exit always, akin to QEMU's -no-reboot option.\n"
++"    This is useful if you're using CONFIG_PANIC_TIMEOUT in order to catch\n"
++"    crashes in CI\n");
++
+ void reboot_skas(void)
+ {
+ 	block_signals_trace();
+-	UML_LONGJMP(&initial_jmpbuf, INIT_JMP_REBOOT);
++	UML_LONGJMP(&initial_jmpbuf, noreboot ? INIT_JMP_HALT : INIT_JMP_REBOOT);
+ }
+ 
+ void __switch_mm(struct mm_id *mm_idp)
 -- 
 2.35.1
 
