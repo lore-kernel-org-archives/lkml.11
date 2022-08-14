@@ -2,197 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86058C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3129DC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239806AbiHNO1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
+        id S239503AbiHNOiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231743AbiHNO1l (ORCPT
+        with ESMTP id S231892AbiHNOiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:27:41 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACF911C27
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:27:39 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id 11so822025ybu.0
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:27:39 -0700 (PDT)
+        Sun, 14 Aug 2022 10:38:03 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B441581B;
+        Sun, 14 Aug 2022 07:38:01 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id bs25so6414387wrb.2;
+        Sun, 14 Aug 2022 07:38:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=BDAVIhnSkgENDUQ7IfYC3/2QkAEAsNSSEneZku1M24s=;
-        b=p0gfoBw4ZgOT1ksw69dVgdZR0JT7daeCJ16dH8wcxMLnRGqjA3uhDchB1lA7TQfaYX
-         BrQw9XUmookElN0tbP/iD4tNxHbscwSregEaqi3xk9KU+HnauYP7IDU38X3ZZJGiM3hc
-         2cUIIAVEHjFscy2B3j5HOgzkZTsMCx9rw/txu7rZ55uaJm4jlwQc7RspbXg/YAloW0C/
-         0svWUNrFbrZiZ7KzaV5kWEWoFtC/V4k27Ur2X/IFi253YZhnsFFyEBoQ+jjOu06CSB77
-         L5qDaCYzVqdwx8ZM/qx64yS4r691EzmylMr4OT3lTcBSK98a1Kt2wCd0iOF2OHsyy1IV
-         Yv8g==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
+        bh=espo5Jw5sWu9O5noOsv3BtZvfu0CnVnvAhoBUKVmfr0=;
+        b=PJoPqZAYOVZ0/HM/DD7vPkhRRMoCL663palCKJjlwBO+bepesRU6eX6PEEsFslPnQE
+         7anhly6UjGx2p8Mt3BOAjipJ4BpJ4vnRxNp5OuV6tnDSMeP4lTo/wfznkRWd+5skeZYX
+         MglyrpMD6tbjzPSD2fxBiokrrneT3re5lJj4V11TrdFelL/GKcRF39z1zsEByxUvZjXD
+         IANWUEzy8l17KyMZlyyIgbeti1tSL+d6yz8UaBEHEkkWEHaSR8z+b5VCfBoD5YFbjtB2
+         fa0ytVBJaaC526pL4jzIc7oXTZnJ9yzHO8o1VXPbUWoWWc+rMRzSzw7W6Z/T5FSwLlZP
+         Q65w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=BDAVIhnSkgENDUQ7IfYC3/2QkAEAsNSSEneZku1M24s=;
-        b=h8irLGKgl7i64g4joOVZhXaoQYLYl32+tSfAC+TcfRz+dgTiOxUPW2cXf42nYrPWMH
-         +OiNfuvMjQ5YCGFOwmDhgg12b4efiYiSmml1/nus4b6+rHd+FwgitN4xp8xgJriL3Ndg
-         UorelNW8bjR/dr3oMNMfF8643FaVjA/XYotyu9Xr+aKl1SpsroFXS497n0VeaEsk8YTR
-         F2c7Km+BFB1msTdmJ9Nydemuh6ode3RX8jkYxVjxCxaEaOzqeHwii8DTpg4qHmu3+peN
-         VbgubKqciSFUdxuWHhvsuy5Nma0ONBw8Sr8AXMisqfvCCWC2v55Mek6Kpu6LqTMs8edB
-         dIhw==
-X-Gm-Message-State: ACgBeo0X+ewGpCL8moUt/3R6BSC49IoRX98iLjk/oHiYyu2WjHJnUMIg
-        XiPymCugeFR64tAdJhDF3cYJLVShD1U7vvxulp7Pvw==
-X-Google-Smtp-Source: AA6agR5oRn4CSLlwRnezXr30VfLoZdKWLSMB++KAjfSH1Z47K3NbFei2uLb/C/FS4mNgtaqJbSfnADfGVfrcqLFcy4o=
-X-Received: by 2002:a25:cb05:0:b0:67c:29a8:cb9c with SMTP id
- b5-20020a25cb05000000b0067c29a8cb9cmr9640988ybg.135.1660487259148; Sun, 14
- Aug 2022 07:27:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <1642587791-13222-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1642587791-13222-4-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <5b6d3e7f-c638-fdc7-5080-44d34abed610@ideasonboard.com> <a3ed3a2c-86ce-1c85-e8aa-c08b54ad1a43@gmail.com>
- <CAMSo37XdZSZUHLWJj373DdtOBA9=uD8SJ7ywWCYF2pU1i4cB_g@mail.gmail.com> <ed4fe238-4fcd-1253-658f-18fe1e1f13b0@gmail.com>
-In-Reply-To: <ed4fe238-4fcd-1253-658f-18fe1e1f13b0@gmail.com>
-From:   Yongqin Liu <yongqin.liu@linaro.org>
-Date:   Sun, 14 Aug 2022 22:27:27 +0800
-Message-ID: <CAMSo37V3U5nYng77jzSnKH73CTLhGYQJu11Q5wRt289se5nFJw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] drm: omapdrm: Do no allocate non-scanout GEMs through DMM/TILER
-To:     Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Cc:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>, tomba@kernel.org,
-        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        merlijn@wizzup.org, tony@atomide.com,
-        "Bajjuri, Praneeth" <praneeth@ti.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=espo5Jw5sWu9O5noOsv3BtZvfu0CnVnvAhoBUKVmfr0=;
+        b=QwqsGksw5d+AcS1pnLqG7dvmOXmBcjJH0gC3pfmRVpLrINYe2OLkDFCtpG6zv0DzBJ
+         YB4Sikb9rYIm9Gv3J+kdMxHb9+qxAvXXEVVKWUGGWV72f7/C57GR2a0TtGYSRnA+H6RA
+         g+EXuwbzGUC10UGPTD+RYqmdXhc7nBNrhTgU4ih79ybc2VZxJsiSGX56Vd4cfBpWyAN4
+         g302h7/tc20Gz0vD9xCoXZ5Own17JOv77du86EXKwdpxPWOCIbC4UXUuqSbWKf+lhN/T
+         y0joLqsrI/2bDrpsUVEQfnz7TFWYv8HnrxXqZKm6RLmWqQKH1vccQXHKiZ9ZgYXPPqC2
+         1WmQ==
+X-Gm-Message-State: ACgBeo1juV/IbVc+i3YTzN4kwoJTlyfFOpxJ3bKA+uAFjelVd0yQeTSc
+        T6M5XNZVaEiB+1n31uXKze8=
+X-Google-Smtp-Source: AA6agR7dxhtvBR7RZSWcvPn39LFFZm1dHGpaIpdtlSL3Uf1PD6Pa3ToS4qQCoim5h3SoH9xmqteo6A==
+X-Received: by 2002:a5d:64e9:0:b0:220:7dd7:63eb with SMTP id g9-20020a5d64e9000000b002207dd763ebmr6460123wri.590.1660487880069;
+        Sun, 14 Aug 2022 07:38:00 -0700 (PDT)
+Received: from [192.168.90.207] (188.red-83-35-57.dynamicip.rima-tde.net. [83.35.57.188])
+        by smtp.gmail.com with ESMTPSA id h13-20020a5d430d000000b00224f605f39dsm3748037wrq.76.2022.08.14.07.37.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 07:37:59 -0700 (PDT)
+Message-ID: <53b0132936a98943fb4284c4f72e3f4e6faa402d.camel@gmail.com>
+Subject: Re: [PATCH v5 3/5] iio: pressure: bmp280: Add support for BMP380
+ sensor family
+From:   Angel Iglesias <ang.iglesiasg@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        linux-kernel@vger.kernel.org
+Date:   Sun, 14 Aug 2022 16:37:58 +0200
+In-Reply-To: <20220814151512.097c7779@jic23-huawei>
+References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
+         <462251c4bca30b53f06307043ad52d859eb8d5c1.1659872590.git.ang.iglesiasg@gmail.com>
+         <20220814151512.097c7779@jic23-huawei>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 (3.42.4-2.module_f35+14217+587aad52) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, IvayIo
+On Sun, 2022-08-14 at 15:15 +0100, Jonathan Cameron wrote:
+> On Sun,  7 Aug 2022 13:55:52 +0200
+> Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+> 
+> > Adds compatibility with the new generation of this sensor, the BMP380
+> > 
+> > Includes basic sensor initialization to do pressure and temp
+> > measurements and allows tuning oversampling settings for each channel.
+> > 
+> > The compensation algorithms are adapted from the device datasheet and
+> > the repository https://github.com/BoschSensortec/BMP3-Sensor-API
+> > 
+> > Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+> 
+> One additional comment from me inline.
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> 
+> >         }
+> > @@ -1124,6 +1471,13 @@ int bmp280_common_probe(struct device *dev,
+> >                 return -EINVAL;
+> >         }
+> >  
+> > +       /* BMP3xx requires soft-reset as part of initialization */
+> > +       if (chip_id == BMP380_CHIP_ID) {
+> 
+> I'd prefer this to be based on a flag in chip_info so that we can
+> trivially add it to future devices by just setting that flag for the
+> chip_info added for the new device.
 
-Thanks very much for the reply!
+How a new init or preinit callback? For now only BMP380 chip would use it, but I
+would like to get my hands on a BMP390 and the new BMP580 and extend the driver
+to support for them.
 
-On Sat, 13 Aug 2022 at 14:58, Ivaylo Dimitrov
-<ivo.g.dimitrov.75@gmail.com> wrote:
->
-> Hi Liu,
->
-> On 12.08.22 =D0=B3. 7:35 =D1=87., Yongqin Liu wrote:
-> > Hi, Ivaylo, Tomi
-> >
-> > We have one X15 Android AOSP master build, it could not have the home
-> > screen displayed
-> > on the hdmi monitor connected with this change, with the following
-> > message printed on the serial console
-> >      [  607.404205] omapdrm omapdrm.0: Failed to setup plane plane-0
-> >      [  607.410522] omapdrm omapdrm.0: Failed to setup plane plane-1
-> >      [  607.416381] omapdrm omapdrm.0: Failed to setup plane plane-2
-> >      [  607.422088] omapdrm omapdrm.0: Failed to setup plane plane-3
-> >
-> >     # for details, please check the link here: http://ix.io/47m1
-> >
-> > It will work with home screen displayed on the hdmi monitor if this
-> > change is reverted.
-> >
-> > Is this the broken problem you talked about here?
-> >
-> > And could you please give some suggestions on how to have the x15
-> > Android build work with this change?
-> >
->
-> Make sure scanout (i.e. those to be displayed) buffers are actually
-> allocated as such - OMAP_BO_SCANOUT flag must be set when calling
-> omap_bo_new().
+> > +               ret = bmp380_cmd(data, BMP380_CMD_SOFT_RESET);
+> > +               if (ret < 0)
+> > +                       return ret;
+> > +       }
+> > +
+> >         ret = data->chip_info->chip_config(data);
+> >         if (ret < 0)
+> >                 return ret;
+> 
 
-I am not familiar with this area, I am sorry if I asked quite silly questio=
-ns:(
-I googled omap_bo_new, and found it's a function of libdrm here[1], is
-it what you meant here?
-
-If it's the omap_bo_new that we should pass OMAP_BO_SCANOUT when it is call=
-ed,
-then is it the correct way to update omap_bo_new to add the OMAP_BO_SCANOUT=
- flag
-before it calls omap_bo_new_impl?
-
-And another question is that, since the userspace(libdrm) will be used
-to work with different kernel versions,
-like the old 4.14, 4.19, etc, do you think there will be problem to
-pass  OMAP_BO_SCANOUT
-from the userspace side with the old kernels(which does not have this chang=
-e)?
-does this change need to be backported to the old kernel versions?
-
-And the last question is that, omap_bo_new might be called by some
-property binaries what not everyone
-could get the source to update, for such case what's your suggestions?
-
-[1]: https://gitlab.freedesktop.org/mesa/drm/-/blob/main/omap/omap_drm.c#L2=
-27
-
-Thanks,
-Yongqin Liu
-> > On Thu, 17 Feb 2022 at 23:29, Ivaylo Dimitrov
-> > <ivo.g.dimitrov.75@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 17.02.22 =D0=B3. 14:46 =D1=87., Tomi Valkeinen wrote:
-> >>> Hi,
-> >>>
-> >>> On 19/01/2022 12:23, Ivaylo Dimitrov wrote:
-> >>>> On devices with DMM, all allocations are done through either DMM or
-> >>>> TILER.
-> >>>> DMM/TILER being a limited resource means that such allocations will =
-start
-> >>>> to fail before actual free memory is exhausted. What is even worse i=
-s
-> >>>> that
-> >>>> with time DMM/TILER space gets fragmented to the point that even if =
-we
-> >>>> have
-> >>>> enough free DMM/TILER space and free memory, allocation fails becaus=
-e
-> >>>> there
-> >>>> is no big enough free block in DMM/TILER space.
-> >>>>
-> >>>> Such failures can be easily observed with OMAP xorg DDX, for example=
- -
-> >>>> starting few GUI applications (so buffers for their windows are
-> >>>> allocated)
-> >>>> and then rotating landscape<->portrait while closing and opening new
-> >>>> windows soon results in allocation failures.
-> >>>>
-> >>>> Fix that by mapping buffers through DMM/TILER only when really neede=
-d,
-> >>>> like, for scanout buffers.
-> >>>
-> >>> Doesn't this break users that get a buffer from omapdrm and expect it=
- to
-> >>> be contiguous?
-> >>>
-> >>
-> >> If you mean dumb buffer, then no, this does not break users as dumb
-> >> buffers are allocated as scanout:
-> >>
-> >> https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/omapdrm=
-/omap_gem.c#L603
-> >>
-> >> If you mean omap_bo allocated buffers, then if users want
-> >> linear(scanout) buffer, then they request it explicitly by passing
-> >> OMAP_BO_SCANOUT.
-> >>
-> >> Ivo
-> >
-> >
-> >
-
-
-
---=20
-Best Regards,
-Yongqin Liu
----------------------------------------------------------------
-#mailing list
-linaro-android@lists.linaro.org
-http://lists.linaro.org/mailman/listinfo/linaro-android
+Kind regards,
+Angel
