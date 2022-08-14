@@ -2,99 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33881C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D93C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:05:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238880AbiHNOEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
+        id S238967AbiHNOF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiHNOEr (ORCPT
+        with ESMTP id S238931AbiHNOFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:04:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8239260F;
-        Sun, 14 Aug 2022 07:04:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BD90601C5;
-        Sun, 14 Aug 2022 14:04:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01197C433D6;
-        Sun, 14 Aug 2022 14:04:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660485885;
-        bh=Ly4O0mOylSo1e7bqqPQz8OkjRFjE9+N+Pi2tqeszdVs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IhSUvjJSY0EH+ADokfbq1kq4yEhlNsCMNMUa+AWc++XxuWiT8mX4++apsCN4eS89V
-         7JiYEzebDW31JM+MJuNH7XNUOuL7/ynYQ/5MXKjtEr+z62f2euYdzih7fPOf/+V5lj
-         PvKb5VeO6CEXMqbmrBPAaeCtjrtmGr6EsndDdnbpmNUeTothXTVM7FpzbWF/Y1UQal
-         u1gx/I+5CVCsP4kzpPWdClf0ymiz6GInqCsQLEyjXIp7w1mK8zoT0aeFi+1rgkh3ss
-         lVWdFXG+80UQyAvrSQOiOgP1E+vbes/88LmBnQY3Zi2oPn/BW8p1mvnFO6iYM+onRd
-         flYQbbW/sq5xQ==
-Date:   Sun, 14 Aug 2022 15:15:12 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Angel Iglesias <ang.iglesiasg@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/5] iio: pressure: bmp280: Add support for BMP380
- sensor family
-Message-ID: <20220814151512.097c7779@jic23-huawei>
-In-Reply-To: <462251c4bca30b53f06307043ad52d859eb8d5c1.1659872590.git.ang.iglesiasg@gmail.com>
-References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
-        <462251c4bca30b53f06307043ad52d859eb8d5c1.1659872590.git.ang.iglesiasg@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 14 Aug 2022 10:05:25 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F3E265F
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:05:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660485923; x=1692021923;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9fAAJ+0Y6IupPR1Maei1hF/1z3rRhAIksVvzcmYEB40=;
+  b=NBa7eQzEKXtZLSQYm8ok44aZczJwW+cZEArb4bvt8H33xD21rjv5Kequ
+   2QvmjnMI88XbmhfEzg8ibBaPuaVo/5H/bG7464btGwKcu7Xp4/tXqLPI6
+   pDzLP5T+BAtVOON6RSQig3bwxt3gk0AQFWonv9A816j31bYqR3xysutCR
+   URnx2xj9RzziT33LaDDsOj+jGbAHpAYqqT10GTVB+6iW0gI+GZEw/502H
+   bM+rWhKkzir/TiPZbrlZhpArx1LUXKEulxe+YvJ1OJtlIuzRzM3Z7qdzy
+   6Puwgv/Y6jXSDAg7IuCKtdnEjKxOBqZCYbFteluasuxp/e0WV6uVqLEDf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="278784433"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="278784433"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 07:05:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="639385151"
+Received: from sse-cse-haiyue-nuc.sh.intel.com ([10.239.241.114])
+  by orsmga001.jf.intel.com with ESMTP; 14 Aug 2022 07:05:20 -0700
+From:   Haiyue Wang <haiyue.wang@intel.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, david@redhat.com, linmiaohe@huawei.com,
+        ying.huang@intel.com, songmuchun@bytedance.com,
+        naoya.horiguchi@linux.dev, alex.sierra@amd.com,
+        Haiyue Wang <haiyue.wang@intel.com>
+Subject: [PATCH v2 0/3] fix follow_page related issues
+Date:   Sun, 14 Aug 2022 22:05:31 +0800
+Message-Id: <20220814140534.363348-1-haiyue.wang@intel.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220812084921.409142-1-haiyue.wang@intel.com>
+References: <20220812084921.409142-1-haiyue.wang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun,  7 Aug 2022 13:55:52 +0200
-Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+v2: Add the Non-LRU pages fix with two patches, so that
+    'mm: migration: fix the FOLL_GET' can be applied directly
+    on linux-5.19 stable branch.
 
-> Adds compatibility with the new generation of this sensor, the BMP380
-> 
-> Includes basic sensor initialization to do pressure and temp
-> measurements and allows tuning oversampling settings for each channel.
-> 
-> The compensation algorithms are adapted from the device datasheet and
-> the repository https://github.com/BoschSensortec/BMP3-Sensor-API
-> 
-> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+Haiyue Wang (3):
+  mm: revert handling Non-LRU pages returned by follow_page
+  mm: migration: fix the FOLL_GET failure on following huge page
+  mm: handling Non-LRU pages returned by follow_page
 
-One additional comment from me inline.
+ mm/huge_memory.c |  4 ++--
+ mm/ksm.c         | 16 +++++++++++++---
+ mm/migrate.c     | 20 +++++++++++++++-----
+ 3 files changed, 30 insertions(+), 10 deletions(-)
 
-Thanks,
-
-Jonathan
-
-
->  	}
-> @@ -1124,6 +1471,13 @@ int bmp280_common_probe(struct device *dev,
->  		return -EINVAL;
->  	}
->  
-> +	/* BMP3xx requires soft-reset as part of initialization */
-> +	if (chip_id == BMP380_CHIP_ID) {
-
-I'd prefer this to be based on a flag in chip_info so that we can
-trivially add it to future devices by just setting that flag for the
-chip_info added for the new device.
-
-> +		ret = bmp380_cmd(data, BMP380_CMD_SOFT_RESET);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
->  	ret = data->chip_info->chip_config(data);
->  	if (ret < 0)
->  		return ret;
+-- 
+2.37.2
 
