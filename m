@@ -2,146 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E48C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9256C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 17:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241580AbiHNQ7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
+        id S239709AbiHNRA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 13:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242802AbiHNQ7U (ORCPT
+        with ESMTP id S241340AbiHNQ7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:59:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C40AB483;
-        Sun, 14 Aug 2022 09:54:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59467B80B78;
-        Sun, 14 Aug 2022 16:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67363C433C1;
-        Sun, 14 Aug 2022 16:54:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660496062;
-        bh=IwUdBLHMT3ieqA5j2bOHu/ZJtDZ4uf4XW2Ju/9Ex+yo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uqOmZ+Yq+YKTd6ZVLoxx/G483wJvouziDzDIKizNsLQcu40Ov5qUPrQP5GZw5y1F0
-         zGm8j4PACCjh5mpqS2ICkfpGNPsxGkYuSu0GfD7oZ9+VC8Ret6cNrBuQFMsa5f7WFF
-         lGhDI45L/liNCNDuMxr4njl0xn0LBclu/TcURiN405YBz9QFiLa45tyjgxhqd3mP/w
-         C3y5tmjozxOxpSo7JQx1GLgrY90O9TT7uzKvXETL8tdyZpqJs8xkxl9TcDuy0hUB3e
-         0myZRgD3INOhiXLEX+7o/KsC7WSYSd4ebtDUCLV+kMXJJZxzpOkS8SmQg3qtF7npfL
-         F2PkBY8Tn9TUg==
-Date:   Sun, 14 Aug 2022 18:04:51 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     andy.shevchenko@gmail.com, hadess@hadess.net, hdegoede@redhat.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: Add new event type gesture and use
- direction for single and double tap
-Message-ID: <20220814180451.44a27126@jic23-huawei>
-In-Reply-To: <20220813071803.4692-2-jagathjog1996@gmail.com>
-References: <20220813071803.4692-1-jagathjog1996@gmail.com>
-        <20220813071803.4692-2-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 14 Aug 2022 12:59:50 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A3D248E6;
+        Sun, 14 Aug 2022 09:56:23 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id qn6so9982933ejc.11;
+        Sun, 14 Aug 2022 09:56:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3FPcPJtSj/bElkQiP9PnLcaKYbdRrJQOnxh5GM0k2J8=;
+        b=jIhzROlIbZmReGLhU1yiB9ifnYNpK7wPMtsEhXldCXAgr8Rl8UiEDggdP71dGuTbS2
+         vlO4HaLZtyD2uYq1DAk8mLwgDaeBSkNLaZkdvKKMyK7WzqdJQXz2vx6Xay0pd7Z7sDx1
+         nsyUwCQiqqprl2sTAnh0An7a16wwTTiwXAEsyVymr4pYykSW49E1DE8uVt3MG/YM2vIp
+         QsVf4SfoxVwN3OrtvQFfukbQg7QdjKv5I3P3bzFBSxC7qFPIVninGAyHPs/jVwHE5irt
+         1f/knX5O8pcdB4DCux0gS+hCAGcEi+RbECkkWC0o6dh6HCEID2zNvPjwDehPQmrbb0Ie
+         b1Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3FPcPJtSj/bElkQiP9PnLcaKYbdRrJQOnxh5GM0k2J8=;
+        b=Li01OkcYXYSf57WzGPbsiAAJ30+R/4vCNVPBf/9HpXKHJJ8rUs/6CecDWZb+tth0em
+         SupTCGuAQ8C7C9U7hozVLNz5vNvuLfsCXo2rDDTu1T8KT9i54NXAe9nwwkyuAijncJd2
+         PN4Z2Y9+l7U3dr93APKGhAqOw+wSsDj9/zjqYAF8Z4sxYsWwXbuNGpa4z8yjf2dt0oqD
+         /ngXITw6ywDjw+RqMez4XLrLIs9fqgKHw09ZGTL91DHOFCqwTX1AFmTs8KYb1byYnE5N
+         pf1z+yToE47gCzvcavEVm6F1CBUt6Ic+sdVIXQwUZH3eWO/jxlmSnj/QV96KYTw2vfy+
+         jH8A==
+X-Gm-Message-State: ACgBeo3Rx407GcPCWQ4qkPkVU2f4vJx8w5q6bnYm9MgqF6SACBEBxa0V
+        LZd2YOezvC059TGmNI2Kv4GBETxV/UG+SSLoSzQ=
+X-Google-Smtp-Source: AA6agR4KRezlsVlNGcVNG12SydHF7/Af523+ZOD9iAijtLg+m6b2EPZib0GbeQ98ybmVhtVI16y8jh9PJCtnXHLMyzU=
+X-Received: by 2002:a17:907:7241:b0:734:b282:184b with SMTP id
+ ds1-20020a170907724100b00734b282184bmr8200009ejc.445.1660496181572; Sun, 14
+ Aug 2022 09:56:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220802034729.2566787-1-haowenchao@huawei.com> <3ba71030-982b-c98b-78ee-ceca74da3b57@oracle.com>
+In-Reply-To: <3ba71030-982b-c98b-78ee-ceca74da3b57@oracle.com>
+From:   wenchao hao <haowenchao22@gmail.com>
+Date:   Mon, 15 Aug 2022 00:56:10 +0800
+Message-ID: <CAOptpSPLSbrQ8hgr275Ds7fwcBA_W9jYt0SFfhV-npPaz08S7g@mail.gmail.com>
+Subject: Re: [PATCH v3] scsi: iscsi: Fix multiple iscsi session unbind event
+ sent to userspace
+To:     Mike Christie <michael.christie@oracle.com>
+Cc:     Wenchao Hao <haowenchao@huawei.com>, Lee Duncan <lduncan@suse.com>,
+        Chris Leech <cleech@redhat.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        open-iscsi@googlegroups.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linfeilong@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 13 Aug 2022 12:48:02 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
+On Fri, Aug 12, 2022 at 12:06 PM Mike Christie
+<michael.christie@oracle.com> wrote:
+>
+> On 8/1/22 10:47 PM, Wenchao Hao wrote:
+> > I found an issue that kernel would send ISCSI_KEVENT_UNBIND_SESSION
+> > for multiple times which should be fixed.
+> >
+> > This patch introduce target_state in iscsi_cls_session to make
+> > sure session would send only one ISCSI_KEVENT_UNBIND_SESSION.
+> >
+> > But this would break issue fixed in commit 13e60d3ba287 ("scsi: iscsi:
+> > Report unbind session event when the target has been removed"). The issue
+> > is iscsid died for any reason after it send unbind session to kernel, once
+> > iscsid restart again, it loss kernel's ISCSI_KEVENT_UNBIND_SESSION event.
+> >
+> > Now kernel think iscsi_cls_session has already sent an
+> > ISCSI_KEVENT_UNBIND_SESSION event and would not send it any more. Which
+> > would cause userspace unable to logout. Actually the session is in
+> > invalid state(it's target_id is INVALID), iscsid should not sync this
+> > session in it's restart.
+> >
+> > So we need to check session's target state during iscsid restart,
+> > if session is in unbound state, do not sync this session and perform
+> > session teardown. It's reasonable because once a session is unbound, we
+> > can not recover it any more(mainly because it's target id is INVALID)
+> >
+>
+> I think we are ok now. Do you have a link to the userspace parts so
+> I can make sure we have everything covered now?
 
-> Add new event type for tap called gesture and the direction can be used
-> to differentiate single and double tap. This may be used by accelerometer
-> sensors to express single and double tap events. For directional tap,
-> modifiers like IIO_MOD_(X/Y/Z) can be used along with singletap and
-> doubletap direction.
-> 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-Hi Jagath,
-
-This ABI is definitely something I want more eyes than ours on, so
-whatever happens I'll leave it on the list for a few weeks.
-
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 41 +++++++++++++++++++++++++
->  drivers/iio/industrialio-event.c        |  7 ++++-
->  include/linux/iio/types.h               |  2 ++
->  include/uapi/linux/iio/types.h          |  3 ++
->  tools/iio/iio_event_monitor.c           |  8 ++++-
->  5 files changed, 59 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index e81ba6f5e1c8..54cb925f714c 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -2038,3 +2038,44 @@ Description:
->  		Available range for the forced calibration value, expressed as:
->  
->  		- a range specified as "[min step max]"
-> +
-> +What:		/sys/.../events/in_accel_gesture_singletap_en
-> +What:		/sys/.../events/in_accel_gesture_doubletap_en
-> +KernelVersion:	5.21
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Device generates an event on a single or double tap.
-> +
-> +What:		/sys/.../events/in_accel_gesture_singletap_value
-> +What:		/sys/.../events/in_accel_gesture_doubletap_value
-> +KernelVersion:	5.21
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Specifies the threshold value that the device is comparing
-> +		against to generate the tap gesture event. Units and exact
-> +		meaning of value are device specific.
-
-I wonder if we should list a direction?  As in smaller is more sensitive?
-(at least to first approximation)
-That way a user would at least be able to consistently decide if they should
-raise or lower the number to get the perf the want.
-
-> +
-> +What:		/sys/.../events/in_accel_gesture_singletap_reset_timeout
-> +What:		/sys/.../events/in_accel_gesture_doubletap_reset_timeout
-> +KernelVersion:	5.21
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Specifies the timeout value in seconds for the tap detector
-> +		to not to look for another tap event after the event as
-> +		occoured. Basically the minimum quiet time between the two
-spelling.  occured
-
-> +		single-tap's or two double-tap's.
-> +
-> +What:		/sys/.../events/in_accel_gesture_doubletap_tap_2min_delay
-
-I'm not sure this naming is intuitive enough. Might be a simple
-as doubletap_tap2_min_delay?  My brain didn't parse 2min correctly.
-
-This one is a bit odd, so definitely want to hear more view points on whether
-this is general enough to cover sensors and intuitive enough that people
-have some hope of setting it right.
-
-> +KernelVersion:	5.21
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Specifies the minimum quiet time in seconds between the two
-> +		taps of a double tap.
-> +
-> +What:		/sys/.../events/in_accel_gesture_maxtomin_time
-> +KernelVersion:	5.21
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Specifies the maximum time difference allowed between upper
-> +		and lower peak of tap to consider it as the valid tap event.
-> +		Units in seconds.
-Needs to be associated with 'tap' in the naming.
-Easiest is probably only to define it as
-singletap_maxtomin_time + doubletap_maxtomin_time and not have the
-shared version as we'd lose the 'tap' part of the name.
-
-
+I updated the PR on github: https://github.com/open-iscsi/open-iscsi/pull/339
