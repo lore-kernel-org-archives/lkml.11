@@ -2,119 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF631C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A99AC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbiHNPWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S231616AbiHNPYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbiHNPWa (ORCPT
+        with ESMTP id S229656AbiHNPYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:22:30 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3DC65E4;
-        Sun, 14 Aug 2022 08:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1660490541; bh=5yiku09NgtJhz8C8AAOMeXdl/tTwjzjyBlCJ4pl0Sm4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=H254bgyaRTEaidBt878YsbVLpkRm0S/3/dv9AHeMBTw9tG5dsi2GdDTxU0Z4yREy/
-         q0HQ1aBO9yNBTEROefNFp3Sjaf5nb0PZwpRhKP4aJsjKvDYGH8tVMkTCpJCuHXshSe
-         +4qKFDkbm96i9YvlZsK78V7NsRfhPqYgIsWSWHYg=
-Received: from [192.168.9.172] (unknown [101.88.24.16])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Sun, 14 Aug 2022 11:24:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB0765E7;
+        Sun, 14 Aug 2022 08:24:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id D65926061B;
-        Sun, 14 Aug 2022 23:22:20 +0800 (CST)
-Message-ID: <f76c7bbc-1253-bdda-4d56-8e9185e6f29a@xen0n.name>
-Date:   Sun, 14 Aug 2022 23:22:19 +0800
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 264B260B9F;
+        Sun, 14 Aug 2022 15:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCBBC433D6;
+        Sun, 14 Aug 2022 15:24:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660490680;
+        bh=ebo6kPnfZ6o+Q1fsjAA8jeQY9HT8MUugEfOa0/b02xE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KJl1IjqkM8tIPfkWtU0OdEDNWny/vh2eYKzzLZiyVvgh4K0xbJVJr89Cvk509Rh3v
+         YD+OrKP4rfJJxPx7jzrrwV5ujfPwJMmn+XG4MVymIeH+r7s8ZLSTe8pktcsGTVjmeT
+         vZV74qyvDcIkJ8eIJnmwKLlh6xlTCk+K00O9/8hf7fsfL41LBHsDQxNP0cGYYie9JU
+         huBxztY5T+FXX954T2+bk9iSTBOEyUi0EYRvxslWpFNDezyPjvNfA8jSTiPDjM60Bg
+         W/AKsopd/auyWWuZWI672UdxqfqLsy72haJL9zgF6Cw17zQ/Vti6kRUarHkPHRvGW1
+         lthSqx2t32enw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Gil Fine <gil.fine@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, andreas.noever@gmail.com,
+        michael.jamet@intel.com, YehezkelShB@gmail.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 01/64] thunderbolt: Change downstream router's TMU rate in both TMU uni/bidir mode
+Date:   Sun, 14 Aug 2022 11:23:34 -0400
+Message-Id: <20220814152437.2374207-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:105.0) Gecko/20100101
- Thunderbird/105.0a1
-Subject: Re: [RESEND] Please consider name next Linux release "I love Linux"
- (Re: Linux 5.19)
-To:     Baoquan He <bhe@redhat.com>,
-        Zhang Boyang <zhangboyang.id@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-next@vger.kernel.org, song@kernel.org, wei.liu@kernel.org,
-        jszhang@kernel.org, chenhuacai@kernel.org, guoren@kernel.org,
-        xiang@kernel.org, chao@kernel.org, ming.lei@redhat.com,
-        longman@redhat.com, wqu@suse.com, yhs@fb.com, haoluo@google.com,
-        decui@microsoft.com, siyanteng@loongson.cn, dyoung@redhat.com
-References: <CAHk-=wgrz5BBk=rCz7W28Fj_o02s0Xi0OEQ3H1uQgOdFvHgx0w@mail.gmail.com>
- <61d77412-af1a-5b00-9754-f156b1c63a74@gmail.com>
- <20220812023950.GF373960@MiWiFi-R3L-srv>
-Content-Language: en-US
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <20220812023950.GF373960@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/12/22 10:39, Baoquan He wrote:
-> Hi Boyang,
->
-> On 08/11/22 at 10:02pm, Zhang Boyang wrote:
->> Hi,
->>
->> On 2022/8/1 05:43, Linus Torvalds wrote:
->>> (*) I'll likely call it 6.0 since I'm starting to worry about getting
->>> confused by big numbers again.
->> Could you please consider name the next Linux release (5.20 or 6.0) "I love
->> linux" ? The number "5.20" is a wordplay in Chinese, which means "I love
->> you" [1], thus "Linux 5.20" can be read as "I love Linux" in Chinese.
->>
->> Even if next kernel version is 6.0, I think it's probably a good idea for
->> both Chinese-speakers and non-Chinese speakers to express our love to Linux
->> Kernel.
-> Interesting idea, LOL.
->
-> Yes, 520 means 'I love you' in chinese since it has the similar pronunciation
-> with '我爱你'. I even don't remember since when May 20th becomes another
-> holiday similar to Valentine's day in China. While I have complicated feeling
-> about 520. It means on each May 20th, I also need prepare gift for my wife. I
-> am not a romantic person, preparing gift to lover is always a torture to me.
-> So almost each May 20th day, Valentine's day, double seventh festival which is
-> a traditional Valentine's day, I will become nervous, and it ends up
-> with a satisfactory gift, or a bunch of flower and a digital red envelope with
-> 520￥ and then complainment and blame in next two weeks.
->
-> So, for naming next release as '5.20', I will vote for it w/o hesitance. No need
-> to prepare gift, and can express our love to Linux kernel, it sounds
-> awesome.
->
-> Meanwhile, I would remind people to take it easy. Whether the suggestion
-> is accepted or not, it doesn't impact the fact that linux may have
-> become part of our life, not just our work, considering many kernel developers
-> are workoing form home. But if you have boasted to your girlfriend
-> or wife, and want to take this as a gift to her, you should try harder to
-> convince Linus.
+From: Gil Fine <gil.fine@intel.com>
 
-Woah. This is some of the larger-scale "cultural export" I've ever seen, 
-and probably the first time on LKML. I'd remember the few dry laughs 
-when I tried to explain the "Superb Owl" meme to my teammates, 
-unfamiliar with (US) English memes in general, so I could even 
-sympathize with those of you not knowing Chinese Internet memes...
+[ Upstream commit 5fd6b9a5cbe63fea4c490fee8af34144a139a266 ]
 
-One thing is for sure, if the next Linux version is to be kept 5.20 and 
-codenamed "Linux I love you" or something like that, it would certainly 
-make headlines on Chinese tech news sites for a while, more specifically 
-both after rc1 and the final release; but anyway, as Baoquan already 
-pointed out, our collective love for Linux and the open-source ideals 
-behind the whole thing is not going anywhere, no matter what the 
-Makefile says. (You may find it useful to make your partner happy using 
-the 520/521 meme too, if applicable; but from my own experience, better 
-not bring up Linux if your partner is not interested in that topic!)
+In case of uni-directional time sync, TMU handshake is
+initiated by upstream router. In case of bi-directional
+time sync, TMU handshake is initiated by downstream router.
+In order to handle correctly the case of uni-directional mode,
+we avoid changing the upstream router's rate to off,
+because it might have another downstream router plugged that is set to
+uni-directional mode (and we don't want to change its mode).
+Instead, we always change downstream router's rate.
 
-(And, pun semi-intended for that "bringing up". ;-)
+Signed-off-by: Gil Fine <gil.fine@intel.com>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/thunderbolt/tmu.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/thunderbolt/tmu.c b/drivers/thunderbolt/tmu.c
+index e4a07a26f693..93ba1d00335b 100644
+--- a/drivers/thunderbolt/tmu.c
++++ b/drivers/thunderbolt/tmu.c
+@@ -359,13 +359,14 @@ int tb_switch_tmu_disable(struct tb_switch *sw)
+ 		 * In case of uni-directional time sync, TMU handshake is
+ 		 * initiated by upstream router. In case of bi-directional
+ 		 * time sync, TMU handshake is initiated by downstream router.
+-		 * Therefore, we change the rate to off in the respective
+-		 * router.
++		 * We change downstream router's rate to off for both uni/bidir
++		 * cases although it is needed only for the bi-directional mode.
++		 * We avoid changing upstream router's mode since it might
++		 * have another downstream router plugged, that is set to
++		 * uni-directional mode and we don't want to change it's TMU
++		 * mode.
+ 		 */
+-		if (unidirectional)
+-			tb_switch_tmu_rate_write(parent, TB_SWITCH_TMU_RATE_OFF);
+-		else
+-			tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
++		tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
+ 
+ 		tb_port_tmu_time_sync_disable(up);
+ 		ret = tb_port_tmu_time_sync_disable(down);
 -- 
-WANG "xen0n" Xuerui
-
-Linux/LoongArch mailing list: https://lore.kernel.org/loongarch/
+2.35.1
 
