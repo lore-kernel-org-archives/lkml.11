@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1D6C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3380EC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242143AbiHNPx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38054 "EHLO
+        id S242149AbiHNPxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241847AbiHNPuM (ORCPT
+        with ESMTP id S241826AbiHNPuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:50:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739721CB25;
-        Sun, 14 Aug 2022 08:35:49 -0700 (PDT)
+        Sun, 14 Aug 2022 11:50:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64A41B7AD;
+        Sun, 14 Aug 2022 08:35:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B16DC60C8C;
-        Sun, 14 Aug 2022 15:35:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE81C43470;
-        Sun, 14 Aug 2022 15:35:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73E33B80B4D;
+        Sun, 14 Aug 2022 15:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862D0C433D6;
+        Sun, 14 Aug 2022 15:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491348;
-        bh=vn8sRngeekKj5Hiwjb/2YEw2w2BCxvYLhU5ASInCkPg=;
+        s=k20201202; t=1660491344;
+        bh=9krYIMZkWByFYm0Z2MCMjTdo/cKY77hHZASSi3Elm3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AN1RpwqB4DPvfIBtxhegWuv1xHsIKS5Mt+oyMdj/3XSzPfVpc6N0ZF4mf6lthVXDx
-         P3paCWCeDbUwyCLT2gHMdzztAl6hfqPLCSl4q8UJODH1DSqz9y0mORNpmTIZivCYtq
-         LGhHoKuPOsDmBiXx8xBLHgbTSDUe5RDHpbtDC1SkK9Umuq88TCL72pNZhYyXaKMZse
-         bn4gTprx4yYkVIr16qS9NGt1Q1898MiNub4dFZ9ft7D3izTwLNtis6gaYj/tLrQ4Q3
-         ZXkoIMOz7+73YM+CMFxasQsngBdriJtGj2AIoyIHUS1zheZLWXeVCkHfyC3DH/M6c8
-         4b1C+tV57O4ZA==
+        b=HLYVFmAyQWORQfbeaWv7IJq44PGQxhqNl8acyS3RRdDvIkDMW0L2m/QTVjTFUOq0Z
+         G/OZP8DHT5/TxkAA0+GkVGd7gd8/vqzGw38j/JUH5M0+ayc1d72vCTXRUHShphZnzA
+         NaedKlrOxPnrVdOllOiXuiPuv8EfxZZoEBdgcx944H8BoDhUP3X3saCATO1M0CEsYc
+         Z1tYL301oFZh9lECE97O4iHtSKVkwx9AKjeCBHjWyPsSA5rhlsgJNV7JNC0TNWffLB
+         pMgQUjo5gxBVSN5hts9tk5nJIJfVWA551j9rmX0jMchQMoX/r0ueJfxrxX87gkcc6Y
+         ctDCwoecI5zNA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/21] scsi: lpfc: Prevent buffer overflow crashes in debugfs with malformed user input
-Date:   Sun, 14 Aug 2022 11:35:20 -0400
-Message-Id: <20220814153531.2379705-10-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 07/21] usb: renesas: Fix refcount leak bug
+Date:   Sun, 14 Aug 2022 11:35:17 -0400
+Message-Id: <20220814153531.2379705-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153531.2379705-1-sashal@kernel.org>
 References: <20220814153531.2379705-1-sashal@kernel.org>
@@ -54,83 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit f8191d40aa612981ce897e66cda6a88db8df17bb ]
+[ Upstream commit 9d6d5303c39b8bc182475b22f45504106a07f086 ]
 
-Malformed user input to debugfs results in buffer overflow crashes.  Adapt
-input string lengths to fit within internal buffers, leaving space for NULL
-terminators.
+In usbhs_rza1_hardware_init(), of_find_node_by_name() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-Link: https://lore.kernel.org/r/20220701211425.2708-3-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220618023205.4056548-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_debugfs.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/usb/renesas_usbhs/rza.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
-index e15bb3dfe995..69551132f304 100644
---- a/drivers/scsi/lpfc/lpfc_debugfs.c
-+++ b/drivers/scsi/lpfc/lpfc_debugfs.c
-@@ -2402,8 +2402,8 @@ lpfc_debugfs_multixripools_write(struct file *file, const char __user *buf,
- 	struct lpfc_sli4_hdw_queue *qp;
- 	struct lpfc_multixri_pool *multixri_pool;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	/* Protect copy from user */
- 	if (!access_ok(buf, nbytes))
-@@ -2487,8 +2487,8 @@ lpfc_debugfs_nvmestat_write(struct file *file, const char __user *buf,
- 	if (!phba->targetport)
- 		return -ENXIO;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2629,8 +2629,8 @@ lpfc_debugfs_nvmektime_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2757,8 +2757,8 @@ lpfc_debugfs_nvmeio_trc_write(struct file *file, const char __user *buf,
- 	char mybuf[64];
- 	char *pbuf;
- 
--	if (nbytes > 63)
--		nbytes = 63;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
-@@ -2863,8 +2863,8 @@ lpfc_debugfs_cpucheck_write(struct file *file, const char __user *buf,
- 	char *pbuf;
- 	int i, j;
- 
--	if (nbytes > 64)
--		nbytes = 64;
-+	if (nbytes > sizeof(mybuf) - 1)
-+		nbytes = sizeof(mybuf) - 1;
- 
- 	memset(mybuf, 0, sizeof(mybuf));
- 
+diff --git a/drivers/usb/renesas_usbhs/rza.c b/drivers/usb/renesas_usbhs/rza.c
+index 24de64edb674..2d77edefb4b3 100644
+--- a/drivers/usb/renesas_usbhs/rza.c
++++ b/drivers/usb/renesas_usbhs/rza.c
+@@ -23,6 +23,10 @@ static int usbhs_rza1_hardware_init(struct platform_device *pdev)
+ 	extal_clk = of_find_node_by_name(NULL, "extal");
+ 	of_property_read_u32(usb_x1_clk, "clock-frequency", &freq_usb);
+ 	of_property_read_u32(extal_clk, "clock-frequency", &freq_extal);
++
++	of_node_put(usb_x1_clk);
++	of_node_put(extal_clk);
++
+ 	if (freq_usb == 0) {
+ 		if (freq_extal == 12000000) {
+ 			/* Select 12MHz XTAL */
 -- 
 2.35.1
 
