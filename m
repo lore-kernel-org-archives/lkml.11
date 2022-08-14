@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCCD7C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A90C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240999AbiHNPiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54680 "EHLO
+        id S241004AbiHNPiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241024AbiHNPgI (ORCPT
+        with ESMTP id S241046AbiHNPgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:36:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9C31E3CB;
-        Sun, 14 Aug 2022 08:31:22 -0700 (PDT)
+        Sun, 14 Aug 2022 11:36:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1571E3FA;
+        Sun, 14 Aug 2022 08:31:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C1F160C43;
-        Sun, 14 Aug 2022 15:31:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7DA8C433D7;
-        Sun, 14 Aug 2022 15:31:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D566B60C99;
+        Sun, 14 Aug 2022 15:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DED3C43470;
+        Sun, 14 Aug 2022 15:31:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491080;
-        bh=3xZlcqcY7As5SwP5sXERZGwcOsecnXQsdVdV8Xder8M=;
+        s=k20201202; t=1660491087;
+        bh=e0Y26IHvt/BfDtmyJiFGBYaa2Fed/g7mKB3u3OlEk48=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hKAB+5Z6sIkFPfn6hsrG3Mzo3sajJNe5O+yacuQa/LmMIGTNBW/gu7HFUubMNcgok
-         T9kT6fzIdhigY9TJOwr5gZzCD+mtn4lZhrKE63HbXKg8kJaFPW3eFh2h1Ljl/AAlHk
-         1x4kdvI8CVbo9K+sgtAEuEbjTbS3vtu7++7MPbc1mhJIb3OMfOdCFn+Fm8GFPxMLU6
-         E3TgUXdrOG6hoizfWyyNREGTbCV1lsPa7zDLRPbt+spCMktlfNfcA6eQmqV+NIFIRo
-         yu+zELFB/GT/hM9byIjZxeOlE2bQKdsWmH17VUKk+kwUVXTHJnDnUYxxLWnzGdWKKC
-         MNg14d5VeLD/A==
+        b=ZHb+LpW4HqBYWSDKJ0Mt29O1S85VaHatF5jpJoFmlGKCLnijElL4KIladvT1yHndQ
+         Sn0si/GstfTWYacoNYfyG4rwsMc6RdYnwMHGZeLAeNzjrlK+9Twj/aoMQzHunLed7w
+         8MBPK3NYoIAaQFYlMDD6uqL/P9aEnIv3rHoHROhbuC0aHW5+1wX7bNzAaq+4AAwFln
+         qUcUREaTRyKZI9VQhvOrg/YkBVGomhRiClzo7xHQQO37Nvu885/6hPjFp8w9fRwscn
+         plpMeWW6xwJ9Qd9WY3lsql0Hojlu1+B3m8ilEDCj3c7zIkpbLMKmXbQYJ+nuHBjOax
+         WMc9BZvG4dFtQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Yang Shen <shenyang39@huawei.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, wangzhou1@hisilicon.com,
-        linux-accelerators@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.18 22/56] uacce: Handle parent device removal or parent driver module rmmod
-Date:   Sun, 14 Aug 2022 11:29:52 -0400
-Message-Id: <20220814153026.2377377-22-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 26/56] scsi: lpfc: Fix possible memory leak when failing to issue CMF WQE
+Date:   Sun, 14 Aug 2022 11:29:56 -0400
+Message-Id: <20220814153026.2377377-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
@@ -54,349 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 80fc671bcc0173836e9032b0c698ea74c13b9d7c ]
+[ Upstream commit 2f67dc7970bce3529edce93a0a14234d88b3fcd5 ]
 
-The uacce driver must deal with a possible removal of the parent device
-or parent driver module rmmod at any time.
+There is no corresponding free routine if lpfc_sli4_issue_wqe fails to
+issue the CMF WQE in lpfc_issue_cmf_sync_wqe.
 
-Although uacce_remove(), called on device removal and on driver unbind,
-prevents future use of the uacce fops by removing the cdev, fops that
-were called before that point may still be running.
+If ret_val is non-zero, then free the iocbq request structure.
 
-Serialize uacce_fops_open() and uacce_remove() with uacce->mutex.
-Serialize other fops against uacce_remove() with q->mutex.
-Since we need to protect uacce_fops_poll() which gets called on the fast
-path, replace uacce->queues_lock with q->mutex to improve scalability.
-The other fops are only used during setup.
-
-uacce_queue_is_valid(), checked under q->mutex or uacce->mutex, denotes
-whether uacce_remove() has disabled all queues. If that is the case,
-don't go any further since the parent device is being removed and
-uacce->ops should not be called anymore.
-
-Reported-by: Yang Shen <shenyang39@huawei.com>
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Link: https://lore.kernel.org/r/20220701034843.7502-1-zhangfei.gao@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220701211425.2708-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/uacce/uacce.c | 133 ++++++++++++++++++++++++-------------
- include/linux/uacce.h      |   6 +-
- 2 files changed, 91 insertions(+), 48 deletions(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index 281c54003edc..b70a013139c7 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -9,43 +9,38 @@
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 123a18784aa4..978cc87d4117 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -2003,10 +2003,12 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba *phba, u32 ms, u64 total)
  
- static struct class *uacce_class;
- static dev_t uacce_devt;
--static DEFINE_MUTEX(uacce_mutex);
- static DEFINE_XARRAY_ALLOC(uacce_xa);
- 
--static int uacce_start_queue(struct uacce_queue *q)
-+/*
-+ * If the parent driver or the device disappears, the queue state is invalid and
-+ * ops are not usable anymore.
-+ */
-+static bool uacce_queue_is_valid(struct uacce_queue *q)
- {
--	int ret = 0;
-+	return q->state == UACCE_Q_INIT || q->state == UACCE_Q_STARTED;
-+}
- 
--	mutex_lock(&uacce_mutex);
-+static int uacce_start_queue(struct uacce_queue *q)
-+{
-+	int ret;
- 
--	if (q->state != UACCE_Q_INIT) {
--		ret = -EINVAL;
--		goto out_with_lock;
--	}
-+	if (q->state != UACCE_Q_INIT)
-+		return -EINVAL;
- 
- 	if (q->uacce->ops->start_queue) {
- 		ret = q->uacce->ops->start_queue(q);
- 		if (ret < 0)
--			goto out_with_lock;
-+			return ret;
- 	}
- 
- 	q->state = UACCE_Q_STARTED;
--
--out_with_lock:
--	mutex_unlock(&uacce_mutex);
--
--	return ret;
-+	return 0;
- }
- 
- static int uacce_put_queue(struct uacce_queue *q)
- {
- 	struct uacce_device *uacce = q->uacce;
- 
--	mutex_lock(&uacce_mutex);
--
--	if (q->state == UACCE_Q_ZOMBIE)
--		goto out;
--
- 	if ((q->state == UACCE_Q_STARTED) && uacce->ops->stop_queue)
- 		uacce->ops->stop_queue(q);
- 
-@@ -54,8 +49,6 @@ static int uacce_put_queue(struct uacce_queue *q)
- 		uacce->ops->put_queue(q);
- 
- 	q->state = UACCE_Q_ZOMBIE;
--out:
--	mutex_unlock(&uacce_mutex);
- 
- 	return 0;
- }
-@@ -65,20 +58,36 @@ static long uacce_fops_unl_ioctl(struct file *filep,
- {
- 	struct uacce_queue *q = filep->private_data;
- 	struct uacce_device *uacce = q->uacce;
-+	long ret = -ENXIO;
-+
-+	/*
-+	 * uacce->ops->ioctl() may take the mmap_lock when copying arg to/from
-+	 * user. Avoid a circular lock dependency with uacce_fops_mmap(), which
-+	 * gets called with mmap_lock held, by taking uacce->mutex instead of
-+	 * q->mutex. Doing this in uacce_fops_mmap() is not possible because
-+	 * uacce_fops_open() calls iommu_sva_bind_device(), which takes
-+	 * mmap_lock, while holding uacce->mutex.
-+	 */
-+	mutex_lock(&uacce->mutex);
-+	if (!uacce_queue_is_valid(q))
-+		goto out_unlock;
- 
- 	switch (cmd) {
- 	case UACCE_CMD_START_Q:
--		return uacce_start_queue(q);
--
-+		ret = uacce_start_queue(q);
-+		break;
- 	case UACCE_CMD_PUT_Q:
--		return uacce_put_queue(q);
--
-+		ret = uacce_put_queue(q);
-+		break;
- 	default:
--		if (!uacce->ops->ioctl)
--			return -EINVAL;
--
--		return uacce->ops->ioctl(q, cmd, arg);
-+		if (uacce->ops->ioctl)
-+			ret = uacce->ops->ioctl(q, cmd, arg);
-+		else
-+			ret = -EINVAL;
- 	}
-+out_unlock:
-+	mutex_unlock(&uacce->mutex);
-+	return ret;
- }
- 
- #ifdef CONFIG_COMPAT
-@@ -136,6 +145,13 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	if (!q)
- 		return -ENOMEM;
- 
-+	mutex_lock(&uacce->mutex);
-+
-+	if (!uacce->parent) {
-+		ret = -EINVAL;
-+		goto out_with_mem;
+ 	sync_buf->cmd_flag |= LPFC_IO_CMF;
+ 	ret_val = lpfc_sli4_issue_wqe(phba, &phba->sli4_hba.hdwq[0], sync_buf);
+-	if (ret_val)
++	if (ret_val) {
+ 		lpfc_printf_log(phba, KERN_INFO, LOG_CGN_MGMT,
+ 				"6214 Cannot issue CMF_SYNC_WQE: x%x\n",
+ 				ret_val);
++		__lpfc_sli_release_iocbq(phba, sync_buf);
 +	}
-+
- 	ret = uacce_bind_queue(uacce, q);
- 	if (ret)
- 		goto out_with_mem;
-@@ -152,10 +168,9 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	filep->private_data = q;
- 	uacce->inode = inode;
- 	q->state = UACCE_Q_INIT;
--
--	mutex_lock(&uacce->queues_lock);
-+	mutex_init(&q->mutex);
- 	list_add(&q->list, &uacce->queues);
--	mutex_unlock(&uacce->queues_lock);
-+	mutex_unlock(&uacce->mutex);
- 
- 	return 0;
- 
-@@ -163,18 +178,20 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	uacce_unbind_queue(q);
- out_with_mem:
- 	kfree(q);
-+	mutex_unlock(&uacce->mutex);
- 	return ret;
- }
- 
- static int uacce_fops_release(struct inode *inode, struct file *filep)
- {
- 	struct uacce_queue *q = filep->private_data;
-+	struct uacce_device *uacce = q->uacce;
- 
--	mutex_lock(&q->uacce->queues_lock);
--	list_del(&q->list);
--	mutex_unlock(&q->uacce->queues_lock);
-+	mutex_lock(&uacce->mutex);
- 	uacce_put_queue(q);
- 	uacce_unbind_queue(q);
-+	list_del(&q->list);
-+	mutex_unlock(&uacce->mutex);
- 	kfree(q);
- 
- 	return 0;
-@@ -217,10 +234,9 @@ static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
- 	vma->vm_private_data = q;
- 	qfr->type = type;
- 
--	mutex_lock(&uacce_mutex);
--
--	if (q->state != UACCE_Q_INIT && q->state != UACCE_Q_STARTED) {
--		ret = -EINVAL;
-+	mutex_lock(&q->mutex);
-+	if (!uacce_queue_is_valid(q)) {
-+		ret = -ENXIO;
- 		goto out_with_lock;
- 	}
- 
-@@ -248,12 +264,12 @@ static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
- 	}
- 
- 	q->qfrs[type] = qfr;
--	mutex_unlock(&uacce_mutex);
-+	mutex_unlock(&q->mutex);
- 
- 	return ret;
- 
- out_with_lock:
--	mutex_unlock(&uacce_mutex);
-+	mutex_unlock(&q->mutex);
- 	kfree(qfr);
- 	return ret;
- }
-@@ -262,12 +278,20 @@ static __poll_t uacce_fops_poll(struct file *file, poll_table *wait)
- {
- 	struct uacce_queue *q = file->private_data;
- 	struct uacce_device *uacce = q->uacce;
-+	__poll_t ret = 0;
-+
-+	mutex_lock(&q->mutex);
-+	if (!uacce_queue_is_valid(q))
-+		goto out_unlock;
- 
- 	poll_wait(file, &q->wait, wait);
-+
- 	if (uacce->ops->is_q_updated && uacce->ops->is_q_updated(q))
--		return EPOLLIN | EPOLLRDNORM;
-+		ret = EPOLLIN | EPOLLRDNORM;
- 
--	return 0;
-+out_unlock:
-+	mutex_unlock(&q->mutex);
-+	return ret;
- }
- 
- static const struct file_operations uacce_fops = {
-@@ -450,7 +474,7 @@ struct uacce_device *uacce_alloc(struct device *parent,
- 		goto err_with_uacce;
- 
- 	INIT_LIST_HEAD(&uacce->queues);
--	mutex_init(&uacce->queues_lock);
-+	mutex_init(&uacce->mutex);
- 	device_initialize(&uacce->dev);
- 	uacce->dev.devt = MKDEV(MAJOR(uacce_devt), uacce->dev_id);
- 	uacce->dev.class = uacce_class;
-@@ -507,13 +531,23 @@ void uacce_remove(struct uacce_device *uacce)
- 	if (uacce->inode)
- 		unmap_mapping_range(uacce->inode->i_mapping, 0, 0, 1);
- 
-+	/*
-+	 * uacce_fops_open() may be running concurrently, even after we remove
-+	 * the cdev. Holding uacce->mutex ensures that open() does not obtain a
-+	 * removed uacce device.
-+	 */
-+	mutex_lock(&uacce->mutex);
- 	/* ensure no open queue remains */
--	mutex_lock(&uacce->queues_lock);
- 	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
-+		/*
-+		 * Taking q->mutex ensures that fops do not use the defunct
-+		 * uacce->ops after the queue is disabled.
-+		 */
-+		mutex_lock(&q->mutex);
- 		uacce_put_queue(q);
-+		mutex_unlock(&q->mutex);
- 		uacce_unbind_queue(q);
- 	}
--	mutex_unlock(&uacce->queues_lock);
- 
- 	/* disable sva now since no opened queues */
- 	uacce_disable_sva(uacce);
-@@ -521,6 +555,13 @@ void uacce_remove(struct uacce_device *uacce)
- 	if (uacce->cdev)
- 		cdev_device_del(uacce->cdev, &uacce->dev);
- 	xa_erase(&uacce_xa, uacce->dev_id);
-+	/*
-+	 * uacce exists as long as there are open fds, but ops will be freed
-+	 * now. Ensure that bugs cause NULL deref rather than use-after-free.
-+	 */
-+	uacce->ops = NULL;
-+	uacce->parent = NULL;
-+	mutex_unlock(&uacce->mutex);
- 	put_device(&uacce->dev);
- }
- EXPORT_SYMBOL_GPL(uacce_remove);
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-index 48e319f40275..9ce88c28b0a8 100644
---- a/include/linux/uacce.h
-+++ b/include/linux/uacce.h
-@@ -70,6 +70,7 @@ enum uacce_q_state {
-  * @wait: wait queue head
-  * @list: index into uacce queues list
-  * @qfrs: pointer of qfr regions
-+ * @mutex: protects queue state
-  * @state: queue state machine
-  * @pasid: pasid associated to the mm
-  * @handle: iommu_sva handle returned by iommu_sva_bind_device()
-@@ -80,6 +81,7 @@ struct uacce_queue {
- 	wait_queue_head_t wait;
- 	struct list_head list;
- 	struct uacce_qfile_region *qfrs[UACCE_MAX_REGION];
-+	struct mutex mutex;
- 	enum uacce_q_state state;
- 	u32 pasid;
- 	struct iommu_sva *handle;
-@@ -97,9 +99,9 @@ struct uacce_queue {
-  * @dev_id: id of the uacce device
-  * @cdev: cdev of the uacce
-  * @dev: dev of the uacce
-+ * @mutex: protects uacce operation
-  * @priv: private pointer of the uacce
-  * @queues: list of queues
-- * @queues_lock: lock for queues list
-  * @inode: core vfs
-  */
- struct uacce_device {
-@@ -113,9 +115,9 @@ struct uacce_device {
- 	u32 dev_id;
- 	struct cdev *cdev;
- 	struct device dev;
-+	struct mutex mutex;
- 	void *priv;
- 	struct list_head queues;
--	struct mutex queues_lock;
- 	struct inode *inode;
- };
- 
+ out_unlock:
+ 	spin_unlock_irqrestore(&phba->hbalock, iflags);
+ 	return ret_val;
 -- 
 2.35.1
 
