@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C656BC28B2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D795AC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232086AbiHNPhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
+        id S240642AbiHNPhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240792AbiHNPfg (ORCPT
+        with ESMTP id S240808AbiHNPfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:35:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BBD1CFE9;
-        Sun, 14 Aug 2022 08:31:00 -0700 (PDT)
+        Sun, 14 Aug 2022 11:35:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD401CFE8;
+        Sun, 14 Aug 2022 08:30:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DBB060C8C;
-        Sun, 14 Aug 2022 15:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E18C433D6;
-        Sun, 14 Aug 2022 15:30:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB0660B90;
+        Sun, 14 Aug 2022 15:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D272C433D6;
+        Sun, 14 Aug 2022 15:30:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491056;
-        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
+        s=k20201202; t=1660491053;
+        bh=GUcB9eD+iEOCbxU+UeqApPApFnGb+Rc+D67AbgcVBCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OMF4rrtPsLxTsUC13FTY1pKYHw14XFUPrHdEEQeLJGMosSQKljhHyy32ML8ios2vj
-         if5zYbMBYZCs9255pPtoCNJ1K5uImyx6D7BIAXRj57mh+mi11Hb2vNfsEqpa3pcUYk
-         P4cuW08rZQxXQXesAB9pWXyx0sk10MSWhq5CaQQoPGEXYN7chZJKgM+Yq0+PCobCiC
-         TyaJoMasWYtBpBSuhiWWQOxIVpOQFP7OzGJe2aNCX6oQYRLdXW9polOaFPr1Z61hDw
-         yeGrCMGaB37aI7gwrW+1qT9FTL1vn+0koqfMqVd6NPKrCFmJ0LiEI8zv3knrHhNq2F
-         zD3Xlvlwv62/w==
+        b=c5D7+MeVhbc7r0SHjDXpq0utDRIKmYYf3zhbTfJGLxhiy9XcSrynPlN/TYlcdv6me
+         28R7r+Hg7CR8qR2vmDQh0mvup7V9tWFlVj/et0HS42Qs3HIlmgwT0AqLqGIKBJ7AVW
+         9Wh/oVlEfv/Fm+P+EgQV+9d7yN5FAyz5JgC+BNqcUpyfkv3optUghbibjB1oMFW4z3
+         KvULYg3tHmKnGAdSYYxCnBBm8xVlODnHEVcwyOwPSqfIVD9gq/V6sLd/+/S90FY7RG
+         WTteFwKLrd575pu8lS/QKfohehxyRicUayynEteHhSdgU6jtNIcl4xVLbZn/BTcKaC
+         n2+6QPEX7VZOw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, khilman@baylibre.com,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 13/56] drm/meson: Fix overflow implicit truncation warnings
-Date:   Sun, 14 Aug 2022 11:29:43 -0400
-Message-Id: <20220814153026.2377377-13-sashal@kernel.org>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        bvanassche@acm.org, beanhuo@micron.com, avri.altman@wdc.com,
+        adrian.hunter@intel.com, j-young.choi@samsung.com,
+        ebiggers@google.com, jjmin.jeong@samsung.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 11/56] scsi: ufs: core: Add UFSHCD_QUIRK_HIBERN_FASTAUTO
+Date:   Sun, 14 Aug 2022 11:29:41 -0400
+Message-Id: <20220814153026.2377377-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,67 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
+[ Upstream commit 2f11bbc2c7f37e3a6151ac548b1c0679cc90ea83 ]
 
-Fix -Woverflow warnings for drm/meson driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+Add UFSHCD_QUIRK_HIBERN_FASTAUTO quirk for host controllers which supports
+auto-hibernate the capability but only FASTAUTO mode.
 
-drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
-drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
- #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
-                                                ^
-drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
-   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
-                  ^~~~~~~~~~~~~~~~~~~~~
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220603110524.1997825-4-yoshihiro.shimoda.uh@renesas.com
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/scsi/ufs/ufshcd.c | 9 +++++++--
+ drivers/scsi/ufs/ufshcd.h | 6 ++++++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
-index 259f3e6bec90..bb7e109534de 100644
---- a/drivers/gpu/drm/meson/meson_viu.c
-+++ b/drivers/gpu/drm/meson/meson_viu.c
-@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
- 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 95be78549ed2..92de5b8d187c 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -4290,8 +4290,13 @@ static int ufshcd_get_max_pwr_mode(struct ufs_hba *hba)
+ 	if (hba->max_pwr_info.is_valid)
+ 		return 0;
  
- 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
--		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
--			       VIU_OSD_BLEND_REORDER(1, 0) |
--			       VIU_OSD_BLEND_REORDER(2, 0) |
--			       VIU_OSD_BLEND_REORDER(3, 0) |
--			       VIU_OSD_BLEND_DIN_EN(1) |
--			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
--			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
--			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
--			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
--			       VIU_OSD_BLEND_HOLD_LINES(4),
--			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
-+		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
-+			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
-+			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
-+			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
-+			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
-+			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
-+			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
-+			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
-+		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
+-	pwr_info->pwr_tx = FAST_MODE;
+-	pwr_info->pwr_rx = FAST_MODE;
++	if (hba->quirks & UFSHCD_QUIRK_HIBERN_FASTAUTO) {
++		pwr_info->pwr_tx = FASTAUTO_MODE;
++		pwr_info->pwr_rx = FASTAUTO_MODE;
++	} else {
++		pwr_info->pwr_tx = FAST_MODE;
++		pwr_info->pwr_rx = FAST_MODE;
++	}
+ 	pwr_info->hs_rate = PA_HS_MODE_B;
  
- 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
- 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
+ 	/* Get the connected lane count */
+diff --git a/drivers/scsi/ufs/ufshcd.h b/drivers/scsi/ufs/ufshcd.h
+index 1745144eb904..d14cc48226ce 100644
+--- a/drivers/scsi/ufs/ufshcd.h
++++ b/drivers/scsi/ufs/ufshcd.h
+@@ -608,6 +608,12 @@ enum ufshcd_quirks {
+ 	 * 64-bit addressing supported capability but it doesn't work.
+ 	 */
+ 	UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS		= 1 << 17,
++
++	/*
++	 * This quirk needs to be enabled if the host controller has
++	 * auto-hibernate capability but it's FASTAUTO only.
++	 */
++	UFSHCD_QUIRK_HIBERN_FASTAUTO			= 1 << 18,
+ };
+ 
+ enum ufshcd_caps {
 -- 
 2.35.1
 
