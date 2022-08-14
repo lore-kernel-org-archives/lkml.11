@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606DCC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A109FC2BB41
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242031AbiHNQXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55382 "EHLO
+        id S242392AbiHNQX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241453AbiHNQWE (ORCPT
+        with ESMTP id S241275AbiHNQWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:22:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8D4F3E;
-        Sun, 14 Aug 2022 09:20:57 -0700 (PDT)
+        Sun, 14 Aug 2022 12:22:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265F7F35;
+        Sun, 14 Aug 2022 09:21:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82B5760F6A;
-        Sun, 14 Aug 2022 16:20:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6558BC433C1;
-        Sun, 14 Aug 2022 16:20:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B002860F49;
+        Sun, 14 Aug 2022 16:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E469C433B5;
+        Sun, 14 Aug 2022 16:21:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494056;
-        bh=ZvgNG1eC9iccsixk7C5q3yyyNPKNAPFVwtvxIcix/aA=;
+        s=k20201202; t=1660494072;
+        bh=WKWA3UbghQorOkZYcUPew9I9PowLOt2UNz2dEBzlkn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ksTillY2i2DDyzU1zbmt6w9PL46A2kQtIxoZN4F1JOlErjLLATaIxcDCkTFyZMZkF
-         ZX+quEkAZSJPKD1iCaN0WSp/oHwxu3dqgosTuqMT0F3Bkv5iga0Oq9BnGEFY3jnoQW
-         pTwTDIYJmWF03soW0ozefZNN1tuTHbyHwtQTrizLDQsgIMrqHPlyCWfiooRivHEDaF
-         kWAOcq8sTe46m2LHsQ44XxL7glAvdgkLLLRYR3uu/n+JGRN1J3SJ7YM3jqiiO12NHN
-         LjmItx2UCEsn4o7bZgREneNK5SjaAmqKg39ykmftBB8uxrwrTofR2st4xavkT1jfFN
-         dWo1Z1NcP0yuw==
+        b=o0NKCGW6cf6MwE+NMh6X3mJgAcVnpBs3ru+eedJh60bU155M0570rLXY0cxUd0Foe
+         mlI/Z8r32XTABSUMNLpGVseUCjc7sdYklzgUMW1VHwR1mdxK0AWHid3sc+/fh6URgt
+         S0Q2fQENmEVfTSpVRKvNXj0Ose6VSVe45yIMJedu7PWdW1QMDoaDUAy1IxODWmBZzg
+         qrC2sStO7hb5uP/+bBAYpg1ZUVhxqG4sCQWg4RcIszthGVJeltquP9tymPRUxdn7Fm
+         usIjKNe10lwnaF1nzicKEcUUL9N3sPnHgqDjTnv8lBpEkKYeFoxE9tY5j8eW6ZsUwZ
+         NGPkG79oyIhvA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Celeste Liu <coelacanthus@outlook.com>, xctan <xc-tan@outlook.com>,
-        dram <dramforever@live.com>, Ruizhe Pan <c141028@gmail.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu, guoren@kernel.org,
-        arnd@arndb.de, linux-riscv@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 20/48] riscv: mmap with PROT_WRITE but no PROT_READ is invalid
-Date:   Sun, 14 Aug 2022 12:19:13 -0400
-Message-Id: <20220814161943.2394452-20-sashal@kernel.org>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, tcrawford@system76.com,
+        wse@tuxedocomputers.com, tangmeng@uniontech.com, cam@neo-zeon.de,
+        kailang@realtek.com, sbinding@opensource.cirrus.com,
+        yong.wu@mediatek.com, andy.chi@canonical.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.19 23/48] ALSA: hda/realtek: Enable speaker and mute LEDs for HP laptops
+Date:   Sun, 14 Aug 2022 12:19:16 -0400
+Message-Id: <20220814161943.2394452-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
 References: <20220814161943.2394452-1-sashal@kernel.org>
@@ -54,45 +56,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Celeste Liu <coelacanthus@outlook.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 2139619bcad7ac44cc8f6f749089120594056613 ]
+[ Upstream commit c578d5da10dc429c6676ab09f3fec0b79b31633a ]
 
-As mentioned in Table 4.5 in RISC-V spec Volume 2 Section 4.3, write
-but not read is "Reserved for future use.". For now, they are not valid.
-In the current code, -wx is marked as invalid, but -w- is not marked
-as invalid.
-This patch refines that judgment.
+Two more HP laptops that use cs35l41 AMP for speaker and GPIO for mute
+LEDs.
 
-Reported-by: xctan <xc-tan@outlook.com>
-Co-developed-by: dram <dramforever@live.com>
-Signed-off-by: dram <dramforever@live.com>
-Co-developed-by: Ruizhe Pan <c141028@gmail.com>
-Signed-off-by: Ruizhe Pan <c141028@gmail.com>
-Signed-off-by: Celeste Liu <coelacanthus@outlook.com>
-Link: https://lore.kernel.org/r/PH7PR14MB559464DBDD310E755F5B21E8CEDC9@PH7PR14MB5594.namprd14.prod.outlook.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+So use the existing quirk to enable them accordingly.
+
+[ Sort the entries at the SSID order by tiwai ]
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220719142015.244426-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/sys_riscv.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ sound/pci/hda/patch_realtek.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/riscv/kernel/sys_riscv.c b/arch/riscv/kernel/sys_riscv.c
-index 9c0194f176fc..571556bb9261 100644
---- a/arch/riscv/kernel/sys_riscv.c
-+++ b/arch/riscv/kernel/sys_riscv.c
-@@ -18,9 +18,8 @@ static long riscv_sys_mmap(unsigned long addr, unsigned long len,
- 	if (unlikely(offset & (~PAGE_MASK >> page_shift_offset)))
- 		return -EINVAL;
- 
--	if ((prot & PROT_WRITE) && (prot & PROT_EXEC))
--		if (unlikely(!(prot & PROT_READ)))
--			return -EINVAL;
-+	if (unlikely((prot & PROT_WRITE) && !(prot & PROT_READ)))
-+		return -EINVAL;
- 
- 	return ksys_mmap_pgoff(addr, len, prot, flags, fd,
- 			       offset >> (PAGE_SHIFT - page_shift_offset));
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 2f55bc43bfa9..8da712c5d743 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9114,6 +9114,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8aa8, "HP EliteBook 640 G9 (MB 8AA6)", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8aab, "HP EliteBook 650 G9 (MB 8AA9)", ALC236_FIXUP_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x8ad1, "HP EliteBook 840 14 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x8ad2, "HP EliteBook 860 16 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
+ 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 -- 
 2.35.1
 
