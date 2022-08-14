@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1A8C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10488C25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240727AbiHNPd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        id S240304AbiHNPeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240702AbiHNPd1 (ORCPT
+        with ESMTP id S240551AbiHNPd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 14 Aug 2022 11:33:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC975FF2;
-        Sun, 14 Aug 2022 08:30:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ECA1144;
+        Sun, 14 Aug 2022 08:30:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCB4FB80B27;
-        Sun, 14 Aug 2022 15:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D422AC433D7;
-        Sun, 14 Aug 2022 15:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1DF560C1D;
+        Sun, 14 Aug 2022 15:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B61C43470;
+        Sun, 14 Aug 2022 15:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491011;
-        bh=TmwB1yyIO7hlQxEEZ3YP1Hse/khGDr1TusJ9UJG8jgQ=;
+        s=k20201202; t=1660491018;
+        bh=gm4JWmFIYfwLgfO8bC1MN2J9LdWEiHeJg2NX56k84FU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AClHnpxETW7doCkoaOlshndODXSaqAYcC+SEfS04/CNg2VebkbcVYTmEpB6bQtJFR
-         RpCxs/2iZ6WuUU/pk2lZXda+35I/JyEbixMKNT9Adt6OnT0XffNC0pldXzeg1q0wgm
-         BDkRQAIwa8pphD5aCFcizf4UeFwnyq3Yhhc2b0aoA75H9Oj8lbtivx2y3KHScavWZr
-         N8d8FF6oNZ8Yw/WApEoJC5jJQsKUSL6OdN3r7OmuRBKaG0fA7BgubSSn1YAdel3XUN
-         L712S0tJE0y8pRchU35NX+797xnaeeNtBC6fpzXyk4NzTf6hCDzTxA1C/Jyc0KoiOG
-         sLHBcO53/LrLQ==
+        b=Z1pXof1LBRyONfzohAwyErvnGDJBwQDpiInD7G6JGFZ0tIWMpBDqMnaWZ2YtHsR8f
+         N0h4bjkVl1MMEUwxdrvOI5MFFqsWcby/lwNSnj6FGrdNcrWHNKDUkyvD2nW5ziKLaC
+         yo+3WOqOen7Sy+udr/vXmcZbUi783dQQKHn72T35ZMJ2aa6zzxl0tURN+RkPNcjUpK
+         R72mm6TUueZEH6zfn4EwO/ik+hQxHTVZZ/9GXFW0ZPN9nynyoYrLTNeGID46y3WNUs
+         8klbvX79TAL11HpcNRu86UYdruQHiMDlLMeae7wTLgszx80Jh3EHa6rY5LiqVuD7Q2
+         E6Eog0NYmt30A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 5.19 56/64] openrisc: io: Define iounmap argument as volatile
-Date:   Sun, 14 Aug 2022 11:24:29 -0400
-Message-Id: <20220814152437.2374207-56-sashal@kernel.org>
+Cc:     Logan Gunthorpe <logang@deltatee.com>, Song Liu <song@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 59/64] md/raid5: Make logic blocking check consistent with logic that blocks
+Date:   Sun, 14 Aug 2022 11:24:32 -0400
+Message-Id: <20220814152437.2374207-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
@@ -52,65 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stafford Horne <shorne@gmail.com>
+From: Logan Gunthorpe <logang@deltatee.com>
 
-[ Upstream commit 52e0ea900202d23843daee8f7089817e81dd3dd7 ]
+[ Upstream commit 6e3f50d30af847bebce072182bd735e90a294c6a ]
 
-When OpenRISC enables PCI it allows for more drivers to be compiled
-resulting in exposing the following with -Werror.
+The check in raid5_make_request differs very slightly from the logic
+that causes it to block lower down. This likely does not cause a bug
+as the check is fuzzy anyway (as reshape may move on between the first
+check and the subsequent check). However, make it consistent so it can
+be cleaned up in a subsequent patch.
 
-    drivers/video/fbdev/riva/fbdev.c: In function 'rivafb_probe':
-    drivers/video/fbdev/riva/fbdev.c:2062:42: error:
-	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
+The condition which causes the schedule is:
 
-    drivers/video/fbdev/nvidia/nvidia.c: In function 'nvidiafb_probe':
-    drivers/video/fbdev/nvidia/nvidia.c:1414:20: error:
-	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
+ !(mddev->reshape_backwards ? logical_sector < conf->reshape_progress :
+   logical_sector >= conf->reshape_progress) &&
+  (mddev->reshape_backwards ? logical_sector < conf->reshape_safe :
+   logical_sector >= conf->reshape_safe)
 
-    drivers/scsi/aic7xxx/aic7xxx_osm.c: In function 'ahc_platform_free':
-    drivers/scsi/aic7xxx/aic7xxx_osm.c:1231:41: error:
-	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
+The condition that causes the early bailout is made to match this.
 
-Most architectures define the iounmap argument to be volatile.  To fix this
-issue we do the same for OpenRISC.  This patch must go before PCI is enabled on
-OpenRISC to avoid any compile failures.
-
-Link: https://lore.kernel.org/lkml/20220729033728.GA2195022@roeck-us.net/
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Stafford Horne <shorne@gmail.com>
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/io.h | 2 +-
- arch/openrisc/mm/ioremap.c     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/raid5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/openrisc/include/asm/io.h b/arch/openrisc/include/asm/io.h
-index c298061c70a7..8aa3e78181e9 100644
---- a/arch/openrisc/include/asm/io.h
-+++ b/arch/openrisc/include/asm/io.h
-@@ -31,7 +31,7 @@
- void __iomem *ioremap(phys_addr_t offset, unsigned long size);
- 
- #define iounmap iounmap
--extern void iounmap(void __iomem *addr);
-+extern void iounmap(volatile void __iomem *addr);
- 
- #include <asm-generic/io.h>
- 
-diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
-index daae13a76743..8ec0dafecf25 100644
---- a/arch/openrisc/mm/ioremap.c
-+++ b/arch/openrisc/mm/ioremap.c
-@@ -77,7 +77,7 @@ void __iomem *__ref ioremap(phys_addr_t addr, unsigned long size)
- }
- EXPORT_SYMBOL(ioremap);
- 
--void iounmap(void __iomem *addr)
-+void iounmap(volatile void __iomem *addr)
- {
- 	/* If the page is from the fixmap pool then we just clear out
- 	 * the fixmap mapping.
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index c8539d0e12dd..45482cebacdb 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -5841,7 +5841,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ 	if ((bi->bi_opf & REQ_NOWAIT) &&
+ 	    (conf->reshape_progress != MaxSector) &&
+ 	    (mddev->reshape_backwards
+-	    ? (logical_sector > conf->reshape_progress && logical_sector <= conf->reshape_safe)
++	    ? (logical_sector >= conf->reshape_progress && logical_sector < conf->reshape_safe)
+ 	    : (logical_sector >= conf->reshape_safe && logical_sector < conf->reshape_progress))) {
+ 		bio_wouldblock_error(bi);
+ 		if (rw == WRITE)
 -- 
 2.35.1
 
