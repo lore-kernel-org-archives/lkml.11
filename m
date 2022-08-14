@@ -2,50 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4292C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7ABC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241701AbiHNPsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        id S241721AbiHNPsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241703AbiHNPqK (ORCPT
+        with ESMTP id S241726AbiHNPqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:46:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5156ABC1A;
-        Sun, 14 Aug 2022 08:34:39 -0700 (PDT)
+        Sun, 14 Aug 2022 11:46:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FAF24F18;
+        Sun, 14 Aug 2022 08:34:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC12360CF7;
-        Sun, 14 Aug 2022 15:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD26C43145;
-        Sun, 14 Aug 2022 15:34:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6408B80B43;
+        Sun, 14 Aug 2022 15:34:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46901C43142;
+        Sun, 14 Aug 2022 15:34:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491278;
-        bh=XCAFwGt6ZZvGEEsPqFEisCf1nOo3sIPK3uhYeB8yzeQ=;
+        s=k20201202; t=1660491281;
+        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJavevuT+uTlhH2CVD+/cbXfad1j+c+8FfP9gaL5czloKYEXit3aBnGea1tuA5iNg
-         BSUMM0H3U06FawagtGsL8SCflFzOXC508FR2wm1YSSS2VF+QoDYi6eTqicXwr4Qt9M
-         TSJzcmyilmIUwkPkf8ztus5AvjhEsN/DFJ/vEVT42vM1liIx9rs4B5g5rj1x5J2ki0
-         STzROC1poAdKpToL5FlgvfGQvHhFHuwOzQM8J6ScGF9t24VB1w4a9W4Lmr3KbZNJJ4
-         ZxddyVSqG2Z0ZwQZ9af3TJgUVSWAv4qHLI9lqgrbNi3AIrWzQqlVyfN5shQuXGt9Cj
-         8Rwri+UBLvsNQ==
+        b=Gm4z/RmK99ADP92vAmkMgCQZWIqkJyKWbr7udGFL/53K3QjQazR0QiDYMmVx9PvHn
+         ljity6+kBBgl5Y51Gz9PfErPP9qTA8jOuQF93aPVjVLZPrM6aiElKYRuCx+EL3qAdE
+         d0i4YrWni1ykO+48ZRiAQt4lix4KZNLUuhwbpTZLClp/veho6HjbJ3yWIms6Di+tfh
+         XrZGKmqyqf7UM5d0pLMHjPb+T/e4I4oGWjHi06+PvzDEcYKooVfO2hav7T4ggQPGwE
+         aFqmtwEc8gn8CSVGg2oSJi/1H1miRlXGJx8Slq/iuszBF+wA3RWmuFABezfGdp41Wr
+         Pa7Z9N1ELeF7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 04/31] usb: gadget: uvc: call uvc uvcg_warn on completed status instead of uvcg_info
-Date:   Sun, 14 Aug 2022 11:34:04 -0400
-Message-Id: <20220814153431.2379231-4-sashal@kernel.org>
+Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, khilman@baylibre.com,
+        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 06/31] drm/meson: Fix overflow implicit truncation warnings
+Date:   Sun, 14 Aug 2022 11:34:06 -0400
+Message-Id: <20220814153431.2379231-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153431.2379231-1-sashal@kernel.org>
 References: <20220814153431.2379231-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,36 +57,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Grzeschik <m.grzeschik@pengutronix.de>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-[ Upstream commit a725d0f6dfc5d3739d6499f30ec865305ba3544d ]
+[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
 
-Likewise to the uvcvideo hostside driver, this patch is changing the
-usb_request message of an non zero completion handler call from dev_info
-to dev_warn.
+Fix -Woverflow warnings for drm/meson driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20220529223848.105914-4-m.grzeschik@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
+drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
+ #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
+                                                ^
+drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
+   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+                  ^~~~~~~~~~~~~~~~~~~~~
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/uvc_video.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
-index 633e23d58d86..5ce548c2359d 100644
---- a/drivers/usb/gadget/function/uvc_video.c
-+++ b/drivers/usb/gadget/function/uvc_video.c
-@@ -159,7 +159,7 @@ uvc_video_complete(struct usb_ep *ep, struct usb_request *req)
- 		break;
+diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
+index 259f3e6bec90..bb7e109534de 100644
+--- a/drivers/gpu/drm/meson/meson_viu.c
++++ b/drivers/gpu/drm/meson/meson_viu.c
+@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
+ 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
  
- 	default:
--		uvcg_info(&video->uvc->func,
-+		uvcg_warn(&video->uvc->func,
- 			  "VS request completed with status %d.\n",
- 			  req->status);
- 		uvcg_queue_cancel(queue, 0);
+ 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
+-		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+-			       VIU_OSD_BLEND_REORDER(1, 0) |
+-			       VIU_OSD_BLEND_REORDER(2, 0) |
+-			       VIU_OSD_BLEND_REORDER(3, 0) |
+-			       VIU_OSD_BLEND_DIN_EN(1) |
+-			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
+-			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
+-			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
+-			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
+-			       VIU_OSD_BLEND_HOLD_LINES(4),
+-			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
++		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
++			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
++			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
++			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
++			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
++			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
++			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
++			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
++		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
+ 
+ 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
+ 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
 -- 
 2.35.1
 
