@@ -2,193 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77965C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620D8C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239848AbiHNOiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        id S239870AbiHNOls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239819AbiHNOiX (ORCPT
+        with ESMTP id S231945AbiHNOlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:38:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CC715823;
-        Sun, 14 Aug 2022 07:38:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFCE3B80B43;
-        Sun, 14 Aug 2022 14:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C54C433D6;
-        Sun, 14 Aug 2022 14:38:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660487899;
-        bh=1R2kSsv8yxj/APAL46W0dsOZfWvi9UbUMoyn3yDzmdE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pTluyPRKNy4j47RUrC6Foivinh94Npye4rXeja8ecySw8vPykANd8Lzd6bWjmLM0o
-         i4rztsSLv21ZV1EGPWCGLfdjVpRFVf98tlZmrQVkKnDG0dwVwceiGXJ3gS2sjx2fF1
-         VpSRVbkHUi3TywuxnbIp0YUSWHdZG4+HpxysqoQ8WADpu/Lmvr7YzM1lYqi9b/XHQ/
-         Q2F05pDdgaAtyCqnUpm9VoUIynl0uumS921RyJAY/rfEtKbcdYJWEQsp5w9lCjXURm
-         ynx3iouQAjxrb075t+XNXix24S83+EVbjj/Ou0aSciNxCdlXbu/OlysJRitcNqpGys
-         9N3O3+2rW0g/g==
-Date:   Sun, 14 Aug 2022 15:48:48 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Julien Panis <jpanis@baylibre.com>
-Cc:     vilhelm.gray@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        mranostay@ti.com
-Subject: Re: [PATCH v4 3/3] counter: capture-tiecap: capture driver support
- for ECAP
-Message-ID: <20220814154848.24442d4c@jic23-huawei>
-In-Reply-To: <20220810140724.182389-4-jpanis@baylibre.com>
-References: <20220810140724.182389-1-jpanis@baylibre.com>
-        <20220810140724.182389-4-jpanis@baylibre.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 14 Aug 2022 10:41:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD9013D0D
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660488103; x=1692024103;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=5Ny0FCAMeRZjgop4vh0jVceTVMsrt8tUl8nztH2Rwd8=;
+  b=cmNFVBzNomDyvEL9iKDjo7dg5WHjI3GDrKKwhjCVcCnoKdLdnMbXL6iw
+   ONlxMb3ndEQasok2VJPqnFt2bWj2fAW/CN/x9oezXjF9flPd+58EUtkXt
+   KFFS/VqS5mz4NybeuUEVlH4xwov1jPDNCy7/SlcNy+T0HhO6n/s7Sksbq
+   GaPhKJCDHF5S6+/BOBokKqYLaALxSdM45wew25a+6I9WhBOKV85RMgxT0
+   5oLzylKA851xL+fkhbTVsPHHzUXMgMqiRhp7L0+DG+XpAUrv1mwKnq6qh
+   BmT7UpLN23FmMvjYG+JQHR7GKrx2DTJkj3CXewGKlcfBrXFYsSVfjilQY
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="317808748"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="317808748"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 07:41:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="635197448"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga008.jf.intel.com with ESMTP; 14 Aug 2022 07:41:41 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Sun, 14 Aug 2022 07:41:41 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Sun, 14 Aug 2022 07:41:41 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Sun, 14 Aug 2022 07:41:41 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.105)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Sun, 14 Aug 2022 07:41:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cKOZsVubUB56HuAvTnMtob+MglmjTcxgcT5MinH3X7W3FiejopDOChI0XynxYE+AyZ60yvVoODuaKAhyA9dvYfa8bgy3R2qobkFe8ddU+xdelSmYjQzow+IPNN0w63QMcTlJ8xqCDiO3iYHfBDcWVSp3CEJJlrdwpXwO0+2/MyVzwsD8VErmc3PzIRw0xjfvS+/GisK4wrYS264kBJW3e3BK0PFMWHesKo+v6o33MWjrbSEry2tahFnvs6S8ORpct2e/DqYnSWG8gIuxbEC4/ljtyZwghSf5a/lWrNSG8lSthhJbCFLc+dLmeXTKGwpo0O04Y0O6iSG/cQlgpks1yA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qZio0R4GUjlbFLpCWI1YzU1JwlInSjUn6jYvUmGx9xs=;
+ b=CttfkEAuSY0whreloXuVy3d2iG5ttXXUezUqFHFRaveLMjmRGwodPrMHxMZDC5hW89IhHAm0Bw8pAFGnyy0Gy/9PE8hFscAj+ssRfeDybfyvHZMka/DVl/lG8tF//Qa8pW7u59yTb9TFThN/NAUIY3dVVusmByLaBLQrXWwP+KywVQ/4YT8GO9C6yVvA7JKE6TcazIsm/jIVXPhWbiIRFBm9Ze4apYBE8W74QQ+4rXVcvvxcezzJJhFADwKrACoRBm7vMRY1FNu24Tr7CnmAz0L1nwwySTH+WGJFT2wAAbWBkQHln4pohydLmhEXsm3Dz+g5P3zSP7KGIivjQxnf0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SJ1PR11MB6201.namprd11.prod.outlook.com (2603:10b6:a03:45c::14)
+ by MN2PR11MB4301.namprd11.prod.outlook.com (2603:10b6:208:188::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Sun, 14 Aug
+ 2022 14:41:36 +0000
+Received: from SJ1PR11MB6201.namprd11.prod.outlook.com
+ ([fe80::10da:929a:73eb:40ad]) by SJ1PR11MB6201.namprd11.prod.outlook.com
+ ([fe80::10da:929a:73eb:40ad%5]) with mapi id 15.20.5525.010; Sun, 14 Aug 2022
+ 14:41:36 +0000
+Date:   Sun, 14 Aug 2022 14:41:18 +0000
+From:   Ashok Raj <ashok.raj@intel.com>
+To:     Andrew Cooper <Andrew.Cooper3@citrix.com>
+CC:     Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "luto@amacapital.net" <luto@amacapital.net>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ashok Raj <ashok.raj@intel.com>
+Subject: Re: [PATCH 5/5] x86/microcode: Handle NMI's during microcode update.
+Message-ID: <YvkJjsdlDIcerqLg@araj-dh-work>
+References: <20220813223825.3164861-1-ashok.raj@intel.com>
+ <20220813223825.3164861-6-ashok.raj@intel.com>
+ <0d6afdb6-e546-4ef0-80c2-84827c11f2ce@www.fastmail.com>
+ <Yvhj5YaLdJnF60uR@araj-dh-work>
+ <328bf268-51b3-f9b2-1315-bac0e883d135@citrix.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <328bf268-51b3-f9b2-1315-bac0e883d135@citrix.com>
+X-ClientProxiedBy: SJ0PR03CA0174.namprd03.prod.outlook.com
+ (2603:10b6:a03:338::29) To SJ1PR11MB6201.namprd11.prod.outlook.com
+ (2603:10b6:a03:45c::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0841676f-f7cd-4ca6-40e9-08da7e031716
+X-MS-TrafficTypeDiagnostic: MN2PR11MB4301:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: m3Q2Si2Y4Xtrc/WE7L+ngFCqAGYyPHOGPLbUwtztNxzcp5ZFufbsYUfnPOQGifmrsgaZZ40t7LZWhI6RqntVyfPZWZ1JtvvUssnptRuVeEC6GaYFtHeCGpzvgVwM5tu6OHwJPI9hzpP8hUvT/hSo3zv4Rc/2lyRg7Tokv88aICFxUHf62TRVAO/pNqdaXtKoNTJrCpPFBR8ihoQkeCtN7k+c/euIdLbW8gJ0wGYKkACvzVBXaboMUDPOs9hrI1syoCuqXyU4Hw//t/T6LEB06tixgAiPii9WI9+KGcu1imoIxEO+wQMmNLze6GoRya4N0M1RWiR6+/k4rSC0CoQP+/jmMex6s7eupcTJ9J3gEbVk2rEAcZgi1EzKmyRZMDj3g1e8elv1P81OSSz4+iQtfXRiFzLN2RJcLBnmHYo2zeUADYP+BNS0d6OgrqEMVvQI6T2xVV/bvKyppSR56kZ6KzQ+jlM+ZVzxYvUPpDONaxI8j5eI4ITYae3XSxLjZ3ZRVS3lHJZQRuwBVcyEYv/w+hsM89nS3WuBE29T0zCOMNHYXYLBPe2GfIQndZg5CLvV32eUF2yW3jYD0ErMJuJFIwkgtInCysb+3+IcXgjf0UlJo2Zdbql0MrHN6ZmnbhSxzQ0gfwsmC2R9c8dAdO3tTrxZWv08kcMDlS7PgsnJwmKqSb0RsMBt+jTQUiDAgzDHJ78I0nwfyhj3575AODksGgBD8aCoTVm6IUVtnZbg36HI6weZZ8oDyJIMGWYBQRq5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR11MB6201.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(39860400002)(136003)(366004)(376002)(346002)(396003)(2906002)(15650500001)(33716001)(5660300002)(44832011)(6666004)(38100700002)(41300700001)(83380400001)(6506007)(6512007)(26005)(9686003)(6916009)(107886003)(54906003)(316002)(86362001)(8676002)(186003)(82960400001)(6486002)(66556008)(8936002)(4326008)(66476007)(66946007)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?EiTygCLo2aOchxYJ6Y5IY7K+r/8T2VUShh3Nymd3gioXfhxicsC2HxiP4K?=
+ =?iso-8859-1?Q?BqtEi2FQ/MnHvfwkP9fJrasvzI148XhF0zhRkmCCz95Gvzb9sSJP5qVlHr?=
+ =?iso-8859-1?Q?tPmVStaNvNEZSEMyDXqi1TWDf6E7Xrvev9RpaFAfwnjKROER+ZzpbfXv60?=
+ =?iso-8859-1?Q?jVgrizLKWUqHBljHMSPVo9unbzjs1eTUbyTRRGfi8kg+5MGaKn6+edP6FN?=
+ =?iso-8859-1?Q?CRuSVYKXORpxrP1trIQV+Wp8g+X50uDpUGZBQ0CXlvj3muXSeaUdwKXkXn?=
+ =?iso-8859-1?Q?xzE4jICswrLH9Ls8Bwj0gVq8s5loIPQHWstu4QQS+W1SgwmsI6YIhPj/aE?=
+ =?iso-8859-1?Q?FoTUAvwm59O8RxfztY/8V3KIQLfnOleyXl4TSeh2SmNJOCOwkZuSS5nUz2?=
+ =?iso-8859-1?Q?TpuVVw8f5PFPVkJ78LMUAaXnnvnv4qsTovTAwiy4zU+RSjbxvBanm4DXIB?=
+ =?iso-8859-1?Q?ptt/lhK83+h7WEGbEkXjlMi6CoFCxhpU/A4V4FbLxBooMuk2aZmG94gkID?=
+ =?iso-8859-1?Q?g+I6yGOELsNhOEXBWsxPZGff6SMH3s6/DTJnXgmEwAUj1KN0xgdTLQ7uf9?=
+ =?iso-8859-1?Q?VO2Itz5eJHm5lE21gjIzuWeb3lGXaU00Op/c1R/OAQ7yx5iYbKLgHoqbu0?=
+ =?iso-8859-1?Q?TAX/ivlLvpVGz4Tfxm+HyfuwDMTCFAtiIEEbv1QdYvAwH/CYGvv8VFCpH6?=
+ =?iso-8859-1?Q?pNx0YWv1FXrkWiaurpjIh1RGmFU9LZse3g9T5MVvHyvsviXISOppQSlEK5?=
+ =?iso-8859-1?Q?LlBCKnfm1TVjP3OJXFo+iSgxE74DDCrXpGY1sEgZ8sO3wKxOUHS9KmAh/d?=
+ =?iso-8859-1?Q?lDhQsuJVhe3XGaW0Yf2+Rx3xTOddKKnqcb/AYbEHaZWaFA1hr9Io6AKf9L?=
+ =?iso-8859-1?Q?Bmj1Yj8Qhf9t15t7RJNpIkOVfESoqPua6KCjuhxxFx3qE0FWuBjAEqoaJp?=
+ =?iso-8859-1?Q?Lv+bNjUXYDGUqtDlMgq/JmP5YNftXTE0ibVeo2P2KsQmzLxpK2XEVrq6Xn?=
+ =?iso-8859-1?Q?D1Ub4k/0q3NZuKYx6+pkWG33KMEvphxoGV8qbF3hdcV6/EGhKqgfK8cIan?=
+ =?iso-8859-1?Q?xqgHtoyZheg+LENqX6xUEXmm+60X/4j3wEgByiqn4esN8L8Dv4cmvih5hw?=
+ =?iso-8859-1?Q?KS8Sj2rpJ3gvvScGRvwlkMYAmtOQGgBRXZDW5jhBOlEWupdzfRJfzJiZdH?=
+ =?iso-8859-1?Q?0bo5EPBkG3h5EpLpH9hz7+LqG/19gF7p4TB4LDI0Tke5vRXIcnJeaTtFtX?=
+ =?iso-8859-1?Q?A0rdMQAg2pv7uYaNFIGrGFEKzRm8OH39laHc0qhGjukseWqwFx+H7nogzr?=
+ =?iso-8859-1?Q?Vi/PNqKCY/8MxDzLe48WpDb1dKXHran6QQXIj4pnZjZD4caGtKia2yG8nM?=
+ =?iso-8859-1?Q?+TQdr6IvaVpazPclAsOLQEsggOwTdteLfoyCa0xNWeKcAybGmIIZ0Ji8QI?=
+ =?iso-8859-1?Q?3ycdwwoXn6Tz6XHDJkCK7L4hhMcbe8+qJGVyhGvrJtel+Qt9z9Pnai1WQZ?=
+ =?iso-8859-1?Q?OBDsw50RUi7VHUCy3qGavapztP3sxR5qiv+awhmdwdm5edIbVMQOvB2LSo?=
+ =?iso-8859-1?Q?JpgQr3TMWE1M/G2y90LsuYICh8faU9Pv+AZHxzZaO9DvM8en9WnfUldZkJ?=
+ =?iso-8859-1?Q?XZoiOzHz19izypKHq6+W0frP0R9fkeh9okPhkyHEN8syClGkxILD79Lw?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0841676f-f7cd-4ca6-40e9-08da7e031716
+X-MS-Exchange-CrossTenant-AuthSource: SJ1PR11MB6201.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2022 14:41:36.5569
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4mRjn0DGANPyZ/yL/x77u8jC/kCLX5F5ln8F+ojq/hUghl7iuBoBBq5fbrZ+TZj/hgP9wYRWVtuT+gSoCUSLMg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4301
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 10 Aug 2022 16:07:24 +0200
-Julien Panis <jpanis@baylibre.com> wrote:
+Hi Andrew,
 
-> ECAP hardware on AM62x SoC supports capture feature. It can be used
-> to timestamp events (falling/rising edges) detected on signal input pin.
+On Sun, Aug 14, 2022 at 11:58:17AM +0000, Andrew Cooper wrote:
+> >> If I were implementing this, I would rendezvous via stop_machine as usual.  Then I would set a flag or install a handler indicating that we are doing a microcode update, send NMI-to-self, and rendezvous in the NMI handler and do the update.
+> > Well, that is exactly what I did for the first attempt. The code looked so
+> > beautiful in the eyes of the creator :-) but somehow I couldn't get it to
+> > not lock up.
 > 
-> This commit adds capture driver support for ECAP hardware on AM62x SoC.
+> So the way we do this in Xen is to rendezvous in stop machine, then have
+> only the siblings self-NMI.  The primary threads don't need to be in NMI
+> context, because the WRMSR to trigger the update *is* atomic with NMIs.
 > 
-> In the ECAP hardware, capture pin can also be configured to be in
-> PWM mode. Current implementation only supports capture operating mode.
-> Hardware also supports timebase sync between multiple instances, but
-> this driver supports simple independent capture functionality.
+> However, you do need to make sure that the NMI wait loop knows not to
+> wait for primary threads, otherwise you can deadlock when taking an NMI
+> on a primary thread between setting up the NMI handler and actually
+> issuing the update.
 > 
-> Signed-off-by: Julien Panis <jpanis@baylibre.com>
-> ---
-Hi Julien,
 
-Been too long since I reviewed a counter driver, so I'll have
-to leave that side of things to William (or find a spare few days
-to remind myself of the details!)
+I'm almost sure that was the deadlock I ran into. You are correct, the
+primary thread doesn't need to be in NMI, since once the wrmsr starts,  it
+can't be interrupted.
 
-A few superficial things I notice below whilst taking a quick look.
+But the primary needs to wait until its own siblings have dropped into NMI.
+Before proceeding to perform wrmsr.
 
-It might be worth adding a bit of description around what the
-result of the various runtime pm calls is (what's actually getting
-powered down?)
+in stop_machine() handler, primary thread waits for its thread siblings to
+enter NMI and report itself. Siblings will simply self IPI and then proceed
+to wait for exit_sync
 
-Jonathan
+then primary does the wrmsr flow
+clears the wait_cpus mask so that secondary inside NMI hander can release
+itself
 
-> +static int ecap_cnt_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct ecap_cnt_dev *ecap_dev;
-> +	struct counter_device *counter_dev;
-> +	void __iomem *mmio_base;
-> +	int ret;
-> +
-> +	counter_dev = devm_counter_alloc(dev, sizeof(*ecap_dev));
-> +	if (IS_ERR(counter_dev))
-> +		return PTR_ERR(counter_dev);
-> +
-> +	counter_dev->name = ECAP_DRV_NAME;
-> +	counter_dev->parent = dev;
-> +	counter_dev->ops = &ecap_cnt_ops;
-> +	counter_dev->signals = ecap_cnt_signals;
-> +	counter_dev->num_signals = ARRAY_SIZE(ecap_cnt_signals);
-> +	counter_dev->counts = ecap_cnt_counts;
-> +	counter_dev->num_counts = ARRAY_SIZE(ecap_cnt_counts);
-> +
-> +	ecap_dev = counter_priv(counter_dev);
-> +
-> +	ecap_dev->clk = devm_clk_get(dev, "fck");
-> +	if (IS_ERR(ecap_dev->clk))
-> +		return dev_err_probe(dev, PTR_ERR(ecap_dev->clk), "failed to get clock\n");
-> +
-> +	ret = clk_prepare_enable(ecap_dev->clk);
+resync at exit rendezvous.
 
-We now have dev_clk_get_enabled() in upstream - finally!
-Text book usecase for it here.
+I have this coded, will test and repost.
 
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable clock\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(dev, ecap_cnt_clk_disable, ecap_dev->clk);
-> +	if (ret) {
-> +		dev_err(dev, "failed to add clock disable action\n");
-> +		return ret;
-> +	}
-> +
-> +	ecap_dev->clk_rate = clk_get_rate(ecap_dev->clk);
-> +	if (!ecap_dev->clk_rate) {
-> +		dev_err(dev, "failed to get clock rate\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	mmio_base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(mmio_base))
-> +		return PTR_ERR(mmio_base);
-> +
-> +	ecap_dev->regmap = devm_regmap_init_mmio(dev, mmio_base, &ecap_cnt_regmap_config);
-> +	if (IS_ERR(ecap_dev->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(ecap_dev->regmap), "failed to init regmap\n");
-> +
-> +	spin_lock_init(&ecap_dev->lock);
-> +
-> +	ret = platform_get_irq(pdev, 0);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to get irq\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_request_irq(dev, ret, ecap_cnt_isr, 0, pdev->name, counter_dev);
-> +	if (ret) {
-> +		dev_err(dev, "failed to request irq\n");
-> +		return ret;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, counter_dev);
-> +	pm_runtime_enable(dev);
-> +
-> +	ecap_dev->enabled = 0;
-> +	ecap_cnt_capture_set_evmode(counter_dev, 0);
-> +
-> +	ret = devm_counter_add(dev, counter_dev);
-> +	if (ret) {
-> +		dev_err(dev, "failed to add counter\n");
-> +		pm_runtime_disable(dev);
-
-Unless there is a very good reason to mix devm and unmanaged
-code, it's best to not do so as it leads to much head scratching over
-whether there are race conditions.  Here I can't see a reason not
-to use devm_add_action_or_reset() to make the pm_runtime_disabled()
-into devm managed.
-
-Any setting of enabled occured after probe() was done so that's
-fine as unmanaged or you could register another devm_ callback
-if you prefer, but with a comment explaining the path to it needing
-to do anything.
-
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int ecap_cnt_remove(struct platform_device *pdev)
-> +{
-> +	struct counter_device *counter_dev = platform_get_drvdata(pdev);
-> +	struct ecap_cnt_dev *ecap_dev = counter_priv(counter_dev);
-> +
-> +	if (ecap_dev->enabled)
-> +		ecap_cnt_capture_disable(counter_dev);
-> +
-> +	pm_runtime_disable(&pdev->dev);
-> +
-> +	return 0;
-> +}
-> +
+Cheers,
+Ashok
