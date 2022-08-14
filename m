@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 986FAC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11B1C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241860AbiHNPuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        id S241866AbiHNPu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241957AbiHNPqv (ORCPT
+        with ESMTP id S241987AbiHNPqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:46:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1291C914;
-        Sun, 14 Aug 2022 08:35:12 -0700 (PDT)
+        Sun, 14 Aug 2022 11:46:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB0CF35;
+        Sun, 14 Aug 2022 08:35:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 474B2B80B83;
-        Sun, 14 Aug 2022 15:35:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ADDDC433C1;
-        Sun, 14 Aug 2022 15:35:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8226F60DC5;
+        Sun, 14 Aug 2022 15:35:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2205AC43140;
+        Sun, 14 Aug 2022 15:35:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491310;
-        bh=YN7hsJzAs5oj+GODhyYpaGyRXv7Zw0L+eTzt7H41l3c=;
+        s=k20201202; t=1660491313;
+        bh=c/6VzAsYv+gnK5VyepI2p2EwSqHQf9tsNnTDEQudJ4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OmJQaC4uOH44yHVwbwPv9I29VK8xNOxg5IvoufaGmIkUSB6yLaG9Q5U5j/tM0AP9+
-         QwSdbochadW0+EEv/UTClDgqW6kTnVk2kx2M5JqV1ubTEbaZRgvIllxPZ7oGegcdOl
-         r6SKhb5a3Cvp6Vk3pEAVPP8mU2/4swrkG1T0ps1NXp1//uC5iiDgtPuTRqJh2VpeF9
-         701e/RVGO2lyk8FhYcHmIejb7pWy5uLikxxwYiXWA4UVASG7XXUaBoWuy33e5PWX32
-         YCJF7MAq0goM55b4VEllHN9XxjcOybeoi6mMkqcUbNz1KdB8ETEA6QbVXRmoep4Lc3
-         YEiWRXlmH7fmQ==
+        b=LYbsworFMmmmMj84gyox4PXPh95IwITNh7+C1dVLYTXIKfs+3Q3vtTrvvq8yIky8Q
+         TbdMrUncLEnJNSbZuO+j3pFUUm18RbTayOyl25t18zzaZ75GP3y1qCNNyDTuNMWbPY
+         xaWjFbHA0We7gNwqZ2DJK10HTbNEdoKoD/IrpimPoeu0z0losMplZbkRB7HIXsU/Id
+         E0UhMC1aGinxepduZxx3VbD/B7s0memoL2zBhuDT9W1xEBTrHtDrE90tJ3knmsn7A5
+         s4AS6+4XAZrES61Rw0Vlh2iIVU8mzgeWBxUc4wkzomQsNyyrvo9HD1g4VMhsA2cUrM
+         dMNtsFCm1CGyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 20/31] PCI/ACPI: Guard ARM64-specific mcfg_quirks
-Date:   Sun, 14 Aug 2022 11:34:20 -0400
-Message-Id: <20220814153431.2379231-20-sashal@kernel.org>
+Cc:     Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, zyjzyj2000@gmail.com,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 22/31] RDMA/rxe: Limit the number of calls to each tasklet
+Date:   Sun, 14 Aug 2022 11:34:22 -0400
+Message-Id: <20220814153431.2379231-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153431.2379231-1-sashal@kernel.org>
 References: <20220814153431.2379231-1-sashal@kernel.org>
@@ -52,42 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huacai Chen <chenhuacai@loongson.cn>
+From: Bob Pearson <rpearsonhpe@gmail.com>
 
-[ Upstream commit 40a6cc141b4b9580de140bcb3e893445708acc5d ]
+[ Upstream commit eff6d998ca297cb0b2e53b032a56cf8e04dd8b17 ]
 
-Guard ARM64-specific quirks with CONFIG_ARM64 to avoid build errors,
-since mcfg_quirks will be shared by more than one architectures.
+Limit the maximum number of calls to each tasklet from rxe_do_task()
+before yielding the cpu. When the limit is reached reschedule the tasklet
+and exit the calling loop. This patch prevents one tasklet from consuming
+100% of a cpu core and causing a deadlock or soft lockup.
 
-Link: https://lore.kernel.org/r/20220714124216.1489304-2-chenhuacai@loongson.cn
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://lore.kernel.org/r/20220630190425.2251-9-rpearsonhpe@gmail.com
+Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/pci_mcfg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/infiniband/sw/rxe/rxe_param.h |  6 ++++++
+ drivers/infiniband/sw/rxe/rxe_task.c  | 16 ++++++++++++----
+ 2 files changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
-index 95f23acd5b80..2709ef2b0351 100644
---- a/drivers/acpi/pci_mcfg.c
-+++ b/drivers/acpi/pci_mcfg.c
-@@ -41,6 +41,8 @@ struct mcfg_fixup {
- static struct mcfg_fixup mcfg_quirks[] = {
- /*	{ OEM_ID, OEM_TABLE_ID, REV, SEGMENT, BUS_RANGE, ops, cfgres }, */
+diff --git a/drivers/infiniband/sw/rxe/rxe_param.h b/drivers/infiniband/sw/rxe/rxe_param.h
+index f9fb56ec6dfd..dca86422b0a2 100644
+--- a/drivers/infiniband/sw/rxe/rxe_param.h
++++ b/drivers/infiniband/sw/rxe/rxe_param.h
+@@ -98,6 +98,12 @@ enum rxe_device_param {
+ 	RXE_INFLIGHT_SKBS_PER_QP_HIGH	= 64,
+ 	RXE_INFLIGHT_SKBS_PER_QP_LOW	= 16,
  
-+#ifdef CONFIG_ARM64
++	/* Max number of interations of each tasklet
++	 * before yielding the cpu to let other
++	 * work make progress
++	 */
++	RXE_MAX_ITERATIONS		= 1024,
 +
- #define AL_ECAM(table_id, rev, seg, ops) \
- 	{ "AMAZON", table_id, rev, seg, MCFG_BUS_ANY, ops }
+ 	/* Delay before calling arbiter timer */
+ 	RXE_NSEC_ARB_TIMER_DELAY	= 200,
  
-@@ -162,6 +164,7 @@ static struct mcfg_fixup mcfg_quirks[] = {
- 	ALTRA_ECAM_QUIRK(1, 13),
- 	ALTRA_ECAM_QUIRK(1, 14),
- 	ALTRA_ECAM_QUIRK(1, 15),
-+#endif /* ARM64 */
- };
+diff --git a/drivers/infiniband/sw/rxe/rxe_task.c b/drivers/infiniband/sw/rxe/rxe_task.c
+index 6951fdcb31bf..568cf56c236b 100644
+--- a/drivers/infiniband/sw/rxe/rxe_task.c
++++ b/drivers/infiniband/sw/rxe/rxe_task.c
+@@ -8,7 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/hardirq.h>
  
- static char mcfg_oem_id[ACPI_OEM_ID_SIZE];
+-#include "rxe_task.h"
++#include "rxe.h"
+ 
+ int __rxe_do_task(struct rxe_task *task)
+ 
+@@ -34,6 +34,7 @@ void rxe_do_task(struct tasklet_struct *t)
+ 	int ret;
+ 	unsigned long flags;
+ 	struct rxe_task *task = from_tasklet(task, t, tasklet);
++	unsigned int iterations = RXE_MAX_ITERATIONS;
+ 
+ 	spin_lock_irqsave(&task->state_lock, flags);
+ 	switch (task->state) {
+@@ -62,13 +63,20 @@ void rxe_do_task(struct tasklet_struct *t)
+ 		spin_lock_irqsave(&task->state_lock, flags);
+ 		switch (task->state) {
+ 		case TASK_STATE_BUSY:
+-			if (ret)
++			if (ret) {
+ 				task->state = TASK_STATE_START;
+-			else
++			} else if (iterations--) {
+ 				cont = 1;
++			} else {
++				/* reschedule the tasklet and exit
++				 * the loop to give up the cpu
++				 */
++				tasklet_schedule(&task->tasklet);
++				task->state = TASK_STATE_START;
++			}
+ 			break;
+ 
+-		/* soneone tried to run the task since the last time we called
++		/* someone tried to run the task since the last time we called
+ 		 * func, so we will call one more time regardless of the
+ 		 * return value
+ 		 */
 -- 
 2.35.1
 
