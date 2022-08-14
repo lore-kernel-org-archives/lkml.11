@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD593C28B2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3978C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239891AbiHNQYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56602 "EHLO
+        id S241180AbiHNQYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241812AbiHNQWf (ORCPT
+        with ESMTP id S242341AbiHNQXw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:22:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F22E1033;
-        Sun, 14 Aug 2022 09:21:16 -0700 (PDT)
+        Sun, 14 Aug 2022 12:23:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159EC13F18;
+        Sun, 14 Aug 2022 09:21:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF8A60F72;
-        Sun, 14 Aug 2022 16:21:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08CC3C433D6;
-        Sun, 14 Aug 2022 16:21:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 096BFB80AEE;
+        Sun, 14 Aug 2022 16:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE86BC433C1;
+        Sun, 14 Aug 2022 16:21:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494075;
-        bh=W1kQkvtWGwbqL+LApdyAl6C20hT+IRfBd+s3KUr4l6Y=;
+        s=k20201202; t=1660494114;
+        bh=R02L0ZCJjmtfN54L9LyXEzxy81yp/EaA6NDAEoEHBw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QfgYc3Ox9dtV3EmM8Xarcs0ii/8P/PhDiq6lY6ig4qA9oAJasuS+VP1/80hercv99
-         9Oaw/i8ZTt6T+jNQgFNXckojykUnMn9fWBQo7x5B8GgJ0DJgm97tIs2l2js+wyW5vn
-         cvMy9TQWWRbPNJLXXhWGkKclcLId0PP/BrKIsVhZrrkJG1nmtJ3/LbuQTgER1RBbvA
-         eVhpCbGlLqowoPx+5ZZuAyITxY4Jx9CepDZN7v74+ZT3vKSb/p5n/Hk9GeYwAQ/ZBP
-         wxTs1iehkg3d6s+80GJwOpZ1fZ7+0DqrynetdvM2jA208qRnq77E7uJXeOswW0BScd
-         SfoG6BdTT+fiQ==
+        b=VCvwlBGrF/AqLGT0G/nOqtUootNTXhhGd7kwtzDReBU4r5JJk4QlnGVmnkla/Dk0u
+         xxhaH6isvDRhySikagqkgCfzfsXXxVZU58i7WLBD5EateXvc8HAmHL69CA0X6AUaKQ
+         qb1kX6RIGZLQzgkyJCKP3FTfGr2tdkewzDHhgCgGBZ68sg06Q0yh75xKBi7iXrEWqi
+         oYfd8EXVmywaUEhBTqD5TNeibohlBsUqQ1OK1WEanvA6pJ83jdF2j9smkBUEhO5waA
+         FqFEa4dYElUBRGnRMzBm7CkapgXAv0JDUkWwgddyV03tfmIfuBfIOW195Uj6Wqdjp4
+         CO8hfudvI1D9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+Cc:     Yong Zhi <yong.zhi@intel.com>,
         Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        peter.ujfalusi@linux.intel.com, daniel.baluta@nxp.com,
-        perex@perex.cz, tiwai@suse.com, kai.vehmanen@linux.intel.com,
-        guennadi.liakhovetski@linux.intel.com,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.19 24/48] ASoC: SOF: Intel: hda: add sanity check on SSP index reported by NHLT
-Date:   Sun, 14 Aug 2022 12:19:17 -0400
-Message-Id: <20220814161943.2394452-24-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, peter.ujfalusi@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, kai.vehmanen@linux.intel.com,
+        perex@perex.cz, tiwai@suse.com, akihiko.odaki@gmail.com,
+        mac.chiang@intel.com, CTLIN0@nuvoton.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.19 27/48] ASoC: Intel: sof_nau8825: Move quirk check to the front in late probe
+Date:   Sun, 14 Aug 2022 12:19:20 -0400
+Message-Id: <20220814161943.2394452-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
 References: <20220814161943.2394452-1-sashal@kernel.org>
@@ -57,48 +58,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Yong Zhi <yong.zhi@intel.com>
 
-[ Upstream commit e51699505042fb365df3a0ce68b850ccd9ad0108 ]
+[ Upstream commit 5b56db90bbaf9d8581e5e6268727d8ad706555e4 ]
 
-We should have a limited trust in the BIOS and verify that the SSP
-index reported in NHLT is valid for each platform.
+The sof_rt5682_quirk check was placed in the middle of
+hdmi handling code, move it to the front to be consistent
+with sof_rt5682.c/sof_card_late_probe().
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220725195343.145603-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Yong Zhi <yong.zhi@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220725194909.145418-11-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ sound/soc/intel/boards/sof_nau8825.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index bc07df1fc39f..328be26e2dbb 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -1395,6 +1395,7 @@ struct snd_soc_acpi_mach *hda_machine_select(struct snd_sof_dev *sdev)
+diff --git a/sound/soc/intel/boards/sof_nau8825.c b/sound/soc/intel/boards/sof_nau8825.c
+index 97dcd204a246..9b3a2ff4d9cd 100644
+--- a/sound/soc/intel/boards/sof_nau8825.c
++++ b/sound/soc/intel/boards/sof_nau8825.c
+@@ -177,11 +177,6 @@ static int sof_card_late_probe(struct snd_soc_card *card)
+ 	struct sof_hdmi_pcm *pcm;
+ 	int err;
  
- 		if (mach->tplg_quirk_mask & SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER &&
- 		    mach->mach_params.i2s_link_mask) {
-+			const struct sof_intel_dsp_desc *chip = get_chip_info(sdev->pdata);
- 			int ssp_num;
+-	if (list_empty(&ctx->hdmi_pcm_list))
+-		return -EINVAL;
+-
+-	pcm = list_first_entry(&ctx->hdmi_pcm_list, struct sof_hdmi_pcm, head);
+-
+ 	if (sof_nau8825_quirk & SOF_MAX98373_SPEAKER_AMP_PRESENT) {
+ 		/* Disable Left and Right Spk pin after boot */
+ 		snd_soc_dapm_disable_pin(dapm, "Left Spk");
+@@ -191,6 +186,11 @@ static int sof_card_late_probe(struct snd_soc_card *card)
+ 			return err;
+ 	}
  
- 			if (hweight_long(mach->mach_params.i2s_link_mask) > 1 &&
-@@ -1404,6 +1405,12 @@ struct snd_soc_acpi_mach *hda_machine_select(struct snd_sof_dev *sdev)
- 			/* fls returns 1-based results, SSPs indices are 0-based */
- 			ssp_num = fls(mach->mach_params.i2s_link_mask) - 1;
- 
-+			if (ssp_num >= chip->ssp_count) {
-+				dev_err(sdev->dev, "Invalid SSP %d, max on this platform is %d\n",
-+					ssp_num, chip->ssp_count);
-+				return NULL;
-+			}
++	if (list_empty(&ctx->hdmi_pcm_list))
++		return -EINVAL;
 +
- 			tplg_filename = devm_kasprintf(sdev->dev, GFP_KERNEL,
- 						       "%s%s%d",
- 						       sof_pdata->tplg_filename,
++	pcm = list_first_entry(&ctx->hdmi_pcm_list, struct sof_hdmi_pcm, head);
++
+ 	return hda_dsp_hdmi_build_controls(card, pcm->codec_dai->component);
+ }
+ 
 -- 
 2.35.1
 
