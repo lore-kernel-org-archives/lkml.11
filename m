@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BB3C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887E4C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243049AbiHNQhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
+        id S243057AbiHNQiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243102AbiHNQgZ (ORCPT
+        with ESMTP id S242940AbiHNQgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:36:25 -0400
+        Sun, 14 Aug 2022 12:36:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1191116;
-        Sun, 14 Aug 2022 09:28:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62161088;
+        Sun, 14 Aug 2022 09:28:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6324760FB1;
-        Sun, 14 Aug 2022 16:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1636C433B5;
-        Sun, 14 Aug 2022 16:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3735B60FC1;
+        Sun, 14 Aug 2022 16:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EEABC433C1;
+        Sun, 14 Aug 2022 16:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494517;
-        bh=Wvy1Op3i9vLGrYZm4IwP35X3KGCfoZ+j8ssDJnCh2xw=;
+        s=k20201202; t=1660494479;
+        bh=1HZL6Ii0eYbpxdGWodcz3JnCT22+06EimcngsnMDASM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TdbP4GwgMVCKwY2nrPm7AU31XMYOgwQvlD0r3DtBq4/UQhGBMeZmlhWdglZCVnYPO
-         T9IM2xIgomc114YOX4MRC+ClCRp7i7qdPsRr6OyaFe80G4o6t4oKNJtYcHqcyJmA4b
-         uqJSHQDNOfFjyCr1YtekUyKFBmQoz6jRbjDWB7ZLkTPlrK7Z4bKKZDwOI2SzWVyYQe
-         MIy7OE0ovmO3s2kuUMfFOvcvhokEgkQbbe8c/jwsjByCbOUWWZVHKtA/k1eAqxsCIJ
-         rpMCfjdcZ4C89QfaelJfTXdB5rgMS04hncLx1hPkxYIgnE8L+LyWG+tEiMIQPjKNEv
-         R02ULkBkL3W/A==
+        b=jycde2CoHIPMWxe870XnKJzM+rASJtlz/BedpahpQ8JKhSoW0K5l/wXlDaOj1mlk3
+         Y56hFG7Qx0C3gVqcxmrU60wpfm+393tGFrzRul7SJgPvioP2mezj5+2QPQe9cP/ffK
+         QDO4q2DlKaWjqLMll0jhyg6K8/sbwOoqLCR2VLBXn67EJsYQ5uzAkGtWiKq6EaLUNO
+         1DqCx7/sFdMt4mjt3M+RM9RYuRp1/DUPo/tdnC0tOvfHfDyuXa6/4EmjyzAPzBllrB
+         XSGy9Zde+9dSSxGKeXV8znrfv5uibqbdwYrWAdbexE/rxOcjEO9qdpM6GcyquWnamj
+         OEUVIsrLx2G9Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Timur Tabi <timur@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/16] tty: serial: Fix refcount leak bug in ucc_uart.c
-Date:   Sun, 14 Aug 2022 12:28:17 -0400
-Message-Id: <20220814162833.2398478-2-sashal@kernel.org>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu,
+        akpm@linux-foundation.org, philipp.tomsich@vrull.eu,
+        wangkefeng.wang@huawei.com, heiko@sntech.de, ebiederm@xmission.com,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 08/19] RISC-V: Add fast call path of crash_kexec()
+Date:   Sun, 14 Aug 2022 12:27:27 -0400
+Message-Id: <20220814162739.2398217-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814162833.2398478-1-sashal@kernel.org>
-References: <20220814162833.2398478-1-sashal@kernel.org>
+In-Reply-To: <20220814162739.2398217-1-sashal@kernel.org>
+References: <20220814162739.2398217-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,36 +56,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
+[ Upstream commit 3f1901110a89b0e2e13adb2ac8d1a7102879ea98 ]
 
-In soc_info(), of_find_node_by_type() will return a node pointer
-with refcount incremented. We should use of_node_put() when it is
-not used anymore.
+Currently, almost all archs (x86, arm64, mips...) support fast call
+of crash_kexec() when "regs && kexec_should_crash()" is true. But
+RISC-V not, it can only enter crash system via panic(). However panic()
+doesn't pass the regs of the real accident scene to crash_kexec(),
+it caused we can't get accurate backtrace via gdb,
+	$ riscv64-linux-gnu-gdb vmlinux vmcore
+	Reading symbols from vmlinux...
+	[New LWP 95]
+	#0  console_unlock () at kernel/printk/printk.c:2557
+	2557                    if (do_cond_resched)
+	(gdb) bt
+	#0  console_unlock () at kernel/printk/printk.c:2557
+	#1  0x0000000000000000 in ?? ()
 
-Acked-by: Timur Tabi <timur@kernel.org>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+With the patch we can get the accurate backtrace,
+	$ riscv64-linux-gnu-gdb vmlinux vmcore
+	Reading symbols from vmlinux...
+	[New LWP 95]
+	#0  0xffffffe00063a4e0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
+	81             *(int *)p = 0xdead;
+	(gdb)
+	(gdb) bt
+	#0  0xffffffe00064d5c0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
+	#1  0x0000000000000000 in ?? ()
+
+Test code to produce NULL address dereference in test_crash.c,
+	void *p = NULL;
+	*(int *)p = 0xdead;
+
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Tested-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220606082308.2883458-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/ucc_uart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/riscv/kernel/traps.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index a0555ae2b1ef..181d55e0c60f 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1141,6 +1141,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
- 		/* No compatible property, so try the name. */
- 		soc_string = np->name;
+diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+index ad14f4466d92..c1a13011fb8e 100644
+--- a/arch/riscv/kernel/traps.c
++++ b/arch/riscv/kernel/traps.c
+@@ -15,6 +15,7 @@
+ #include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/irq.h>
++#include <linux/kexec.h>
  
-+	of_node_put(np);
+ #include <asm/processor.h>
+ #include <asm/ptrace.h>
+@@ -43,6 +44,9 @@ void die(struct pt_regs *regs, const char *str)
+ 
+ 	ret = notify_die(DIE_OOPS, str, regs, 0, regs->cause, SIGSEGV);
+ 
++	if (regs && kexec_should_crash(current))
++		crash_kexec(regs);
 +
- 	/* Extract the SOC number from the "PowerPC," string */
- 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
- 		return 0;
+ 	bust_spinlocks(0);
+ 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
+ 	spin_unlock_irq(&die_lock);
 -- 
 2.35.1
 
