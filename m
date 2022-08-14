@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4842C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07133C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242214AbiHNPyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
+        id S242023AbiHNPy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241990AbiHNPuv (ORCPT
+        with ESMTP id S242005AbiHNPux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:50:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8264C1CFF7;
-        Sun, 14 Aug 2022 08:36:17 -0700 (PDT)
+        Sun, 14 Aug 2022 11:50:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7E518B2B;
+        Sun, 14 Aug 2022 08:36:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1249FB80B4D;
-        Sun, 14 Aug 2022 15:36:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82704C43470;
-        Sun, 14 Aug 2022 15:36:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87BAD60C92;
+        Sun, 14 Aug 2022 15:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B60C43470;
+        Sun, 14 Aug 2022 15:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491374;
-        bh=yx3F4GWmfbblmgPgIsm34N4nZ3rzz+7Tif+D4H6tSck=;
+        s=k20201202; t=1660491381;
+        bh=TPY6boGZ9LimDUB8G4GXrgYk+mHqEWmGJZWSctSXiZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mhhvMXWcbUlZSsKCIIeZKKfPFiNDu4noE6QCzBtZcRKHsb1Uj0d1Bmojd+Xpq3gFl
-         tFGmoVxwsqPEwB/agof+uoTGsYBzfJ5+uYQWV5ThcCM3WZjev0iZSEy46ONmmIpRKY
-         ZiyrDT9EkV7d0Ar2+vK8HR4G71S6bU7EX2xWKM2DsDt0fMTk2Ti+s+dAr49EeFKcTv
-         5KY3Nj8eM2wObfcriPHNAJEEDPRl6zcjtitup+UDYzWcqI1Hle8eRvjCQ6j/lGK9mw
-         ygY56g4u15VKO5fBSysZCl7eeiTIiw+q52gI4b4pBUWO1Mpc8XbZHr5XCBGuf9NDLp
-         N9QZ4qimpwdtQ==
+        b=iKwUNXXvBrvzOgVUd2OH7xgh/+kf4IvJU8XzzoLLUioPFgSjnL6dKUaMSxD27LBVq
+         x+tleBlb3FnH/5omQtM9g8w/hB4AT1VJa+XHJbE88szPWMnepsKFi+AMbVIgxm5epj
+         cjzMoScbeL8d/m2DdyX41HKjjGcGvj/6zq0cVDk+5vZJVOWikYKQUEgnBSafzguQPz
+         UeLNK7pz8/Hlq82G/A2DEujBd9PlIXlZOdsxaav8y9YuR1iOzFy3XYr167L6rwXB2g
+         e5+i8i7rPA4NRsQ2tmDSf6RloJUnK7M5Hi2aCDTHDnyIO0FkoOZsWdzkoULr+Y/Qaq
+         tNZdom3rM48mA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/13] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Sun, 14 Aug 2022 11:35:59 -0400
-Message-Id: <20220814153610.2380234-2-sashal@kernel.org>
+Cc:     Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/13] clk: qcom: ipq8074: dont disable gcc_sleep_clk_src
+Date:   Sun, 14 Aug 2022 11:36:03 -0400
+Message-Id: <20220814153610.2380234-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153610.2380234-1-sashal@kernel.org>
 References: <20220814153610.2380234-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,71 +53,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Robert Marko <robimarko@gmail.com>
 
-[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
+[ Upstream commit 1bf7305e79aab095196131bdc87a97796e0e3fac ]
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+Once the usb sleep clocks are disabled, clock framework is trying to
+disable the sleep clock source also.
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
+However, it seems that it cannot be disabled and trying to do so produces:
+[  245.436390] ------------[ cut here ]------------
+[  245.441233] gcc_sleep_clk_src status stuck at 'on'
+[  245.441254] WARNING: CPU: 2 PID: 223 at clk_branch_wait+0x130/0x140
+[  245.450435] Modules linked in: xhci_plat_hcd xhci_hcd dwc3 dwc3_qcom leds_gpio
+[  245.456601] CPU: 2 PID: 223 Comm: sh Not tainted 5.18.0-rc4 #215
+[  245.463889] Hardware name: Xiaomi AX9000 (DT)
+[  245.470050] pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  245.474307] pc : clk_branch_wait+0x130/0x140
+[  245.481073] lr : clk_branch_wait+0x130/0x140
+[  245.485588] sp : ffffffc009f2bad0
+[  245.489838] x29: ffffffc009f2bad0 x28: ffffff8003e6c800 x27: 0000000000000000
+[  245.493057] x26: 0000000000000000 x25: 0000000000000000 x24: ffffff800226ef20
+[  245.500175] x23: ffffffc0089ff550 x22: 0000000000000000 x21: ffffffc008476ad0
+[  245.507294] x20: 0000000000000000 x19: ffffffc00965ac70 x18: fffffffffffc51a7
+[  245.514413] x17: 68702e3030303837 x16: 3a6d726f6674616c x15: ffffffc089f2b777
+[  245.521531] x14: ffffffc0095c9d18 x13: 0000000000000129 x12: 0000000000000129
+[  245.528649] x11: 00000000ffffffea x10: ffffffc009621d18 x9 : 0000000000000001
+[  245.535767] x8 : 0000000000000001 x7 : 0000000000017fe8 x6 : 0000000000000001
+[  245.542885] x5 : ffffff803fdca6d8 x4 : 0000000000000000 x3 : 0000000000000027
+[  245.550002] x2 : 0000000000000027 x1 : 0000000000000023 x0 : 0000000000000026
+[  245.557122] Call trace:
+[  245.564229]  clk_branch_wait+0x130/0x140
+[  245.566490]  clk_branch2_disable+0x2c/0x40
+[  245.570656]  clk_core_disable+0x60/0xb0
+[  245.574561]  clk_core_disable+0x68/0xb0
+[  245.578293]  clk_disable+0x30/0x50
+[  245.582113]  dwc3_qcom_remove+0x60/0xc0 [dwc3_qcom]
+[  245.585588]  platform_remove+0x28/0x60
+[  245.590361]  device_remove+0x4c/0x80
+[  245.594179]  device_release_driver_internal+0x1dc/0x230
+[  245.597914]  device_driver_detach+0x18/0x30
+[  245.602861]  unbind_store+0xec/0x110
+[  245.607027]  drv_attr_store+0x24/0x40
+[  245.610847]  sysfs_kf_write+0x44/0x60
+[  245.614405]  kernfs_fop_write_iter+0x128/0x1c0
+[  245.618052]  new_sync_write+0xc0/0x130
+[  245.622391]  vfs_write+0x1d4/0x2a0
+[  245.626123]  ksys_write+0x58/0xe0
+[  245.629508]  __arm64_sys_write+0x1c/0x30
+[  245.632895]  invoke_syscall.constprop.0+0x5c/0x110
+[  245.636890]  do_el0_svc+0xa0/0x150
+[  245.641488]  el0_svc+0x18/0x60
+[  245.644872]  el0t_64_sync_handler+0xa4/0x130
+[  245.647914]  el0t_64_sync+0x174/0x178
+[  245.652340] ---[ end trace 0000000000000000 ]---
 
-Suggested-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+So, add CLK_IS_CRITICAL flag to the clock so that the kernel won't try
+to disable the sleep clock.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-10-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index 0abc0cd1c32e..1b3048ecb600 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -157,10 +157,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
- 
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -181,12 +181,12 @@ static void tegra_ictlr_resume(void)
- 
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
- 	}
-@@ -321,7 +321,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
- 
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
- 
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index 708c486a6e96..90b53356d38b 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -675,6 +675,7 @@ static struct clk_branch gcc_sleep_clk_src = {
+ 			},
+ 			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
++			.flags = CLK_IS_CRITICAL,
+ 		},
+ 	},
+ };
 -- 
 2.35.1
 
