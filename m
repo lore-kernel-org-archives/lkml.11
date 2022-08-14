@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F50C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C960C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240029AbiHNPaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
+        id S240484AbiHNPaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240287AbiHNP2w (ORCPT
+        with ESMTP id S229523AbiHNP2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:28:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79585B1E6;
-        Sun, 14 Aug 2022 08:28:51 -0700 (PDT)
+        Sun, 14 Aug 2022 11:28:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2820B1CE;
+        Sun, 14 Aug 2022 08:28:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E3C5B80B56;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FCB260C13;
+        Sun, 14 Aug 2022 15:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9238C43470;
         Sun, 14 Aug 2022 15:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAEA9C433D7;
-        Sun, 14 Aug 2022 15:28:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660490929;
-        bh=G2K9/tvgzYCsdb49HzRkvEhTlNWWJDNeuDTwoROSywg=;
+        s=k20201202; t=1660490932;
+        bh=tOAIb5zAvN93JR+nNiVB/+65aJaN03Crd3NKqy/DKvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBMdQORFxsmQSm93Qs+bSQYbP4QKmuyAYwK2ddkz+n5UhPrL6Zj9lr22cdAfYeRE2
-         MN0pDo/BZR5hVikpqs/k/5e61sbuKyocCvbhPeBsYQUhBaSaNghP6KIiednbgfC2cZ
-         IWTSVsetfi1un5fyKLU9cwH+4YFAnlE+XVi+xCDRXz8WtJqqx3cgKLbE/DDag1QniJ
-         mbCEgur0yX0HN3F1mk32OSJCEuiGTD9Aw5lQCILWrVQAVx+L8d424of6BpNX/HCSCG
-         wdEi4YyPAGiYzbmKBoWieKpj7VpDTH393cSCnksa5aGsvdcjC9Rj3aeDlcw/N5SFfL
-         EkMLYIHv1tlOg==
+        b=Ej6Gu7Ide6noXPg5kVzm4+BAUKy2eqES+wlWLcVtCowgLJzlsMcE4ccqnQjCZZqVr
+         /1ezB9L05Vfk0+bigSqRUSF2NgwUFzPREEZRm+N9OsKRrNRwa8vQTpsjtRjoKcwTR/
+         JPkbfzO6wOdFSwWk10On5dCmsiNbi4pdAUfKf78hQxsD9nhuJCEfQfOMPQhoPGoa7H
+         YfQG1ix8xMTVI+UZAN18MtWYSG4qEHqd95+j2LBjBDMANWiE+JVUwlZBq61hTSP/YE
+         pD6g4p1bBHqc8NqhxqDlI+ezVEwwJePxWTRL+NqBagwI/34JiAaN4vxjHx5ybV6WEq
+         xsJafB6hHsl2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        mturquette@baylibre.com, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 28/64] clk: qcom: clk-alpha-pll: fix clk_trion_pll_configure description
-Date:   Sun, 14 Aug 2022 11:24:01 -0400
-Message-Id: <20220814152437.2374207-28-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 30/64] scsi: lpfc: Fix possible memory leak when failing to issue CMF WQE
+Date:   Sun, 14 Aug 2022 11:24:03 -0400
+Message-Id: <20220814152437.2374207-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
@@ -54,38 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 94bed9bb05c7850ff5d80b87cc29004901f37956 ]
+[ Upstream commit 2f67dc7970bce3529edce93a0a14234d88b3fcd5 ]
 
-After merging lucid and trion pll functions in commit 0b01489475c6
-("clk: qcom: clk-alpha-pll: same regs and ops for trion and lucid")
-the function clk_trion_pll_configure() is left with an old description
-header, which results in a W=2 compile time warning, fix it.
+There is no corresponding free routine if lpfc_sli4_issue_wqe fails to
+issue the CMF WQE in lpfc_issue_cmf_sync_wqe.
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220701062711.2757855-1-vladimir.zapolskiy@linaro.org
+If ret_val is non-zero, then free the iocbq request structure.
+
+Link: https://lore.kernel.org/r/20220701211425.2708-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/clk-alpha-pll.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/clk-alpha-pll.c b/drivers/clk/qcom/clk-alpha-pll.c
-index 4406cf609aae..288692f0ea39 100644
---- a/drivers/clk/qcom/clk-alpha-pll.c
-+++ b/drivers/clk/qcom/clk-alpha-pll.c
-@@ -1439,7 +1439,7 @@ const struct clk_ops clk_alpha_pll_postdiv_fabia_ops = {
- EXPORT_SYMBOL_GPL(clk_alpha_pll_postdiv_fabia_ops);
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 80ac3a051c19..e2127e85ff32 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -2003,10 +2003,12 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba *phba, u32 ms, u64 total)
  
- /**
-- * clk_lucid_pll_configure - configure the lucid pll
-+ * clk_trion_pll_configure - configure the trion pll
-  *
-  * @pll: clk alpha pll
-  * @regmap: register map
+ 	sync_buf->cmd_flag |= LPFC_IO_CMF;
+ 	ret_val = lpfc_sli4_issue_wqe(phba, &phba->sli4_hba.hdwq[0], sync_buf);
+-	if (ret_val)
++	if (ret_val) {
+ 		lpfc_printf_log(phba, KERN_INFO, LOG_CGN_MGMT,
+ 				"6214 Cannot issue CMF_SYNC_WQE: x%x\n",
+ 				ret_val);
++		__lpfc_sli_release_iocbq(phba, sync_buf);
++	}
+ out_unlock:
+ 	spin_unlock_irqrestore(&phba->hbalock, iflags);
+ 	return ret_val;
 -- 
 2.35.1
 
