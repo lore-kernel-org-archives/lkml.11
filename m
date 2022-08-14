@@ -2,291 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7A3C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 13:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB45AC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 13:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiHNNd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 09:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        id S231603AbiHNNg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 09:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHNNdZ (ORCPT
+        with ESMTP id S229379AbiHNNg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 09:33:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530581759E;
-        Sun, 14 Aug 2022 06:33:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 090FEB80AEE;
-        Sun, 14 Aug 2022 13:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFFF0C433D6;
-        Sun, 14 Aug 2022 13:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660484001;
-        bh=cXQdMAxMMUixvPWaJ3r9QcDJ3wViHH+mep8Gcae419Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P5o05DPbrLAsxKagWvkNIPOOjaTB4sPKlYcOwxc0NFeKQkvpb9UnCX/OXhaDklARp
-         Zfo7t2f0YA8AjIbdtOWhsJPMmPe6A1n19kOVlrUpTjdiFbK2SKv2MxBSy5zGakCYoa
-         9a1z62vZOIjInVMDp2qR1i/mzuY3tUZcTMhqmF2esDh8xojw9Wkz1UlMGGQiDG16WU
-         JzRLfJgi7xHj/jVLNYNpBepzYQrH2e9VDdv23S1T+YU3WURAYpkZ0r50r2DCpmYecH
-         aNkspgkQF+6NrkaEMyRWvrmWC18WymC32xd04YPnqX7lM60W/+c3EUVfd6hFqqVb8B
-         GzBl+6u3Oyt/A==
-Date:   Sun, 14 Aug 2022 14:43:50 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/5] iio: pressure: bmp280: simplify driver
- initialization logic
-Message-ID: <20220814144350.7d0282e6@jic23-huawei>
-In-Reply-To: <602f032955b56eb367177d1de7536f18ad94bc87.1659872590.git.ang.iglesiasg@gmail.com>
-References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
-        <602f032955b56eb367177d1de7536f18ad94bc87.1659872590.git.ang.iglesiasg@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Sun, 14 Aug 2022 09:36:56 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2058.outbound.protection.outlook.com [40.107.100.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 093FC1759C
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 06:36:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ApwQC9AqVb4qtQfgOXCrdxnLfmRZCVzSHQMnr1Z2zXEFBnX7yckFD5KmuuWGeoLhK37BTXinxnsO3lqcUK/WoVflx+SFycSiQJHE40VPYW/0IwpK3JccTgG12Efu+Bznp2Z8gJKBZ14NvAxwqo1JosiElpvThzMc55NdD+/JaSFs2ajapwL61PvwAMD5/Wy0q2oV4ebG7sFiPSBdmE63/3ZX3CwBwrmFb3Vt8dDmg9hGFoQJaXThaGAqJqy7ndZgm+gNyuXd3UowE90avCErXPZV7dPtBu9f3KoY+GAg/sxDDf8MTmN5sVRaDZouLkqQoZwppMkARYzFdMMpx8E4mA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tuPJK0VrCiWR0uXVyDZ114WO+hiDjfECWGL/vDrAZlY=;
+ b=Pe3tXfSwWei+H9s0lMXXT9xkaHcSmv6erzasToTX5WT+Qsl6CxHUrzBrB/NXiHCFnL6SygjWHTbOeUCxbCWvUQsxGKWEj5mCsoGCo5pxGy5xDMK0CbQzujUWkerrvYTldXjG73D34Mw6qMVaJ2cVYeIUOndNWVnB6WXGYI4g5V5G3VnG5XQKWJlLhqtXKgyaEuvITpk3HQo8bL45vJjCw1WPDkDScy5rSOXgXuZRrLTQW5B5uv6ER1kn4tGTrZVfc9i13Wlhfe8bG501Q9gquyCUiCyHimNyVWW0QTfsbkWIBDzkPYFOKNt7TAXAMQj/W0EIj+U5oWLHYrxwexwOpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tuPJK0VrCiWR0uXVyDZ114WO+hiDjfECWGL/vDrAZlY=;
+ b=AKqoA8wQtoD+ap6J6hvvDeM4gTZ3bFu7KcDdiVftk9y7O5Q/r4VEr9+NJ9thtjVKYOrsow8wMTicxpP2wRhAJ9sE7EWeLhrQE33nUuUsINb7o7v6GbqVpvr2prhjmUOqST4sOn+6cOigz6c4yDyfNTKu9yMn0dd/47AjxOAKiPA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by BN6PR12MB1188.namprd12.prod.outlook.com (2603:10b6:404:19::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Sun, 14 Aug
+ 2022 13:36:50 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::1dac:1301:78a3:c0d0]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::1dac:1301:78a3:c0d0%6]) with mapi id 15.20.5525.011; Sun, 14 Aug 2022
+ 13:36:49 +0000
+Message-ID: <bff96726-cbf8-7f27-8f11-5bc979a8b407@amd.com>
+Date:   Sun, 14 Aug 2022 08:36:47 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/2] x86/sev: Put PSC struct on the stack in prep for
+ unaccepted memory support
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <cover.1659978985.git.thomas.lendacky@amd.com>
+ <21d5d55640ee1c5d66501b9398858b6a6bd6546f.1659978985.git.thomas.lendacky@amd.com>
+ <YvZPoEm6PSeoflAz@zn.tnic> <6d9d433f-779d-7531-02b5-382796acceef@amd.com>
+ <YvZkpYRfrgPLLoJV@zn.tnic> <fc48ce75-7a4c-4804-92ce-71f63c2db5ea@amd.com>
+ <Yvf+HnofHZ3rZ+yL@zn.tnic>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <Yvf+HnofHZ3rZ+yL@zn.tnic>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SN7PR18CA0011.namprd18.prod.outlook.com
+ (2603:10b6:806:f3::19) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c1e993b7-5a2b-4dd9-e46c-08da7dfa0a72
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1188:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4qaov0UMuBw4zLa04iNXouUzsKZ8JkC3DE9DgjpgS3o60w/YDrWKV5gYZYSfvXMjr2uA4Evgq/aP7uQ53NyqOWnVJ8Bh6U/BJ41c0TnLpGttJdnnMXuYjMT1oWPZN1DErNLzxbx5WaVMfyw+CQIQSgmhZHEDS6iMGAJ55IhF9IylllAMPf4vWYKUPg1FeJ/HSv4YMiHBDw1IFBtrILYU/p0YCAT/LH3SNlieYmZGI/B+Pq5kwtyRE2lbformW38OOo6Tb3DFdrg4Bh0o4Q3Hf+gX53uInFz0h/9OXUtKwVPJ5PVfLxEXm4HN+/kerze3bDx/wcqouegUqmW3XQXzyuBm6juEAjbuc1C1xOaj+0vxKMkHGlEvmv9C/d3MQe6QQWVKLbuyuAlevPXmFpKghaLygeVPNkxAACxbV2jiSoyomj/ddGzAhih5ZRGPhN5BghRE+XfvG/cL85NcqJaaOJHpjiSJ1ZbPcyvbrUHLWeauUnHqgRjdZfkQx+CWco/rSvmL+0z6wskjGxm7Lvc2EkqrcFAfEMfOF9DAkT3Isc4jFJD6r2cGNl/R6RVMr0PyyzGmYq+BOpe8M1Nuw4eZgiBuQKJT2gPcyvdvVIYkANxc4INQXGGmme5KLHOBvNVzAayu1EhlydAqXBBUCtmofKeISRsqigf9nTg5YaA3BtOw7pBy1aRL6uKpQ+UwBEEQjYJ6dXgaNmErKN7N+NnGMgsImNHy/s0lhHvfSNzlgMQTd95oI4NSsC2bGaCIOid88E1CIU+Zga4IY5PY+iIY5lQJQ806TtleK+I3RdBSp/ESQ9+NYDtABN7Bzfwy/J25GSVkK4CcCaCCLMK6grJd4mfVe7BtMWltZTSzyXI/o3E=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(39860400002)(366004)(346002)(376002)(36756003)(2906002)(186003)(2616005)(54906003)(7416002)(31686004)(86362001)(8936002)(966005)(6916009)(5660300002)(38100700002)(53546011)(66476007)(4326008)(66946007)(66556008)(8676002)(6512007)(6486002)(83380400001)(316002)(31696002)(26005)(6506007)(41300700001)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0xQeW53Z2pCajRuS1Z0R2swcUNCQWxNbFEwTnN6STFPNE9UMTVkUWtnTG1O?=
+ =?utf-8?B?YTF0NnEzYjN1b08vTU9JTFZ0eTJDNmZ0Z1FubmExay85ZndPZDJwRXhRNG9u?=
+ =?utf-8?B?ZHgvRVlCb29HMkVJODVWcTJZaXpHOG83MTJaRDVRMEJYN0IrN2RlQUtrK0hi?=
+ =?utf-8?B?QzRZeTNVeXpHSml3alBHMVFBdjBwL1grNDBoV1g2VXVVb3laa092SjJPbGhW?=
+ =?utf-8?B?a3FENmRyaE5LZTd5TU4yeGcxVXNObXMvU0tlOTk1QTU0YTlHMHZ6aDZuVlNZ?=
+ =?utf-8?B?eEpkNHZuWjl5MVZISjMxUlJLYnNpUWxKUXVpS3F3VEtUKzVZVzVWbkpjWUt6?=
+ =?utf-8?B?bG9IZmR3ZFVaRTM4cFVwVXl0VHFocWVmcWRPY2VYeTJqaElsTFl5MEwwcU4z?=
+ =?utf-8?B?Z3Y4b1hVVmowTUppMUZMeEc0Q0JzQk0yaFBoZVpNKzM1QzY4SlRHLzhjNjVh?=
+ =?utf-8?B?b3JMTTZNdzBBYWd6NTYwMzNFdHA5UEdobC9TM3hXYm03MmRxZHN2c1ZBRFc0?=
+ =?utf-8?B?YUJuTy9KZlU3eTRUdlJYUGNmWjMxY2JZWitlSHJQVXVqT2NzNktvRmhXTEtY?=
+ =?utf-8?B?ZWhqQnl2S3h5bUw0SzdrYXFmL0V3NzJSTkFwb1VaWUVPMVBOVUFWV3VJbzA2?=
+ =?utf-8?B?bUdvelU2RFhoV2txcGZ4dEpEa3dlVE5saVZOU3ZrUWxlSXQ0VjUyZzNRVnR5?=
+ =?utf-8?B?VmtLZHAvZWtrZlc3cTZ3ZS81WXpRZVI3Zm95aytEVlZGNS92YzAxOGs3ZUhL?=
+ =?utf-8?B?WVVXRWZjSExZMEJJUHBZMi9pTSthUkhiTW9xNlNCaFlRSjRHNUJlRFVHU29B?=
+ =?utf-8?B?aStFTWdmdzdkOC9xMitQeXlHMEdqUmVBOXc1Ymp2TGlXMjVjcDR2dVZ1bU95?=
+ =?utf-8?B?NytBWjhITHowUGRHcTRoejZhb2s4MC9keXoxTUgyV045UDFZNFRJM3JlRVl4?=
+ =?utf-8?B?WEpGeFFZY3Ywdmk1SHhGcVo3VkdhOXdvckxrYXAycTFHd1pydXhEZVVhRllZ?=
+ =?utf-8?B?YzROTjJ2ZEkwcEtHdzg2dVdlaWFLNDFlcTNMM2ZEVUhZZFR0MHk3cWNoQ2lU?=
+ =?utf-8?B?c3JITmROU3ZpNGxzV3JYYlM5N2VNMnJVdzNlZTc0NVdpV0tjRUMvYTNtQzE1?=
+ =?utf-8?B?RE5tU2tzcWJ0OE9CMmNBUVVSeEd0ekQ5aWIxQUczZ2NKSTFDSTVaR3oyNXo0?=
+ =?utf-8?B?N0ZKN25oM3ZrY01kOTdnelNyOUhJbjE1TnhENTZ0UHhWYnNFdzl5aUNscmRy?=
+ =?utf-8?B?Vm9HdkZ4anJwK3BmUWZMOC9vamVwZzB5aTdBU3hZWk5YYzRnNWR2ZWN5UVA0?=
+ =?utf-8?B?a2dQZzRuMDF6UzUzYkFzczFlVHhIYnA5dVd1eUdPNlNqeWRsdDNoNnk1MWcx?=
+ =?utf-8?B?UDJ4eWh4dUJVUGhHRGJrY2FMWExiTTA4SDBveE4vWEtoQTBxUGVCMXhoYWow?=
+ =?utf-8?B?UDlEdDd5TitEdFZNT0d2TjlZWXpzOHgvMGJtZVUvanRVUHNiU1pEdVNpNTh4?=
+ =?utf-8?B?VzU2cGFvbEE5ZzFvVmkxdW9xYTYzNVVjZ0tiTFR4UkVUWE4vbmtEYzZ6b0FZ?=
+ =?utf-8?B?M1NzUWJXMXBLQlBSR2l0MmRwc3JsVlM3a1ZXYXlpU0RJeHlCUmFtOGNjYkQ3?=
+ =?utf-8?B?TVpPTWdVSmNOSm0yV0pGSmlKOTdsdHdJMGpnZ2J1TVlMQXcwY0t2cEVUY2dm?=
+ =?utf-8?B?ME1uNFIzZVhhQThQNTY2ZytpKzVaTmRwWXhQOFhvMXpvQVo5L3ZvS1BaWGls?=
+ =?utf-8?B?UzZldG9oaVVSTnZXV29YUGpzK1hxUFl3TUw1TzFmNWt1T3JJRWdZSUNBakpV?=
+ =?utf-8?B?anhGL3dsdnFWQjF2Z00wSFF5SlVvNHVJRTNuNXdnTmZoTVI3MnVzMGpUMnNB?=
+ =?utf-8?B?L0R4UmhXNFVtcjNBUmV5Mkh3ZUlIajloaFk0UkxtRVdEWUZRQkhmbmNNTW96?=
+ =?utf-8?B?emxLa3FxSjJtSHhJSXFNclc2RWhsb1d6QlI4SVZBVzIyMVpDUUVYcHNidmIz?=
+ =?utf-8?B?KzUwMW1hWTdSY09oK21ScGZLN1J5NjB0eVUzN2gyMEV0WTVwbUxRTTN4RlIz?=
+ =?utf-8?B?R3p6YmNwb0JkSCtkUnJMU3liZElxeXJLSkh0SmUzdi8xMWpzUy9YSzdQeHJI?=
+ =?utf-8?Q?DnMqo9jt2UuXM6HdQwB3swmgR?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1e993b7-5a2b-4dd9-e46c-08da7dfa0a72
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2022 13:36:49.8662
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fhm8fT6BxxDTsLqXb/3G7dA5PZQfRG+4RSIXJyVdW2aAbi1bPo31SexwFuri4sjQVLtlO7mNbN5byGoSh8nVrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1188
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun,  7 Aug 2022 13:54:40 +0200
-Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+On 8/13/22 14:40, Borislav Petkov wrote:
+> On Fri, Aug 12, 2022 at 09:51:41AM -0500, Tom Lendacky wrote:
+>> On 8/12/22 09:33, Borislav Petkov wrote:
+>>> On Fri, Aug 12, 2022 at 09:11:25AM -0500, Tom Lendacky wrote:
+>>>> There was a whole discussion on this
+>>>
+>>> Pointer to it?
+>>
+>> It starts here: https://lore.kernel.org/lkml/658c455c40e8950cb046dd885dd19dc1c52d060a.1659103274.git.thomas.lendacky@amd.com/
+> 
+> So how come none of the rationale for the on-stack decision vs a single
+> buffer with a spinlock protection hasn't made it to this patch?
+> 
+> We need to have the reason why this thing is changed documented
+> somewhere.
 
-> Simplified common initialization logic of different sensor types
-> unifying calibration and initial configuration recovery.
-> 
-> Default config param values of each sensor type are stored inside
-> chip_info structure and used to initialize sensor data struct instance.
-> 
-> The helper functions for read each sensor type calibration are converted
-> to a callback available on the chip_info struct.
-> 
-> Revised BMP180 and BMP280 definitions and code functions to use GENMASK
-> and FIELD_PREP/FIELD_GET utilities to homogenize structure with more
-> recent drivers, in preparation for the patches adding support for the
-> BMP380 sensors.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
-Hi Angel, not sure if I commented on this before, but this patch is doing
-several different things, so in the ideal case it would be split into
-1: FIELD_PREP/FIELD_GET/GENMASK changes. 
-2: Chipinfo related changes
-3: Maybe the the reordering of defintions of local variables that Andy
-   indirectly referered to.
+Yup, was all being addressed in v3 based on Dave's comments.
 
-However, this is short enough to be fairly reviewable as it stands
-so from my point of view I'll accept leaving 1 and 2 combined if it is
-going to be a lot of work to separate them. Doesn't look like it will be hard
-but without trying I'm not totally sure!
+> 
+>>> So smaller, on-stack PSC but lockless is still better than a bigger one
+>>> but with synchronized accesses to it?
+> 
+> That thing.
+> 
+> That decision for on-stack buffer needs explaining why.
+> 
+>>>> Well when we don't know which GHCB is in use, using that reserved area in
+>>>> the GHCB doesn't help.
+>>>
+>>> What do you mean?
+>>>
+>>> The one which you read with
+>>>
+>>> 	data = this_cpu_read(runtime_data);
+>>
+>> Memory acceptance is called before the per-CPU GHCBs have been allocated
+>> and so you would be actually be using early boot GHCB. And that is decided
+>> based on the #VC handler that is invoked - but in this case we're not
+>> coming through the #VC handler to accept memory.
+> 
+> But then ghcb_percpu_ready needs to be a per-CPU variable too! Because
+> it is set right after snp_register_per_cpu_ghcb() which works on the
+> *per-CPU* GHCB.
 
-One question inline on what the chip parameter to the calibration functions
-is there for as it appears unused.
+No, and the code comment will explain this. Since the APs only ever use 
+the per-CPU GHCB there is no concern as to when there is a switch over 
+from the early boot GHCB to the per-CPU GHCB, so a single global variable 
+is all that is needed.
+
+I'll send out v3 soon.
 
 Thanks,
+Tom
 
-Jonathan
-
-
-> ---
->  drivers/iio/pressure/bmp280-core.c | 120 ++++++++++++++++++-----------
->  drivers/iio/pressure/bmp280.h      |  73 +++++++++---------
->  2 files changed, 113 insertions(+), 80 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-> index fe7aa81e7cc9..a109c2609896 100644
-> --- a/drivers/iio/pressure/bmp280-core.c
-> +++ b/drivers/iio/pressure/bmp280-core.c
-> @@ -16,6 +16,8 @@
->  
->  #define pr_fmt(fmt) "bmp280: " fmt
->  
-> +#include <linux/bitops.h>
-> +#include <linux/bitfield.h>
->  #include <linux/device.h>
->  #include <linux/module.h>
->  #include <linux/regmap.h>
-> @@ -107,19 +109,28 @@ struct bmp280_data {
->  };
->  
->  struct bmp280_chip_info {
-> +	unsigned int id_reg;
-> +
-> +	int num_channels;
-> +	unsigned int start_up_time;
-> +
->  	const int *oversampling_temp_avail;
->  	int num_oversampling_temp_avail;
-> +	int oversampling_temp_default;
->  
->  	const int *oversampling_press_avail;
->  	int num_oversampling_press_avail;
-> +	int oversampling_press_default;
->  
->  	const int *oversampling_humid_avail;
->  	int num_oversampling_humid_avail;
-> +	int oversampling_humid_default;
->  
->  	int (*chip_config)(struct bmp280_data *);
->  	int (*read_temp)(struct bmp280_data *, int *);
->  	int (*read_press)(struct bmp280_data *, int *, int *);
->  	int (*read_humid)(struct bmp280_data *, int *, int *);
-> +	int (*read_calib)(struct bmp280_data *, unsigned int);
->  };
->  
->  /*
-> @@ -147,15 +158,14 @@ static const struct iio_chan_spec bmp280_channels[] = {
->  	},
->  };
->  
-> -static int bmp280_read_calib(struct bmp280_data *data,
-> -			     struct bmp280_calib *calib,
-> -			     unsigned int chip)
-> +static int bmp280_read_calib(struct bmp280_data *data, unsigned int chip)
->  {
->  	int ret;
->  	unsigned int tmp;
->  	__le16 l16;
->  	__be16 b16;
->  	struct device *dev = data->dev;
-> +	struct bmp280_calib *calib = &data->calib.bmp280;
->  	__le16 t_buf[BMP280_COMP_TEMP_REG_COUNT / 2];
->  	__le16 p_buf[BMP280_COMP_PRESS_REG_COUNT / 2];
->  
-> @@ -611,8 +621,8 @@ static const struct iio_info bmp280_info = {
->  static int bmp280_chip_config(struct bmp280_data *data)
->  {
->  	int ret;
-> -	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
-> -		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
-> +	u8 osrs = FIELD_PREP(BMP280_OSRS_TEMP_MASK, data->oversampling_temp + 1) |
-> +		  FIELD_PREP(BMP280_OSRS_PRESS_MASK, data->oversampling_press + 1);
->  
->  	ret = regmap_write_bits(data->regmap, BMP280_REG_CTRL_MEAS,
->  				 BMP280_OSRS_TEMP_MASK |
-> @@ -640,21 +650,38 @@ static int bmp280_chip_config(struct bmp280_data *data)
->  static const int bmp280_oversampling_avail[] = { 1, 2, 4, 8, 16 };
->  
->  static const struct bmp280_chip_info bmp280_chip_info = {
-> +	.id_reg = BMP280_REG_ID,
-> +	.start_up_time = 2000,
-> +	.num_channels = 2,
-> +
->  	.oversampling_temp_avail = bmp280_oversampling_avail,
->  	.num_oversampling_temp_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-> +	/*
-> +	 * Oversampling config values on BMx280 have one additional setting
-> +	 * that other generations of the family don't:
-> +	 * The value 0 means the measurement is bypassed instead of
-> +	 * oversampling set to x1.
-> +	 *
-> +	 * To account for this difference, and preserve the same common
-> +	 * config logic, this is handled later on chip_config callback
-> +	 * incrementing one unit the oversampling setting.
-> +	 */
-> +	.oversampling_temp_default = BMP280_OSRS_TEMP_2X - 1,
->  
->  	.oversampling_press_avail = bmp280_oversampling_avail,
->  	.num_oversampling_press_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-> +	.oversampling_press_default = BMP280_OSRS_PRESS_16X - 1,
->  
->  	.chip_config = bmp280_chip_config,
->  	.read_temp = bmp280_read_temp,
->  	.read_press = bmp280_read_press,
-> +	.read_calib = bmp280_read_calib,
->  };
->  
->  static int bme280_chip_config(struct bmp280_data *data)
->  {
->  	int ret;
-> -	u8 osrs = BMP280_OSRS_HUMIDITIY_X(data->oversampling_humid + 1);
-> +	u8 osrs = FIELD_PREP(BMP280_OSRS_HUMIDITY_MASK, data->oversampling_humid + 1);
->  
->  	/*
->  	 * Oversampling of humidity must be set before oversampling of
-> @@ -670,19 +697,27 @@ static int bme280_chip_config(struct bmp280_data *data)
->  }
->  
->  static const struct bmp280_chip_info bme280_chip_info = {
-> +	.id_reg = BMP280_REG_ID,
-> +	.start_up_time = 2000,
-> +	.num_channels = 3,
-> +
->  	.oversampling_temp_avail = bmp280_oversampling_avail,
->  	.num_oversampling_temp_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-> +	.oversampling_temp_default = BMP280_OSRS_TEMP_2X - 1,
->  
->  	.oversampling_press_avail = bmp280_oversampling_avail,
->  	.num_oversampling_press_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-> +	.oversampling_press_default = BMP280_OSRS_PRESS_16X - 1,
->  
->  	.oversampling_humid_avail = bmp280_oversampling_avail,
->  	.num_oversampling_humid_avail = ARRAY_SIZE(bmp280_oversampling_avail),
-> +	.oversampling_humid_default = BMP280_OSRS_HUMIDITY_16X - 1,
->  
->  	.chip_config = bme280_chip_config,
->  	.read_temp = bmp280_read_temp,
->  	.read_press = bmp280_read_press,
->  	.read_humid = bmp280_read_humid,
-> +	.read_calib = bmp280_read_calib,
->  };
->  
->  static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
-> @@ -710,7 +745,7 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
->  		if (!ret)
->  			dev_err(data->dev, "timeout waiting for completion\n");
->  	} else {
-> -		if (ctrl_meas == BMP180_MEAS_TEMP)
-> +		if (FIELD_GET(BMP180_MEAS_CTRL_MASK, ctrl_meas) == BMP180_MEAS_TEMP)
->  			delay_us = 4500;
->  		else
->  			delay_us =
-> @@ -735,7 +770,9 @@ static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
->  	__be16 tmp;
->  	int ret;
->  
-> -	ret = bmp180_measure(data, BMP180_MEAS_TEMP);
-> +	ret = bmp180_measure(data,
-> +			     FIELD_PREP(BMP180_MEAS_CTRL_MASK, BMP180_MEAS_TEMP) |
-> +			     BMP180_MEAS_SCO);
->  	if (ret)
->  		return ret;
->  
-> @@ -748,11 +785,11 @@ static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
->  	return 0;
->  }
->  
-> -static int bmp180_read_calib(struct bmp280_data *data,
-> -			     struct bmp180_calib *calib)
-> +static int bmp180_read_calib(struct bmp280_data *data, unsigned int chip)
-
-What is chip used for?  If there will be a need for it in later patches, then
-it's fine to add the additional parameter now but please say why in the patch
-description.
-
-
->  {
->  	int ret;
->  	int i;
-> +	struct bmp180_calib *calib = &data->calib.bmp180;
->  	__be16 buf[BMP180_REG_CALIB_COUNT / 2];
->  
->  	ret = regmap_bulk_read(data->regmap, BMP180_REG_CALIB_START, buf,
-> @@ -832,7 +869,10 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
->  	__be32 tmp = 0;
->  	u8 oss = data->oversampling_press;
->  
-> -	ret = bmp180_measure(data, BMP180_MEAS_PRESS_X(oss));
-> +	ret = bmp180_measure(data,
-> +			     FIELD_PREP(BMP180_MEAS_CTRL_MASK, BMP180_MEAS_PRESS) |
-> +			     FIELD_PREP(BMP180_OSRS_PRESS_MASK, oss) |
-> +			     BMP180_MEAS_SCO);
->  	if (ret)
->  		return ret;
->  
