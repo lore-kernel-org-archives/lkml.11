@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E94C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43DFC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242231AbiHNPyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S242237AbiHNPyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242006AbiHNPux (ORCPT
+        with ESMTP id S241998AbiHNPux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 14 Aug 2022 11:50:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCEDF18374;
-        Sun, 14 Aug 2022 08:36:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD08A1CFFC;
+        Sun, 14 Aug 2022 08:36:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86DE3B80B48;
-        Sun, 14 Aug 2022 15:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699D6C433D7;
-        Sun, 14 Aug 2022 15:36:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 475D0B80B48;
+        Sun, 14 Aug 2022 15:36:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FEFEC433C1;
+        Sun, 14 Aug 2022 15:36:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491380;
-        bh=qUqsgPOy6zQU4YreXQqm2KXQli+UFswEmunZtLyK6aA=;
+        s=k20201202; t=1660491376;
+        bh=dYGbQYEVSg+7i9OX+zbS1WofhspkrL24iXLAfO+kxgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XCsbuw5/S2KW2ZEihzldy7DPFrFFIHRg9yrYHuH7YAobDmfShxTlVUFYL7NwwRUt+
-         yszf0kGuNaRLrkRdXjrXtbsNH/hSnXmY9Zz04aDE+CNdjYEhtYdbmmIBWqZb2kq06N
-         HWSkpGQhdwwpAkkSX32GL/Ehl0Nd0werSXxfDWz6NVPiQZGzXbObezZ4JYCo1NEYad
-         FYiTJ8jyWoX2uL2zQP5Y7nJba99Vt9jJosIuBWVnB+UIrj9SJ5ISF7UuKfYp9PUP4d
-         /stf/9gr7j6uaQ3KsTZ9YjX46L31/djcEWqEleBGhwI5zUoRzAD++ALPvdlcQtVpeR
-         riSYRp4z6Mzdg==
+        b=oFmpIF1wT+wlwk/3gDae4nyvh3yPWyjMUrqcBUAyh8hlR0qJyNOd88VyOGmnUiqtU
+         GyUbGx1Ssa7qW7FBK/b4hjqCQrgNHEAS8+WaOCbNS1HkrA3crSmHezw/eZ+CsnXtPV
+         gBNZtkWLtPvDalw+9hu0bJ3MIZPydsRKL/iDAUB3sps1/tUFiR+3MpUw/rR7I3uqBK
+         mYP1pF3D62ikGXuQfEZAdF1BpgnsoggVM1xZ5i+EocoeBIxrWZcMlrz8g/VLSyImUX
+         ZAwJjnVQY+ju9eR1l4tTp8eFC7TMRQ8756F0XaCs9BPOnPLVz6Rg7CqE8r1dfq5Uqt
+         vS4vwlKlEYWdw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pascal Terjan <pterjan@google.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+Cc:     Liang He <windhl@126.com>, Alan Stern <stern@rowland.harvard.edu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 05/13] vboxguest: Do not use devm for irq
-Date:   Sun, 14 Aug 2022 11:36:02 -0400
-Message-Id: <20220814153610.2380234-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 03/13] usb: host: ohci-ppc-of: Fix refcount leak bug
+Date:   Sun, 14 Aug 2022 11:36:00 -0400
+Message-Id: <20220814153610.2380234-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153610.2380234-1-sashal@kernel.org>
 References: <20220814153610.2380234-1-sashal@kernel.org>
@@ -52,79 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Terjan <pterjan@google.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
+[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
 
-When relying on devm it doesn't get freed early enough which causes the
-following warning when unloading the module:
+In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
-[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
-
-[249348.837379] Call Trace:
-[249348.837385]  unregister_irq_proc+0xbd/0xe0
-[249348.837392]  free_desc+0x23/0x60
-[249348.837396]  irq_free_descs+0x4a/0x70
-[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
-[249348.837452]  mp_unmap_irq+0x5c/0x60
-[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
-[249348.837463]  acpi_unregister_gsi+0x17/0x30
-[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
-[249348.837473]  pcibios_disable_device+0x20/0x30
-[249348.837478]  pci_disable_device+0xef/0x120
-[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Pascal Terjan <pterjan@google.com>
-Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/usb/host/ohci-ppc-of.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 94e055ee7ad6..aa65b20883ef 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -341,8 +341,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 		goto err_vbg_core_exit;
+diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
+index 76a9b40b08f1..96c5c7655283 100644
+--- a/drivers/usb/host/ohci-ppc-of.c
++++ b/drivers/usb/host/ohci-ppc-of.c
+@@ -169,6 +169,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
+ 				release_mem_region(res.start, 0x4);
+ 		} else
+ 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
++		of_node_put(np);
  	}
  
--	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
--			       DEVICE_NAME, gdev);
-+	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
-+			  gdev);
- 	if (ret) {
- 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
- 		goto err_vbg_core_exit;
-@@ -352,7 +352,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	if (ret) {
- 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
- 			DEVICE_NAME, ret);
--		goto err_vbg_core_exit;
-+		goto err_free_irq;
- 	}
- 
- 	ret = misc_register(&gdev->misc_device_user);
-@@ -388,6 +388,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	misc_deregister(&gdev->misc_device_user);
- err_unregister_misc_device:
- 	misc_deregister(&gdev->misc_device);
-+err_free_irq:
-+	free_irq(pci->irq, gdev);
- err_vbg_core_exit:
- 	vbg_core_exit(gdev);
- err_disable_pcidev:
-@@ -404,6 +406,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
- 	vbg_gdev = NULL;
- 	mutex_unlock(&vbg_gdev_mutex);
- 
-+	free_irq(pci->irq, gdev);
- 	device_remove_file(gdev->dev, &dev_attr_host_features);
- 	device_remove_file(gdev->dev, &dev_attr_host_version);
- 	misc_deregister(&gdev->misc_device_user);
+ 	irq_dispose_mapping(irq);
 -- 
 2.35.1
 
