@@ -2,137 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9B0C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 13:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564EDC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 13:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238865AbiHNNtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 09:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
+        id S231775AbiHNNzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 09:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiHNNtG (ORCPT
+        with ESMTP id S229634AbiHNNzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 09:49:06 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803B61C124
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 06:49:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VM9mdW6_1660484934;
-Received: from 192.168.1.6(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VM9mdW6_1660484934)
-          by smtp.aliyun-inc.com;
-          Sun, 14 Aug 2022 21:48:56 +0800
-Message-ID: <6af16141-1f9d-d74c-1a76-c752417a4283@linux.alibaba.com>
-Date:   Sun, 14 Aug 2022 21:48:54 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.0
-Subject: Re: [PATCH V2 1/1] mm/slub: release kobject if kobject_init_and_add
- failed in sysfs_slab_add
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
-        roman.gushchin@linux.dev, linux-mm@kvack.org,
+        Sun, 14 Aug 2022 09:55:05 -0400
+X-Greylist: delayed 132 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 14 Aug 2022 06:55:03 PDT
+Received: from mx1.mythic-beasts.com (mx1.mythic-beasts.com [IPv6:2a00:1098:0:86:1000:0:2:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88311CB3C;
+        Sun, 14 Aug 2022 06:55:03 -0700 (PDT)
+Received: from [90.243.5.40] (port=34492 helo=jic23-huawei)
+        by mailhub-cam-d.mythic-beasts.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <jic23@jic23.retrosnub.co.uk>)
+        id 1oNE39-00FxlA-SQ; Sun, 14 Aug 2022 14:53:08 +0100
+Date:   Sun, 14 Aug 2022 15:03:22 +0100
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         linux-kernel@vger.kernel.org
-References: <20220811071844.74020-1-xhao@linux.alibaba.com>
- <20220811071844.74020-2-xhao@linux.alibaba.com> <Yvis1knnMomoeuAx@hyeyoo>
-From:   haoxin <xhao@linux.alibaba.com>
-In-Reply-To: <Yvis1knnMomoeuAx@hyeyoo>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 2/5] iio: pressure: bmp280: Fix alignment for DMA
+ safety
+Message-ID: <20220814150255.4f24fa9d@jic23-huawei>
+In-Reply-To: <49086f5c1401d7d28ebf921a67b49f8403ddb16a.1659872590.git.ang.iglesiasg@gmail.com>
+References: <cover.1659872590.git.ang.iglesiasg@gmail.com>
+        <49086f5c1401d7d28ebf921a67b49f8403ddb16a.1659872590.git.ang.iglesiasg@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-BlackCat-Spam-Score: 19
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun,  7 Aug 2022 13:55:15 +0200
+Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
 
-在 2022/8/14 下午4:05, Hyeonggon Yoo 写道:
-> On Thu, Aug 11, 2022 at 03:18:44PM +0800, Xin Hao wrote:
->> In kobject_init_and_add() function, the refcount is setted by calling
->> kobject_init() function, regardless of whether the return value is zero
->> or not, therefore, we must call kobject_del(&s->kobj) to prevent memory
->> of s->kobj is leaked.
-> TL;DR: IIUC current code works just fine
->
-> After thinking more, I don't think the memory leak you said exist.
-> The space for s->kobj is freed in create_cache() when __kmem_cache_create() failed.
+> Adds DMA-safe buffers to driver data struct to store raw data from sensors
+> 
+> The multiple buffers used thorough the driver share the same memory
+> allocated as part of the device data instance. The union containing
+> the buffers is aligned to allow safe usage with DMA operations, such
+> as regmap bulk read calls.
+> 
+> Updated measurement and calibration reading functions to use the new,
+> DMA-safe, buffers.
+> 
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+Hi Angel,
 
-Yes, Agree what you explain,  but  in slab_sysfs_init() function, it 
-also call slab_sysfs_add() and  there no other function to release it,  
-so i think the memory leak still exist.
+As you are doing a v6 anyway to address Andy's review, I
+took another look and have a few additional comments below.
+> ---
+>  drivers/iio/pressure/bmp280-core.c | 122 ++++++++++++++---------------
+>  drivers/iio/pressure/bmp280.h      |   3 +
+>  2 files changed, 64 insertions(+), 61 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+> index a109c2609896..4cd657dcbfed 100644
+> --- a/drivers/iio/pressure/bmp280-core.c
+> +++ b/drivers/iio/pressure/bmp280-core.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/completion.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/random.h>
+> +#include <asm/unaligned.h>
+>  
+>  #include "bmp280.h"
+>  
+> @@ -106,6 +107,18 @@ struct bmp280_data {
+>  	 * calculation.
+>  	 */
+>  	s32 t_fine;
+> +
+> +	/*
+> +	 * DMA (thus cache coherency maintenance) may require the
+> +	 * transfer buffers to live in their own cache lines.
+> +	 */
+> +	union {
+> +		/* sensor data buffer */
+> +		u8 data[3];
+__le16 le16;
+__be16 be16; 
 
-> The situation here is:
->
-> create_cache() {
-> 	s = kmem_cache_alloc(kmem_cache, GFP_KERNEL)
-> 	err = __kmem_cache_create()
-> 	if (err)
-> 		goto out_free_cache;
-> 	
-> out_free_cache:
-> 	kmem_cache_free(s) // s is freed here (including its kobject)
-> 	[...]
-> }
->
-> __kmem_cache_create() {
-> 	[...]
->
-> 	err = sysfs_slab_add();
-> 	if (err) {
-> 		__kmem_cache_release(s);
-> 		return err;
-> 	}
-> }
->
-> The primary goal of kobject_put() is to call release() function
-> of kobj_type (when reference becomes zero), which is kmem_cache_release().
->
-> kmem_cache_release() {
-> 	__kmem_cache_release(s)
-> 	kfree_const(s->name)
-> 	kmem_cache_free(s)
-> }
->
-> But when slab_sysfs_add() failed, __kmem_cache_release() and
-> create_cache() releases resources related to the cache.
-> (Also its name is freed in kmem_cache_create_usercopy().)
->
-> So IIUC current code works just fine!
->
->> Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
->> ---
->>   mm/slub.c | 7 +++----
->>   1 file changed, 3 insertions(+), 4 deletions(-)
->>
->> diff --git a/mm/slub.c b/mm/slub.c
->> index b1281b8654bd..940a3f52e07c 100644
->> --- a/mm/slub.c
->> +++ b/mm/slub.c
->> @@ -5981,19 +5981,18 @@ static int sysfs_slab_add(struct kmem_cache *s)
->>   
->>   	err = sysfs_create_group(&s->kobj, &slab_attr_group);
->>   	if (err)
->> -		goto out_del_kobj;
->> +		goto out;
->>   
->>   	if (!unmergeable) {
->>   		/* Setup first alias */
->>   		sysfs_slab_alias(s, s->name);
->>   	}
->> +	return err;
->>   out:
->>   	if (!unmergeable)
->>   		kfree(name);
->> +	kobject_put(&s->kobj);
->>   	return err;
->> -out_del_kobj:
->> -	kobject_del(&s->kobj);
-> So related resources are released in create_cache(), instead of by
-> calling kobject_put().
->
-> But kobject_del() is still needed because it should unlink kobject
-> hierarchy when kobject_add() succeeded but sysfs_create_group() failed!
->
->> -	goto out;
->>   }
->>   
->>   void sysfs_slab_unlink(struct kmem_cache *s)
->> -- 
->> 2.31.0
->>
+added here would simplify some of the other changes below.
+
+> +		/* calibration data buffers */
+> +		__le16 bmp280_cal[BMP280_CONTIGUOUS_CALIB_REGS / 2];
+> +		__be16 bmp180_cal[BMP180_REG_CALIB_COUNT / 2];
+> +	} buf __aligned(IIO_DMA_MINALIGN);
+>  };
+>  
+>  struct bmp280_chip_info {
+> @@ -162,41 +175,29 @@ static int bmp280_read_calib(struct bmp280_data *data, unsigned int chip)
+>  {
+>  	int ret;
+>  	unsigned int tmp;
+> -	__le16 l16;
+> -	__be16 b16;
+>  	struct device *dev = data->dev;
+> +	__le16 *t_buf = data->buf.bmp280_cal;
+> +	__le16 *p_buf = &data->buf.bmp280_cal[T3+1];
+
+spaces around +
+
+>  	struct bmp280_calib *calib = &data->calib.bmp280;
+> -	__le16 t_buf[BMP280_COMP_TEMP_REG_COUNT / 2];
+> -	__le16 p_buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+>  
+>  	/* Read temperature calibration values. */
+>  	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
+> -			       t_buf, BMP280_COMP_TEMP_REG_COUNT);
+> +			       data->buf.bmp280_cal, sizeof(data->buf.bmp280_cal));
+Given we don't use the local variable until later (as can't get the size from it,
+I would suggest only setting it further down.
+
+>  	if (ret < 0) {
+>  		dev_err(data->dev,
+>  			"failed to read temperature calibration parameters\n");
+>  		return ret;
+>  	}
+>  
+> -	/* Toss the temperature calibration data into the entropy pool */
+> -	add_device_randomness(t_buf, sizeof(t_buf));
+> +	/* Toss the temperature and pressure calibration data into the entropy pool */
+> +	add_device_randomness(data->buf.bmp280_cal, sizeof(data->buf.bmp280_cal));
+>  
+like here.
+	t_buf = data->bmp280_cal;
+
+or just don't bother with those at all as they don't greatly help readability over
+	calib->T1 = le16_to_cpu(data->bmp280_cal[T1]);
+similar for p_buf.
+Note I haven't looked at the existing code to see if there are other reasons to
+use t_buf etc, so  may be wrong on this!
+It will as make this patch more complex even if the code ends up simpler as a result.
+
+> +	/* parse temperature calibration data */
+>  	calib->T1 = le16_to_cpu(t_buf[T1]);
+>  	calib->T2 = le16_to_cpu(t_buf[T2]);
+>  	calib->T3 = le16_to_cpu(t_buf[T3]);
+>  
+> -	/* Read pressure calibration values. */
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
+> -			       p_buf, BMP280_COMP_PRESS_REG_COUNT);
+> -	if (ret < 0) {
+> -		dev_err(data->dev,
+> -			"failed to read pressure calibration parameters\n");
+> -		return ret;
+> -	}
+> -
+> -	/* Toss the pressure calibration data into the entropy pool */
+> -	add_device_randomness(p_buf, sizeof(p_buf));
+> -
+> +	/* parse pressure calibration data */
+>  	calib->P1 = le16_to_cpu(p_buf[P1]);
+>  	calib->P2 = le16_to_cpu(p_buf[P2]);
+>  	calib->P3 = le16_to_cpu(p_buf[P3]);
+> @@ -224,12 +225,12 @@ static int bmp280_read_calib(struct bmp280_data *data, unsigned int chip)
+>  	}
+>  	calib->H1 = tmp;
+>  
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &l16, 2);
+> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, data->buf.data, 2);
+
+Bit nasty to read little endian into buf.data which I think is a u8 array.
+Maybe we need another entry in that union for each of le16 and be16 similar to the
+local variables previously in this function?
+ 
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to read H2 comp value\n");
+>  		return ret;
+>  	}
+> -	calib->H2 = sign_extend32(le16_to_cpu(l16), 15);
+> +	calib->H2 = get_unaligned_le16(data->buf.data);
+>  
+>  	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &tmp);
+>  	if (ret < 0) {
+> @@ -238,20 +239,20 @@ static int bmp280_read_calib(struct bmp280_data *data, unsigned int chip)
+>  	}
+>  	calib->H3 = tmp;
+>  
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &b16, 2);
+> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, data->buf.data, 2);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to read H4 comp value\n");
+>  		return ret;
+>  	}
+> -	calib->H4 = sign_extend32(((be16_to_cpu(b16) >> 4) & 0xff0) |
+> -				  (be16_to_cpu(b16) & 0xf), 11);
+> +	calib->H4 = sign_extend32(((get_unaligned_be16(data->buf.data) >> 4) & 0xff0) |
+> +				  (get_unaligned_be16(data->buf.data) & 0xf), 11);
+>  
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &l16, 2);
+> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, data->buf.data, 2);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to read H5 comp value\n");
+>  		return ret;
+>  	}
+> -	calib->H5 = sign_extend32(((le16_to_cpu(l16) >> 4) & 0xfff), 11);
+> +	calib->H5 = sign_extend32(((get_unaligned_le16(data->buf.data) >> 4) & 0xfff), 11);
+>  
+>  	ret = regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
+>  	if (ret < 0) {
+
+...
+
+>  static int bmp280_read_humid(struct bmp280_data *data, int *val, int *val2)
+>  {
+> -	__be16 tmp;
+>  	int ret;
+>  	s32 adc_humidity;
+>  	u32 comp_humidity;
+> @@ -420,13 +420,14 @@ static int bmp280_read_humid(struct bmp280_data *data, int *val, int *val2)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB, &tmp, 2);
+> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB,
+> +			       data->buf.data, 2);
+>  	if (ret < 0) {
+>  		dev_err(data->dev, "failed to read humidity\n");
+>  		return ret;
+>  	}
+>  
+> -	adc_humidity = be16_to_cpu(tmp);
+> +	adc_humidity = get_unaligned_be16(data->buf.data);
+
+We are only unaligned because data is u8 and a dumb compiler might not realize the
+alignment is forced.  Use the suggestion above of a couple more entries in the
+union and we can switch back to be16_to_cpu()
+
+>  	if (adc_humidity == BMP280_HUMIDITY_SKIPPED) {
+>  		/* reading was skipped */
+>  		dev_err(data->dev, "reading humidity skipped\n");
+> @@ -767,7 +768,6 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+>  
+
