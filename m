@@ -2,409 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3E8C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 07:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 843FDC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 07:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238964AbiHNHiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 03:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        id S236066AbiHNHmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 03:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbiHNHiO (ORCPT
+        with ESMTP id S229642AbiHNHmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 03:38:14 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317501F2D3
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 00:38:12 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z2so6130656edc.1
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 00:38:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=jgwCjSUazOczYXnvPhV/4jsgZnpwHDyElQhyBWvpUg0=;
-        b=pvbxI6kbJpA3f4OhtDpudJMcls+h6nJc7tj0RA7uFg7EjsOakn578kIxoE+mLrQboH
-         d690GKN6yG6pCR4OXHv801YdqEQBUDiQ1UrZrAf/mKO0TUZQ7N97YiP5+aOpS0pmXkJC
-         RPvVYsJQf9vT5wNSVbICpRQOJoAyXBBRB4p1x6UIh6EFVWrgL6B/PD6QJIPk8gHNG06i
-         jhJ2S4KaTFW6SQDYSptW+Ka8doH4sBXS9/paJQh51mVydKLSJSH50G0KpUJVk1Dod2D6
-         YRotX2qLc5jswFKbk9mfihFDgX9m4nr3TRH0/OeG7e6AqAHLDFqIbYLQVBd7JQuT6Fyy
-         IjWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=jgwCjSUazOczYXnvPhV/4jsgZnpwHDyElQhyBWvpUg0=;
-        b=8O0dt39jRwttK04igUpHhyd5Kh2V5hsqVfcmTKqlnZgaAYb/0GbtyjVEb5T929nKng
-         FazOW4ejSbK/V36vVCuAiHG7rCcsKhmaPsJPWQAzFocxcfCLLdsnVKem/+mnR1O+HZr1
-         cVHo9QfcdOEEFJ4JFkcxD+B7WR6A/A4puR1dBGI01ScqDSiN9cvr7iMDnZrrcYuEbhZD
-         o+SR7yHcjo9ufCZnFMARBxcxxyBK1W5LLXq9qi1aSLLwx48l3xBWVS/S5fpQs8TsfiT7
-         1AlHAjFVWynP93waHuyIVq82YIZiKhhnWJ3oSOVae8HFglSx76m/1sBnXxWU9G1/bspU
-         //RA==
-X-Gm-Message-State: ACgBeo1i2WhvaPzxpwAivOtVaPhHXq5fcQfB7VGBpA5zrI/3mMxwv3kl
-        pawGuUxXkk5uhbbP+MRV7rc9Ag==
-X-Google-Smtp-Source: AA6agR74WHaLG5Sc8zp/rZ8S4dfIYUwaL9OWwp94l2ANFxLkKJ7hNEncQtZmqnxZqiuotnp/dL0TeQ==
-X-Received: by 2002:a05:6402:42d3:b0:435:2c49:313d with SMTP id i19-20020a05640242d300b004352c49313dmr9826265edc.86.1660462690400;
-        Sun, 14 Aug 2022 00:38:10 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id cs1-20020a0564020c4100b0043e35ae2610sm4257090edb.27.2022.08.14.00.38.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Aug 2022 00:38:09 -0700 (PDT)
-Message-ID: <34228958-081d-52b5-f363-d2df6ecf251d@blackwall.org>
-Date:   Sun, 14 Aug 2022 10:38:08 +0300
+        Sun, 14 Aug 2022 03:42:11 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2060.outbound.protection.outlook.com [40.107.22.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544771F2D3;
+        Sun, 14 Aug 2022 00:42:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HxR6HnSa5BSkgeKnPj/nHkTFqM+z08SND9/qKALcJejdTRAAY4l3z/d5e2UbVqUrRzIJPWvKr70xzaAVb00nilSLCGPMuHtXN/ZhKrtpkuy0BTxBQHwnGpUB0ArOEUtkHWzSSalZB7MFVfRCheV3cTS45WP9o2VEhDZ3mo0BxWW15jA4fKBTozwpBVbVrL7PS7p4WRyZuZar+FsQUkPrG0/G8kdWgw1vmRyDVD9SAYgCiRi6rVkwYwR1+6o7iyIgsI6Kx871qY2H30zdJnQ+jXxQ+fa6/Z15FWSRBWQkLcm5Apk+9r2ovZnPvzH6vgdj0qagZTGAfLxhYDBAaVxiWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zw8Ro1MO+og1+0voe6aIlByQLmKCl2PanpBTwEdHlXA=;
+ b=eBG1H84Wz7iKB6K4V19XmGksVZNLJWE/ZSpZ395CYHKdsKbvuT0LrhK/Yo/KBK5CtGOW5rm1jbmpZxS5oEYUHBPeLgkoG0uvcoq8XPMm9XE1/rVKwuknyUu+p0kPse20KpcEv3E1bswQ5AsXdRBnmik3UOJHvZx8C0hKPFCwD22fG42FrMpzqo8SMwcdt3P+kM1GPmw4mU+d3MT9PI++QTYQSYPjLiQxeKks9m4adf0jh8OnytCv6VqiYEL/YKnDbqni8Ic9uHmw4nxPwhXWfUvrOuZBqnREyV9dxYl8W1Uucn4RAFSFPJOJB7lYtfpCDC6ljJk5eM15xVAu16ZBSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zw8Ro1MO+og1+0voe6aIlByQLmKCl2PanpBTwEdHlXA=;
+ b=cwkf6+bTHvZb2TZSl9y152/VSmRdY57svBoNwdz4H7GwbEfaQc9E/qJZDF19PaxToy/JSUzi68xgC4koYTrMLBuXHdxFNpqYuOnutc+NyUCVpqQRYLg67EKuwxB0YsiM60m+t2vmDmqmuh5uF0nvBkZoeXFR0l732EdadZg5VZs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
+ by VI1PR04MB4016.eurprd04.prod.outlook.com (2603:10a6:803:4a::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Sun, 14 Aug
+ 2022 07:42:05 +0000
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::2549:869e:d80b:3a1b]) by AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::2549:869e:d80b:3a1b%6]) with mapi id 15.20.5504.027; Sun, 14 Aug 2022
+ 07:42:05 +0000
+From:   Liu Ying <victor.liu@nxp.com>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, saravanak@google.com,
+        gregkh@linuxfoundation.org, geert+renesas@glider.be,
+        krzysztof.kozlowski@linaro.org, robh@kernel.org
+Subject: [PATCH v4 0/2] drivers: bus: Add Freescale i.MX8qxp pixel link MSI bus support
+Date:   Sun, 14 Aug 2022 15:43:36 +0800
+Message-Id: <20220814074338.453608-1-victor.liu@nxp.com>
+X-Mailer: git-send-email 2.37.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0197.apcprd06.prod.outlook.com (2603:1096:4:1::29)
+ To AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RFC net-next 0/3] net: vlan: fix bridge binding behavior
- and add selftests
-Content-Language: en-US
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     netdev@vger.kernel.org, aroulin@nvidia.com, sbrivio@redhat.com,
-        roopa@nvidia.com, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <cover.1660100506.git.sevinj.aghayeva@gmail.com>
- <94ec6182-0804-7a0e-dcba-42655ff19884@blackwall.org>
- <CAMWRUK4Mo2KHfa-6Z4Ka+ZLx8TtmzSvq9CLmMmEwE5S7Yp7-Kw@mail.gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <CAMWRUK4Mo2KHfa-6Z4Ka+ZLx8TtmzSvq9CLmMmEwE5S7Yp7-Kw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 65a9326b-cf08-4fbe-2532-08da7dc87bac
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4016:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CRxulwVzXrZFDuYoh4IrrMuPIQeEv6h+nPiq9eavHb0CTS78umZrp0dnveUfCUeXJS1mo9CsSM3B5jShCkAY0G4SKSPNNVfLEMXSS+ITO3zH6rq8j/uEi337Syd85VudQs4FPo3qnSPUDWK+TCqZqxd4Ztg0/ZltB9R0VVwo8j9r+0FKQygVoAsau/v/YIvsusjSVmseIOhqIK1/9CstJpkAOEAnlsTx9m4InHDJJMBcp3dwOFrt4uaEI9JcuBlf/6I6c/koawItVZsvUb+jaR7dnItBvbX1SauZWDZJKyCifZxsNTah8VcxlFEPZSSfDsoO/eIolT87uOxBJ85IgFSFglX7t/SZzjstTzRryZ6mnE9W/z5bZlw28e1krGSbKy69EyWmhZMqOk4qqml+lGltnLZ36CGm3XViTFT50CO7dUGmmN9qlEZqXsAbTE9p7T/Db62xY2Upr2C2315dqiXLOvopmlLYmyMyX9VI67MnNj6UtGaZ5sF2NHwVKd0pv2mnKF+ujLqiM12UTiwUEqi/5/PIoimeGhuErfhfDv+JJEh25fzRrvwDgFejn7IEdVyCk1ihJYzUpVrvtQum0o/M+nLi5PMm46FS1NHtF3wXKsLyTqqFgpGeU6WZW9f1uf1Fkvw6jNdGdbEn/R9OHAlyWWQT5qPASfVt4urnfdyhCqKxT7vzWwKlTEItU5Mg5XWypnx/4RiPpJ3A42yS31Dj5jYhNEKoT7x7VyzddNnalz6Fy+QIhwAoBXEOwCNnWUqLr2WunmLsBnIam57JmuYOKwW70L2LhCqhP54LZRs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39850400004)(396003)(346002)(136003)(376002)(366004)(36756003)(86362001)(26005)(6666004)(83380400001)(6506007)(6512007)(2616005)(1076003)(52116002)(186003)(6486002)(38350700002)(4326008)(41300700001)(316002)(478600001)(66946007)(5660300002)(8676002)(66556008)(8936002)(7416002)(38100700002)(66476007)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EggfzHpfkX7cAp1DCXuQ508MQnX94zBqAJAWRByDNL4GtdY508Azm3uqeNkQ?=
+ =?us-ascii?Q?r4V7e3u9PqkvXYeBh1WKd80DgL+d3A3PS+Iyms71s40p/LwOCdqjoTXbYjDj?=
+ =?us-ascii?Q?bf/1X/pFY0Dc63vZADBna9zxYZ7TFkkM9dyc8AuAiygVdai96etuDHRuBtZg?=
+ =?us-ascii?Q?hFqEc7cDZozJgnvDkQ4lPN3fEzW5x+AHaUHlsN1QTrerClGzstv5gOTdo7xV?=
+ =?us-ascii?Q?YeWnXwJ/e2vTdmQsEQWtGbnnBtiQxHlKQo08ynMgFCs0qqVxpOG5WM0hY/sa?=
+ =?us-ascii?Q?+PNs+mrgFG0qolJ0qteWcZ1cqCSUl/eG69q9qCqFoJm+fWMlEM3fTHNVlXC5?=
+ =?us-ascii?Q?wNMJmqT3zwYAzfjU4JhubY9xqfaCVzHARGc8aDaEr/6hSUPu2pzFov8QMMj6?=
+ =?us-ascii?Q?apJj8Ql6+wIgW8wOjk5BgYQnfNTg+TIq9N2tCCxzf+p3wjOgeeuobs+5mIFg?=
+ =?us-ascii?Q?ZhzekC4n1cmFIGhmMR/PdaaMUDkEnJ5wtFaT0CRSjFMm7qZ+5GCYbwRgEdpg?=
+ =?us-ascii?Q?Usz8q+JcpAJCte96wX51QfW5F6IEfJZB+uOx8Y0aqOpDf4t3JRhrfpF9BAxg?=
+ =?us-ascii?Q?Jh77SpJQsOUI2vbLb6JpsmDQm7yaoXKQ9r2aFEIMWHm0WrPudzsoasy8l5d4?=
+ =?us-ascii?Q?2/2WzBvra/IcxEZ6LdBIpoD7RY/dlsromHLAo3r++HkWj/pi/8N63Og77DD8?=
+ =?us-ascii?Q?mPKzXwjvpWkgYBD3WLMwHbiWltwnLBDtM37ZI+bFEY41s49YXVJfVX2tOZpm?=
+ =?us-ascii?Q?aM3xicMAmLPFbWRVpvci7q+5scKCwwcmUy67GXjpTPRNAkeqgKbkjQvchqVe?=
+ =?us-ascii?Q?ZB3grWOeobaQcfar+40ZEMMBAjlj3RGcX0JvrqWFYo0U0gZ6lkR/zixhPYAi?=
+ =?us-ascii?Q?tuddcO/jaQ2pqYbEwXLNc3Xh0sVxRagW5U649eIVcyVl1SW/8EeR7OuI0KZE?=
+ =?us-ascii?Q?e04N2RBRNK9CiBmfgyzV0u7K/HvZkyNG+L/iztF3eJ5Tt3Oq87/2Zx0b5PX+?=
+ =?us-ascii?Q?ttksT3OLRb/t5qccrUYc3q37NkJaqi2hyu3ReMfkNN1mjz9t88RF2AGMsjn7?=
+ =?us-ascii?Q?ccGVUUxCfHv1UDnOI0lXJBguYDMte5tADMjNiBG8vl/S8FQB3RBibKtyB/4S?=
+ =?us-ascii?Q?odIDGGTLznFjt+Gidj63kBJu7W5c/V1lg9TkYtVz0A/vqUl2ugj6mZvEORSk?=
+ =?us-ascii?Q?T+qqLN7lMCiPNLa4jN4QLhUlaI7BqeNjuDFMqpISwPzCqtfmyfetAma+ai7e?=
+ =?us-ascii?Q?4kaHw65dfFRGN9ESeQK8uHIk9pGLRKmvmMRavot90KlL9kbp+7u7FWLAoE0A?=
+ =?us-ascii?Q?Tym1mSxsnl5igmCQ3rm/wCpCg+LJcUxP2LVINN9LJKhvLNy7R7BttxqQqNKO?=
+ =?us-ascii?Q?OeHxw7BQtd/gzXDLcUyH3B8ojpT22t219+WCCNfCt8HHaRH7uCe524ayA724?=
+ =?us-ascii?Q?18YIJ9l6YFPbpRRIbEpnMLoSrjBMQgXxhYjIqZLus9KqoolzpgqsZ2GSj+BH?=
+ =?us-ascii?Q?3ZRPMFQ+1bopOmQQz9K56WCnpajAsKr7qnUVXqP5g+uf5PTZMSaGsC7lRbQo?=
+ =?us-ascii?Q?OD43nZ9OVCOgOPekGnL3vzQYcec91C1Z/unere2/?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65a9326b-cf08-4fbe-2532-08da7dc87bac
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2022 07:42:05.0499
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: byLQ6RBK/WBNKlAbtkVHb4q+LSxggLL07ZORapCi/aMgGd8jp9Qh9Xz/GHbLjEKZgZM0x3P9zpZNVIKwVjfJFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4016
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/08/2022 18:30, Sevinj Aghayeva wrote:
-> On Wed, Aug 10, 2022 at 4:54 AM Nikolay Aleksandrov <razor@blackwall.org> wrote:
->>
->> On 10/08/2022 06:11, Sevinj Aghayeva wrote:
->>> When bridge binding is enabled for a vlan interface, it is expected
->>> that the link state of the vlan interface will track the subset of the
->>> ports that are also members of the corresponding vlan, rather than
->>> that of all ports.
->>>
->>> Currently, this feature works as expected when a vlan interface is
->>> created with bridge binding enabled:
->>>
->>>   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
->>>         bridge_binding on
->>>
->>> However, the feature does not work when a vlan interface is created
->>> with bridge binding disabled, and then enabled later:
->>>
->>>   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
->>>         bridge_binding off
->>>   ip link set vlan10 type vlan bridge_binding on
->>>
->>> After these two commands, the link state of the vlan interface
->>> continues to track that of all ports, which is inconsistent and
->>> confusing to users. This series fixes this bug and introduces two
->>> tests for the valid behavior.
->>>
->>> Sevinj Aghayeva (3):
->>>   net: core: export call_netdevice_notifiers_info
->>>   net: 8021q: fix bridge binding behavior for vlan interfaces
->>>   selftests: net: tests for bridge binding behavior
->>>
->>>  include/linux/netdevice.h                     |   2 +
->>>  net/8021q/vlan.h                              |   2 +-
->>>  net/8021q/vlan_dev.c                          |  25 ++-
->>>  net/core/dev.c                                |   7 +-
->>>  tools/testing/selftests/net/Makefile          |   1 +
->>>  .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
->>>  6 files changed, 172 insertions(+), 8 deletions(-)
->>>  create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
->>>
->>
->> Hi,
->> NETDEV_CHANGE event is already propagated when the vlan changes flags,
->> NETDEV_CHANGEUPPER is used when the devices' relationship changes not their flags.
->> The only problem you have to figure out is that the flag has changed. The fix itself
->> must be done within the bridge, not 8021q. You can figure it out based on current bridge
->> loose binding state and the vlan's changed state, again in the bridge's NETDEV_CHANGE
->> handler. Unfortunately the proper fix is much more involved and will need new
->> infra, you'll have to track the loose binding vlans in the bridge. To do that you should
->> add logic that reflects the current vlans' loose binding state *only* for vlans that also
->> exist in the bridge, the rest which are upper should be carrier off if they have the loose
->> binding flag set.
->>
->> Alternatively you can add a new NETDEV_ notifier (using something similar to struct netdev_notifier_pre_changeaddr_info)
->> and add link type-specific space (e.g. union of link type-specific structs) in the struct which will contain
->> what changed for 8021q and will be properly interpreted by the bridge. The downside is that we'll generate
->> 2 notifications when changing the loose binding flag, but on the bright side won't have to track anything
->> in the bridge, just handle the new notifier type. This might be the easiest path, the fix is still in
->> the bridge though, the 8021q module just needs to fill in the new struct and emit the notification on
->> any loose binding changes, the bridge must decide if it should process it (i.e. based on upper/lower
->> relationship). Such notifier can be also re-used by other link types to propagate link-type specific
->> changes.
-
 Hi,
 
-> 
-> Hi Nik,
-> 
-> Can you please clarify the following?
-> 
-> 1) should the new NETDEV_ notifier be about the vlan device and not
-> the bridge? That is, should I handle it in br_device_event?
+This series aims to add Freescale i.MX8qxp pixel link MSI bus support
+by using the existing simple-pm-bus driver. A power domain and two input
+clocks need to be enabled before the MSI bus accesses it's child devices,
+which matches what a simple power-managed bus is(See simple-pm-bus.yaml).
 
-Yes, it should be about the vlan device (i.e. the target device that changes its state).
+Patch 1 enables/disables functional clock(s) as a bulk in the
+simple-pm-bus driver when the simple-pm-bus is being power managed,
+since the MSI bus takes the two input clocks as functional clocks.
 
-> 2) is it still okay to export call_netdevice_notifiers_info or should
-> i write a new function for this?
-> 
+Patch 2 adds dt-bindings for the MSI bus.
 
-If you need it, export it. But if you do it similar to netdev_notifier_pre_changeaddr_info
-then you don't have to, more below.
+v3->v4:
+* Drop patch 1 in v3, because simple-bus/simple-mfd devices probed by the
+  simple-pm-bus driver should not be child nodes of simple-pm-bus at all,
+  as simple-bus/simple-mfd's child devices PM operations cannot be propagated
+  to simple-pm-bus. Those simple-bus/simple-mfd devices needs dedicated drivers.
+* Drop unnecessary 'bus == NULL' check from simple_pm_bus_runtime_{suspend,resume}.
+  for patch 1 in v4. (Geert)
+* Add Geert's R-b tag on patch 1 in v4.
+* Add child nodes in the example MSI bus node of the MSI bus dt-binding. (Krzysztof)
 
-> The answers to the above wasn't clear to me, but I came up with the
-> following patch anyway, so perhaps you can also comment on it. I'm
-> pasting it inline; this is against 5.19.
-> 
+v2->v3:
+* Add a pattern property to allow child nodes in the MSI bus dt-binding. (Rob)
 
-A few comments inline below,
+v1->v2:
+Address Krzysztof's comments on patch 3:
+* Add a select to explicitly select the MSI bus dt-binding.
+* List 'simple-pm-bus' explicitly as one item of compatible strings.
+* Require compatible and reg properties.
+* Put reg property just after compatible property in example.
 
-> Thanks!
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 2563d30736e9..c63205eb1f72 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -2762,6 +2762,7 @@ enum netdev_cmd {
->   NETDEV_UNREGISTER,
->   NETDEV_CHANGEMTU, /* notify after mtu change happened */
->   NETDEV_CHANGEADDR, /* notify after the address change */
-> + NETDEV_CHANGEUPPERFLAGS,
 
-Please don't use CHANGEUPPER, that is about a device changing its
-upper device. Also make it more generic, NETDEV_CHANGEFLAGS is too
-specific. For example today we have NETDEV_CHANGEINFODATA which TBH
-sounds good, but is tied to bonding in a few places, e.g.:
-        case NETDEV_CHANGEINFODATA:
-                rtnl_event_type = IFLA_EVENT_BONDING_OPTIONS;
+Liu Ying (2):
+  drivers: bus: simple-pm-bus: Use clocks
+  dt-bindings: bus: Add Freescale i.MX8qxp pixel link MSI bus binding
 
-which is very unfortunate. We really need a generic notifier that can pass
-link-type specific information alongside the device. As I mentioned please
-see how netdev_notifier_pre_changeaddr_info is handled, we need something
-generic that extends netdev_notifier_info and the various link types can add
-their own structures in a union which is to be interpreted based on the link
-type. For example if the new notifier is called NETDEV_CHANGE_DETAILS then
-in the bridge we'll check if the target device is a vlan and interpret the
-structure's union as the vlan change information. It'd be nice to get more
-feedback about this from others as well.
+ .../bus/fsl,imx8qxp-pixel-link-msi-bus.yaml   | 232 ++++++++++++++++++
+ drivers/bus/simple-pm-bus.c                   |  48 ++++
+ 2 files changed, 280 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/bus/fsl,imx8qxp-pixel-link-msi-bus.yaml
 
-Also note that this notifier is for internal use for the time being so it's not necessary
-to export these notifications to user-space yet.
-
-I would've opted for extending NETDEV_CHANGE itself, but that would be quite the
-adventure. :)
-
->   NETDEV_PRE_CHANGEADDR, /* notify before the address change */
->   NETDEV_GOING_DOWN,
->   NETDEV_CHANGENAME,
-> @@ -2837,6 +2838,12 @@ struct netdev_notifier_changelowerstate_info {
->   void *lower_state_info; /* is lower dev state */
->  };
-> 
-> +struct netdev_notifier_changeupperflags_info {
-> + struct netdev_notifier_info info; /* must be first */
-> + struct net_device *upper_dev;
-
-just dev, not upper
-we should be able to use this construct for any link type and actually
-we don't need the device here, we already have it in info.dev
-
-> + bool vlan_bridge_binding;
-
-add this into a vlan-specific structure that should be in a union here so
-other link types can add their own later
-
-> +};
-> +
->  struct netdev_notifier_pre_changeaddr_info {
->   struct netdev_notifier_info info; /* must be first */
->   const unsigned char *dev_addr;
-> @@ -2898,6 +2905,8 @@ netdev_notifier_info_to_extack(const struct
-> netdev_notifier_info *info)
->  }
-> 
->  int call_netdevice_notifiers(unsigned long val, struct net_device *dev);
-> +int call_netdevice_notifiers_info(unsigned long val,
-> +  struct netdev_notifier_info *info);
-
-No need for this if you handle notifications similar to dev_pre_changeaddr_notify()
-with netdev_notifier_pre_changeaddr_info
-
-> 
-> 
->  extern rwlock_t dev_base_lock; /* Device list lock */
-> diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
-> index 5eaf38875554..71947cdcfaaa 100644
-> --- a/net/8021q/vlan.h
-> +++ b/net/8021q/vlan.h
-> @@ -130,7 +130,7 @@ void vlan_dev_set_ingress_priority(const struct
-> net_device *dev,
->  int vlan_dev_set_egress_priority(const struct net_device *dev,
->   u32 skb_prio, u16 vlan_prio);
->  void vlan_dev_free_egress_priority(const struct net_device *dev);
-> -int vlan_dev_change_flags(const struct net_device *dev, u32 flag, u32 mask);
-> +int vlan_dev_change_flags(struct net_device *dev, u32 flag, u32 mask);
->  void vlan_dev_get_realdev_name(const struct net_device *dev, char *result,
->         size_t size);
-> 
-> diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-> index 839f2020b015..68da3901dfb0 100644
-> --- a/net/8021q/vlan_dev.c
-> +++ b/net/8021q/vlan_dev.c
-> @@ -208,11 +208,18 @@ int vlan_dev_set_egress_priority(const struct
-> net_device *dev,
->   return 0;
->  }
-> 
-> +static inline bool netif_is_bridge(const struct net_device *dev)
-
-no inline in .c files, let the compiler decide
-
-> +{
-> + return dev->rtnl_link_ops &&
-> +    !strcmp(dev->rtnl_link_ops->kind, "bridge");
-> +}
-> +
-
-there is already netif_is_bridge_master()
-
->  /* Flags are defined in the vlan_flags enum in
->   * include/uapi/linux/if_vlan.h file.
->   */
-> -int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
-> +int vlan_dev_change_flags(struct net_device *dev, u32 flags, u32 mask)
->  {
-> + struct netdev_notifier_changeupperflags_info info;
->   struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
->   u32 old_flags = vlan->flags;
-> 
-> @@ -223,19 +230,33 @@ int vlan_dev_change_flags(const struct
-> net_device *dev, u32 flags, u32 mask)
-> 
->   vlan->flags = (old_flags & ~mask) | (flags & mask);
-> 
-> - if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
-> + if (!netif_running(dev))
-> + return 0;
-> +
-> + if ((vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
->   if (vlan->flags & VLAN_FLAG_GVRP)
->   vlan_gvrp_request_join(dev);
->   else
->   vlan_gvrp_request_leave(dev);
->   }
-> 
-> - if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
-> + if ((vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
->   if (vlan->flags & VLAN_FLAG_MVRP)
->   vlan_mvrp_request_join(dev);
->   else
->   vlan_mvrp_request_leave(dev);
->   }
-> +
-> + if ((vlan->flags ^ old_flags) & VLAN_FLAG_BRIDGE_BINDING &&
-> +    netif_is_bridge(vlan->real_dev)) {
-> + info.info.dev = vlan->real_dev;
-> + info.upper_dev = dev;
-> + info.vlan_bridge_binding =
-> +    !!(vlan->flags & VLAN_FLAG_BRIDGE_BINDING);
-> + call_netdevice_notifiers_info(NETDEV_CHANGEUPPERFLAGS,
-> +    &info.info);
-> + }
-> +
->   return 0;
->  }
-> 
-> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-> index 0f5e75ccac79..cbcb0877d4a4 100644
-> --- a/net/bridge/br_vlan.c
-> +++ b/net/bridge/br_vlan.c
-> @@ -1718,6 +1718,7 @@ static void nbp_vlan_set_vlan_dev_state(struct
-> net_bridge_port *p, u16 vid)
->  /* Must be protected by RTNL. */
->  int br_vlan_bridge_event(struct net_device *dev, unsigned long event,
-> void *ptr)
->  {
-> + struct netdev_notifier_changeupperflags_info *flags_info;
->   struct netdev_notifier_changeupper_info *info;
->   struct net_bridge *br = netdev_priv(dev);
->   int vlcmd = 0, ret = 0;
-> @@ -1739,7 +1740,11 @@ int br_vlan_bridge_event(struct net_device
-> *dev, unsigned long event, void *ptr)
->   info = ptr;
->   br_vlan_upper_change(dev, info->upper_dev, info->linking);
->   break;
-> -
-> + case NETDEV_CHANGEUPPERFLAGS:
-> + flags_info = ptr;
-> + br_vlan_upper_change(dev, flags_info->upper_dev,
-> +    flags_info->vlan_bridge_binding);
-> + break;
->   case NETDEV_CHANGE:
->   case NETDEV_UP:
->   if (!br_opt_get(br, BROPT_VLAN_BRIDGE_BINDING))
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 30a1603a7225..bc8640d77d83 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -160,8 +160,6 @@ struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
->  struct list_head ptype_all __read_mostly; /* Taps */
-> 
->  static int netif_rx_internal(struct sk_buff *skb);
-> -static int call_netdevice_notifiers_info(unsigned long val,
-> - struct netdev_notifier_info *info);
->  static int call_netdevice_notifiers_extack(unsigned long val,
->     struct net_device *dev,
->     struct netlink_ext_ack *extack);
-> @@ -1624,7 +1622,7 @@ const char *netdev_cmd_to_name(enum netdev_cmd cmd)
->   N(POST_INIT) N(RELEASE) N(NOTIFY_PEERS) N(JOIN) N(CHANGEUPPER)
->   N(RESEND_IGMP) N(PRECHANGEMTU) N(CHANGEINFODATA) N(BONDING_INFO)
->   N(PRECHANGEUPPER) N(CHANGELOWERSTATE) N(UDP_TUNNEL_PUSH_INFO)
-> - N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN)
-> + N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN) N(CHANGEUPPERFLAGS)
->   N(CVLAN_FILTER_PUSH_INFO) N(CVLAN_FILTER_DROP_INFO)
->   N(SVLAN_FILTER_PUSH_INFO) N(SVLAN_FILTER_DROP_INFO)
->   N(PRE_CHANGEADDR) N(OFFLOAD_XSTATS_ENABLE) N(OFFLOAD_XSTATS_DISABLE)
-> @@ -1927,8 +1925,8 @@ static void
-> move_netdevice_notifiers_dev_net(struct net_device *dev,
->   * are as for raw_notifier_call_chain().
->   */
-> 
-> -static int call_netdevice_notifiers_info(unsigned long val,
-> - struct netdev_notifier_info *info)
-> +int call_netdevice_notifiers_info(unsigned long val,
-> +  struct netdev_notifier_info *info)
->  {
->   struct net *net = dev_net(info->dev);
->   int ret;
-> @@ -1944,6 +1942,7 @@ static int
-> call_netdevice_notifiers_info(unsigned long val,
->   return ret;
->   return raw_notifier_call_chain(&netdev_chain, val, info);
->  }
-> +EXPORT_SYMBOL(call_netdevice_notifiers_info);
-> 
->  /**
->   * call_netdevice_notifiers_info_robust - call per-netns notifier blocks
-> 
-> 
->>
->> Both of these avoid any direct dependencies between the bridge and 8021q. Any other suggestions that
->> are simpler, avoid direct dependencies and solve the issue in a generic way would be appreciated.
->>
->> Just be careful about introducing too much unnecessary processing because we
->> can have lots of vlan devices in a system.
->>
->> Cheers,
->>  Nik
-> 
-> 
-> 
+-- 
+2.37.1
 
