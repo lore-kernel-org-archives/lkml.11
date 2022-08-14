@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD4EC282E7
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF91C2BB41
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242601AbiHNQdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:33:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
+        id S242639AbiHNQdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242733AbiHNQbN (ORCPT
+        with ESMTP id S242812AbiHNQbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:31:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E18A6368;
-        Sun, 14 Aug 2022 09:25:53 -0700 (PDT)
+        Sun, 14 Aug 2022 12:31:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E03F18353;
+        Sun, 14 Aug 2022 09:26:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9E9ECCE0B6B;
-        Sun, 14 Aug 2022 16:25:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E804C433C1;
-        Sun, 14 Aug 2022 16:25:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81B34B80B79;
+        Sun, 14 Aug 2022 16:25:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB2AC433D6;
+        Sun, 14 Aug 2022 16:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494350;
-        bh=X/ZLYxxDnih0e0paGcYJ4tSJ7KVpOyF0ATP2RLTK/q4=;
+        s=k20201202; t=1660494358;
+        bh=NHWDZ11Zas4RfucSWheNyMrfWr81TuKNBeH9H8L3S/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXwow0oM18Ec6nNRESrRvLR9XT8hwJJY0Bjv2emIyF+eiwiNhv0Xgf/nzI/Cz6DxR
-         tHVPqTGExUo5RpQ7OlaNfr4O4T7o7Relr7B/Hk4mwvq1gNorUqmWGVZCI6/3DpMN0v
-         2h5pKdXfxCNbFwRF/CcTUCPRKUaNXDu1sBfMJHrOFE3Uzm9XMfC36oVurJ1yv7YGZg
-         Ute+J6Hh+Cw8uzKVZdIS8naEAvUsVtT7n4AvSUv4VGWEl4qen6XzV2x7qxDc0CysJm
-         uB8SffhnO2i6kVbC14hO2hboqo/T53BKkAA9x8QZeO22gYdPuwAtBw6MTOh2ft8grU
-         o9Pb7djPCdZVg==
+        b=Rc2AF/A1YNijXpCCCrngYLB8Mmy5mClCY4Gyqclt5/aUrfnh1MNFoq030Po3lZJ7k
+         VeaIw+LraGSTbJO+OCbSDumFxJr6GC+RmSrrrZvpCTT4cxvlK/eSH/pTmfh9dnu6jS
+         p6DcTk4218lQHN7nMYlGiqcpSIE031qHOGQmKJAttBIAapDwiZQGx/80y+9Tco2BAe
+         xw/cJaSOi8wpvu+3s/XgKNpM687oVrPjJdPk99p2yKlWfRhv2pZJ4fTihazSWgN0+M
+         rGhqt499uXOmA1O9/BbLHdMCvZepqd+l0QTgOPfaweTVI65W9W6a0twPA4Kq4hMuNq
+         lm97JQ7hkOWMA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 32/39] ALSA: control: Use deferred fasync helper
-Date:   Sun, 14 Aug 2022 12:23:21 -0400
-Message-Id: <20220814162332.2396012-32-sashal@kernel.org>
+Cc:     Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, robh@kernel.org,
+        frank.rowand@sony.com, clg@kaod.org, npiggin@gmail.com,
+        christophe.leroy@csgroup.eu, nick.child@ibm.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.18 36/39] powerpc/64: Init jump labels before parse_early_param()
+Date:   Sun, 14 Aug 2022 12:23:25 -0400
+Message-Id: <20220814162332.2396012-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814162332.2396012-1-sashal@kernel.org>
 References: <20220814162332.2396012-1-sashal@kernel.org>
@@ -50,79 +54,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Zhouyi Zhou <zhouzhouyi@gmail.com>
 
-[ Upstream commit 4a971e84a7ae10a38d875cd2d4e487c8d1682ca3 ]
+[ Upstream commit ca829e05d3d4f728810cc5e4b468d9ebc7745eb3 ]
 
-For avoiding the potential deadlock via kill_fasync() call, use the
-new fasync helpers to defer the invocation from the control API.  Note
-that it's merely a workaround.
+On 64-bit, calling jump_label_init() in setup_feature_keys() is too
+late because static keys may be used in subroutines of
+parse_early_param() which is again subroutine of early_init_devtree().
 
-Another note: although we haven't received reports about the deadlock
-with the control API, the deadlock is still potentially possible, and
-it's better to align the behavior with other core APIs (PCM and
-timer); so let's move altogether.
+For example booting with "threadirqs":
 
-Link: https://lore.kernel.org/r/20220728125945.29533-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+  static_key_enable_cpuslocked(): static key '0xc000000002953260' used before call to jump_label_init()
+  WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xfc/0x120
+  ...
+  NIP static_key_enable_cpuslocked+0xfc/0x120
+  LR  static_key_enable_cpuslocked+0xf8/0x120
+  Call Trace:
+    static_key_enable_cpuslocked+0xf8/0x120 (unreliable)
+    static_key_enable+0x30/0x50
+    setup_forced_irqthreads+0x28/0x40
+    do_early_param+0xa0/0x108
+    parse_args+0x290/0x4e0
+    parse_early_options+0x48/0x5c
+    parse_early_param+0x58/0x84
+    early_init_devtree+0xd4/0x518
+    early_setup+0xb4/0x214
+
+So call jump_label_init() just before parse_early_param() in
+early_init_devtree().
+
+Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+[mpe: Add call trace to change log and minor wording edits.]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220726015747.11754-1-zhouzhouyi@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/control.h | 2 +-
- sound/core/control.c    | 7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ arch/powerpc/kernel/prom.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/sound/control.h b/include/sound/control.h
-index 985c51a8fb74..a1fc7e0a47d9 100644
---- a/include/sound/control.h
-+++ b/include/sound/control.h
-@@ -109,7 +109,7 @@ struct snd_ctl_file {
- 	int preferred_subdevice[SND_CTL_SUBDEV_ITEMS];
- 	wait_queue_head_t change_sleep;
- 	spinlock_t read_lock;
--	struct fasync_struct *fasync;
-+	struct snd_fasync *fasync;
- 	int subscribed;			/* read interface is activated */
- 	struct list_head events;	/* waiting events for read */
- };
-diff --git a/sound/core/control.c b/sound/core/control.c
-index a25c0d64d104..f66fe4be30d3 100644
---- a/sound/core/control.c
-+++ b/sound/core/control.c
-@@ -127,6 +127,7 @@ static int snd_ctl_release(struct inode *inode, struct file *file)
- 			if (control->vd[idx].owner == ctl)
- 				control->vd[idx].owner = NULL;
- 	up_write(&card->controls_rwsem);
-+	snd_fasync_free(ctl->fasync);
- 	snd_ctl_empty_read_queue(ctl);
- 	put_pid(ctl->pid);
- 	kfree(ctl);
-@@ -181,7 +182,7 @@ void snd_ctl_notify(struct snd_card *card, unsigned int mask,
- 	_found:
- 		wake_up(&ctl->change_sleep);
- 		spin_unlock(&ctl->read_lock);
--		kill_fasync(&ctl->fasync, SIGIO, POLL_IN);
-+		snd_kill_fasync(ctl->fasync, SIGIO, POLL_IN);
- 	}
- 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
- }
-@@ -2002,7 +2003,7 @@ static int snd_ctl_fasync(int fd, struct file * file, int on)
- 	struct snd_ctl_file *ctl;
+diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
+index 86c4f009563d..053781a4678d 100644
+--- a/arch/powerpc/kernel/prom.c
++++ b/arch/powerpc/kernel/prom.c
+@@ -752,6 +752,13 @@ void __init early_init_devtree(void *params)
+ 	early_init_dt_scan_root();
+ 	early_init_dt_scan_memory_ppc();
  
- 	ctl = file->private_data;
--	return fasync_helper(fd, file, on, &ctl->fasync);
-+	return snd_fasync_helper(fd, file, on, &ctl->fasync);
- }
++	/*
++	 * As generic code authors expect to be able to use static keys
++	 * in early_param() handlers, we initialize the static keys just
++	 * before parsing early params (it's fine to call jump_label_init()
++	 * more than once).
++	 */
++	jump_label_init();
+ 	parse_early_param();
  
- /* return the preferred subdevice number if already assigned;
-@@ -2170,7 +2171,7 @@ static int snd_ctl_dev_disconnect(struct snd_device *device)
- 	read_lock_irqsave(&card->ctl_files_rwlock, flags);
- 	list_for_each_entry(ctl, &card->ctl_files, list) {
- 		wake_up(&ctl->change_sleep);
--		kill_fasync(&ctl->fasync, SIGIO, POLL_ERR);
-+		snd_kill_fasync(ctl->fasync, SIGIO, POLL_ERR);
- 	}
- 	read_unlock_irqrestore(&card->ctl_files_rwlock, flags);
- 
+ 	/* make sure we've parsed cmdline for mem= before this */
 -- 
 2.35.1
 
