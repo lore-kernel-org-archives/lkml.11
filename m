@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DA0C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E482C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242707AbiHNQeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S242725AbiHNQeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242998AbiHNQbq (ORCPT
+        with ESMTP id S243025AbiHNQbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:31:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58F322BD2;
-        Sun, 14 Aug 2022 09:26:21 -0700 (PDT)
+        Sun, 14 Aug 2022 12:31:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BBE237F1;
+        Sun, 14 Aug 2022 09:26:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 07115CE0B12;
-        Sun, 14 Aug 2022 16:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8CFDC433D7;
-        Sun, 14 Aug 2022 16:26:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7332060F49;
+        Sun, 14 Aug 2022 16:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44011C433D7;
+        Sun, 14 Aug 2022 16:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494378;
-        bh=3lexMGJKqNSSshBNGmPY6l9XMI4LRtysWKOU/2UhE5M=;
+        s=k20201202; t=1660494386;
+        bh=zZLL++bYvl0F92rMoTpAbVJJgVpyIgrqAToCvPmUEYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RuNc9i4QvMA9TD31r9gKRwhApPxaRdrkVexU2eWzoixmnlmYvh6fPRzuFs5Lpao1S
-         A34rK/seSO9uyojiNi2ufD2PZ8sfnXHhbuwhZJ2WA/+8Jjix6vcFV71dPyNNGAVs1r
-         1Sb6jvigAPuv5H+8o1Y0QhfvNY5rSiiYDjarnXNjcLnuL1zAjBvwA7woHCKG4PgWBK
-         Y8p7kntZ/F61EcqG+CWlgdRsthOtJRlOFwHdM70P63sUbBq4B+UIJ7tpUQg47TI1ar
-         JeIHls5S7U+6McsvJKCQ/FtZeDKNRubR/eoj58MvOPhwxAFLkD6yUw4tRoX008FogH
-         K+hAecugTbwwQ==
+        b=fGHozz6Qi5LZQBw8lbrxo2WBuqRiIgHw0jIKniALm5M3Kef0m7bToBgA0tugp7pLn
+         cjXTEceTYPw8lZNgqB9dNFFswwl1DN7rCi4CpqaWM9G3KAU2tdm8ZPrFwnmLBx7cFG
+         IrgI5xiXqfEc7dPrtmjmBbDqT41999lxk5xlcgvuu3hy5Lt9LqM4UWgQswpZz7Tdr4
+         qDemdBNI/vYxh+Nk8Wv/qqYLROyq4/Ym/W00nAgvfhjzsL0zQWScFr54SNa7Lp/fWX
+         I4TWfLTOc1SQ/TOzzuxGX19Ap2oRavVpN+6pQiTgmXg/L+q0ZC3ILoIwsxMaaiND82
+         jObcvho39lQhg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Schspa Shi <schspa@gmail.com>, Cornelia Huck <cohuck@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 04/28] vfio: Clear the caps->buf to NULL after free
-Date:   Sun, 14 Aug 2022 12:25:44 -0400
-Message-Id: <20220814162610.2397644-4-sashal@kernel.org>
+Cc:     Helge Deller <deller@gmx.de>, Luis Chamberlain <mcgrof@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 07/28] modules: Ensure natural alignment for .altinstructions and __bug_table sections
+Date:   Sun, 14 Aug 2022 12:25:47 -0400
+Message-Id: <20220814162610.2397644-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814162610.2397644-1-sashal@kernel.org>
 References: <20220814162610.2397644-1-sashal@kernel.org>
@@ -51,36 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
+[ Upstream commit 87c482bdfa79f378297d92af49cdf265be199df5 ]
 
-On buffer resize failure, vfio_info_cap_add() will free the buffer,
-report zero for the size, and return -ENOMEM.  As additional
-hardening, also clear the buffer pointer to prevent any chance of a
-double free.
+In the kernel image vmlinux.lds.S linker scripts the .altinstructions
+and __bug_table sections are 4- or 8-byte aligned because they hold 32-
+and/or 64-bit values.
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Most architectures use altinstructions and BUG() or WARN() in modules as
+well, but in the module linker script (module.lds.S) those sections are
+currently missing. As consequence the linker will store their content
+byte-aligned by default, which then can lead to unnecessary unaligned
+memory accesses by the CPU when those tables are processed at runtime.
+
+Usually unaligned memory accesses are unnoticed, because either the
+hardware (as on x86 CPUs) or in-kernel exception handlers (e.g. on
+parisc or sparc) emulate and fix them up at runtime. Nevertheless, such
+unaligned accesses introduce a performance penalty and can even crash
+the kernel if there is a bug in the unalignment exception handlers
+(which happened once to me on the parisc architecture and which is why I
+noticed that issue at all).
+
+This patch fixes a non-critical issue and might be backported at any time.
+It's trivial and shouldn't introduce any regression because it simply
+tells the linker to use a different (8-byte alignment) for those
+sections by default.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Link: https://lore.kernel.org/all/Yr8%2Fgr8e8I7tVX4d@p100/
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/vfio.c | 1 +
- 1 file changed, 1 insertion(+)
+ scripts/module.lds.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 3c034fe14ccb..818e47fc0896 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -1850,6 +1850,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
- 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
- 	if (!buf) {
- 		kfree(caps->buf);
-+		caps->buf = NULL;
- 		caps->size = 0;
- 		return ERR_PTR(-ENOMEM);
- 	}
+diff --git a/scripts/module.lds.S b/scripts/module.lds.S
+index 1d0e1e4dc3d2..3a3aa2354ed8 100644
+--- a/scripts/module.lds.S
++++ b/scripts/module.lds.S
+@@ -27,6 +27,8 @@ SECTIONS {
+ 	.ctors			0 : ALIGN(8) { *(SORT(.ctors.*)) *(.ctors) }
+ 	.init_array		0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }
+ 
++	.altinstructions	0 : ALIGN(8) { KEEP(*(.altinstructions)) }
++	__bug_table		0 : ALIGN(8) { KEEP(*(__bug_table)) }
+ 	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
+ 
+ 	__patchable_function_entries : { *(__patchable_function_entries) }
 -- 
 2.35.1
 
