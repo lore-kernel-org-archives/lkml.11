@@ -2,118 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F19C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 12:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAEEC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 13:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231668AbiHNMwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 08:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S231628AbiHNNBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 09:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHNMwC (ORCPT
+        with ESMTP id S229907AbiHNNBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 08:52:02 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7DA26E6
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 05:51:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660481519; x=1692017519;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kFk1jUbR8Kh+cFUMjzYkduWCTXacUecoe/Y9VWupVTQ=;
-  b=F8csmVgQxifJBsAX65oN7ZTrmkRGa5bfg6S2F0/t9T3+Ud+tc0dyMWgD
-   yQnSRCgsBhaD2l6MLaRewQnlEHy23GdnalnalxLvAjVH2M8EQqUxHXQxX
-   sYvT+qat77D0v8JKLKsOQVQo4thb/9V1gBC8O5WKVc2+YfFaxUyT6xCXQ
-   fDjkjBeOVG8sfcMjtGWDGBD8bGJ/JEwg018f9Fkha/UAxBJPnmrcONeOF
-   d9m6i17eflpUzOZShCMZz7+40HSRpSPieegLlnBUTorjxmFZ8uTh/yUxM
-   kGWjid5h8IAij7MslZ1td9cW701coW61ml18VDw4upy4B1LE7PDFH4Ayw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="293092905"
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="293092905"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 05:51:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="557006389"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 14 Aug 2022 05:51:57 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oND5x-00005z-06;
-        Sun, 14 Aug 2022 12:51:57 +0000
-Date:   Sun, 14 Aug 2022 20:51:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [stable:linux-5.15.y 5373/9027] arch/x86/kvm/hyperv.c:2185:5:
- warning: stack frame size (1036) exceeds limit (1024) in 'kvm_hv_hypercall'
-Message-ID: <202208142025.NHKErAjq-lkp@intel.com>
+        Sun, 14 Aug 2022 09:01:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A5C9FDA;
+        Sun, 14 Aug 2022 06:01:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6C70B80AEF;
+        Sun, 14 Aug 2022 13:01:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F18C433C1;
+        Sun, 14 Aug 2022 13:01:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660482104;
+        bh=WAP5JA0wQbdx2XgmotyffLP9nUzI/sVbWZvAOatNT3Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zNpzQEfBY6ClWGQYxNib/B/GVaQ5aFeAGkg2nXIL2Bllu/uco+d8LidddCFnoLsKQ
+         xQ6qfDh1+3VjYZ76fP5XxcSkoe3hsn2QjTqaqawHxMHWlgexd98rNQGIeMWciiW0vO
+         Hwcz4HtIbHwemE5umHqlsCFeGFye7AdM+98CvyIo=
+Date:   Sun, 14 Aug 2022 15:01:41 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Chuck Zmudzinski <brchuckz@netscape.net>
+Cc:     Thorsten Leemhuis <regressions@leemhuis.info>, jbeulich@suse.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        regressions@lists.linux.dev, Juergen Gross <jgross@suse.com>,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH 0/3] x86: make pat and mtrr independent from each other
+Message-ID: <YvjyNdH+X0dwjj+f@kroah.com>
+References: <20220715142549.25223-1-jgross@suse.com>
+ <efbde93b-e280-0e40-798d-dc7bf8ca83cf@leemhuis.info>
+ <a0ce2f59-b653-fa8b-a016-1335f05c86ae@netscape.net>
+ <32ed59c9-c894-c426-dd27-3602625cf3b1@netscape.net>
+ <4688ee9b-1b18-3204-cc93-c6ab2ce9222c@netscape.net>
+ <YvjFY1dn2Afg/mFj@kroah.com>
+ <22bb6f38-c319-35a1-cf8a-07f78904ecfb@netscape.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <22bb6f38-c319-35a1-cf8a-07f78904ecfb@netscape.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vitaly,
+On Sun, Aug 14, 2022 at 08:08:30AM -0400, Chuck Zmudzinski wrote:
+> On 8/14/2022 5:50 AM, Greg KH wrote:
+> > On Sun, Aug 14, 2022 at 05:19:12AM -0400, Chuck Zmudzinski wrote:
+> > > Well, that did not take long. Juergen responded with a message,
+> > > which is encrypted and not delivered to my mailbox because I do not
+> > > have the PGP keys, presumably to make it difficult for me to continue
+> > > the discussion and defend myself after I was accused of violating
+> > > the netiquette rules yesterday by Boris:
+> >
+> > The message was signed, not encrypted.  Odd that your email client could
+> > not read it, perhaps you need to use a different one?
+> >
+> > thanks,
+> >
+> > greg k-h
+> 
+> It's not that my e-mail client could not read it, there is no evidence it
+> was ever sent to me.
 
-FYI, the error/warning still remains.
+The To: line had your address in it, so it was sent to you, and again,
+it was not encrypted as you claimed, but rather just signed to verify he
+was the sender.  That's not making anything difficult for anyone, so I
+think you owe him an apology here, especially as you are asking him to
+do work for you.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
-head:   7217df81279835a7aee62a07aabb7b8fb8c766f2
-commit: cb188e07105f2216f5efbefac95df4b6ce266906 [5373/9027] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast hypercall
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220814/202208142025.NHKErAjq-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=cb188e07105f2216f5efbefac95df4b6ce266906
-        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-        git fetch --no-tags stable linux-5.15.y
-        git checkout cb188e07105f2216f5efbefac95df4b6ce266906
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kvm/
+best of luck!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/x86/kvm/hyperv.c:2185:5: warning: stack frame size (1036) exceeds limit (1024) in 'kvm_hv_hypercall' [-Wframe-larger-than]
-   int kvm_hv_hypercall(struct kvm_vcpu *vcpu)
-       ^
-   1 warning generated.
-
-
-vim +/kvm_hv_hypercall +2185 arch/x86/kvm/hyperv.c
-
-4ad81a91119df7 Vitaly Kuznetsov         2021-05-21  2184  
-e83d58874ba1de Andrey Smetanin          2015-07-03 @2185  int kvm_hv_hypercall(struct kvm_vcpu *vcpu)
-e83d58874ba1de Andrey Smetanin          2015-07-03  2186  {
-4e62aa96d6e55c Vitaly Kuznetsov         2021-07-30  2187  	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-bd38b32053eb1c Siddharth Chandrasekaran 2021-05-26  2188  	struct kvm_hv_hcall hc;
-bd38b32053eb1c Siddharth Chandrasekaran 2021-05-26  2189  	u64 ret = HV_STATUS_SUCCESS;
-e83d58874ba1de Andrey Smetanin          2015-07-03  2190  
-e83d58874ba1de Andrey Smetanin          2015-07-03  2191  	/*
-e83d58874ba1de Andrey Smetanin          2015-07-03  2192  	 * hypercall generates UD from non zero cpl and real mode
-e83d58874ba1de Andrey Smetanin          2015-07-03  2193  	 * per HYPER-V spec
-e83d58874ba1de Andrey Smetanin          2015-07-03  2194  	 */
-b3646477d458fb Jason Baron              2021-01-14  2195  	if (static_call(kvm_x86_get_cpl)(vcpu) != 0 || !is_protmode(vcpu)) {
-e83d58874ba1de Andrey Smetanin          2015-07-03  2196  		kvm_queue_exception(vcpu, UD_VECTOR);
-0d9c055eaaf41b Andrey Smetanin          2016-02-11  2197  		return 1;
-e83d58874ba1de Andrey Smetanin          2015-07-03  2198  	}
-e83d58874ba1de Andrey Smetanin          2015-07-03  2199  
-
-:::::: The code at line 2185 was first introduced by commit
-:::::: e83d58874ba1de74c13d3c6b05f95a023c860d25 kvm/x86: move Hyper-V MSR's/hypercall code into hyperv.c file
-
-:::::: TO: Andrey Smetanin <asmetanin@virtuozzo.com>
-:::::: CC: Paolo Bonzini <pbonzini@redhat.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
