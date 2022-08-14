@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCE4C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9D6C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240863AbiHNPgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        id S240898AbiHNPg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240761AbiHNPfc (ORCPT
+        with ESMTP id S240777AbiHNPfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:35:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472F21CFD0;
-        Sun, 14 Aug 2022 08:30:57 -0700 (PDT)
+        Sun, 14 Aug 2022 11:35:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F4D13D4B;
+        Sun, 14 Aug 2022 08:30:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA9960C94;
-        Sun, 14 Aug 2022 15:30:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 113A7C43470;
-        Sun, 14 Aug 2022 15:30:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6D4260CA3;
+        Sun, 14 Aug 2022 15:30:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E9AC43142;
+        Sun, 14 Aug 2022 15:30:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491055;
-        bh=hRPBfczdm15C8/gZO/F3YClMCpGorCXgOhAyyTX1B+M=;
+        s=k20201202; t=1660491035;
+        bh=ajrefJ9f1ixT32JAcsAdH2A3pWO5nNoP2gGtygVkdQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fBdWERADFM/uLE1cBEUckMe3btlPmw/qy7qx6dDAT/jihfXVQTwvowMIdjfzUaxk2
-         Fj4/uzGXh8/SWQC35hRlwyWoiyU2BkWkFXOk7qgz3PNK5dduwb7Y0fCkJgRiwnC1mA
-         ycYFznm+coZTlGpnJMCW8B51WrOuuZ+McfXNczhmLBVsRsOuGqsonDBcYP/TrKLnJV
-         7BKAUQIpvQhWbyCS13WjmdilLGqvp/c8F00VkRDbUFs2dpiIqVU9/0N0xVK9WYC2Ae
-         oYxXuSqDI97wQTGUqUosO0uAyOCDrpb5IDqKB/G83gN/SfUwyBerldUAYUgxsj4ToZ
-         0FIE5o3fGTomw==
+        b=roajf/tvD/RJ2tuqXlrrMI+BzODwqMWz8S17zduMwp37fV1hKPZlfx/33bMDI4TeX
+         zq54ce1NbhNX8bEEaTQwgAt+cRhAs4j4LbfyfrISbb/w9jcQkssQm4BjfM2YOl5Eik
+         wiPfIBz9QSf+j0Zt1LkHu3pOVsa64Oi/drwC4r1gr8j9TbJwANHOcZ9uxXyGjG5cgC
+         db0JEojSnaDHaoZmlP9uOZKVBaAavpwc/7Aly6uyn1zyXuVJguTFV6StKjSXT7hISp
+         56UHJlo0szOgyW6r93+ZVz8uRNCRbYU4kev1lZ5N4A7r1bX5xy6aOoxgn0WFW1AJW2
+         rpMLNweNDSraA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 12/56] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Sun, 14 Aug 2022 11:29:42 -0400
-Message-Id: <20220814153026.2377377-12-sashal@kernel.org>
+Cc:     Frank Li <Frank.Li@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, peter.chen@kernel.org,
+        pawell@cadence.com, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 06/56] usb: cdns3: fix random warning message when driver load
+Date:   Sun, 14 Aug 2022 11:29:36 -0400
+Message-Id: <20220814153026.2377377-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,71 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Frank Li <Frank.Li@nxp.com>
 
-[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
+[ Upstream commit 8659ab3d936fcf0084676f98b75b317017aa8f82 ]
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+Warning log:
+[    4.141392] Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xa20 (GFP_ATOMIC). Fix your code!
+[    4.150340] CPU: 1 PID: 175 Comm: 1-0050 Not tainted 5.15.5-00039-g2fd9ae1b568c #20
+[    4.158010] Hardware name: Freescale i.MX8QXP MEK (DT)
+[    4.163155] Call trace:
+[    4.165600]  dump_backtrace+0x0/0x1b0
+[    4.169286]  show_stack+0x18/0x68
+[    4.172611]  dump_stack_lvl+0x68/0x84
+[    4.176286]  dump_stack+0x18/0x34
+[    4.179613]  kmalloc_fix_flags+0x60/0x88
+[    4.183550]  new_slab+0x334/0x370
+[    4.186878]  ___slab_alloc.part.108+0x4d4/0x748
+[    4.191419]  __slab_alloc.isra.109+0x30/0x78
+[    4.195702]  kmem_cache_alloc+0x40c/0x420
+[    4.199725]  dma_pool_alloc+0xac/0x1f8
+[    4.203486]  cdns3_allocate_trb_pool+0xb4/0xd0
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
+pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
+{
+	...
+	page = kmalloc(sizeof(*page), mem_flags);
+	page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
+					 &page->dma, mem_flags);
+	...
+}
 
-Suggested-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+kmalloc was called with mem_flags, which is passed down in
+cdns3_allocate_trb_pool() and have GFP_DMA32 flags.
+kmall_fix_flags() report warning.
+
+GFP_DMA32 is not useful at all. dma_alloc_coherent() will handle
+DMA memory region correctly by pool->dev. GFP_DMA32 can be removed
+safely.
+
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Link: https://lore.kernel.org/r/20220609154456.2871672-1-Frank.Li@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/usb/cdns3/cdns3-gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index e1f771c72fc4..ad3e2c1b3c87 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
+diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
+index c4f90b124e55..c7c394402e44 100644
+--- a/drivers/usb/cdns3/cdns3-gadget.c
++++ b/drivers/usb/cdns3/cdns3-gadget.c
+@@ -220,7 +220,7 @@ int cdns3_allocate_trb_pool(struct cdns3_endpoint *priv_ep)
  
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
+ 	if (!priv_ep->trb_pool) {
+ 		priv_ep->trb_pool = dma_pool_alloc(priv_dev->eps_dma_pool,
+-						   GFP_DMA32 | GFP_ATOMIC,
++						   GFP_ATOMIC,
+ 						   &priv_ep->trb_pool_dma);
  
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
- 
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
- 	}
-@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
- 
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
- 
+ 		if (!priv_ep->trb_pool)
 -- 
 2.35.1
 
