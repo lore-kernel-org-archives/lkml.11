@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA60DC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 774E1C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241093AbiHNPjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
+        id S241103AbiHNPjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231990AbiHNPgv (ORCPT
+        with ESMTP id S240901AbiHNPg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:36:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3651FCDC;
-        Sun, 14 Aug 2022 08:32:09 -0700 (PDT)
+        Sun, 14 Aug 2022 11:36:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6E420188;
+        Sun, 14 Aug 2022 08:32:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B6C960C93;
-        Sun, 14 Aug 2022 15:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56B1C433D6;
-        Sun, 14 Aug 2022 15:32:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C29F60C98;
+        Sun, 14 Aug 2022 15:32:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C4FC43140;
+        Sun, 14 Aug 2022 15:32:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491127;
-        bh=DDjUZxl2V2JdEZSkI5b5kOsibxbKLbbmvroI1QTDkPw=;
+        s=k20201202; t=1660491133;
+        bh=Hz4IDQ1JODRnQj2XRHBXSjJFvRrsRauABgljRV7KOqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z2qtO8zMMBFlBzUz/dNsoU+HWN/k9jXUp5gfPvgHgnx5dtg+L/av8KMpYdmnPvcWh
-         TsRSjY2Dek9gSf4aglhhHtY9pIe3dRa6/5ov0coozsjcjMBdBSBXdLjqkJmlabEo0J
-         QFiVdefEER7R1J5lAYNOmG8AGhc5hTeFahuTJeHqOpImowXbd3ijZ0zxm7KkANOz2u
-         70FXTApmS6DRSc4ApgbjqPutCGRIT8oo/0q0oMgqoY0X8Ib8r7uolyBDBQq/+pBlOE
-         2eYrlJCku1us5C5pDehNzmAiAunSFCK9+YBxwSlHvhdMwbToiFRQJjlECrCRsTsAcL
-         lYiTLF8v9hpfw==
+        b=uGA/AFmOL+9luENALRfA8LD9KwEYHJNGO+uwImHC3w7upCeqddpJL5cCLuTCmZnpe
+         LrkCg5Cq+gZfS6peyl4WjfATLf6C4hyTn5HuFtxR1oP/BH+VKEAKaOzYG3pLsYmUGw
+         lPr2RFMTvqygiySiKLRTnWywnsJfB/8kvRKDXX+8dxOiBF0mMYaChnJA1VofOqgVh0
+         Gamf1UOSVbNewVBWwge6tkGnPor5Mutp8OrilM6XZDJOMNKisa8N193o5m6/ELuUtm
+         hR7gw9vxRAOotmzuv6N8lGLMs94X/ilcOf9yuGopAwh479PrtvTvx4ENJcimvrV4Ga
+         gY5g7Sentfwvw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 37/56] PCI/ACPI: Guard ARM64-specific mcfg_quirks
-Date:   Sun, 14 Aug 2022 11:30:07 -0400
-Message-Id: <20220814153026.2377377-37-sashal@kernel.org>
+Cc:     Ben Dooks <ben.dooks@sifive.com>, Vinod Koul <vkoul@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Eugeniy.Paltsev@synopsys.com,
+        dmaengine@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 40/56] dmaengine: dw-axi-dmac: ignore interrupt if no descriptor
+Date:   Sun, 14 Aug 2022 11:30:10 -0400
+Message-Id: <20220814153026.2377377-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
@@ -52,42 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huacai Chen <chenhuacai@loongson.cn>
+From: Ben Dooks <ben.dooks@sifive.com>
 
-[ Upstream commit 40a6cc141b4b9580de140bcb3e893445708acc5d ]
+[ Upstream commit 820f5ce999d2f99961e88c16d65cd26764df0590 ]
 
-Guard ARM64-specific quirks with CONFIG_ARM64 to avoid build errors,
-since mcfg_quirks will be shared by more than one architectures.
+If the channel has no descriptor and the interrupt is raised then the
+kernel will OOPS. Check the result of vchan_next_desc() in the handler
+axi_chan_block_xfer_complete() to avoid the error happening.
 
-Link: https://lore.kernel.org/r/20220714124216.1489304-2-chenhuacai@loongson.cn
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Link: https://lore.kernel.org/r/20220708170153.269991-4-ben.dooks@sifive.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/pci_mcfg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
-index 53cab975f612..63b98eae5e75 100644
---- a/drivers/acpi/pci_mcfg.c
-+++ b/drivers/acpi/pci_mcfg.c
-@@ -41,6 +41,8 @@ struct mcfg_fixup {
- static struct mcfg_fixup mcfg_quirks[] = {
- /*	{ OEM_ID, OEM_TABLE_ID, REV, SEGMENT, BUS_RANGE, ops, cfgres }, */
+diff --git a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+index 41583f01a360..a183d93bd7e2 100644
+--- a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
++++ b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+@@ -1054,6 +1054,11 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
  
-+#ifdef CONFIG_ARM64
-+
- #define AL_ECAM(table_id, rev, seg, ops) \
- 	{ "AMAZON", table_id, rev, seg, MCFG_BUS_ANY, ops }
+ 	/* The completed descriptor currently is in the head of vc list */
+ 	vd = vchan_next_desc(&chan->vc);
++	if (!vd) {
++		dev_err(chan2dev(chan), "BUG: %s, IRQ with no descriptors\n",
++			axi_chan_name(chan));
++		goto out;
++	}
  
-@@ -169,6 +171,7 @@ static struct mcfg_fixup mcfg_quirks[] = {
- 	ALTRA_ECAM_QUIRK(1, 13),
- 	ALTRA_ECAM_QUIRK(1, 14),
- 	ALTRA_ECAM_QUIRK(1, 15),
-+#endif /* ARM64 */
- };
+ 	if (chan->cyclic) {
+ 		desc = vd_to_axi_desc(vd);
+@@ -1083,6 +1088,7 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
+ 		axi_chan_start_first_queued(chan);
+ 	}
  
- static char mcfg_oem_id[ACPI_OEM_ID_SIZE];
++out:
+ 	spin_unlock_irqrestore(&chan->vc.lock, flags);
+ }
+ 
 -- 
 2.35.1
 
