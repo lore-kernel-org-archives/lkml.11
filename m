@@ -2,83 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8CDC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 18:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9255AC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 18:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239463AbiHNSds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 14:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44340 "EHLO
+        id S231706AbiHNSfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 14:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHNSdp (ORCPT
+        with ESMTP id S229379AbiHNSfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 14:33:45 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3615D186D5;
-        Sun, 14 Aug 2022 11:33:44 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id fy5so10262168ejc.3;
-        Sun, 14 Aug 2022 11:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=4+2ulhFVcoDAjZEoMthRjrOaXvnt89QHNhQtRqhHP4s=;
-        b=fX9pi09EiTGFxwGOxA2V8wdc4cS8yTLAY5O+Lr6evH7WYQfLNkQPjwLA2TgtZPHOMh
-         jxjpmtzkHC8K082p36rUUQDcHGYqPstimpHyacdkMk24iiQzLf37vOOGPjs8l4yVJe/w
-         6wkT6xr5guhQGq/x5jslkQCMuRuMWfs1Hdo9pbcV1uEWsP3IKhq8CVlCZXaRjdLnKvaC
-         J3lrFLEWJcRgoy1nFmi4hZ8muwNhyrYyAIJqCw5lHhcgfX7dE2IWmJtlS8NnYN2WbD9Y
-         5MJQRql+oOAh8Wcw0rOhflL5YxgP26rXhTIWwCPM7JXreuXWjasSScqI9LPII9zRyfQF
-         su7A==
+        Sun, 14 Aug 2022 14:35:09 -0400
+Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A893E186DF;
+        Sun, 14 Aug 2022 11:35:06 -0700 (PDT)
+Received: by mail-il1-f169.google.com with SMTP id f18so1147297ilj.11;
+        Sun, 14 Aug 2022 11:35:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=4+2ulhFVcoDAjZEoMthRjrOaXvnt89QHNhQtRqhHP4s=;
-        b=PboBR8xYEFPoPnz5zHsu/r8vAs+HsnEKKEG7lYsXdQwBAr9UdfWOUF7efGtkYfP/Vf
-         CWQcCWuHz/3/Pd7ndGvlLaFQp9AA5JTqCr5OVkgS4CoGB9g9hPEhRUqlo2udRkZZO7wL
-         dHuv4XwIZnKpiofndT/MROJyZZFYcmq68CisRnGVqXnNCWrml54jpCEFD/F4VaDWm4Ys
-         bWgD38rUllZpF/X4x4ALLsJryCf/JuTCmbyfi668Cmeir0W/+6clFuyy37Lenc9VYXav
-         Du7/FVJLY9lZyxMSWREQRQjy0himSk+i8AFKjcoLJ06kiqAvHpIld4yRNMJyjk5yDu81
-         8k0g==
-X-Gm-Message-State: ACgBeo1Lb1Zlv37louU36dVTGWxyC/1SZw7BTmsWGI8odeayX3rUks3w
-        0ouU58nUNhmbNwVhqnSXGk49M1bt8INTsA==
-X-Google-Smtp-Source: AA6agR4/M9HH2/f84AG8Fd/KLTX78rK74rtI0dDGgYRxggAqcMOivuaVI3DiNTELE+WqZshrf4D2Pw==
-X-Received: by 2002:a17:906:8a73:b0:730:9af8:b335 with SMTP id hy19-20020a1709068a7300b007309af8b335mr8740361ejc.14.1660502022790;
-        Sun, 14 Aug 2022 11:33:42 -0700 (PDT)
-Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
-        by smtp.gmail.com with ESMTPSA id o19-20020a170906861300b0072eddcc807fsm3183679ejx.155.2022.08.14.11.33.41
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=gVW85/KDaANkBY2qCn0Fjp04/BEeNokQszStw+tvDH0=;
+        b=Hgug6en0aQBzDWOrSc3r8/mFR0PuRcjHata3McUZyq+my9XubakKloyelf+0BNcUhH
+         kbzI+uNjGjAGL9Qu7QCDc4i1zrcTX4Gr+5z2t6Dzh1P+ViWrR8YhaWSwr1ZSANTehoyM
+         rd4lGYa3CSyNIPa9iuor5XX35DukKcS0Q2Eog4z+t0uLIDyihuOL0JTm3a+ztvwB4UHp
+         V3UyhKhAb9VejTKHmTgPGbqWBI4/2hyXozPN4eg9ONdGGpZH7/msFFIT04hMiO4gfMeT
+         aRAMTSD7I+uqCvJaS4drBo5RHcXZKKwasLdX/+0hVK2zpgZF3HzU6Goltl/W1SVEHJSx
+         QQ+A==
+X-Gm-Message-State: ACgBeo2Lo4jlDkU6gAvVFYmIKEJolKK3xCL8MgVDHcF+vs1e3kpHj18f
+        8cw9qjvudPHk/WJJXtoqLg==
+X-Google-Smtp-Source: AA6agR7Y1di0eWxnpj0zfbAvLFxAvmjIxcBDVB44qAyLxZqqOTVzWXub5XeNFypIKZNsMxAYflc0sA==
+X-Received: by 2002:a92:c26a:0:b0:2e5:b7e4:7e52 with SMTP id h10-20020a92c26a000000b002e5b7e47e52mr775729ild.299.1660502105860;
+        Sun, 14 Aug 2022 11:35:05 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id h12-20020a056e021d8c00b002e127d59f63sm3063758ila.74.2022.08.14.11.35.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 11:33:42 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 9/9] soc: sunxi: sram: Add support for the D1 system control
-Date:   Sun, 14 Aug 2022 20:33:41 +0200
-Message-ID: <2310270.NG923GbCHz@jernej-laptop>
-In-Reply-To: <20220801030509.21966-10-samuel@sholland.org>
-References: <20220801030509.21966-1-samuel@sholland.org> <20220801030509.21966-10-samuel@sholland.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        Sun, 14 Aug 2022 11:35:04 -0700 (PDT)
+Received: (nullmailer pid 546325 invoked by uid 1000);
+        Sun, 14 Aug 2022 18:35:02 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org,
+        kernel@pengutronix.de, festevam@gmail.com,
+        krzysztof.kozlowski@linaro.org, saravanak@google.com,
+        geert+renesas@glider.be, robh+dt@kernel.org,
+        s.hauer@pengutronix.de, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shawnguo@kernel.org, krzysztof.kozlowski+dt@linaro.org
+In-Reply-To: <20220814074338.453608-3-victor.liu@nxp.com>
+References: <20220814074338.453608-1-victor.liu@nxp.com> <20220814074338.453608-3-victor.liu@nxp.com>
+Subject: Re: [PATCH v4 2/2] dt-bindings: bus: Add Freescale i.MX8qxp pixel link MSI bus binding
+Date:   Sun, 14 Aug 2022 12:35:02 -0600
+Message-Id: <1660502102.287520.546324.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 01. avgust 2022 ob 05:05:09 CEST je Samuel Holland napisal(a):
-> D1 has a single EMAC and some LDOs that need to be exported.
+On Sun, 14 Aug 2022 15:43:38 +0800, Liu Ying wrote:
+> Freescale i.MX8qxp pixel link MSI bus is a simple memory-mapped bus.
+> It is used to access peripherals in i.MX8qm/qxp imaging, LVDS, MIPI
+> DSI and HDMI TX subsystems, like I2C controller, PWM controller,
+> MIPI DSI controller and Control and Status Registers (CSR) module.
 > 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> Reference simple-pm-bus bindings and add Freescale i.MX8qxp pixel
+> link MSI bus specific bindings.
+> 
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> ---
+> v3->v4:
+> * Add child nodes in the example MSI bus node of the MSI bus dt-binding. (Krzysztof)
+> 
+> v2->v3:
+> * Add a pattern property to allow child nodes. (Rob)
+> 
+> v1->v2:
+> Address Krzysztof's comments:
+> * Add a select to explicitly select the MSI bus dt-binding.
+> * List 'simple-pm-bus' explicitly as one item of compatible strings.
+> * Require compatible and reg properties.
+> * Put reg property just after compatible property in example.
+> 
+>  .../bus/fsl,imx8qxp-pixel-link-msi-bus.yaml   | 232 ++++++++++++++++++
+>  1 file changed, 232 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/bus/fsl,imx8qxp-pixel-link-msi-bus.yaml
+> 
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Best regards,
-Jernej
+yamllint warnings/errors:
 
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/bus/fsl,imx8qxp-pixel-link-msi-bus.example.dtb:0:0: /example-0/bus@56200000/syscon@56221000: failed to match any schema with compatible: ['fsl,imx8qxp-mipi-lvds-csr', 'syscon', 'simple-mfd']
+Documentation/devicetree/bindings/bus/fsl,imx8qxp-pixel-link-msi-bus.example.dtb:0:0: /example-0/bus@56200000/syscon@56221000/pxl2dpi: failed to match any schema with compatible: ['fsl,imx8qxp-pxl2dpi']
+Documentation/devicetree/bindings/bus/fsl,imx8qxp-pixel-link-msi-bus.example.dtb:0:0: /example-0/bus@56200000/syscon@56221000/ldb: failed to match any schema with compatible: ['fsl,imx8qxp-ldb']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
