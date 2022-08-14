@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5267DC25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7F2C2BB45
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241534AbiHNPrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
+        id S241558AbiHNPr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:47:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241239AbiHNPox (ORCPT
+        with ESMTP id S241461AbiHNPpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:44:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58F3248E1;
-        Sun, 14 Aug 2022 08:34:06 -0700 (PDT)
+        Sun, 14 Aug 2022 11:45:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD42E2494B;
+        Sun, 14 Aug 2022 08:34:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35239B80B79;
-        Sun, 14 Aug 2022 15:34:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E452EC433C1;
-        Sun, 14 Aug 2022 15:34:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9091C60CF1;
+        Sun, 14 Aug 2022 15:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06712C433D7;
+        Sun, 14 Aug 2022 15:34:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491244;
-        bh=lY8Vu6e1a86oTT8LLYHfgkFVDDyf4+IO166QYIoKdS4=;
+        s=k20201202; t=1660491249;
+        bh=t1roUgaSTodrFE5Q67YXj8K4EuRG/7oWKG6ZxMhzEgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=reeUw7Su+x7OFAsbsfPGVuofObE0hWaoGYvoO9TMYmxOLzazFNOrzrx97MNNKBJnT
-         w3zYciuAZ62nvHhg6adb95y3+iYQqnpBgdhqqzO9AOsHoi20Dn3Q56ya1XuoCZLYFC
-         zEJWzjcpCO8pnJSdDkVIFY+YrLjT2Tw/foYKDyZnF4f7WIdRBrI2bsBRIA6+WbDKLM
-         EOH52PuNLMKJwc7dMAMu2tvi0jhKfil6XWtFPRI+Grea+7BMLvNKJB8/uu6fOQBs36
-         B/CWijjrSKSvPr48pFms1XtrEKxIjZtRM6Jja1h3BdgFb9S7UCv/wvwJg75dnZHXBU
-         Pj1K0n+cs1p7A==
+        b=W3GhR4uqLnh0tbC4JCnYlL8maN1sLXZ93UAEpaSZ8nhELQc74o2y3rlErI48o1VWu
+         EH9VzGZosDoUGjnp3IUXc8WMbJYy4hRR6Iw4gzdqButMGqcMVbaPEr2HIAHRu5e7qu
+         9lF2OK7ygZkiEB1PCwFo4Gdn6YbhAh+rAJWABFi+iY3Ezi+kTEiAVRjPKLqN016V00
+         fuzWJfDRAL4HCL2mILdVGSkTDY0YLCdYkZIMfOe2Hfy5VBccW6/6zF7ztE+PsjxRT8
+         FC/r9z/oDziCyB/fDpk3O8/nqp49TICkCfjbpI710MESkDYCwfMJFeHyFLWxh8Bp6+
+         sbHiIeH/OJd3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liao Chang <liaochang1@huawei.com>,
-        Chen Guokai <chenguokai17@mails.ucas.ac.cn>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Guo Ren <guoren@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        rostedt@goodmis.org, lkp@intel.com, linux-csky@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 35/46] csky/kprobe: reclaim insn_slot on kprobe unregistration
-Date:   Sun, 14 Aug 2022 11:32:36 -0400
-Message-Id: <20220814153247.2378312-35-sashal@kernel.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        orsonzhai@gmail.com, zhang.lyra@gmail.com,
+        dmaengine@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 37/46] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
+Date:   Sun, 14 Aug 2022 11:32:38 -0400
+Message-Id: <20220814153247.2378312-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,38 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liao Chang <liaochang1@huawei.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit a2310c74d418deca0f1d749c45f1f43162510f51 ]
+[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
 
-On kprobe registration kernel allocate one insn_slot for new kprobe,
-but it forget to reclaim the insn_slot on unregistration, leading to a
-potential leakage.
+It's not allowed to quit remove early without cleaning up completely.
+Otherwise this results in resource leaks that probably yield graver
+problems later. Here for example some tasklets might survive the lifetime
+of the sprd-dma device and access sdev which is freed after .remove()
+returns.
 
-Reported-by: Chen Guokai <chenguokai17@mails.ucas.ac.cn>
-Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
+As none of the device freeing requires an active device, just ignore the
+return value of pm_runtime_get_sync().
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/csky/kernel/probes/kprobes.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/dma/sprd-dma.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/csky/kernel/probes/kprobes.c b/arch/csky/kernel/probes/kprobes.c
-index 4045894d9280..584ed9f36290 100644
---- a/arch/csky/kernel/probes/kprobes.c
-+++ b/arch/csky/kernel/probes/kprobes.c
-@@ -124,6 +124,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
- 
- void __kprobes arch_remove_kprobe(struct kprobe *p)
+diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
+index 4357d2395e6b..60115d8d4083 100644
+--- a/drivers/dma/sprd-dma.c
++++ b/drivers/dma/sprd-dma.c
+@@ -1236,11 +1236,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
  {
-+	if (p->ainsn.api.insn) {
-+		free_insn_slot(p->ainsn.api.insn, 0);
-+		p->ainsn.api.insn = NULL;
-+	}
- }
+ 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
+ 	struct sprd_dma_chn *c, *cn;
+-	int ret;
  
- static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
+-	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0)
+-		return ret;
++	pm_runtime_get_sync(&pdev->dev);
+ 
+ 	/* explicitly free the irq */
+ 	if (sdev->irq > 0)
 -- 
 2.35.1
 
