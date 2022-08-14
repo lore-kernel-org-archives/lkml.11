@@ -2,155 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BD5C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 12:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E409C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 12:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231887AbiHNMaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 08:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S232769AbiHNMmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 08:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiHNMaA (ORCPT
+        with ESMTP id S229614AbiHNMmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 08:30:00 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDD31CFD6
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 05:29:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660480199; x=1692016199;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+tc0O//ewjffkXM2kwutZHrS5qdyDIVb3PC7Ivm2r6c=;
-  b=guNISI9nMcG8REk4P2JFAHYd8D1afDFpr7iJ3DKNXJXYX1lhv/uBZsKJ
-   0yicwCyCjpQCX0ckbgYLQiPOuQqv8qCXaHUJEPjqGR1o5zgH0fY2b8DN+
-   mIgzZaEEhFI85pRskYAC+rM5PuLB15gSGLMgtAk7Ls0jC7UvlvfOvQh63
-   ZLp5wpUPioe+zdezjqhGwSEVVyz2P48QLEz5NW4clO1X8AUD53CAnq9U5
-   vi1zU5I1foUJxuYisH0vVw/0SBkomRSoRFxUztvHYYqU7vQXkatHT2/az
-   qoyQfi7zGOfohF6ivWjYji5+PNPRXR29wA9clsvN1Z9ioWIH60tPuqsEm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="274876433"
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="274876433"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 05:29:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="557003177"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 14 Aug 2022 05:29:57 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNCke-00004p-22;
-        Sun, 14 Aug 2022 12:29:56 +0000
-Date:   Sun, 14 Aug 2022 20:29:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nikolay Borisov <nborisov@suse.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        David Sterba <dsterba@suse.com>
-Subject: fs/btrfs/ioctl.c:4370: warning: expecting prototype for Try to
- acquire fs_info:(). Prototype was for btrfs_try_lock_balance() instead
-Message-ID: <202208142017.toR0Cz6v-lkp@intel.com>
+        Sun, 14 Aug 2022 08:42:07 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7D5201AB
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 05:42:05 -0700 (PDT)
+Received: from zn.tnic (p2e55d27b.dip0.t-ipconnect.de [46.85.210.123])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BFF001EC02F2;
+        Sun, 14 Aug 2022 14:41:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660480919;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=6W9pL26aeXOLT5Po4wAcLyb9mKmJZJw56r9wwihEm44=;
+        b=oVsK+GH5n3NWSsuZLFe3QeAUJaWLokJT7sKteb0MSYYSOFXSkAw4T70uWwcA7yUs2thTwK
+        pLdUblPv1A2J3ON6bFtaPBbTf4K6hwAozcTxGqNazzWpuPA+vIF7KqS+WIhmHW+W0OkLCj
+        YNaG7pbOPVsgsK7qkjve5JLkkUbktMg=
+Date:   Sun, 14 Aug 2022 14:41:54 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>, x86-ml <x86@kernel.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Christian Brauner <brauner@kernel.org>
+Subject: Re: [GIT PULL] timer fixes
+Message-ID: <YvjtkidVZg2sBY0R@zn.tnic>
+References: <Yvd8L0qIbLarxrOQ@gmail.com>
+ <YvfQUGLGY7cfZ9gf@zn.tnic>
+ <CAHk-=wi+K-LQ121sPbsQonja3Sx-_kXZc6ntauUC2=JPsUrC+g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <CAHk-=wi+K-LQ121sPbsQonja3Sx-_kXZc6ntauUC2=JPsUrC+g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   aea23e7c464bfdec04b52cf61edb62030e9e0d0a
-commit: 7fb10ed89e95e26f5f81087a75f2a4bfa43b1705 btrfs: introduce btrfs_try_lock_balance
-date:   3 weeks ago
-config: loongarch-allyesconfig (https://download.01.org/0day-ci/archive/20220814/202208142017.toR0Cz6v-lkp@intel.com/config)
-compiler: loongarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7fb10ed89e95e26f5f81087a75f2a4bfa43b1705
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7fb10ed89e95e26f5f81087a75f2a4bfa43b1705
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=loongarch SHELL=/bin/bash fs/btrfs/
+On Sat, Aug 13, 2022 at 01:27:40PM -0700, Linus Torvalds wrote:
+> On Sat, Aug 13, 2022 at 9:25 AM Borislav Petkov <bp@alien8.de> wrote:
+> >
+> > That task_struct.sighand is marked __rcu and thus noderef and sparse
+> > complains:
+> 
+> I think that RCU marking is misleading.
+> 
+> Doing a
+> 
+>         git grep -e '->sighand'
+> 
+> shows that we basically never treat that as some kind of RCU pointer.
+> 
+> Adding a
+> 
+>         grep -i rcu
+> 
+> to the above shows that we have a couple of places that do this
+> carefully, but they are the exception rather than the rule.
+> 
+> I think the issue is that "current->sighand" is always safe (and that
+> "me->sighand" is the same thing), and that sighand has RCU-delayed
+> freeing so that __lock_task_sighand() can safely try to take the lock
+> of another process' sighand.
+> 
+> And we have no real way to explain to sparse that *some* cases are
+> fine, others are not and need the sighand lock (after that careful
+> __lock_task_sighand thing).
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Sounds to me like that sparse check was not such a good idea in the
+first place. Especially since the 0day bot is probably warning about all
+those cases where we try to lock ->sighand.
 
-All warnings (new ones prefixed by >>):
+It was added by
 
->> fs/btrfs/ioctl.c:4370: warning: expecting prototype for Try to acquire fs_info:(). Prototype was for btrfs_try_lock_balance() instead
+913292c97d75 ("sched.h: Annotate sighand_struct with __rcu")
 
+Lemme add the involved parties to Cc.
 
-vim +4370 fs/btrfs/ioctl.c
-
-  4357	
-  4358	/**
-  4359	 * Try to acquire fs_info::balance_mutex as well as set BTRFS_EXLCOP_BALANCE as
-  4360	 * required.
-  4361	 *
-  4362	 * @fs_info:       the filesystem
-  4363	 * @excl_acquired: ptr to boolean value which is set to false in case balance
-  4364	 *                 is being resumed
-  4365	 *
-  4366	 * Return 0 on success in which case both fs_info::balance is acquired as well
-  4367	 * as exclusive ops are blocked. In case of failure return an error code.
-  4368	 */
-  4369	static int btrfs_try_lock_balance(struct btrfs_fs_info *fs_info, bool *excl_acquired)
-> 4370	{
-  4371		int ret;
-  4372	
-  4373		/*
-  4374		 * Exclusive operation is locked. Three possibilities:
-  4375		 *   (1) some other op is running
-  4376		 *   (2) balance is running
-  4377		 *   (3) balance is paused -- special case (think resume)
-  4378		 */
-  4379		while (1) {
-  4380			if (btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
-  4381				*excl_acquired = true;
-  4382				mutex_lock(&fs_info->balance_mutex);
-  4383				return 0;
-  4384			}
-  4385	
-  4386			mutex_lock(&fs_info->balance_mutex);
-  4387			if (fs_info->balance_ctl) {
-  4388				/* This is either (2) or (3) */
-  4389				if (test_bit(BTRFS_FS_BALANCE_RUNNING, &fs_info->flags)) {
-  4390					/* This is (2) */
-  4391					ret = -EINPROGRESS;
-  4392					goto out_failure;
-  4393	
-  4394				} else {
-  4395					mutex_unlock(&fs_info->balance_mutex);
-  4396					/*
-  4397					 * Lock released to allow other waiters to
-  4398					 * continue, we'll reexamine the status again.
-  4399					 */
-  4400					mutex_lock(&fs_info->balance_mutex);
-  4401	
-  4402					if (fs_info->balance_ctl &&
-  4403					    !test_bit(BTRFS_FS_BALANCE_RUNNING, &fs_info->flags)) {
-  4404						/* This is (3) */
-  4405						*excl_acquired = false;
-  4406						return 0;
-  4407					}
-  4408				}
-  4409			} else {
-  4410				/* This is (1) */
-  4411				ret = BTRFS_ERROR_DEV_EXCL_RUN_IN_PROGRESS;
-  4412				goto out_failure;
-  4413			}
-  4414	
-  4415			mutex_unlock(&fs_info->balance_mutex);
-  4416		}
-  4417	
-  4418	out_failure:
-  4419		mutex_unlock(&fs_info->balance_mutex);
-  4420		*excl_acquired = false;
-  4421		return ret;
-  4422	}
-  4423	
+Thx.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
