@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE58C2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E178C32757
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241098AbiHNQZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
+        id S241426AbiHNQZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241289AbiHNQYn (ORCPT
+        with ESMTP id S241469AbiHNQYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:24:43 -0400
+        Sun, 14 Aug 2022 12:24:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626D41659E;
-        Sun, 14 Aug 2022 09:22:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3221705C;
+        Sun, 14 Aug 2022 09:22:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 035ECB80B3F;
-        Sun, 14 Aug 2022 16:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE3FEC433C1;
-        Sun, 14 Aug 2022 16:22:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1A5FB80B7F;
+        Sun, 14 Aug 2022 16:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B227C433C1;
+        Sun, 14 Aug 2022 16:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494144;
-        bh=txqmN+YAfMMR2TvIi5EB/XRuqWPGhCXHEhadMv2AIf8=;
+        s=k20201202; t=1660494150;
+        bh=jld3Qog9SsdZFeVcGy1YR+rTIrPAlZB2z9rTGiZgsQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aiC5eRjJGc1z09uj6ZWVfv8taqhNH4K0EiSDmybvjxnFeE8aPQrx0mJojh7dlIG8L
-         G87/x1zwUtHS13F63tY911FFmnjGyPFCQ47PbyZrTvuC4SqWMIf0RKoUnT6qCnfnTU
-         zMEJsVfmMmjviJp1l4rpi94lyTrV/z6mNxCMj5GUZ/221GD4rcujAiIgL0mdcICTOi
-         bjqDZujJQ0CoiXrUDx2jfGXQihzhL7HshnU2+AZXEn5ZHPDXUOjOg664GRd07ilqJi
-         MouHSuOe3mko1grLyFYAia7GBct2h3ixnJEcBrdK+M3QJ22hnrc8ANLlQ4rvdzaJHz
-         Cias2+Ssm8Jnw==
+        b=M8dD0HLBl+98TsP4rPlh3fth9MrmW9jTHcxLL2m31WlG/x+K03WQp+cDJ3/I+8cLi
+         WkSMhnPnxgKHuHc/ggM2rZWpyaHg4hV7tbQ5EsjN47r6PXrljcy0mVY4U7xp1UMXuS
+         bPM/drygpuis5G99YaYpNVPwuuel6dyyg0TKegfN8+xV4nknQDMUzJVoEDHCH9zItc
+         KWM7VySs8/duSwqBY9WUIn+NiA0AMuKT7vUG8lc/s1PYDOv6awJwat3IBt3KxcRQ1i
+         k0llxbTTG0fnZ2W5nKG6wYms8CqCiUxTJ9TuelpSQk8uqobss1/cD4ewzaeUNBLJ5n
+         BUZOt08HxSHJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.19 31/48] powerpc/32: Set an IBAT covering up to _einittext during init
-Date:   Sun, 14 Aug 2022 12:19:24 -0400
-Message-Id: <20220814161943.2394452-31-sashal@kernel.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, bgoswami@quicinc.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.19 33/48] ASoC: codecs: va-macro: use fsgen as clock
+Date:   Sun, 14 Aug 2022 12:19:26 -0400
+Message-Id: <20220814161943.2394452-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
 References: <20220814161943.2394452-1-sashal@kernel.org>
@@ -53,89 +54,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 2a0fb3c155c97c75176e557d61f8e66c1bd9b735 ]
+[ Upstream commit 30097967e0566cac817273ef76add100f6b0f463 ]
 
-Always set an IBAT covering up to _einittext during init because when
-CONFIG_MODULES is not selected there is no reason to have an exception
-handler for kernel instruction TLB misses.
+VA Macro fsgen clock is supplied to other LPASS Macros using proper
+clock apis, however the internal user uses the registers directly without
+clk apis. This approch has race condition where in external users of
+the clock might cut the clock while VA macro is actively using this.
 
-It implies DBAT and IBAT are now totaly independent, IBATs are set
-by setibat() and DBAT by setbat().
+Moving the internal usage to clk apis would provide a proper refcounting
+and avoid such race conditions.
 
-This allows to revert commit 9bb162fa26ed ("powerpc/603: Fix
-boot failure with DEBUG_PAGEALLOC and KFENCE")
+This issue was noticed while headset was pulled out while recording is
+in progress and shifting record patch to DMIC.
 
-Reported-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/ce7f04a39593934d9b1ee68c69144ccd3d4da4a1.1655202804.git.christophe.leroy@csgroup.eu
+Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Tested-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Link: https://lore.kernel.org/r/20220727124749.4604-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/head_book3s_32.S |  4 ++--
- arch/powerpc/mm/book3s32/mmu.c       | 10 ++++------
- 2 files changed, 6 insertions(+), 8 deletions(-)
+ sound/soc/codecs/lpass-va-macro.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kernel/head_book3s_32.S b/arch/powerpc/kernel/head_book3s_32.S
-index 6c739beb938c..519b60695167 100644
---- a/arch/powerpc/kernel/head_book3s_32.S
-+++ b/arch/powerpc/kernel/head_book3s_32.S
-@@ -418,14 +418,14 @@ InstructionTLBMiss:
-  */
- 	/* Get PTE (linux-style) and check access */
- 	mfspr	r3,SPRN_IMISS
--#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
-+#ifdef CONFIG_MODULES
- 	lis	r1, TASK_SIZE@h		/* check if kernel address */
- 	cmplw	0,r1,r3
- #endif
- 	mfspr	r2, SPRN_SDR1
- 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC | _PAGE_USER
- 	rlwinm	r2, r2, 28, 0xfffff000
--#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
-+#ifdef CONFIG_MODULES
- 	bgt-	112f
- 	lis	r2, (swapper_pg_dir - PAGE_OFFSET)@ha	/* if kernel address, use */
- 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC
-diff --git a/arch/powerpc/mm/book3s32/mmu.c b/arch/powerpc/mm/book3s32/mmu.c
-index 49a737fbbd18..40029280c320 100644
---- a/arch/powerpc/mm/book3s32/mmu.c
-+++ b/arch/powerpc/mm/book3s32/mmu.c
-@@ -159,7 +159,10 @@ unsigned long __init mmu_mapin_ram(unsigned long base, unsigned long top)
- {
- 	unsigned long done;
- 	unsigned long border = (unsigned long)__init_begin - PAGE_OFFSET;
-+	unsigned long size;
+diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+index d18b56e60433..1ea10dc70748 100644
+--- a/sound/soc/codecs/lpass-va-macro.c
++++ b/sound/soc/codecs/lpass-va-macro.c
+@@ -199,6 +199,7 @@ struct va_macro {
+ 	struct clk *mclk;
+ 	struct clk *macro;
+ 	struct clk *dcodec;
++	struct clk *fsgen;
+ 	struct clk_hw hw;
+ 	struct lpass_macro *pds;
  
-+	size = roundup_pow_of_two((unsigned long)_einittext - PAGE_OFFSET);
-+	setibat(0, PAGE_OFFSET, 0, size, PAGE_KERNEL_X);
+@@ -467,9 +468,9 @@ static int va_macro_mclk_event(struct snd_soc_dapm_widget *w,
  
- 	if (debug_pagealloc_enabled_or_kfence() || __map_without_bats) {
- 		pr_debug_once("Read-Write memory mapped without BATs\n");
-@@ -245,10 +248,9 @@ void mmu_mark_rodata_ro(void)
- }
- 
- /*
-- * Set up one of the I/D BAT (block address translation) register pairs.
-+ * Set up one of the D BAT (block address translation) register pairs.
-  * The parameters are not checked; in particular size must be a power
-  * of 2 between 128k and 256M.
-- * On 603+, only set IBAT when _PAGE_EXEC is set
-  */
- void __init setbat(int index, unsigned long virt, phys_addr_t phys,
- 		   unsigned int size, pgprot_t prot)
-@@ -284,10 +286,6 @@ void __init setbat(int index, unsigned long virt, phys_addr_t phys,
- 		/* G bit must be zero in IBATs */
- 		flags &= ~_PAGE_EXEC;
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+-		return va_macro_mclk_enable(va, true);
++		return clk_prepare_enable(va->fsgen);
+ 	case SND_SOC_DAPM_POST_PMD:
+-		return va_macro_mclk_enable(va, false);
++		clk_disable_unprepare(va->fsgen);
  	}
--	if (flags & _PAGE_EXEC)
--		bat[0] = bat[1];
--	else
--		bat[0].batu = bat[0].batl = 0;
  
- 	bat_addrs[index].start = virt;
- 	bat_addrs[index].limit = virt + ((bl + 1) << 17) - 1;
+ 	return 0;
+@@ -1473,6 +1474,12 @@ static int va_macro_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_clkout;
+ 
++	va->fsgen = clk_hw_get_clk(&va->hw, "fsgen");
++	if (IS_ERR(va->fsgen)) {
++		ret = PTR_ERR(va->fsgen);
++		goto err_clkout;
++	}
++
+ 	ret = devm_snd_soc_register_component(dev, &va_macro_component_drv,
+ 					      va_macro_dais,
+ 					      ARRAY_SIZE(va_macro_dais));
 -- 
 2.35.1
 
