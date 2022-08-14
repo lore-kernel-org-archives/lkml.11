@@ -2,94 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 445F5C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E14C25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239419AbiHNOLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
+        id S239538AbiHNOM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbiHNOLJ (ORCPT
+        with ESMTP id S230071AbiHNOMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:11:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C432DFD;
-        Sun, 14 Aug 2022 07:11:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A586260010;
-        Sun, 14 Aug 2022 14:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D37B4C433D6;
-        Sun, 14 Aug 2022 14:11:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660486266;
-        bh=9shFH31XM8hIAAKc3p+cdv3PxrsibqT5kKAI+7Qh+eM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z60U9uONuwv0QlTtvVbWT7H0C6yGZyCbd14ryoTfYtIbZJQAi+g32Zw2e1i3MHiXT
-         XTKcW32jGXRGr1ha8cb/gf6zUsSrJ/vS4yQ8bTEibPRkMboRf+Ex6VO5+rbMop56xR
-         HOtX2cVUZYUWCnBr7qWtzkJxhgASu94HgiBKWC7+tVxjGqAJ1NYBW+o5uLJhoE+mGM
-         /HnHSUlS3gogs5nJ+7KaSNYk+hL0H1eI06LpSNuc5yPRacuVrNU4iYTBGDRwjPo6V1
-         KFa6xl3wfCtsWcEgaNV3evNbDDidAigwW0yhgOVDoPwTAZPSt5kHkR23bGqCxvvXja
-         HRhoEr13Vf1Nw==
-Date:   Sun, 14 Aug 2022 15:21:35 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Crt Mori <cmo@melexis.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 0/2] iio: temperature: mlx90632: Add supply regulator
-Message-ID: <20220814152135.6ac36cfb@jic23-huawei>
-In-Reply-To: <20220808144804.1558849-1-cmo@melexis.com>
-References: <20220808144804.1558849-1-cmo@melexis.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 14 Aug 2022 10:12:53 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36EC395B2
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:52 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id v3so6386720wrp.0
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=K+4ztMrZDye6S2odnUAg2YD+Sis7k4asg4StIp4L2N8=;
+        b=DfdO3yRHemNBlA7Z4K40epXT6a5mzLgotaT+wjrQ0CCVq94MwNT7SVXLAtyZUDygnw
+         2lQfcVKnpICBUjlEpWDOPzfaZFnEqrkxVNsNybuTrzGd3fjZDmCT+ReRqE+Auj4sGY8K
+         uRcRa9FbjDb05ahlJI00s/Hk3/l5lZaGjPgWTME/bO5b750e+9+lPtrOES7c0i8tIc8C
+         8hdkA+jZ3XgV6n68tO+rItWKC9tkWGCXtj9yeDj/SfbPE7NEb7jemnuz+/jhcmNW7ShI
+         3RdqO1rZca3tYU2ZJk3Fivp43ZyuSk4V+oEveW5vwEiKUcew/VQlHqnG/kHLjQlvWFvt
+         70Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=K+4ztMrZDye6S2odnUAg2YD+Sis7k4asg4StIp4L2N8=;
+        b=2IAsoN3wmeW8POU8m80wg6MYYLiHeFv26XuI5ESwMCnDsVTg3A4lfAfoL90u2beaDW
+         uYD4dUHDfsQQwILwuPKY9XX6xeh88WVZy50AP8nYJkWHMDGHQe+JF8RzcIAP1d32XA6z
+         Yi/Zx5Cy1Ir5ZxszqWbUzIpSzw0TE8Xy6qZmBkohT7kCdPNH8TylSvFS7bjX4vIMlykN
+         jPw3ZNVwIQEZxfB72khWyC4heQtuWofFLRDr3u9YWRrJqMak/fKU2Sf0/wzsZT8NkngJ
+         jlsYBRo29RcWbEURb3Z1yX6gUjZ88u/VudJKHvMVBpA6DUscbG9kIigfDOfU8vuXcM+o
+         e61Q==
+X-Gm-Message-State: ACgBeo0o8fX/cQGDwEosY2SV2vDn4yMLCcHLijnlyEkxVic51xqL1aBV
+        xeD04ZKRMMIXHsGLuszYaqi1KA==
+X-Google-Smtp-Source: AA6agR5PV8qeRAKHvRTEReWxvq3UtoJToFqH0Q4Bl/uP3TlBuYJBu4g3GQwfQjHfdPU5zsQhWphrPw==
+X-Received: by 2002:adf:fc88:0:b0:220:61dc:d297 with SMTP id g8-20020adffc88000000b0022061dcd297mr6138300wrr.660.1660486370580;
+        Sun, 14 Aug 2022 07:12:50 -0700 (PDT)
+Received: from henark71.. ([109.76.58.63])
+        by smtp.gmail.com with ESMTPSA id b8-20020adfde08000000b0021db7b0162esm4625419wrm.105.2022.08.14.07.12.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 07:12:50 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Conor Dooley <conor.dooley@microchip.com>,
+        Guo Ren <guoren@kernel.org>,
+        Vincent Chen <vincent.chen@sifive.com>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] misc warning cleanup in arch/risc-v
+Date:   Sun, 14 Aug 2022 15:12:34 +0100
+Message-Id: <20220814141237.493457-1-mail@conchuod.ie>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  8 Aug 2022 16:48:04 +0200
-Crt Mori <cmo@melexis.com> wrote:
+From: Conor Dooley <conor.dooley@microchip.com>
 
-> Add supply regulator to the sensor as initial update before proper power
-> management is presented. This will reduce the diff for the following
-> patches.
-> 
-Hi Crt,
+Hey all,
+Couple fixes here for most of what's left of the {sparse,} warnings in
+arch/riscv that are still in need of patches. Ben has sent patches
+for the VDSO issue already (although they seem to need rework).
 
-Series applied to what will be the togreg branch of iio.git after I've
-rebased on rc1.  Until then pushed out as testing for 0-day to see
-if it can find anything we missed.
-
-btw,  your series are not coming through as threads which makes them (slightly)
-harder to apply.  For whatever reason the reply-to header field on
-the emails isn't set.
+VDSO aside, With this patchset applied, we are left with:
+- cpuinfo_ops missing prototype: this likely needs to go into an
+  asm-generic header & I'll send a separate patch for that.
+- Complaints about an error in mm/init.c:
+  "error inarch/riscv/mm/init.c:819:2: error: "setup_vm() is <trunc>
+  I think this can be ignored.
+- 600+ -Woverride-init warnings for syscall table setup where
+  overriding seems to be the whole point of the macro.
+- Warnings about imported kvm core code.
+- Flexible array member warnings that look like common KVM code
+  patterns
+- An unexpected unlock in kvm_riscv_check_vcpu_requests that was added
+  intentionally:
+  https://lore.kernel.org/all/20220710151105.687193-1-apatel@ventanamicro.com/
+  Is it worth looking into whether that's a false positive or not?
 
 Thanks,
+Conor.
 
-Jonathan
+Conor Dooley (4):
+  riscv: kvm: vcpu_timer: fix unused variable warnings
+  riscv: kvm: move extern sbi_ext declarations to a header
+  riscv: signal: fix missing prototype warning
+  riscv: traps: add missing prototype
 
-> Changes in v3:
-> 
->  - Style changes of few more arguments in one line
-> 
-> Changes in v2:
-> 
->  - Regulator voltage was removed as per comments from Jonathan Cameron
->    and Lars-Peter Clausen
->  - Style handling for the error reporting of the regulator DT binding
->    was adjusted
->  - NEW: Delay function was created and grouped together with call from
->    the reset command, to ensure consistency and reduce the amount of
->    code.
-> 
-> Crt Mori (2):
->   iio: temperature: mlx90632 Add supply regulator to sensor
->   dt-bindings: iio: mlx90632 Add supply regulator documentation
-> 
->  .../iio/temperature/melexis,mlx90632.yaml     |  4 ++
->  drivers/iio/temperature/mlx90632.c            | 61 +++++++++++++++++--
->  2 files changed, 60 insertions(+), 5 deletions(-)
-> 
+ arch/riscv/include/asm/kvm_vcpu_sbi.h | 12 ++++++++++++
+ arch/riscv/include/asm/signal.h       | 12 ++++++++++++
+ arch/riscv/include/asm/thread_info.h  |  2 ++
+ arch/riscv/kernel/signal.c            |  1 +
+ arch/riscv/kernel/traps.c             |  3 ++-
+ arch/riscv/kvm/vcpu_sbi.c             | 12 +-----------
+ arch/riscv/kvm/vcpu_timer.c           |  4 ----
+ 7 files changed, 30 insertions(+), 16 deletions(-)
+ create mode 100644 arch/riscv/include/asm/signal.h
+
+-- 
+2.37.1
 
