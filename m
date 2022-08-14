@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71812C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF478C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242169AbiHNPyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39916 "EHLO
+        id S241704AbiHNPyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241936AbiHNPul (ORCPT
+        with ESMTP id S241951AbiHNPun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:50:41 -0400
+        Sun, 14 Aug 2022 11:50:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831151CFD4;
-        Sun, 14 Aug 2022 08:36:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A712D167DC;
+        Sun, 14 Aug 2022 08:36:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E252460DDA;
-        Sun, 14 Aug 2022 15:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D5B1C433B5;
-        Sun, 14 Aug 2022 15:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43F8960DDA;
+        Sun, 14 Aug 2022 15:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00642C433D7;
+        Sun, 14 Aug 2022 15:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491367;
-        bh=aNmfpcaxTpFNfqz2CgXLsqoeLB3uweq9V9AqqFqHcRg=;
+        s=k20201202; t=1660491369;
+        bh=5UPJ1gQ/Tl9tcKWdYwWMLOm2gVJnQKZ6vmhSg9dzOes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDo2TslTnyfH3BYMgR2+5xyYa2UkbOuR1AN8tNT/gt+eMzFNBJZEda+K/v9zeqpHC
-         DaPNy3Zoft1BT756KJT1uZxzeyhyxf3YFaalBTwygNcZHPnuLGeoZ8R7k/ilRHGS04
-         bfByuQvXoInGnoJu6CqzIr+vbobtC9v1betkHK20ohBMQ3Jt2DPFgLvJoZ2fzqgr2g
-         cT/aZ/KhX4/ikdD0MjbtmpkhgZ9oJd+gE/PNsNwN/peeKhwtSblv2AqsMHUEuLBBHF
-         j4D7pAkXNN+kMh5NLOuLrY9XzI05VrUCOdCVxiE5O6le2GpGkbp/gi1UmBEJo+mNxL
-         C3SQ6LmzgQW7A==
+        b=K9NkjSPc5HMIzyy9jQEZ7leFKBrrTAwVxVBjtF+r17oCG5M+fPLImg/UEskDXiryA
+         Hst1iIBJpyVmmR2xMGePFPplD8bcWPG0bGK9e2Tf6W1Z7tD0uvzMvcH+MPXaQsxFPo
+         cVxOzK45NbBeI/vFhXvd0CzMK5v06pAyCkAAGDKb5bjvFgbmzCNzWNBs1Gg4jDwfoe
+         CrxM32CPhIzS26+AX/1Im/GaobEtVcMgIJPeXJSFwSUnyYNaeS5FAuozAuPygt5Hm/
+         +Dr4oJWWXnOuSp5QBKXLTCjMxYCiuKLwOTB6X/fvwglZOCYoDHqCFdScirZsNjN8vZ
+         AZ9fxysXWktSw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wentao_Liang <Wentao_Liang_g@163.com>, Song Liu <song@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 19/21] drivers:md:fix a potential use-after-free bug
-Date:   Sun, 14 Aug 2022 11:35:29 -0400
-Message-Id: <20220814153531.2379705-19-sashal@kernel.org>
+Cc:     "Kiselev, Oleg" <okiselev@amazon.com>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 21/21] ext4: avoid resizing to a partial cluster size
+Date:   Sun, 14 Aug 2022 11:35:31 -0400
+Message-Id: <20220814153531.2379705-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153531.2379705-1-sashal@kernel.org>
 References: <20220814153531.2379705-1-sashal@kernel.org>
@@ -51,42 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wentao_Liang <Wentao_Liang_g@163.com>
+From: "Kiselev, Oleg" <okiselev@amazon.com>
 
-[ Upstream commit 104212471b1c1817b311771d817fb692af983173 ]
+[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
 
-In line 2884, "raid5_release_stripe(sh);" drops the reference to sh and
-may cause sh to be released. However, sh is subsequently used in lines
-2886 "if (sh->batch_head && sh != sh->batch_head)". This may result in an
-use-after-free bug.
+This patch avoids an attempt to resize the filesystem to an
+unaligned cluster boundary.  An online resize to a size that is not
+integral to cluster size results in the last iteration attempting to
+grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
+with a corrupted in-memory superblock.
 
-It can be fixed by moving "raid5_release_stripe(sh);" to the bottom of
-the function.
-
-Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
+Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/raid5.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/resize.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 474cf6abefea..fe99e8cdc026 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -2666,10 +2666,10 @@ static void raid5_end_write_request(struct bio *bi)
- 	if (!test_and_clear_bit(R5_DOUBLE_LOCKED, &sh->dev[i].flags))
- 		clear_bit(R5_LOCKED, &sh->dev[i].flags);
- 	set_bit(STRIPE_HANDLE, &sh->state);
--	raid5_release_stripe(sh);
+diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
+index 6410c1e098d3..76bb877693be 100644
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -1978,6 +1978,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
+ 	}
+ 	brelse(bh);
  
- 	if (sh->batch_head && sh != sh->batch_head)
- 		raid5_release_stripe(sh->batch_head);
-+	raid5_release_stripe(sh);
- }
++	/*
++	 * For bigalloc, trim the requested size to the nearest cluster
++	 * boundary to avoid creating an unusable filesystem. We do this
++	 * silently, instead of returning an error, to avoid breaking
++	 * callers that blindly resize the filesystem to the full size of
++	 * the underlying block device.
++	 */
++	if (ext4_has_feature_bigalloc(sb))
++		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
++
+ retry:
+ 	o_blocks_count = ext4_blocks_count(es);
  
- static void raid5_error(struct mddev *mddev, struct md_rdev *rdev)
 -- 
 2.35.1
 
