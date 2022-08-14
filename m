@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6EDC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B22F5C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242793AbiHNQnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
+        id S243376AbiHNQni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243346AbiHNQku (ORCPT
+        with ESMTP id S243366AbiHNQkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:40:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B699865D5;
-        Sun, 14 Aug 2022 09:31:00 -0700 (PDT)
+        Sun, 14 Aug 2022 12:40:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF73C66;
+        Sun, 14 Aug 2022 09:31:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7053EB80B37;
-        Sun, 14 Aug 2022 16:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6392EC433D7;
-        Sun, 14 Aug 2022 16:30:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BA6EB80B3C;
+        Sun, 14 Aug 2022 16:31:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60221C433C1;
+        Sun, 14 Aug 2022 16:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494658;
-        bh=iS9yqPrrykOoJinZudE3RI49uScGLU+2ThjG/LbrXTs=;
+        s=k20201202; t=1660494675;
+        bh=QJRKZeqWyHOAMgpIQr673Jjz8RQb1Y0LVJw0ylK1rRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LD06aie8VPTm1xhhtvEzzMwJOI3kod/sdbTyUagUV6iUMEqfyP+2Bml3ZPdZ5lxEV
-         FJH9Az3/LC+V67IoP0q0RWX2yC+32poZ7uCiFjPFTsnwkSIWy5wA3O3e7MzQkC00vv
-         XSNz25St4TSxLd8C6nBdD5rawdr69wOdaIp69w2LYc8vIaTs3q9lqiqDWg1W/MiRp6
-         MgLqF+prUgK+BxdksPrWHnEEV7xVA56EVu8csc5G8KJzGNS4Y0Ve2Tt5rGOmokO9lR
-         EHFRAnYWWL381YzXzdoP3MXxgPrkowmZkZN/7b2epjPoCVeDYe9mz2ZWD83+L4FawB
-         nEli0lswEzsKA==
+        b=uS/+6wltoyffidAKki2gMIEeG6JC03BBaZ33OibIk4FSEJ98+U9hLBi7DS/E4DXT5
+         pff7Yi7UGoI3hAlhzoPCFDz2s2VfW743hkbcQfNVYO1RtCRCADBWO/NFFT+miF8H0X
+         De3n2aAtznYXZ9mIP9Kf/hrfhIag0WL8xrV72PbNsUN/SGHx/tkvb9jVmLPBnQTxvk
+         DDL6s0zxHne5JE7aIlXeG0ImMnlw3pqDLrUEk0d9RxSK7110+5GL/OjIxBNXRgzNom
+         micFIvotNoglFyzDmrRB6ULXCyoH/ORhE4krLWPqgvIZA8x13xuneYC8cAUrtpGBHO
+         3joEpJ6mU6uhw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 4/8] ALSA: core: Add async signal helpers
-Date:   Sun, 14 Aug 2022 12:30:37 -0400
-Message-Id: <20220814163041.2399552-4-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, linux@zary.sk,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.9 7/8] video: fbdev: i740fb: Check the argument of i740_calc_vclk()
+Date:   Sun, 14 Aug 2022 12:30:40 -0400
+Message-Id: <20220814163041.2399552-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814163041.2399552-1-sashal@kernel.org>
 References: <20220814163041.2399552-1-sashal@kernel.org>
@@ -50,156 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit ef34a0ae7a2654bc9e58675e36898217fb2799d8 ]
+[ Upstream commit 40bf722f8064f50200b8c4f8946cd625b441dda9 ]
 
-Currently the call of kill_fasync() from an interrupt handler might
-lead to potential spin deadlocks, as spotted by syzkaller.
-Unfortunately, it's not so trivial to fix this lock chain as it's
-involved with the tasklist_lock that is touched in allover places.
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug.
 
-As a temporary workaround, this patch provides the way to defer the
-async signal notification in a work.  The new helper functions,
-snd_fasync_helper() and snd_kill_faync() are replacements for
-fasync_helper() and kill_fasync(), respectively.  In addition,
-snd_fasync_free() needs to be called at the destructor of the relevant
-file object.
+If the user provides an improper 'pixclock' value that makes the argumet
+of i740_calc_vclk() less than 'I740_RFREQ_FIX', it will cause a
+divide-by-zero bug in:
+    drivers/video/fbdev/i740fb.c:353 p_best = min(15, ilog2(I740_MAX_VCO_FREQ / (freq / I740_RFREQ_FIX)));
 
-Link: https://lore.kernel.org/r/20220728125945.29533-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The following log can reveal it:
+
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:i740_calc_vclk drivers/video/fbdev/i740fb.c:353 [inline]
+RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:646 [inline]
+RIP: 0010:i740fb_set_par+0x163f/0x3b70 drivers/video/fbdev/i740fb.c:742
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+
+Fix this by checking the argument of i740_calc_vclk() first.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/core.h |  8 ++++
- sound/core/misc.c    | 94 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 102 insertions(+)
+ drivers/video/fbdev/i740fb.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/include/sound/core.h b/include/sound/core.h
-index 31079ea5e484..d5d0e5e53920 100644
---- a/include/sound/core.h
-+++ b/include/sound/core.h
-@@ -457,4 +457,12 @@ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
- }
- #endif
+diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
+index 7bc5f6056c77..4147a9534179 100644
+--- a/drivers/video/fbdev/i740fb.c
++++ b/drivers/video/fbdev/i740fb.c
+@@ -399,7 +399,7 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 	u32 xres, right, hslen, left, xtotal;
+ 	u32 yres, lower, vslen, upper, ytotal;
+ 	u32 vxres, xoffset, vyres, yoffset;
+-	u32 bpp, base, dacspeed24, mem;
++	u32 bpp, base, dacspeed24, mem, freq;
+ 	u8 r7;
+ 	int i;
  
-+/* async signal helpers */
-+struct snd_fasync;
-+
-+int snd_fasync_helper(int fd, struct file *file, int on,
-+		      struct snd_fasync **fasyncp);
-+void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll);
-+void snd_fasync_free(struct snd_fasync *fasync);
-+
- #endif /* __SOUND_CORE_H */
-diff --git a/sound/core/misc.c b/sound/core/misc.c
-index f2e8226c88fb..efe26b8ca57f 100644
---- a/sound/core/misc.c
-+++ b/sound/core/misc.c
-@@ -25,6 +25,7 @@
- #include <linux/time.h>
- #include <linux/slab.h>
- #include <linux/ioport.h>
-+#include <linux/fs.h>
- #include <sound/core.h>
+@@ -641,7 +641,12 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
+ 	par->atc[VGA_ATC_OVERSCAN] = 0;
  
- #ifdef CONFIG_SND_DEBUG
-@@ -153,3 +154,96 @@ snd_pci_quirk_lookup(struct pci_dev *pci, const struct snd_pci_quirk *list)
- }
- EXPORT_SYMBOL(snd_pci_quirk_lookup);
- #endif
-+
-+/*
-+ * Deferred async signal helpers
-+ *
-+ * Below are a few helper functions to wrap the async signal handling
-+ * in the deferred work.  The main purpose is to avoid the messy deadlock
-+ * around tasklist_lock and co at the kill_fasync() invocation.
-+ * fasync_helper() and kill_fasync() are replaced with snd_fasync_helper()
-+ * and snd_kill_fasync(), respectively.  In addition, snd_fasync_free() has
-+ * to be called at releasing the relevant file object.
-+ */
-+struct snd_fasync {
-+	struct fasync_struct *fasync;
-+	int signal;
-+	int poll;
-+	int on;
-+	struct list_head list;
-+};
-+
-+static DEFINE_SPINLOCK(snd_fasync_lock);
-+static LIST_HEAD(snd_fasync_list);
-+
-+static void snd_fasync_work_fn(struct work_struct *work)
-+{
-+	struct snd_fasync *fasync;
-+
-+	spin_lock_irq(&snd_fasync_lock);
-+	while (!list_empty(&snd_fasync_list)) {
-+		fasync = list_first_entry(&snd_fasync_list, struct snd_fasync, list);
-+		list_del_init(&fasync->list);
-+		spin_unlock_irq(&snd_fasync_lock);
-+		if (fasync->on)
-+			kill_fasync(&fasync->fasync, fasync->signal, fasync->poll);
-+		spin_lock_irq(&snd_fasync_lock);
+ 	/* Calculate VCLK that most closely matches the requested dot clock */
+-	i740_calc_vclk((((u32)1e9) / var->pixclock) * (u32)(1e3), par);
++	freq = (((u32)1e9) / var->pixclock) * (u32)(1e3);
++	if (freq < I740_RFREQ_FIX) {
++		fb_dbg(info, "invalid pixclock\n");
++		freq = I740_RFREQ_FIX;
 +	}
-+	spin_unlock_irq(&snd_fasync_lock);
-+}
-+
-+static DECLARE_WORK(snd_fasync_work, snd_fasync_work_fn);
-+
-+int snd_fasync_helper(int fd, struct file *file, int on,
-+		      struct snd_fasync **fasyncp)
-+{
-+	struct snd_fasync *fasync = NULL;
-+
-+	if (on) {
-+		fasync = kzalloc(sizeof(*fasync), GFP_KERNEL);
-+		if (!fasync)
-+			return -ENOMEM;
-+		INIT_LIST_HEAD(&fasync->list);
-+	}
-+
-+	spin_lock_irq(&snd_fasync_lock);
-+	if (*fasyncp) {
-+		kfree(fasync);
-+		fasync = *fasyncp;
-+	} else {
-+		if (!fasync) {
-+			spin_unlock_irq(&snd_fasync_lock);
-+			return 0;
-+		}
-+		*fasyncp = fasync;
-+	}
-+	fasync->on = on;
-+	spin_unlock_irq(&snd_fasync_lock);
-+	return fasync_helper(fd, file, on, &fasync->fasync);
-+}
-+EXPORT_SYMBOL_GPL(snd_fasync_helper);
-+
-+void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll)
-+{
-+	unsigned long flags;
-+
-+	if (!fasync || !fasync->on)
-+		return;
-+	spin_lock_irqsave(&snd_fasync_lock, flags);
-+	fasync->signal = signal;
-+	fasync->poll = poll;
-+	list_move(&fasync->list, &snd_fasync_list);
-+	schedule_work(&snd_fasync_work);
-+	spin_unlock_irqrestore(&snd_fasync_lock, flags);
-+}
-+EXPORT_SYMBOL_GPL(snd_kill_fasync);
-+
-+void snd_fasync_free(struct snd_fasync *fasync)
-+{
-+	if (!fasync)
-+		return;
-+	fasync->on = 0;
-+	flush_work(&snd_fasync_work);
-+	kfree(fasync);
-+}
-+EXPORT_SYMBOL_GPL(snd_fasync_free);
++	i740_calc_vclk(freq, par);
+ 
+ 	/* Since we program the clocks ourselves, always use VCLK2. */
+ 	par->misc |= 0x0C;
 -- 
 2.35.1
 
