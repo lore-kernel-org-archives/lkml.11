@@ -2,89 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EAEC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B608BC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243443AbiHNQoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
+        id S242656AbiHNQok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243053AbiHNQj6 (ORCPT
+        with ESMTP id S243391AbiHNQoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:39:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C5D21C;
-        Sun, 14 Aug 2022 09:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23A30B80B3C;
-        Sun, 14 Aug 2022 16:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DAF4C433D6;
-        Sun, 14 Aug 2022 16:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494609;
-        bh=EDm+cXKravyMKJOtAFbZaSk7wAygPsVXHZEc10Upyg8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ezYlk5gDb6CRK90/3KUvQ7Hs8phvYgypBbgMKzqJvGiYtgTparRd3NRg+ePzduxSB
-         nyAuHJ+QJwJ3uc2Eb2qfCUlG6GzWfqTrcDnng7X93KYKv/F04tN9eg4nhBFon12cR5
-         ks3HNfkqAPp11R8+aHEACTkkTbog23JtcKjYwC8H3/e5hj6LMibQUwouHwNqpWyvrU
-         TK5pU3DbKxffHM4xWvgZE+AjPrXhGfyOqcVrMlRxv09a8mHOjJ54cP3mqu/XeHItVM
-         OxnwP7V4dGpp7F8FWJLLPM6k2fAU4ejSXuwuZPP8jSHGYCvyZY5P/SMrV6GHSxouSe
-         RgjQq95fikr1g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, ye.guojin@zte.com.cn,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 3/9] mips: cavium-octeon: Fix missing of_node_put() in octeon2_usb_clocks_start
-Date:   Sun, 14 Aug 2022 12:29:53 -0400
-Message-Id: <20220814162959.2399011-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814162959.2399011-1-sashal@kernel.org>
-References: <20220814162959.2399011-1-sashal@kernel.org>
+        Sun, 14 Aug 2022 12:44:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB01B192B2
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 09:34:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660494858;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/bLBxnLhyoe+Ri5hSyQerGnoHF0IT6FiQiuj35p9Rts=;
+        b=CfmHoqOUl5IHbg1MUm03x/1ECVtRGQtYRhrK6wzHePM+9Ke14B3HZJah2GAc3JrkXiu4Oe
+        3obUhB57+eUXt68wcHd7ZG2sG3N+SzuquOtlZRGISIIU6Co00nc7pLFAl+s7BRWp5+aRSo
+        ZzYxjYvcjCzTdzalk5zwWQmJeIcCFKI=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-536-M5EkHkrgOOuImeqd3Hw2tw-1; Sun, 14 Aug 2022 12:34:16 -0400
+X-MC-Unique: M5EkHkrgOOuImeqd3Hw2tw-1
+Received: by mail-wm1-f72.google.com with SMTP id h127-20020a1c2185000000b003a534ec2570so1713941wmh.7
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 09:34:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=/bLBxnLhyoe+Ri5hSyQerGnoHF0IT6FiQiuj35p9Rts=;
+        b=T6+P/JARcCXg51qF/XsbFMaTxRFFOLiF8pJdzmtmZVFIFiY7Uu1nEH4gW63d6MkRel
+         8lXfb0rbc4IfKJCvTWI0TQK2Lx7JeQhOMZJaaoYLevoA4NGE5OkKc2wVQHmGvWZQXm3k
+         A32O7YYYhQRBr/NxiUcQt0UDR07DgO3GkfGilpS4zz29zhAV3M77p268Ej5NLTItIarx
+         aVuBcxJYwa8S/IKMbDdUfN2u++VVfiukI4ffY1LHYaWn/aQXRo73gQC45QM7aMko00GH
+         SYjTD8C/9/UnMqQwrn0YB22OeoZIVT2Ni5hqge8qmSqTyZWLaCLYRbnOlnUFRF6M3LyW
+         KrJg==
+X-Gm-Message-State: ACgBeo2hRjUry6S7BPY6tSDLzWjDSSiRkxceeVkWwOhoFW6xXMl/vSm7
+        tXgKecORZJ2TMPzf/x4GxuxuxWGwWow1nMWW8ajNgLD917sLGNTb5ewgBv66VnlYE8IRopakbjm
+        ogozmHDpEmPhuRsy81L361k5t
+X-Received: by 2002:a5d:5403:0:b0:21e:ea93:234d with SMTP id g3-20020a5d5403000000b0021eea93234dmr6345505wrv.125.1660494853563;
+        Sun, 14 Aug 2022 09:34:13 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7kzxZUWuBRCpUoygu7uG0RhgLXN19/Gzo1QOzf6smajaXfRnesi/S7AxAMeQekyKieU4Giyw==
+X-Received: by 2002:a5d:5403:0:b0:21e:ea93:234d with SMTP id g3-20020a5d5403000000b0021eea93234dmr6345494wrv.125.1660494853258;
+        Sun, 14 Aug 2022 09:34:13 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c72a:1e00:10cf:131b:999d:9b4a? (p200300cbc72a1e0010cf131b999d9b4a.dip0.t-ipconnect.de. [2003:cb:c72a:1e00:10cf:131b:999d:9b4a])
+        by smtp.gmail.com with ESMTPSA id d7-20020a05600c34c700b003a35516ccc3sm6863678wmq.26.2022.08.14.09.34.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Aug 2022 09:34:12 -0700 (PDT)
+Message-ID: <aff9df5d-81be-ee98-5b12-c70cbede8a31@redhat.com>
+Date:   Sun, 14 Aug 2022 18:34:12 +0200
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 3/3] mm: handling Non-LRU pages returned by follow_page
+Content-Language: en-US
+To:     Haiyue Wang <haiyue.wang@intel.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, linmiaohe@huawei.com,
+        ying.huang@intel.com, songmuchun@bytedance.com,
+        naoya.horiguchi@linux.dev, alex.sierra@amd.com
+References: <20220812084921.409142-1-haiyue.wang@intel.com>
+ <20220814140534.363348-1-haiyue.wang@intel.com>
+ <20220814140534.363348-4-haiyue.wang@intel.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220814140534.363348-4-haiyue.wang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+On 14.08.22 16:05, Haiyue Wang wrote:
+> Add the missed put_page handling for handling Non-LRU pages returned by
+> follow_page with FOLL_GET flag set.
+> 
+> This is the second patch for fixing the commit
+> 3218f8712d6b ("mm: handling Non-LRU pages returned by vm_normal_pages")
+> 
+> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+> ---
+>  mm/huge_memory.c |  2 +-
+>  mm/ksm.c         | 10 ++++++++++
+>  mm/migrate.c     |  6 +++++-
+>  3 files changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 2ee6d38a1426..b2ba17c3dcd7 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -2966,7 +2966,7 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
+>  		if (IS_ERR_OR_NULL(page))
+>  			continue;
+>  
+> -		if (!is_transparent_hugepage(page))
+> +		if (is_zone_device_page(page) || !is_transparent_hugepage(page))
+>  			goto next;
+>  
+>  		total++;
+> diff --git a/mm/ksm.c b/mm/ksm.c
+> index fe3e0a39f73a..1360bb52ada6 100644
+> --- a/mm/ksm.c
+> +++ b/mm/ksm.c
+> @@ -477,6 +477,10 @@ static int break_ksm(struct vm_area_struct *vma, unsigned long addr)
+>  				FOLL_GET | FOLL_MIGRATION | FOLL_REMOTE);
+>  		if (IS_ERR_OR_NULL(page))
+>  			break;
+> +		if (is_zone_device_page(page)) {
+> +			put_page(page);
+> +			break;
+> +		}
 
-[ Upstream commit 7a9f743ceead60ed454c46fbc3085ee9a79cbebb ]
+I think we can drop this check completely. While working on patches that
+touch this code I realized that this check is completely useless. device
+pages are never PageKsm pages and there is no need to special-case here.
 
-We should call of_node_put() for the reference 'uctl_node' returned by
-of_get_parent() which will increase the refcount. Otherwise, there will
-be a refcount leak bug.
+If a zone device page could be PageKsm, then we wouldn't handle it here
+correctly and not break ksm.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/mips/cavium-octeon/octeon-platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+So just drop it.
 
-diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
-index ed42fc27033c..f2a1c316608a 100644
---- a/arch/mips/cavium-octeon/octeon-platform.c
-+++ b/arch/mips/cavium-octeon/octeon-platform.c
-@@ -86,11 +86,12 @@ static void octeon2_usb_clocks_start(struct device *dev)
- 					 "refclk-frequency", &clock_rate);
- 		if (i) {
- 			dev_err(dev, "No UCTL \"refclk-frequency\"\n");
-+			of_node_put(uctl_node);
- 			goto exit;
- 		}
- 		i = of_property_read_string(uctl_node,
- 					    "refclk-type", &clock_type);
--
-+		of_node_put(uctl_node);
- 		if (!i && strcmp("crystal", clock_type) == 0)
- 			is_crystal_clock = true;
- 	}
+
+
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
