@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD191C28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 941F9C25B0E
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242400AbiHNQeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39904 "EHLO
+        id S242754AbiHNQeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242832AbiHNQb1 (ORCPT
+        with ESMTP id S243022AbiHNQbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:31:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A317E186CE;
-        Sun, 14 Aug 2022 09:26:02 -0700 (PDT)
+        Sun, 14 Aug 2022 12:31:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DCC237DF;
+        Sun, 14 Aug 2022 09:26:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BCD8B80B37;
-        Sun, 14 Aug 2022 16:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1AA8C43470;
-        Sun, 14 Aug 2022 16:25:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBA10B80B3F;
+        Sun, 14 Aug 2022 16:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D95C433D6;
+        Sun, 14 Aug 2022 16:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494360;
-        bh=jCB3yocuDnO1L80aYS568njTv1ha44rBP6GelQkIIuk=;
+        s=k20201202; t=1660494384;
+        bh=YI2a3bQsRpitOm3qvXNGbLX4UFt3jIL05K8HgbujqzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cFOZt0ILYmPWMkubqgZ/aEbIFzm/xtEzxQ0hQQMaKSjQzqmn5jNHqD7csMHonbjSE
-         xIWjdkc0FhJpqCIeto8RIYvdVlLnMbZPHNuTvVP5fsXIiZhq+BTipncBB4aSDL5S5A
-         nvQ0zro3s1CuGGBA2MycZK1r0gSNK2fVHzzRv4Tnve0RxzY54LAiBfNv6UKBDISv08
-         L6PGbNhdC2cdg3Qa5rvzPivqsv2ZRxUndGGGaI0cFCJKTFAm4sh8AmLQUZgNjcM18Y
-         Jh8iC1AA3aWXCi31Rk9/+z2T6CL3F53P/MXQdJ/9yHE7iR9dY23ISxctduNDxGTe7O
-         4Xqlmgtz8WOXQ==
+        b=EalNv9Jb1PUXxGzsCpbwEKs6/3D7cRTn585a1RmGxviAYOX+WOQlegOQKPAnCFz3t
+         1FCdWdW5h5lxmV6SnmVvaLgukZI3YdEbpxjfFkbNZxLjAkOvwGOwkxYB6p6qvJV7Yp
+         a5GFewZHm8tqezEJBPxMLgAYs5hRGkLJcOrRxAD0V8HQXG46uPsL/RQoN656PrsTB+
+         OYzswzAoIbm7odW6Xcp+7fNWF2+vVB8r09g7Fovxw3QStHGtrFmPGS3BjdHt92797d
+         VeSS0IclW/TidRzxVooh5gi8k/Rn1viLBdhl68w+HrioHvp8zG2m9Qh+iFOFeUJZO/
+         3MvPfE1fMLzzQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, mchehab@kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 37/39] venus: pm_helpers: Fix warning in OPP during probe
-Date:   Sun, 14 Aug 2022 12:23:26 -0400
-Message-Id: <20220814162332.2396012-37-sashal@kernel.org>
+Cc:     Yunfei Wang <yf.wang@mediatek.com>, Ning Li <ning.li@mediatek.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Will Deacon <will@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
+        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 06/28] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
+Date:   Sun, 14 Aug 2022 12:25:46 -0400
+Message-Id: <20220814162610.2397644-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814162332.2396012-1-sashal@kernel.org>
-References: <20220814162332.2396012-1-sashal@kernel.org>
+In-Reply-To: <20220814162610.2397644-1-sashal@kernel.org>
+References: <20220814162610.2397644-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,117 +54,215 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-[ Upstream commit 1d95af02f23031c2e1cca7607c514b86ce85bc6e ]
+[ Upstream commit bfdd231374181254742c5e2faef0bef2d30c0ee4 ]
 
-Fix the following WARN triggered during Venus driver probe on
-5.19.0-rc8-next-20220728:
+Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA and
+cause pgtable PA size larger than 32bit.
 
- WARNING: CPU: 7 PID: 339 at drivers/opp/core.c:2471 dev_pm_opp_set_config+0x49c/0x610
- Modules linked in: qcom_spmi_adc5 rtc_pm8xxx qcom_spmi_adc_tm5 leds_qcom_lpg led_class_multicolor
-  qcom_pon qcom_vadc_common venus_core(+) qcom_spmi_temp_alarm v4l2_mem2mem videobuf2_v4l2 msm(+)
-  videobuf2_common crct10dif_ce spi_geni_qcom snd_soc_sm8250 i2c_qcom_geni gpu_sched
-  snd_soc_qcom_common videodev qcom_q6v5_pas soundwire_qcom drm_dp_aux_bus qcom_stats
-  drm_display_helper qcom_pil_info soundwire_bus snd_soc_lpass_va_macro mc qcom_q6v5
-  phy_qcom_snps_femto_v2 qcom_rng snd_soc_lpass_macro_common snd_soc_lpass_wsa_macro
-  lpass_gfm_sm8250 slimbus qcom_sysmon qcom_common qcom_glink_smem qmi_helpers
-  qcom_wdt mdt_loader socinfo icc_osm_l3 display_connector
-  drm_kms_helper qnoc_sm8250 drm fuse ip_tables x_tables ipv6
- CPU: 7 PID: 339 Comm: systemd-udevd Not tainted 5.19.0-rc8-next-20220728 #4
- Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
- pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : dev_pm_opp_set_config+0x49c/0x610
- lr : dev_pm_opp_set_config+0x58/0x610
- sp : ffff8000093c3710
- x29: ffff8000093c3710 x28: ffffbca3959d82b8 x27: ffff8000093c3d00
- x26: ffffbca3959d8e08 x25: ffff4396cac98118 x24: ffff4396c0e24810
- x23: ffff4396c4272c40 x22: ffff4396c0e24810 x21: ffff8000093c3810
- x20: ffff4396cac36800 x19: ffff4396cac96800 x18: 0000000000000000
- x17: 0000000000000003 x16: ffffbca3f4edf198 x15: 0000001cba64a858
- x14: 0000000000000180 x13: 000000000000017e x12: 0000000000000000
- x11: 0000000000000002 x10: 0000000000000a60 x9 : ffff8000093c35c0
- x8 : ffff4396c4273700 x7 : ffff43983efca6c0 x6 : ffff43983efca640
- x5 : 00000000410fd0d0 x4 : ffff4396c4272c40 x3 : ffffbca3f5d1e008
- x2 : 0000000000000000 x1 : ffff4396c2421600 x0 : ffff4396cac96860
- Call trace:
-  dev_pm_opp_set_config+0x49c/0x610
-  devm_pm_opp_set_config+0x18/0x70
-  vcodec_domains_get+0xb8/0x1638 [venus_core]
-  core_get_v4+0x1d8/0x218 [venus_core]
-  venus_probe+0xf4/0x468 [venus_core]
-  platform_probe+0x68/0xd8
-  really_probe+0xbc/0x2a8
-  __driver_probe_device+0x78/0xe0
-  driver_probe_device+0x3c/0xf0
-  __driver_attach+0x70/0x120
-  bus_for_each_dev+0x70/0xc0
-  driver_attach+0x24/0x30
-  bus_add_driver+0x150/0x200
-  driver_register+0x64/0x120
-  __platform_driver_register+0x28/0x38
-  qcom_venus_driver_init+0x24/0x1000 [venus_core]
-  do_one_initcall+0x54/0x1c8
-  do_init_module+0x44/0x1d0
-  load_module+0x16c8/0x1aa0
-  __do_sys_finit_module+0xbc/0x110
-  __arm64_sys_finit_module+0x20/0x30
-  invoke_syscall+0x44/0x108
-  el0_svc_common.constprop.0+0xcc/0xf0
-  do_el0_svc+0x2c/0xb8
-  el0_svc+0x2c/0x88
-  el0t_64_sync_handler+0xb8/0xc0
-  el0t_64_sync+0x18c/0x190
-  qcom-venus: probe of aa00000.video-codec failed with error -16
+Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+so add a quirk to allow the PA of pgtables support up to bit35.
 
-The fix is re-ordering the code related to OPP core. The OPP core
-expects all configuration options to be provided before the OPP
-table is added.
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Suggested-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220630092927.24925-2-yf.wang@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/pm_helpers.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/io-pgtable-arm-v7s.c | 75 ++++++++++++++++++++++--------
+ include/linux/io-pgtable.h         | 15 ++++--
+ 2 files changed, 66 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/media/platform/qcom/venus/pm_helpers.c b/drivers/media/platform/qcom/venus/pm_helpers.c
-index cb48c5ff3dee..c93d2906e4c7 100644
---- a/drivers/media/platform/qcom/venus/pm_helpers.c
-+++ b/drivers/media/platform/qcom/venus/pm_helpers.c
-@@ -875,7 +875,7 @@ static int vcodec_domains_get(struct venus_core *core)
- 	}
- 
- skip_pmdomains:
--	if (!core->has_opp_table)
-+	if (!core->res->opp_pmdomain)
- 		return 0;
- 
- 	/* Attach the power domain for setting performance state */
-@@ -1007,6 +1007,10 @@ static int core_get_v4(struct venus_core *core)
- 	if (ret)
- 		return ret;
- 
-+	ret = vcodec_domains_get(core);
-+	if (ret)
-+		return ret;
-+
- 	if (core->res->opp_pmdomain) {
- 		ret = devm_pm_opp_of_add_table(dev);
- 		if (!ret) {
-@@ -1017,10 +1021,6 @@ static int core_get_v4(struct venus_core *core)
- 		}
- 	}
- 
--	ret = vcodec_domains_get(core);
--	if (ret)
--		return ret;
--
- 	return 0;
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index be066c1503d3..ba3115fd0f86 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -182,14 +182,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+ 		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
  }
  
+-static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+-				    struct io_pgtable_cfg *cfg)
++static arm_v7s_iopte to_mtk_iopte(phys_addr_t paddr, arm_v7s_iopte pte)
+ {
+-	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+-
+-	if (!arm_v7s_is_mtk_enabled(cfg))
+-		return pte;
+-
+ 	if (paddr & BIT_ULL(32))
+ 		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+ 	if (paddr & BIT_ULL(33))
+@@ -199,6 +193,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+ 	return pte;
+ }
+ 
++static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
++				    struct io_pgtable_cfg *cfg)
++{
++	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
++
++	if (arm_v7s_is_mtk_enabled(cfg))
++		return to_mtk_iopte(paddr, pte);
++
++	return pte;
++}
++
+ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+ 				  struct io_pgtable_cfg *cfg)
+ {
+@@ -240,10 +245,17 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 	dma_addr_t dma;
+ 	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+ 	void *table = NULL;
++	gfp_t gfp_l1;
++
++	/*
++	 * ARM_MTK_TTBR_EXT extend the translation table base support larger
++	 * memory address.
++	 */
++	gfp_l1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
++		 GFP_KERNEL : ARM_V7S_TABLE_GFP_DMA;
+ 
+ 	if (lvl == 1)
+-		table = (void *)__get_free_pages(
+-			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
++		table = (void *)__get_free_pages(gfp_l1 | __GFP_ZERO, get_order(size));
+ 	else if (lvl == 2)
+ 		table = kmem_cache_zalloc(data->l2_tables, gfp);
+ 
+@@ -251,7 +263,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		return NULL;
+ 
+ 	phys = virt_to_phys(table);
+-	if (phys != (arm_v7s_iopte)phys) {
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
++	    phys >= (1ULL << cfg->oas) : phys != (arm_v7s_iopte)phys) {
+ 		/* Doesn't fit in PTE */
+ 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+ 		goto out_free;
+@@ -457,9 +470,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+ 					   arm_v7s_iopte curr,
+ 					   struct io_pgtable_cfg *cfg)
+ {
++	phys_addr_t phys = virt_to_phys(table);
+ 	arm_v7s_iopte old, new;
+ 
+-	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
++	new = phys | ARM_V7S_PTE_TYPE_TABLE;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		new = to_mtk_iopte(phys, new);
++
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_V7S_ATTR_NS_TABLE;
+ 
+@@ -779,6 +797,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 						void *cookie)
+ {
+ 	struct arm_v7s_io_pgtable *data;
++	slab_flags_t slab_flag;
++	phys_addr_t paddr;
+ 
+ 	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+ 		return NULL;
+@@ -788,7 +808,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
++			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
++			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+ 		return NULL;
+ 
+ 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+@@ -796,15 +817,27 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	    !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS))
+ 			return NULL;
+ 
++	if ((cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT) &&
++	    !arm_v7s_is_mtk_enabled(cfg))
++		return NULL;
++
+ 	data = kmalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return NULL;
+ 
+ 	spin_lock_init(&data->split_lock);
++
++	/*
++	 * ARM_MTK_TTBR_EXT extend the translation table base support larger
++	 * memory address.
++	 */
++	slab_flag = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
++		    0 : ARM_V7S_TABLE_SLAB_FLAGS;
++
+ 	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+-					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
++					    slab_flag, NULL);
+ 	if (!data->l2_tables)
+ 		goto out_free_data;
+ 
+@@ -850,12 +883,16 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	wmb();
+ 
+ 	/* TTBR */
+-	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
+-				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
+-				 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
+-				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
+-				(ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
+-				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
++	paddr = virt_to_phys(data->pgd);
++	if (arm_v7s_is_mtk_enabled(cfg))
++		cfg->arm_v7s_cfg.ttbr = paddr | upper_32_bits(paddr);
++	else
++		cfg->arm_v7s_cfg.ttbr = paddr | ARM_V7S_TTBR_S |
++					(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
++					 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
++					 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
++					(ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
++					 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
+ 	return &data->iop;
+ 
+ out_free_data:
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 86af6f0a00a2..ca98aeadcc80 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+ 	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+ 	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+ 	 *
++	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
++	 *	extend the translation table base support up to 35 bits PA, the
++	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
++	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
+ 	 */
+-	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+-	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+-	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+-	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+-	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
++	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
++	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
++	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 -- 
 2.35.1
 
