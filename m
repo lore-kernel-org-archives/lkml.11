@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213EDC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECEBDC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240803AbiHNPew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
+        id S240816AbiHNPe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240745AbiHNPeQ (ORCPT
+        with ESMTP id S240518AbiHNPeV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:34:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED0ABE23;
-        Sun, 14 Aug 2022 08:30:33 -0700 (PDT)
+        Sun, 14 Aug 2022 11:34:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDE1DF35;
+        Sun, 14 Aug 2022 08:30:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 745A8B80B7E;
-        Sun, 14 Aug 2022 15:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CF5C433C1;
-        Sun, 14 Aug 2022 15:30:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CB044CE0B63;
+        Sun, 14 Aug 2022 15:30:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A5E3C4347C;
+        Sun, 14 Aug 2022 15:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491029;
-        bh=ebo6kPnfZ6o+Q1fsjAA8jeQY9HT8MUugEfOa0/b02xE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qqeMILVRzrnyMCODpMc+97MO7Z5sHBTFaFS4Qc/tuXaxJ8xGwWIMf1MsrydmVrCk0
-         fYEP3/jK8YnAYh2ZhlQtd/bkgRkIhi94W3tHQJk0MHeljeZbaPJ8+AZh3/pNyNmuCN
-         Wi+DEHy441MrNcJbAmpcc49bTyhsgLQqwJ6P9oEJw1xEHAqxJoDkXYMszO2pCXuHBx
-         v8gA0Zj2Zokn3gsG9kDuCLzitC+73JuDmKvg5DrrVIGx3semOPUe1q4o9OFFplO9VB
-         7j4N4SwHCztDnRBwuli7l+Aq6hZkPLwWJ8YsL6ZUZSb89dMN8MgtHR5IG07hqJavV8
-         5E+ZcvaJQCS+w==
+        s=k20201202; t=1660491022;
+        bh=oLdac/GYfJCC8DaGqXUjQX2LUFe0uX1PO4NaTektQbY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XVzpOGUQWtXu8pCalKewfQbmAIgKGO1MgmsYTBLv/uS1qq5x/uVTu1iPWxa4QPx26
+         S2089C7HE60WVnNJ8taRX1Gc12sZLt7xwdiLQC2KEbQCDs6sm1PE+tuND0Cz5SyDM9
+         9E5cN46xEF8rJiCpjZyz4CiPfpltHxMVuH3RRPqkubOJUKNznEU4X3I0ehN85YJ56R
+         wxOJIQbYhjI8m6vE8zKza69bx3b3TcFLbt+MG5UAQcUw5BJ+DTBCCsJvS16ivc8MVg
+         lq3Etrkqx8UbnfkwEW7+JBgD/Q+fn3x1wwU2kDARm45CbxgxakT8PrcIqezGWck3Mk
+         B7OB5U6Cbl2XQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gil Fine <gil.fine@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, andreas.noever@gmail.com,
-        michael.jamet@intel.com, YehezkelShB@gmail.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 01/56] thunderbolt: Change downstream router's TMU rate in both TMU uni/bidir mode
-Date:   Sun, 14 Aug 2022 11:29:31 -0400
-Message-Id: <20220814153026.2377377-1-sashal@kernel.org>
+Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 62/64] ext4: avoid remove directory when directory is corrupted
+Date:   Sun, 14 Aug 2022 11:24:35 -0400
+Message-Id: <20220814152437.2374207-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
+References: <20220814152437.2374207-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,51 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gil Fine <gil.fine@intel.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 5fd6b9a5cbe63fea4c490fee8af34144a139a266 ]
+[ Upstream commit b24e77ef1c6d4dbf42749ad4903c97539cc9755a ]
 
-In case of uni-directional time sync, TMU handshake is
-initiated by upstream router. In case of bi-directional
-time sync, TMU handshake is initiated by downstream router.
-In order to handle correctly the case of uni-directional mode,
-we avoid changing the upstream router's rate to off,
-because it might have another downstream router plugged that is set to
-uni-directional mode (and we don't want to change its mode).
-Instead, we always change downstream router's rate.
+Now if check directoy entry is corrupted, ext4_empty_dir may return true
+then directory will be removed when file system mounted with "errors=continue".
+In order not to make things worse just return false when directory is corrupted.
 
-Signed-off-by: Gil Fine <gil.fine@intel.com>
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220622090223.682234-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thunderbolt/tmu.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ fs/ext4/namei.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/thunderbolt/tmu.c b/drivers/thunderbolt/tmu.c
-index e4a07a26f693..93ba1d00335b 100644
---- a/drivers/thunderbolt/tmu.c
-+++ b/drivers/thunderbolt/tmu.c
-@@ -359,13 +359,14 @@ int tb_switch_tmu_disable(struct tb_switch *sw)
- 		 * In case of uni-directional time sync, TMU handshake is
- 		 * initiated by upstream router. In case of bi-directional
- 		 * time sync, TMU handshake is initiated by downstream router.
--		 * Therefore, we change the rate to off in the respective
--		 * router.
-+		 * We change downstream router's rate to off for both uni/bidir
-+		 * cases although it is needed only for the bi-directional mode.
-+		 * We avoid changing upstream router's mode since it might
-+		 * have another downstream router plugged, that is set to
-+		 * uni-directional mode and we don't want to change it's TMU
-+		 * mode.
- 		 */
--		if (unidirectional)
--			tb_switch_tmu_rate_write(parent, TB_SWITCH_TMU_RATE_OFF);
--		else
--			tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
-+		tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
- 
- 		tb_port_tmu_time_sync_disable(up);
- 		ret = tb_port_tmu_time_sync_disable(down);
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index db4ba99d1ceb..1c6725ecca1a 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -3067,11 +3067,8 @@ bool ext4_empty_dir(struct inode *inode)
+ 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
+ 					(offset & (sb->s_blocksize - 1)));
+ 		if (ext4_check_dir_entry(inode, NULL, de, bh,
+-					 bh->b_data, bh->b_size, offset)) {
+-			offset = (offset | (sb->s_blocksize - 1)) + 1;
+-			continue;
+-		}
+-		if (le32_to_cpu(de->inode)) {
++					 bh->b_data, bh->b_size, offset) ||
++		    le32_to_cpu(de->inode)) {
+ 			brelse(bh);
+ 			return false;
+ 		}
 -- 
 2.35.1
 
