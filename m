@@ -2,136 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCC5C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 08:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A42C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 08:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbiHNIFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 04:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S232568AbiHNIFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 04:05:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbiHNIFi (ORCPT
+        with ESMTP id S232678AbiHNIFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 04:05:38 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B751C11C;
-        Sun, 14 Aug 2022 01:05:38 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id c24so4229100pgg.11;
-        Sun, 14 Aug 2022 01:05:38 -0700 (PDT)
+        Sun, 14 Aug 2022 04:05:50 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E2C1D320
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:05:49 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id f65so4219158pgc.12
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=rWqpd+TDL+uhqq+ZM31CgYmJ/5I6ggTeiRIyfhpx6YE=;
-        b=l/H4zND9Wh9LsleFV38bwrmFAMETQ3dei02nqbrPEQvrkhn/Fo7NFXn6zZM3oca66Z
-         dxpf7bLIId8OuGXf8/KlgKEHlTse4HJ9JJWFgYQQakC3KHFaJNFKSf4r07fZTh2ITGbI
-         /ZqPN8tJLKWrBjlCyDXDTtwddtCZKs1wHYyahsF37u2TYduFpYKX4TV4WwkOH7p0Otlo
-         dvUmdgeQARI21JkRN/hstcFfHE/iO4Dt7XBad2lRXDgXkDA+jqh9UZFY/5Bv8sBl59Yh
-         u6/wzAYEXig+/+dj1erB+v2YtTgzAwlTOg3w2GgF2Vp+O/ewzAZ6wkWV45gP8flej8HE
-         YMDA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=7G1ch4jQhofsf5blw9v08dA+V4yyEX/5SvBJlQvxtxI=;
+        b=FCxkVSpdGnP2vhf/FTZow29Svf69NBFLCTu+K94SX4my/XxYZiJKr+55gFJ0gSjNV5
+         Tpfe6ghc/f4NXPgfYWPOO6hcx1VlItiPqsBn1cRHHruifH0yYuw9B4dUKlyay1TLfwV3
+         NM2Uc8ZHZA60+rp77A0XFrMM+ktTYmY73P7CiymTo2svfvgyLyF1/YHmQCTHtlFi/Dp8
+         i/gt9fez4ucODmSCg8ZTKqrsLL0wsrNqgCMIAkZhBayupSmRfkTte03Uw6WLqLQ0YSsC
+         Cq/iCTf4jkamq++AfWF9776NdO9YwzbdDXavlBf8GEfT8+WMlcc96CLKiVuydF81at4l
+         AUmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=rWqpd+TDL+uhqq+ZM31CgYmJ/5I6ggTeiRIyfhpx6YE=;
-        b=1E5XJ557rtf5zLoSn/ecdgR2RknIZ3Tq0AgKg+iJISKc1jVKpMBDPjwQmOX6DO6TJx
-         dMshvQV9JJADBflPBzT1lsfVLUt4fACk4JMoKTq8a7MKTDvy5E8vFr8WyGz+ZI3jRPbL
-         KYXibKiwOTU8mFW+TQovREXXUDaaflaMWlQJQoG9fLeGBl0v3z6hUn14FvqBb6TpBpxP
-         WMY23OAVDWgbyhHtTtdVLuP/z/O8RSiioFjNMPzlQY/3N2vHVd+xWbsIuI8hYy2YyynN
-         6tNOMRfDCRjf9njfP6sY8DF/cqkA5X5EUmk4udvy4/4+3BB4G/ph2wAgHGF5xzmqAtJb
-         M5Qw==
-X-Gm-Message-State: ACgBeo3NlU7ogZA/3YUBySrcmfeNVzPG77AA4tizPOtwwlGqQj7b+taQ
-        steTKRAYIaeYbuDdwDRNxao=
-X-Google-Smtp-Source: AA6agR44dMyyhdx5CLh7qHEoCxg2XQP01uFUUC2ZHzsviRdJfYmkYA7pSnB/CVOgcsGZBfQVeVGwSw==
-X-Received: by 2002:aa7:8e91:0:b0:52d:8ebf:29a4 with SMTP id a17-20020aa78e91000000b0052d8ebf29a4mr11407833pfr.1.1660464337507;
-        Sun, 14 Aug 2022 01:05:37 -0700 (PDT)
-Received: from fedora.. ([103.159.189.159])
-        by smtp.gmail.com with ESMTPSA id l27-20020a63ba5b000000b0041d95d805d6sm4173032pgu.57.2022.08.14.01.05.27
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=7G1ch4jQhofsf5blw9v08dA+V4yyEX/5SvBJlQvxtxI=;
+        b=CD6IRMqH7ZVKFchOqT7DhspCNSxdqC9ORuhtbwTt4i4p2NFP+BoJinWlpExoA2QaiB
+         Lmwe+dRUuEr4i6T/g9S6BMQWVka4bp7ALsnEwM4KoC5glEHUhedUgk8XBfZuWoKG4983
+         CuUr/FzDL+aVGz9vJO19nDpiLSewKkE4YRlSt4wogg+gbuK7ZK+wKjvaGPCb0MFX2Oeh
+         sjW+/wj3/VLhMYQ7vUWOygGppRwUetocdrEQXlO910A1yIBwOsFI8NUBSTfOmMQTHfHv
+         cQtFMD01/lFR5NNh+VL4W8WtdoGtvsp9AYytMOOfSDltPF2PTbrvg+jzwuWgXwYOWvHP
+         0Lgg==
+X-Gm-Message-State: ACgBeo2RY5n3w/LwXSoBgP+9kMbxJOGGaAWnRD3xi9u43XhXIhZ0zcqd
+        5jgFpV0sScroKr66OWNWMXs=
+X-Google-Smtp-Source: AA6agR57w+ju1BUaVHtUyBnWh4c1zgnWTnNyxSldfMe5xn2wB2lCKGMHsYDcZfrEFGUrbAbaIhIosA==
+X-Received: by 2002:a65:46c4:0:b0:41d:e36b:1e59 with SMTP id n4-20020a6546c4000000b0041de36b1e59mr9291859pgr.494.1660464349196;
+        Sun, 14 Aug 2022 01:05:49 -0700 (PDT)
+Received: from hyeyoo ([114.29.91.56])
+        by smtp.gmail.com with ESMTPSA id x185-20020a6263c2000000b0052dc3796cbfsm4689485pfb.75.2022.08.14.01.05.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 01:05:37 -0700 (PDT)
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-To:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Khalid Masum <khalid.masum.92@gmail.com>
-Subject: [RFC PATCH] Soundwire: Initialize multi_link with fwnode props
-Date:   Sun, 14 Aug 2022 14:04:15 +0600
-Message-Id: <20220814080416.7531-1-khalid.masum.92@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Sun, 14 Aug 2022 01:05:47 -0700 (PDT)
+Date:   Sun, 14 Aug 2022 17:05:42 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Xin Hao <xhao@linux.alibaba.com>
+Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
+        roman.gushchin@linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 1/1] mm/slub: release kobject if kobject_init_and_add
+ failed in sysfs_slab_add
+Message-ID: <Yvis1knnMomoeuAx@hyeyoo>
+References: <20220811071844.74020-1-xhao@linux.alibaba.com>
+ <20220811071844.74020-2-xhao@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220811071844.74020-2-xhao@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to the TODO, In sw_bus_master_add, bus->multi_link is to be
-populated with properties from FW node props. Make this happen by 
-creating a new fwnode_handle flag FWNODE_FLAG_MULTI_LINKED and use 
-the flag to store the multi_link value from intel_link_startup. Use 
-this flag to initialize bus->multi_link.
+On Thu, Aug 11, 2022 at 03:18:44PM +0800, Xin Hao wrote:
+> In kobject_init_and_add() function, the refcount is setted by calling
+> kobject_init() function, regardless of whether the return value is zero
+> or not, therefore, we must call kobject_del(&s->kobj) to prevent memory
+> of s->kobj is leaked.
 
-Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
----
-I do not think adding a new flag for fwnode_handle is a good idea.
-So, what would be the best way to initialize bus->multilink with 
-fwnode props?
+TL;DR: IIUC current code works just fine
 
-  -- Khalid Masum
+After thinking more, I don't think the memory leak you said exist.
+The space for s->kobj is freed in create_cache() when __kmem_cache_create() failed.
 
- drivers/soundwire/bus.c   | 4 ++--
- drivers/soundwire/intel.c | 1 +
- include/linux/fwnode.h    | 1 +
- 3 files changed, 4 insertions(+), 2 deletions(-)
+The situation here is:
 
-diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
-index a2bfb0434a67..80df1672c60b 100644
---- a/drivers/soundwire/bus.c
-+++ b/drivers/soundwire/bus.c
-@@ -74,9 +74,9 @@ int sdw_bus_master_add(struct sdw_bus *bus, struct device *parent,
- 
- 	/*
- 	 * Initialize multi_link flag
--	 * TODO: populate this flag by reading property from FW node
- 	 */
--	bus->multi_link = false;
-+	bus->multi_link = (fwnode->flags & FWNODE_FLAG_MULTI_LINKED)
-+		== FWNODE_FLAG_MULTI_LINKED;
- 	if (bus->ops->read_prop) {
- 		ret = bus->ops->read_prop(bus);
- 		if (ret < 0) {
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 505c5ef061e3..034d1c523ddf 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -1347,6 +1347,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
- 		 */
- 		bus->multi_link = true;
- 		bus->hw_sync_min_links = 1;
-+		dev->fwnode->flags |= FWNODE_FLAG_MULTI_LINKED;
- 	}
- 
- 	/* Initialize shim, controller */
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 9a81c4410b9f..446a52744953 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -32,6 +32,7 @@ struct device;
- #define FWNODE_FLAG_NOT_DEVICE			BIT(1)
- #define FWNODE_FLAG_INITIALIZED			BIT(2)
- #define FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD	BIT(3)
-+#define FWNODE_FLAG_MULTI_LINKED		BIT(4)
- 
- struct fwnode_handle {
- 	struct fwnode_handle *secondary;
+create_cache() {
+	s = kmem_cache_alloc(kmem_cache, GFP_KERNEL)
+	err = __kmem_cache_create()
+	if (err)
+		goto out_free_cache;
+	
+out_free_cache:
+	kmem_cache_free(s) // s is freed here (including its kobject)
+	[...]
+}
+
+__kmem_cache_create() {
+	[...]
+
+	err = sysfs_slab_add();
+	if (err) {
+		__kmem_cache_release(s);
+		return err;
+	}
+}
+
+The primary goal of kobject_put() is to call release() function 
+of kobj_type (when reference becomes zero), which is kmem_cache_release().
+
+kmem_cache_release() {
+	__kmem_cache_release(s)
+	kfree_const(s->name)
+	kmem_cache_free(s)
+}
+
+But when slab_sysfs_add() failed, __kmem_cache_release() and
+create_cache() releases resources related to the cache.
+(Also its name is freed in kmem_cache_create_usercopy().)
+
+So IIUC current code works just fine!
+
+> 
+> Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
+> ---
+>  mm/slub.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/slub.c b/mm/slub.c
+> index b1281b8654bd..940a3f52e07c 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -5981,19 +5981,18 @@ static int sysfs_slab_add(struct kmem_cache *s)
+>  
+>  	err = sysfs_create_group(&s->kobj, &slab_attr_group);
+>  	if (err)
+> -		goto out_del_kobj;
+> +		goto out;
+>  
+>  	if (!unmergeable) {
+>  		/* Setup first alias */
+>  		sysfs_slab_alias(s, s->name);
+>  	}
+> +	return err;
+>  out:
+>  	if (!unmergeable)
+>  		kfree(name);
+> +	kobject_put(&s->kobj);
+>  	return err;
+> -out_del_kobj:
+> -	kobject_del(&s->kobj);
+
+So related resources are released in create_cache(), instead of by
+calling kobject_put().
+
+But kobject_del() is still needed because it should unlink kobject
+hierarchy when kobject_add() succeeded but sysfs_create_group() failed!
+
+> -	goto out;
+>  }
+>  
+>  void sysfs_slab_unlink(struct kmem_cache *s)
+> -- 
+> 2.31.0
+> 
+
 -- 
-2.37.1
-
+Thanks,
+Hyeonggon
