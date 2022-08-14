@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2229C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEE4C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241962AbiHNPxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
+        id S241890AbiHNPxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241911AbiHNPuj (ORCPT
+        with ESMTP id S241795AbiHNPto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:50:39 -0400
+        Sun, 14 Aug 2022 11:49:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B961CB3E;
-        Sun, 14 Aug 2022 08:36:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECB512D3D;
+        Sun, 14 Aug 2022 08:35:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42BA960DDA;
-        Sun, 14 Aug 2022 15:36:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C34C7C43470;
-        Sun, 14 Aug 2022 15:35:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A35C360DC5;
+        Sun, 14 Aug 2022 15:35:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E85DC433D7;
+        Sun, 14 Aug 2022 15:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491360;
-        bh=VkRn4+8ydRrl8kgh6G1pqsFQTBK7tf6FFq8d3e6si44=;
+        s=k20201202; t=1660491341;
+        bh=0LLFBfOKHFPod6bxQlh8610jSWOZ/Fs0Wgi1kYBiWWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EiN31sUjgCFNpPyCbmlEBXWybwI+d10lamVwj6txptJNjNp1GmOpN4bBeloWEiNmk
-         TZiVIGf9M7yXKRzqDSY0/CaZ9Uq2K4T5D1LE3ByI9nC8EXRDmsUfXpCaya0h585i7+
-         yf7fQLtIhKaYGR3AFq9YpYx5G4ONHjDsitXcLrizhUyEDgGyujMqb14asdVjgc3FSJ
-         oZ9XbVRd8LpABu/JEurYkMPB+3mZFYUjNW0SfUN3jxuukfkmL4XrE7lRciw8HWYDEr
-         BQmMkmLe4zMXTp/XZt6sy846nGPCfYvTZHnPb20zuiIF/A38c9aGyBcUlyWTY4Eqkz
-         dq6+pHIYi5xsw==
+        b=C2hQgsk4YTooebwLxp3Wft1KXn8DKealYuf/DTne0x9ZJT/d1VnF3pQu7qLsSFc/Y
+         jmPRoyVlwcz0zwqtHr2ZLHqg7u0893lZXxaoKOaTlkawYqLHuA7WlxLCXtYrXbCLCJ
+         RbdntDnjJCdYHF9B3b/uCWJ8isSpN+NhaWfP4FeSMIRqmAWOjKyYvR6Yq/tuhxQUoS
+         x45ha8l4kVGxJ1+PbXvdOQ175fT1OOJkzJNnq4BArjOxxt0BDOwWlRKV5ZkdGgtEB/
+         37VYPCgcvdaQQYCYHpxdoPe38iUB5oucwmuWEFJD+dMqmUXixAqqTDCIv1a3Hm3MW0
+         WdGbF8weTpudA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        orsonzhai@gmail.com, zhang.lyra@gmail.com,
-        dmaengine@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/21] dmaengine: sprd: Cleanup in .remove() after pm_runtime_get_sync() failed
-Date:   Sun, 14 Aug 2022 11:35:26 -0400
-Message-Id: <20220814153531.2379705-16-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>, Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 06/21] usb: host: ohci-ppc-of: Fix refcount leak bug
+Date:   Sun, 14 Aug 2022 11:35:16 -0400
+Message-Id: <20220814153531.2379705-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153531.2379705-1-sashal@kernel.org>
 References: <20220814153531.2379705-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,45 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 1e42f82cbec7b2cc4873751e7791e6611901c5fc ]
+[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
 
-It's not allowed to quit remove early without cleaning up completely.
-Otherwise this results in resource leaks that probably yield graver
-problems later. Here for example some tasklets might survive the lifetime
-of the sprd-dma device and access sdev which is freed after .remove()
-returns.
+In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-As none of the device freeing requires an active device, just ignore the
-return value of pm_runtime_get_sync().
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-Link: https://lore.kernel.org/r/20220721204054.323602-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sprd-dma.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/usb/host/ohci-ppc-of.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/dma/sprd-dma.c b/drivers/dma/sprd-dma.c
-index b966115bfad1..4f0c50106321 100644
---- a/drivers/dma/sprd-dma.c
-+++ b/drivers/dma/sprd-dma.c
-@@ -1201,11 +1201,8 @@ static int sprd_dma_remove(struct platform_device *pdev)
- {
- 	struct sprd_dma_dev *sdev = platform_get_drvdata(pdev);
- 	struct sprd_dma_chn *c, *cn;
--	int ret;
+diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
+index 45f7cceb6df3..98e46725999e 100644
+--- a/drivers/usb/host/ohci-ppc-of.c
++++ b/drivers/usb/host/ohci-ppc-of.c
+@@ -169,6 +169,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
+ 				release_mem_region(res.start, 0x4);
+ 		} else
+ 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
++		of_node_put(np);
+ 	}
  
--	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0)
--		return ret;
-+	pm_runtime_get_sync(&pdev->dev);
- 
- 	/* explicitly free the irq */
- 	if (sdev->irq > 0)
+ 	irq_dispose_mapping(irq);
 -- 
 2.35.1
 
