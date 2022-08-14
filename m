@@ -2,109 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15147C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:24:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 428F7C25B08
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239622AbiHNOY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
+        id S239792AbiHNOZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239569AbiHNOYW (ORCPT
+        with ESMTP id S231576AbiHNOZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:24:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910D21054E;
-        Sun, 14 Aug 2022 07:24:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F1AA60B3D;
-        Sun, 14 Aug 2022 14:24:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2405C433D6;
-        Sun, 14 Aug 2022 14:24:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660487059;
-        bh=Oo73bKMI+TAP6jxlC5fKRQHZbZFrgO3piXgBXIu7pq0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZICwZ0OLcKCRJCa0PZVrQ4GAhAjvJ92npRzs90CeIHAyXWmGFullFgevtHBK1QAhU
-         POFiwO9l6BOvzgQ1SDAxgn30v/4xb6D6/CrM0PVy7C+T3tZhymcqXu211bbvD6Or/F
-         6QWyJCfpZsQnZNayuh8BmTyYEpS1a5tSCQ1O4XQFwrBApSHkFBWATqtp/Op7TYB7o9
-         6hGmr61KJIolkZ0R1caDLUfATNB6xwigk9HWJREqzcK4I0UUg5crTt2TkrWMAg3BS2
-         eJ7DHoVKqV3M6XwhuRjCi5maUiiXDW55P2857oOI8bIcdhrvc8Q24w1BU84ya42Jci
-         81vxj0rpUBosw==
-Date:   Sun, 14 Aug 2022 15:34:47 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 0/9] Improve MCP3911 driver
-Message-ID: <20220814153447.2e9b512a@jic23-huawei>
-In-Reply-To: <20220809073648.167821-1-marcus.folkesson@gmail.com>
-References: <20220809073648.167821-1-marcus.folkesson@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 14 Aug 2022 10:25:53 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F2410545;
+        Sun, 14 Aug 2022 07:25:52 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id k14so4861300pfh.0;
+        Sun, 14 Aug 2022 07:25:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=cmiC4GyXrivAdN89C1L8XiqqWpho7GqZlZeaKyCMglU=;
+        b=iW7PUTkWbQ4GdHHEteuCNQQ5Ss7ljIOtKksm4RzTJDCRMkFQ216uH9eyBZ2pMHgX9g
+         PuNmNy51O5WWstLXa0FBpetTeHuSGSgl1VKN6FAvouYLBuiUerRTuHGUXVf2liVticay
+         NmUUq3xL7EiuE6XJXJB5otVI+ST8+hjNF4J+gCF/8YjDvLGPcPLiZKC+7OfA19SLMBIv
+         ddLNMlG1E3UDFQleHPX5KNluWSKFhQ7b7qCRVdJ8tHNHzlJGR090oBkuHIuUTD7E6i3z
+         QWWa6wvoTrbbBFCWbxBVes1c7haTDs/qD2qZIlC2p5lTzK2RPl0HbtC2aCNZxUn0+yNP
+         2uYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=cmiC4GyXrivAdN89C1L8XiqqWpho7GqZlZeaKyCMglU=;
+        b=wXJqUw2KVXkvVf7dyNAP8qzjIDcP2Tv3jua2MoMYPmhl3DDSCymCkumWIQIHC+YIqI
+         HMPNb1sHRtrfgIN0HUwvv+FTdiToXTaqMCaz+ACgxKpGr9Jhar18VNDKzaHKjbP88QUr
+         zQQzXGMCM0yO44FHYlYsQZeSQwpDqSiHmp7yIhYkrPF0MQ7Jv2vxQrBJYBNxv9g3xe9r
+         AdAwhKkkqEYSR8zWc+Uo4kekngSIr0zv6+dypiYauXk8+CFwRSA3E3DvgkR0l+KuCpK3
+         TyQlJoK4QEDvlHl0sglk9L/9tJZzGouP+4o9jVzcaApKwtnRQCl8ikrajhSCy+WT3gwW
+         22dg==
+X-Gm-Message-State: ACgBeo16nMRgNE48FbrghtVpkTl6JYEQGPDYqx1rfSDe0KGHU95d2Sbv
+        sTysqA6/yyLuKyGS/bnNnLw=
+X-Google-Smtp-Source: AA6agR5oNGtoZK4xcKJgsKFitJ58zTxZ2oiNPpciipm5RltIv8qLg6CwX2m+LTMXM1+WO4RhZqI7NQ==
+X-Received: by 2002:a63:1208:0:b0:423:c60e:ed09 with SMTP id h8-20020a631208000000b00423c60eed09mr6082759pgl.385.1660487150954;
+        Sun, 14 Aug 2022 07:25:50 -0700 (PDT)
+Received: from biggie.. ([103.230.148.189])
+        by smtp.gmail.com with ESMTPSA id s6-20020a170902ea0600b0016dc6279ab7sm5491340plg.149.2022.08.14.07.25.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 07:25:50 -0700 (PDT)
+From:   Gautam Menghani <gautammenghani201@gmail.com>
+To:     sean@mess.org, mchehab@kernel.org
+Cc:     Gautam Menghani <gautammenghani201@gmail.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com,
+        hdanton@sina.com
+Subject: [PATCH] drivers/media/rc: Ensure usb_submit_urb() is not called if write is in progress
+Date:   Sun, 14 Aug 2022 19:55:42 +0530
+Message-Id: <20220814142543.24910-1-gautammenghani201@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  9 Aug 2022 09:36:39 +0200
-Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
+The warning "URB submitted while active" is reported if the function
+send_packet() in imon.c is called if a write is already is in progress.
+Add a check to return -EBUSY in case a write is already is in progress.
+Also, mark tx.busy as false after transmission is completed.
 
-> Hi,
-> 
-> This patch series intend to fix bugs and improve functionality of the MCP3911 driver.
-> The main features added are
-> - Support for buffers
-> - Interrupt driven readings
-> - Support for oversampling ratio
-> - Support for set scale values (Gain)
-> 
-> Among the bug fixes, there are changes in the formula for calculate raw value and a fix for mismatch in the devicetree property.
-> 
-> Another general improvement for the driver is to use managed resources for all allocated resources.
-> 
-Given requested changes from Andy and I were all small, I would normally
-have just made them whilst applying.  However, patches 1-3 still need
-to work their way through as fixes to be upstream so we can't merge the
-rest yet anyway.
+Fixes: 21677cfc562a ("V4L/DVB: ir-core: add imon driver")
+Cc: hdanton@sina.com
+Suggested-by: hdanton@sina.com
+Link: https://syzkaller.appspot.com/bug?id=e378e6a51fbe6c5cc43e34f131cc9a315ef0337e
+Reported-by: syzbot+0c3cb6dc05fbbdc3ad66@syzkaller.appspotmail.com
+Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+---
+ drivers/media/rc/imon.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Looks good to me in general, just those little things to tidy up in a v6.
-
-Thanks,
-
-Jonathan
-
-> General changes for the series:
-> 
-> v3:
-> - Drop Phase patch
-> - Add Fixes tags for those patches that are fixes
-> - Move Fixes patches to the beginning of the patchset
-> 
-> v4:
-> - Split up devm-cleanup functions 
-> - Cosmetic cleanups
-> - Add
-> 	select IIO_BUFFER
-> 	select IIO_TRIGGERED_BUFFER
->     To Kconfig
-> - Add .endianness = IIO_BE
-> 
-> v5:
-> - Drop remove function
-> - Split tx&rx transfers in mcp3911_trigger_handler()
-> - Moved Kconfig changes to right patch
-> 
-> 
-> Best regards,
-> Marcus Folkesson
-> 
-> 
+diff --git a/drivers/media/rc/imon.c b/drivers/media/rc/imon.c
+index 735b925da998..a5b997c2c7e2 100644
+--- a/drivers/media/rc/imon.c
++++ b/drivers/media/rc/imon.c
+@@ -598,6 +598,8 @@ static int send_packet(struct imon_context *ictx)
+ 	int retval = 0;
+ 	struct usb_ctrlrequest *control_req = NULL;
+ 
++	if (ictx->tx.busy)
++		return -EBUSY;
+ 	/* Check if we need to use control or interrupt urb */
+ 	if (!ictx->tx_control) {
+ 		pipe = usb_sndintpipe(ictx->usbdev_intf0,
+@@ -654,6 +656,7 @@ static int send_packet(struct imon_context *ictx)
+ 			pr_err_ratelimited("task interrupted\n");
+ 		}
+ 		mutex_lock(&ictx->lock);
++		ictx->tx.busy = false;
+ 
+ 		retval = ictx->tx.status;
+ 		if (retval)
+-- 
+2.34.1
 
