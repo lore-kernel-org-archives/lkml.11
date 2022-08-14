@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A109FC2BB41
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C56C2BB41
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242392AbiHNQX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        id S240716AbiHNQYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241275AbiHNQWa (ORCPT
+        with ESMTP id S242200AbiHNQXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:22:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265F7F35;
-        Sun, 14 Aug 2022 09:21:13 -0700 (PDT)
+        Sun, 14 Aug 2022 12:23:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25F5DF01;
+        Sun, 14 Aug 2022 09:21:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B002860F49;
-        Sun, 14 Aug 2022 16:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E469C433B5;
-        Sun, 14 Aug 2022 16:21:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FCBAB80AEE;
+        Sun, 14 Aug 2022 16:21:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BB7C433C1;
+        Sun, 14 Aug 2022 16:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494072;
-        bh=WKWA3UbghQorOkZYcUPew9I9PowLOt2UNz2dEBzlkn0=;
+        s=k20201202; t=1660494100;
+        bh=K+ir609JSd1Xoem7Z547dEqv671JPfbFvoqdmpiy38o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o0NKCGW6cf6MwE+NMh6X3mJgAcVnpBs3ru+eedJh60bU155M0570rLXY0cxUd0Foe
-         mlI/Z8r32XTABSUMNLpGVseUCjc7sdYklzgUMW1VHwR1mdxK0AWHid3sc+/fh6URgt
-         S0Q2fQENmEVfTSpVRKvNXj0Ose6VSVe45yIMJedu7PWdW1QMDoaDUAy1IxODWmBZzg
-         qrC2sStO7hb5uP/+bBAYpg1ZUVhxqG4sCQWg4RcIszthGVJeltquP9tymPRUxdn7Fm
-         usIjKNe10lwnaF1nzicKEcUUL9N3sPnHgqDjTnv8lBpEkKYeFoxE9tY5j8eW6ZsUwZ
-         NGPkG79oyIhvA==
+        b=FHh57aW53pVTqrtMQM238toN+5RF4Q67ThXms2KPLamDvZh4U3fk0+fAdJqZUcHFb
+         ZS+PXpSIAz8pkZWQ21mK6q1eE0smjTAZHkmEKHdzOZeGS+d3tvQUnaUoZpgNemyxGw
+         11WmazDg3YBiQmClXIAFkpuSpe83lMGruH7Xi45Hp+71+QJJjydyuHStenSGTndIjL
+         0HnzQ/JIWNlqUZG+A6r5VVYpxh2DH3xpLWagzgJuxzCdrTrWgHhUW9+9WLPzwq3VYL
+         LodHcjMBGx/ETopZJievwXw+Eg3b/jc2xPCLJLBMVHjfvCAZjxnyIjk0RndvgdSLti
+         0t1mmIl3yFhDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, tcrawford@system76.com,
-        wse@tuxedocomputers.com, tangmeng@uniontech.com, cam@neo-zeon.de,
-        kailang@realtek.com, sbinding@opensource.cirrus.com,
-        yong.wu@mediatek.com, andy.chi@canonical.com,
+Cc:     Andrey Turkin <andrey.turkin@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, peter.ujfalusi@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        kai.vehmanen@linux.intel.com, perex@perex.cz, tiwai@suse.com,
+        mchehab@kernel.org, akihiko.odaki@gmail.com,
         alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.19 23/48] ALSA: hda/realtek: Enable speaker and mute LEDs for HP laptops
-Date:   Sun, 14 Aug 2022 12:19:16 -0400
-Message-Id: <20220814161943.2394452-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 26/48] ASoC: Intel: sof_es8336: ignore GpioInt when looking for speaker/headset GPIO lines
+Date:   Sun, 14 Aug 2022 12:19:19 -0400
+Message-Id: <20220814161943.2394452-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
 References: <20220814161943.2394452-1-sashal@kernel.org>
@@ -56,39 +58,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Andrey Turkin <andrey.turkin@gmail.com>
 
-[ Upstream commit c578d5da10dc429c6676ab09f3fec0b79b31633a ]
+[ Upstream commit 751e77011f7a43a204bf2a5d02fbf5f8219bc531 ]
 
-Two more HP laptops that use cs35l41 AMP for speaker and GPIO for mute
-LEDs.
+This fixes speaker GPIO detection on machines those ACPI tables
+list their jack detection GpioInt before output GpioIo.
+GpioInt entry can never be the speaker/headphone amplifier control
+so it makes sense to only look for GpioIo entries when looking for them.
 
-So use the existing quirk to enable them accordingly.
-
-[ Sort the entries at the SSID order by tiwai ]
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220719142015.244426-1-kai.heng.feng@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Andrey Turkin <andrey.turkin@gmail.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220725194909.145418-5-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/intel/boards/sof_es8336.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 2f55bc43bfa9..8da712c5d743 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9114,6 +9114,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8aa8, "HP EliteBook 640 G9 (MB 8AA6)", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8aab, "HP EliteBook 650 G9 (MB 8AA9)", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8ad1, "HP EliteBook 840 14 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8ad2, "HP EliteBook 860 16 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
- 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 4d0c361fc277..d70d8255b8c7 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -57,23 +57,23 @@ static const struct acpi_gpio_params enable_gpio0 = { 0, 0, true };
+ static const struct acpi_gpio_params enable_gpio1 = { 1, 0, true };
+ 
+ static const struct acpi_gpio_mapping acpi_speakers_enable_gpio0[] = {
+-	{ "speakers-enable-gpios", &enable_gpio0, 1 },
++	{ "speakers-enable-gpios", &enable_gpio0, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
+ 	{ }
+ };
+ 
+ static const struct acpi_gpio_mapping acpi_speakers_enable_gpio1[] = {
+-	{ "speakers-enable-gpios", &enable_gpio1, 1 },
++	{ "speakers-enable-gpios", &enable_gpio1, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
+ };
+ 
+ static const struct acpi_gpio_mapping acpi_enable_both_gpios[] = {
+-	{ "speakers-enable-gpios", &enable_gpio0, 1 },
+-	{ "headphone-enable-gpios", &enable_gpio1, 1 },
++	{ "speakers-enable-gpios", &enable_gpio0, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
++	{ "headphone-enable-gpios", &enable_gpio1, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
+ 	{ }
+ };
+ 
+ static const struct acpi_gpio_mapping acpi_enable_both_gpios_rev_order[] = {
+-	{ "speakers-enable-gpios", &enable_gpio1, 1 },
+-	{ "headphone-enable-gpios", &enable_gpio0, 1 },
++	{ "speakers-enable-gpios", &enable_gpio1, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
++	{ "headphone-enable-gpios", &enable_gpio0, 1, ACPI_GPIO_QUIRK_ONLY_GPIOIO },
+ 	{ }
+ };
+ 
 -- 
 2.35.1
 
