@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6099DC282E7
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 349CFC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240789AbiHNPen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
+        id S240798AbiHNPer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiHNPeP (ORCPT
+        with ESMTP id S240732AbiHNPeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:34:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EBDDEA4;
-        Sun, 14 Aug 2022 08:30:36 -0700 (PDT)
+        Sun, 14 Aug 2022 11:34:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA36CE25;
+        Sun, 14 Aug 2022 08:30:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C16F60C94;
-        Sun, 14 Aug 2022 15:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30774C433D7;
-        Sun, 14 Aug 2022 15:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5214160C1D;
+        Sun, 14 Aug 2022 15:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2D7C433D7;
+        Sun, 14 Aug 2022 15:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491020;
-        bh=LKYTZ8t1r7PSDOsdZvV9qIXBrHrd4WElWZNqWkPgLvo=;
+        s=k20201202; t=1660491032;
+        bh=9S61Z+VGznUtOHxI/LjEz0Ut1LHsJYtenXwGluVJaXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TcqSMF4xMJmMORL/T1tAEOTJgV6NHGVfh3p+K1h3pqfDT20p3eRLx1xHg+x4UdcA3
-         qTv4voMgpzuxDTZjLd54nGt3/W82U/VhO8DbLgGgVI3b0e0rJhUxbiX8hDiv0p4kLC
-         QPbNXLWKC8H4dj0dfTs//7jb5mpXD2NgjM9k/PlZI59zbrFZZlnCQbn0+SsJv5n7hX
-         dC0l6hn4GRPUMvl0EwFIhLVGIly4O+xityX20+t8eZmryKv6yO7pyiWs7arcJuR3RF
-         YRBFGloXwpNPBcpE9p618jjpXUtoBl0rbi2+s62xhuR31VBDK6TmgguWY9TzrqfjsD
-         96vopDRutepAw==
+        b=H1ZxAlZunwiZm07mAHyvRJCyUs6+EfbEwoRsgxMQrorl/NHaUquY3HramaGMtj1Uq
+         jxuWatfnWxkM0im1J/+8p2ER59DhhlCWF7QJIuSDwtT3LEO35/mvgeHGW4KXgsArb0
+         wD4Ir3u8UTiAinH45p+It2P+R76Le9of+fJBCK4cTP/bWsaO3BjGivUBAC3YHZJkmi
+         aUWos/hz05s1ZQniuK/AdndCQ5tSoOXE7d2Ia79eKI6gpyg1szkSiHJX+1xLd4OEym
+         EStI1P/ovO6rx9GvelS97JdMmeVmoK2D54OT2IalZUMGpLt/Y44pG+mzX29QGZzmL7
+         4llrYunMiD2Sw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wentao_Liang <Wentao_Liang_g@163.com>, Song Liu <song@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 61/64] drivers:md:fix a potential use-after-free bug
-Date:   Sun, 14 Aug 2022 11:24:34 -0400
-Message-Id: <20220814152437.2374207-61-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@kernel.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, bleung@chromium.org,
+        chrome-platform@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 04/56] platform/chrome: cros_ec_proto: don't show MKBP version if unsupported
+Date:   Sun, 14 Aug 2022 11:29:34 -0400
+Message-Id: <20220814153026.2377377-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
-References: <20220814152437.2374207-1-sashal@kernel.org>
+In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
+References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,42 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wentao_Liang <Wentao_Liang_g@163.com>
+From: Tzung-Bi Shih <tzungbi@kernel.org>
 
-[ Upstream commit 104212471b1c1817b311771d817fb692af983173 ]
+[ Upstream commit b36f0643ff14a2fb281b105418e4e73c9d7c11d0 ]
 
-In line 2884, "raid5_release_stripe(sh);" drops the reference to sh and
-may cause sh to be released. However, sh is subsequently used in lines
-2886 "if (sh->batch_head && sh != sh->batch_head)". This may result in an
-use-after-free bug.
+It wrongly showed the following message when it doesn't support MKBP:
+"MKBP support version 4294967295".
 
-It can be fixed by moving "raid5_release_stripe(sh);" to the bottom of
-the function.
+Fix it.
 
-Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Link: https://lore.kernel.org/r/20220609084957.3684698-14-tzungbi@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/raid5.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 45482cebacdb..1c1310d539f2 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -2881,10 +2881,10 @@ static void raid5_end_write_request(struct bio *bi)
- 	if (!test_and_clear_bit(R5_DOUBLE_LOCKED, &sh->dev[i].flags))
- 		clear_bit(R5_LOCKED, &sh->dev[i].flags);
- 	set_bit(STRIPE_HANDLE, &sh->state);
--	raid5_release_stripe(sh);
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index ac1419881ff3..c8353f96a7f3 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -507,13 +507,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 						    EC_CMD_GET_NEXT_EVENT,
+ 						    &ver_mask);
+-	if (ret < 0 || ver_mask == 0)
++	if (ret < 0 || ver_mask == 0) {
+ 		ec_dev->mkbp_event_supported = 0;
+-	else
++	} else {
+ 		ec_dev->mkbp_event_supported = fls(ver_mask);
  
- 	if (sh->batch_head && sh != sh->batch_head)
- 		raid5_release_stripe(sh->batch_head);
-+	raid5_release_stripe(sh);
- }
+-	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
+-		ec_dev->mkbp_event_supported - 1);
++		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
++	}
  
- static void raid5_error(struct mddev *mddev, struct md_rdev *rdev)
+ 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
 -- 
 2.35.1
 
