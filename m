@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0E5C25B0F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1B5C25B06
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 17:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbiHNRhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 13:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54372 "EHLO
+        id S238927AbiHNRhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 13:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiHNRhD (ORCPT
+        with ESMTP id S231265AbiHNRhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 13:37:03 -0400
+        Sun, 14 Aug 2022 13:37:06 -0400
 Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1298115707;
-        Sun, 14 Aug 2022 10:37:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D828615707;
+        Sun, 14 Aug 2022 10:37:05 -0700 (PDT)
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 0C59632002E2;
-        Sun, 14 Aug 2022 13:36:58 -0400 (EDT)
+        by mailout.west.internal (Postfix) with ESMTP id 70FCE32005C1;
+        Sun, 14 Aug 2022 13:37:04 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 14 Aug 2022 13:37:00 -0400
+  by compute3.internal (MEProxy); Sun, 14 Aug 2022 13:37:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1660498618; x=1660585018; bh=pgAKczYI46YK504LsfplQlggz
-        lIabQBRUDRiVOHFmsI=; b=TqzkUy03yMVcmYimv55HdNk09kcuLbITIrek08fPk
-        fo8WoIWQ3guv9zR4Jrk+bj2I6E3aFeOyi+0GSk+sQHdnMmcoYJ15KY2vkx8PZz8A
-        9p2b+T0JSkEd32ra61G6wUw3P9vB+kGEhfM8JN1sVsPrip1Zq8yG9TFlR+ZBOe8r
-        eRojOeXmTMpP5VqgrNgK/5TQ374W+mC9khTBzXcBygd3ygRvKg2QqI3tdV95HN+6
-        zQYVpfTXpwkQojfJGtXSrnibmJ97rHN3OLkudtf5sxcy2/QlA8Ij8pfbKGCsSYMC
-        G+BoAwOlZLUCUhPeF4xUAwkZQ9tjVYC1aT631gtB4qXyg==
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1660498623; x=1660585023; bh=gG
+        x++uZuYm9XsKFB3DjNDrE1NoVs5U98OkdD7W5x8KI=; b=TXSiHVaHjWlzDn7Dba
+        Q0U+q/3VvyRrEjwnG6dDFJWC7sUGuJTfECfoGWvBUZK53G3KfIoZ8hpQjHSr/XiA
+        JYjL1raULlivYsXrWKQMU5UCoa7Z6Zb1L47ekh3XeQVcsmzCEIZIwbzDjlYT6apu
+        DGfkl0adKhPokuznlLmploSAtmOmlTcjs31IrBrlphib0aFMMdkztRAz1oT/eey1
+        ALZtoTsFwzVGbh/ZzLIt6MlGd8nWe6Y01vBbOnptAqJndh95ApCSK70qAVD0v5v9
+        fMibfSdyAxpAVPf8tgjZ8FrQbS/ruClPd0W/geHCliMv9MOJww20uw5WbxU/N9sO
+        wfew==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660498618; x=1660585018; bh=pgAKczYI46YK504LsfplQlggzlIabQBRUDR
-        iVOHFmsI=; b=UL0HRS3xHtAlV+xIQYl2wF/td14Yev2o/qb6s5cTEe8vjErkOFW
-        0/0oEtTRiDlILgOVmr4BsFK0k1oGygp2bJ8L0BZ7RUruReMPSArhIsPKW+bLsw0A
-        WQW1mczyCUnm9Wro1b0n6gzsqfQH/miliaGD5jxrP7RZJXbBAVgyJT0kQMxuS9IU
-        oTU8q8gg74mGFUByEOxoDvN9REcbynDo8ffteKtKOZ8VNFyjWoFWnDcoWLABarH8
-        aP5a9B2GH6CExY/AGma+lPWC4kZY0k5lj0OmQdpOHzzqnp8q8tXGIBZuDukZ0Kzi
-        uu40ogA5wL2PZdXR7wNG/vNQS0sS8fAnSmw==
-X-ME-Sender: <xms:uTL5YhUU1zQKXj6X3-EOwbPdosxjoHfvlpk8KiopaIPk5ilSxXVG2g>
-    <xme:uTL5YhmH8LysTDaUJ-rprbu5K21qQm3Y3iv1WUkdlFEMZPtTqfypxSz0KUjI8jEgT
-    ZHtFxgKqfH81Bu3AQ>
-X-ME-Received: <xmr:uTL5YtZTNrxtVbRS7KkCNC5n5sAH3Y3XKuioIMs7dRy8Ppx00q8Fj5kHHOmJzdUuefdTE7J5BgFGuYa_-04EftPmVrYV0BtzhkmSXpqaB2ASloYWwMO5kN49Wy62Pc39m01m0w>
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1660498623; x=1660585023; bh=gGx++uZuYm9Xs
+        KFB3DjNDrE1NoVs5U98OkdD7W5x8KI=; b=W6rsmJyKK7y56esvwejcSYSb47CsW
+        1IMMWbixKYVu5+UyPfIU3p8RTb/VQc/8aMoSyTX3J0cpp5Igw2bsv0Ded00pjT5k
+        /7g56ltLGRRCKZXHX0Ab9RkTF+wKSBteBtC3Rdq79bB5V+HcdAMApSrcHC3nPJ5I
+        nAlCIzuBCbvY77N+s+oYxhoP3cW8A5Flo3v9so53xk9/kj+rgVUnYNjYQ/NmPE1a
+        0YRevuKxczzE2B2ta8BeRhVUPRWa/A8i/nIMZC8VWLKIujV5DgaS4eoYq1iHJaOK
+        fkP4EP3H9YqI93mWOAmTEUZ0IVxo+RodIWbdJy0+eY5IehY48vLoruw1g==
+X-ME-Sender: <xms:vzL5Yob8aki7An9kzzIV1U9fXQ-iN2iak3VobTHW5zYMUl7XBoUMOA>
+    <xme:vzL5YjYF7DufidY6hUWm32qREg0vdiEG2pcrAG-ogY562CCogGrP2-vTdSWDWzHji
+    nu63_xtVW7qViE_zA>
+X-ME-Received: <xmr:vzL5Yi8UVSlrgT3xYh6-yCvutFiXlhp_YZ259Mhc_HCfFM9Xs1_YsR0QbyYiVkZfuXv3bzCbHK-QcoyjSpdJtQdPz2SYHJOC5mFF8FLhSvLR-7nRH658g8Cmg0LB_7nBTk9Lsw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehtddgudduiecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeeh
-    hffhkeekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:uTL5YkVinxS2pXYOtL7D93H33vO_1j4krwXTPF_G75DXa8LDwfLFmQ>
-    <xmx:uTL5YrmZBqS4G6lg1ZD9r9ZdeMvnm-wsFkd_qO1bGZd8VeNjyRtC2w>
-    <xmx:uTL5YhdGXmoaW4pXllyD8li2VhY586tdBqrmwkZncSh3q0sYBzqxFw>
-    <xmx:ujL5Ykielf9y9LbguWXM3lepKxfD-xd0ROz9pHiC13mvPY0m3U2nnQ>
+    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
+    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:vzL5Yio-k6vIt4SAlMUq-O7FlhCGkbMcJVV0mCBZVwP08dBX0jY3mg>
+    <xmx:vzL5Yjr4hk4ekLQHpYOAWof4W3WUgVXz-AYPC7-DX8b0LnNM7aq5xA>
+    <xmx:vzL5YgRp2lQkklNUMdsAByYqIT4Oj7VmCK-gl-cLW2o7TAOMxQK1OA>
+    <xmx:vzL5Ym09_L5LXsMoguQgb9sOa2jjN6XKht4J2S0ihxyTn0bYXNikbw>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 14 Aug 2022 13:36:56 -0400 (EDT)
+ 14 Aug 2022 13:37:03 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Chen-Yu Tsai <wens@csie.org>,
@@ -71,57 +72,58 @@ Cc:     Samuel Holland <samuel@sholland.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@lists.linux.dev
-Subject: [PATCH 0/4] nvmem: Support non-stride-aligned NVMEM cell data
-Date:   Sun, 14 Aug 2022 12:36:51 -0500
-Message-Id: <20220814173656.11856-1-samuel@sholland.org>
+Subject: [PATCH 2/4] nvmem: sunxi_sid: Drop the workaround on A64
+Date:   Sun, 14 Aug 2022 12:36:53 -0500
+Message-Id: <20220814173656.11856-3-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814173656.11856-1-samuel@sholland.org>
+References: <20220814173656.11856-1-samuel@sholland.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first half of this series fixes a bug in the sunxi SID driver,
-emphasizing that it really does have a hardware-level stride of 4 bytes.
+Now that the SRAM readout code is fixed by using 32-bit accesses, it
+always returns the same values as register readout, so the A64 variant
+no longer needs the workaround. This makes the D1 variant structure
+redundant, so remove it.
 
-The remainder of the series tries to answer the question:
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-    How can I use nvmem_cell_read_u8() to read byte 0x2a of a NVMEM
-    device that has .stride == 4?
+ drivers/nvmem/sunxi_sid.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-The NVMEM cell may be at a different offset in future SoCs, so I think
-it would be wrong to use nvmem_cell_read_u32() and extract the single
-relevant byte in the consumer driver.
-
-I can think of three solutions:
- 1) Change the NVMEM provider driver to use .stride == 1, and fix the
-    alignment inside that driver. Some other NVMEM implementations have
-    taken this path. This is not ideal because it requires allocating
-    an extra bounce buffer inside the driver.
- 2) Extend nvmem_shift_read_buffer_in_place() to handle larger bit
-    offsets. Specify a stride-aligned "reg" in the devicetree, and use
-    "bits" to provide the sub-stride offset. This adds a minimal amount
-    of new code, and is generic across all drivers.
- 3) Do the same as #2, but also remove the alignment checks from
-    nvmem_cell_info_to_nvmem_cell_entry_nodup() and have it convert
-    non-stride-aligned "reg" properties to the equivalent bit_offset
-    and nbits fields (and use that from nvmem_add_cells_from_of()).
-
-Since option #3 has larger impacts on the NVMEM core, and is backward-
-compatible with option #2, I have implemented option #2 in this series.
-
-
-Samuel Holland (4):
-  nvmem: sunxi_sid: Always use 32-bit MMIO reads
-  nvmem: sunxi_sid: Drop the workaround on A64
-  dt-bindings: nvmem: Allow bit offsets greater than a byte
-  nvmem: core: Support reading cells with >= 8 bit offsets
-
- .../devicetree/bindings/nvmem/nvmem.yaml      |  2 +-
- drivers/nvmem/core.c                          | 43 +++++++++++--------
- drivers/nvmem/sunxi_sid.c                     | 23 ++++++----
- 3 files changed, 40 insertions(+), 28 deletions(-)
-
+diff --git a/drivers/nvmem/sunxi_sid.c b/drivers/nvmem/sunxi_sid.c
+index 92dfe4cb10e3..a970f1741cc6 100644
+--- a/drivers/nvmem/sunxi_sid.c
++++ b/drivers/nvmem/sunxi_sid.c
+@@ -197,15 +197,9 @@ static const struct sunxi_sid_cfg sun8i_h3_cfg = {
+ 	.need_register_readout = true,
+ };
+ 
+-static const struct sunxi_sid_cfg sun20i_d1_cfg = {
+-	.value_offset = 0x200,
+-	.size = 0x100,
+-};
+-
+ static const struct sunxi_sid_cfg sun50i_a64_cfg = {
+ 	.value_offset = 0x200,
+ 	.size = 0x100,
+-	.need_register_readout = true,
+ };
+ 
+ static const struct sunxi_sid_cfg sun50i_h6_cfg = {
+@@ -218,7 +212,7 @@ static const struct of_device_id sunxi_sid_of_match[] = {
+ 	{ .compatible = "allwinner,sun7i-a20-sid", .data = &sun7i_a20_cfg },
+ 	{ .compatible = "allwinner,sun8i-a83t-sid", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun8i-h3-sid", .data = &sun8i_h3_cfg },
+-	{ .compatible = "allwinner,sun20i-d1-sid", .data = &sun20i_d1_cfg },
++	{ .compatible = "allwinner,sun20i-d1-sid", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun50i-a64-sid", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun50i-h5-sid", .data = &sun50i_a64_cfg },
+ 	{ .compatible = "allwinner,sun50i-h6-sid", .data = &sun50i_h6_cfg },
 -- 
 2.35.1
 
