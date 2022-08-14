@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EABC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD41C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241494AbiHNPp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
+        id S241513AbiHNPpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241383AbiHNPnz (ORCPT
+        with ESMTP id S241078AbiHNPoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:43:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BF72BEB;
-        Sun, 14 Aug 2022 08:33:54 -0700 (PDT)
+        Sun, 14 Aug 2022 11:44:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635E1240B6;
+        Sun, 14 Aug 2022 08:34:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 488D6B80B4D;
-        Sun, 14 Aug 2022 15:33:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F77C433D6;
-        Sun, 14 Aug 2022 15:33:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 739A260CF5;
+        Sun, 14 Aug 2022 15:34:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E859C433D6;
+        Sun, 14 Aug 2022 15:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491231;
-        bh=9QOTeBaCZwzn8tL1XYxhiVwIRrb0vg0D0Yjvo3r0d2I=;
+        s=k20201202; t=1660491240;
+        bh=L2kbwHsu7mISqjTwShhCSkl2t+nfdjFXCjhkhiPZprA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IgEgGmdJOgc9uOKklxf24vkIR0D5dPUkxWNEvuQCtHUv0VvTKy7KQ08d90lRzBQQa
-         h0pEC2rmRgujQRpeWLHiMQUXgBgtFKl8X/v/BpiYieTeTZtAPa9kCE8vbXuDE0TN5J
-         UWVj9ebB36xv4fbDyV0sj4Wsy6gcA79S0Gc7dqaazZB1KChdHPR+HMjtdw9rIlCVRo
-         iKxHC9VClncwRo+eGKgybqf31DvNw6nbXwf8/Mh7Vl2r/r/Oiz6knM+CubPckqmyKs
-         HvXZOEmwGqjGwmDO2IHyvHg0dxzIAijZxS5EGm+JAe/oeRp9aUpxW4Ogzrw55E6moF
-         UPxTBUc2gaFFQ==
+        b=D9lEuKYCbf+of5vMT+ZuxpGmGLGep4k9W1QobEV2fNRiPQD2FiYumxbAQTeMJhTZS
+         k8LsLifcErNDIojWY91rEU9wjmajgHCHRe27GRqUXOpJcHSzX2hxJBm85qi12RXAm6
+         0Hob1VZkqPqZMgS9fCTNINJ90ZYEVcViNTuRosz4BqPZ48caU5f6UnF+CcpgHYkuup
+         KCMEmkddqOyOyf424cQ3xX/NlKbH7G1JUmoSLQO5XF1hNUwx1pB/zhZkWRZvVEh2mV
+         htc2E16zspnjGOSEFygobeyfJqV1dBPFYTcJGCJfMlI09gWPpH8glJ9bseRT/+b3gl
+         5w6rL8H0ARwew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, p.zabel@pengutronix.de,
-        linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 27/46] mmc: tmio: avoid glitches when resetting
-Date:   Sun, 14 Aug 2022 11:32:28 -0400
-Message-Id: <20220814153247.2378312-27-sashal@kernel.org>
+Cc:     Ben Dooks <ben.dooks@sifive.com>, Vinod Koul <vkoul@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Eugeniy.Paltsev@synopsys.com,
+        dmaengine@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 33/46] dmaengine: dw-axi-dmac: ignore interrupt if no descriptor
+Date:   Sun, 14 Aug 2022 11:32:34 -0400
+Message-Id: <20220814153247.2378312-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
@@ -53,208 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+From: Ben Dooks <ben.dooks@sifive.com>
 
-[ Upstream commit 2e586f8a5b0ed4a525014a692923ac96f6647816 ]
+[ Upstream commit 820f5ce999d2f99961e88c16d65cd26764df0590 ]
 
-If we reset because of an error, we need to preserve values for the
-clock frequency. Otherwise, glitches may be seen on the bus.
+If the channel has no descriptor and the interrupt is raised then the
+kernel will OOPS. Check the result of vchan_next_desc() in the handler
+axi_chan_block_xfer_complete() to avoid the error happening.
 
-To achieve that, we introduce a 'preserve' parameter to the reset
-function and the IP core specific reset callbacks to handle everything
-accordingly.
-
-Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Link: https://lore.kernel.org/r/20220625131722.1397-1-wsa@kernel.org
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Link: https://lore.kernel.org/r/20220708170153.269991-4-ben.dooks@sifive.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/renesas_sdhi_core.c | 29 ++++++++++++++--------------
- drivers/mmc/host/tmio_mmc.c          |  2 +-
- drivers/mmc/host/tmio_mmc.h          |  6 +++++-
- drivers/mmc/host/tmio_mmc_core.c     | 28 +++++++++++++++++++++------
- 4 files changed, 42 insertions(+), 23 deletions(-)
+ drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
-index ae689bf54686..bbbd512785da 100644
---- a/drivers/mmc/host/renesas_sdhi_core.c
-+++ b/drivers/mmc/host/renesas_sdhi_core.c
-@@ -51,9 +51,6 @@
- #define HOST_MODE_GEN3_32BIT	(HOST_MODE_GEN3_WMODE | HOST_MODE_GEN3_BUSWIDTH)
- #define HOST_MODE_GEN3_64BIT	0
+diff --git a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+index 8f765e2d7c72..48de8d2b32f2 100644
+--- a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
++++ b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+@@ -1016,6 +1016,11 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
  
--#define CTL_SDIF_MODE	0xe6
--#define SDIF_MODE_HS400		BIT(0)
--
- #define SDHI_VER_GEN2_SDR50	0x490c
- #define SDHI_VER_RZ_A1		0x820b
- /* very old datasheets said 0x490c for SDR104, too. They are wrong! */
-@@ -550,23 +547,25 @@ static void renesas_sdhi_scc_reset(struct tmio_mmc_host *host, struct renesas_sd
- }
+ 	/* The completed descriptor currently is in the head of vc list */
+ 	vd = vchan_next_desc(&chan->vc);
++	if (!vd) {
++		dev_err(chan2dev(chan), "BUG: %s, IRQ with no descriptors\n",
++			axi_chan_name(chan));
++		goto out;
++	}
  
- /* only populated for TMIO_MMC_MIN_RCAR2 */
--static void renesas_sdhi_reset(struct tmio_mmc_host *host)
-+static void renesas_sdhi_reset(struct tmio_mmc_host *host, bool preserve)
- {
- 	struct renesas_sdhi *priv = host_to_priv(host);
- 	int ret;
- 	u16 val;
- 
--	if (priv->rstc) {
--		reset_control_reset(priv->rstc);
--		/* Unknown why but without polling reset status, it will hang */
--		read_poll_timeout(reset_control_status, ret, ret == 0, 1, 100,
--				  false, priv->rstc);
--		/* At least SDHI_VER_GEN2_SDR50 needs manual release of reset */
--		sd_ctrl_write16(host, CTL_RESET_SD, 0x0001);
--		priv->needs_adjust_hs400 = false;
--		renesas_sdhi_set_clock(host, host->clk_cache);
--	} else if (priv->scc_ctl) {
--		renesas_sdhi_scc_reset(host, priv);
-+	if (!preserve) {
-+		if (priv->rstc) {
-+			reset_control_reset(priv->rstc);
-+			/* Unknown why but without polling reset status, it will hang */
-+			read_poll_timeout(reset_control_status, ret, ret == 0, 1, 100,
-+					  false, priv->rstc);
-+			/* At least SDHI_VER_GEN2_SDR50 needs manual release of reset */
-+			sd_ctrl_write16(host, CTL_RESET_SD, 0x0001);
-+			priv->needs_adjust_hs400 = false;
-+			renesas_sdhi_set_clock(host, host->clk_cache);
-+		} else if (priv->scc_ctl) {
-+			renesas_sdhi_scc_reset(host, priv);
-+		}
+ 	if (chan->cyclic) {
+ 		desc = vd_to_axi_desc(vd);
+@@ -1045,6 +1050,7 @@ static void axi_chan_block_xfer_complete(struct axi_dma_chan *chan)
+ 		axi_chan_start_first_queued(chan);
  	}
  
- 	if (sd_ctrl_read16(host, CTL_VERSION) >= SDHI_VER_GEN3_SD) {
-diff --git a/drivers/mmc/host/tmio_mmc.c b/drivers/mmc/host/tmio_mmc.c
-index b55a29c53d9c..53a2ad9a24b8 100644
---- a/drivers/mmc/host/tmio_mmc.c
-+++ b/drivers/mmc/host/tmio_mmc.c
-@@ -75,7 +75,7 @@ static void tmio_mmc_set_clock(struct tmio_mmc_host *host,
- 	tmio_mmc_clk_start(host);
++out:
+ 	spin_unlock_irqrestore(&chan->vc.lock, flags);
  }
  
--static void tmio_mmc_reset(struct tmio_mmc_host *host)
-+static void tmio_mmc_reset(struct tmio_mmc_host *host, bool preserve)
- {
- 	sd_ctrl_write16(host, CTL_RESET_SDIO, 0x0000);
- 	usleep_range(10000, 11000);
-diff --git a/drivers/mmc/host/tmio_mmc.h b/drivers/mmc/host/tmio_mmc.h
-index f936aad945ce..da63193dd45b 100644
---- a/drivers/mmc/host/tmio_mmc.h
-+++ b/drivers/mmc/host/tmio_mmc.h
-@@ -42,6 +42,7 @@
- #define CTL_DMA_ENABLE 0xd8
- #define CTL_RESET_SD 0xe0
- #define CTL_VERSION 0xe2
-+#define CTL_SDIF_MODE 0xe6 /* only known on R-Car 2+ */
- 
- /* Definitions for values the CTL_STOP_INTERNAL_ACTION register can take */
- #define TMIO_STOP_STP		BIT(0)
-@@ -98,6 +99,9 @@
- /* Definitions for values the CTL_DMA_ENABLE register can take */
- #define DMA_ENABLE_DMASDRW	BIT(1)
- 
-+/* Definitions for values the CTL_SDIF_MODE register can take */
-+#define SDIF_MODE_HS400		BIT(0) /* only known on R-Car 2+ */
-+
- /* Define some IRQ masks */
- /* This is the mask used at reset by the chip */
- #define TMIO_MASK_ALL           0x837f031d
-@@ -181,7 +185,7 @@ struct tmio_mmc_host {
- 	int (*multi_io_quirk)(struct mmc_card *card,
- 			      unsigned int direction, int blk_size);
- 	int (*write16_hook)(struct tmio_mmc_host *host, int addr);
--	void (*reset)(struct tmio_mmc_host *host);
-+	void (*reset)(struct tmio_mmc_host *host, bool preserve);
- 	bool (*check_retune)(struct tmio_mmc_host *host, struct mmc_request *mrq);
- 	void (*fixup_request)(struct tmio_mmc_host *host, struct mmc_request *mrq);
- 	unsigned int (*get_timeout_cycles)(struct tmio_mmc_host *host);
-diff --git a/drivers/mmc/host/tmio_mmc_core.c b/drivers/mmc/host/tmio_mmc_core.c
-index a5850d83908b..437048bb8027 100644
---- a/drivers/mmc/host/tmio_mmc_core.c
-+++ b/drivers/mmc/host/tmio_mmc_core.c
-@@ -179,8 +179,17 @@ static void tmio_mmc_set_bus_width(struct tmio_mmc_host *host,
- 	sd_ctrl_write16(host, CTL_SD_MEM_CARD_OPT, reg);
- }
- 
--static void tmio_mmc_reset(struct tmio_mmc_host *host)
-+static void tmio_mmc_reset(struct tmio_mmc_host *host, bool preserve)
- {
-+	u16 card_opt, clk_ctrl, sdif_mode;
-+
-+	if (preserve) {
-+		card_opt = sd_ctrl_read16(host, CTL_SD_MEM_CARD_OPT);
-+		clk_ctrl = sd_ctrl_read16(host, CTL_SD_CARD_CLK_CTL);
-+		if (host->pdata->flags & TMIO_MMC_MIN_RCAR2)
-+			sdif_mode = sd_ctrl_read16(host, CTL_SDIF_MODE);
-+	}
-+
- 	/* FIXME - should we set stop clock reg here */
- 	sd_ctrl_write16(host, CTL_RESET_SD, 0x0000);
- 	usleep_range(10000, 11000);
-@@ -190,7 +199,7 @@ static void tmio_mmc_reset(struct tmio_mmc_host *host)
- 	tmio_mmc_abort_dma(host);
- 
- 	if (host->reset)
--		host->reset(host);
-+		host->reset(host, preserve);
- 
- 	sd_ctrl_write32_as_16_and_16(host, CTL_IRQ_MASK, host->sdcard_irq_mask_all);
- 	host->sdcard_irq_mask = host->sdcard_irq_mask_all;
-@@ -206,6 +215,13 @@ static void tmio_mmc_reset(struct tmio_mmc_host *host)
- 		sd_ctrl_write16(host, CTL_TRANSACTION_CTL, 0x0001);
- 	}
- 
-+	if (preserve) {
-+		sd_ctrl_write16(host, CTL_SD_MEM_CARD_OPT, card_opt);
-+		sd_ctrl_write16(host, CTL_SD_CARD_CLK_CTL, clk_ctrl);
-+		if (host->pdata->flags & TMIO_MMC_MIN_RCAR2)
-+			sd_ctrl_write16(host, CTL_SDIF_MODE, sdif_mode);
-+	}
-+
- 	if (host->mmc->card)
- 		mmc_retune_needed(host->mmc);
- }
-@@ -248,7 +264,7 @@ static void tmio_mmc_reset_work(struct work_struct *work)
- 
- 	spin_unlock_irqrestore(&host->lock, flags);
- 
--	tmio_mmc_reset(host);
-+	tmio_mmc_reset(host, true);
- 
- 	/* Ready for new calls */
- 	host->mrq = NULL;
-@@ -961,7 +977,7 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
- 		tmio_mmc_power_off(host);
- 		/* For R-Car Gen2+, we need to reset SDHI specific SCC */
- 		if (host->pdata->flags & TMIO_MMC_MIN_RCAR2)
--			tmio_mmc_reset(host);
-+			tmio_mmc_reset(host, false);
- 
- 		host->set_clock(host, 0);
- 		break;
-@@ -1189,7 +1205,7 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host)
- 		_host->sdcard_irq_mask_all = TMIO_MASK_ALL;
- 
- 	_host->set_clock(_host, 0);
--	tmio_mmc_reset(_host);
-+	tmio_mmc_reset(_host, false);
- 
- 	spin_lock_init(&_host->lock);
- 	mutex_init(&_host->ios_lock);
-@@ -1285,7 +1301,7 @@ int tmio_mmc_host_runtime_resume(struct device *dev)
- 	struct tmio_mmc_host *host = dev_get_drvdata(dev);
- 
- 	tmio_mmc_clk_enable(host);
--	tmio_mmc_reset(host);
-+	tmio_mmc_reset(host, false);
- 
- 	if (host->clk_cache)
- 		host->set_clock(host, host->clk_cache);
 -- 
 2.35.1
 
