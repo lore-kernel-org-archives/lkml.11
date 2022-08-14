@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E2AC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E4FC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241334AbiHNPpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
+        id S241475AbiHNPpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232109AbiHNPnS (ORCPT
+        with ESMTP id S241356AbiHNPne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:43:18 -0400
+        Sun, 14 Aug 2022 11:43:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766111C13D;
-        Sun, 14 Aug 2022 08:33:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B5AFF2;
+        Sun, 14 Aug 2022 08:33:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35B0D60D24;
-        Sun, 14 Aug 2022 15:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50392C433C1;
-        Sun, 14 Aug 2022 15:33:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A3A160D3D;
+        Sun, 14 Aug 2022 15:33:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB81C433B5;
+        Sun, 14 Aug 2022 15:33:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491227;
-        bh=XpSNX1f32Q6TMFam1wAor2QPc0RbNk2vlmC0HXRK4HU=;
+        s=k20201202; t=1660491233;
+        bh=YJQdeheKy3hP9l/pnqJdEujrSGFaTCm5AvS8wFuLOtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nTDA0yUXb67z4KaGnZuOrP2Q2E0+03ffR51ILznesG+ZLq3f4m/MN9zTfZWYB05YR
-         eRtYRkbfugxmP64vfnv2UzGAX1qG/EpjLHVMAtpyu+AUm5u/if1c2iln1dvArmQc+T
-         wqAFWv39ke/nm8q+YSxHsqPyUt4ZMG4Vzjduit++56JlH07oczC6iBORjnNLKePmfJ
-         StynqrNXV80CxghsIITPCZ+xnxPQSCBP0/OX9n6BY6Q0awzmN0XsaZxS3YAxdQ2AVl
-         zee97TRXTmy8voZOwuMbrQvQKUS3z11e1O3Op/Tx2fb2GcnMCrShh6po8d/7Freufe
-         LnbrNfKNNCzpQ==
+        b=F0zcMAhAb5ovM9lbBD1PBa1fSMa2Smx7QrHjX0TLgbZyA2bBulXWaSF7yNEh6V8VA
+         eXtCLnh0gnHmVndyq6tNEa3DIn4C3ihNeIIDbvNjQnP+0ySMsbeJOY3CmanebBEGUz
+         oO0IPC4Pu6sSuQglRVUfdmHrB0HwfzW52mhXKh1t8N5BJWVeNhWMS0l44N54HOoYoG
+         o9Esz1lXx+HGMoMm4DOmfQPmDofoA7gnDxhvn545qYnkVSm9GAcELrQ9le7RF0KmO/
+         E9t4HGXUbZEowmOUvu8Rce3ZlzuNN30yu5FzY7wy4tvsz0LWmJoSuB31JZd6qAgVPU
+         G/OXYHmNOQGCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oded Gabbay <ogabbay@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        gregkh@linuxfoundation.org, osharabi@habana.ai, obitton@habana.ai,
-        ttayar@habana.ai, ynudelman@habana.ai, dliberman@habana.ai,
-        fkassabri@habana.ai, dhirschfeld@habana.ai
-Subject: [PATCH AUTOSEL 5.15 26/46] habanalabs/gaudi: mask constant value before cast
-Date:   Sun, 14 Aug 2022 11:32:27 -0400
-Message-Id: <20220814153247.2378312-26-sashal@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Henning Schild <henning.schild@siemens.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lee Jones <lee@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        andy@kernel.org, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 28/46] pinctrl: intel: Check against matching data instead of ACPI companion
+Date:   Sun, 14 Aug 2022 11:32:29 -0400
+Message-Id: <20220814153247.2378312-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
@@ -52,47 +55,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oded Gabbay <ogabbay@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit e3f49437a2e0221a387ecd192d742ae1434e1e3a ]
+[ Upstream commit c551bd81d198bf1dcd4398d5454acdc0309dbe77 ]
 
-This fixes a sparse warning of
-"cast truncates bits from constant value"
+In some cases we may get a platform device that has ACPI companion
+which is different to the pin control described in the ACPI tables.
+This is primarily happens when device is instantiated by board file.
 
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+In order to allow this device being enumerated, refactor
+intel_pinctrl_get_soc_data() to check the matching data instead of
+ACPI companion.
+
+Reported-by: Henning Schild <henning.schild@siemens.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Henning Schild <henning.schild@siemens.com>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Lee Jones <lee@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pinctrl/intel/pinctrl-intel.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 801acab048eb..8132200dca67 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -3318,19 +3318,19 @@ static void gaudi_init_nic_qman(struct hl_device *hdev, u32 nic_offset,
- 	u32 nic_qm_err_cfg, irq_handler_offset;
- 	u32 q_off;
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
+index 826d494f3cc6..48f55991ae8c 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -1626,16 +1626,14 @@ EXPORT_SYMBOL_GPL(intel_pinctrl_probe_by_uid);
  
--	mtr_base_en_lo = lower_32_bits(CFG_BASE +
-+	mtr_base_en_lo = lower_32_bits((CFG_BASE & U32_MAX) +
- 			mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
- 	mtr_base_en_hi = upper_32_bits(CFG_BASE +
- 				mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
--	so_base_en_lo = lower_32_bits(CFG_BASE +
-+	so_base_en_lo = lower_32_bits((CFG_BASE & U32_MAX) +
- 				mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_SOB_OBJ_0);
- 	so_base_en_hi = upper_32_bits(CFG_BASE +
- 				mmSYNC_MNGR_E_N_SYNC_MNGR_OBJS_SOB_OBJ_0);
--	mtr_base_ws_lo = lower_32_bits(CFG_BASE +
-+	mtr_base_ws_lo = lower_32_bits((CFG_BASE & U32_MAX) +
- 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
- 	mtr_base_ws_hi = upper_32_bits(CFG_BASE +
- 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_MON_PAY_ADDRL_0);
--	so_base_ws_lo = lower_32_bits(CFG_BASE +
-+	so_base_ws_lo = lower_32_bits((CFG_BASE & U32_MAX) +
- 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_SOB_OBJ_0);
- 	so_base_ws_hi = upper_32_bits(CFG_BASE +
- 				mmSYNC_MNGR_W_S_SYNC_MNGR_OBJS_SOB_OBJ_0);
+ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_device *pdev)
+ {
++	const struct intel_pinctrl_soc_data * const *table;
+ 	const struct intel_pinctrl_soc_data *data = NULL;
+-	const struct intel_pinctrl_soc_data **table;
+-	struct acpi_device *adev;
+-	unsigned int i;
+ 
+-	adev = ACPI_COMPANION(&pdev->dev);
+-	if (adev) {
+-		const void *match = device_get_match_data(&pdev->dev);
++	table = device_get_match_data(&pdev->dev);
++	if (table) {
++		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
++		unsigned int i;
+ 
+-		table = (const struct intel_pinctrl_soc_data **)match;
+ 		for (i = 0; table[i]; i++) {
+ 			if (!strcmp(adev->pnp.unique_id, table[i]->uid)) {
+ 				data = table[i];
+@@ -1649,7 +1647,7 @@ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_
+ 		if (!id)
+ 			return ERR_PTR(-ENODEV);
+ 
+-		table = (const struct intel_pinctrl_soc_data **)id->driver_data;
++		table = (const struct intel_pinctrl_soc_data * const *)id->driver_data;
+ 		data = table[pdev->id];
+ 	}
+ 
 -- 
 2.35.1
 
