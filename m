@@ -2,105 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E15C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 21:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB42C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 21:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240759AbiHNVWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 17:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
+        id S240376AbiHNV0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 17:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240458AbiHNVV4 (ORCPT
+        with ESMTP id S236100AbiHNV0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 17:21:56 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69428B7C7
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 14:20:59 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660512058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C2n4uHutgtmzVoIjtyB1e31ZEUf1XWHBQLH2DJH4COc=;
-        b=oUsCUNLrg75SzozUUtmTz93BjytmJvASLkDZ53VltoxIarYqoczvKeojchgKImZF5/GSeK
-        XPJtSDuGfmIxOTuoTAuIeq4/8ZM8t0VzX9cAfFvCp2xWY3Ak8Fl/3/usI7hdgsAfgmtrMw
-        BFWBbtCxfAhtPgdQU5L1z5b24/qa+J4=
-From:   Kent Overstreet <kent.overstreet@linux.dev>
-To:     akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 21/32] Input/joystick/analog: Convert from seq_buf -> printbuf
-Date:   Sun, 14 Aug 2022 17:20:00 -0400
-Message-Id: <20220814212011.1727798-22-kent.overstreet@linux.dev>
-In-Reply-To: <20220814212011.1727798-1-kent.overstreet@linux.dev>
-References: <20220814212011.1727798-1-kent.overstreet@linux.dev>
+        Sun, 14 Aug 2022 17:26:20 -0400
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E349E4F;
+        Sun, 14 Aug 2022 14:25:23 -0700 (PDT)
+Received: by mail-pl1-f178.google.com with SMTP id o3so4950552ple.5;
+        Sun, 14 Aug 2022 14:25:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Qo7JqMyBl98Dfi1GLWq2+D40THRpPwUbZg2FaTyray4=;
+        b=p0vQAsG3/dy/JTUKA7ZNpWVmPrDj+J4Oy5ecuw/4lKSYdN1oBl3aH938q9KQQoHidr
+         yt6rIafB7uMuk+hn/5F+6NQ0ePQz1+HMVh0DkG/8RFWrln+wZiCWUK3LkFidFC+PXiJy
+         qk8vedt9FX4l2nq+Tpwz11tlabmIJZCG3m4L+QxZHlFJPOVrvi47cTSVYnAxTmSTeOGZ
+         bFA5VD8kU7dcDxfnJKrXOL77LW179iHYfYxDcOalMhR+prOIhGR0KsH5viHJXtI4bnFE
+         hHXTUlrM7HlZeOHFWUu748R8YdqRn6QdIvkw5Fg1sFpfqKnkfxtdSFYHjWqMtNP4gr4Q
+         AOmw==
+X-Gm-Message-State: ACgBeo2ik6SnWuOBdH7MwEZ6TCxmIXna0miJhRL8dMfVJJIy6H7lgeoE
+        67FPMp/5yWou+E+wTjlmtJZzlZlzmg==
+X-Google-Smtp-Source: AA6agR6CPtGSg5LrG2ATwGoXMf1RpAO/eKlw9Rdknyh9z164drqoQsdZs5vV+g2HhnZkK+fhVMn1Kw==
+X-Received: by 2002:a17:90a:8808:b0:1f7:4bd3:3760 with SMTP id s8-20020a17090a880800b001f74bd33760mr15279401pjn.170.1660512322794;
+        Sun, 14 Aug 2022 14:25:22 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:282b:ad51:2025:80dc:3a15:a2de])
+        by smtp.gmail.com with ESMTPSA id a6-20020a170902710600b0016ed20eacd2sm5730887pll.150.2022.08.14.14.25.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 14:25:22 -0700 (PDT)
+Received: (nullmailer pid 736117 invoked by uid 1000);
+        Sun, 14 Aug 2022 21:25:17 -0000
+Date:   Sun, 14 Aug 2022 15:25:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Del Regno <angelogioacchino.delregno@somainline.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: display/msm: dpu-msm8998: add missing
+ DPU opp-table
+Message-ID: <20220814212517.GA716652-robh@kernel.org>
+References: <20220811084331.83715-1-krzysztof.kozlowski@linaro.org>
+ <20220811084331.83715-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220811084331.83715-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet <kent.overstreet@gmail.com>
+On Thu, Aug 11, 2022 at 11:43:27AM +0300, Krzysztof Kozlowski wrote:
+> The 'display-controller' child (DPU) of Display SubSystem (MDSS) uses
+> opp-table, so reference it which allows restricting DPU schema to fixed
+> list of properties.
+> 
+> Fixes: 6e986a8f1cf1 ("dt-bindings: display: msm: Add binding for msm8998 dpu")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Cc: Rob Clark <robdclark@gmail.com>
+> Cc: Sean Paul <sean@poorly.run>
+> Cc: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml b/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml
+> index 2df64afb76e6..7ed438bc7dce 100644
+> --- a/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml
+> @@ -62,6 +62,7 @@ patternProperties:
+>    "^display-controller@[0-9a-f]+$":
+>      type: object
+>      description: Node containing the properties of DPU.
+> +    additionalProperties: false
+>  
+>      properties:
+>        compatible:
+> @@ -105,6 +106,8 @@ patternProperties:
+>          maxItems: 1
+>  
+>        operating-points-v2: true
+> +      opp-table: true
 
-seq_buf is being deprecated, this converts to printbuf.
+type: object
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
----
- drivers/input/joystick/analog.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
+Otherwise, 'opp-table;' would be accepted.
 
-diff --git a/drivers/input/joystick/analog.c b/drivers/input/joystick/analog.c
-index 3088c5b829..a8c5f90e82 100644
---- a/drivers/input/joystick/analog.c
-+++ b/drivers/input/joystick/analog.c
-@@ -19,7 +19,7 @@
- #include <linux/input.h>
- #include <linux/gameport.h>
- #include <linux/jiffies.h>
--#include <linux/seq_buf.h>
-+#include <linux/printbuf.h>
- #include <linux/timex.h>
- #include <linux/timekeeping.h>
- 
-@@ -339,24 +339,21 @@ static void analog_calibrate_timer(struct analog_port *port)
- 
- static void analog_name(struct analog *analog)
- {
--	struct seq_buf s;
-+	struct printbuf buf = PRINTBUF_EXTERN(analog->name, sizeof(analog->name));
- 
--	seq_buf_init(&s, analog->name, sizeof(analog->name));
--	seq_buf_printf(&s, "Analog %d-axis %d-button",
--		 hweight8(analog->mask & ANALOG_AXES_STD),
--		 hweight8(analog->mask & ANALOG_BTNS_STD) + !!(analog->mask & ANALOG_BTNS_CHF) * 2 +
--		 hweight16(analog->mask & ANALOG_BTNS_GAMEPAD) + !!(analog->mask & ANALOG_HBTN_CHF) * 4);
-+	prt_printf(&buf, "Analog %d-axis %d-button",
-+	       hweight8(analog->mask & ANALOG_AXES_STD),
-+	       hweight8(analog->mask & ANALOG_BTNS_STD) + !!(analog->mask & ANALOG_BTNS_CHF) * 2 +
-+	       hweight16(analog->mask & ANALOG_BTNS_GAMEPAD) + !!(analog->mask & ANALOG_HBTN_CHF) * 4);
- 
- 	if (analog->mask & ANALOG_HATS_ALL)
--		seq_buf_printf(&s, " %d-hat",
--			       hweight16(analog->mask & ANALOG_HATS_ALL));
--
-+		prt_printf(&buf, " %d-hat", hweight16(analog->mask & ANALOG_HATS_ALL));
- 	if (analog->mask & ANALOG_HAT_FCS)
--		seq_buf_printf(&s, " FCS");
-+		prt_printf(&buf, " FCS");
- 	if (analog->mask & ANALOG_ANY_CHF)
--		seq_buf_printf(&s, (analog->mask & ANALOG_SAITEK) ? " Saitek" : " CHF");
-+		prt_printf(&buf, (analog->mask & ANALOG_SAITEK) ? " Saitek" : " CHF");
- 
--	seq_buf_printf(&s, (analog->mask & ANALOG_GAMEPAD) ? " gamepad" : " joystick");
-+	prt_printf(&buf, (analog->mask & ANALOG_GAMEPAD) ? " gamepad" : " joystick");
- }
- 
- /*
--- 
-2.36.1
-
+> +
+>        ports:
+>          $ref: /schemas/graph.yaml#/properties/ports
+>          description: |
+> -- 
+> 2.34.1
+> 
+> 
