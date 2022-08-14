@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 349CFC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 213EDC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240798AbiHNPer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        id S240803AbiHNPew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240732AbiHNPeC (ORCPT
+        with ESMTP id S240745AbiHNPeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:34:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA36CE25;
-        Sun, 14 Aug 2022 08:30:34 -0700 (PDT)
+        Sun, 14 Aug 2022 11:34:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED0ABE23;
+        Sun, 14 Aug 2022 08:30:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5214160C1D;
-        Sun, 14 Aug 2022 15:30:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2D7C433D7;
-        Sun, 14 Aug 2022 15:30:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 745A8B80B7E;
+        Sun, 14 Aug 2022 15:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CF5C433C1;
+        Sun, 14 Aug 2022 15:30:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491032;
-        bh=9S61Z+VGznUtOHxI/LjEz0Ut1LHsJYtenXwGluVJaXs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1ZxAlZunwiZm07mAHyvRJCyUs6+EfbEwoRsgxMQrorl/NHaUquY3HramaGMtj1Uq
-         jxuWatfnWxkM0im1J/+8p2ER59DhhlCWF7QJIuSDwtT3LEO35/mvgeHGW4KXgsArb0
-         wD4Ir3u8UTiAinH45p+It2P+R76Le9of+fJBCK4cTP/bWsaO3BjGivUBAC3YHZJkmi
-         aUWos/hz05s1ZQniuK/AdndCQ5tSoOXE7d2Ia79eKI6gpyg1szkSiHJX+1xLd4OEym
-         EStI1P/ovO6rx9GvelS97JdMmeVmoK2D54OT2IalZUMGpLt/Y44pG+mzX29QGZzmL7
-         4llrYunMiD2Sw==
+        s=k20201202; t=1660491029;
+        bh=ebo6kPnfZ6o+Q1fsjAA8jeQY9HT8MUugEfOa0/b02xE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qqeMILVRzrnyMCODpMc+97MO7Z5sHBTFaFS4Qc/tuXaxJ8xGwWIMf1MsrydmVrCk0
+         fYEP3/jK8YnAYh2ZhlQtd/bkgRkIhi94W3tHQJk0MHeljeZbaPJ8+AZh3/pNyNmuCN
+         Wi+DEHy441MrNcJbAmpcc49bTyhsgLQqwJ6P9oEJw1xEHAqxJoDkXYMszO2pCXuHBx
+         v8gA0Zj2Zokn3gsG9kDuCLzitC+73JuDmKvg5DrrVIGx3semOPUe1q4o9OFFplO9VB
+         7j4N4SwHCztDnRBwuli7l+Aq6hZkPLwWJ8YsL6ZUZSb89dMN8MgtHR5IG07hqJavV8
+         5E+ZcvaJQCS+w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tzung-Bi Shih <tzungbi@kernel.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, bleung@chromium.org,
-        chrome-platform@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.18 04/56] platform/chrome: cros_ec_proto: don't show MKBP version if unsupported
-Date:   Sun, 14 Aug 2022 11:29:34 -0400
-Message-Id: <20220814153026.2377377-4-sashal@kernel.org>
+Cc:     Gil Fine <gil.fine@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, andreas.noever@gmail.com,
+        michael.jamet@intel.com, YehezkelShB@gmail.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 01/56] thunderbolt: Change downstream router's TMU rate in both TMU uni/bidir mode
+Date:   Sun, 14 Aug 2022 11:29:31 -0400
+Message-Id: <20220814153026.2377377-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
-References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,45 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@kernel.org>
+From: Gil Fine <gil.fine@intel.com>
 
-[ Upstream commit b36f0643ff14a2fb281b105418e4e73c9d7c11d0 ]
+[ Upstream commit 5fd6b9a5cbe63fea4c490fee8af34144a139a266 ]
 
-It wrongly showed the following message when it doesn't support MKBP:
-"MKBP support version 4294967295".
+In case of uni-directional time sync, TMU handshake is
+initiated by upstream router. In case of bi-directional
+time sync, TMU handshake is initiated by downstream router.
+In order to handle correctly the case of uni-directional mode,
+we avoid changing the upstream router's rate to off,
+because it might have another downstream router plugged that is set to
+uni-directional mode (and we don't want to change its mode).
+Instead, we always change downstream router's rate.
 
-Fix it.
-
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-Link: https://lore.kernel.org/r/20220609084957.3684698-14-tzungbi@kernel.org
+Signed-off-by: Gil Fine <gil.fine@intel.com>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/thunderbolt/tmu.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index ac1419881ff3..c8353f96a7f3 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -507,13 +507,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- 	ret = cros_ec_get_host_command_version_mask(ec_dev,
- 						    EC_CMD_GET_NEXT_EVENT,
- 						    &ver_mask);
--	if (ret < 0 || ver_mask == 0)
-+	if (ret < 0 || ver_mask == 0) {
- 		ec_dev->mkbp_event_supported = 0;
--	else
-+	} else {
- 		ec_dev->mkbp_event_supported = fls(ver_mask);
+diff --git a/drivers/thunderbolt/tmu.c b/drivers/thunderbolt/tmu.c
+index e4a07a26f693..93ba1d00335b 100644
+--- a/drivers/thunderbolt/tmu.c
++++ b/drivers/thunderbolt/tmu.c
+@@ -359,13 +359,14 @@ int tb_switch_tmu_disable(struct tb_switch *sw)
+ 		 * In case of uni-directional time sync, TMU handshake is
+ 		 * initiated by upstream router. In case of bi-directional
+ 		 * time sync, TMU handshake is initiated by downstream router.
+-		 * Therefore, we change the rate to off in the respective
+-		 * router.
++		 * We change downstream router's rate to off for both uni/bidir
++		 * cases although it is needed only for the bi-directional mode.
++		 * We avoid changing upstream router's mode since it might
++		 * have another downstream router plugged, that is set to
++		 * uni-directional mode and we don't want to change it's TMU
++		 * mode.
+ 		 */
+-		if (unidirectional)
+-			tb_switch_tmu_rate_write(parent, TB_SWITCH_TMU_RATE_OFF);
+-		else
+-			tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
++		tb_switch_tmu_rate_write(sw, TB_SWITCH_TMU_RATE_OFF);
  
--	dev_dbg(ec_dev->dev, "MKBP support version %u\n",
--		ec_dev->mkbp_event_supported - 1);
-+		dev_dbg(ec_dev->dev, "MKBP support version %u\n", ec_dev->mkbp_event_supported - 1);
-+	}
- 
- 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
- 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+ 		tb_port_tmu_time_sync_disable(up);
+ 		ret = tb_port_tmu_time_sync_disable(down);
 -- 
 2.35.1
 
