@@ -2,53 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F723C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F5FC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240743AbiHNPeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        id S240700AbiHNPe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiHNPda (ORCPT
+        with ESMTP id S231671AbiHNPdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:33:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F092BC6;
-        Sun, 14 Aug 2022 08:30:20 -0700 (PDT)
+        Sun, 14 Aug 2022 11:33:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782942DDD;
+        Sun, 14 Aug 2022 08:30:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 377A8B80B4D;
-        Sun, 14 Aug 2022 15:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82022C4314B;
-        Sun, 14 Aug 2022 15:30:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CF4960BEC;
+        Sun, 14 Aug 2022 15:30:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90599C433B5;
+        Sun, 14 Aug 2022 15:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491015;
-        bh=dA6ZEuwj7DPqjItnEoT4QchiUOKqV/ohRsxC0LHDOW0=;
+        s=k20201202; t=1660491030;
+        bh=opRpwBXuIqKfJEKdV/gdL/Q2qqUENx7dxO38eYQHJZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JXgTDBOABiffiVpBOZfuKphny11/sBUdu9XH6rSx2Le0+ZVvPZA6uVdOqfEH6zf70
-         XT+PwuWuP6bVRzEJ2CfMTdAlTQAdh022fPxZwykUm9Rfon5nO7znLU6DQkYlWNO0OF
-         +XNhlk0SHXW32KTur71FLx2az4mDKGfsqQyZCb+ZNkezdnfbeaIYZq7fDIVptgw/VE
-         uwFhLg6X85kd9nPZcdsjSchYtw5p5/iUTDc/4XQRim15GqltX2tTk9F3sWI/ZpWeCR
-         +JZgXJlG+dilyeW6aKnSGzf3vSDBNRud6Rv76FTJCpbkQ9wQZdiB+xXEd047ONjPJF
-         ymIDFnjapy3Qw==
+        b=YdtKb7w02pilIBrprKtdd2D41OGkNwWu0qjhgxoDeqrxmNWFLNN1Ss7HMZPlwc1Fh
+         KAN7cMpYjQC+Y6WuJ0T+/xuqSgVQI8EY7QSwHkRCgjCctpdtND8sCYrKFMWAc8txbq
+         sEahmoEAb5ip+sgLy3HSMc+OiZnuM9G86hy1IYB2dPr9NYg3ZOSIKDj6HoFLCGHKju
+         PlAfzoZi+JtZqT2q+JZw8rqmItw7cI0yKTXqTQ5Mx/noXpEvSyWJHS+TNPoRaWkUbk
+         wTyP4Q2S8pVbIrzY7eDTpXDfZh+sUujkSHiT3vATcxID//ZGRbX++qEGdeGx3p2uad
+         lAdzHrpBx5iqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        kishon@ti.com, linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 57/64] phy: samsung: phy-exynos-pcie: sanitize init/power_on callbacks
-Date:   Sun, 14 Aug 2022 11:24:30 -0400
-Message-Id: <20220814152437.2374207-57-sashal@kernel.org>
+Cc:     Tao Jin <tao-j@outlook.com>, Jiri Kosina <jkosina@suse.cz>,
+        Sasha Levin <sashal@kernel.org>, jikos@kernel.org,
+        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 02/56] HID: multitouch: new device class fix Lenovo X12 trackpad sticky
+Date:   Sun, 14 Aug 2022 11:29:32 -0400
+Message-Id: <20220814153026.2377377-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
-References: <20220814152437.2374207-1-sashal@kernel.org>
+In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
+References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,85 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Tao Jin <tao-j@outlook.com>
 
-[ Upstream commit f2812227bb07e2eaee74253f11cea1576945df31 ]
+[ Upstream commit 54eed5c7b938dc4ef6b14d4ee048bbdafdbce352 ]
 
-The exynos-pcie driver called phy_power_on() before phy_init() for some
-historical reasons. However the generic PHY framework assumes that the
-proper sequence is to call phy_init() first, then phy_power_on(). The
-operations done by both functions should be considered as one action and as
-such they are called by the exynos-pcie driver (without doing anything
-between them). The initialization is just a sequence of register writes,
-which cannot be altered without breaking the hardware operation.
+The trackpad of the given device sends continuous report of pointers
+status as per wxn8 spec. However, the spec did not clarify when the
+fingers are lifted so fast that between the interval of two report
+frames fingers on pad reduced from >=2 to 0. The second last report
+contains >=2 fingers with tip state 1 and the last report contains only
+1 finger with tip state 0. Although this can happen unfrequently, a
+  quick fix will be improve the consistency to 100%. A quick fix is to
+disable MT_QUIRK_ALWAYS_VALID and enable MT_QUIRK_NOT_SEEN_MEANS_UP.
 
-To match the generic PHY framework requirement, simply move all register
-writes to the phy_init()/phy_exit() and drop power_on()/power_off()
-callbacks. This way the driver will also work with the old (incorrect)
-PHY initialization call sequence.
+Test for hid-tools is added in [1]
 
-Link: https://lore.kernel.org/r/20220628220409.26545-1-m.szyprowski@samsung.com
-Reported-by: Bjorn Helgaas <helgaas@kernel.org>
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Chanho Park <chanho61.park@samsung.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-By: Vinod Koul <vkoul@kernel.org>
+In addition to this, I2C device 04CA:00B1 may also need similar class
+but with MT_QUIRK_FORCE_MULTI_INPUT disabled (but it does not harm to
+ enable it on non-multi-input device either). The respective owner has
+been notified and a patch may coming soon after test.
+
+[1]: https://gitlab.freedesktop.org/libevdev/hid-tools/-/merge_requests/130
+
+Signed-off-by: Tao Jin <tao-j@outlook.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/samsung/phy-exynos-pcie.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+ drivers/hid/hid-multitouch.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/samsung/phy-exynos-pcie.c b/drivers/phy/samsung/phy-exynos-pcie.c
-index 578cfe07d07a..53c9230c2907 100644
---- a/drivers/phy/samsung/phy-exynos-pcie.c
-+++ b/drivers/phy/samsung/phy-exynos-pcie.c
-@@ -51,6 +51,13 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
- {
- 	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
+diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
+index 6bb3890b0f2c..2e72922e36f5 100644
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -194,6 +194,7 @@ static void mt_post_parse(struct mt_device *td, struct mt_application *app);
+ #define MT_CLS_WIN_8_FORCE_MULTI_INPUT		0x0015
+ #define MT_CLS_WIN_8_DISABLE_WAKEUP		0x0016
+ #define MT_CLS_WIN_8_NO_STICKY_FINGERS		0x0017
++#define MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU	0x0018
  
-+	regmap_update_bits(ep->pmureg, EXYNOS5433_PMU_PCIE_PHY_OFFSET,
-+			   BIT(0), 1);
-+	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_GLOBAL_RESET,
-+			   PCIE_APP_REQ_EXIT_L1_MODE, 0);
-+	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_L1SUB_CM_CON,
-+			   PCIE_REFCLK_GATING_EN, 0);
-+
- 	regmap_update_bits(ep->fsysreg,	PCIE_EXYNOS5433_PHY_COMMON_RESET,
- 			   PCIE_PHY_RESET, 1);
- 	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_MAC_RESET,
-@@ -109,20 +116,7 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
- 	return 0;
- }
+ /* vendor specific classes */
+ #define MT_CLS_3M				0x0101
+@@ -286,6 +287,15 @@ static const struct mt_class mt_classes[] = {
+ 			MT_QUIRK_WIN8_PTP_BUTTONS |
+ 			MT_QUIRK_FORCE_MULTI_INPUT,
+ 		.export_all_inputs = true },
++	{ .name = MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU,
++		.quirks = MT_QUIRK_IGNORE_DUPLICATES |
++			MT_QUIRK_HOVERING |
++			MT_QUIRK_CONTACT_CNT_ACCURATE |
++			MT_QUIRK_STICKY_FINGERS |
++			MT_QUIRK_WIN8_PTP_BUTTONS |
++			MT_QUIRK_FORCE_MULTI_INPUT |
++			MT_QUIRK_NOT_SEEN_MEANS_UP,
++		.export_all_inputs = true },
+ 	{ .name = MT_CLS_WIN_8_DISABLE_WAKEUP,
+ 		.quirks = MT_QUIRK_ALWAYS_VALID |
+ 			MT_QUIRK_IGNORE_DUPLICATES |
+@@ -783,6 +793,7 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
+ 		case HID_DG_CONFIDENCE:
+ 			if ((cls->name == MT_CLS_WIN_8 ||
+ 			     cls->name == MT_CLS_WIN_8_FORCE_MULTI_INPUT ||
++			     cls->name == MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU ||
+ 			     cls->name == MT_CLS_WIN_8_DISABLE_WAKEUP) &&
+ 				(field->application == HID_DG_TOUCHPAD ||
+ 				 field->application == HID_DG_TOUCHSCREEN))
+@@ -2035,7 +2046,7 @@ static const struct hid_device_id mt_devices[] = {
+ 			   USB_DEVICE_ID_LENOVO_X1_TAB3) },
  
--static int exynos5433_pcie_phy_power_on(struct phy *phy)
--{
--	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
--
--	regmap_update_bits(ep->pmureg, EXYNOS5433_PMU_PCIE_PHY_OFFSET,
--			   BIT(0), 1);
--	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_GLOBAL_RESET,
--			   PCIE_APP_REQ_EXIT_L1_MODE, 0);
--	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_L1SUB_CM_CON,
--			   PCIE_REFCLK_GATING_EN, 0);
--	return 0;
--}
--
--static int exynos5433_pcie_phy_power_off(struct phy *phy)
-+static int exynos5433_pcie_phy_exit(struct phy *phy)
- {
- 	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
- 
-@@ -135,8 +129,7 @@ static int exynos5433_pcie_phy_power_off(struct phy *phy)
- 
- static const struct phy_ops exynos5433_phy_ops = {
- 	.init		= exynos5433_pcie_phy_init,
--	.power_on	= exynos5433_pcie_phy_power_on,
--	.power_off	= exynos5433_pcie_phy_power_off,
-+	.exit		= exynos5433_pcie_phy_exit,
- 	.owner		= THIS_MODULE,
- };
- 
+ 	/* Lenovo X12 TAB Gen 1 */
+-	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT,
++	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU,
+ 		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8,
+ 			   USB_VENDOR_ID_LENOVO,
+ 			   USB_DEVICE_ID_LENOVO_X12_TAB) },
 -- 
 2.35.1
 
