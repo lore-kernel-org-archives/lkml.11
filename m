@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A45DEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8651DC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240363AbiHNP3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38492 "EHLO
+        id S240389AbiHNP3N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239944AbiHNP23 (ORCPT
+        with ESMTP id S239891AbiHNP2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:28:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30CBB1CA;
-        Sun, 14 Aug 2022 08:28:25 -0700 (PDT)
+        Sun, 14 Aug 2022 11:28:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5A9B1CB;
+        Sun, 14 Aug 2022 08:28:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2CC960C0B;
-        Sun, 14 Aug 2022 15:28:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13163C433C1;
-        Sun, 14 Aug 2022 15:28:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A90D1B80B27;
+        Sun, 14 Aug 2022 15:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FAF2C433D7;
+        Sun, 14 Aug 2022 15:28:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660490904;
-        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
+        s=k20201202; t=1660490913;
+        bh=a4/LmbqCcfw4a/dBf+i02Qljn4gGGMGLZNQ7He7NoVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qcjjkT8a2k5GNJqgfNzG7IJi66sGYlyF60wMBeEvh+IEICM+D/ghPMiZfC7ZcAv80
-         dEOdjMU4A9XqjxkH/tgRaUlzlmD4baUPvJPK65OR95vkbpA8Kut89nnanI5GVKM41t
-         N0g47N/n7+55Jf8gjTrS0cAlAuh7LcyN4ioOtiNZjhxMezXuICGSOo+ADsqVQMmea9
-         fJYL+TAoU86fT9ZeYWOSN/Ax5eP1uBvLMunT/Bp0eIlP6pOSevXIIX0LCd3MbA6f16
-         l8/FKcLUsL98sxzCYo7r4fIDC04436GOMTGhnf8FUWlKwhUCEiQBnDpT+ZRi7qyitS
-         PMDSCG0KmgMOA==
+        b=tWp9wQyEuxWVxFCNGDYVRYbbPEOniSDzHwVKgsl0Ym9sbEJgwzEiaA53/xqYWws6l
+         MBXXnr16QSi4KNOrn+ugD7UzqqITFGRq2OoG7BUcg6HBthDY8Ec4sc8gGXaOjlKYD+
+         e+FjO3RutjLQq3Nm3UQyH3Ad1IEm5ZmzrFa/rFF4rF4rYPw5bk0ahDtq8vHXTYWddI
+         viMCbmTSGDTr4CKP8CLxyd5ya35igj5QCbi0KJsHodYT4cRc7PPnuE2+L+H2KaKvDv
+         u+LrQChXSJLq3d/BLzanfufj1B+ftQAMkK6jcorwYigMQkFBrqrvEcY7qXvn511hgL
+         MS+5RhmRyrYcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, khilman@baylibre.com,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
+Cc:     Po-Wen Kao <powen.kao@mediatek.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        matthias.bgg@gmail.com, linux-scsi@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 16/64] drm/meson: Fix overflow implicit truncation warnings
-Date:   Sun, 14 Aug 2022 11:23:49 -0400
-Message-Id: <20220814152437.2374207-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 18/64] scsi: ufs: ufs-mediatek: Fix the timing of configuring device regulators
+Date:   Sun, 14 Aug 2022 11:23:51 -0400
+Message-Id: <20220814152437.2374207-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,67 +55,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Po-Wen Kao <powen.kao@mediatek.com>
 
-[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
+[ Upstream commit 3fd23b8dfb54d9b74eba6dfdd3225db3ac116785 ]
 
-Fix -Woverflow warnings for drm/meson driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+Currently the LPM configurations of device regulators may not work since
+VCC is not disabled yet while ufs_mtk_vreg_set_lpm() is executed.
 
-drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
-drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
- #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
-                                                ^
-drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
-   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
-                  ^~~~~~~~~~~~~~~~~~~~~
+Fix this by changing the timing of invoking ufs_mtk_vreg_set_lpm().
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220616053725.5681-5-stanley.chu@mediatek.com
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Po-Wen Kao <powen.kao@mediatek.com>
+Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/ufs/host/ufs-mediatek.c | 58 ++++++++++++++++++++++++++++++---
+ 1 file changed, 53 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
-index 259f3e6bec90..bb7e109534de 100644
---- a/drivers/gpu/drm/meson/meson_viu.c
-+++ b/drivers/gpu/drm/meson/meson_viu.c
-@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
- 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
+diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
+index beabc3ccd30b..8b9daa281cc4 100644
+--- a/drivers/ufs/host/ufs-mediatek.c
++++ b/drivers/ufs/host/ufs-mediatek.c
+@@ -1026,7 +1026,6 @@ static int ufs_mtk_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op,
+ 		 * ufshcd_suspend() re-enabling regulators while vreg is still
+ 		 * in low-power mode.
+ 		 */
+-		ufs_mtk_vreg_set_lpm(hba, true);
+ 		err = ufs_mtk_mphy_power_on(hba, false);
+ 		if (err)
+ 			goto fail;
+@@ -1050,12 +1049,13 @@ static int ufs_mtk_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+ {
+ 	int err;
  
- 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
--		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
--			       VIU_OSD_BLEND_REORDER(1, 0) |
--			       VIU_OSD_BLEND_REORDER(2, 0) |
--			       VIU_OSD_BLEND_REORDER(3, 0) |
--			       VIU_OSD_BLEND_DIN_EN(1) |
--			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
--			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
--			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
--			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
--			       VIU_OSD_BLEND_HOLD_LINES(4),
--			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
-+		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
-+			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
-+			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
-+			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
-+			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
-+			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
-+			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
-+			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
-+			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
-+		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
++	if (hba->ufshcd_state != UFSHCD_STATE_OPERATIONAL)
++		ufs_mtk_vreg_set_lpm(hba, false);
++
+ 	err = ufs_mtk_mphy_power_on(hba, true);
+ 	if (err)
+ 		goto fail;
  
- 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
- 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
+-	ufs_mtk_vreg_set_lpm(hba, false);
+-
+ 	if (ufshcd_is_link_hibern8(hba)) {
+ 		err = ufs_mtk_link_set_hpm(hba);
+ 		if (err)
+@@ -1220,9 +1220,57 @@ static int ufs_mtk_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++int ufs_mtk_system_suspend(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++	int ret;
++
++	ret = ufshcd_system_suspend(dev);
++	if (ret)
++		return ret;
++
++	ufs_mtk_vreg_set_lpm(hba, true);
++
++	return 0;
++}
++
++int ufs_mtk_system_resume(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	ufs_mtk_vreg_set_lpm(hba, false);
++
++	return ufshcd_system_resume(dev);
++}
++
++int ufs_mtk_runtime_suspend(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++	int ret = 0;
++
++	ret = ufshcd_runtime_suspend(dev);
++	if (ret)
++		return ret;
++
++	ufs_mtk_vreg_set_lpm(hba, true);
++
++	return 0;
++}
++
++int ufs_mtk_runtime_resume(struct device *dev)
++{
++	struct ufs_hba *hba = dev_get_drvdata(dev);
++
++	ufs_mtk_vreg_set_lpm(hba, false);
++
++	return ufshcd_runtime_resume(dev);
++}
++
+ static const struct dev_pm_ops ufs_mtk_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(ufshcd_system_suspend, ufshcd_system_resume)
+-	SET_RUNTIME_PM_OPS(ufshcd_runtime_suspend, ufshcd_runtime_resume, NULL)
++	SET_SYSTEM_SLEEP_PM_OPS(ufs_mtk_system_suspend,
++				ufs_mtk_system_resume)
++	SET_RUNTIME_PM_OPS(ufs_mtk_runtime_suspend,
++			   ufs_mtk_runtime_resume, NULL)
+ 	.prepare	 = ufshcd_suspend_prepare,
+ 	.complete	 = ufshcd_resume_complete,
+ };
 -- 
 2.35.1
 
