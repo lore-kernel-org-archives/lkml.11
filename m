@@ -2,123 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30414C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2EAC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239735AbiHNONL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34146 "EHLO
+        id S239739AbiHNOQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiHNOM6 (ORCPT
+        with ESMTP id S231268AbiHNOQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:12:58 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342EB9FCC
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:57 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id l22so6348894wrz.7
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Jpi+qYPVkjjgLSftDLRCVgzhzYoBkPjkNBatqeFjYP4=;
-        b=Qq8AUk/9AWVqplZnZsraolgAwvvs+PIe6EeGfq6jN5MM2n6AruvuyymJsCkvpb+OzP
-         DYg/NMqHsO6QTHRAmrKsuXtxegQV5ArT1zwjqST2UY7tF7wobikGXu8YTrZv50Ep0Ae3
-         kQ6O0X7afhbpbhHnOfxIltiwZLRErrqF5lam6sIXJu4xMzzliWzprfPqRkgZB1tMXU1/
-         R7yHX1sH3JLUhkX3H1H84GsxsU9S9kdPrpHmC8xt1v98s+gs4HLrQJ3K/kl6UABKJ4Rr
-         uV7ZKh1Ouv6RetM5zMnnJz7UfMlbuOU52TAUum4YqqIrYAQSjRgz7dY13Phg2BCkc3lq
-         qL4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Jpi+qYPVkjjgLSftDLRCVgzhzYoBkPjkNBatqeFjYP4=;
-        b=Rez9CC9Y8/uu7OKf0B6KsMG6FZ5u5WZWpi17Y0+/7Dy5wlecJKhTsFyTnhsyso5wl8
-         QomGzmz/GEiLGLBmGbyv+zaYxATZV0kpzuQOMtUBL/GrtZoXsQtewvGE/Ma6wph+1dIa
-         t9WHWzut0hJVDk0ES6uoUbBHK8BTIJGrpaOOJPoZ17OUbjoZkHohw+cwaA9Ilev32u6d
-         fyTapFvuaaBasSeC5gU0AkcyoVqjO23Y5tvnug+soNDedBwmNopFuv0JrV6xYheSS67z
-         p9klHbhvyGdwNFs6eUPposXPmScCef6a4wnrrRFO0oS5kFuOtqluvSxgvJFSA1R364Qc
-         rlaw==
-X-Gm-Message-State: ACgBeo2zJyFNyt+OqKqwn4b08k37OSYLUh06Q5yreTndvcUd5KfuWJyr
-        JWgDpRftnE3xzKmpvaBJvY/TUA==
-X-Google-Smtp-Source: AA6agR6FYk+iY85iu6ZNNhqlEqAtS2htyInEPS/oNlnm6Idei+lVhLdGdUcw2QokwFea/pPKDyVQbg==
-X-Received: by 2002:adf:f90e:0:b0:21e:417b:dbd with SMTP id b14-20020adff90e000000b0021e417b0dbdmr6282420wrr.425.1660486375541;
-        Sun, 14 Aug 2022 07:12:55 -0700 (PDT)
-Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id b8-20020adfde08000000b0021db7b0162esm4625419wrm.105.2022.08.14.07.12.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 07:12:55 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Guo Ren <guoren@kernel.org>,
-        Vincent Chen <vincent.chen@sifive.com>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] riscv: traps: add missing prototype
-Date:   Sun, 14 Aug 2022 15:12:38 +0100
-Message-Id: <20220814141237.493457-5-mail@conchuod.ie>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220814141237.493457-1-mail@conchuod.ie>
-References: <20220814141237.493457-1-mail@conchuod.ie>
+        Sun, 14 Aug 2022 10:16:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CADEDEB0;
+        Sun, 14 Aug 2022 07:16:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2556A60010;
+        Sun, 14 Aug 2022 14:16:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C820FC433C1;
+        Sun, 14 Aug 2022 14:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660486611;
+        bh=uWoAq0ATnsOAbG/v53oGm0JhCatO2L0aeQdPfeB4Xq4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iSkd0AHEsGvTF3NAwh5S7pfgNAE0lLcMvw6t0e2OsTxnEJ+izG/hfM9whbO4dOxvZ
+         tXRvMOQBCwFiUUIh6fNxUpl6VA4F9//fEuWOzW8k/bKb3RpgC1wft1QHsVaC+acxUg
+         KJgP8evn/SXnJsWo0uDsvVjkzMe5MeoWayLRIY8JQFvtWn06dm+APxYLo8u7nHVXuE
+         3c1YRsHcOwRHP1ajdDLpigYcJ5aqVnhCnkWJhdG2aOvV5FItYGRe7r6J2ALDfEaUlh
+         ta+gDC9PbF0NNoRzvapJ5Ox7YTdx0T262PsUzBbG4KntrBzMaejBcvsb2SAE+F6Oz2
+         OvVEKZ1XLRFEA==
+Date:   Sun, 14 Aug 2022 15:27:19 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 4/9] iio: adc: mcp3911: use resource-managed version
+ of iio_device_register
+Message-ID: <20220814152719.17597442@jic23-huawei>
+In-Reply-To: <CAHp75VdhdpKasyYrb1tkhL6yjfZwMcbWJYNc9bw8LDr7KLT6jw@mail.gmail.com>
+References: <20220809073648.167821-1-marcus.folkesson@gmail.com>
+        <20220809073648.167821-5-marcus.folkesson@gmail.com>
+        <CAHp75Vc-cd_-+qyd62tcJGdXh917AgZY5VB0ztXR3zwrGoMCRQ@mail.gmail.com>
+        <CAHp75VdhdpKasyYrb1tkhL6yjfZwMcbWJYNc9bw8LDr7KLT6jw@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Tue, 9 Aug 2022 11:40:55 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Sparse complains:
-arch/riscv/kernel/traps.c:213:6: warning: symbol 'shadow_stack' was not declared. Should it be static?
+> On Tue, Aug 9, 2022 at 11:39 AM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> 
+> ...
+> 
+> > You may rather switch to devm_clk_get_enabled() and drop this.  
+> 
+> While doing this I would recommend to split the regulator case and clock case.
+> 
+Hi Andy,
 
-The variable is used in entry.S, so declare shadow_stack there
-alongside SHADOW_OVERFLOW_STACK_SIZE.
+I read this and wasn't quite sure what you meant.  Do you mean splitting
+it into multiple patches?  
 
-Fixes: 31da94c25aea ("riscv: add VMAP_STACK overflow detection")
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/include/asm/thread_info.h | 2 ++
- arch/riscv/kernel/traps.c            | 3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+If so I think that is probably taking "one thing one patch" a step too far.
+I wouldn't object it if were presented as separate patches, but I'm not
+sure I'd bother splitting them.
 
-diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/asm/thread_info.h
-index 78933ac04995..67322f878e0d 100644
---- a/arch/riscv/include/asm/thread_info.h
-+++ b/arch/riscv/include/asm/thread_info.h
-@@ -42,6 +42,8 @@
- 
- #ifndef __ASSEMBLY__
- 
-+extern long shadow_stack[SHADOW_OVERFLOW_STACK_SIZE / sizeof(long)];
-+
- #include <asm/processor.h>
- #include <asm/csr.h>
- 
-diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-index 39d0f8bba4b4..635e6ec26938 100644
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -20,9 +20,10 @@
- 
- #include <asm/asm-prototypes.h>
- #include <asm/bug.h>
-+#include <asm/csr.h>
- #include <asm/processor.h>
- #include <asm/ptrace.h>
--#include <asm/csr.h>
-+#include <asm/thread_info.h>
- 
- int show_unhandled_signals = 1;
- 
--- 
-2.37.1
+Definitely good to switch to devm_clk_get_enabled() now that's available.
+There is another go at adding devm_regulator_enable() under review at the
+moment, but we can tidy that up as a follow on patch (along with the 100s of
+other cases in IIO!)
 
+Jonathan
