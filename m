@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C45C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B898C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241082AbiHNPi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
+        id S231918AbiHNPjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239858AbiHNPfa (ORCPT
+        with ESMTP id S240856AbiHNPgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:35:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161B913D53;
-        Sun, 14 Aug 2022 08:30:55 -0700 (PDT)
+        Sun, 14 Aug 2022 11:36:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDBF1AF07;
+        Sun, 14 Aug 2022 08:32:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63919B80B77;
-        Sun, 14 Aug 2022 15:30:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFC7EC433C1;
-        Sun, 14 Aug 2022 15:30:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 143FC60C41;
+        Sun, 14 Aug 2022 15:32:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73B9C43142;
+        Sun, 14 Aug 2022 15:32:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491046;
-        bh=USr/7H+W22phQatZu5Xppi2ymWAL1+5qrZm1balBdmc=;
+        s=k20201202; t=1660491126;
+        bh=g97XD/pgPbqJ4VwO4uV+VBUuGwCDEvgLc1WAUiTfTeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EO/IfEBs3sXyixftAeaB1nz3igTFztKHe1eiWlNSbjygqnQIGWWJpiL3d2xA5RNoM
-         Uf/3i2y5RpMZCBjvAA3hMxmsIu/av8H9OtchZlmq2pJ4/oPqEAgkqQ5rd+UCnWxIMM
-         VRV+JLGGKHWbbMstHVlG2K2r1tkmAD6FJSZHS38k6QCJXhAeA/FRTNvxWeBfHnqvyM
-         CIKgmeGeTMk/knjrXLRHM5DQlt75WtEr9S7fYUOs3fUI/Q3I7TWjiG8xpvzQn0dokz
-         BK0RjWPE7gpJW15vxXImyoZrn9J331upiEh3aumolXWFgYO5A6uqhiDEZtfrzWlgu3
-         PtNDNN5Freo1w==
+        b=nY0kgGKTzImmryas4nlg75cGBt4h6fi0HhAWwxt7z2pvLKhoxLVRTECZw0ZRU4g2n
+         nPmK7gzyhvSp9UzQEushcbB7cRuv1+bSPXDpdxGEZcj5UQxXr0dw9uKRw8Mqyd4QTJ
+         69MBpFimqPIqY2rSqdph+bhFThGpqvRYPN2DonY18ZGTbkAp86vNaKmSQJgyt53QYz
+         lL92Z0QZohUbHqALOBA/EWQY2kIwNFuro+eDysW9CHYXh/ekcShiAykLp27NRzKFB5
+         0sYmpyoLAWfqCpCxy1KS91gcscf8yUBvG0cOqAdsxtE8UWuocbrxVDn4ebhYuaXpxL
+         4UdvAAddxxSsw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        bvanassche@acm.org, beanhuo@micron.com, avri.altman@wdc.com,
-        adrian.hunter@intel.com, j-young.choi@samsung.com,
-        ebiggers@google.com, jjmin.jeong@samsung.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 10/56] scsi: ufs: core: Add UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS
-Date:   Sun, 14 Aug 2022 11:29:40 -0400
-Message-Id: <20220814153026.2377377-10-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, fbarrat@linux.ibm.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.18 36/56] cxl: Fix a memory leak in an error handling path
+Date:   Sun, 14 Aug 2022 11:30:06 -0400
+Message-Id: <20220814153026.2377377-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
@@ -55,52 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 6554400d6f66b9494a0c0f07712ab0a9d307eb01 ]
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-Add UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS for host controllers which do not
-support 64-bit addressing.
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-Link: https://lore.kernel.org/r/20220603110524.1997825-3-yoshihiro.shimoda.uh@renesas.com
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 2 ++
- drivers/scsi/ufs/ufshcd.h | 6 ++++++
- 2 files changed, 8 insertions(+)
+ drivers/misc/cxl/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 874490f7f5e7..95be78549ed2 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -2210,6 +2210,8 @@ static inline int ufshcd_hba_capabilities(struct ufs_hba *hba)
- 	int err;
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index 4cb829d5d873..2e4dcfebf19a 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -349,6 +349,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
  
- 	hba->capabilities = ufshcd_readl(hba, REG_CONTROLLER_CAPABILITIES);
-+	if (hba->quirks & UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS)
-+		hba->capabilities &= ~MASK_64_ADDRESSING_SUPPORT;
- 
- 	/* nutrs and nutmrs are 0 based values */
- 	hba->nutrs = (hba->capabilities & MASK_TRANSFER_REQUESTS_SLOTS) + 1;
-diff --git a/drivers/scsi/ufs/ufshcd.h b/drivers/scsi/ufs/ufshcd.h
-index 94f545be183a..1745144eb904 100644
---- a/drivers/scsi/ufs/ufshcd.h
-+++ b/drivers/scsi/ufs/ufshcd.h
-@@ -602,6 +602,12 @@ enum ufshcd_quirks {
- 	 * support physical host configuration.
- 	 */
- 	UFSHCD_QUIRK_SKIP_PH_CONFIGURATION		= 1 << 16,
-+
-+	/*
-+	 * This quirk needs to be enabled if the host controller has
-+	 * 64-bit addressing supported capability but it doesn't work.
-+	 */
-+	UFSHCD_QUIRK_BROKEN_64BIT_ADDRESS		= 1 << 17,
- };
- 
- enum ufshcd_caps {
+ out:
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
+ }
 -- 
 2.35.1
 
