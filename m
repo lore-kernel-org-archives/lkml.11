@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23961C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E99EC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241670AbiHNPse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
+        id S241677AbiHNPsj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241665AbiHNPqG (ORCPT
+        with ESMTP id S241672AbiHNPqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 14 Aug 2022 11:46:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C9BB1DC;
-        Sun, 14 Aug 2022 08:34:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C1D2528B;
+        Sun, 14 Aug 2022 08:34:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84639B80B27;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AE8360DDA;
+        Sun, 14 Aug 2022 15:34:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5288C433D6;
         Sun, 14 Aug 2022 15:34:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F3AC433B5;
-        Sun, 14 Aug 2022 15:34:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491274;
-        bh=sZ3FI8gzIs/qxa0LbylMl31H7eqy955v1DuUIiaVNOw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=j30ovNiAYEjTaCMI/fm9M9pzOERfsd4o0KYrfvBgVjCthrad0xB/ShsQEBV4JtcfW
-         DKTNSE0RYZHVikLX6ovciXLWvTO4vb4rxh86VgXLPwo1B82qgEd1aT1Xu6IT1gEPH1
-         r/GMbCzy2xB9M0M2hVPJuw07LOgGxXmV2RsOCFvIexJJRMQcAdVa7dpgQJW8YDg/fS
-         uX4sEmvlcee5fScUGus2e96567xddpkbXG9QS4RABvsVnSNOj3KB2GoUXBYRZuxmMT
-         Pf8IfY9CjouxRH2oELHxOb7bPTvQWWpTajABmvOvN3b9JxadZPbJbRzSLPRY+sh3sc
-         qcYbovzrX4sug==
+        s=k20201202; t=1660491276;
+        bh=dyJOthvr6oSUl/doNTPZjgQxVs7NMIJmhIQjnx2L0YU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dfONxJwvyMcT8EYJDHe7vPF0QPmsZh1G23gIVDgCbYPtOZbcr3SFVJcZ9Bk1pdcF7
+         0zTVkRrqRHEDptHskeDU6Lgsm9WY9OgUWyNvtuwkPnV+snMfY6wM0x+rUQ1iuL4EOr
+         MqUmFlGAgaSf0dWXPqJA9iXcPoLEyo9tmDgtQfC9J0d/YdfdrU+PTKHgMwPgAQgDmv
+         SQRosDA7DNkPQR2AElDsFP8EnTOUcWZckpRcDWKH83Cc7nrddAl18F4nuJhI52meRc
+         LFTkVj3paDFggt9EZyshsufsBd3yZJBNymn//YmqT8zTsU8iIMTD7xeq5f9Z0+Rnal
+         L6YS/y6zXA87w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>, linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 01/31] PCI: Add ACS quirk for Broadcom BCM5750x NICs
-Date:   Sun, 14 Aug 2022 11:34:01 -0400
-Message-Id: <20220814153431.2379231-1-sashal@kernel.org>
+Cc:     Frank Li <Frank.Li@nxp.com>, Faqiang Zhu <faqiang.zhu@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, peter.chen@kernel.org,
+        pawell@cadence.com, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/31] usb: cdns3 fix use-after-free at workaround 2
+Date:   Sun, 14 Aug 2022 11:34:03 -0400
+Message-Id: <20220814153431.2379231-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814153431.2379231-1-sashal@kernel.org>
+References: <20220814153431.2379231-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,42 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Frank Li <Frank.Li@nxp.com>
 
-[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
+[ Upstream commit 7d602f30149a117eea260208b1661bc404c21dfd ]
 
-The Broadcom BCM5750x NICs may be multi-function devices.  They do not
-advertise ACS capability. Peer-to-peer transactions are not possible
-between the individual functions, so it is safe to treat them as fully
-isolated.
+BUG: KFENCE: use-after-free read in __list_del_entry_valid+0x10/0xac
 
-Add an ACS quirk for these devices so the functions can be in independent
-IOMMU groups and attached individually to userspace applications using
-VFIO.
+cdns3_wa2_remove_old_request()
+{
+	...
+	kfree(priv_req->request.buf);
+	cdns3_gadget_ep_free_request(&priv_ep->endpoint, &priv_req->request);
+	list_del_init(&priv_req->list);
+	^^^ use after free
+	...
+}
 
-Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+cdns3_gadget_ep_free_request() free the space pointed by priv_req,
+but priv_req is used in the following list_del_init().
+
+This patch move list_del_init() before cdns3_gadget_ep_free_request().
+
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Signed-off-by: Faqiang Zhu <faqiang.zhu@nxp.com>
+Link: https://lore.kernel.org/r/20220608190430.2814358-1-Frank.Li@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/quirks.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/cdns3/gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 1be2894ada70..fb2e52fd01b3 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4897,6 +4897,9 @@ static const struct pci_dev_acs_enabled {
- 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
- 	/* Broadcom multi-function device */
- 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
-+	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
- 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
- 	/* Amazon Annapurna Labs */
- 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
+diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
+index d5056cc34974..75bfc039fb7b 100644
+--- a/drivers/usb/cdns3/gadget.c
++++ b/drivers/usb/cdns3/gadget.c
+@@ -655,9 +655,9 @@ static void cdns3_wa2_remove_old_request(struct cdns3_endpoint *priv_ep)
+ 		trace_cdns3_wa2(priv_ep, "removes eldest request");
+ 
+ 		kfree(priv_req->request.buf);
++		list_del_init(&priv_req->list);
+ 		cdns3_gadget_ep_free_request(&priv_ep->endpoint,
+ 					     &priv_req->request);
+-		list_del_init(&priv_req->list);
+ 		--priv_ep->wa2_counter;
+ 
+ 		if (!chain)
 -- 
 2.35.1
 
