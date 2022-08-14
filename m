@@ -2,129 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 029B6C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 01:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC948C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 01:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbiHNBTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 21:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S230121AbiHNByl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 21:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiHNBTj (ORCPT
+        with ESMTP id S229484AbiHNByk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 21:19:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B9F15813
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 18:19:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD421B80ADA
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:19:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA4A8C433D7;
-        Sun, 14 Aug 2022 01:19:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660439971;
-        bh=lVnMgDezkLSQTfmf4iQ0SkVg6u16Zbg/ddRb3RwOQm8=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=AVkIxX3rGYfcI7VHGPtzE9+vUN5FS6tbnN4EuBhZqjPSbtfOLP3Z0PG11JWGh01B9
-         HWMYNRm4uwb+eyIYf3qiKo21xJ1yb0Js47qytYwYmSv+a3Zfh/Szfl6JDQcXwyaIIj
-         HVkOJy1/AyWVyHTokMhyEGkBEt+1o/az1oixF4lUnNeGumbCWOrX/z+l/tLsxqZD2b
-         cApWAalFIDnn5SQShjsqlwPZ4jpnfNYRmqJnf+8t+0N9LKMnQ5NleunYxdZHDAQK3w
-         usJkqWUCwHSooNWHQgRA2EOYwNFcxAEaHN72mCo+RG8ETJTWIkl3+aDo+2jCvoKTVS
-         BvE6ihJz46bWg==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id C015F27C0054;
-        Sat, 13 Aug 2022 21:19:29 -0400 (EDT)
-Received: from imap48 ([10.202.2.98])
-  by compute2.internal (MEProxy); Sat, 13 Aug 2022 21:19:29 -0400
-X-ME-Sender: <xms:oU34Yh230Cp4tosnCtAoupyuQ2Dc83b9sENeHpXsJ3oPhuD5ywit0g>
-    <xme:oU34YoEhFPxRlS5Mv3ehMZPDXhtHN8KE8ibqjOpazwaeBZvW1F20HNQKGDl8d1dxk
-    q8X5vJKyn2Z5asHmK4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegledggeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ugihucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepvdfhuedvtdfhudffhfekkefftefghfeltdelgeffteehueegjeff
-    udehgfetiefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudek
-    heeifedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuh
-    igrdhluhhtohdruhhs
-X-ME-Proxy: <xmx:oU34Yh6C-CLLpxkn4E4mAXLg1WZ4n94vi9ML4_ukWgV6PImYAbB2qg>
-    <xmx:oU34Yu3GQWUJs66jVZhmrpXyQUz5NHjnhiRQfJAQmIRZLMeVpDkjoQ>
-    <xmx:oU34YkFlelrqGAcF_wOLJ2ZNM55ilyTj26K5fSmK4KaQva9mq12Rjg>
-    <xmx:oU34Yv0NPapKEHJNzhT4oWN3iQ2tZJD4CE1igbxxlf_9ElGtq1hyRg>
-Feedback-ID: ieff94742:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 01D0731A0062; Sat, 13 Aug 2022 21:19:28 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <1471edba-ccb9-4568-85da-bf69f55d02c8@www.fastmail.com>
-In-Reply-To: <0d6afdb6-e546-4ef0-80c2-84827c11f2ce@www.fastmail.com>
-References: <20220813223825.3164861-1-ashok.raj@intel.com>
- <20220813223825.3164861-6-ashok.raj@intel.com>
- <0d6afdb6-e546-4ef0-80c2-84827c11f2ce@www.fastmail.com>
-Date:   Sat, 13 Aug 2022 18:19:04 -0700
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Raj Ashok" <ashok.raj@intel.com>,
-        "Borislav Petkov" <bp@alien8.de>,
-        "Thomas Gleixner" <tglx@linutronix.de>
-Cc:     "Tony Luck" <tony.luck@intel.com>,
-        "Dave Hansen" <dave.hansen@intel.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "Tom Lendacky" <thomas.lendacky@amd.com>,
-        "Andrew Cooper" <andrew.cooper3@citrix.com>
-Subject: Re: [PATCH 5/5] x86/microcode: Handle NMI's during microcode update.
-Content-Type: text/plain
+        Sat, 13 Aug 2022 21:54:40 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E4145047
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 18:54:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660442079; x=1691978079;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=W6MBtWKO8tMPHF/oumnvXqnlJO5Gd5TzgHu3Kmhb8J4=;
+  b=M0XHpKO9NRjagexgs+BjfTLu7xSYM4T2ll8JtGrfzOSI9yzAxIKDq4pz
+   Pf4AP9j71eBN0lpHdqfs17/Yn1g79Wvfv5Y6BkmTVYX586Bkfia845f5o
+   seOXtw19tY05m7znw7XHagdubQU/hEna6u/qhQVMq/BERY7yLsX44K+UK
+   QTBEYqULRxQGBib8IMwHkYoSXRStuEn+WOVbw5WEUq+/R/aA5YsHOjaow
+   vqpPSQlNP6JdaS49GhHhW//ynTr4YS//iUfjSvU0YWmM5gH58gzoIzJGF
+   GA51iGx4g7DXYju2Pminj6MQPUKRccZPCEuUTZfwRiDUp7moek0Fl3c5o
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="317767606"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="317767606"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 18:54:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="695624197"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Aug 2022 18:54:37 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oN2pp-0002K7-0U;
+        Sun, 14 Aug 2022 01:54:37 +0000
+Date:   Sun, 14 Aug 2022 09:54:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [ammarfaizi2-block:stable/linux-stable-rc/queue/5.19 294/1034]
+ io_uring/io_uring.c:3150:40: warning: variable 'prev' set but not used
+Message-ID: <202208140958.F7WLU1BS-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 13, 2022, at 5:13 PM, Andy Lutomirski wrote:
-> On Sat, Aug 13, 2022, at 3:38 PM, Ashok Raj wrote:
->> Microcode updates need a guarantee that the thread sibling that is waiting
->> for the update to finish on the primary core will not execute any
->> instructions until the update is complete. This is required to guarantee
->> any MSR or instruction that's being patched will be executed before the
->> update is complete.
->>
->> After the stop_machine() rendezvous, an NMI handler is registered. If an
->> NMI were to happen while the microcode update is not complete, the
->> secondary thread will spin until the ucode update state is cleared.
->>
->> Couple of choices discussed are:
->>
->> 1. Rendezvous inside the NMI handler, and also perform the update from
->>    within the handler. This seemed too risky and might cause instability
->>    with the races that we would need to solve. This would be a difficult
->>    choice.
->
-> I prefer choice 1.  As I understand it, Xen has done this for a while 
-> to good effect.
->
-> If I were implementing this, I would rendezvous via stop_machine as 
-> usual.  Then I would set a flag or install a handler indicating that we 
-> are doing a microcode update, send NMI-to-self, and rendezvous in the 
-> NMI handler and do the update.
->
+tree:   https://github.com/ammarfaizi2/linux-block stable/linux-stable-rc/queue/5.19
+head:   a93eab25d54766b1d89d7fa7dd315b3fc268d0b5
+commit: a1fd6af4b362b4f8ed0d7f5a78f0e8ff2f15d70f [294/1034] io_uring: move to separate directory
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220814/202208140958.F7WLU1BS-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/a1fd6af4b362b4f8ed0d7f5a78f0e8ff2f15d70f
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block stable/linux-stable-rc/queue/5.19
+        git checkout a1fd6af4b362b4f8ed0d7f5a78f0e8ff2f15d70f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-So I thought about this a bit more.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-What's the actual goal?  Are we trying to execute no instructions at all on the sibling or are we trying to avoid executing nasty instructions like RDMSR and WRMSR?
+All warnings (new ones prefixed by >>):
 
-If it's the former, we don't have a whole lot of choices.  We need the sibling to be in HLT or MWAIT, and we need NMIs masked or we need all likely NMI sources shut down.  If it's the latter, then we would ideally like to avoid a trip through the entry or exit code -- that code has nasty instructions (RDMSR in the paranoid path if !FSGSBASE, WRMSRs for mitigations, etc).  And we need to be extra careful: there are cases where NMIs are not actually masked but we just simulate NMIs being masked through the delightful logic in the entry code.  Off the top of my head, the NMI-entry-pretend-masked path probably doesn't execute nasty instructions other than IRET, but still, this might be fragile.
+   io_uring/io_uring.c: In function '__io_submit_flush_completions':
+>> io_uring/io_uring.c:3150:40: warning: variable 'prev' set but not used [-Wunused-but-set-variable]
+    3150 |         struct io_wq_work_node *node, *prev;
+         |                                        ^~~~
 
-So here's my half-backed suggestion.  Add a new feature to the NMI entry code: at this point:
 
-        /* Everything up to here is safe from nested NMIs */
+vim +/prev +3150 io_uring/io_uring.c
 
-At that point, NMIs are actually masked.  So check a flag indicating that we're trying to do the NMI-protected ucode patch dance.  If so, call a special noinstr C function (this part is distinctly nontrivial) that does the ucode work.  Now the stop_machine handler does NMI-to-self in a loop until it actually hits the special code path.
+7a743e225b2a9da fs/io_uring.c Pavel Begunkov 2020-03-03  3146  
+c450178d9be9dc4 fs/io_uring.c Pavel Begunkov 2021-09-08  3147  static void __io_submit_flush_completions(struct io_ring_ctx *ctx)
+a141dd896f544df fs/io_uring.c Jens Axboe     2021-08-12  3148  	__must_hold(&ctx->uring_lock)
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  3149  {
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24 @3150  	struct io_wq_work_node *node, *prev;
+cd0ca2e048dc0dd fs/io_uring.c Pavel Begunkov 2021-08-09  3151  	struct io_submit_state *state = &ctx->submit_state;
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  3152  
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  3153  	if (state->flush_cqes) {
+79ebeaee8a21a00 fs/io_uring.c Jens Axboe     2021-08-10  3154  		spin_lock(&ctx->completion_lock);
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  3155  		wq_list_for_each(node, prev, &state->compl_reqs) {
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  3156  			struct io_kiocb *req = container_of(node, struct io_kiocb,
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  3157  						    comp_list);
+5182ed2e332e8e1 fs/io_uring.c Pavel Begunkov 2021-06-26  3158  
+f43de1f88841d59 fs/io_uring.c Pavel Begunkov 2022-06-15  3159  			if (!(req->flags & REQ_F_CQE_SKIP))
+91ef75a7db0d085 fs/io_uring.c Pavel Begunkov 2022-06-15  3160  				__io_fill_cqe_req(ctx, req);
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  3161  		}
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  3162  
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  3163  		io_commit_cqring(ctx);
+79ebeaee8a21a00 fs/io_uring.c Jens Axboe     2021-08-10  3164  		spin_unlock(&ctx->completion_lock);
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  3165  		io_cqring_ev_posted(ctx);
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  3166  		state->flush_cqes = false;
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  3167  	}
+5182ed2e332e8e1 fs/io_uring.c Pavel Begunkov 2021-06-26  3168  
+1cce17aca621c38 fs/io_uring.c Pavel Begunkov 2021-09-24  3169  	io_free_batch_list(ctx, state->compl_reqs.first);
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  3170  	INIT_WQ_LIST(&state->compl_reqs);
+7a743e225b2a9da fs/io_uring.c Pavel Begunkov 2020-03-03  3171  }
+7a743e225b2a9da fs/io_uring.c Pavel Begunkov 2020-03-03  3172  
 
-Alternatively, stop_machine, then change the IDT to a special one with a special non-IST NMI handler that does the dirty work.  NMI-to-self, do the ucode work, set the IDT back *inside the handler* so a latched NMI will do the right thing, and return.  This may be much, much simpler.
+:::::: The code at line 3150 was first introduced by commit
+:::::: 6f33b0bc4ea43f5c5ce7b7c9ab66051f80837862 io_uring: use slist for completion batching
 
-Or we stop messing around and do this for real.  Soft-offline the sibling, send it INIT, do the ucode patch, then SIPI, SIPI and resume the world.  What could possibly go wrong?
+:::::: TO: Pavel Begunkov <asml.silence@gmail.com>
+:::::: CC: Jens Axboe <axboe@kernel.dk>
 
-I have to say: Intel, can you please get your act together?  There is an entity in the system that is *actually* capable of doing this right: the microcode.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
