@@ -2,118 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEB6C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 00:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B56C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 00:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239977AbiHNAZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 20:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        id S230306AbiHNAdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 20:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiHNAZ2 (ORCPT
+        with ESMTP id S229663AbiHNAdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 20:25:28 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CB3B1D5;
-        Sat, 13 Aug 2022 17:25:26 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id c28so1963667lfh.3;
-        Sat, 13 Aug 2022 17:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=CzO+KXa/fToaqU4lKH2uZ183XsoZP7LC2vMWPpsOYnE=;
-        b=ADZpL1vgzVcOSjBsNex0YIK9in0yTGj0y1DYVwI9dfAub4362ctHOIE7xQWdBBu/lX
-         xF8PAoQf4Ap3xJmbVHd9WVB/hlkOKihISEeqbobLUh+Jd/X/X1dBQMjO0kOr6LU5k8Z3
-         fthuilsCFb14LtOMcWm/hun2YC1lErLp+34AMsR3L7y0BVWiR0xNkl/OHzV7qedDU8nj
-         ixJQTVgMTvrq5zB3YCIV2qPh+wLZeJTFAJd9X2Ku/z+SSqSD++GUY4yc8Xj43IclLLl2
-         owHmC22GcSjpwMNStIBdNnaKgjw0vyKgfIDgjhpBvaXqxcWBVX8tKEdyJI9TfrHJYhnP
-         LWOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=CzO+KXa/fToaqU4lKH2uZ183XsoZP7LC2vMWPpsOYnE=;
-        b=onADD806qGAOkNkzam06+IpehKathO9KkyFT/YtGRi3TF/qx9f4pHHfbeAuGCinX8S
-         9GkNkgG6Ni2dcZe/HNxAdr7WsfvTadg3ivg8uFsAdyukHNhCYKQ+H7GhP/fqcL3zMsuK
-         XkFonY7MS0mfwMd2USHYqq2DHiKryMMjDOq3f9ROnljiVxV7DZkBFirDCjXVSb2NyKcs
-         wqq48EBa/uyAEBHfx7/ArGIy4+/Gcv2VHYTsJejtkfHn3Vcz9ZWapllY4rVGf1DE+UNd
-         RJMiDerQdsu1aI5mrBd1O4d4WoFcoBw71UGGFPNU8+7cbnvR4/3p3NWkE7jmJ2DYo2Rq
-         hfJg==
-X-Gm-Message-State: ACgBeo0VEk5XE72rVf2Y5fvHkS+SxDmXbZhegBKyW6/NzydnrVaSxvbR
-        v1FPTQfF/lvKydBi5MuwcRU=
-X-Google-Smtp-Source: AA6agR71WBaaLyqxIwPYq5N4Uji8e3DRi1//H4CXjCPgOjwJbhsfWYd8EdwxLCFv24CXdMlvcnLEdA==
-X-Received: by 2002:a05:6512:36ca:b0:48b:2896:bb8c with SMTP id e10-20020a05651236ca00b0048b2896bb8cmr3669594lfs.638.1660436724736;
-        Sat, 13 Aug 2022 17:25:24 -0700 (PDT)
-Received: from localhost.localdomain (37-145-44-55.broadband.corbina.ru. [37.145.44.55])
-        by smtp.gmail.com with ESMTPSA id a5-20020a2ebe85000000b0025e49aaae10sm882917ljr.12.2022.08.13.17.25.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Aug 2022 17:25:24 -0700 (PDT)
-From:   Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
-To:     masahiroy@kernel.org, akpm@linux-foundation.org
-Cc:     michal.lkml@markovi.net, ndesaulniers@google.com,
-        nathan@kernel.org, peterz@infradead.org, keescook@chromium.org,
-        jpoimboe@kernel.org, dan.j.williams@intel.com,
-        isabbasso@riseup.net, edumazet@google.com, vbabka@suse.cz,
-        linux@rasmusvillemoes.dk, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org,
-        Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
-Subject: [PATCH v2] kbuild: add configurable debug info level
-Date:   Sun, 14 Aug 2022 03:20:21 +0300
-Message-Id: <20220814002021.16990-1-dmitrii.bundin.a@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Sat, 13 Aug 2022 20:33:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859B777541;
+        Sat, 13 Aug 2022 17:33:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C26DB80ADA;
+        Sun, 14 Aug 2022 00:33:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12837C433D6;
+        Sun, 14 Aug 2022 00:33:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660437228;
+        bh=QB6Nmti1L+awDYgapfI17MdYzjDYMriPAv0Lbhq4ad8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DznQhNreK9Teei2r6n1/IVHtYtePKobHTp58hypocqsKWC17SqOlT+ggRmHCrPGxO
+         BJN1htcOPIpyVDSHL1oKh1eAiirjNqHo7ohaStn2T+7/yVihw+CTsYIT+CLyQtIsSR
+         q+8kvJNvtyQTDto3SOVUDsy20I6067WdGQr70aaaL8rFTlZMZVxfEfV6DG/CmW5+nH
+         XJblJaxbGP6NVcgxC8fYEPC02V5ByRmx9XBEYIbr89z4ds2vPDVb342M7QYFttaxGe
+         Vu6/VacIT++Gtgf0JzTeRXCSk5Q+aUuTDdpPUo3jeK/XOOsWtwFAVpjE+4u4X/GRMw
+         IqMXVAuY5bjFQ==
+Date:   Sun, 14 Aug 2022 02:33:40 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Julia Lawall <julia.lawall@inria.fr>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, cocci@systeme.lip6.fr
+Subject: Re: [PULL REQUEST] i2c-for-5.20-part2
+Message-ID: <YvhC5Orb+JeZFDEO@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Julia Lawall <julia.lawall@inria.fr>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, cocci@systeme.lip6.fr
+References: <YvfGY2qnl2YXrUgX@shikoro>
+ <CAHk-=wjGmhaE-Y8GqWKPtWYOi=bOarFgo7UkzHNoOVEKnkXXrQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uB+JR5ek71zdC9Wb"
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjGmhaE-Y8GqWKPtWYOi=bOarFgo7UkzHNoOVEKnkXXrQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provides a way to configure debug info level (-glevel).
-Debug level 3 includes extra information such as macro definitions. With
-level 3 enabled it's possible to expand macros right from the debugging
-session in gdb simplifying debugging when complicated macros involved.
-The default level is set to 2 to not change the default build behavior.
 
-Signed-off-by: Dmitrii Bundin <dmitrii.bundin.a@gmail.com>
----
+--uB+JR5ek71zdC9Wb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes in v2: https://lore.kernel.org/all/20220804223504.4739-1-dmitrii.bundin.a@gmail.com/
-  - Replace hardcoded -g3 with a configurable debug info level
 
- lib/Kconfig.debug      | 11 +++++++++++
- scripts/Makefile.debug |  2 +-
- 2 files changed, 12 insertions(+), 1 deletion(-)
+>  (b) auto-convert (with a coccinelle script) all the 'strlcpy()' users
+> that don't care about the return value, and leave a few broken users
+> of strlcpy around
+>=20
+> I think (b) is the simpler thing, but I have no idea how to write a
+> coccinelle patch that basically does "if return value of strlcpy is
+> not used, convert the strlcpy to a strscpy".
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 2e24db4bff19..a17c12c20290 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -304,6 +304,17 @@ config DEBUG_INFO_REDUCED
- 	  DEBUG_INFO build and compile times are reduced too.
- 	  Only works with newer gcc versions.
- 
-+config DEBUG_INFO_LEVEL
-+	int "Debug info level"
-+	range 0 3
-+	default "2"
-+	help
-+	  Sets the level of how much debug information to generate (-glevel).
-+	  Level 1 produces minimal debug information without including information
-+	  about local variables. Level 3 includes extra information like macro
-+	  definitions. Setting up level 3 will require significantly more disk
-+	  space and increase built time. Level 0 produces no debug information.
-+
- config DEBUG_INFO_COMPRESSED
- 	bool "Compressed debugging information"
- 	depends on $(cc-option,-gz=zlib)
-diff --git a/scripts/Makefile.debug b/scripts/Makefile.debug
-index 9f39b0130551..28beffc42e71 100644
---- a/scripts/Makefile.debug
-+++ b/scripts/Makefile.debug
-@@ -3,7 +3,7 @@ DEBUG_CFLAGS	:=
- ifdef CONFIG_DEBUG_INFO_SPLIT
- DEBUG_CFLAGS	+= -gsplit-dwarf
- else
--DEBUG_CFLAGS	+= -g
-+DEBUG_CFLAGS	+= -g$(CONFIG_DEBUG_INFO_LEVEL)
- endif
- 
- ifndef CONFIG_AS_IS_LLVM
--- 
-2.17.1
+That shouldn't be hard. I'll give it a try tomorrow.
 
+
+--uB+JR5ek71zdC9Wb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmL4QuAACgkQFA3kzBSg
+KbbYyA//WuigCTYDgAp7aKGcaVofA1eQe7h2iAA3Q5Jld2HLS00X4g7dYWqouoK4
+Mv+kASr5sBQCqHyjDrsf4TzLUE7L/D4ZtHprRX/2C4sbEhsd/JxoubzuGxydXzOh
+fa+nX8uWU01wGLryCb9RMxvRKGciQyOJNjsiRDoXlK40xkKNen/tLiXUvs8EvoFb
+e3jgQ2LjaVy6zJY7pNZOgqn6H4gi2JVurvHwTjV37MF/WUrI2yDBq7cBL6smcP7N
+4BvtsfDg9sxKeZaCbf0XukPfIbsKpt9v6ezBgzygQ4HLG+67FcIw+VQz+bX/XLxt
+Y2hiWbc3Mm48lrbbSQKMsNme1R3AQyl3rJYmQNIqylqxvetdhTJQbvBnUL24wjb4
+N7JACTwnq6f1nPGVqj1GdZI7h08JeyX7Wwl7fxR4j+KCwUX3NOUXLTNoYYnzasN8
+5DoPShpLGtRpHzo0RTrohSNKWxuv+pQgO3xGdI7fJveci3HdcokEwKkMgYlIvngn
+VCcSujkxAp4xcETKHy/xRsHQtKu+r02UaUD6k4+U4fnlQ5WHxg1mlReoXCFbKl33
+I74SSFsnEfTrFt9o3G/YOl/tKO+Svni1bgpQhulbPI8AGhvR+iouxIuOzhj5w1bU
+ZxvDdY0QIK11nvNdpqbJGD7ZqsR2r1KZ3hshjTz9ZC5itedXcvI=
+=OGfg
+-----END PGP SIGNATURE-----
+
+--uB+JR5ek71zdC9Wb--
