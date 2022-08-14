@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD35AC28B2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F14C2BB41
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242011AbiHNQdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
+        id S242684AbiHNQd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242942AbiHNQbj (ORCPT
+        with ESMTP id S242971AbiHNQbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:31:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018E022B13;
-        Sun, 14 Aug 2022 09:26:16 -0700 (PDT)
+        Sun, 14 Aug 2022 12:31:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7DF22BDC;
+        Sun, 14 Aug 2022 09:26:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 894A7B80B3F;
-        Sun, 14 Aug 2022 16:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B947C433C1;
-        Sun, 14 Aug 2022 16:26:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDD3160F49;
+        Sun, 14 Aug 2022 16:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A085C433C1;
+        Sun, 14 Aug 2022 16:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494373;
-        bh=5QEhkpbOIt5ZQhJj4twQe+roC+RNayxcEOZD8bg916A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=afgPfB1cNI8/HydOIGZtDhxLyCfwe3jPSbmac6HzqyDBQkNAQvjO7Hq+h6LxwhOnh
-         GnzMShcASHr7OmBSkuUyDg3GsGPlsoK0/dq12/GHhiKx+buZDmrqppdI7Jmf0cvOrk
-         Nvv2Iip39JKv4IRtfTxaqtaV0J+nlRzmurI7A+2/BrAze4ik1+xEbJjNW5cdMsbT/S
-         N+Ir9u4PjR9Y5p0sZSZsqu1wYKVtOqV6ytRV9FSbW5xuiJvVzLXeihwx4ilETZAQWd
-         S5eBnk7vYMJYJRQ7Kkyqa/8hvXxzpuxg50nPXEFr58NokrmBisBjXRo/G9Jq3tjSHN
-         TwWfhUjx/32YQ==
+        s=k20201202; t=1660494377;
+        bh=et9RcAsV13Sdx2IlqD0sI3Jvs/62/1aMjIDH0P/bCOk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GKnfwNlyiZnpOcxJEgpEHqREpg5dwDTpRvrng11f2K8GnNLDKMw14BMdqAIENBaoC
+         M/cjeJ5G8qHNPZ16d2i8LyFCgUa6+xesS7HGQm9Qt1AO/M/YxKgQcI4mToVDh/ykK/
+         Q3YF5eLANDSFiJBfIv9cV3sjycOjx0yZlKjg6F8Wa8jsm7dz2hfWTdWvCW+Q0sL/nY
+         Y1j+2tzp6QFGT97kna7un8M/m56e96xFzZ29CkvbUoVPsuMzf8MM+z9PF4m4hVz8JL
+         S0wDQhsU/67TgGCK0EmVofAQX6HhCtp8XIXFpSQAb4+FHZ0p39P/tqA33Zj+RIgw8C
+         4DlZu+612RHuw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, thunder.leizhen@huawei.com
-Subject: [PATCH AUTOSEL 5.15 01/28] lib/list_debug.c: Detect uninitialized lists
-Date:   Sun, 14 Aug 2022 12:25:41 -0400
-Message-Id: <20220814162610.2397644-1-sashal@kernel.org>
+Cc:     Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 03/28] KVM: PPC: Book3S HV: Fix "rm_exit" entry in debugfs timings
+Date:   Sun, 14 Aug 2022 12:25:43 -0400
+Message-Id: <20220814162610.2397644-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814162610.2397644-1-sashal@kernel.org>
+References: <20220814162610.2397644-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,78 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-[ Upstream commit 0cc011c576aaa4de505046f7a6c90933d7c749a9 ]
+[ Upstream commit 9981bace85d816ed8724ac46e49285e8488d29e6 ]
 
-In some circumstances, attempts are made to add entries to or to remove
-entries from an uninitialized list.  A prime example is
-amdgpu_bo_vm_destroy(): It is indirectly called from
-ttm_bo_init_reserved() if that function fails, and tries to remove an
-entry from a list.  However, that list is only initialized in
-amdgpu_bo_create_vm() after the call to ttm_bo_init_reserved() returned
-success.  This results in crashes such as
+At debugfs/kvm/<pid>/vcpu0/timings we show how long each part of the
+code takes to run:
 
- BUG: kernel NULL pointer dereference, address: 0000000000000000
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP NOPTI
- CPU: 1 PID: 1479 Comm: chrome Not tainted 5.10.110-15768-g29a72e65dae5
- Hardware name: Google Grunt/Grunt, BIOS Google_Grunt.11031.149.0 07/15/2020
- RIP: 0010:__list_del_entry_valid+0x26/0x7d
- ...
- Call Trace:
-  amdgpu_bo_vm_destroy+0x48/0x8b
-  ttm_bo_init_reserved+0x1d7/0x1e0
-  amdgpu_bo_create+0x212/0x476
-  ? amdgpu_bo_user_destroy+0x23/0x23
-  ? kmem_cache_alloc+0x60/0x271
-  amdgpu_bo_create_vm+0x40/0x7d
-  amdgpu_vm_pt_create+0xe8/0x24b
- ...
+$ cat /sys/kernel/debug/kvm/*-*/vcpu0/timings
+rm_entry: 123785 49398892 118 4898
+rm_intr: 123780 6075890 22 390
+rm_exit: 0 0 0 0                     <-- NOK
+guest: 123780 46732919988 402 9997638
+cede: 0 0 0 0                        <-- OK, no cede napping in P9
 
-Check if the list's prev and next pointers are NULL to catch such problems.
+The "rm_exit" is always showing zero because it is the last one and
+end_timing does not increment the counter of the previous entry.
 
-Link: https://lkml.kernel.org/r/20220531222951.92073-1-linux@roeck-us.net
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+We can fix it by calling accumulate_time again instead of
+end_timing. That way the counter gets incremented. The rest of the
+arithmetic can be ignored because there are no timing points after
+this and the accumulators are reset before the next round.
+
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220525130554.2614394-2-farosas@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/list_debug.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ arch/powerpc/kvm/book3s_hv_p9_entry.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/lib/list_debug.c b/lib/list_debug.c
-index 5d5424b51b74..413daa72a3d8 100644
---- a/lib/list_debug.c
-+++ b/lib/list_debug.c
-@@ -20,7 +20,11 @@
- bool __list_add_valid(struct list_head *new, struct list_head *prev,
- 		      struct list_head *next)
- {
--	if (CHECK_DATA_CORRUPTION(next->prev != prev,
-+	if (CHECK_DATA_CORRUPTION(prev == NULL,
-+			"list_add corruption. prev is NULL.\n") ||
-+	    CHECK_DATA_CORRUPTION(next == NULL,
-+			"list_add corruption. next is NULL.\n") ||
-+	    CHECK_DATA_CORRUPTION(next->prev != prev,
- 			"list_add corruption. next->prev should be prev (%px), but was %px. (next=%px).\n",
- 			prev, next->prev, next) ||
- 	    CHECK_DATA_CORRUPTION(prev->next != next,
-@@ -42,7 +46,11 @@ bool __list_del_entry_valid(struct list_head *entry)
- 	prev = entry->prev;
- 	next = entry->next;
+diff --git a/arch/powerpc/kvm/book3s_hv_p9_entry.c b/arch/powerpc/kvm/book3s_hv_p9_entry.c
+index 961b3d70483c..a0e0c28408c0 100644
+--- a/arch/powerpc/kvm/book3s_hv_p9_entry.c
++++ b/arch/powerpc/kvm/book3s_hv_p9_entry.c
+@@ -7,15 +7,6 @@
+ #include <asm/ppc-opcode.h>
  
--	if (CHECK_DATA_CORRUPTION(next == LIST_POISON1,
-+	if (CHECK_DATA_CORRUPTION(next == NULL,
-+			"list_del corruption, %px->next is NULL\n", entry) ||
-+	    CHECK_DATA_CORRUPTION(prev == NULL,
-+			"list_del corruption, %px->prev is NULL\n", entry) ||
-+	    CHECK_DATA_CORRUPTION(next == LIST_POISON1,
- 			"list_del corruption, %px->next is LIST_POISON1 (%px)\n",
- 			entry, LIST_POISON1) ||
- 	    CHECK_DATA_CORRUPTION(prev == LIST_POISON2,
+ #ifdef CONFIG_KVM_BOOK3S_HV_EXIT_TIMING
+-static void __start_timing(struct kvm_vcpu *vcpu, struct kvmhv_tb_accumulator *next)
+-{
+-	struct kvmppc_vcore *vc = vcpu->arch.vcore;
+-	u64 tb = mftb() - vc->tb_offset_applied;
+-
+-	vcpu->arch.cur_activity = next;
+-	vcpu->arch.cur_tb_start = tb;
+-}
+-
+ static void __accumulate_time(struct kvm_vcpu *vcpu, struct kvmhv_tb_accumulator *next)
+ {
+ 	struct kvmppc_vcore *vc = vcpu->arch.vcore;
+@@ -47,8 +38,8 @@ static void __accumulate_time(struct kvm_vcpu *vcpu, struct kvmhv_tb_accumulator
+ 	curr->seqcount = seq + 2;
+ }
+ 
+-#define start_timing(vcpu, next) __start_timing(vcpu, next)
+-#define end_timing(vcpu) __start_timing(vcpu, NULL)
++#define start_timing(vcpu, next) __accumulate_time(vcpu, next)
++#define end_timing(vcpu) __accumulate_time(vcpu, NULL)
+ #define accumulate_time(vcpu, next) __accumulate_time(vcpu, next)
+ #else
+ #define start_timing(vcpu, next) do {} while (0)
 -- 
 2.35.1
 
