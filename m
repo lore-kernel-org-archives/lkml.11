@@ -2,120 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6267EC282E7
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA70DC25B0E
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241283AbiHNQWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        id S240879AbiHNQWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240784AbiHNQVg (ORCPT
+        with ESMTP id S240777AbiHNQVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:21:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E04117E39;
-        Sun, 14 Aug 2022 09:15:57 -0700 (PDT)
+        Sun, 14 Aug 2022 12:21:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730D0140B8;
+        Sun, 14 Aug 2022 09:19:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06C4760F4E;
-        Sun, 14 Aug 2022 16:15:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF469C433D6;
-        Sun, 14 Aug 2022 16:15:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DD3EDCE0B6B;
+        Sun, 14 Aug 2022 16:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3661BC433D6;
+        Sun, 14 Aug 2022 16:19:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660493756;
-        bh=xVTcmGG9OL0uC/4v49WHvtlR/iFN2KD0cTGuGXzzoB4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MrJglOx+bzOb4NgjUM6qveUa3aNC8MVxeIGJQbQq3IYD5iGJudyLgpT1Qs4W4gwcI
-         cODi7DldT5OrpeKE619yOGo1nIHj9/F+hesMvD0DX6DVkrQUvpNlwP4Gvo0F831oK9
-         kfRzC1034bJhpHE3hq2xQIcTeuMwxMnOAzuSWEiOsKDD5YdfXK9eALqO7y6pDUZi1r
-         /JNpEs78QN222ce2BHsUvtFCuZY8N6e+TdvEQrZH/TXRMBasDDctTIxDRUxvMCWM13
-         HrHa3fb7algVs+irilUEn09EkArG8v29rAK2tVdHMdpFN0P/4CMmYuI47nH/dmYupr
-         575LIQsPKQRlA==
-Date:   Sun, 14 Aug 2022 17:26:22 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "wsa@kernel.org" <wsa@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "jbhayana@google.com" <jbhayana@google.com>,
-        "lucas.demarchi@intel.com" <lucas.demarchi@intel.com>,
-        "jani.nikula@intel.com" <jani.nikula@intel.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 6/7] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Message-ID: <20220814172622.3b14ab3b@jic23-huawei>
-In-Reply-To: <CAHp75Ve8VtwGX6YeuGvhUat5UfoLXB4RdkW4vc1kQUk71+_aCA@mail.gmail.com>
-References: <20220812165243.22177-1-ddrokosov@sberdevices.ru>
-        <20220812165243.22177-7-ddrokosov@sberdevices.ru>
-        <CAHp75Ve8VtwGX6YeuGvhUat5UfoLXB4RdkW4vc1kQUk71+_aCA@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1660493986;
+        bh=j6NV3NHZXdnVzeVJMsRHbm/l1Gnb2Ly24LwoKMCdh4Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EKpkwqFKJLwFzIXXtDnP1it1LCLOkG6l4leDWjDebv5FvzT0gobJv0RayD6QzYutG
+         A8zjpJADCZLUG8gBDUlnOQBpDsXHcEUB7T4H+QHurUfSFb5K/Fr16YHK+oyqBDN3dl
+         lEGXnwGjF2RLEWPK+N3mToetOlXeOs1HNRRmIldnIi1xNjnfeHVE2ns8vBJV+QSNGj
+         VjA5K8o4k9S8i8UYHSEZdEK2ZX1YI/wySGuq/6NgPOgXnEkyn1WJeN3AOu2po9M510
+         U8v03tcUAHUNRg6M2es44ag6KbbnlzQMpirx8j2gc7zaaqKeOWIj1KXV48+g664q7o
+         ymlBMCF3zdn7w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, thunder.leizhen@huawei.com
+Subject: [PATCH AUTOSEL 5.19 01/48] lib/list_debug.c: Detect uninitialized lists
+Date:   Sun, 14 Aug 2022 12:18:54 -0400
+Message-Id: <20220814161943.2394452-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 13 Aug 2022 01:34:40 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+From: Guenter Roeck <linux@roeck-us.net>
 
-> On Fri, Aug 12, 2022 at 7:52 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> >
-> > MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-> > sensitivity consumer applications. It has dynamic user-selectable full
-> > scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
-> > with output data rates from 1Hz to 1000Hz.  
-> 
-> > Spec: https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf  
-> 
-> Can you use Datasheet: tag below (just before your SoB tag)?
-> 
-> > This driver supports following MSA311 features:
-> >     - IIO interface
-> >     - Different power modes: NORMAL and SUSPEND (using pm_runtime)
-> >     - ODR (Output Data Rate) selection
-> >     - Scale and samp_freq selection
-> >     - IIO triggered buffer, IIO reg access
-> >     - NEW_DATA interrupt + trigger
-> >
-> > Below features to be done:
-> >     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
-> >     - Low Power mode  
-> 
-> ...
-> 
-> > +static const struct {
-> > +       int val;
-> > +       int val2;
-> > +} msa311_fs_table[] = {
-> > +       {0, 9580}, {0, 19160}, {0, 38320}, {0, 76641}
-> > +};  
-> 
-> At least you may deduplicate the type definition for these data structures, like
-> 
-> struct iio_float {
+[ Upstream commit 0cc011c576aaa4de505046f7a6c90933d7c749a9 ]
 
-iio_int_plus_micro maybe...
-we have lots of fixed point types and they definitely are floats
-then integer, micro
+In some circumstances, attempts are made to add entries to or to remove
+entries from an uninitialized list.  A prime example is
+amdgpu_bo_vm_destroy(): It is indirectly called from
+ttm_bo_init_reserved() if that function fails, and tries to remove an
+entry from a list.  However, that list is only initialized in
+amdgpu_bo_create_vm() after the call to ttm_bo_init_reserved() returned
+success.  This results in crashes such as
 
+ BUG: kernel NULL pointer dereference, address: 0000000000000000
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 1 PID: 1479 Comm: chrome Not tainted 5.10.110-15768-g29a72e65dae5
+ Hardware name: Google Grunt/Grunt, BIOS Google_Grunt.11031.149.0 07/15/2020
+ RIP: 0010:__list_del_entry_valid+0x26/0x7d
+ ...
+ Call Trace:
+  amdgpu_bo_vm_destroy+0x48/0x8b
+  ttm_bo_init_reserved+0x1d7/0x1e0
+  amdgpu_bo_create+0x212/0x476
+  ? amdgpu_bo_user_destroy+0x23/0x23
+  ? kmem_cache_alloc+0x60/0x271
+  amdgpu_bo_create_vm+0x40/0x7d
+  amdgpu_vm_pt_create+0xe8/0x24b
+ ...
 
->   int integer;
->   int fract;
-> };
->
+Check if the list's prev and next pointers are NULL to catch such problems.
+
+Link: https://lkml.kernel.org/r/20220531222951.92073-1-linux@roeck-us.net
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ lib/list_debug.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/lib/list_debug.c b/lib/list_debug.c
+index 9daa3fb9d1cd..d98d43f80958 100644
+--- a/lib/list_debug.c
++++ b/lib/list_debug.c
+@@ -20,7 +20,11 @@
+ bool __list_add_valid(struct list_head *new, struct list_head *prev,
+ 		      struct list_head *next)
+ {
+-	if (CHECK_DATA_CORRUPTION(next->prev != prev,
++	if (CHECK_DATA_CORRUPTION(prev == NULL,
++			"list_add corruption. prev is NULL.\n") ||
++	    CHECK_DATA_CORRUPTION(next == NULL,
++			"list_add corruption. next is NULL.\n") ||
++	    CHECK_DATA_CORRUPTION(next->prev != prev,
+ 			"list_add corruption. next->prev should be prev (%px), but was %px. (next=%px).\n",
+ 			prev, next->prev, next) ||
+ 	    CHECK_DATA_CORRUPTION(prev->next != next,
+@@ -42,7 +46,11 @@ bool __list_del_entry_valid(struct list_head *entry)
+ 	prev = entry->prev;
+ 	next = entry->next;
+ 
+-	if (CHECK_DATA_CORRUPTION(next == LIST_POISON1,
++	if (CHECK_DATA_CORRUPTION(next == NULL,
++			"list_del corruption, %px->next is NULL\n", entry) ||
++	    CHECK_DATA_CORRUPTION(prev == NULL,
++			"list_del corruption, %px->prev is NULL\n", entry) ||
++	    CHECK_DATA_CORRUPTION(next == LIST_POISON1,
+ 			"list_del corruption, %px->next is LIST_POISON1 (%px)\n",
+ 			entry, LIST_POISON1) ||
+ 	    CHECK_DATA_CORRUPTION(prev == LIST_POISON2,
+-- 
+2.35.1
+
