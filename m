@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874F3C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A207EC2BB41
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242696AbiHNQmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
+        id S243118AbiHNQmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232314AbiHNQjy (ORCPT
+        with ESMTP id S243152AbiHNQj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:39:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA161E3DD;
-        Sun, 14 Aug 2022 09:30:06 -0700 (PDT)
+        Sun, 14 Aug 2022 12:39:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1D5D50;
+        Sun, 14 Aug 2022 09:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D620B80B3C;
-        Sun, 14 Aug 2022 16:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE33C433C1;
-        Sun, 14 Aug 2022 16:30:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B72260FBF;
+        Sun, 14 Aug 2022 16:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE05C433C1;
+        Sun, 14 Aug 2022 16:30:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494604;
-        bh=/rrdra+UNE0LoJsFdhBak/JV5VbATvgQuE34YKLAAEA=;
+        s=k20201202; t=1660494619;
+        bh=4yS/bWF1VfDmwPHBya2eTtx13bO3K83w8kHuwOh/Kz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=krcgHZElf994XUP3gn3q+RgdYnfycBy4ukFyl0qNSNpxcgcALj/ofmCznvVB+PCl6
-         INIVaBf/vgWNh09d/GEK3fe+23SPugevRcA1edoJh0FET8RVgxEI+EquyplaSqSVIU
-         1qND8ihvMPoCd+g/nkqQYn3V9M5N4nQEEfwNiD2EB+i5uTpy2XsXkwQYyO9ulRX5XR
-         NVz4ck1sXkJYSaj/glTKNoYk0zH14JeLbDdmjllyZYDdbIHpKx+/bCL5T/ovlaRMB9
-         DI988dK07EB74hxnzwuhAQB6tLCngjFR02E0OkYKGYGeZ1mwRV9hBW8AOCP6W1wSgH
-         f8W86PHJw4PHQ==
+        b=JW4kVxT+LuKhTaYB7ZoUMHQqe9rI6/8kShosAojO/a5GFNwdOzsq/0vqp5ZRwYz23
+         lgIBwvHpymhO9xSLJIIFXyiP14St2wv4pcuRdi0iKozgKmwtqyPch1+cqE3XRyUmG8
+         uZNGy5QRdBX6gGx59zZT1QFacdBlyVQci/84mS/SsL6S8Oh2dZjHVj2Ty0XDRkN2JK
+         zBcaItytBefXZdI0kSvXnuwJq5GwwurUlaW+MmCcxRzr7z8m18jD8uiWYNKojsILkN
+         pGENrbzuCZaxJ/b5anQaaUSB4U4upAk3yJTnLg3IX2chFjsto5tEj3tvfqXdeaZvnt
+         96dCkOOsQOH6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Schspa Shi <schspa@gmail.com>, Cornelia Huck <cohuck@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 2/9] vfio: Clear the caps->buf to NULL after free
-Date:   Sun, 14 Aug 2022 12:29:52 -0400
-Message-Id: <20220814162959.2399011-2-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com,
+        syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com,
+        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
+        tiwai@suse.com, wangwensheng4@huawei.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 5/9] ALSA: timer: Use deferred fasync helper
+Date:   Sun, 14 Aug 2022 12:29:55 -0400
+Message-Id: <20220814162959.2399011-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814162959.2399011-1-sashal@kernel.org>
 References: <20220814162959.2399011-1-sashal@kernel.org>
@@ -51,36 +55,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 6641085e8d7b3f061911517f79a2a15a0a21b97b ]
+[ Upstream commit 95cc637c1afd83fb7dd3d7c8a53710488f4caf9c ]
 
-On buffer resize failure, vfio_info_cap_add() will free the buffer,
-report zero for the size, and return -ENOMEM.  As additional
-hardening, also clear the buffer pointer to prevent any chance of a
-double free.
+For avoiding the potential deadlock via kill_fasync() call, use the
+new fasync helpers to defer the invocation from PCI API.  Note that
+it's merely a workaround.
 
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Link: https://lore.kernel.org/r/20220629022948.55608-1-schspa@gmail.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Reported-by: syzbot+1ee0910eca9c94f71f25@syzkaller.appspotmail.com
+Reported-by: syzbot+49b10793b867871ee26f@syzkaller.appspotmail.com
+Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20220728125945.29533-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/vfio.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/core/timer.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 0d73d913c18b..747eb5c70238 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -1813,6 +1813,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
- 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
- 	if (!buf) {
- 		kfree(caps->buf);
-+		caps->buf = NULL;
- 		caps->size = 0;
- 		return ERR_PTR(-ENOMEM);
+diff --git a/sound/core/timer.c b/sound/core/timer.c
+index c333ceb80d5f..720d63574bfb 100644
+--- a/sound/core/timer.c
++++ b/sound/core/timer.c
+@@ -75,7 +75,7 @@ struct snd_timer_user {
+ 	unsigned int filter;
+ 	struct timespec tstamp;		/* trigger tstamp */
+ 	wait_queue_head_t qchange_sleep;
+-	struct fasync_struct *fasync;
++	struct snd_fasync *fasync;
+ 	struct mutex ioctl_lock;
+ };
+ 
+@@ -1295,7 +1295,7 @@ static void snd_timer_user_interrupt(struct snd_timer_instance *timeri,
  	}
+       __wake:
+ 	spin_unlock(&tu->qlock);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1332,7 +1332,7 @@ static void snd_timer_user_ccallback(struct snd_timer_instance *timeri,
+ 	spin_lock_irqsave(&tu->qlock, flags);
+ 	snd_timer_user_append_to_tqueue(tu, &r1);
+ 	spin_unlock_irqrestore(&tu->qlock, flags);
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1399,7 +1399,7 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
+ 	spin_unlock(&tu->qlock);
+ 	if (append == 0)
+ 		return;
+-	kill_fasync(&tu->fasync, SIGIO, POLL_IN);
++	snd_kill_fasync(tu->fasync, SIGIO, POLL_IN);
+ 	wake_up(&tu->qchange_sleep);
+ }
+ 
+@@ -1465,6 +1465,7 @@ static int snd_timer_user_release(struct inode *inode, struct file *file)
+ 		if (tu->timeri)
+ 			snd_timer_close(tu->timeri);
+ 		mutex_unlock(&tu->ioctl_lock);
++		snd_fasync_free(tu->fasync);
+ 		kfree(tu->queue);
+ 		kfree(tu->tqueue);
+ 		kfree(tu);
+@@ -2017,7 +2018,7 @@ static int snd_timer_user_fasync(int fd, struct file * file, int on)
+ 	struct snd_timer_user *tu;
+ 
+ 	tu = file->private_data;
+-	return fasync_helper(fd, file, on, &tu->fasync);
++	return snd_fasync_helper(fd, file, on, &tu->fasync);
+ }
+ 
+ static ssize_t snd_timer_user_read(struct file *file, char __user *buffer,
 -- 
 2.35.1
 
