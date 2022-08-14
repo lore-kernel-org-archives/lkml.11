@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 111BDC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BB3C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243039AbiHNQht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        id S243049AbiHNQhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243083AbiHNQgW (ORCPT
+        with ESMTP id S243102AbiHNQgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:36:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B1F5C375;
-        Sun, 14 Aug 2022 09:28:32 -0700 (PDT)
+        Sun, 14 Aug 2022 12:36:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1191116;
+        Sun, 14 Aug 2022 09:28:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CF6C60FB4;
-        Sun, 14 Aug 2022 16:28:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B97E3C433D6;
-        Sun, 14 Aug 2022 16:28:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6324760FB1;
+        Sun, 14 Aug 2022 16:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1636C433B5;
+        Sun, 14 Aug 2022 16:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494510;
-        bh=kZjCwi/ZghYXD9yFoDyuDQAVaWe7B0FSLT4PDSpmsPQ=;
+        s=k20201202; t=1660494517;
+        bh=Wvy1Op3i9vLGrYZm4IwP35X3KGCfoZ+j8ssDJnCh2xw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gogMkdaF5ouLw6inmNr3T8tqaIRXzqiVfkA9mi0xJ8+fNA4NKtvEsDYHd0BDLB0QK
-         8gJlNE7EkYEMmtOFmcCYy9bGaQn56wzEde4DBrwUdwbRNfdqvH/wzlY7i+DjjkhOR6
-         d+4Sp+Up+WFoI0C+lMKZOQBeQcQgUtdKt9r5sbhoO2MS6SHNUWfX/wHfcDrtvLekFk
-         JUA7QklTy5C7QQl4R1ez8KGtTvnYpTcruydPFGFBbWVJ/QDxw5zknIMPipiWyX+/Tp
-         yJVXrdG2ck9vLGY19P9v6SpNsXLDFzTk3xWZHThvfLLvebJ0tLZfZ8w8s1PJ/jW4hV
-         lUyFTViGSwy8Q==
+        b=TdbP4GwgMVCKwY2nrPm7AU31XMYOgwQvlD0r3DtBq4/UQhGBMeZmlhWdglZCVnYPO
+         T9IM2xIgomc114YOX4MRC+ClCRp7i7qdPsRr6OyaFe80G4o6t4oKNJtYcHqcyJmA4b
+         uqJSHQDNOfFjyCr1YtekUyKFBmQoz6jRbjDWB7ZLkTPlrK7Z4bKKZDwOI2SzWVyYQe
+         MIy7OE0ovmO3s2kuUMfFOvcvhokEgkQbbe8c/jwsjByCbOUWWZVHKtA/k1eAqxsCIJ
+         rpMCfjdcZ4C89QfaelJfTXdB5rgMS04hncLx1hPkxYIgnE8L+LyWG+tEiMIQPjKNEv
+         R02ULkBkL3W/A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, ndesaulniers@google.com,
-        macro@orcam.me.uk, linux-mips@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 19/19] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
-Date:   Sun, 14 Aug 2022 12:27:38 -0400
-Message-Id: <20220814162739.2398217-19-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>, Timur Tabi <timur@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/16] tty: serial: Fix refcount leak bug in ucc_uart.c
+Date:   Sun, 14 Aug 2022 12:28:17 -0400
+Message-Id: <20220814162833.2398478-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814162739.2398217-1-sashal@kernel.org>
-References: <20220814162739.2398217-1-sashal@kernel.org>
+In-Reply-To: <20220814162833.2398478-1-sashal@kernel.org>
+References: <20220814162833.2398478-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,68 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 74de14fe05dd6b151d73cb0c73c8ec874cbdcde6 ]
+[ Upstream commit d24d7bb2cd947676f9b71fb944d045e09b8b282f ]
 
-When CONFIG_XPA is enabled, Clang warns:
+In soc_info(), of_find_node_by_type() will return a node pointer
+with refcount incremented. We should use of_node_put() when it is
+not used anymore.
 
-  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-                              ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
-          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-                                ^
-  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
-  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
-                                     ^
-  2 errors generated.
-
-_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
-build and runtime configuration, which is what the negation operators
-are trying to convey. To silence the warning, explicitly compare against
-0 so the result of the '<<' operator is not implicitly converted to a
-boolean.
-
-According to its documentation, GCC enables -Wint-in-bool-context with
--Wall but this warning is not visible when building the same
-configuration with GCC. It appears GCC only warns when compiling C++,
-not C, although the documentation makes no note of this:
-https://godbolt.org/z/x39q3brxf
-
-Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Acked-by: Timur Tabi <timur@kernel.org>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220618060850.4058525-1-windhl@126.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/tlbex.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/ucc_uart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
-index a7521b8f7658..e8e3635dda09 100644
---- a/arch/mips/mm/tlbex.c
-+++ b/arch/mips/mm/tlbex.c
-@@ -633,7 +633,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
- 		return;
- 	}
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index a0555ae2b1ef..181d55e0c60f 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -1141,6 +1141,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
+ 		/* No compatible property, so try the name. */
+ 		soc_string = np->name;
  
--	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
-+	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
- 		if (fill_includes_sw_bits) {
- 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
- 		} else {
-@@ -2572,7 +2572,7 @@ static void check_pabits(void)
- 	unsigned long entry;
- 	unsigned pabits, fillbits;
- 
--	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
-+	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
- 		/*
- 		 * We'll only be making use of the fact that we can rotate bits
- 		 * into the fill if the CPU supports RIXI, so don't bother
++	of_node_put(np);
++
+ 	/* Extract the SOC number from the "PowerPC," string */
+ 	if ((sscanf(soc_string, "PowerPC,%u", &soc) != 1) || !soc)
+ 		return 0;
 -- 
 2.35.1
 
