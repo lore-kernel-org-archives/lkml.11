@@ -2,163 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DC0C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 08:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A474BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 09:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbiHNIjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 04:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
+        id S230112AbiHNI5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 04:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiHNIjD (ORCPT
+        with ESMTP id S229565AbiHNI5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 04:39:03 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B11A1CFF8
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:39:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 33553207C4;
-        Sun, 14 Aug 2022 08:39:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1660466340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qBzbzLXtOGncnq/z3oqFXpq5/qj6DfqjuoQxQOYKlBc=;
-        b=aCkHozMaJD0Z+z/puNBMYfMQ+oBfWZltq9MI2noljckk1OsopQR4qrKlghyKDAcwIIHowx
-        31dga2qDFqOaPASwwlgGQqaGqPaKILAoHON0QdaA7OPVQNXBZwznxLAGLS5iqGhaWs0STJ
-        o2slZ2P/kaMYQ2LF3gJeD1lrVk1x/KE=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EE45B13AAE;
-        Sun, 14 Aug 2022 08:38:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id nZmdOKO0+GJfNwAAMHmgww
-        (envelope-from <jgross@suse.com>); Sun, 14 Aug 2022 08:38:59 +0000
-Message-ID: <f0f4e689-edcf-8e83-8834-f4f9f5b6c958@suse.com>
-Date:   Sun, 14 Aug 2022 10:38:59 +0200
+        Sun, 14 Aug 2022 04:57:54 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0394620194
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:57:53 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id k26so8879160ejx.5
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 01:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=oFIo8KrWFAw4ql69EyYD1EHvN31zfLhd0U7GRD48ME8=;
+        b=B4a2+mJf2HDA/4PCrI8aCNsfxS2SO2lsNABzb6OhkpuDOPe6GX6JZa0HlBiWhzIfNn
+         kDQpFQIBAaAXJEhjrta9f5VdzA+pHR3hPs+QI1Qi7SwTsMyKxm6oZUplOdm+mm8gktnB
+         m1gpujfJvujJ1FrRrJTMkITh+2OM1Lj3aOye6vB7PrBwMloXsr6obx3fjGp7tZz8d+l+
+         Qy7llr39UorY+SgQi/4H1vTV0CqZiOWnbZ9RqoUx+OMYEvnRTk7OqUMcd+LNErIMNAXN
+         6ERv82tWIBbjEG0PiVMAcfF24lr0eX/OCxBLF8nlfnjyvZUuB0pXO22mo2jsL0HLO6VO
+         dNKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=oFIo8KrWFAw4ql69EyYD1EHvN31zfLhd0U7GRD48ME8=;
+        b=f5rb3KkULVu5PVWntY7Dx/6Io8XSMZGWtkP/46iRM0hBkhdFid1C9a1RvJgI3OBT0p
+         s2t6mc14WlwogcYFt3R1jL+cJykmhyTj7DTE+ESKZ265CYSs1eY+qlsg0on8waE8/N5l
+         hoxc6zHjaKonarTbxOCJbUm9115rLYQYQiQrGlMQKnnEHhKV65UL5UuBb80tcFJ8R1gU
+         B5pvM7A2CqB2+QztmACEOSdiP/cNbWZ9VqMZUbxRrC2EIsoSQfwgYA/11mSNZOZuFRwp
+         VZzyJImTr0q/wQSDd9Y7sleWNacBuVYee4R4tFqnf7qJsVHCYdtfUjEEoZDoUTPi85We
+         uKBQ==
+X-Gm-Message-State: ACgBeo3tMvymmlhZ+cg5oyOEFPoM8egDXgSL/2xLCKnHF+PXBC7tSShX
+        eHCZjct3+nV/7n5k+UnTMyY=
+X-Google-Smtp-Source: AA6agR47AXq/QFomXS2zUyLkRHiok+Z1qRXDvWkbySUsVtTOvwYFTEf7Xs2nzzi3fksGHzLRB/vEnw==
+X-Received: by 2002:a17:907:94c3:b0:730:9641:8dd8 with SMTP id dn3-20020a17090794c300b0073096418dd8mr7481277ejc.586.1660467471454;
+        Sun, 14 Aug 2022 01:57:51 -0700 (PDT)
+Received: from gmail.com (195-38-113-253.pool.digikabel.hu. [195.38.113.253])
+        by smtp.gmail.com with ESMTPSA id t19-20020a05640203d300b0043bbf79b3ebsm4460410edw.54.2022.08.14.01.57.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 01:57:50 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Sun, 14 Aug 2022 10:57:48 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>, x86-ml <x86@kernel.org>
+Subject: Re: [GIT PULL] timer fixes
+Message-ID: <Yvi5DMkZJlaj2rBx@gmail.com>
+References: <Yvd8L0qIbLarxrOQ@gmail.com>
+ <YvfQUGLGY7cfZ9gf@zn.tnic>
+ <CAHk-=wi+K-LQ121sPbsQonja3Sx-_kXZc6ntauUC2=JPsUrC+g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] xen/pciback: Fix comment typo
-Content-Language: en-US
-To:     Jason Wang <wangborong@cdjrlc.com>, oleksandr_tyshchenko@epam.com
-Cc:     sstabellini@kernel.org, xen-devel@lists.xenproject.org,
-        linux-kernel@vger.kernel.org
-References: <20220811120918.17961-1-wangborong@cdjrlc.com>
-From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <20220811120918.17961-1-wangborong@cdjrlc.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------KY9NMxrc1K5xHV9Tw20fFlQD"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wi+K-LQ121sPbsQonja3Sx-_kXZc6ntauUC2=JPsUrC+g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------KY9NMxrc1K5xHV9Tw20fFlQD
-Content-Type: multipart/mixed; boundary="------------Mjd00y3Fgda5L7ku70jresb7";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Jason Wang <wangborong@cdjrlc.com>, oleksandr_tyshchenko@epam.com
-Cc: sstabellini@kernel.org, xen-devel@lists.xenproject.org,
- linux-kernel@vger.kernel.org
-Message-ID: <f0f4e689-edcf-8e83-8834-f4f9f5b6c958@suse.com>
-Subject: Re: [PATCH] xen/pciback: Fix comment typo
-References: <20220811120918.17961-1-wangborong@cdjrlc.com>
-In-Reply-To: <20220811120918.17961-1-wangborong@cdjrlc.com>
 
---------------Mjd00y3Fgda5L7ku70jresb7
-Content-Type: multipart/mixed; boundary="------------xVf50BFAXQG4NSewdX9YOZKm"
+* Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
---------------xVf50BFAXQG4NSewdX9YOZKm
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+> I think the issue is that "current->sighand" is always safe (and that 
+> "me->sighand" is the same thing), and that sighand has RCU-delayed 
+> freeing so that __lock_task_sighand() can safely try to take the lock of 
+> another process' sighand.
 
-T24gMTEuMDguMjIgMTQ6MDksIEphc29uIFdhbmcgd3JvdGU6DQo+IFRoZSBkb3VibGUgYHRo
-ZScgaXMgZHVwbGljYXRlZCBpbiB0aGUgY29tbWVudCwgcmVtb3ZlIG9uZS4NCj4gDQo+IFNp
-Z25lZC1vZmYtYnk6IEphc29uIFdhbmcgPHdhbmdib3JvbmdAY2RqcmxjLmNvbT4NCg0KUHVz
-aGVkIHRvIHhlbi90aXAuZ2l0IGZvci1saW51cy02LjANCg0KDQpKdWVyZ2VuDQo=
---------------xVf50BFAXQG4NSewdX9YOZKm
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+Yeah - 'me' (== current) here can never go away from under the locking 
+context which is 'me' as well.
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+Thanks,
 
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------xVf50BFAXQG4NSewdX9YOZKm--
-
---------------Mjd00y3Fgda5L7ku70jresb7--
-
---------------KY9NMxrc1K5xHV9Tw20fFlQD
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmL4tKMFAwAAAAAACgkQsN6d1ii/Ey+D
-BAf+IYj/XixMTL0nYWHf+oFmHp6g5p+YHDKNc+mJX0BOU0l326ecrDqO6WhFfwb6AbTZgz4+HZqv
-dIunzNoWLM3nQZWjq6P1NEoi8VqvxRjh2Mm8LZIROTjuds4UlGcmCYA1l7bhVSOHwby7qhmjrojx
-zxUMO0G9a3aoGATDxuOfb+P7JrkIw48wmOGtxsd6geCRXdX9kAJhwfneue2sdaZ0q86PdH7YQRFc
-2R3X+/L71SqcbdP6jROOXDxFpyvQFGpml2NMkWGlGobflNG9WZ0kNVXt0wZq556R4A6h85/uE51c
-1C7sw6YJh93rWHGccuSuF1FoFDvxBL9hos1pB76ZEw==
-=WoxE
------END PGP SIGNATURE-----
-
---------------KY9NMxrc1K5xHV9Tw20fFlQD--
+	Ingo
