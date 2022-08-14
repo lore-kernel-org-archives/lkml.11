@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEBBC25B08
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6147C28B2B
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242062AbiHNPwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
+        id S241947AbiHNPwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241280AbiHNPtZ (ORCPT
+        with ESMTP id S241661AbiHNPtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:49:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF2011801;
-        Sun, 14 Aug 2022 08:35:36 -0700 (PDT)
+        Sun, 14 Aug 2022 11:49:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D851212AB5;
+        Sun, 14 Aug 2022 08:35:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 874C3B80B43;
-        Sun, 14 Aug 2022 15:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B07C43470;
-        Sun, 14 Aug 2022 15:35:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79B8BB80B77;
+        Sun, 14 Aug 2022 15:35:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205A9C433D6;
+        Sun, 14 Aug 2022 15:35:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491335;
-        bh=alwZg7Pm/vtkDLVFTe2uuR2ES6OCPdj8VDhWPiZKH8Y=;
+        s=k20201202; t=1660491338;
+        bh=hRPBfczdm15C8/gZO/F3YClMCpGorCXgOhAyyTX1B+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VTRESsmlrFswBSb9/Y+iCPdoEvkNIhCujnAC8nbCVHT0lzpgCN+gmg753qjxyHgbV
-         EbAY7/xJ4L0pwKPtCZdt0q7hq9koYYG4Dg2fcOLd92Ps/7GU3kSKCMwq7/fTSPmIHM
-         orbGJDNqqZtI8nkdTjyxfZkM0EvYiHS2Em1OJtkSgfT04Jyhb8DfQDpiw8O21Ip1qO
-         Yfxk4Eg8ZVO+uH+n84kk+Usx4EZ6yxiaRxDhkfKZtwvT7PWqKsF6d6+jfv6PJfwpYj
-         qn2NziViTjVgS1H2iMf06uyjWWLRRRLQ1ZiEIXlZwbxsD9eqW4+FsqDI8KiNIBmROl
-         8J54TXcYU48vg==
+        b=P+GmVC/YgnTiPdy/WBKSomYItNLbYinIxYv7Fj93xJucivDc58XRnWhI9BExg6UtB
+         VGs1CfzxJgXKxHCkyJ3QjFScX1kA6xtwhRFVUpyENyLa6G9wCUm8O7CxZpETIPHIs5
+         YDXjs2YnIFJXPEIVwSK/EMezUHewa3kJx5/Wf3888T1JfzUpyXIpgudyR5ZvBESmml
+         hXxEtpoD6MrmskdZPUIyBMwoSfjmRRCXy5AZCkFj5eh8xwvvV3CBDpDfbgf2hf3yZ+
+         wb960PQFw+Pa5Wzz6QqkpK6/a2HO+oQ3xZtMcWSFmKcadflbUxyh2LvPpECI0Fv58z
+         dXjN/7Rqw7sQg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Frank Li <Frank.Li@nxp.com>, Faqiang Zhu <faqiang.zhu@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, pawell@cadence.com,
-        peter.chen@kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/21] usb: cdns3 fix use-after-free at workaround 2
-Date:   Sun, 14 Aug 2022 11:35:12 -0400
-Message-Id: <20220814153531.2379705-2-sashal@kernel.org>
+Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 04/21] irqchip/tegra: Fix overflow implicit truncation warnings
+Date:   Sun, 14 Aug 2022 11:35:14 -0400
+Message-Id: <20220814153531.2379705-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153531.2379705-1-sashal@kernel.org>
 References: <20220814153531.2379705-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,51 +54,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Li <Frank.Li@nxp.com>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-[ Upstream commit 7d602f30149a117eea260208b1661bc404c21dfd ]
+[ Upstream commit 443685992bda9bb4f8b17fc02c9f6c60e62b1461 ]
 
-BUG: KFENCE: use-after-free read in __list_del_entry_valid+0x10/0xac
+Fix -Woverflow warnings for tegra irqchip driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-cdns3_wa2_remove_old_request()
-{
-	...
-	kfree(priv_req->request.buf);
-	cdns3_gadget_ep_free_request(&priv_ep->endpoint, &priv_req->request);
-	list_del_init(&priv_req->list);
-	^^^ use after free
-	...
-}
+drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
+drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
+   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
+                  ^
 
-cdns3_gadget_ep_free_request() free the space pointed by priv_req,
-but priv_req is used in the following list_del_init().
-
-This patch move list_del_init() before cdns3_gadget_ep_free_request().
-
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Signed-off-by: Faqiang Zhu <faqiang.zhu@nxp.com>
-Link: https://lore.kernel.org/r/20220608190430.2814358-1-Frank.Li@nxp.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-tegra.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/cdns3/gadget.c b/drivers/usb/cdns3/gadget.c
-index 296f2ee1b680..a9399f2b3930 100644
---- a/drivers/usb/cdns3/gadget.c
-+++ b/drivers/usb/cdns3/gadget.c
-@@ -549,9 +549,9 @@ static void cdns3_wa2_remove_old_request(struct cdns3_endpoint *priv_ep)
- 		trace_cdns3_wa2(priv_ep, "removes eldest request");
+diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
+index e1f771c72fc4..ad3e2c1b3c87 100644
+--- a/drivers/irqchip/irq-tegra.c
++++ b/drivers/irqchip/irq-tegra.c
+@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
+ 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
  
- 		kfree(priv_req->request.buf);
-+		list_del_init(&priv_req->list);
- 		cdns3_gadget_ep_free_request(&priv_ep->endpoint,
- 					     &priv_req->request);
--		list_del_init(&priv_req->list);
- 		--priv_ep->wa2_counter;
+ 		/* Disable COP interrupts */
+-		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
  
- 		if (!chain)
+ 		/* Disable CPU interrupts */
+-		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
+ 
+ 		/* Enable the wakeup sources of ictlr */
+ 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
+@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
+ 
+ 		writel_relaxed(lic->cpu_iep[i],
+ 			       ictlr + ICTLR_CPU_IEP_CLASS);
+-		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_CPU_IER_CLR);
+ 		writel_relaxed(lic->cpu_ier[i],
+ 			       ictlr + ICTLR_CPU_IER_SET);
+ 		writel_relaxed(lic->cop_iep[i],
+ 			       ictlr + ICTLR_COP_IEP_CLASS);
+-		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), ictlr + ICTLR_COP_IER_CLR);
+ 		writel_relaxed(lic->cop_ier[i],
+ 			       ictlr + ICTLR_COP_IER_SET);
+ 	}
+@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
+ 		lic->base[i] = base;
+ 
+ 		/* Disable all interrupts */
+-		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
++		writel_relaxed(GENMASK(31, 0), base + ICTLR_CPU_IER_CLR);
+ 		/* All interrupts target IRQ */
+ 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
+ 
 -- 
 2.35.1
 
