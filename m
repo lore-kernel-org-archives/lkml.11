@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87419C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A367C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241414AbiHNPoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S239289AbiHNPoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241683AbiHNPmJ (ORCPT
+        with ESMTP id S241692AbiHNPmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:42:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4FB1C11F;
-        Sun, 14 Aug 2022 08:33:29 -0700 (PDT)
+        Sun, 14 Aug 2022 11:42:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B052823BC6;
+        Sun, 14 Aug 2022 08:33:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 062C2B80B27;
-        Sun, 14 Aug 2022 15:33:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B58B4C433B5;
-        Sun, 14 Aug 2022 15:33:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7525260D3D;
+        Sun, 14 Aug 2022 15:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0BD3C43470;
+        Sun, 14 Aug 2022 15:33:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491206;
-        bh=g8DqRUnEJ1CxvVsgj9EkQ/vTlZZXVk/+ZnUNVFzMwU4=;
+        s=k20201202; t=1660491211;
+        bh=O8aE1jTKrL0TskUtT7Qa2QYgF4+w8ELLS2dMm9AG0R4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uHnttjCJ0xbP7lA3OcE6GnjmvXa3NQvrI1FkZ4htgZxJQZfapYoVxLsnXlyd1py7d
-         GjiFaCd6Kf7MOcY363g9RnnoJCeOUz7OLKb+J0dzPrHzqmxv0CJfDjfrixjpPepd7N
-         fJpCwSIQc5liKMPlG5fSHiNPDvxcQiYkRh99TcRavhMSHAznGwYi2Lb4FqT01EH2gQ
-         71ehgqjQQ8ZwCXOZ5zJaztcruitco1AJblTe5+ogvabTh7PhlvdgTnS6Om19kdX6J+
-         MYJqf2IdkhqUdzxLSO1e3BIZoIag8AT62vvSS5qKQDF9ihrbiI1l0gb5HlDT/B+Kr6
-         HApokqYs1gRCQ==
+        b=hepIXFa4YAHHDQdkwFBSp6VqLf+G9gxvmWV1FJEsRVhEAMjBfyDXLaza2PTdj0Slp
+         S/Y9julYFEY0NxFAIsTU6P51/X/XJFA/gocUuJUyr5b5z1mnQGGkMqVN+BFdqW/lci
+         i/EXj4cUT68M0i5+e9ASqOWYTfmrFppWnyKaYGJtApEv0th6gOWgtUQKL0HY+I8SNU
+         8f2KSTBsglMgnYxuQQ93ftQRO34XhQoEBuMmkF6snB1CPAVE2miv+WBwfvbTvSMXr3
+         RUobwgljhaWdui8QEAa+r0Jnm2BtiHsM7SKt30tm2NXt7+gk4zzhjjPj6pHAzIJtWX
+         CmuTTCbn3mK5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, axboe@kernel.dk,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/46] zram: do not lookup algorithm in backends table
-Date:   Sun, 14 Aug 2022 11:32:20 -0400
-Message-Id: <20220814153247.2378312-19-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 22/46] scsi: lpfc: Fix possible memory leak when failing to issue CMF WQE
+Date:   Sun, 14 Aug 2022 11:32:23 -0400
+Message-Id: <20220814153247.2378312-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
@@ -54,98 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Senozhatsky <senozhatsky@chromium.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit dc89997264de565999a1cb55db3f295d3a8e457b ]
+[ Upstream commit 2f67dc7970bce3529edce93a0a14234d88b3fcd5 ]
 
-Always use crypto_has_comp() so that crypto can lookup module, call
-usermodhelper to load the modules, wait for usermodhelper to finish and so
-on.  Otherwise crypto will do all of these steps under CPU hot-plug lock
-and this looks like too much stuff to handle under the CPU hot-plug lock.
-Besides this can end up in a deadlock when usermodhelper triggers a code
-path that attempts to lock the CPU hot-plug lock, that zram already holds.
+There is no corresponding free routine if lpfc_sli4_issue_wqe fails to
+issue the CMF WQE in lpfc_issue_cmf_sync_wqe.
 
-An example of such deadlock:
+If ret_val is non-zero, then free the iocbq request structure.
 
-- path A. zram grabs CPU hot-plug lock, execs /sbin/modprobe from crypto
-  and waits for modprobe to finish
-
-disksize_store
- zcomp_create
-  __cpuhp_state_add_instance
-   __cpuhp_state_add_instance_cpuslocked
-    zcomp_cpu_up_prepare
-     crypto_alloc_base
-      crypto_alg_mod_lookup
-       call_usermodehelper_exec
-        wait_for_completion_killable
-         do_wait_for_common
-          schedule
-
-- path B. async work kthread that brings in scsi device. It wants to
-  register CPUHP states at some point, and it needs the CPU hot-plug
-  lock for that, which is owned by zram.
-
-async_run_entry_fn
- scsi_probe_and_add_lun
-  scsi_mq_alloc_queue
-   blk_mq_init_queue
-    blk_mq_init_allocated_queue
-     blk_mq_realloc_hw_ctxs
-      __cpuhp_state_add_instance
-       __cpuhp_state_add_instance_cpuslocked
-        mutex_lock
-         schedule
-
-- path C. modprobe sleeps, waiting for all aync works to finish.
-
-load_module
- do_init_module
-  async_synchronize_full
-   async_synchronize_cookie_domain
-    schedule
-
-[senozhatsky@chromium.org: add comment]
-  Link: https://lkml.kernel.org/r/20220624060606.1014474-1-senozhatsky@chromium.org
-Link: https://lkml.kernel.org/r/20220622023501.517125-1-senozhatsky@chromium.org
-Signed-off-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Link: https://lore.kernel.org/r/20220701211425.2708-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/zram/zcomp.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
-index 052aa3f65514..0916de952e09 100644
---- a/drivers/block/zram/zcomp.c
-+++ b/drivers/block/zram/zcomp.c
-@@ -63,12 +63,6 @@ static int zcomp_strm_init(struct zcomp_strm *zstrm, struct zcomp *comp)
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index d8d26cde70b6..d5a47fdf8650 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -2007,10 +2007,12 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba *phba, u32 ms, u64 total)
  
- bool zcomp_available_algorithm(const char *comp)
- {
--	int i;
--
--	i = sysfs_match_string(backends, comp);
--	if (i >= 0)
--		return true;
--
- 	/*
- 	 * Crypto does not ignore a trailing new line symbol,
- 	 * so make sure you don't supply a string containing
-@@ -217,6 +211,11 @@ struct zcomp *zcomp_create(const char *compress)
- 	struct zcomp *comp;
- 	int error;
- 
-+	/*
-+	 * Crypto API will execute /sbin/modprobe if the compression module
-+	 * is not loaded yet. We must do it here, otherwise we are about to
-+	 * call /sbin/modprobe under CPU hot-plug lock.
-+	 */
- 	if (!zcomp_available_algorithm(compress))
- 		return ERR_PTR(-EINVAL);
- 
+ 	sync_buf->iocb_flag |= LPFC_IO_CMF;
+ 	ret_val = lpfc_sli4_issue_wqe(phba, &phba->sli4_hba.hdwq[0], sync_buf);
+-	if (ret_val)
++	if (ret_val) {
+ 		lpfc_printf_log(phba, KERN_INFO, LOG_CGN_MGMT,
+ 				"6214 Cannot issue CMF_SYNC_WQE: x%x\n",
+ 				ret_val);
++		__lpfc_sli_release_iocbq(phba, sync_buf);
++	}
+ out_unlock:
+ 	spin_unlock_irqrestore(&phba->hbalock, iflags);
+ 	return ret_val;
 -- 
 2.35.1
 
