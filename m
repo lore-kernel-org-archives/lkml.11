@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 195E7C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CCEC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 14:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239574AbiHNONA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
+        id S230484AbiHNONG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239445AbiHNOMz (ORCPT
+        with ESMTP id S239471AbiHNOM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 10:12:55 -0400
+        Sun, 14 Aug 2022 10:12:57 -0400
 Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCCD9FCC
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:53 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id n4so6326622wrp.10
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BCD9FD0
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:55 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e27so1639241wra.11
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 07:12:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Xqc3VtPSBOAfpxrTQ3FQnbEScSjzijC2Ge9Qv+3BLFo=;
-        b=KSSPXqdDvQ30jRp5ZEhGlfQ/aS0hz2oSUFeTar1lta3J4zdKDfpW/jUYA0/PiDxfDa
-         7CaS1dovo6wdlqR6phEaSv5eUlvB0h4SZHh1+4WgiaWr9tMGHL3VrRJsE6ppzN8fow3i
-         sRXlxbOajPCerCw1GcDlS2x8dobocGRI1cVsgcqeGnYtM1XDr5z1nMJPIvXFATv4ZA93
-         ao69Y8ApqC0YOZL0ByltUGbCWAT1GUOx7eu27fPQFM4nExizuoS54M71vFUPoP8n2iPc
-         McBTZn5q2UiGtoC4//f166GNAWF4vGRe7ySnMZp8phvvR0EOCoZZtTw14ts7untZY9li
-         hS7w==
+        bh=pPv0l6vD5WlLpI1nTN7zzV3sMR7lS/dRIy37KSKLV6k=;
+        b=HMMTLU/p8YLEHSGr0JdrSHHzL+KPSzr/2SbHVIYZPefUDLh0i6BEpVFmoM7PonqAQu
+         XHK1xmVw1UBg2BPE8d6h3iPvrE+h3Ms+3mRmDMA9Wb50IKTeWvZ0qIOlXZ1ZkoUbFGHE
+         0mUhMOI5/9Bp3r2iu5qSOoF2uZw6OohSrtuVWL1610+z/NlAO6QENPP2PWA5I1CD3+Ng
+         euh7jve2sSLkFojItamUEEE3h9vElikeXBeEWacM1nyspNJDM6MQj9pdpf6uA3YdvvbX
+         JHdWK+memg4nFTSgdmc6BoFrjCm7SFf/6eVZhXMvj+kHJE/DRuNDbHBIhxDKgeNhP0WF
+         Scrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Xqc3VtPSBOAfpxrTQ3FQnbEScSjzijC2Ge9Qv+3BLFo=;
-        b=0xV4zFg+Wsg2Zi4VJU/ZgAt9kwjZXRDT4SYjtuBCuSAn5BvgVOfNqZB9u5AesLMixQ
-         CEBWF9daeQTAcsfFA6I0qD5xVDt6JLpTbV5rHEsdUp6t+H1PWPksMNf5dWODjRZqIWTq
-         1LhMT8//HKYnvQM3AjjD5d9yPqc2Yp4szyO122DYyBZ48/tL7ctGuAFikeyA/ZmxT2vK
-         IUV0UShT+RU6k/QYKiYu1bccl9D5zGTFF+HswuaMDB4ly1LVCnT45yjxvuvDeUmsbp+U
-         jDXYY7AiWID2O8Os9uoZnmoKDFdGZXtuiw60DMZYAvKj12B5Po31mBztmN074X419FFu
-         gwcQ==
-X-Gm-Message-State: ACgBeo1f7bcZukFNPxxZAOuR6fC8ASWo8C+w80wpYvWoGd2sgj9m5phl
-        hCDJtbTItqLto1uHD35w2mdmPQ==
-X-Google-Smtp-Source: AA6agR7L6qLIdUlUFVOsEa6ZwXoag/PaFOX3IukupKFIqjjhVOE/vcErNmGNQSSR0BwuzhSCaRA2HQ==
-X-Received: by 2002:adf:f708:0:b0:221:6cb7:8d52 with SMTP id r8-20020adff708000000b002216cb78d52mr6272145wrp.186.1660486371758;
-        Sun, 14 Aug 2022 07:12:51 -0700 (PDT)
+        bh=pPv0l6vD5WlLpI1nTN7zzV3sMR7lS/dRIy37KSKLV6k=;
+        b=i3D3ps5BHSBL1M52fw26qOSqobVrMt+qLVyVESCllCTx3eoADyyoUvVhq6RkYiTXqf
+         PCSDOwf8PxwqQOCsqrj7XYz/Lu6W+pmYPWlc0aPf1cIN8H2z/Wg2gjU5cu7AtRxeyYL3
+         j7VHVE/Va8lnc8wsqHDIdTrXUrTEAkXgqdNZXti9Gl1mOxXH246pxDiTIpTRDDBcOTrE
+         fDaL69DdB8/T7ZrXcY9yCXnlxCpgGsMcnNhov8yE+D7HWs2l5Nar7tb92hZ3aksmziBA
+         lTSyjOmlj0mumXWgxDppoPl2Au8EL0Hk7btOrUnhDXM1JIGYhmvpNu8z0cgubGcBpYoH
+         t/oA==
+X-Gm-Message-State: ACgBeo0OXyRv4sz2MhNvUZtII8TAmu2kJxbrQ+KXIRvN38mXTdWX7Hc0
+        Ta+YpJXnaeqAsKiZ3KxQX/1knA==
+X-Google-Smtp-Source: AA6agR6BPhLCEYbGHWwFtW7IA0BVcNy4nXrlbW7af92IxkgTrJMJnNk9uz1mkz0iwWDTuJ1TmfrDbA==
+X-Received: by 2002:a5d:4705:0:b0:21f:3890:8619 with SMTP id y5-20020a5d4705000000b0021f38908619mr6285685wrq.104.1660486374334;
+        Sun, 14 Aug 2022 07:12:54 -0700 (PDT)
 Received: from henark71.. ([109.76.58.63])
-        by smtp.gmail.com with ESMTPSA id b8-20020adfde08000000b0021db7b0162esm4625419wrm.105.2022.08.14.07.12.50
+        by smtp.gmail.com with ESMTPSA id b8-20020adfde08000000b0021db7b0162esm4625419wrm.105.2022.08.14.07.12.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 07:12:51 -0700 (PDT)
+        Sun, 14 Aug 2022 07:12:53 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     Anup Patel <anup@brainfault.org>,
         Atish Patra <atishp@atishpatra.org>,
@@ -63,9 +63,9 @@ Cc:     Conor Dooley <conor.dooley@microchip.com>,
         Tong Tiangen <tongtiangen@huawei.com>, kvm@vger.kernel.org,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] riscv: kvm: vcpu_timer: fix unused variable warnings
-Date:   Sun, 14 Aug 2022 15:12:35 +0100
-Message-Id: <20220814141237.493457-2-mail@conchuod.ie>
+Subject: [PATCH 3/4] riscv: signal: fix missing prototype warning
+Date:   Sun, 14 Aug 2022 15:12:37 +0100
+Message-Id: <20220814141237.493457-4-mail@conchuod.ie>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220814141237.493457-1-mail@conchuod.ie>
 References: <20220814141237.493457-1-mail@conchuod.ie>
@@ -77,57 +77,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-In two places, csr is set but never used:
+Fix the warning:
+arch/riscv/kernel/signal.c:316:27: warning: no previous prototype for function 'do_notify_resume' [-Wmissing-prototypes]
+asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
 
-arch/riscv/kvm/vcpu_timer.c:302:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
-        struct kvm_vcpu_csr *csr;
-                             ^
-arch/riscv/kvm/vcpu_timer.c:327:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
-        struct kvm_vcpu_csr *csr;
-                             ^
+All other functions in the file are static & none of the existing
+headers stood out as an obvious location. Create signal.h to hold the
+declaration.
 
-Remove the variable.
-
-Fixes: 8f5cb44b1bae ("RISC-V: KVM: Support sstc extension")
+Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/riscv/kvm/vcpu_timer.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/riscv/include/asm/signal.h | 12 ++++++++++++
+ arch/riscv/kernel/signal.c      |  1 +
+ 2 files changed, 13 insertions(+)
+ create mode 100644 arch/riscv/include/asm/signal.h
 
-diff --git a/arch/riscv/kvm/vcpu_timer.c b/arch/riscv/kvm/vcpu_timer.c
-index 16f50c46ba39..185f2386a747 100644
---- a/arch/riscv/kvm/vcpu_timer.c
-+++ b/arch/riscv/kvm/vcpu_timer.c
-@@ -299,7 +299,6 @@ static void kvm_riscv_vcpu_update_timedelta(struct kvm_vcpu *vcpu)
+diff --git a/arch/riscv/include/asm/signal.h b/arch/riscv/include/asm/signal.h
+new file mode 100644
+index 000000000000..532c29ef0376
+--- /dev/null
++++ b/arch/riscv/include/asm/signal.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef __ASM_SIGNAL_H
++#define __ASM_SIGNAL_H
++
++#include <uapi/asm/signal.h>
++#include <uapi/asm/ptrace.h>
++
++asmlinkage __visible
++void do_notify_resume(struct pt_regs *regs, unsigned long thread_info_flags);
++
++#endif
+diff --git a/arch/riscv/kernel/signal.c b/arch/riscv/kernel/signal.c
+index 38b05ca6fe66..5a2de6b6f882 100644
+--- a/arch/riscv/kernel/signal.c
++++ b/arch/riscv/kernel/signal.c
+@@ -15,6 +15,7 @@
  
- void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
- {
--	struct kvm_vcpu_csr *csr;
- 	struct kvm_vcpu_timer *t = &vcpu->arch.timer;
- 
- 	kvm_riscv_vcpu_update_timedelta(vcpu);
-@@ -307,7 +306,6 @@ void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
- 	if (!t->sstc_enabled)
- 		return;
- 
--	csr = &vcpu->arch.guest_csr;
- #if defined(CONFIG_32BIT)
- 	csr_write(CSR_VSTIMECMP, (u32)t->next_cycles);
- 	csr_write(CSR_VSTIMECMPH, (u32)(t->next_cycles >> 32));
-@@ -324,13 +322,11 @@ void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
- 
- void kvm_riscv_vcpu_timer_save(struct kvm_vcpu *vcpu)
- {
--	struct kvm_vcpu_csr *csr;
- 	struct kvm_vcpu_timer *t = &vcpu->arch.timer;
- 
- 	if (!t->sstc_enabled)
- 		return;
- 
--	csr = &vcpu->arch.guest_csr;
- 	t = &vcpu->arch.timer;
- #if defined(CONFIG_32BIT)
- 	t->next_cycles = csr_read(CSR_VSTIMECMP);
+ #include <asm/ucontext.h>
+ #include <asm/vdso.h>
++#include <asm/signal.h>
+ #include <asm/signal32.h>
+ #include <asm/switch_to.h>
+ #include <asm/csr.h>
 -- 
 2.37.1
 
