@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B325BC25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3128C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241587AbiHNPrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
+        id S241603AbiHNPrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241463AbiHNPpE (ORCPT
+        with ESMTP id S241472AbiHNPpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:45:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099C8240B2;
-        Sun, 14 Aug 2022 08:34:10 -0700 (PDT)
+        Sun, 14 Aug 2022 11:45:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EB52494E;
+        Sun, 14 Aug 2022 08:34:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFB3EB80B27;
-        Sun, 14 Aug 2022 15:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C19F2C433C1;
-        Sun, 14 Aug 2022 15:34:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44E8760C58;
+        Sun, 14 Aug 2022 15:34:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B189C433D6;
+        Sun, 14 Aug 2022 15:34:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491247;
-        bh=2F6ETMZsAJ9BEr8L3pUMUUvrKg/3pNm/yewanihTYIE=;
+        s=k20201202; t=1660491252;
+        bh=KrGw3jvz3VlrB6s/KQb6fT3Ak7ZC19uSgWY1w7Xat7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rd7S9wLTP0fPo2XhCQgiYjoOkyZyWJyv4Y8gOCMDZ9FjeSoCusxanPBBAG6pdff32
-         CQr/BKl1U0VzvF94C1D8J2G2sd1m3tsbVnPvNJLO6fNoy7HTYT0G2kK8VCXKj0tytC
-         ZI4Tx7EHsReAHmOCXVLDCx2PZx6SWGOjE/ogRMctxpYKwwFan2lMp/xGkS0ab2khlU
-         FNiCB1gKLCah1OOwIwScEncmgWqZZ6ctZ9cqBCbXSq7tp8h5HgeBK+h04Oyqj7jbf3
-         pu6FK/fazBVUhDfAoEnVSqqNPgPTcka/TPiDoHDT1qttWx4DG2yQm3zFueecuieBiH
-         oSKYNoUOXXydA==
+        b=VdcMjWcXeSdwWxkGrBuF0iuEWlEXQw8yaSclbeTX3dMgg5AHUsmOrqS3XyDfY0+Jp
+         0ZpZCuaDzc+jiKcXEEiaEwqqCi0U9MZMLycMZiiA/qHYqD+IAnMZshSFy4CRTquzKn
+         hL4F4YkhKbapdWSTLszS19F2PQedDG4+QTqGxBIt5P22xvkcm2ouYCfuxHkccWceM/
+         wLaYhFLJ+66n/rVvJKWuJNrX0oY4QCUq6GVr/73Cy3T57IaZV0eudCi6RrAYl36wsh
+         0jxZd7MX3GbnXEcRFKGJZHMGS9hWIIQ1ArwxhimeNoEfMcr9kkvhCE2q5zB91cAdyp
+         I9CKDKuhEd8wA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 36/46] selftests/kprobe: Do not test for GRP/ without event failures
-Date:   Sun, 14 Aug 2022 11:32:37 -0400
-Message-Id: <20220814153247.2378312-36-sashal@kernel.org>
+Cc:     Lecopzer Chen <lecopzer.chen@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        ryabinin.a.a@gmail.com, matthias.bgg@gmail.com, arnd@arndb.de,
+        ardb@kernel.org, rostedt@goodmis.org, nick.hawkins@hpe.com,
+        john@phrozen.org, linux-arm-kernel@lists.infradead.org,
+        kasan-dev@googlegroups.com, linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 38/46] ARM: 9202/1: kasan: support CONFIG_KASAN_VMALLOC
+Date:   Sun, 14 Aug 2022 11:32:39 -0400
+Message-Id: <20220814153247.2378312-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
@@ -51,48 +56,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+From: Lecopzer Chen <lecopzer.chen@mediatek.com>
 
-[ Upstream commit f5eab65ff2b76449286d18efc7fee3e0b72f7d9b ]
+[ Upstream commit 565cbaad83d83e288927b96565211109bc984007 ]
 
-A new feature is added where kprobes (and other probes) do not need to
-explicitly state the event name when creating a probe. The event name will
-come from what is being attached.
+Simply make shadow of vmalloc area mapped on demand.
 
-That is:
+Since the virtual address of vmalloc for Arm is also between
+MODULE_VADDR and 0x100000000 (ZONE_HIGHMEM), which means the shadow
+address has already included between KASAN_SHADOW_START and
+KASAN_SHADOW_END.
+Thus we need to change nothing for memory map of Arm.
 
-  # echo 'p:foo/ vfs_read' > kprobe_events
+This can fix ARM_MODULE_PLTS with KASan, support KASan for higmem
+and support CONFIG_VMAP_STACK with KASan.
 
-Will no longer error, but instead create an event:
-
-  # cat kprobe_events
- p:foo/p_vfs_read_0 vfs_read
-
-This should not be tested as an error case anymore. Remove it from the
-selftest as now this feature "breaks" the selftest as it no longer fails
-as expected.
-
-Link: https://lore.kernel.org/all/1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com/
-Link: https://lkml.kernel.org/r/20220712161707.6dc08a14@gandalf.local.home
-
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Tested-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc       | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/Kconfig         | 1 +
+ arch/arm/mm/kasan_init.c | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
-index fa928b431555..7c02509c71d0 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
-@@ -21,7 +21,6 @@ check_error 'p:^/bar vfs_read'		# NO_GROUP_NAME
- check_error 'p:^12345678901234567890123456789012345678901234567890123456789012345/bar vfs_read'	# GROUP_TOO_LONG
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4ebd512043be..44f328fa5996 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -71,6 +71,7 @@ config ARM
+ 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL && !CPU_ENDIAN_BE32 && MMU
+ 	select HAVE_ARCH_KGDB if !CPU_ENDIAN_BE32 && MMU
+ 	select HAVE_ARCH_KASAN if MMU && !XIP_KERNEL
++	select HAVE_ARCH_KASAN_VMALLOC if HAVE_ARCH_KASAN
+ 	select HAVE_ARCH_MMAP_RND_BITS if MMU
+ 	select HAVE_ARCH_PFN_VALID
+ 	select HAVE_ARCH_SECCOMP
+diff --git a/arch/arm/mm/kasan_init.c b/arch/arm/mm/kasan_init.c
+index 4b1619584b23..040346cc4a3a 100644
+--- a/arch/arm/mm/kasan_init.c
++++ b/arch/arm/mm/kasan_init.c
+@@ -236,7 +236,11 @@ void __init kasan_init(void)
  
- check_error 'p:^foo.1/bar vfs_read'	# BAD_GROUP_NAME
--check_error 'p:foo/^ vfs_read'		# NO_EVENT_NAME
- check_error 'p:foo/^12345678901234567890123456789012345678901234567890123456789012345 vfs_read'	# EVENT_TOO_LONG
- check_error 'p:foo/^bar.1 vfs_read'	# BAD_EVENT_NAME
+ 	clear_pgds(KASAN_SHADOW_START, KASAN_SHADOW_END);
  
+-	kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_START),
++	if (!IS_ENABLED(CONFIG_KASAN_VMALLOC))
++		kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_START),
++					    kasan_mem_to_shadow((void *)VMALLOC_END));
++
++	kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_END),
+ 				    kasan_mem_to_shadow((void *)-1UL) + 1);
+ 
+ 	for_each_mem_range(i, &pa_start, &pa_end) {
 -- 
 2.35.1
 
