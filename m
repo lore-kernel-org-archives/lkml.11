@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C545C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4CCC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239717AbiHNP1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
+        id S239971AbiHNP1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239081AbiHNP1c (ORCPT
+        with ESMTP id S239463AbiHNP1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:27:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7B7AE51;
-        Sun, 14 Aug 2022 08:27:31 -0700 (PDT)
+        Sun, 14 Aug 2022 11:27:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0587BB1C6;
+        Sun, 14 Aug 2022 08:27:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7606B80B74;
-        Sun, 14 Aug 2022 15:27:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A65C6C433D7;
-        Sun, 14 Aug 2022 15:27:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 985F4B80B48;
+        Sun, 14 Aug 2022 15:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 769AAC433D6;
+        Sun, 14 Aug 2022 15:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660490848;
-        bh=yJNbX/lEa6B5zb4AB956b5HRWtmg1Jood0nxTvZn2S4=;
+        s=k20201202; t=1660490851;
+        bh=cxkevsUwWhkQZ7oBs9OqhVFejVOhwqYVJhnKPFLumOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/wrqPFCMMAwDktOA+E/W5SlkJQut4lAG3G4QGARhamvoFV6nZxUCZTR5FJ3lZkRI
-         KbhtpHrc4WabaJfUgGAiLORwxEC18u78CHoy67SG8g/hSvMacMbw3vLoJVTdOG1+ci
-         7TNn0iNkOAsmBoXP1kpxHnyF5MQ/FJJ0X8Zvg2Bp+ZZWWvAXBd171P7PDwux3tH7pk
-         lcjNWJ+oOgeuz9Mi1vd14+syBAtpaloM4j0S0GzNkGTCTP2B+mnkT9Wtux7QsyJo5P
-         A3aTgdUFkLDxmfkFqApyaKuYFKXfScL7FRFaEnSem+38Zm5SNNphJR6alXkH3hvkuE
-         eS+WWO2oOYAag==
+        b=Mtd+CwmA2zZSbvtDREtJWA1c6MLDBOUstxhSzhKGjXPea14JpIk+nT791UGpEuMQU
+         113/YMWfLa+rTtR3p+kH+ZFSrTN5gt73Vetzhm6+NgXQFQ4maVjl1zvRKUk15AV2L3
+         XJTHMCGIatrmFYoIk3aOP9bxehEhn53L5Ym1KVBmNT+ze8K/fy0rPp+w565kxTM1IF
+         +WaDaNGb9hobM1znm14K6wZtVQ1XUbh8pA4+WGli1TEh8S9OgCnr0jQcMA6MvaOOHr
+         EU0b67vEeV5t0hrLDSy35CsNXshxMwiIMgzw0s1FCDk7y5XBlXELLPNQgiRDWqafSE
+         19qqM+TZhBxuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Frank Li <Frank.Li@nxp.com>,
+Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, peter.chen@kernel.org,
-        pawell@cadence.com, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 09/64] usb: cdns3: fix random warning message when driver load
-Date:   Sun, 14 Aug 2022 11:23:42 -0400
-Message-Id: <20220814152437.2374207-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 11/64] usb: gadget: uvc: call uvc uvcg_warn on completed status instead of uvcg_info
+Date:   Sun, 14 Aug 2022 11:23:44 -0400
+Message-Id: <20220814152437.2374207-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
@@ -52,65 +53,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Li <Frank.Li@nxp.com>
+From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-[ Upstream commit 8659ab3d936fcf0084676f98b75b317017aa8f82 ]
+[ Upstream commit a725d0f6dfc5d3739d6499f30ec865305ba3544d ]
 
-Warning log:
-[    4.141392] Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xa20 (GFP_ATOMIC). Fix your code!
-[    4.150340] CPU: 1 PID: 175 Comm: 1-0050 Not tainted 5.15.5-00039-g2fd9ae1b568c #20
-[    4.158010] Hardware name: Freescale i.MX8QXP MEK (DT)
-[    4.163155] Call trace:
-[    4.165600]  dump_backtrace+0x0/0x1b0
-[    4.169286]  show_stack+0x18/0x68
-[    4.172611]  dump_stack_lvl+0x68/0x84
-[    4.176286]  dump_stack+0x18/0x34
-[    4.179613]  kmalloc_fix_flags+0x60/0x88
-[    4.183550]  new_slab+0x334/0x370
-[    4.186878]  ___slab_alloc.part.108+0x4d4/0x748
-[    4.191419]  __slab_alloc.isra.109+0x30/0x78
-[    4.195702]  kmem_cache_alloc+0x40c/0x420
-[    4.199725]  dma_pool_alloc+0xac/0x1f8
-[    4.203486]  cdns3_allocate_trb_pool+0xb4/0xd0
+Likewise to the uvcvideo hostside driver, this patch is changing the
+usb_request message of an non zero completion handler call from dev_info
+to dev_warn.
 
-pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
-{
-	...
-	page = kmalloc(sizeof(*page), mem_flags);
-	page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
-					 &page->dma, mem_flags);
-	...
-}
-
-kmalloc was called with mem_flags, which is passed down in
-cdns3_allocate_trb_pool() and have GFP_DMA32 flags.
-kmall_fix_flags() report warning.
-
-GFP_DMA32 is not useful at all. dma_alloc_coherent() will handle
-DMA memory region correctly by pool->dev. GFP_DMA32 can be removed
-safely.
-
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Link: https://lore.kernel.org/r/20220609154456.2871672-1-Frank.Li@nxp.com
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20220529223848.105914-4-m.grzeschik@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/cdns3-gadget.c | 2 +-
+ drivers/usb/gadget/function/uvc_video.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
-index 29662c8ac024..555caafe4f04 100644
---- a/drivers/usb/cdns3/cdns3-gadget.c
-+++ b/drivers/usb/cdns3/cdns3-gadget.c
-@@ -220,7 +220,7 @@ int cdns3_allocate_trb_pool(struct cdns3_endpoint *priv_ep)
+diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
+index d42bb3346745..e0f381ce7e77 100644
+--- a/drivers/usb/gadget/function/uvc_video.c
++++ b/drivers/usb/gadget/function/uvc_video.c
+@@ -261,7 +261,7 @@ uvc_video_complete(struct usb_ep *ep, struct usb_request *req)
+ 		break;
  
- 	if (!priv_ep->trb_pool) {
- 		priv_ep->trb_pool = dma_pool_alloc(priv_dev->eps_dma_pool,
--						   GFP_DMA32 | GFP_ATOMIC,
-+						   GFP_ATOMIC,
- 						   &priv_ep->trb_pool_dma);
- 
- 		if (!priv_ep->trb_pool)
+ 	default:
+-		uvcg_info(&video->uvc->func,
++		uvcg_warn(&video->uvc->func,
+ 			  "VS request completed with status %d.\n",
+ 			  req->status);
+ 		uvcg_queue_cancel(queue, 0);
 -- 
 2.35.1
 
