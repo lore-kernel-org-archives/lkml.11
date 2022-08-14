@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B21C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F9FFC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241388AbiHNPn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        id S241395AbiHNPoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241616AbiHNPmB (ORCPT
+        with ESMTP id S241330AbiHNPlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:42:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F571BEB8;
-        Sun, 14 Aug 2022 08:33:24 -0700 (PDT)
+        Sun, 14 Aug 2022 11:41:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386DE1B7A0;
+        Sun, 14 Aug 2022 08:32:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B07E360D34;
-        Sun, 14 Aug 2022 15:33:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A74BC433D7;
-        Sun, 14 Aug 2022 15:33:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB44FB80B7C;
+        Sun, 14 Aug 2022 15:32:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C218AC43470;
+        Sun, 14 Aug 2022 15:32:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491202;
-        bh=zuynUB4qvXHwuhHt93KM7PDIxN+C9d44hf1QyZClopY=;
+        s=k20201202; t=1660491171;
+        bh=gLh/IqF4UW/uFOYR8tsOEPV+3tgPe4SDpXMVoAg0AvI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mdoooRvm5njWOyjhMjQLGXLM6uBSHQo9TjCNHPY7zRT7xKQ3xGlhf2VcEX39m6nV6
-         P+HJIswYJfuclYQ1vnvhoEuNMKYe7dcO8TVl8f8AjDdhgEj5ZpkBoQgqprbIZMBjHE
-         Y3KcyNMeV5x9nV9TbTd4sr9QoM4YT8G4vJKtt/VycZyqNdgc4owRqoGObOIPlCDklA
-         Afy4v1GgFuwbcTbbVAjnzK80TnA+VX2svGUE1h74rihteBEHNbSA/rtDPklcpvO27b
-         IO3v+lJgvDSU0v+d7L12y5Tb4aYJNH+WYUWsPFhbp//V30Sow8/2tdXDNv9PcCO6Jz
-         mFpY6ut03Z05A==
+        b=Nbuw1FQTVt1vPhEgkoZLMAv0DupQMFUWB3fbNKCkzahF0fZwoaNtu4EV29PuoGn0e
+         V1a+I7KOEzuKi32JA8lq1t2jVPTaBAs4lRc81w1JQm1/6CaG/xKHPCSUk/l6igWHEV
+         fWR+AOiB/R/8WDorPoqriqbqXS/nfZ/FfbJKTxWDw1WLcgKWXaCKMs2SNn7njGbBxo
+         UddH3XHgRInnLsKcwb9hthZsX+bIe+P1Z28vUg991QhY9nrt7nBsDs2hfPxqtZYDqH
+         v1AZFwVD/7J74nkQpsVRBmwOIgxu4F2BNOb+35Sh/e2ZVSRSghgJv2qBEIinDheLTo
+         wHQaRAjpXcOzQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pascal Terjan <pterjan@google.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 16/46] vboxguest: Do not use devm for irq
-Date:   Sun, 14 Aug 2022 11:32:17 -0400
-Message-Id: <20220814153247.2378312-16-sashal@kernel.org>
+Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 02/46] PCI: Add ACS quirk for Broadcom BCM5750x NICs
+Date:   Sun, 14 Aug 2022 11:32:03 -0400
+Message-Id: <20220814153247.2378312-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153247.2378312-1-sashal@kernel.org>
 References: <20220814153247.2378312-1-sashal@kernel.org>
@@ -52,79 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Terjan <pterjan@google.com>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
+[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
 
-When relying on devm it doesn't get freed early enough which causes the
-following warning when unloading the module:
+The Broadcom BCM5750x NICs may be multi-function devices.  They do not
+advertise ACS capability. Peer-to-peer transactions are not possible
+between the individual functions, so it is safe to treat them as fully
+isolated.
 
-[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
-[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
+Add an ACS quirk for these devices so the functions can be in independent
+IOMMU groups and attached individually to userspace applications using
+VFIO.
 
-[249348.837379] Call Trace:
-[249348.837385]  unregister_irq_proc+0xbd/0xe0
-[249348.837392]  free_desc+0x23/0x60
-[249348.837396]  irq_free_descs+0x4a/0x70
-[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
-[249348.837452]  mp_unmap_irq+0x5c/0x60
-[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
-[249348.837463]  acpi_unregister_gsi+0x17/0x30
-[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
-[249348.837473]  pcibios_disable_device+0x20/0x30
-[249348.837478]  pci_disable_device+0xef/0x120
-[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Pascal Terjan <pterjan@google.com>
-Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/pci/quirks.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
-index 73eb34849eab..4ccfd30c2a30 100644
---- a/drivers/virt/vboxguest/vboxguest_linux.c
-+++ b/drivers/virt/vboxguest/vboxguest_linux.c
-@@ -356,8 +356,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 		goto err_vbg_core_exit;
- 	}
- 
--	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
--			       DEVICE_NAME, gdev);
-+	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
-+			  gdev);
- 	if (ret) {
- 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
- 		goto err_vbg_core_exit;
-@@ -367,7 +367,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	if (ret) {
- 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
- 			DEVICE_NAME, ret);
--		goto err_vbg_core_exit;
-+		goto err_free_irq;
- 	}
- 
- 	ret = misc_register(&gdev->misc_device_user);
-@@ -403,6 +403,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	misc_deregister(&gdev->misc_device_user);
- err_unregister_misc_device:
- 	misc_deregister(&gdev->misc_device);
-+err_free_irq:
-+	free_irq(pci->irq, gdev);
- err_vbg_core_exit:
- 	vbg_core_exit(gdev);
- err_disable_pcidev:
-@@ -419,6 +421,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
- 	vbg_gdev = NULL;
- 	mutex_unlock(&vbg_gdev_mutex);
- 
-+	free_irq(pci->irq, gdev);
- 	device_remove_file(gdev->dev, &dev_attr_host_features);
- 	device_remove_file(gdev->dev, &dev_attr_host_version);
- 	misc_deregister(&gdev->misc_device_user);
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 4893b1e82403..a531064233f9 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4923,6 +4923,9 @@ static const struct pci_dev_acs_enabled {
+ 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
+ 	/* Broadcom multi-function device */
+ 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
+ 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
+ 	/* Amazon Annapurna Labs */
+ 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
 -- 
 2.35.1
 
