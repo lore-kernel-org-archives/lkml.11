@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB71C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 110C9C28B2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240832AbiHNPfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S240637AbiHNPgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240697AbiHNPe0 (ORCPT
+        with ESMTP id S240750AbiHNPfI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:34:26 -0400
+        Sun, 14 Aug 2022 11:35:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9974BE019;
-        Sun, 14 Aug 2022 08:30:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605091CB37;
+        Sun, 14 Aug 2022 08:30:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB642B80B74;
-        Sun, 14 Aug 2022 15:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A876C433C1;
-        Sun, 14 Aug 2022 15:30:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3095B80B27;
+        Sun, 14 Aug 2022 15:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 815E1C43141;
+        Sun, 14 Aug 2022 15:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491023;
-        bh=TT7tWc/244ggDbMGZAOtd6yfrQaNNX6DFkJuHIlf8kw=;
+        s=k20201202; t=1660491039;
+        bh=5GyLM1CyVv10Ove+YIIf3oMlmnKfA55OKySxx0jDfxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OzjAgd12nHLO9ETALotTaG53C0e18EcqUAwm7I+Iuij5upcTwh0UXvMwK1U5g9GUQ
-         wdt3N+eOST7ZE838Tm7tGVc/qkXadh+Zkk+BeFigz7ULbxwEHg8yYUWmPnttP2Aulq
-         m2a8k+Q5+OhPpwzzzsLK/2dw8kXfFAwZFS7I26q+mGaCCWM7WycBbIahQxTbxEqYO9
-         1Jzu4N2gArkrxFCsOGVwJqf1WmSS5k+D26kVpcKCo1bBGVEQ4J+uJxA4StQoi/MokX
-         waFWGgDQhKchBbrJK58tivuW9zNCtlJ0RNaKzsP5Gk2djibZx1t+/IUefi6SMYCIkP
-         YxQp4zGmVyp8A==
+        b=PkWn4SmFUOKErtS5qwhY6e9gJK5yJ6NOvw4T2qxFG+LmK4n5g34W+e4pfhJJBcHsW
+         syH93zy/qXhVOQjXaIXhSOciy5c8yqjnf9d9r8eDhuh38/IwOEbK2JiARyTB5l2J7z
+         2FAbDDPgVutboK0RAO26NlekaBGE3Yiy7Ot4Bl4UDDl57i+ZQ/DRwi+qj2F5YQTp8S
+         gG8F2vucuEME8dL4Dsiq+BHHinhip652tGbxkYnVfYFBiRPvzyCMlG94L0UC1/+q3U
+         pXXLo80VMePjEv2aTRSoeHAJvlsglvLEqE+iEBXDWCRaO44y6AA05aVaLZSOn4JbOa
+         9Wlj/Uz/a4gJw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Czerner <lczerner@redhat.com>,
-        syzbot+15cd994e273307bf5cfa@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 63/64] ext4: block range must be validated before use in ext4_mb_clear_bb()
-Date:   Sun, 14 Aug 2022 11:24:36 -0400
-Message-Id: <20220814152437.2374207-63-sashal@kernel.org>
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, thomas.petazzoni@bootlin.com,
+        lpieralisi@kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 09/56] PCI: aardvark: Fix reporting Slot capabilities on emulated bridge
+Date:   Sun, 14 Aug 2022 11:29:39 -0400
+Message-Id: <20220814153026.2377377-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
-References: <20220814152437.2374207-1-sashal@kernel.org>
+In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
+References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,145 +55,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Czerner <lczerner@redhat.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 1e1c2b86ef86a8477fd9b9a4f48a6bfe235606f6 ]
+[ Upstream commit bcdb6fd4f3e9ac1097698c8d8f56b70853b49873 ]
 
-Block range to free is validated in ext4_free_blocks() using
-ext4_inode_block_valid() and then it's passed to ext4_mb_clear_bb().
-However in some situations on bigalloc file system the range might be
-adjusted after the validation in ext4_free_blocks() which can lead to
-troubles on corrupted file systems such as one found by syzkaller that
-resulted in the following BUG
+Slot capabilities are currently not reported because emulated bridge does
+not report the PCI_EXP_FLAGS_SLOT flag.
 
-kernel BUG at fs/ext4/ext4.h:3319!
-PREEMPT SMP NOPTI
-CPU: 28 PID: 4243 Comm: repro Kdump: loaded Not tainted 5.19.0-rc6+ #1
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
-RIP: 0010:ext4_free_blocks+0x95e/0xa90
-Call Trace:
- <TASK>
- ? lock_timer_base+0x61/0x80
- ? __es_remove_extent+0x5a/0x760
- ? __mod_timer+0x256/0x380
- ? ext4_ind_truncate_ensure_credits+0x90/0x220
- ext4_clear_blocks+0x107/0x1b0
- ext4_free_data+0x15b/0x170
- ext4_ind_truncate+0x214/0x2c0
- ? _raw_spin_unlock+0x15/0x30
- ? ext4_discard_preallocations+0x15a/0x410
- ? ext4_journal_check_start+0xe/0x90
- ? __ext4_journal_start_sb+0x2f/0x110
- ext4_truncate+0x1b5/0x460
- ? __ext4_journal_start_sb+0x2f/0x110
- ext4_evict_inode+0x2b4/0x6f0
- evict+0xd0/0x1d0
- ext4_enable_quotas+0x11f/0x1f0
- ext4_orphan_cleanup+0x3de/0x430
- ? proc_create_seq_private+0x43/0x50
- ext4_fill_super+0x295f/0x3ae0
- ? snprintf+0x39/0x40
- ? sget_fc+0x19c/0x330
- ? ext4_reconfigure+0x850/0x850
- get_tree_bdev+0x16d/0x260
- vfs_get_tree+0x25/0xb0
- path_mount+0x431/0xa70
- __x64_sys_mount+0xe2/0x120
- do_syscall_64+0x5b/0x80
- ? do_user_addr_fault+0x1e2/0x670
- ? exc_page_fault+0x70/0x170
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7fdf4e512ace
+Set PCI_EXP_FLAGS_SLOT to let the kernel know that PCI_EXP_SLT* registers
+are supported.
 
-Fix it by making sure that the block range is properly validated before
-used every time it changes in ext4_free_blocks() or ext4_mb_clear_bb().
+Move setting of PCI_EXP_SLTCTL register from "dynamic" pcie_conf_read
+function to static buffer as it is only statically filled the
+PCI_EXP_SLTSTA_PDS flag and dynamic read callback is not needed for this
+register.
 
-Link: https://syzkaller.appspot.com/bug?id=5266d464285a03cee9dbfda7d2452a72c3c2ae7c
-Reported-by: syzbot+15cd994e273307bf5cfa@syzkaller.appspotmail.com
-Signed-off-by: Lukas Czerner <lczerner@redhat.com>
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Link: https://lore.kernel.org/r/20220714165903.58260-1-lczerner@redhat.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Set Presence State Bit to 1 since there is no support for unplugging the
+card and there is currently no platform able to detect presence of a card -
+in such a case the bit needs to be set to 1.
+
+Finally correctly set Physical Slot Number to 1 since there is only one
+port and zero value is reserved for ports within the same silicon as Root
+Port which is not our case for Aardvark HW.
+
+Link: https://lore.kernel.org/r/20220524132827.8837-3-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/mballoc.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c | 33 +++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 9e06334771a3..38e7dc2531b1 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -5928,6 +5928,15 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index ffec82c8a523..62db476a8651 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -8,6 +8,7 @@
+  * Author: Hezi Shahmoon <hezi.shahmoon@marvell.com>
+  */
  
- 	sbi = EXT4_SB(sb);
++#include <linux/bitfield.h>
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/interrupt.h>
+@@ -857,14 +858,11 @@ advk_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
  
-+	if (!(flags & EXT4_FREE_BLOCKS_VALIDATED) &&
-+	    !ext4_inode_block_valid(inode, block, count)) {
-+		ext4_error(sb, "Freeing blocks in system zone - "
-+			   "Block = %llu, count = %lu", block, count);
-+		/* err = 0. ext4_std_error should be a no op */
-+		goto error_return;
-+	}
-+	flags |= EXT4_FREE_BLOCKS_VALIDATED;
+ 
+ 	switch (reg) {
+-	case PCI_EXP_SLTCTL:
+-		*value = PCI_EXP_SLTSTA_PDS << 16;
+-		return PCI_BRIDGE_EMUL_HANDLED;
+-
+ 	/*
+-	 * PCI_EXP_RTCTL and PCI_EXP_RTSTA are also supported, but do not need
+-	 * to be handled here, because their values are stored in emulated
+-	 * config space buffer, and we read them from there when needed.
++	 * PCI_EXP_SLTCAP, PCI_EXP_SLTCTL, PCI_EXP_RTCTL and PCI_EXP_RTSTA are
++	 * also supported, but do not need to be handled here, because their
++	 * values are stored in emulated config space buffer, and we read them
++	 * from there when needed.
+ 	 */
+ 
+ 	case PCI_EXP_LNKCAP: {
+@@ -977,8 +975,25 @@ static int advk_sw_pci_bridge_init(struct advk_pcie *pcie)
+ 	/* Support interrupt A for MSI feature */
+ 	bridge->conf.intpin = PCI_INTERRUPT_INTA;
+ 
+-	/* Aardvark HW provides PCIe Capability structure in version 2 */
+-	bridge->pcie_conf.cap = cpu_to_le16(2);
++	/*
++	 * Aardvark HW provides PCIe Capability structure in version 2 and
++	 * indicate slot support, which is emulated.
++	 */
++	bridge->pcie_conf.cap = cpu_to_le16(2 | PCI_EXP_FLAGS_SLOT);
 +
- do_more:
- 	overflow = 0;
- 	ext4_get_group_no_and_offset(sb, block, &block_group, &bit);
-@@ -5944,6 +5953,8 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 		overflow = EXT4_C2B(sbi, bit) + count -
- 			EXT4_BLOCKS_PER_GROUP(sb);
- 		count -= overflow;
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 	}
- 	count_clusters = EXT4_NUM_B2C(sbi, count);
- 	bitmap_bh = ext4_read_block_bitmap(sb, block_group);
-@@ -5958,7 +5969,8 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 		goto error_return;
- 	}
++	/*
++	 * Set Presence Detect State bit permanently since there is no support
++	 * for unplugging the card nor detecting whether it is plugged. (If a
++	 * platform exists in the future that supports it, via a GPIO for
++	 * example, it should be implemented via this bit.)
++	 *
++	 * Set physical slot number to 1 since there is only one port and zero
++	 * value is reserved for ports within the same silicon as Root Port
++	 * which is not our case.
++	 */
++	bridge->pcie_conf.slotcap = cpu_to_le32(FIELD_PREP(PCI_EXP_SLTCAP_PSN,
++							   1));
++	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
  
--	if (!ext4_inode_block_valid(inode, block, count)) {
-+	if (!(flags & EXT4_FREE_BLOCKS_VALIDATED) &&
-+	    !ext4_inode_block_valid(inode, block, count)) {
- 		ext4_error(sb, "Freeing blocks in system zone - "
- 			   "Block = %llu, count = %lu", block, count);
- 		/* err = 0. ext4_std_error should be a no op */
-@@ -6081,6 +6093,8 @@ static void ext4_mb_clear_bb(handle_t *handle, struct inode *inode,
- 		block += count;
- 		count = overflow;
- 		put_bh(bitmap_bh);
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 		goto do_more;
- 	}
- error_return:
-@@ -6127,6 +6141,7 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
- 			   "block = %llu, count = %lu", block, count);
- 		return;
- 	}
-+	flags |= EXT4_FREE_BLOCKS_VALIDATED;
- 
- 	ext4_debug("freeing block %llu\n", block);
- 	trace_ext4_free_blocks(inode, block, count, flags);
-@@ -6158,6 +6173,8 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
- 			block -= overflow;
- 			count += overflow;
- 		}
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 	}
- 	overflow = EXT4_LBLK_COFF(sbi, count);
- 	if (overflow) {
-@@ -6168,6 +6185,8 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
- 				return;
- 		} else
- 			count += sbi->s_cluster_ratio - overflow;
-+		/* The range changed so it's no longer validated */
-+		flags &= ~EXT4_FREE_BLOCKS_VALIDATED;
- 	}
- 
- 	if (!bh && (flags & EXT4_FREE_BLOCKS_FORGET)) {
+ 	/* Indicates supports for Completion Retry Status */
+ 	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
 -- 
 2.35.1
 
