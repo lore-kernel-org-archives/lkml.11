@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46733C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4121CC28B2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242191AbiHNQ2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39532 "EHLO
+        id S242236AbiHNQ22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242227AbiHNQ1K (ORCPT
+        with ESMTP id S241788AbiHNQ1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:27:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E05A19C35;
-        Sun, 14 Aug 2022 09:23:26 -0700 (PDT)
+        Sun, 14 Aug 2022 12:27:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7AE1A3B1;
+        Sun, 14 Aug 2022 09:23:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6ED3B80B7E;
-        Sun, 14 Aug 2022 16:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5D7C433D6;
-        Sun, 14 Aug 2022 16:23:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D9FC60EF8;
+        Sun, 14 Aug 2022 16:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6AFEC433D7;
+        Sun, 14 Aug 2022 16:23:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494203;
-        bh=3Cx6uIp12/bxIh8U635RMb8+E2YBg42NLG6gUoikfnM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t0B4TiaGymHRpdpUjUduV8YxDJLw2NSp3yTDm9ZxHVBwVa9pTiKsx7TyLriblNM1P
-         /EorWO8+yebH5EHqc+a9RSC0buGCn669c6yZi76+putctn2i5QNFrqZohwrrqSoxte
-         OYmVapLK1oPkWGmbHBfM1NcPuL3pfUsuw7zoCHJpvhwnE4zW917j5jwdCyMwxVDLX7
-         6b8RvMi1s08DRTaeLOQGzYLkUH6Gc0I3puoJP5xfvGHqHK4YRWypNcLLPhioq5Mi2Y
-         135e3M3RHPd5Ood4KsSRrLK32lRDXQ9i5/HZYK1Lx7N5xqXrHyYziwQRyS3HvO6j7m
-         u4ohA+Pz7uIgw==
+        s=k20201202; t=1660494214;
+        bh=j6NV3NHZXdnVzeVJMsRHbm/l1Gnb2Ly24LwoKMCdh4Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VkAXXyz2Jo3POd3Xh+V1s8cadCw+Oav/lLByuTVgeLTA2i6k55aTd/opcVzD8Twvq
+         PArk/+NKXgQBS71Jx4Y7Klw9MdWwijD70tjqr/EMpznR/0wJbfC87+JJhPp/xWndtE
+         4jPoJVtwTVpRFYYvj2AbBmTjzHB0Bx6qdOQWUlPasDfktwtykb+u++EbCVNQpb/ogG
+         gUuLKnbJtHnqz72BK8bhw/7OsP+LAgc9uXmO8RBUn3RQ4jk92MegYcOrYpYd+wZCYy
+         cDPGBL+bHQrqRei+7Gn7x9R0Z2sn+gPEC0FtEjJbIRYambfBgU5kBnYGZOvbyUPWr8
+         sxXJlFqhM99KQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daeho Jeong <daehojeong@google.com>, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-f2fs-devel@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.19 47/48] f2fs: revive F2FS_IOC_ABORT_VOLATILE_WRITE
-Date:   Sun, 14 Aug 2022 12:19:40 -0400
-Message-Id: <20220814161943.2394452-47-sashal@kernel.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, thunder.leizhen@huawei.com
+Subject: [PATCH AUTOSEL 5.18 01/39] lib/list_debug.c: Detect uninitialized lists
+Date:   Sun, 14 Aug 2022 12:22:50 -0400
+Message-Id: <20220814162332.2396012-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
-References: <20220814161943.2394452-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,94 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daeho Jeong <daehojeong@google.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 23339e5752d01a4b5e122759b002cf896d26f6c1 ]
+[ Upstream commit 0cc011c576aaa4de505046f7a6c90933d7c749a9 ]
 
-F2FS_IOC_ABORT_VOLATILE_WRITE was used to abort a atomic write before.
-However it was removed accidentally. So revive it by changing the name,
-since volatile write had gone.
+In some circumstances, attempts are made to add entries to or to remove
+entries from an uninitialized list.  A prime example is
+amdgpu_bo_vm_destroy(): It is indirectly called from
+ttm_bo_init_reserved() if that function fails, and tries to remove an
+entry from a list.  However, that list is only initialized in
+amdgpu_bo_create_vm() after the call to ttm_bo_init_reserved() returned
+success.  This results in crashes such as
 
-Signed-off-by: Daeho Jeong <daehojeong@google.com>
-Fiexes: 7bc155fec5b3("f2fs: kill volatile write support")
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+ BUG: kernel NULL pointer dereference, address: 0000000000000000
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 1 PID: 1479 Comm: chrome Not tainted 5.10.110-15768-g29a72e65dae5
+ Hardware name: Google Grunt/Grunt, BIOS Google_Grunt.11031.149.0 07/15/2020
+ RIP: 0010:__list_del_entry_valid+0x26/0x7d
+ ...
+ Call Trace:
+  amdgpu_bo_vm_destroy+0x48/0x8b
+  ttm_bo_init_reserved+0x1d7/0x1e0
+  amdgpu_bo_create+0x212/0x476
+  ? amdgpu_bo_user_destroy+0x23/0x23
+  ? kmem_cache_alloc+0x60/0x271
+  amdgpu_bo_create_vm+0x40/0x7d
+  amdgpu_vm_pt_create+0xe8/0x24b
+ ...
+
+Check if the list's prev and next pointers are NULL to catch such problems.
+
+Link: https://lkml.kernel.org/r/20220531222951.92073-1-linux@roeck-us.net
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c            | 30 ++++++++++++++++++++++++++++--
- include/uapi/linux/f2fs.h |  2 +-
- 2 files changed, 29 insertions(+), 3 deletions(-)
+ lib/list_debug.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index bd14cef1b08f..2ab33fc5ee13 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2115,6 +2115,31 @@ static int f2fs_ioc_commit_atomic_write(struct file *filp)
- 	return ret;
- }
- 
-+static int f2fs_ioc_abort_atomic_write(struct file *filp)
-+{
-+	struct inode *inode = file_inode(filp);
-+	struct user_namespace *mnt_userns = file_mnt_user_ns(filp);
-+	int ret;
-+
-+	if (!inode_owner_or_capable(mnt_userns, inode))
-+		return -EACCES;
-+
-+	ret = mnt_want_write_file(filp);
-+	if (ret)
-+		return ret;
-+
-+	inode_lock(inode);
-+
-+	if (f2fs_is_atomic_file(inode))
-+		f2fs_abort_atomic_write(inode, true);
-+
-+	inode_unlock(inode);
-+
-+	mnt_drop_write_file(filp);
-+	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
-+	return ret;
-+}
-+
- static int f2fs_ioc_shutdown(struct file *filp, unsigned long arg)
+diff --git a/lib/list_debug.c b/lib/list_debug.c
+index 9daa3fb9d1cd..d98d43f80958 100644
+--- a/lib/list_debug.c
++++ b/lib/list_debug.c
+@@ -20,7 +20,11 @@
+ bool __list_add_valid(struct list_head *new, struct list_head *prev,
+ 		      struct list_head *next)
  {
- 	struct inode *inode = file_inode(filp);
-@@ -4060,9 +4085,10 @@ static long __f2fs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
- 		return f2fs_ioc_start_atomic_write(filp);
- 	case F2FS_IOC_COMMIT_ATOMIC_WRITE:
- 		return f2fs_ioc_commit_atomic_write(filp);
-+	case F2FS_IOC_ABORT_ATOMIC_WRITE:
-+		return f2fs_ioc_abort_atomic_write(filp);
- 	case F2FS_IOC_START_VOLATILE_WRITE:
- 	case F2FS_IOC_RELEASE_VOLATILE_WRITE:
--	case F2FS_IOC_ABORT_VOLATILE_WRITE:
- 		return -EOPNOTSUPP;
- 	case F2FS_IOC_SHUTDOWN:
- 		return f2fs_ioc_shutdown(filp, arg);
-@@ -4731,7 +4757,7 @@ long f2fs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 	case F2FS_IOC_COMMIT_ATOMIC_WRITE:
- 	case F2FS_IOC_START_VOLATILE_WRITE:
- 	case F2FS_IOC_RELEASE_VOLATILE_WRITE:
--	case F2FS_IOC_ABORT_VOLATILE_WRITE:
-+	case F2FS_IOC_ABORT_ATOMIC_WRITE:
- 	case F2FS_IOC_SHUTDOWN:
- 	case FITRIM:
- 	case FS_IOC_SET_ENCRYPTION_POLICY:
-diff --git a/include/uapi/linux/f2fs.h b/include/uapi/linux/f2fs.h
-index 352a822d4370..3121d127d5aa 100644
---- a/include/uapi/linux/f2fs.h
-+++ b/include/uapi/linux/f2fs.h
-@@ -13,7 +13,7 @@
- #define F2FS_IOC_COMMIT_ATOMIC_WRITE	_IO(F2FS_IOCTL_MAGIC, 2)
- #define F2FS_IOC_START_VOLATILE_WRITE	_IO(F2FS_IOCTL_MAGIC, 3)
- #define F2FS_IOC_RELEASE_VOLATILE_WRITE	_IO(F2FS_IOCTL_MAGIC, 4)
--#define F2FS_IOC_ABORT_VOLATILE_WRITE	_IO(F2FS_IOCTL_MAGIC, 5)
-+#define F2FS_IOC_ABORT_ATOMIC_WRITE	_IO(F2FS_IOCTL_MAGIC, 5)
- #define F2FS_IOC_GARBAGE_COLLECT	_IOW(F2FS_IOCTL_MAGIC, 6, __u32)
- #define F2FS_IOC_WRITE_CHECKPOINT	_IO(F2FS_IOCTL_MAGIC, 7)
- #define F2FS_IOC_DEFRAGMENT		_IOWR(F2FS_IOCTL_MAGIC, 8,	\
+-	if (CHECK_DATA_CORRUPTION(next->prev != prev,
++	if (CHECK_DATA_CORRUPTION(prev == NULL,
++			"list_add corruption. prev is NULL.\n") ||
++	    CHECK_DATA_CORRUPTION(next == NULL,
++			"list_add corruption. next is NULL.\n") ||
++	    CHECK_DATA_CORRUPTION(next->prev != prev,
+ 			"list_add corruption. next->prev should be prev (%px), but was %px. (next=%px).\n",
+ 			prev, next->prev, next) ||
+ 	    CHECK_DATA_CORRUPTION(prev->next != next,
+@@ -42,7 +46,11 @@ bool __list_del_entry_valid(struct list_head *entry)
+ 	prev = entry->prev;
+ 	next = entry->next;
+ 
+-	if (CHECK_DATA_CORRUPTION(next == LIST_POISON1,
++	if (CHECK_DATA_CORRUPTION(next == NULL,
++			"list_del corruption, %px->next is NULL\n", entry) ||
++	    CHECK_DATA_CORRUPTION(prev == NULL,
++			"list_del corruption, %px->prev is NULL\n", entry) ||
++	    CHECK_DATA_CORRUPTION(next == LIST_POISON1,
+ 			"list_del corruption, %px->next is LIST_POISON1 (%px)\n",
+ 			entry, LIST_POISON1) ||
+ 	    CHECK_DATA_CORRUPTION(prev == LIST_POISON2,
 -- 
 2.35.1
 
