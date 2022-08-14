@@ -2,194 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B05CC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6EDC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243425AbiHNQn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
+        id S242793AbiHNQnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243340AbiHNQkt (ORCPT
+        with ESMTP id S243346AbiHNQku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:40:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5802BE3;
-        Sun, 14 Aug 2022 09:30:59 -0700 (PDT)
+        Sun, 14 Aug 2022 12:40:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B699865D5;
+        Sun, 14 Aug 2022 09:31:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95B69B80B3C;
-        Sun, 14 Aug 2022 16:30:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 197A0C433D6;
-        Sun, 14 Aug 2022 16:30:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7053EB80B37;
+        Sun, 14 Aug 2022 16:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6392EC433D7;
+        Sun, 14 Aug 2022 16:30:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494657;
-        bh=hB5GSqsYBUG0UIm0MUR0pzAfDCRA3x4i0KMcrIk710I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PSQG/e7uIbCAiX/PKpo2k4hn86qVx4CtGvxy8at6o0r+gIrtJppb5Imrh8OCo8Eht
-         rZPoLmK2IUH6jnDcIlnzP3qjLDuwcS7urcRE+kO2TahmIWBx71pp7CrGrtealkldE4
-         1phA8UzDsPcsnd80ph8+ZK5AIbzw9vX2jI0nFY626w+/x2fQlGyMqaN+lz+gr/gO2u
-         vNh4OSXaqHZjvLV2UMV1rEM1H4JuLsebHsjc6CkvjED/rvWO1Gd/UbH0msxnudJ9Dn
-         Ry0FGxy3/DMU/fXl842jgul/9jFl+12EWR3d7gTAUlH+pDiyKE+YV8lEqd7ZJV88HM
-         XyanADJHJMLdQ==
-Date:   Sun, 14 Aug 2022 17:41:22 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "wsa@kernel.org" <wsa@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "jbhayana@google.com" <jbhayana@google.com>,
-        "lucas.demarchi@intel.com" <lucas.demarchi@intel.com>,
-        "jani.nikula@intel.com" <jani.nikula@intel.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 6/7] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Message-ID: <20220814174122.4f9afbf3@jic23-huawei>
-In-Reply-To: <20220812165243.22177-7-ddrokosov@sberdevices.ru>
-References: <20220812165243.22177-1-ddrokosov@sberdevices.ru>
-        <20220812165243.22177-7-ddrokosov@sberdevices.ru>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1660494658;
+        bh=iS9yqPrrykOoJinZudE3RI49uScGLU+2ThjG/LbrXTs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LD06aie8VPTm1xhhtvEzzMwJOI3kod/sdbTyUagUV6iUMEqfyP+2Bml3ZPdZ5lxEV
+         FJH9Az3/LC+V67IoP0q0RWX2yC+32poZ7uCiFjPFTsnwkSIWy5wA3O3e7MzQkC00vv
+         XSNz25St4TSxLd8C6nBdD5rawdr69wOdaIp69w2LYc8vIaTs3q9lqiqDWg1W/MiRp6
+         MgLqF+prUgK+BxdksPrWHnEEV7xVA56EVu8csc5G8KJzGNS4Y0Ve2Tt5rGOmokO9lR
+         EHFRAnYWWL381YzXzdoP3MXxgPrkowmZkZN/7b2epjPoCVeDYe9mz2ZWD83+L4FawB
+         nEli0lswEzsKA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.9 4/8] ALSA: core: Add async signal helpers
+Date:   Sun, 14 Aug 2022 12:30:37 -0400
+Message-Id: <20220814163041.2399552-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220814163041.2399552-1-sashal@kernel.org>
+References: <20220814163041.2399552-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 12 Aug 2022 16:52:29 +0000
-Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+From: Takashi Iwai <tiwai@suse.de>
 
-> MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-> sensitivity consumer applications. It has dynamic user-selectable full
-> scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
-> with output data rates from 1Hz to 1000Hz.
-> 
-> Spec: https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
-> 
-> This driver supports following MSA311 features:
->     - IIO interface
->     - Different power modes: NORMAL and SUSPEND (using pm_runtime)
->     - ODR (Output Data Rate) selection
->     - Scale and samp_freq selection
->     - IIO triggered buffer, IIO reg access
->     - NEW_DATA interrupt + trigger
-> 
-> Below features to be done:
->     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
->     - Low Power mode
-> 
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Hi Dmitry, a few minor comments from another read through.
+[ Upstream commit ef34a0ae7a2654bc9e58675e36898217fb2799d8 ]
 
-> + */
-> +static inline int msa311_set_odr(struct msa311_priv *msa311, unsigned int odr)
-> +{
-> +	struct device *dev = msa311->dev;
-> +	unsigned int pwr_mode;
-> +	bool good_odr = false;
-> +	int err;
-> +
-> +	err = regmap_field_read(msa311->fields[F_PWR_MODE], &pwr_mode);
-> +	if (err)
-> +		return err;
-> +
-> +	/* Filter bad ODR values */
-> +	if (pwr_mode == MSA311_PWR_MODE_NORMAL)
-> +		good_odr = (odr > MSA311_ODR_1_95_HZ);
-> +
-> +	if (!good_odr) {
-> +		dev_err(dev,
-> +			"cannot set odr %u.%luHz, not available in %s mode\n",
+Currently the call of kill_fasync() from an interrupt handler might
+lead to potential spin deadlocks, as spotted by syzkaller.
+Unfortunately, it's not so trivial to fix this lock chain as it's
+involved with the tasklist_lock that is touched in allover places.
 
-Don't you need to zero pad the fractional part?
-or use iio_format_values.
+As a temporary workaround, this patch provides the way to defer the
+async signal notification in a work.  The new helper functions,
+snd_fasync_helper() and snd_kill_faync() are replacements for
+fasync_helper() and kill_fasync(), respectively.  In addition,
+snd_fasync_free() needs to be called at the destructor of the relevant
+file object.
 
-> +			msa311_odr_table[odr].val,
-> +			msa311_odr_table[odr].val2 / MILLIHZ_PER_HZ,
-> +			msa311_pwr_modes[pwr_mode]);
-> +		return -EINVAL;
-> +	}
-> +
-> +	return regmap_field_write(msa311->fields[F_ODR], odr);
-> +}
+Link: https://lore.kernel.org/r/20220728125945.29533-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/sound/core.h |  8 ++++
+ sound/core/misc.c    | 94 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 102 insertions(+)
 
-
-> +
-> +static int msa311_setup_interrupts(struct msa311_priv *msa311)
-> +{
-> +	struct device *dev = msa311->dev;
-> +	struct i2c_client *i2c = to_i2c_client(dev);
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(i2c);
-> +	struct iio_trigger *trig;
-> +	int err;
-> +
-> +	/* Keep going without interrupts if no initialized I2C irq */
-> +	if (i2c->irq <= 0)
-> +		return 0;
-> +
-> +	err = devm_request_threaded_irq(&i2c->dev, i2c->irq,
-> +					NULL, msa311_irq_thread,
-> +					IRQF_ONESHOT,
-> +					msa311->chip_name,
-> +					indio_dev);
-
-Could wrap this a little less given you are respinning anyway. It's way under
-80 chars currently.
-
-...
-	     "cannot map new data interrupt\n");
-> +
-> +	return 0;
-> +}
-> +
-
-> +	msa311->vdd = devm_regulator_get_optional(dev, "vdd");
-> +	if (IS_ERR(msa311->vdd)) {
-> +		err = PTR_ERR(msa311->vdd);
-> +		if (err == -ENODEV)
-> +			msa311->vdd = NULL;
-> +		else
-> +			return dev_err_probe(dev, PTR_ERR(msa311->vdd),
-
-use err instead of PTR_ERR(msa311->vdd) ?
-
-> +					     "cannot get vdd supply\n");
-> +	}
-> +
-> +	if (msa311->vdd) {
-> +		err = regulator_enable(msa311->vdd);
-> +		if (err)
-> +			return dev_err_probe(dev, err,
-> +					     "cannot enable vdd supply\n");
-> +
-> +		err = devm_add_action_or_reset(dev, msa311_vdd_disable,
-> +					       msa311->vdd);
-> +		if (err) {
-> +			return dev_err_probe(dev, err,
-> +					     "cannot add vdd disable action\n");
-> +		}
-> +	}
-> +
-> +	err = msa311_check_partid(msa311);
-> +	if (err)
-> +		return err;
-> +
-> +	err = msa311_soft_reset(msa311);
-> +	if (err)
-> +		return err;
-> +
+diff --git a/include/sound/core.h b/include/sound/core.h
+index 31079ea5e484..d5d0e5e53920 100644
+--- a/include/sound/core.h
++++ b/include/sound/core.h
+@@ -457,4 +457,12 @@ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
+ }
+ #endif
+ 
++/* async signal helpers */
++struct snd_fasync;
++
++int snd_fasync_helper(int fd, struct file *file, int on,
++		      struct snd_fasync **fasyncp);
++void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll);
++void snd_fasync_free(struct snd_fasync *fasync);
++
+ #endif /* __SOUND_CORE_H */
+diff --git a/sound/core/misc.c b/sound/core/misc.c
+index f2e8226c88fb..efe26b8ca57f 100644
+--- a/sound/core/misc.c
++++ b/sound/core/misc.c
+@@ -25,6 +25,7 @@
+ #include <linux/time.h>
+ #include <linux/slab.h>
+ #include <linux/ioport.h>
++#include <linux/fs.h>
+ #include <sound/core.h>
+ 
+ #ifdef CONFIG_SND_DEBUG
+@@ -153,3 +154,96 @@ snd_pci_quirk_lookup(struct pci_dev *pci, const struct snd_pci_quirk *list)
+ }
+ EXPORT_SYMBOL(snd_pci_quirk_lookup);
+ #endif
++
++/*
++ * Deferred async signal helpers
++ *
++ * Below are a few helper functions to wrap the async signal handling
++ * in the deferred work.  The main purpose is to avoid the messy deadlock
++ * around tasklist_lock and co at the kill_fasync() invocation.
++ * fasync_helper() and kill_fasync() are replaced with snd_fasync_helper()
++ * and snd_kill_fasync(), respectively.  In addition, snd_fasync_free() has
++ * to be called at releasing the relevant file object.
++ */
++struct snd_fasync {
++	struct fasync_struct *fasync;
++	int signal;
++	int poll;
++	int on;
++	struct list_head list;
++};
++
++static DEFINE_SPINLOCK(snd_fasync_lock);
++static LIST_HEAD(snd_fasync_list);
++
++static void snd_fasync_work_fn(struct work_struct *work)
++{
++	struct snd_fasync *fasync;
++
++	spin_lock_irq(&snd_fasync_lock);
++	while (!list_empty(&snd_fasync_list)) {
++		fasync = list_first_entry(&snd_fasync_list, struct snd_fasync, list);
++		list_del_init(&fasync->list);
++		spin_unlock_irq(&snd_fasync_lock);
++		if (fasync->on)
++			kill_fasync(&fasync->fasync, fasync->signal, fasync->poll);
++		spin_lock_irq(&snd_fasync_lock);
++	}
++	spin_unlock_irq(&snd_fasync_lock);
++}
++
++static DECLARE_WORK(snd_fasync_work, snd_fasync_work_fn);
++
++int snd_fasync_helper(int fd, struct file *file, int on,
++		      struct snd_fasync **fasyncp)
++{
++	struct snd_fasync *fasync = NULL;
++
++	if (on) {
++		fasync = kzalloc(sizeof(*fasync), GFP_KERNEL);
++		if (!fasync)
++			return -ENOMEM;
++		INIT_LIST_HEAD(&fasync->list);
++	}
++
++	spin_lock_irq(&snd_fasync_lock);
++	if (*fasyncp) {
++		kfree(fasync);
++		fasync = *fasyncp;
++	} else {
++		if (!fasync) {
++			spin_unlock_irq(&snd_fasync_lock);
++			return 0;
++		}
++		*fasyncp = fasync;
++	}
++	fasync->on = on;
++	spin_unlock_irq(&snd_fasync_lock);
++	return fasync_helper(fd, file, on, &fasync->fasync);
++}
++EXPORT_SYMBOL_GPL(snd_fasync_helper);
++
++void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll)
++{
++	unsigned long flags;
++
++	if (!fasync || !fasync->on)
++		return;
++	spin_lock_irqsave(&snd_fasync_lock, flags);
++	fasync->signal = signal;
++	fasync->poll = poll;
++	list_move(&fasync->list, &snd_fasync_list);
++	schedule_work(&snd_fasync_work);
++	spin_unlock_irqrestore(&snd_fasync_lock, flags);
++}
++EXPORT_SYMBOL_GPL(snd_kill_fasync);
++
++void snd_fasync_free(struct snd_fasync *fasync)
++{
++	if (!fasync)
++		return;
++	fasync->on = 0;
++	flush_work(&snd_fasync_work);
++	kfree(fasync);
++}
++EXPORT_SYMBOL_GPL(snd_fasync_free);
+-- 
+2.35.1
 
