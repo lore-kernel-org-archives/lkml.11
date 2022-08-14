@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69469C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1300C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:37:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242865AbiHNQhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
+        id S242870AbiHNQhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242964AbiHNQgG (ORCPT
+        with ESMTP id S242986AbiHNQgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:36:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347BC402F6;
-        Sun, 14 Aug 2022 09:28:07 -0700 (PDT)
+        Sun, 14 Aug 2022 12:36:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E9C10A2;
+        Sun, 14 Aug 2022 09:28:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8CDFB80B37;
-        Sun, 14 Aug 2022 16:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3358AC433D6;
-        Sun, 14 Aug 2022 16:28:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D59A160FB5;
+        Sun, 14 Aug 2022 16:28:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF77C433D7;
+        Sun, 14 Aug 2022 16:28:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494484;
-        bh=vB1QglllVjVmyLvs9SY4E5kAiJ6FpYz7jp3X8/Tkb20=;
+        s=k20201202; t=1660494497;
+        bh=fUMF4OApn1Hmo4wpX5irskdfVqBGS3KSolrr/ewx330=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cg/c63HmxEAJbnZcGTwN4khJ3ic0YBNpVmVPpPms1k/AZPIwL7J5cGNf5wMO/tCPM
-         Wi1b4njeet/ORQC5MX+oIUT1b7CNDS5ujCJitaI241zFaJ0Ugi8npZjNTEeyReOeiV
-         fMFR9krKLwIXoD3v98Dr+gPDrmdxqCgOnS9LHJ8TsXHRehHjW0fEKJGBKBoM7rl+BW
-         x3bn2m3xSVLUZmzFq0YpOSac2dl5Ahap4h8lMAo6UTBvRN+S11BC5xQPsCP0yba3m2
-         OJ8oCG/rIIeQmCGtrIIWx/AvVyySJlbEEZLQGVgeCI0+Tl1LkuHZK7w9ueCTTTFEVp
-         pfIFShdrWIHuA==
+        b=s0XbXsH8yzBpD4r1iQd2DBdpHrKnXNRyLT0o4oMs/1xSwjx/w8O++a5hT8aMqco6X
+         +5JSPmZhA7CA53ddKdzGaUEeKz+BfxInKQYvhvYEnLyagA9RSJOZ4u3G58vkrN6bIX
+         w8I8u0Nk/s8ztGodXlCw8TaTud2W9jk3UK15xtaW7tU/8A4C8mPHAeIvRqEZWcr5wV
+         nUR0CQsvfK3Yao1cWnWaXlUHfKEdP5JDcbBfgGu78PJPo5Y+hO+utZz984TM6eIRWu
+         9ZD1/zizFbndjRmmDIQWE2ZWoazF1svr/IhMKCLNSPhXX7bB1bI7FbswpJE8OqhulD
+         HZtv4DQ+NHNrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, pmladek@suse.com,
-        akpm@linux-foundation.org, linux@rasmusvillemoes.dk,
-        juri.lelli@redhat.com, john.ogness@linutronix.de,
-        nixiaoming@huawei.com, frederic@kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/19] watchdog: export lockup_detector_reconfigure
-Date:   Sun, 14 Aug 2022 12:27:28 -0400
-Message-Id: <20220814162739.2398217-9-sashal@kernel.org>
+Cc:     Chao Yu <chao.yu@oppo.com>,
+        Dipanjan Das <mail.dipanjan.das@gmail.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, chao@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.10 14/19] f2fs: fix to avoid use f2fs_bug_on() in f2fs_new_node_page()
+Date:   Sun, 14 Aug 2022 12:27:33 -0400
+Message-Id: <20220814162739.2398217-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814162739.2398217-1-sashal@kernel.org>
 References: <20220814162739.2398217-1-sashal@kernel.org>
@@ -54,113 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Chao Yu <chao.yu@oppo.com>
 
-[ Upstream commit 7c56a8733d0a2a4be2438a7512566e5ce552fccf ]
+[ Upstream commit 141170b759e03958f296033bb7001be62d1d363b ]
 
-In some circumstances it may be interesting to reconfigure the watchdog
-from inside the kernel.
+As Dipanjan Das <mail.dipanjan.das@gmail.com> reported, syzkaller
+found a f2fs bug as below:
 
-On PowerPC, this may helpful before and after a LPAR migration (LPM) is
-initiated, because it implies some latencies, watchdog, and especially NMI
-watchdog is expected to be triggered during this operation. Reconfiguring
-the watchdog with a factor, would prevent it to happen too frequently
-during LPM.
+RIP: 0010:f2fs_new_node_page+0x19ac/0x1fc0 fs/f2fs/node.c:1295
+Call Trace:
+ write_all_xattrs fs/f2fs/xattr.c:487 [inline]
+ __f2fs_setxattr+0xe76/0x2e10 fs/f2fs/xattr.c:743
+ f2fs_setxattr+0x233/0xab0 fs/f2fs/xattr.c:790
+ f2fs_xattr_generic_set+0x133/0x170 fs/f2fs/xattr.c:86
+ __vfs_setxattr+0x115/0x180 fs/xattr.c:182
+ __vfs_setxattr_noperm+0x125/0x5f0 fs/xattr.c:216
+ __vfs_setxattr_locked+0x1cf/0x260 fs/xattr.c:277
+ vfs_setxattr+0x13f/0x330 fs/xattr.c:303
+ setxattr+0x146/0x160 fs/xattr.c:611
+ path_setxattr+0x1a7/0x1d0 fs/xattr.c:630
+ __do_sys_lsetxattr fs/xattr.c:653 [inline]
+ __se_sys_lsetxattr fs/xattr.c:649 [inline]
+ __x64_sys_lsetxattr+0xbd/0x150 fs/xattr.c:649
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Rename lockup_detector_reconfigure() as __lockup_detector_reconfigure() and
-create a new function lockup_detector_reconfigure() calling
-__lockup_detector_reconfigure() under the protection of watchdog_mutex.
+NAT entry and nat bitmap can be inconsistent, e.g. one nid is free
+in nat bitmap, and blkaddr in its NAT entry is not NULL_ADDR, it
+may trigger BUG_ON() in f2fs_new_node_page(), fix it.
 
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-[mpe: Squash in build fix from Laurent, reported by Sachin]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220713154729.80789-3-ldufour@linux.ibm.com
+Reported-by: Dipanjan Das <mail.dipanjan.das@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/nmi.h |  2 ++
- kernel/watchdog.c   | 21 ++++++++++++++++-----
- 2 files changed, 18 insertions(+), 5 deletions(-)
+ fs/f2fs/node.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/nmi.h b/include/linux/nmi.h
-index 750c7f395ca9..f700ff2df074 100644
---- a/include/linux/nmi.h
-+++ b/include/linux/nmi.h
-@@ -122,6 +122,8 @@ int watchdog_nmi_probe(void);
- int watchdog_nmi_enable(unsigned int cpu);
- void watchdog_nmi_disable(unsigned int cpu);
- 
-+void lockup_detector_reconfigure(void);
-+
- /**
-  * touch_nmi_watchdog - restart NMI watchdog timeout.
-  *
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 01bf977090dc..ec34d9f2eab2 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -518,7 +518,7 @@ int lockup_detector_offline_cpu(unsigned int cpu)
- 	return 0;
- }
- 
--static void lockup_detector_reconfigure(void)
-+static void __lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -538,6 +538,13 @@ static void lockup_detector_reconfigure(void)
- 	__lockup_detector_cleanup();
- }
- 
-+void lockup_detector_reconfigure(void)
-+{
-+	mutex_lock(&watchdog_mutex);
-+	__lockup_detector_reconfigure();
-+	mutex_unlock(&watchdog_mutex);
-+}
-+
- /*
-  * Create the watchdog thread infrastructure and configure the detector(s).
-  *
-@@ -558,13 +565,13 @@ static __init void lockup_detector_setup(void)
- 		return;
- 
- 	mutex_lock(&watchdog_mutex);
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- 	softlockup_initialized = true;
- 	mutex_unlock(&watchdog_mutex);
- }
- 
- #else /* CONFIG_SOFTLOCKUP_DETECTOR */
--static void lockup_detector_reconfigure(void)
-+static void __lockup_detector_reconfigure(void)
- {
- 	cpus_read_lock();
- 	watchdog_nmi_stop();
-@@ -572,9 +579,13 @@ static void lockup_detector_reconfigure(void)
- 	watchdog_nmi_start();
- 	cpus_read_unlock();
- }
-+void lockup_detector_reconfigure(void)
-+{
-+	__lockup_detector_reconfigure();
-+}
- static inline void lockup_detector_setup(void)
- {
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- }
- #endif /* !CONFIG_SOFTLOCKUP_DETECTOR */
- 
-@@ -614,7 +625,7 @@ static void proc_watchdog_update(void)
- {
- 	/* Remove impossible cpus to keep sysctl output clean. */
- 	cpumask_and(&watchdog_cpumask, &watchdog_cpumask, cpu_possible_mask);
--	lockup_detector_reconfigure();
-+	__lockup_detector_reconfigure();
- }
- 
- /*
+diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+index 5fa10d0b0068..c63274d4b74b 100644
+--- a/fs/f2fs/node.c
++++ b/fs/f2fs/node.c
+@@ -1238,7 +1238,11 @@ struct page *f2fs_new_node_page(struct dnode_of_data *dn, unsigned int ofs)
+ 		dec_valid_node_count(sbi, dn->inode, !ofs);
+ 		goto fail;
+ 	}
+-	f2fs_bug_on(sbi, new_ni.blk_addr != NULL_ADDR);
++	if (unlikely(new_ni.blk_addr != NULL_ADDR)) {
++		err = -EFSCORRUPTED;
++		set_sbi_flag(sbi, SBI_NEED_FSCK);
++		goto fail;
++	}
+ #endif
+ 	new_ni.nid = dn->nid;
+ 	new_ni.ino = dn->inode->i_ino;
 -- 
 2.35.1
 
