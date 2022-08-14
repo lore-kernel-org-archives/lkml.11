@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08ADEC28B2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA70FC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240638AbiHNPci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
+        id S240651AbiHNPcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240558AbiHNPbl (ORCPT
+        with ESMTP id S240516AbiHNPcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:31:41 -0400
+        Sun, 14 Aug 2022 11:32:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3983E1A836;
-        Sun, 14 Aug 2022 08:29:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DE91AF2C;
+        Sun, 14 Aug 2022 08:29:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1023DB80B27;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7CDDB80B48;
+        Sun, 14 Aug 2022 15:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED305C433C1;
         Sun, 14 Aug 2022 15:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF90C433D6;
-        Sun, 14 Aug 2022 15:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660490983;
-        bh=VAZ7bw/cY6Ku/WESVFj7vU3YOdy8tsbj8N9GzWDRbVY=;
+        s=k20201202; t=1660490986;
+        bh=7D0OrVKNjV5W28hSKVEGbz9KYV6kvLGpEuCpVGt/P4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXI8i2ia1XSm5TJypricsEdMMHdrm3FSLWuwY6/kfIP3AbCUdApzyTHVJ0GSTtBQC
-         +pxm0/0lEY47wwyAoUeiTJ+BsFNpCQhWTyIFpVSp4Y+WhviqNQDCigpeqvWu+IgMEO
-         sEcH6Vr2Im1rreVUgzb8SEzzhFvWYibjEtbriEc1eiJNue+qTMTF/HMaV2EeaZ7WzA
-         jyvBFWeCRE855l2UOJCRBCMfXbf6fLIJd96dNG4weCpdKLRMmgjsjDAZs5hpZak8Oj
-         q5Lz8hosqIQ8RV3WfCzBF0qPHo0sD6phRJJVFMB5z4vCw9EHoVQJFAWO2P+rCfaaqE
-         HgMkOzuCvFIuA==
+        b=SeNXRAf/6seMWrn5B3jjo9QmVqC347TC49RA2wUxCARL+uhmeQYgR/SpR8D8C7/9M
+         BYf1nD2nLaYdKkreKV9gGArY5HMh6jB1oEDGnwLK5pAUd6fiEywXUfWsPINfn6NBk9
+         ufcMeXDVUv67ScjRyvQ9BVvxZ6Y4wV55yx68SDm+qPa+1C3rkzfv1RJs76YmQKWkRV
+         Y2OWIwydUxDsCflduZI9+NN1ix4o6hWHe9004RvmsXK1fCaZzJkWypqihcgBTtLi0J
+         LVWqVyesMZyvFgHUrXyqtlyYC2f/LeV86INxcW6p2WbbHOoYxFemRvoexGbzT0Dfce
+         fuHxNaf1jouOw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takeshi Saito <takeshi.saito.xv@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 46/64] mmc: renesas_sdhi: newer SoCs don't need manual tap correction
-Date:   Sun, 14 Aug 2022 11:24:19 -0400
-Message-Id: <20220814152437.2374207-46-sashal@kernel.org>
+Cc:     Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, zyjzyj2000@gmail.com,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 48/64] RDMA/rxe: Limit the number of calls to each tasklet
+Date:   Sun, 14 Aug 2022 11:24:21 -0400
+Message-Id: <20220814152437.2374207-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
@@ -54,106 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takeshi Saito <takeshi.saito.xv@renesas.com>
+From: Bob Pearson <rpearsonhpe@gmail.com>
 
-[ Upstream commit 00e8c11c137b2e4b2bf54dc9881cf32e3441ddb4 ]
+[ Upstream commit eff6d998ca297cb0b2e53b032a56cf8e04dd8b17 ]
 
-The newest Gen3 SoCs and Gen4 SoCs do not need manual tap correction
-with HS400 anymore. So, instead of checking the SDHI version, add a
-quirk flag and set manual tap correction only for affected SoCs.
+Limit the maximum number of calls to each tasklet from rxe_do_task()
+before yielding the cpu. When the limit is reached reschedule the tasklet
+and exit the calling loop. This patch prevents one tasklet from consuming
+100% of a cpu core and causing a deadlock or soft lockup.
 
-Signed-off-by: Takeshi Saito <takeshi.saito.xv@renesas.com>
-[wsa: rebased, renamed the quirk variable, removed stale comment]
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Link: https://lore.kernel.org/r/20220720072901.1266-1-wsa+renesas@sang-engineering.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220630190425.2251-9-rpearsonhpe@gmail.com
+Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/renesas_sdhi.h               | 1 +
- drivers/mmc/host/renesas_sdhi_core.c          | 5 ++---
- drivers/mmc/host/renesas_sdhi_internal_dmac.c | 6 ++++++
- 3 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_param.h |  6 ++++++
+ drivers/infiniband/sw/rxe/rxe_task.c  | 16 ++++++++++++----
+ 2 files changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mmc/host/renesas_sdhi.h b/drivers/mmc/host/renesas_sdhi.h
-index 1a1e3e020a8c..c4abfee1ebae 100644
---- a/drivers/mmc/host/renesas_sdhi.h
-+++ b/drivers/mmc/host/renesas_sdhi.h
-@@ -43,6 +43,7 @@ struct renesas_sdhi_quirks {
- 	bool hs400_4taps;
- 	bool fixed_addr_mode;
- 	bool dma_one_rx_only;
-+	bool manual_tap_correction;
- 	u32 hs400_bad_taps;
- 	const u8 (*hs400_calib_table)[SDHI_CALIB_TABLE_MAX];
- };
-diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
-index 5fa365d0c7fd..61149c0acaae 100644
---- a/drivers/mmc/host/renesas_sdhi_core.c
-+++ b/drivers/mmc/host/renesas_sdhi_core.c
-@@ -380,8 +380,7 @@ static void renesas_sdhi_hs400_complete(struct mmc_host *mmc)
- 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_DT2FF,
- 		       priv->scc_tappos_hs400);
+diff --git a/drivers/infiniband/sw/rxe/rxe_param.h b/drivers/infiniband/sw/rxe/rxe_param.h
+index 568a7cbd13d4..86c7a8bf3cbb 100644
+--- a/drivers/infiniband/sw/rxe/rxe_param.h
++++ b/drivers/infiniband/sw/rxe/rxe_param.h
+@@ -105,6 +105,12 @@ enum rxe_device_param {
+ 	RXE_INFLIGHT_SKBS_PER_QP_HIGH	= 64,
+ 	RXE_INFLIGHT_SKBS_PER_QP_LOW	= 16,
  
--	/* Gen3 can't do automatic tap correction with HS400, so disable it */
--	if (sd_ctrl_read16(host, CTL_VERSION) == SDHI_VER_GEN3_SDMMC)
-+	if (priv->quirks && priv->quirks->manual_tap_correction)
- 		sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL,
- 			       ~SH_MOBILE_SDHI_SCC_RVSCNTL_RVSEN &
- 			       sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_RVSCNTL));
-@@ -718,7 +717,7 @@ static bool renesas_sdhi_manual_correction(struct tmio_mmc_host *host, bool use_
- 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_RVSREQ, 0);
++	/* Max number of interations of each tasklet
++	 * before yielding the cpu to let other
++	 * work make progress
++	 */
++	RXE_MAX_ITERATIONS		= 1024,
++
+ 	/* Delay before calling arbiter timer */
+ 	RXE_NSEC_ARB_TIMER_DELAY	= 200,
  
- 	/* Change TAP position according to correction status */
--	if (sd_ctrl_read16(host, CTL_VERSION) == SDHI_VER_GEN3_SDMMC &&
-+	if (priv->quirks && priv->quirks->manual_tap_correction &&
- 	    host->mmc->ios.timing == MMC_TIMING_MMC_HS400) {
- 		u32 bad_taps = priv->quirks ? priv->quirks->hs400_bad_taps : 0;
- 		/*
-diff --git a/drivers/mmc/host/renesas_sdhi_internal_dmac.c b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-index 3084b15ae2cb..52915404eb07 100644
---- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-+++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-@@ -170,6 +170,7 @@ static const struct renesas_sdhi_quirks sdhi_quirks_4tap_nohs400_one_rx = {
- static const struct renesas_sdhi_quirks sdhi_quirks_4tap = {
- 	.hs400_4taps = true,
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
-+	.manual_tap_correction = true,
- };
+diff --git a/drivers/infiniband/sw/rxe/rxe_task.c b/drivers/infiniband/sw/rxe/rxe_task.c
+index 0c4db5bb17d7..2248cf33d776 100644
+--- a/drivers/infiniband/sw/rxe/rxe_task.c
++++ b/drivers/infiniband/sw/rxe/rxe_task.c
+@@ -8,7 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/hardirq.h>
  
- static const struct renesas_sdhi_quirks sdhi_quirks_nohs400 = {
-@@ -182,25 +183,30 @@ static const struct renesas_sdhi_quirks sdhi_quirks_fixed_addr = {
+-#include "rxe_task.h"
++#include "rxe.h"
  
- static const struct renesas_sdhi_quirks sdhi_quirks_bad_taps1357 = {
- 	.hs400_bad_taps = BIT(1) | BIT(3) | BIT(5) | BIT(7),
-+	.manual_tap_correction = true,
- };
+ int __rxe_do_task(struct rxe_task *task)
  
- static const struct renesas_sdhi_quirks sdhi_quirks_bad_taps2367 = {
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
-+	.manual_tap_correction = true,
- };
+@@ -33,6 +33,7 @@ void rxe_do_task(struct tasklet_struct *t)
+ 	int cont;
+ 	int ret;
+ 	struct rxe_task *task = from_tasklet(task, t, tasklet);
++	unsigned int iterations = RXE_MAX_ITERATIONS;
  
- static const struct renesas_sdhi_quirks sdhi_quirks_r8a7796_es13 = {
- 	.hs400_4taps = true,
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
- 	.hs400_calib_table = r8a7796_es13_calib_table,
-+	.manual_tap_correction = true,
- };
+ 	spin_lock_bh(&task->state_lock);
+ 	switch (task->state) {
+@@ -61,13 +62,20 @@ void rxe_do_task(struct tasklet_struct *t)
+ 		spin_lock_bh(&task->state_lock);
+ 		switch (task->state) {
+ 		case TASK_STATE_BUSY:
+-			if (ret)
++			if (ret) {
+ 				task->state = TASK_STATE_START;
+-			else
++			} else if (iterations--) {
+ 				cont = 1;
++			} else {
++				/* reschedule the tasklet and exit
++				 * the loop to give up the cpu
++				 */
++				tasklet_schedule(&task->tasklet);
++				task->state = TASK_STATE_START;
++			}
+ 			break;
  
- static const struct renesas_sdhi_quirks sdhi_quirks_r8a77965 = {
- 	.hs400_bad_taps = BIT(2) | BIT(3) | BIT(6) | BIT(7),
- 	.hs400_calib_table = r8a77965_calib_table,
-+	.manual_tap_correction = true,
- };
- 
- static const struct renesas_sdhi_quirks sdhi_quirks_r8a77990 = {
- 	.hs400_calib_table = r8a77990_calib_table,
-+	.manual_tap_correction = true,
- };
- 
- /*
+-		/* soneone tried to run the task since the last time we called
++		/* someone tried to run the task since the last time we called
+ 		 * func, so we will call one more time regardless of the
+ 		 * return value
+ 		 */
 -- 
 2.35.1
 
