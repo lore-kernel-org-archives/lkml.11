@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB208C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C02AC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240561AbiHNPbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S240570AbiHNPbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240362AbiHNPa4 (ORCPT
+        with ESMTP id S240428AbiHNPbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:30:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA3D1A826;
-        Sun, 14 Aug 2022 08:29:32 -0700 (PDT)
+        Sun, 14 Aug 2022 11:31:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8341AD8B;
+        Sun, 14 Aug 2022 08:29:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1479460C41;
-        Sun, 14 Aug 2022 15:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DFB2C433D6;
-        Sun, 14 Aug 2022 15:29:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 875EFB80B79;
+        Sun, 14 Aug 2022 15:29:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E28DC4347C;
+        Sun, 14 Aug 2022 15:29:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660490971;
-        bh=qt61o7YewrXnnLL9ocm5HDs/bnCH6kg7cv3t1Ds3lw8=;
+        s=k20201202; t=1660490974;
+        bh=bvxl4NfAPWoJeKXPXZQ9lKtZkp/R6dPMZbid1WSJKj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hNNDrRCxBQIok7pc0B2BtKN5py0ml1fNBjXHenOw1KbwjmkXG0ygxTZfC5Li6wAWj
-         GO4Gpr4SayO+Bq7eM7s/8fGxtdUQWGKZ+38+MA9Mi0lzj744IjuDaHhnHReTgY1phE
-         H01+WJac0OSGq34E8QzVhyQdVb2hIpGzbDq6qOquhx/4Sf4baaJQT9vTeF2BUY6EMJ
-         4jG6EI6P/dzNK4JbRIbkYtbMJvEDrYa3rI6AigALbR+6IgIqR4R4eTfNmMEoI31/k8
-         ayczk4roQ4ZfRDtMQvi2vAFyzRp14sJBckV41bGMGADwBzxW5ilWufRa4/ZZPfcEAU
-         eGw6fgjfgLxWg==
+        b=TcuBzZgQJMQRjqen04b+Zvl30DhDkZWkpSYnckaZvI6GeewXM+zDeSUiTIkkZHzHa
+         kS5UBoJ+3idMq19F4IZYeSZQdz8IWA+QT3xGNFBB0k1f3Yt/3o1aepqEmHU1CD1MX8
+         I9FoZl9sjFL9tFW2A4FtQc06Jx90PYrLym0xPOJbkXA1BqxUTWTKEedBYDALl6G54S
+         HU0vGzvZRmy3DEyjVFEts2UZgWXTqoMMpmUone5CKxOjBynhD/IMHhBOUd/lVPhtlk
+         rnut/UW8iOIYijULEZi7T1rmEOJTU6tDLYZONij8zee5bapTlSQ+tczvRnsmk4kke/
+         Yt7tyEwBUjE1Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chanho Park <chanho61.park@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        alim.akhtar@samsung.com, bvanassche@acm.org, beanhuo@micron.com,
-        peter.wang@mediatek.com, linux-scsi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 38/64] scsi: ufs: ufs-exynos: Change ufs phy control sequence
-Date:   Sun, 14 Aug 2022 11:24:11 -0400
-Message-Id: <20220814152437.2374207-38-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, fbarrat@linux.ibm.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.19 40/64] cxl: Fix a memory leak in an error handling path
+Date:   Sun, 14 Aug 2022 11:24:13 -0400
+Message-Id: <20220814152437.2374207-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814152437.2374207-1-sashal@kernel.org>
 References: <20220814152437.2374207-1-sashal@kernel.org>
@@ -56,82 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 3d73b200f9893d8f5ba5d105e8b69c8d16744fa2 ]
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-Since commit 1599069a62c6 ("phy: core: Warn when phy_power_on is called
-before phy_init"), the following warning has been reported:
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-	phy_power_on was called before phy_init
-
-To address this, we need to remove phy_power_on from exynos_ufs_phy_init()
-and move it after phy_init. phy_power_off and phy_exit are also necessary
-in exynos_ufs_remove().
-
-Link: https://lore.kernel.org/r/20220706020255.151177-4-chanho61.park@samsung.com
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ufs/host/ufs-exynos.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/misc/cxl/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/ufs/host/ufs-exynos.c b/drivers/ufs/host/ufs-exynos.c
-index a81d8cbd542f..25995667c832 100644
---- a/drivers/ufs/host/ufs-exynos.c
-+++ b/drivers/ufs/host/ufs-exynos.c
-@@ -910,9 +910,13 @@ static int exynos_ufs_phy_init(struct exynos_ufs *ufs)
- 	if (ret) {
- 		dev_err(hba->dev, "%s: phy init failed, ret = %d\n",
- 			__func__, ret);
--		goto out_exit_phy;
-+		return ret;
- 	}
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index 5f0e2dcebb34..ac3795a7e1f6 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -350,6 +350,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
  
-+	ret = phy_power_on(generic_phy);
-+	if (ret)
-+		goto out_exit_phy;
-+
- 	return 0;
- 
- out_exit_phy:
-@@ -1174,10 +1178,6 @@ static int exynos_ufs_init(struct ufs_hba *hba)
- 		goto out;
- 	}
- 
--	ret = phy_power_on(ufs->phy);
--	if (ret)
--		goto phy_off;
--
- 	exynos_ufs_priv_init(hba, ufs);
- 
- 	if (ufs->drv_data->drv_init) {
-@@ -1195,8 +1195,6 @@ static int exynos_ufs_init(struct ufs_hba *hba)
- 	exynos_ufs_config_smu(ufs);
- 	return 0;
- 
--phy_off:
--	phy_power_off(ufs->phy);
  out:
- 	hba->priv = NULL;
- 	return ret;
-@@ -1514,9 +1512,14 @@ static int exynos_ufs_probe(struct platform_device *pdev)
- static int exynos_ufs_remove(struct platform_device *pdev)
- {
- 	struct ufs_hba *hba =  platform_get_drvdata(pdev);
-+	struct exynos_ufs *ufs = ufshcd_get_variant(hba);
- 
- 	pm_runtime_get_sync(&(pdev)->dev);
- 	ufshcd_remove(hba);
-+
-+	phy_power_off(ufs->phy);
-+	phy_exit(ufs->phy);
-+
- 	return 0;
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
  }
- 
 -- 
 2.35.1
 
