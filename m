@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F52AC25B0E
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9895FC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242293AbiHNPzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
+        id S242187AbiHNPzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242039AbiHNPvF (ORCPT
+        with ESMTP id S242067AbiHNPvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:51:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B423317AB0;
-        Sun, 14 Aug 2022 08:36:44 -0700 (PDT)
+        Sun, 14 Aug 2022 11:51:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250D01A805;
+        Sun, 14 Aug 2022 08:36:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E4C4B80B56;
-        Sun, 14 Aug 2022 15:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64526C43470;
-        Sun, 14 Aug 2022 15:36:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFCE560CF5;
+        Sun, 14 Aug 2022 15:36:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E83DCC433C1;
+        Sun, 14 Aug 2022 15:36:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491402;
-        bh=X32xtPBWcVE6Z6gxu3/jbMLK/pP7I1mcOKV4OxfaTWk=;
+        s=k20201202; t=1660491407;
+        bh=2IANWfcDXn8gdk1Z4gv51ItWI+UvkHS6CpqklXgJFeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBt1HThrz9JxiAAOe/IQBYrFVQTwjKS4GZt0ilyjIKRbXuG5moPVkZ5DIH1sElVR6
-         1wrXIGtMAIfr0psmvAL9stMM7tJSkHXKcZlDdWSLQeBHIRc85KBhLWakyw3wEJwdyo
-         /TOTtukmUWkoRo9F0ki1rIrcWrYjS5LmVbV/ABKLaMe5LZHUgi6dNZdmQKNe+CWauI
-         kJxVJD45fWj80QXNrWJibu1WpHuB83823yVJ4DRGed7jthpybjfa0W9mm2G1hH0lka
-         2cz9vr5cbdeVsLWYaLu7dStoGY04Hg0G4lnJLSLp+9TsOcgjKgP+wkf4t6br7fl3iE
-         vvFkfqJlmLy+w==
+        b=CP+djlBD/sA/kbRYMsdmL0uHLHBhqxxzPeiEfK4o+nkl29XrQKUNk15qrq4WwcQBL
+         AdW88K/+oOZPkSeeg8JKiNmanwPichFwn+gcMu8Z/2GNi06PLranSATbw6zYcfrrM/
+         r5ILS4HkfbBhVDjHcZL3EjyEilKNdEeVbAjOXiUEdltL28uCWaSGb9jHPnfL9XMZ8e
+         25NRc8QNerJt/vwZ7S5VFS4IKdj7Y7QD+T12SUaMZfzlwBqNCi0+sfLrvySEpJZagZ
+         2+2d0wXp6XJxccdx0xVwcRnrCkCLVcihqQVi+sJ1waQPUixXB39ZK317aT8R3q9bEq
+         zcfx1sWWYJK7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Alan Stern <stern@rowland.harvard.edu>,
+Cc:     Jozef Martiniak <jomajm@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 3/9] usb: host: ohci-ppc-of: Fix refcount leak bug
-Date:   Sun, 14 Aug 2022 11:36:30 -0400
-Message-Id: <20220814153637.2380406-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        stern@rowland.harvard.edu, axboe@kernel.dk, hbh25y@gmail.com,
+        rdunlap@infradead.org, mingo@kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 5/9] gadgetfs: ep_io - wait until IRQ finishes
+Date:   Sun, 14 Aug 2022 11:36:32 -0400
+Message-Id: <20220814153637.2380406-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153637.2380406-1-sashal@kernel.org>
 References: <20220814153637.2380406-1-sashal@kernel.org>
@@ -51,35 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Jozef Martiniak <jomajm@gmail.com>
 
-[ Upstream commit 40a959d7042bb7711e404ad2318b30e9f92c6b9b ]
+[ Upstream commit 04cb742d4d8f30dc2e83b46ac317eec09191c68e ]
 
-In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+after usb_ep_queue() if wait_for_completion_interruptible() is
+interrupted we need to wait until IRQ gets finished.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220617034637.4003115-1-windhl@126.com
+Otherwise complete() from epio_complete() can corrupt stack.
+
+Signed-off-by: Jozef Martiniak <jomajm@gmail.com>
+Link: https://lore.kernel.org/r/20220708070645.6130-1-jomajm@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ohci-ppc-of.c | 1 +
+ drivers/usb/gadget/legacy/inode.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
-index 4f87a5c61b08..d22a70363fbf 100644
---- a/drivers/usb/host/ohci-ppc-of.c
-+++ b/drivers/usb/host/ohci-ppc-of.c
-@@ -168,6 +168,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
- 				release_mem_region(res.start, 0x4);
- 		} else
- 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
-+		of_node_put(np);
- 	}
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index 53d17e1bb65a..f0f41cc8b2f1 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -365,6 +365,7 @@ ep_io (struct ep_data *epdata, void *buf, unsigned len)
+ 				spin_unlock_irq (&epdata->dev->lock);
  
- 	irq_dispose_mapping(irq);
+ 				DBG (epdata->dev, "endpoint gone\n");
++				wait_for_completion(&done);
+ 				epdata->status = -ENODEV;
+ 			}
+ 		}
 -- 
 2.35.1
 
