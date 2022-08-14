@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3C3C28B2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DEC7C2BB47
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241100AbiHNQ0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
+        id S241707AbiHNQ0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242189AbiHNQZI (ORCPT
+        with ESMTP id S240126AbiHNQZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:25:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A2118E02;
-        Sun, 14 Aug 2022 09:22:57 -0700 (PDT)
+        Sun, 14 Aug 2022 12:25:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8981900C;
+        Sun, 14 Aug 2022 09:23:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4234960F98;
-        Sun, 14 Aug 2022 16:22:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09808C433C1;
-        Sun, 14 Aug 2022 16:22:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01063B80AEE;
+        Sun, 14 Aug 2022 16:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA01C4347C;
+        Sun, 14 Aug 2022 16:23:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494176;
-        bh=BWjidRQ+edWUR4aH7drez7StIMEyzcJyA/RtL4QAKXA=;
+        s=k20201202; t=1660494183;
+        bh=nIcfzrungjtKw7y6HO2FvmCrIPM7rRA9aRlAm5poON0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hFoySHI71rG1Kl1I3iPGyDYiE6pk/RKnMAqcO8Z0gzzCT3A3PGXl3z1hrFpcw3rsK
-         pmL0fdAqfOwCjbjOh/2jFvpInJLIzWq2pJE3CTzewqvd1jCc5quZtMtTwCy/8P+HOS
-         N0NtWe3zQavJ+tmVSsBVt115KlV3gLAQt1LesSk839AF7QkSC2dkFyyzcykAvLeNXG
-         u12lQWwMA3wxEDaGwLgu+a2/uwY+wNOsGQs7olD00IOzv8LC+SQ5j0qH02c5Wdwr9u
-         EmQHRNJXPkSf74p9TwT2C6tkC13KSvAgDsrT40qCJMmfd/lv61j+n8lYUEwj/vdUwW
-         8CTZkxzAfx/bw==
+        b=uh6ecDv79p8qjETv0dO52fcjQoKS/fn6aqkNKFNN/5ug7bQQ3iPzUClPFhz0J3AIJ
+         XACR7yOMrUmo49/zxecN2JZt2diJNm/AWXIoarDQ1YEidPzafJL3Ehds2RrrOSQ+R8
+         xVd22A71wfU1L+y2INp4SiTutnU37uphXsuP25phMCLjXW2JIEsfb5UVxuq4J5UVFb
+         nATm3s2yQtG6b4uS7ZqaGu/WyXkdN7XaNzW0Hj+etSrh/VC+qZjKzQCO8u5JOSNz2D
+         0lJeFt/ovb/13P4YluxYxyE8eZkYsBm7LIrYqZasYJoj4Qui8kbojz4s52EOn7q27U
+         cUEHdm8wi7dXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>,
-        syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com,
-        syzbot+669c9abf11a6a011dd09@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, kai.vehmanen@linux.intel.com, broonie@kernel.org,
-        pierre-louis.bossart@linux.intel.com,
-        ranjani.sridharan@linux.intel.com, zsm@chromium.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.19 38/48] ALSA: pcm: Use deferred fasync helper
-Date:   Sun, 14 Aug 2022 12:19:31 -0400
-Message-Id: <20220814161943.2394452-38-sashal@kernel.org>
+Cc:     Chao Yu <chao.yu@oppo.com>, Wenqing Liu <wenqingliu0120@gmail.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, chao@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.19 41/48] f2fs: fix to do sanity check on segment type in build_sit_entries()
+Date:   Sun, 14 Aug 2022 12:19:34 -0400
+Message-Id: <20220814161943.2394452-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
 References: <20220814161943.2394452-1-sashal@kernel.org>
@@ -56,77 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Chao Yu <chao.yu@oppo.com>
 
-[ Upstream commit 96b097091c66df4f6fbf5cbff21df6cc02a2f055 ]
+[ Upstream commit 09beadf289d6e300553e60d6e76f13c0427ecab3 ]
 
-For avoiding the potential deadlock via kill_fasync() call, use the
-new fasync helpers to defer the invocation from timer API.  Note that
-it's merely a workaround.
+As Wenqing Liu <wenqingliu0120@gmail.com> reported in bugzilla:
 
-Reported-by: syzbot+8285e973a41b5aa68902@syzkaller.appspotmail.com
-Reported-by: syzbot+669c9abf11a6a011dd09@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20220728125945.29533-4-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+https://bugzilla.kernel.org/show_bug.cgi?id=216285
+
+RIP: 0010:memcpy_erms+0x6/0x10
+ f2fs_update_meta_page+0x84/0x570 [f2fs]
+ change_curseg.constprop.0+0x159/0xbd0 [f2fs]
+ f2fs_do_replace_block+0x5c7/0x18a0 [f2fs]
+ f2fs_replace_block+0xeb/0x180 [f2fs]
+ recover_data+0x1abd/0x6f50 [f2fs]
+ f2fs_recover_fsync_data+0x12ce/0x3250 [f2fs]
+ f2fs_fill_super+0x4459/0x6190 [f2fs]
+ mount_bdev+0x2cf/0x3b0
+ legacy_get_tree+0xed/0x1d0
+ vfs_get_tree+0x81/0x2b0
+ path_mount+0x47e/0x19d0
+ do_mount+0xce/0xf0
+ __x64_sys_mount+0x12c/0x1a0
+ do_syscall_64+0x38/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+The root cause is segment type is invalid, so in f2fs_do_replace_block(),
+f2fs accesses f2fs_sm_info::curseg_array with out-of-range segment type,
+result in accessing invalid curseg->sum_blk during memcpy in
+f2fs_update_meta_page(). Fix this by adding sanity check on segment type
+in build_sit_entries().
+
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/pcm.h     | 2 +-
- sound/core/pcm.c        | 1 +
- sound/core/pcm_lib.c    | 2 +-
- sound/core/pcm_native.c | 2 +-
- 4 files changed, 4 insertions(+), 3 deletions(-)
+ fs/f2fs/segment.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/include/sound/pcm.h b/include/sound/pcm.h
-index 6b99310b5b88..6987110843f0 100644
---- a/include/sound/pcm.h
-+++ b/include/sound/pcm.h
-@@ -399,7 +399,7 @@ struct snd_pcm_runtime {
- 	snd_pcm_uframes_t twake; 	/* do transfer (!poll) wakeup if non-zero */
- 	wait_queue_head_t sleep;	/* poll sleep */
- 	wait_queue_head_t tsleep;	/* transfer sleep */
--	struct fasync_struct *fasync;
-+	struct snd_fasync *fasync;
- 	bool stop_operating;		/* sync_stop will be called */
- 	struct mutex buffer_mutex;	/* protect for buffer changes */
- 	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
-diff --git a/sound/core/pcm.c b/sound/core/pcm.c
-index 977d54320a5c..c917ac84a7e5 100644
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -1005,6 +1005,7 @@ void snd_pcm_detach_substream(struct snd_pcm_substream *substream)
- 		substream->runtime = NULL;
- 	}
- 	mutex_destroy(&runtime->buffer_mutex);
-+	snd_fasync_free(runtime->fasync);
- 	kfree(runtime);
- 	put_pid(substream->pid);
- 	substream->pid = NULL;
-diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
-index 1fc7c50ffa62..40751e5aff09 100644
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -1822,7 +1822,7 @@ void snd_pcm_period_elapsed_under_stream_lock(struct snd_pcm_substream *substrea
- 		snd_timer_interrupt(substream->timer, 1);
- #endif
-  _end:
--	kill_fasync(&runtime->fasync, SIGIO, POLL_IN);
-+	snd_kill_fasync(runtime->fasync, SIGIO, POLL_IN);
- }
- EXPORT_SYMBOL(snd_pcm_period_elapsed_under_stream_lock);
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 874c1b9c41a2..ac890c9fa8a1 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4362,6 +4362,12 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 				return err;
+ 			seg_info_from_raw_sit(se, &sit);
  
-diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
-index 4adaee62ef33..16fcf57c6f03 100644
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -3945,7 +3945,7 @@ static int snd_pcm_fasync(int fd, struct file * file, int on)
- 	runtime = substream->runtime;
- 	if (runtime->status->state == SNDRV_PCM_STATE_DISCONNECTED)
- 		return -EBADFD;
--	return fasync_helper(fd, file, on, &runtime->fasync);
-+	return snd_fasync_helper(fd, file, on, &runtime->fasync);
- }
++			if (se->type >= NR_PERSISTENT_LOG) {
++				f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++				return -EFSCORRUPTED;
++			}
++
+ 			sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
  
- /*
+ 			if (f2fs_block_unit_discard(sbi)) {
+@@ -4410,6 +4416,13 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 			break;
+ 		seg_info_from_raw_sit(se, &sit);
+ 
++		if (se->type >= NR_PERSISTENT_LOG) {
++			f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++			err = -EFSCORRUPTED;
++			break;
++		}
++
+ 		sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 		if (f2fs_block_unit_discard(sbi)) {
 -- 
 2.35.1
 
