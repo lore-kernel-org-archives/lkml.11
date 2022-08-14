@@ -2,105 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90939C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3D7C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241069AbiHNQVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
+        id S240758AbiHNQVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241079AbiHNQUp (ORCPT
+        with ESMTP id S231503AbiHNQVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:20:45 -0400
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455D7F35;
-        Sun, 14 Aug 2022 09:09:29 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id A8678F8A; Sun, 14 Aug 2022 10:55:08 -0500 (CDT)
-Date:   Sun, 14 Aug 2022 10:55:08 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com
-Subject: Re: [PATCH v4 0/4] Introduce security_create_user_ns()
-Message-ID: <20220814155508.GA7991@mail.hallyn.com>
-References: <20220801180146.1157914-1-fred@cloudflare.com>
- <87les7cq03.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhRpUxyxkPaTz1scGeRm+i4KviQQA7WismOX2q5agzC+DQ@mail.gmail.com>
- <87wnbia7jh.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhS3udhEecVYVvHm=tuqiPGh034-xPqXYtFjBk23+p-Szg@mail.gmail.com>
+        Sun, 14 Aug 2022 12:21:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41820BCAB;
+        Sun, 14 Aug 2022 09:12:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD51660F4E;
+        Sun, 14 Aug 2022 16:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD51C433C1;
+        Sun, 14 Aug 2022 16:12:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660493524;
+        bh=xTjMqD+IdoL1cpjFNN0IwBiI/zTHumM+62VySxWgwE8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=D9BtwFwuLZCIOcFsE8XcTPKPF0bsxRj+Le2Fu6fpsqSkDz8bx6I3WMCGMvbRfOogn
+         pxFW7N3WIW/mHJVetpltFKKCIPKg9jpXvRXQYK2aog8h0Rx3KNgxVEZAh8dO/H1L7j
+         XR47qTGXluq4KaYUXoioa27EG+gTFTnrPi/SX3U6Hwo5LKFEOKF76kFeKXwZ8jpZc2
+         Vi0UREx02oVqDhq7QPiOClxjSCmp61rQkiLHDBPo58rPptlZ/d8hLbyS/KRZxZq/0Z
+         WMF6413ezVDjgMHxETzyuRCFUzMImqdpUSEmtA8cMGNX72PHeRxAh0UwriY9jRVeuC
+         Sr4xX6trRFekg==
+Date:   Sun, 14 Aug 2022 17:22:32 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, krisman@collabora.com,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH v2] iio: light: ltrf216a: Add raw attribute
+Message-ID: <20220814172232.4caeaf1c@jic23-huawei>
+In-Reply-To: <20220812100424.529425-1-shreeya.patel@collabora.com>
+References: <20220812100424.529425-1-shreeya.patel@collabora.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhS3udhEecVYVvHm=tuqiPGh034-xPqXYtFjBk23+p-Szg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 03:16:16PM -0400, Paul Moore wrote:
-> On Mon, Aug 8, 2022 at 2:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > Paul Moore <paul@paul-moore.com> writes:
-> > > On Mon, Aug 1, 2022 at 10:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > >> Frederick Lawler <fred@cloudflare.com> writes:
-> > >>
-> > >> > While creating a LSM BPF MAC policy to block user namespace creation, we
-> > >> > used the LSM cred_prepare hook because that is the closest hook to prevent
-> > >> > a call to create_user_ns().
-> > >>
-> > >> Re-nack for all of the same reasons.
-> > >> AKA This can only break the users of the user namespace.
-> > >>
-> > >> Nacked-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> > >>
-> > >> You aren't fixing what your problem you are papering over it by denying
-> > >> access to the user namespace.
-> > >>
-> > >> Nack Nack Nack.
-> > >>
-> > >> Stop.
-> > >>
-> > >> Go back to the drawing board.
-> > >>
-> > >> Do not pass go.
-> > >>
-> > >> Do not collect $200.
-> > >
-> > > If you want us to take your comments seriously Eric, you need to
-> > > provide the list with some constructive feedback that would allow
-> > > Frederick to move forward with a solution to the use case that has
-> > > been proposed.  You response above may be many things, but it is
-> > > certainly not that.
-> >
-> > I did provide constructive feedback.  My feedback to his problem
-> > was to address the real problem of bugs in the kernel.
+On Fri, 12 Aug 2022 15:34:24 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
+
+> Add IIO_CHAN_INFO_RAW to the mask to be able to read raw values
+> from the light sensor.
 > 
-> We've heard from several people who have use cases which require
-> adding LSM-level access controls and observability to user namespace
-> creation.  This is the problem we are trying to solve here; if you do
-> not like the approach proposed in this patchset please suggest another
-> implementation that allows LSMs visibility into user namespace
-> creation.
+> The userspace code for brightness control in steam deck uses the
+> in_illuminance_input value through sysfs and multiplies it
+> with a constant stored in BIOS at factory calibration time.
+> 
+> The downstream driver for LTRF216A that we have been using
+> has incorrect formula for LUX calculation which we corrected
+> in the upstreamed driver.
+> 
+> Now to be able to use the upstreamed driver, we need to add some
+> magic in userspace so that the brightness control works like before
+> even with the updated LUX formula.
+> 
+> Hence, we need the raw data to calculate a constant that can be
+> added in userspace code.
+> 
+> Downstream driver LUX formula :-
+> (greendata*8*LTRF216A_WIN_FAC) / (data->als_gain_fac*data->int_time_fac*10)
+> 
+> Upstreamed driver LUX formula :-
+> (greendata*45*LTRF216A_WIN_FAC) / (data->als_gain_fac*data->int_time_fac)
+> 
+> greendata is the ALS_DATA which we would like to get through sysfs using
+> the raw attribute.
+> 
+> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 
-Regarding the observability - can someone concisely lay out why just
-auditing userns creation would not suffice?  Userspace could decide
-what to report based on whether the creating user_ns == /proc/1/ns/user...
+Hi Shreeya.
 
-Regarding limiting the tweaking of otherwise-privileged code by
-unprivileged users, i wonder whether we could instead add smarts to
-ns_capable().  Point being, uid mapping would still work, but we'd
-break the "privileged against resources you own" part of user
-namespaces.  I would want it to default to allow, but then when a
-0-day is found which requires reaching ns_capable() code, admins 
-could easily prevent exploitation until reboot from a fixed kernel.
+Your description above makes me wonder though if we should support
+this as an intensity channel as we did for many of the early Ambient light
+sensors.  Not sure why it's called 'greendata' btw!
+For those early tsl2583 IIRC and similar, we had two sensors with infrared vs
+visible+infrared (which is basically what clear is here).
+The readings given were of those two sensors then we did a bunch of maths
+to convert those to LUX (in simplest drivers we simply subtracted
+the infrared part from visible and applied a scale factor)
+
+That lead to IIO_TYPE_BOTH though we later added IIO_TYPE_CLEAR which is
+subtly different as that was for color sensors with RGB and clearish
+filters.  The value you want here doesn't really correspond to any of
+those modifiers
+
+I guess that brings us back around to LIGHT(illuminance) + raw as you have it.
+or adding a 'visible' modifier which is also rather ugly and hard
+to define.
+
+Let's leave this on list a while longer to see if others comment.
+For now I'm inclined to just accept this as a dirty hack needed for this
+corner case.
+
+Jonathan
+
+> ---
+> 
+> Changes in v2
+>   - Add a better commit message explaining why we want this change.
+>   - Call ltrf216a_set_power_state(data, false) before return.
+> 
+> 
+>  drivers/iio/light/ltrf216a.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+> 
+> diff --git a/drivers/iio/light/ltrf216a.c b/drivers/iio/light/ltrf216a.c
+> index e6e24e70d2b9..4b8ef36b6912 100644
+> --- a/drivers/iio/light/ltrf216a.c
+> +++ b/drivers/iio/light/ltrf216a.c
+> @@ -93,6 +93,7 @@ static const struct iio_chan_spec ltrf216a_channels[] = {
+>  	{
+>  		.type = IIO_LIGHT,
+>  		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) |
+>  			BIT(IIO_CHAN_INFO_PROCESSED) |
+>  			BIT(IIO_CHAN_INFO_INT_TIME),
+>  		.info_mask_separate_available =
+> @@ -259,6 +260,18 @@ static int ltrf216a_read_raw(struct iio_dev *indio_dev,
+>  	int ret;
+>  
+>  	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = ltrf216a_set_power_state(data, true);
+> +		if (ret)
+> +			return ret;
+> +		mutex_lock(&data->lock);
+> +		ret = ltrf216a_read_data(data, LTRF216A_ALS_DATA_0);
+> +		mutex_unlock(&data->lock);
+> +		ltrf216a_set_power_state(data, false);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret;
+> +		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_PROCESSED:
+>  		mutex_lock(&data->lock);
+>  		ret = ltrf216a_get_lux(data);
+
