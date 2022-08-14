@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0008C3276A
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DE8C2BB41
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 16:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242480AbiHNQc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
+        id S242538AbiHNQcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242303AbiHNQaj (ORCPT
+        with ESMTP id S242574AbiHNQat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:30:39 -0400
+        Sun, 14 Aug 2022 12:30:49 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D90DBF5;
-        Sun, 14 Aug 2022 09:25:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BE1558A;
+        Sun, 14 Aug 2022 09:25:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 43C7ECE0B5E;
-        Sun, 14 Aug 2022 16:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A65C433C1;
-        Sun, 14 Aug 2022 16:25:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC91ACE0B6B;
+        Sun, 14 Aug 2022 16:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC11C433C1;
+        Sun, 14 Aug 2022 16:25:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494311;
-        bh=ON/kXxC3offAntPhv8p0Hoo5JwKdH8ee2XaV4xXqYBM=;
+        s=k20201202; t=1660494327;
+        bh=jld3Qog9SsdZFeVcGy1YR+rTIrPAlZB2z9rTGiZgsQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HEtNcJVmGop6Poq8uYyaVg6C9jgyyHgH6hpMG0MBnKpf6Njth11aRZF87q59O5rV3
-         uJ059fkvURrWdsAUh+hwBkkZ67N7hErSoGmRUMWOf6gVbWxgw86+bnEYhIe6yGEpZm
-         FBxWOaiJ25vyqUYDoE5osXRdIv27MMsuVx15zG+zZN1UDifef+RyNP+aFKA1EhXe2y
-         8WCIZqnROZBS8dF3Kk3BeHkwC/4zvLrO3pDkzVN41CRAhZyr8TcdA16xyWhyAcwbwG
-         I9v20A0WjO5wk1x0yzrfEQej8DuTTLSnywrwIvB80UOtVTBZ7VZUWhHgtdviT8jS2c
-         XcCxllcgCdgKQ==
+        b=hekD7bP9IBu7P7CczgVwagAzJ/OuPu9aO9G+fSifaCW+Yy/fuRFZJ2iALq88PH5rC
+         cFDZ5bvHlExCz1B5g8LKNIpTVDZ7z1/lmPj6BddWNWKRXG4m0G+az5sd2tByHQMdo1
+         prqDAszQ5CR6CNaOgBBCB9G83y7RDoiwMJ0Wia6aorzdWsOhvedF/w/+ndUXcSvezt
+         TzMSwww6ITvQhvU6pzmWTHKcZp1DUltQGWdn1ZEKIfUeeXUUgNYvZUf80IcFPO653n
+         ps+4l8D7R5nMfXaes88uvoDsY0+SRSWWXw0a3B527hDM2xqm8ettYpQ09aqU9pmIV7
+         ykLg5MwKOv1/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Laurent Dufour <ldufour@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, pmladek@suse.com,
-        john.ogness@linutronix.de, Julia.Lawall@inria.fr,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.18 22/39] powerpc/watchdog: introduce a NMI watchdog's factor
-Date:   Sun, 14 Aug 2022 12:23:11 -0400
-Message-Id: <20220814162332.2396012-22-sashal@kernel.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, bgoswami@quicinc.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 26/39] ASoC: codecs: va-macro: use fsgen as clock
+Date:   Sun, 14 Aug 2022 12:23:15 -0400
+Message-Id: <20220814162332.2396012-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814162332.2396012-1-sashal@kernel.org>
 References: <20220814162332.2396012-1-sashal@kernel.org>
@@ -54,87 +54,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit f5e74e836097d1004077390717d4bd95d4a2c27a ]
+[ Upstream commit 30097967e0566cac817273ef76add100f6b0f463 ]
 
-Introduce a factor which would apply to the NMI watchdog timeout.
+VA Macro fsgen clock is supplied to other LPASS Macros using proper
+clock apis, however the internal user uses the registers directly without
+clk apis. This approch has race condition where in external users of
+the clock might cut the clock while VA macro is actively using this.
 
-This factor is a percentage added to the watchdog_tresh value. The value is
-set under the watchdog_mutex protection and lockup_detector_reconfigure()
-is called to recompute wd_panic_timeout_tb.
+Moving the internal usage to clk apis would provide a proper refcounting
+and avoid such race conditions.
 
-Once the factor is set, it remains until it is set back to 0, which means
-no impact.
+This issue was noticed while headset was pulled out while recording is
+in progress and shifting record patch to DMIC.
 
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220713154729.80789-4-ldufour@linux.ibm.com
+Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Tested-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Link: https://lore.kernel.org/r/20220727124749.4604-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/nmi.h |  2 ++
- arch/powerpc/kernel/watchdog.c | 21 ++++++++++++++++++++-
- 2 files changed, 22 insertions(+), 1 deletion(-)
+ sound/soc/codecs/lpass-va-macro.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/nmi.h b/arch/powerpc/include/asm/nmi.h
-index ea0e487f87b1..c3c7adef74de 100644
---- a/arch/powerpc/include/asm/nmi.h
-+++ b/arch/powerpc/include/asm/nmi.h
-@@ -5,8 +5,10 @@
- #ifdef CONFIG_PPC_WATCHDOG
- extern void arch_touch_nmi_watchdog(void);
- long soft_nmi_interrupt(struct pt_regs *regs);
-+void watchdog_nmi_set_timeout_pct(u64 pct);
- #else
- static inline void arch_touch_nmi_watchdog(void) {}
-+static inline void watchdog_nmi_set_timeout_pct(u64 pct) {}
- #endif
+diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+index d18b56e60433..1ea10dc70748 100644
+--- a/sound/soc/codecs/lpass-va-macro.c
++++ b/sound/soc/codecs/lpass-va-macro.c
+@@ -199,6 +199,7 @@ struct va_macro {
+ 	struct clk *mclk;
+ 	struct clk *macro;
+ 	struct clk *dcodec;
++	struct clk *fsgen;
+ 	struct clk_hw hw;
+ 	struct lpass_macro *pds;
  
- #ifdef CONFIG_NMI_IPI
-diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
-index bfc27496fe7e..1d0fe8e9c900 100644
---- a/arch/powerpc/kernel/watchdog.c
-+++ b/arch/powerpc/kernel/watchdog.c
-@@ -91,6 +91,10 @@ static cpumask_t wd_smp_cpus_pending;
- static cpumask_t wd_smp_cpus_stuck;
- static u64 wd_smp_last_reset_tb;
+@@ -467,9 +468,9 @@ static int va_macro_mclk_event(struct snd_soc_dapm_widget *w,
  
-+#ifdef CONFIG_PPC_PSERIES
-+static u64 wd_timeout_pct;
-+#endif
-+
- /*
-  * Try to take the exclusive watchdog action / NMI IPI / printing lock.
-  * wd_smp_lock must be held. If this fails, we should return and wait
-@@ -527,7 +531,13 @@ static int stop_watchdog_on_cpu(unsigned int cpu)
- 
- static void watchdog_calc_timeouts(void)
- {
--	wd_panic_timeout_tb = watchdog_thresh * ppc_tb_freq;
-+	u64 threshold = watchdog_thresh;
-+
-+#ifdef CONFIG_PPC_PSERIES
-+	threshold += (READ_ONCE(wd_timeout_pct) * threshold) / 100;
-+#endif
-+
-+	wd_panic_timeout_tb = threshold * ppc_tb_freq;
- 
- 	/* Have the SMP detector trigger a bit later */
- 	wd_smp_panic_timeout_tb = wd_panic_timeout_tb * 3 / 2;
-@@ -570,3 +580,12 @@ int __init watchdog_nmi_probe(void)
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+-		return va_macro_mclk_enable(va, true);
++		return clk_prepare_enable(va->fsgen);
+ 	case SND_SOC_DAPM_POST_PMD:
+-		return va_macro_mclk_enable(va, false);
++		clk_disable_unprepare(va->fsgen);
  	}
+ 
  	return 0;
- }
+@@ -1473,6 +1474,12 @@ static int va_macro_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_clkout;
+ 
++	va->fsgen = clk_hw_get_clk(&va->hw, "fsgen");
++	if (IS_ERR(va->fsgen)) {
++		ret = PTR_ERR(va->fsgen);
++		goto err_clkout;
++	}
 +
-+#ifdef CONFIG_PPC_PSERIES
-+void watchdog_nmi_set_timeout_pct(u64 pct)
-+{
-+	pr_info("Set the NMI watchdog timeout factor to %llu%%\n", pct);
-+	WRITE_ONCE(wd_timeout_pct, pct);
-+	lockup_detector_reconfigure();
-+}
-+#endif
+ 	ret = devm_snd_soc_register_component(dev, &va_macro_component_drv,
+ 					      va_macro_dais,
+ 					      ARRAY_SIZE(va_macro_dais));
 -- 
 2.35.1
 
