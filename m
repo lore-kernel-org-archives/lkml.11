@@ -2,83 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D18C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 00:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FEDC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 00:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240120AbiHNArJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 13 Aug 2022 20:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
+        id S240129AbiHNAwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 13 Aug 2022 20:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240203AbiHNAq5 (ORCPT
+        with ESMTP id S229847AbiHNAwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 13 Aug 2022 20:46:57 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9461F54663
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 17:46:56 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id tl27so7941802ejc.1
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 17:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=x2TJWb9VPxfS4WbEMgi+9muxipCHahNie+FBh69toFk=;
-        b=P41/CsUxUsIATZkpcMv7hdU0X8HMf8UCtVaJc7H8Q8F2QNKlOWLaIFBPC6yPc3vg1i
-         a7Uk1CF19oMNKx3AYrY2X8JAB2w5R3MtuWbQzl3X+6aEhHMXM1ZVZ0UOwc/mpV4JX1jb
-         YmsL38vP2Ozuut9ebAJlYTOg4L4aWsVdFPa1w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=x2TJWb9VPxfS4WbEMgi+9muxipCHahNie+FBh69toFk=;
-        b=54wDC32vWsFuiELN6WsNH1F+kuLG27Ztjc+yGbn9TnpTxHhLwvfRxHiik85kMVFPQg
-         DhinGG84pxBdhK5dFJSqR/P9SC4HArwCGV+06QVMRZlRwhDRY8ZXxfIkaVLSlgHRW/lc
-         4KDPjGkiI4sBh9V62/2zyIOu4a5b9Y6AMBaYuUrU/4HrF/ria57nOnGxv2Z7Kl+YBUMO
-         j4bbUvYkPQJIq3vNWRVVKC2QK9KoQ5JLRMoIJmWaB8rXVBZPNDFoagGqn3PeJqTmDXIs
-         OWDDz6d62C3VBLMCmS5i8EXduOGLSnjS9H/cFluK+cNixaoNsudG4iU4Tn8KHnqYGs0e
-         X7RQ==
-X-Gm-Message-State: ACgBeo3kLbewZoPaZiqa6kTD5KLuA6iopkIugcgzuE/yQ150ufLW9djj
-        V7NllrCsTOn6vp9Ej3JuO+GZPV8WJCE5NNO1
-X-Google-Smtp-Source: AA6agR6EkdRHI5SM3FkZ86RqP60eJgogZtuUy7nj/zV962J7qXb9dLzdinEVcqBJPNil7Xv9/gqmyw==
-X-Received: by 2002:a17:907:3d90:b0:730:a937:fb04 with SMTP id he16-20020a1709073d9000b00730a937fb04mr6766096ejc.176.1660438014403;
-        Sat, 13 Aug 2022 17:46:54 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id bv18-20020a170906b1d200b007315e57ba0asm2424301ejb.114.2022.08.13.17.46.53
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Aug 2022 17:46:53 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id z16so5058907wrh.12
-        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 17:46:53 -0700 (PDT)
-X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
- p11-20020a5d638b000000b002206e1a8794mr5340552wru.193.1660438013290; Sat, 13
- Aug 2022 17:46:53 -0700 (PDT)
+        Sat, 13 Aug 2022 20:52:38 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7629E79EC5
+        for <linux-kernel@vger.kernel.org>; Sat, 13 Aug 2022 17:52:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660438357; x=1691974357;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g/aVtxwvzv43PLRNj2S3P7jLoKHjjU/AZ1XXd9zCz88=;
+  b=JAIfwonkkYSDYH6zGJVmp7zzDeIcSvIt7FYR/NhBQfPoyGiDaOQ3OwUX
+   wWxPSmcI0P8BQ0u6f37FpBobNHmxtJ7suSRUccSqW36NltKUe7A8VgAGl
+   QrQMeixlygJ5EkfWYi/Jgch7q1ZbXuLDChz6mSIpmBPrjKgsl58vESLMJ
+   6wexRPbczTNYXd8POJnIu5l48f4hUS1XT9+1qA3msKfjsNgQSnHJEMbDb
+   jkSvpLPER0dXh/sdcE9n9jFVTwGu6Y6MKQ7JLQxkpY/E9a3JNXo/sbmSS
+   s048w6TqzMHSIB1r8QxA7znBRkaWDJu88W2WFpMny8QiG0FCg2XeAWImq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="272180402"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="272180402"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 17:52:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="635070507"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 13 Aug 2022 17:52:35 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oN1rn-0002FW-0c;
+        Sun, 14 Aug 2022 00:52:35 +0000
+Date:   Sun, 14 Aug 2022 08:52:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mnyman-xhci:fix_port_disable_s4 1/1]
+ drivers/usb/core/hcd-pci.c:637:19: error: use of undeclared identifier
+ 'hcd_pci_poweroff_late'
+Message-ID: <202208140802.8IhDwVtx-lkp@intel.com>
 MIME-Version: 1.0
-References: <87czd3d8ra.fsf@mpe.ellerman.id.au>
-In-Reply-To: <87czd3d8ra.fsf@mpe.ellerman.id.au>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 13 Aug 2022 17:46:37 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiLWWteYdVgXuLv9TA3aGsUaKV8gS3WxBo+NHHn5ZHkPw@mail.gmail.com>
-Message-ID: <CAHk-=wiLWWteYdVgXuLv9TA3aGsUaKV8gS3WxBo+NHHn5ZHkPw@mail.gmail.com>
-Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-6.0-2 tag
-To:     mpe@ellerman.id.au
-Cc:     christophe.leroy@csgroup.eu, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, naveen.n.rao@linux.vnet.ibm.com,
-        ndesaulniers@google.com, ruscur@russell.cc
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 4:27 PM <mpe@ellerman.id.au> wrote:
-> [..]
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git fix_port_disable_s4
+head:   a41d3a635cb80d88f6d5fa958ebce3d81abd5c73
+commit: a41d3a635cb80d88f6d5fa958ebce3d81abd5c73 [1/1] xhci: pci: disable all xhci ports in hibernate poweroff_late stage,
+config: i386-randconfig-a015-20220808 (https://download.01.org/0day-ci/archive/20220814/202208140802.8IhDwVtx-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/commit/?id=a41d3a635cb80d88f6d5fa958ebce3d81abd5c73
+        git remote add mnyman-xhci https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git
+        git fetch --no-tags mnyman-xhci fix_port_disable_s4
+        git checkout a41d3a635cb80d88f6d5fa958ebce3d81abd5c73
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Btw, could you please fix whatever your email setup is, so that you
-have a proper name?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Seeing that 'mpe' as a source in my inbox just makes me think it's
-spam and not real mail.
+All errors (new ones prefixed by >>):
 
-My search for "git pull" will find it, so it's not a huge problem in
-practice, it's more of a "what is that garbage in my inbox - ooh, it's
-Michael Ellerman's badly configured email again"
+>> drivers/usb/core/hcd-pci.c:637:19: error: use of undeclared identifier 'hcd_pci_poweroff_late'
+           .poweroff_late  = hcd_pci_poweroff_late,
+                             ^
+   1 error generated.
 
-               Linus
+
+vim +/hcd_pci_poweroff_late +637 drivers/usb/core/hcd-pci.c
+
+   626	
+   627	const struct dev_pm_ops usb_hcd_pci_pm_ops = {
+   628		.suspend	= hcd_pci_suspend,
+   629		.suspend_noirq	= hcd_pci_suspend_noirq,
+   630		.resume_noirq	= hcd_pci_resume_noirq,
+   631		.resume		= hcd_pci_resume,
+   632		.freeze		= hcd_pci_suspend,
+   633		.freeze_noirq	= check_root_hub_suspended,
+   634		.thaw_noirq	= NULL,
+   635		.thaw		= hcd_pci_resume,
+   636		.poweroff	= hcd_pci_suspend,
+ > 637		.poweroff_late	= hcd_pci_poweroff_late,
+   638		.poweroff_noirq	= hcd_pci_suspend_noirq,
+   639		.restore_noirq	= hcd_pci_resume_noirq,
+   640		.restore	= hcd_pci_restore,
+   641		.runtime_suspend = hcd_pci_runtime_suspend,
+   642		.runtime_resume	= hcd_pci_runtime_resume,
+   643	};
+   644	EXPORT_SYMBOL_GPL(usb_hcd_pci_pm_ops);
+   645	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
