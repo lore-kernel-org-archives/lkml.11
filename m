@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D526AC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EDBC25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242500AbiHNP4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
+        id S241733AbiHNP5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242184AbiHNPvX (ORCPT
+        with ESMTP id S241760AbiHNPtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:51:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25EAB1E6;
-        Sun, 14 Aug 2022 08:37:04 -0700 (PDT)
+        Sun, 14 Aug 2022 11:49:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E8511161;
+        Sun, 14 Aug 2022 08:35:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5893A60DC5;
-        Sun, 14 Aug 2022 15:37:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC8E2C433C1;
-        Sun, 14 Aug 2022 15:37:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F574B80B27;
+        Sun, 14 Aug 2022 15:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15AF0C433C1;
+        Sun, 14 Aug 2022 15:35:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491423;
-        bh=MxBrCgp60wZXQOdwbGLNhOnloxrnmzpXLzyomKOZKyM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxHZdk1fVkqJLYy3pM2KhI0X3gvcYFpPJJnv/pCBh1M6CMN/ymaBS8i4OVK2yI5jA
-         vJm7A5HR+j1b9YD16BRwpDKQPd9+I+8WZtI/NG7acNDMa/L1ufUOlj2lSvoFQY+a+I
-         +JBx/QMU9BRlehDHMhVPPfcoYSzuD4dlvsVRrcs+mBWI85N2vUau47bpYWDFN1TqAj
-         rMzLqOrust+fSjlwuhbzJ6yUKMER5l7AILzi5YzZc3wI5Ig9EOKhrB+dw2mnNdiiB9
-         VmfAG1KGIIH0abwVFxpUv/IhVhktes63NFBFCC4ii8rTU1ZkLPYzQ2BgbSPTMwcdUN
-         kCUGJzp1al8tA==
+        s=k20201202; t=1660491333;
+        bh=s9lab+a5xifcAa284CeV2WZkDk2Ia40oFHO0Pen9x6Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OSkKEbbEPw4LPJxlDfumdO1ei5aP1uPksIRhb1gCwsH1VQdtDr94BCrxB1WdMBL6V
+         ZKamc9DmI3H2cQ91xdryoP2DcSJVRxFNiG+p5u/HRp8REptR7aCX9Df2AJThIqk5t+
+         GbmAK9ovAg3ED/2sif/AUrk0Egt1aSvkmj8k0YhThbGAxYl7Xg3s5c2JiuJTROaFan
+         FF6F3H2fbgmM0dVTu+K6S0cio0WEb8eLCKNg1zgkJjX139yYCH5PeL3UGxdwKrVdN4
+         AIm1iXk88wZDYIzbewcPj08xsSMVcfZKoNEb/ZUklSxGR9PLzt2QAEqIG37nbokSDa
+         KoJewzWZ8bxgw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 6/7] ext4: avoid remove directory when directory is corrupted
-Date:   Sun, 14 Aug 2022 11:36:51 -0400
-Message-Id: <20220814153652.2380549-6-sashal@kernel.org>
+Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 01/21] PCI: Add ACS quirk for Broadcom BCM5750x NICs
+Date:   Sun, 14 Aug 2022 11:35:11 -0400
+Message-Id: <20220814153531.2379705-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814153652.2380549-1-sashal@kernel.org>
-References: <20220814153652.2380549-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,41 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-[ Upstream commit b24e77ef1c6d4dbf42749ad4903c97539cc9755a ]
+[ Upstream commit afd306a65cedb9589564bdb23a0c368abc4215fd ]
 
-Now if check directoy entry is corrupted, ext4_empty_dir may return true
-then directory will be removed when file system mounted with "errors=continue".
-In order not to make things worse just return false when directory is corrupted.
+The Broadcom BCM5750x NICs may be multi-function devices.  They do not
+advertise ACS capability. Peer-to-peer transactions are not possible
+between the individual functions, so it is safe to treat them as fully
+isolated.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220622090223.682234-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Add an ACS quirk for these devices so the functions can be in independent
+IOMMU groups and attached individually to userspace applications using
+VFIO.
+
+Link: https://lore.kernel.org/r/1654796507-28610-1-git-send-email-michael.chan@broadcom.com
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/pci/quirks.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index edf78728ed32..6d9dedee6b44 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -2777,11 +2777,8 @@ bool ext4_empty_dir(struct inode *inode)
- 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
- 					(offset & (sb->s_blocksize - 1)));
- 		if (ext4_check_dir_entry(inode, NULL, de, bh,
--					 bh->b_data, bh->b_size, offset)) {
--			offset = (offset | (sb->s_blocksize - 1)) + 1;
--			continue;
--		}
--		if (le32_to_cpu(de->inode)) {
-+					 bh->b_data, bh->b_size, offset) ||
-+		    le32_to_cpu(de->inode)) {
- 			brelse(bh);
- 			return false;
- 		}
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 2a4bc8df8563..8b98b7f3eb24 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4943,6 +4943,9 @@ static const struct pci_dev_acs_enabled {
+ 	{ PCI_VENDOR_ID_AMPERE, 0xE00C, pci_quirk_xgene_acs },
+ 	/* Broadcom multi-function device */
+ 	{ PCI_VENDOR_ID_BROADCOM, 0x16D7, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1750, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1751, pci_quirk_mf_endpoint_acs },
++	{ PCI_VENDOR_ID_BROADCOM, 0x1752, pci_quirk_mf_endpoint_acs },
+ 	{ PCI_VENDOR_ID_BROADCOM, 0xD714, pci_quirk_brcm_acs },
+ 	/* Amazon Annapurna Labs */
+ 	{ PCI_VENDOR_ID_AMAZON_ANNAPURNA_LABS, 0x0031, pci_quirk_al_acs },
 -- 
 2.35.1
 
