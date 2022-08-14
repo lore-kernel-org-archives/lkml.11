@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E38F0C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 21:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B3EC25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 21:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240219AbiHNVV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 17:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57438 "EHLO
+        id S239698AbiHNVWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 17:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231910AbiHNVUy (ORCPT
+        with ESMTP id S240465AbiHNVU5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 17:20:54 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466426435
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 14:20:47 -0700 (PDT)
+        Sun, 14 Aug 2022 17:20:57 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C814B1C8
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 14:20:50 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660512045;
+        t=1660512048;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=p2b4/V+42uJKZ8rG7/53XrLIP4lCTcM8aG3HRwdnES4=;
-        b=CbgOzMkpT8EXsrF5vqmyJk+ehe/3FCOR4IGLD+c35pOGf3rmmqB+g5nsbZgIVHL3bRVGEN
-        dNeDs5Ghqh4wQLzQoTc7l152zF/GmJ26JZEOSsXinoGqdQfzUfOmjyMbErUDu5rVxH+cZJ
-        SybA+XDpzh7LrGHkga/ve1eYa/+xgyw=
+        bh=lYid45vDrsfGp3/xPEZDgzeMTFMxEVq5nDuDoli1D2U=;
+        b=YFv+rmH1oFhY4ybgP1LhjEX8xQEBPX+Rb8QJenVULTRnrO8GiokbD4yKEAOm3LNifn8M8y
+        dGDA8oniqHZBKrhfxZZQpGg0DxOnjpKeeDhVdU1Q/YvelvTuaDzv38qj3S3qWJdRs+CV2+
+        X3WzNCjkG293rRYrAO74gMHAdEdmh2E=
 From:   Kent Overstreet <kent.overstreet@linux.dev>
 To:     akpm@linux-foundation.org
 Cc:     linux-kernel@vger.kernel.org,
         Kent Overstreet <kent.overstreet@gmail.com>,
-        Petr Mladek <pmladek@suse.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH 09/32] vsprintf: Improve number()
-Date:   Sun, 14 Aug 2022 17:19:48 -0400
-Message-Id: <20220814212011.1727798-10-kent.overstreet@linux.dev>
+Subject: [PATCH 11/32] test_printf: Drop requirement that sprintf not write past nul
+Date:   Sun, 14 Aug 2022 17:19:50 -0400
+Message-Id: <20220814212011.1727798-12-kent.overstreet@linux.dev>
 In-Reply-To: <20220814212011.1727798-1-kent.overstreet@linux.dev>
 References: <20220814212011.1727798-1-kent.overstreet@linux.dev>
 MIME-Version: 1.0
@@ -47,156 +46,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kent Overstreet <kent.overstreet@gmail.com>
 
-This patch refactors number() to make it a bit clearer, and it also
-changes it to call printbuf_make_room() only once at the start, instead
-of in the printbuf output helpers.
+The current test code checks that sprintf never writes past the
+terminating nul. This is a rather strange requirement, completely
+separate from writing past the end of the buffer, which of course we
+can't do: writing anywhere to the buffer passed to snprintf, within size
+of course, should be perfectly fine.
+
+Since this check has no documentation as to where it comes from or what
+depends on it, and it's getting in the way of further refactoring
+(printf_spec handling is right now scattered massively throughout the
+code, and we'd like to consolidate it) - delete it.
+
+Also, many current pretty-printers building up their output on the
+stack, and then copy it to the actual output buffer - by eliminating
+this requirement we can kill those extra buffers.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>
 Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- lib/vsprintf.c | 83 +++++++++++++++++++++++++-------------------------
- 1 file changed, 41 insertions(+), 42 deletions(-)
+ lib/test_printf.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 52dac8519a..87adc528c6 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -457,93 +457,92 @@ void number(struct printbuf *out, unsigned long long num,
- {
- 	/* put_dec requires 2-byte alignment of the buffer. */
- 	char tmp[3 * sizeof(num)] __aligned(2);
--	char sign;
--	char locase;
-+	char sign = 0;
-+	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
-+	 * produces same digits or (maybe lowercased) letters */
-+	char locase = (spec.flags & SMALL);
- 	int need_pfx = ((spec.flags & SPECIAL) && spec.base != 10);
--	int i;
- 	bool is_zero = num == 0LL;
- 	int field_width = spec.field_width;
- 	int precision = spec.precision;
-+	int nr_digits = 0;
-+	int output_bytes = 0;
- 
--	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
--	 * produces same digits or (maybe lowercased) letters */
--	locase = (spec.flags & SMALL);
- 	if (spec.flags & LEFT)
- 		spec.flags &= ~ZEROPAD;
--	sign = 0;
- 	if (spec.flags & SIGN) {
- 		if ((signed long long)num < 0) {
- 			sign = '-';
- 			num = -(signed long long)num;
--			field_width--;
-+			output_bytes++;
- 		} else if (spec.flags & PLUS) {
- 			sign = '+';
--			field_width--;
-+			output_bytes++;
- 		} else if (spec.flags & SPACE) {
- 			sign = ' ';
--			field_width--;
-+			output_bytes++;
- 		}
- 	}
- 	if (need_pfx) {
- 		if (spec.base == 16)
--			field_width -= 2;
-+			output_bytes += 2;
- 		else if (!is_zero)
--			field_width--;
-+			output_bytes++;
+diff --git a/lib/test_printf.c b/lib/test_printf.c
+index 4bd15a593f..da91301eae 100644
+--- a/lib/test_printf.c
++++ b/lib/test_printf.c
+@@ -84,12 +84,6 @@ do_test(int bufsize, const char *expect, int elen,
+ 		return 1;
  	}
  
- 	/* generate full string in tmp[], in reverse order */
--	i = 0;
--	if (num < spec.base)
--		tmp[i++] = hex_asc_upper[num] | locase;
--	else if (spec.base != 10) { /* 8 or 16 */
-+	if (spec.base == 10) {
-+		nr_digits = put_dec(tmp, num) - tmp;
-+	} else { /* 8 or 16 */
- 		int mask = spec.base - 1;
--		int shift = 3;
-+		int shift = ilog2((unsigned) spec.base);
- 
--		if (spec.base == 16)
--			shift = 4;
- 		do {
--			tmp[i++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
-+			tmp[nr_digits++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
- 			num >>= shift;
- 		} while (num);
--	} else { /* base 10 */
--		i = put_dec(tmp, num) - tmp;
- 	}
- 
- 	/* printing 100 using %2d gives "100", not "00" */
--	if (i > precision)
--		precision = i;
-+	precision = max(nr_digits, precision);
-+	output_bytes += precision;
-+	field_width = max(0, field_width - output_bytes);
-+
-+	printbuf_make_room(out, field_width + output_bytes);
-+
- 	/* leading space padding */
--	field_width = max(0, field_width - precision);
- 	if (!(spec.flags & (ZEROPAD | LEFT)) && field_width) {
--		__prt_chars(out, ' ', field_width);
-+		__prt_chars_reserved(out, ' ', field_width);
- 		field_width = 0;
- 	}
-+
- 	/* sign */
- 	if (sign)
--		__prt_char(out, sign);
-+		__prt_char_reserved(out, sign);
-+
- 	/* "0x" / "0" prefix */
- 	if (need_pfx) {
- 		if (spec.base == 16 || !is_zero)
--			__prt_char(out, '0');
-+			__prt_char_reserved(out, '0');
- 		if (spec.base == 16)
--			__prt_char(out, 'X' | locase);
-+			__prt_char_reserved(out, 'X' | locase);
- 	}
--	/* zero or space padding */
--	if (!(spec.flags & LEFT) && field_width) {
--		char c = ' ' + (spec.flags & ZEROPAD);
- 
--		__prt_chars(out, c, field_width);
--		field_width = 0;
+-	if (memchr_inv(test_buffer + written + 1, FILL_CHAR, bufsize - (written + 1))) {
+-		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote beyond the nul-terminator\n",
+-			bufsize, fmt);
+-		return 1;
 -	}
--	/* hmm even more zero padding? */
--	if (precision > i)
--		__prt_chars(out, '0', precision - i);
-+	/* zero padding */
-+	if (!(spec.flags & LEFT) && field_width)
-+		__prt_chars_reserved(out, '0', field_width);
-+
-+	/* zero padding from precision */
-+	if (precision > nr_digits)
-+		__prt_chars_reserved(out, '0', precision - nr_digits);
-+
- 	/* actual digits of result */
--	while (--i >= 0)
--		__prt_char(out, tmp[i]);
-+	while (--nr_digits >= 0)
-+		__prt_char_reserved(out, tmp[nr_digits]);
-+
- 	/* trailing space padding */
--	if (field_width)
--		__prt_chars(out, ' ', field_width);
-+	if ((spec.flags & LEFT) && field_width)
-+		__prt_chars_reserved(out, ' ', field_width);
- 
- 	printbuf_nul_terminate(out);
- }
+-
+ 	if (memchr_inv(test_buffer + bufsize, FILL_CHAR, BUF_SIZE + PAD_SIZE - bufsize)) {
+ 		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote beyond buffer\n", bufsize, fmt);
+ 		return 1;
 -- 
 2.36.1
 
