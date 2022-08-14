@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C544C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AF7C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240962AbiHNPhs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52368 "EHLO
+        id S240968AbiHNPhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240926AbiHNPfx (ORCPT
+        with ESMTP id S240953AbiHNPf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:35:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7721659B;
-        Sun, 14 Aug 2022 08:31:17 -0700 (PDT)
+        Sun, 14 Aug 2022 11:35:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591701DA52;
+        Sun, 14 Aug 2022 08:31:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D4F8B80B77;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC909B80B7F;
+        Sun, 14 Aug 2022 15:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1556C433B5;
         Sun, 14 Aug 2022 15:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B224C4347C;
-        Sun, 14 Aug 2022 15:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491075;
-        bh=mr9tRLqQ8X+aGtXimse11oHRXOJPJJGTmgtdeuO+DJw=;
+        s=k20201202; t=1660491077;
+        bh=zuynUB4qvXHwuhHt93KM7PDIxN+C9d44hf1QyZClopY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M9vn/6Wd5wdsXN/xuTvTQ9nYtAOatjkOuaca9GeCq2Pp5yClaiSHzplciUf8Klxf6
-         i/j43apPXjV4vderG4mM84JUD0J7NqEqDEhSw4pKtHexwo1SaCISGoI+WS60zw/hd7
-         nGD6qylCVwCOQSnb9kxcMlK8PHAw5b1yXZwL/4lUy74jlE67tuMv8nLTq8/jYJ4gaO
-         M8c6s0spIhZUlOt1IyIh1Xfw0ERRasceaVjSYWDisIGIarHR1o5wKRlllLhiGm0yfi
-         P0UDlWBLZm65w9svV04Ka+x+0lWhvngGLxeRZTbkmV2KZP0ZGiAIKw3nRMkBY65J58
-         h5w+g1t8xoVWg==
+        b=oOz6DMmFxtD6CgBeAPk3SbMeIZUzhUiaD1rkTdg4YWKpLpdYIXhi8HUo4Xp8R1VdP
+         JQyLrPgsknvvKuw4xpucP7zaXVOQHWlqPmgI3QIF0nogo9/F7CL61PrCZaxoAtAxY+
+         6Znjq9hojUJiNpzFr+6t3X4grK+ICa3SYLbbjQNG+Fl0RQ1LtiruR+MD+mFradyztF
+         fMmMKTie2/sB5XxM9/xe5nl0FnCH8lN3AWeLkJ2+R5GxpWcazSK6HoBt1ozComyU8Y
+         NnoSpbxBHTsGYYo6z70dE8s9u0Xw88qFLNa+rIR3lhrOnvJcoFL7STnyTW9P2txEWL
+         Y4Gz4mALtkvmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        Lee Duncan <lduncan@suse.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, cleech@redhat.com,
-        jejb@linux.ibm.com, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 18/56] scsi: iscsi: Fix HW conn removal use after free
-Date:   Sun, 14 Aug 2022 11:29:48 -0400
-Message-Id: <20220814153026.2377377-18-sashal@kernel.org>
+Cc:     Pascal Terjan <pterjan@google.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 20/56] vboxguest: Do not use devm for irq
+Date:   Sun, 14 Aug 2022 11:29:50 -0400
+Message-Id: <20220814153026.2377377-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
@@ -55,39 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Pascal Terjan <pterjan@google.com>
 
-[ Upstream commit c577ab7ba5f3bf9062db8a58b6e89d4fe370447e ]
+[ Upstream commit 6169525b76764acb81918aa387ac168fb9a55575 ]
 
-If qla4xxx doesn't remove the connection before the session, the iSCSI
-class tries to remove the connection for it. We were doing a
-iscsi_put_conn() in the iter function which is not needed and will result
-in a use after free because iscsi_remove_conn() will free the connection.
+When relying on devm it doesn't get freed early enough which causes the
+following warning when unloading the module:
 
-Link: https://lore.kernel.org/r/20220616222738.5722-2-michael.christie@oracle.com
-Tested-by: Nilesh Javali <njavali@marvell.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Reviewed-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[249348.837181] remove_proc_entry: removing non-empty directory 'irq/20', leaking at least 'vboxguest'
+[249348.837219] WARNING: CPU: 0 PID: 6708 at fs/proc/generic.c:715 remove_proc_entry+0x119/0x140
+
+[249348.837379] Call Trace:
+[249348.837385]  unregister_irq_proc+0xbd/0xe0
+[249348.837392]  free_desc+0x23/0x60
+[249348.837396]  irq_free_descs+0x4a/0x70
+[249348.837401]  irq_domain_free_irqs+0x160/0x1a0
+[249348.837452]  mp_unmap_irq+0x5c/0x60
+[249348.837458]  acpi_unregister_gsi_ioapic+0x29/0x40
+[249348.837463]  acpi_unregister_gsi+0x17/0x30
+[249348.837467]  acpi_pci_irq_disable+0xbf/0xe0
+[249348.837473]  pcibios_disable_device+0x20/0x30
+[249348.837478]  pci_disable_device+0xef/0x120
+[249348.837482]  vbg_pci_remove+0x6c/0x70 [vboxguest]
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Pascal Terjan <pterjan@google.com>
+Link: https://lore.kernel.org/r/20220612133744.4030602-1-pterjan@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/virt/vboxguest/vboxguest_linux.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 5d21f07456c6..6e73f14b9749 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2143,8 +2143,6 @@ static int iscsi_iter_destroy_conn_fn(struct device *dev, void *data)
- 		return 0;
+diff --git a/drivers/virt/vboxguest/vboxguest_linux.c b/drivers/virt/vboxguest/vboxguest_linux.c
+index 73eb34849eab..4ccfd30c2a30 100644
+--- a/drivers/virt/vboxguest/vboxguest_linux.c
++++ b/drivers/virt/vboxguest/vboxguest_linux.c
+@@ -356,8 +356,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 		goto err_vbg_core_exit;
+ 	}
  
- 	iscsi_remove_conn(iscsi_dev_to_conn(dev));
--	iscsi_put_conn(iscsi_dev_to_conn(dev));
--
- 	return 0;
- }
+-	ret = devm_request_irq(dev, pci->irq, vbg_core_isr, IRQF_SHARED,
+-			       DEVICE_NAME, gdev);
++	ret = request_irq(pci->irq, vbg_core_isr, IRQF_SHARED, DEVICE_NAME,
++			  gdev);
+ 	if (ret) {
+ 		vbg_err("vboxguest: Error requesting irq: %d\n", ret);
+ 		goto err_vbg_core_exit;
+@@ -367,7 +367,7 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	if (ret) {
+ 		vbg_err("vboxguest: Error misc_register %s failed: %d\n",
+ 			DEVICE_NAME, ret);
+-		goto err_vbg_core_exit;
++		goto err_free_irq;
+ 	}
  
+ 	ret = misc_register(&gdev->misc_device_user);
+@@ -403,6 +403,8 @@ static int vbg_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	misc_deregister(&gdev->misc_device_user);
+ err_unregister_misc_device:
+ 	misc_deregister(&gdev->misc_device);
++err_free_irq:
++	free_irq(pci->irq, gdev);
+ err_vbg_core_exit:
+ 	vbg_core_exit(gdev);
+ err_disable_pcidev:
+@@ -419,6 +421,7 @@ static void vbg_pci_remove(struct pci_dev *pci)
+ 	vbg_gdev = NULL;
+ 	mutex_unlock(&vbg_gdev_mutex);
+ 
++	free_irq(pci->irq, gdev);
+ 	device_remove_file(gdev->dev, &dev_attr_host_features);
+ 	device_remove_file(gdev->dev, &dev_attr_host_version);
+ 	misc_deregister(&gdev->misc_device_user);
 -- 
 2.35.1
 
