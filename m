@@ -2,49 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9D6C25B0F
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C656BC28B2B
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240898AbiHNPg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
+        id S232086AbiHNPhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240777AbiHNPfd (ORCPT
+        with ESMTP id S240792AbiHNPfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:35:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F4D13D4B;
-        Sun, 14 Aug 2022 08:30:50 -0700 (PDT)
+        Sun, 14 Aug 2022 11:35:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BBD1CFE9;
+        Sun, 14 Aug 2022 08:31:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6D4260CA3;
-        Sun, 14 Aug 2022 15:30:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E9AC43142;
-        Sun, 14 Aug 2022 15:30:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DBB060C8C;
+        Sun, 14 Aug 2022 15:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E18C433D6;
+        Sun, 14 Aug 2022 15:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491035;
-        bh=ajrefJ9f1ixT32JAcsAdH2A3pWO5nNoP2gGtygVkdQE=;
+        s=k20201202; t=1660491056;
+        bh=YA7qGjAoZ0w68jbN59Y8bWwXYBlkSuhDhVnrXYHcvq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=roajf/tvD/RJ2tuqXlrrMI+BzODwqMWz8S17zduMwp37fV1hKPZlfx/33bMDI4TeX
-         zq54ce1NbhNX8bEEaTQwgAt+cRhAs4j4LbfyfrISbb/w9jcQkssQm4BjfM2YOl5Eik
-         wiPfIBz9QSf+j0Zt1LkHu3pOVsa64Oi/drwC4r1gr8j9TbJwANHOcZ9uxXyGjG5cgC
-         db0JEojSnaDHaoZmlP9uOZKVBaAavpwc/7Aly6uyn1zyXuVJguTFV6StKjSXT7hISp
-         56UHJlo0szOgyW6r93+ZVz8uRNCRbYU4kev1lZ5N4A7r1bX5xy6aOoxgn0WFW1AJW2
-         rpMLNweNDSraA==
+        b=OMF4rrtPsLxTsUC13FTY1pKYHw14XFUPrHdEEQeLJGMosSQKljhHyy32ML8ios2vj
+         if5zYbMBYZCs9255pPtoCNJ1K5uImyx6D7BIAXRj57mh+mi11Hb2vNfsEqpa3pcUYk
+         P4cuW08rZQxXQXesAB9pWXyx0sk10MSWhq5CaQQoPGEXYN7chZJKgM+Yq0+PCobCiC
+         TyaJoMasWYtBpBSuhiWWQOxIVpOQFP7OzGJe2aNCX6oQYRLdXW9polOaFPr1Z61hDw
+         yeGrCMGaB37aI7gwrW+1qT9FTL1vn+0koqfMqVd6NPKrCFmJ0LiEI8zv3knrHhNq2F
+         zD3Xlvlwv62/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Frank Li <Frank.Li@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, peter.chen@kernel.org,
-        pawell@cadence.com, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 06/56] usb: cdns3: fix random warning message when driver load
-Date:   Sun, 14 Aug 2022 11:29:36 -0400
-Message-Id: <20220814153026.2377377-6-sashal@kernel.org>
+Cc:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, khilman@baylibre.com,
+        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 13/56] drm/meson: Fix overflow implicit truncation warnings
+Date:   Sun, 14 Aug 2022 11:29:43 -0400
+Message-Id: <20220814153026.2377377-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
 References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,65 +57,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Li <Frank.Li@nxp.com>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-[ Upstream commit 8659ab3d936fcf0084676f98b75b317017aa8f82 ]
+[ Upstream commit 98692f52c588225034cbff458622c2c06dfcb544 ]
 
-Warning log:
-[    4.141392] Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xa20 (GFP_ATOMIC). Fix your code!
-[    4.150340] CPU: 1 PID: 175 Comm: 1-0050 Not tainted 5.15.5-00039-g2fd9ae1b568c #20
-[    4.158010] Hardware name: Freescale i.MX8QXP MEK (DT)
-[    4.163155] Call trace:
-[    4.165600]  dump_backtrace+0x0/0x1b0
-[    4.169286]  show_stack+0x18/0x68
-[    4.172611]  dump_stack_lvl+0x68/0x84
-[    4.176286]  dump_stack+0x18/0x34
-[    4.179613]  kmalloc_fix_flags+0x60/0x88
-[    4.183550]  new_slab+0x334/0x370
-[    4.186878]  ___slab_alloc.part.108+0x4d4/0x748
-[    4.191419]  __slab_alloc.isra.109+0x30/0x78
-[    4.195702]  kmem_cache_alloc+0x40c/0x420
-[    4.199725]  dma_pool_alloc+0xac/0x1f8
-[    4.203486]  cdns3_allocate_trb_pool+0xb4/0xd0
+Fix -Woverflow warnings for drm/meson driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
-{
-	...
-	page = kmalloc(sizeof(*page), mem_flags);
-	page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
-					 &page->dma, mem_flags);
-	...
-}
+drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
+drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
+ #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
+                                                ^
+drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
+   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+                  ^~~~~~~~~~~~~~~~~~~~~
 
-kmalloc was called with mem_flags, which is passed down in
-cdns3_allocate_trb_pool() and have GFP_DMA32 flags.
-kmall_fix_flags() report warning.
-
-GFP_DMA32 is not useful at all. dma_alloc_coherent() will handle
-DMA memory region correctly by pool->dev. GFP_DMA32 can be removed
-safely.
-
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Link: https://lore.kernel.org/r/20220609154456.2871672-1-Frank.Li@nxp.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/cdns3-gadget.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
-index c4f90b124e55..c7c394402e44 100644
---- a/drivers/usb/cdns3/cdns3-gadget.c
-+++ b/drivers/usb/cdns3/cdns3-gadget.c
-@@ -220,7 +220,7 @@ int cdns3_allocate_trb_pool(struct cdns3_endpoint *priv_ep)
+diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
+index 259f3e6bec90..bb7e109534de 100644
+--- a/drivers/gpu/drm/meson/meson_viu.c
++++ b/drivers/gpu/drm/meson/meson_viu.c
+@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
+ 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
  
- 	if (!priv_ep->trb_pool) {
- 		priv_ep->trb_pool = dma_pool_alloc(priv_dev->eps_dma_pool,
--						   GFP_DMA32 | GFP_ATOMIC,
-+						   GFP_ATOMIC,
- 						   &priv_ep->trb_pool_dma);
+ 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
+-		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+-			       VIU_OSD_BLEND_REORDER(1, 0) |
+-			       VIU_OSD_BLEND_REORDER(2, 0) |
+-			       VIU_OSD_BLEND_REORDER(3, 0) |
+-			       VIU_OSD_BLEND_DIN_EN(1) |
+-			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
+-			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
+-			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
+-			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
+-			       VIU_OSD_BLEND_HOLD_LINES(4),
+-			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
++		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
++			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
++			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
++			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
++			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
++			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
++			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
++			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
++		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
  
- 		if (!priv_ep->trb_pool)
+ 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
+ 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
 -- 
 2.35.1
 
