@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C00C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 927C7C25B0F
 	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242368AbiHNPzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
+        id S242319AbiHNPzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242118AbiHNPvP (ORCPT
+        with ESMTP id S242087AbiHNPvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:51:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E861F1D31B;
-        Sun, 14 Aug 2022 08:36:54 -0700 (PDT)
+        Sun, 14 Aug 2022 11:51:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C6E1D0E8;
+        Sun, 14 Aug 2022 08:36:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 492F1B80B77;
-        Sun, 14 Aug 2022 15:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 501B8C433C1;
-        Sun, 14 Aug 2022 15:36:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EAB760B90;
+        Sun, 14 Aug 2022 15:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB35C433B5;
+        Sun, 14 Aug 2022 15:36:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491412;
-        bh=HDn0Qcz2gytPtLt5gyFK0rQWGhhoEna1MAc0S70Ab3I=;
+        s=k20201202; t=1660491408;
+        bh=BvpZ9+z3PwhwVDxWUyHfXYsBLSq0+ghAeah0uQ9gcoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o/GFh5zRhi+tj4LBDM6w45anT2Y30fYU40PTADfbbrXBQeWEpj1POQpEPIFQkIdVk
-         K2Sgyth8FqcCgh8Nwxe+WQB/zGv92SaCJRxtGa0RUqDw4qQnsIqFCHNtctHEV2OTl8
-         hCrgq0S1UThLwYXAnhZvkuq3yOSBS7m7VhAsw93Wqv6zpkBbNj8gC6Fl20iuwEDC7L
-         bVY9NpVj9RZ9SkaLVbzmUMVlNAkm1DJMVBhvMAroinuJe64HKaMK0hOBKG2gpqMnhF
-         HA9qPmdDa52BKeYTvEm9E9b2eVVL6XyE3d5iSI/ebcKI3w5ADoKjsi/7Jau3DgnQN5
-         WSeDj2MpeQYeg==
+        b=hvSW7P18gxB/XXvz+9h3mxy9Coich4QoX17+DxaE4nkxCMPc/SVFwYj0P8eMQ+fJs
+         Xyyro6KT7fy2Y+Gm/+/q9wtQGCdxrUZFtdW55v5xXLdviVcB3x3MF+jCuIWnuA5Fdy
+         sExNmnXWZ8LRb/NCCJ4yA0gRyP8jctb/+6J93seNii2/AXEpMobqkZ43cNRJSdKsLF
+         9++jJFycGswaY0ZC1BVIUCrHcQcWRF9iy4il5nMb2eV/v9F7cAAHrQA208X46bHgQ7
+         qlhZsXcjDK6A3lsBYy1yXp3gLMSZbRycXFUIg4Y4jb7qjBF+0QudZ9/tc2U6D5xq29
+         oJ8j7rrAxQn0w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Kiselev, Oleg" <okiselev@amazon.com>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 9/9] ext4: avoid resizing to a partial cluster size
-Date:   Sun, 14 Aug 2022 11:36:36 -0400
-Message-Id: <20220814153637.2380406-9-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, fbarrat@linux.ibm.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.14 6/9] cxl: Fix a memory leak in an error handling path
+Date:   Sun, 14 Aug 2022 11:36:33 -0400
+Message-Id: <20220814153637.2380406-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220814153637.2380406-1-sashal@kernel.org>
 References: <20220814153637.2380406-1-sashal@kernel.org>
@@ -51,45 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Kiselev, Oleg" <okiselev@amazon.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 69cb8e9d8cd97cdf5e293b26d70a9dee3e35e6bd ]
+[ Upstream commit 3a15b45b5454da862376b5d69a4967f5c6fa1368 ]
 
-This patch avoids an attempt to resize the filesystem to an
-unaligned cluster boundary.  An online resize to a size that is not
-integral to cluster size results in the last iteration attempting to
-grow the fs by a negative amount, which trips a BUG_ON and leaves the fs
-with a corrupted in-memory superblock.
+A bitmap_zalloc() must be balanced by a corresponding bitmap_free() in the
+error handling path of afu_allocate_irqs().
 
-Signed-off-by: Oleg Kiselev <okiselev@amazon.com>
-Link: https://lore.kernel.org/r/0E92A0AB-4F16-4F1A-94B7-702CC6504FDE@amazon.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/ce5869418f5838187946eb6b11a52715a93ece3d.1657566849.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/resize.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/misc/cxl/irq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index 721a00767d0e..aab86205c056 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1950,6 +1950,16 @@ int ext4_resize_fs(struct super_block *sb, ext4_fsblk_t n_blocks_count)
- 	}
- 	brelse(bh);
+diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
+index ce08a9f22308..0dbe78383f8f 100644
+--- a/drivers/misc/cxl/irq.c
++++ b/drivers/misc/cxl/irq.c
+@@ -353,6 +353,7 @@ int afu_allocate_irqs(struct cxl_context *ctx, u32 count)
  
-+	/*
-+	 * For bigalloc, trim the requested size to the nearest cluster
-+	 * boundary to avoid creating an unusable filesystem. We do this
-+	 * silently, instead of returning an error, to avoid breaking
-+	 * callers that blindly resize the filesystem to the full size of
-+	 * the underlying block device.
-+	 */
-+	if (ext4_has_feature_bigalloc(sb))
-+		n_blocks_count &= ~((1 << EXT4_CLUSTER_BITS(sb)) - 1);
-+
- retry:
- 	o_blocks_count = ext4_blocks_count(es);
- 
+ out:
+ 	cxl_ops->release_irq_ranges(&ctx->irqs, ctx->afu->adapter);
++	bitmap_free(ctx->irq_bitmap);
+ 	afu_irq_name_free(ctx);
+ 	return -ENOMEM;
+ }
 -- 
 2.35.1
 
