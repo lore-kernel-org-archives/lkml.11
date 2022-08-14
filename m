@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF4FC25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F155C25B06
+	for <linux-kernel@archiver.kernel.org>; Sun, 14 Aug 2022 15:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241257AbiHNPm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 11:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
+        id S241264AbiHNPm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 11:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241196AbiHNPkh (ORCPT
+        with ESMTP id S241306AbiHNPlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 11:40:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D659721810;
-        Sun, 14 Aug 2022 08:32:46 -0700 (PDT)
+        Sun, 14 Aug 2022 11:41:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152C421804;
+        Sun, 14 Aug 2022 08:32:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3720DB80B79;
-        Sun, 14 Aug 2022 15:32:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2164BC43470;
-        Sun, 14 Aug 2022 15:32:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FDDCB80B87;
+        Sun, 14 Aug 2022 15:32:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 764B7C433D6;
+        Sun, 14 Aug 2022 15:32:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660491164;
-        bh=5cf3bV0bfw+B53ZZEl/N5YAmfm/Pj3IjjVJUTwIxvEg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FHnd+kJ/zmQBGIImE/DF34L1qks53sxvKUyjTvRheXYYCvyPmVmopJE1COUWougDb
-         FjfBPI825MUdxdE45/6e5UE/x7wiRWGZW4HYaH/xd5eFg2eXzJCYZXF+IvfMs6Cq3s
-         KU1nPIqATs+j8VqkwLczX/pUySWGl74kgt715wDVQRuEGisTERBrOc4hQFZBgk/3kX
-         21p29Mf46DUvZejuBtT9KxjvfJsGTg2VXu2cOtrEACZ1TtetuMgYoqgCDzj1J4dtRi
-         1Ax9oNKszzTHOm4KUhgbj2hGfnusrdjH3VYR1POoNxfpSLDaCQQ0ocuRRrdS3yq5ob
-         OOy3r2Gfhh8VQ==
+        s=k20201202; t=1660491170;
+        bh=0pbObdzox6CbrcgRjPxsv/HH0bIFHIjmUHHJFWXZ/p4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Emdu4A2EjO9syZj1eibSW2jxAzP0fGWy3NnlUQ2AgOY5XDPVNupFXRPu/DcIJeo4D
+         ibznx8WzgmHtrmhq6tds3ff4moZjtiy++e6YAAS9Gv6wGdljbEFzdXfhVoHj2+IkYt
+         qMEfLO7QqY5m7zpOE8ZajgFaLFVBFbvRmGfGP1RoW7oSyQStkwHXh70o3CCSgAjnT5
+         6HoBwYpWBXfRQa/vcM6ogcj5MFNg/9bqSbIEXQWrX8oWinyGod/ruewX1tqzYZYC0l
+         DgTXOhCYBILbB3bzgvu28EI/mE+DECnWj5qSCDKLVQRJcJ6k3Hbaq99rGacQWOnpuy
+         /6Jxa8csxY+VA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 54/56] ext4: avoid remove directory when directory is corrupted
-Date:   Sun, 14 Aug 2022 11:30:24 -0400
-Message-Id: <20220814153026.2377377-54-sashal@kernel.org>
+Cc:     Tao Jin <tao-j@outlook.com>, Jiri Kosina <jkosina@suse.cz>,
+        Sasha Levin <sashal@kernel.org>, jikos@kernel.org,
+        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/46] HID: multitouch: new device class fix Lenovo X12 trackpad sticky
+Date:   Sun, 14 Aug 2022 11:32:02 -0400
+Message-Id: <20220814153247.2378312-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814153026.2377377-1-sashal@kernel.org>
-References: <20220814153026.2377377-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,41 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Tao Jin <tao-j@outlook.com>
 
-[ Upstream commit b24e77ef1c6d4dbf42749ad4903c97539cc9755a ]
+[ Upstream commit 54eed5c7b938dc4ef6b14d4ee048bbdafdbce352 ]
 
-Now if check directoy entry is corrupted, ext4_empty_dir may return true
-then directory will be removed when file system mounted with "errors=continue".
-In order not to make things worse just return false when directory is corrupted.
+The trackpad of the given device sends continuous report of pointers
+status as per wxn8 spec. However, the spec did not clarify when the
+fingers are lifted so fast that between the interval of two report
+frames fingers on pad reduced from >=2 to 0. The second last report
+contains >=2 fingers with tip state 1 and the last report contains only
+1 finger with tip state 0. Although this can happen unfrequently, a
+  quick fix will be improve the consistency to 100%. A quick fix is to
+disable MT_QUIRK_ALWAYS_VALID and enable MT_QUIRK_NOT_SEEN_MEANS_UP.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220622090223.682234-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Test for hid-tools is added in [1]
+
+In addition to this, I2C device 04CA:00B1 may also need similar class
+but with MT_QUIRK_FORCE_MULTI_INPUT disabled (but it does not harm to
+ enable it on non-multi-input device either). The respective owner has
+been notified and a patch may coming soon after test.
+
+[1]: https://gitlab.freedesktop.org/libevdev/hid-tools/-/merge_requests/130
+
+Signed-off-by: Tao Jin <tao-j@outlook.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/hid/hid-multitouch.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index 4f0420b1ff3e..5929c081ea3e 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -3067,11 +3067,8 @@ bool ext4_empty_dir(struct inode *inode)
- 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
- 					(offset & (sb->s_blocksize - 1)));
- 		if (ext4_check_dir_entry(inode, NULL, de, bh,
--					 bh->b_data, bh->b_size, offset)) {
--			offset = (offset | (sb->s_blocksize - 1)) + 1;
--			continue;
--		}
--		if (le32_to_cpu(de->inode)) {
-+					 bh->b_data, bh->b_size, offset) ||
-+		    le32_to_cpu(de->inode)) {
- 			brelse(bh);
- 			return false;
- 		}
+diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
+index f382444dc2db..a14c48de4446 100644
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -194,6 +194,7 @@ static void mt_post_parse(struct mt_device *td, struct mt_application *app);
+ #define MT_CLS_WIN_8_FORCE_MULTI_INPUT		0x0015
+ #define MT_CLS_WIN_8_DISABLE_WAKEUP		0x0016
+ #define MT_CLS_WIN_8_NO_STICKY_FINGERS		0x0017
++#define MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU	0x0018
+ 
+ /* vendor specific classes */
+ #define MT_CLS_3M				0x0101
+@@ -286,6 +287,15 @@ static const struct mt_class mt_classes[] = {
+ 			MT_QUIRK_WIN8_PTP_BUTTONS |
+ 			MT_QUIRK_FORCE_MULTI_INPUT,
+ 		.export_all_inputs = true },
++	{ .name = MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU,
++		.quirks = MT_QUIRK_IGNORE_DUPLICATES |
++			MT_QUIRK_HOVERING |
++			MT_QUIRK_CONTACT_CNT_ACCURATE |
++			MT_QUIRK_STICKY_FINGERS |
++			MT_QUIRK_WIN8_PTP_BUTTONS |
++			MT_QUIRK_FORCE_MULTI_INPUT |
++			MT_QUIRK_NOT_SEEN_MEANS_UP,
++		.export_all_inputs = true },
+ 	{ .name = MT_CLS_WIN_8_DISABLE_WAKEUP,
+ 		.quirks = MT_QUIRK_ALWAYS_VALID |
+ 			MT_QUIRK_IGNORE_DUPLICATES |
+@@ -783,6 +793,7 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
+ 		case HID_DG_CONFIDENCE:
+ 			if ((cls->name == MT_CLS_WIN_8 ||
+ 			     cls->name == MT_CLS_WIN_8_FORCE_MULTI_INPUT ||
++			     cls->name == MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU ||
+ 			     cls->name == MT_CLS_WIN_8_DISABLE_WAKEUP) &&
+ 				(field->application == HID_DG_TOUCHPAD ||
+ 				 field->application == HID_DG_TOUCHSCREEN))
+@@ -2033,7 +2044,7 @@ static const struct hid_device_id mt_devices[] = {
+ 			   USB_DEVICE_ID_LENOVO_X1_TAB3) },
+ 
+ 	/* Lenovo X12 TAB Gen 1 */
+-	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT,
++	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT_NSMU,
+ 		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8,
+ 			   USB_VENDOR_ID_LENOVO,
+ 			   USB_DEVICE_ID_LENOVO_X12_TAB) },
 -- 
 2.35.1
 
