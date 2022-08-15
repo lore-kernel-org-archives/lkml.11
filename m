@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A18C0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC34EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244787AbiHOTA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        id S244971AbiHOTAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245074AbiHOS4i (ORCPT
+        with ESMTP id S245094AbiHOS4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B1D2CC87;
-        Mon, 15 Aug 2022 11:31:31 -0700 (PDT)
+        Mon, 15 Aug 2022 14:56:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829EE326F0;
+        Mon, 15 Aug 2022 11:31:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9FC161043;
-        Mon, 15 Aug 2022 18:31:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C87D1C433C1;
-        Mon, 15 Aug 2022 18:31:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F4FD61050;
+        Mon, 15 Aug 2022 18:31:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA82C433D6;
+        Mon, 15 Aug 2022 18:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588290;
-        bh=PV0DCN/w6gznVYgw07YsdZ7KKqqykyP06skBcW/arXc=;
+        s=korg; t=1660588296;
+        bh=XRB3SSSa6lVv1vpESnbZZPaeZevVKXbJ/c1B4ApnyA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bgIYQE6GpXj4rLMw03U92swR+wqAVg4fe+tCbyOUQJf/oWoIophzOgTem9RkAqTFF
-         iPoN8C2Y6Ok4jyJ9RBbEiGmCnQpPVzR2EIeAA1uyOy960hmt5Y+k3k9N6zzSAKjtTU
-         q9dPx1O1u73VCeKmnBk/ce90PB8ZHw5F86vul/00=
+        b=BMW2jTvb2NJ3SJHD0+MeHlMphkWZAskmjEcEERcFlrOYAmHMteWytTBLB3tiTIPpi
+         860LmMX9uk0VFgbgxHDFtkDZ0ndHKbPstfCxhlctwtEzcEVjSdAEodjl8noQ9dTIC5
+         hvln6AUOlWAw9sO8Xc7NTFik9PwZ07iUzxXltNH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 354/779] can: hi311x: do not report txerr and rxerr during bus-off
-Date:   Mon, 15 Aug 2022 19:59:58 +0200
-Message-Id: <20220815180352.368672380@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 327/779] mt76: mt7615: do not update pm stats in case of error
+Date:   Mon, 15 Aug 2022 19:59:31 +0200
+Message-Id: <20220815180351.267315169@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,44 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a22bd630cfff496b270211745536e50e98eb3a45 ]
+[ Upstream commit 79717c4eeeae9dec894794fbe8af72f08f03ebdd ]
 
-During bus off, the error count is greater than 255 and can not fit in
-a u8.
+Do not update pm stats if mt7615_mcu_fw_pmctrl returns an error.
 
-Fixes: 57e83fb9b746 ("can: hi311x: Add Holt HI-311x CAN driver")
-Link: https://lore.kernel.org/all/20220719143550.3681-6-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: abe912ae3cd42 ("mt76: mt7663: add awake and doze time accounting")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/hi311x.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
-index 89d9c986a229..b08b98e6ad1c 100644
---- a/drivers/net/can/spi/hi311x.c
-+++ b/drivers/net/can/spi/hi311x.c
-@@ -670,8 +670,6 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index 4fed3afad67c..bde65af72fed 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -385,10 +385,11 @@ static int mt7615_mcu_fw_pmctrl(struct mt7615_dev *dev)
+ 	}
  
- 			txerr = hi3110_read(spi, HI3110_READ_TEC);
- 			rxerr = hi3110_read(spi, HI3110_READ_REC);
--			cf->data[6] = txerr;
--			cf->data[7] = rxerr;
- 			tx_state = txerr >= rxerr ? new_state : 0;
- 			rx_state = txerr <= rxerr ? new_state : 0;
- 			can_change_state(net, cf, tx_state, rx_state);
-@@ -684,6 +682,9 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
- 					hi3110_hw_sleep(spi);
- 					break;
- 				}
-+			} else {
-+				cf->data[6] = txerr;
-+				cf->data[7] = rxerr;
- 			}
- 		}
+ 	mt7622_trigger_hif_int(dev, false);
+-
+-	pm->stats.last_doze_event = jiffies;
+-	pm->stats.awake_time += pm->stats.last_doze_event -
+-				pm->stats.last_wake_event;
++	if (!err) {
++		pm->stats.last_doze_event = jiffies;
++		pm->stats.awake_time += pm->stats.last_doze_event -
++					pm->stats.last_wake_event;
++	}
+ out:
+ 	mutex_unlock(&pm->mutex);
  
 -- 
 2.35.1
