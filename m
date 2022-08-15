@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D57C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B787C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344072AbiHOWJI (ORCPT
+        id S1347077AbiHOWJR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
+        Mon, 15 Aug 2022 18:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348654AbiHOWGF (ORCPT
+        with ESMTP id S1348919AbiHOWGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:06:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80478116EEF;
-        Mon, 15 Aug 2022 12:37:42 -0700 (PDT)
+        Mon, 15 Aug 2022 18:06:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E85642E0;
+        Mon, 15 Aug 2022 12:37:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A44A8B80EAB;
-        Mon, 15 Aug 2022 19:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D58DAC433D6;
-        Mon, 15 Aug 2022 19:37:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9504B81136;
+        Mon, 15 Aug 2022 19:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00FDFC433C1;
+        Mon, 15 Aug 2022 19:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592259;
-        bh=GhUnTEMiB/95ekdv6mXv9gqAcCtVgrLB9cNCLk8LCWU=;
+        s=korg; t=1660592262;
+        bh=ANL6klqW/86IDG8pasVTOS+kTf2py8/R0aiAnbzkIjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zLIHClLQ23WQfOZDG+TT1SAoCW4MbGN8lzzqheN7yvynKXK5UhU8dY7LIspqdH+8P
-         nzk6U/wv9uzX9WXXd2EZ0QSQmHFMwZFGS3HCgK1ynBk8LVMNUa/Ps5QQKocdVU490g
-         X9C9ihdvUsbie4ZdpzJ8AnKs6MHIip17sTjIRN+g=
+        b=yrFwg9iIzKnnIwlclIFCGn7tGIex0L0H6eNqzeI7H+MObv4FHjWp00GYAm+Lb2SUY
+         GYF/KYgIp7Q5MYEz6fq91nWuu1oRZiUPwXTXK4BYx02bMPkTlwzZm3Cqzd9VOmGCny
+         JjPorBtDmG1o1i1uDdzOnZ5tQAAgqheSHeFak4ck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Rohith Kollalsi <quic_rkollals@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0757/1095] usb: dwc3: core: Do not perform GCTL_CORE_SOFTRESET during bootup
-Date:   Mon, 15 Aug 2022 20:02:36 +0200
-Message-Id: <20220815180500.610840846@linuxfoundation.org>
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: [PATCH 5.19 0082/1157] drm/gem: Properly annotate WW context on drm_gem_lock_reservations() error
+Date:   Mon, 15 Aug 2022 19:50:38 +0200
+Message-Id: <20220815180442.818738923@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,56 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rohith Kollalsi <quic_rkollals@quicinc.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-[ Upstream commit 07903626d98853e605fe63e5ce149f1b7314bbea ]
+commit 2939deac1fa220bc82b89235f146df1d9b52e876 upstream.
 
-According to the programming guide, it is recommended to
-perform a GCTL_CORE_SOFTRESET only when switching the mode
-from device to host or host to device. However, it is found
-that during bootup when __dwc3_set_mode() is called for the
-first time, GCTL_CORESOFTRESET is done with suspendable bit(BIT 17)
-of DWC3_GUSB3PIPECTL set. This some times leads to issues
-like controller going into bad state and controller registers
-reading value zero. Until GCTL_CORESOFTRESET is done and
-run/stop bit is set core initialization is not complete.
-Setting suspendable bit of DWC3_GUSB3PIPECTL and then
-performing GCTL_CORESOFTRESET is therefore not recommended.
-Avoid this by only performing the reset if current_dr_role is set,
-that is, when doing subsequent role switching.
+Use ww_acquire_fini() in the error code paths. Otherwise lockdep
+thinks that lock is held when lock's memory is freed after the
+drm_gem_lock_reservations() error. The ww_acquire_context needs to be
+annotated as "released", which fixes the noisy "WARNING: held lock freed!"
+splat of VirtIO-GPU driver with CONFIG_DEBUG_MUTEXES=y and enabled lockdep.
 
-Fixes: f88359e1588b ("usb: dwc3: core: Do core softreset when switch mode")
-Signed-off-by: Rohith Kollalsi <quic_rkollals@quicinc.com>
-Link: https://lore.kernel.org/r/20220714045625.20377-1-quic_rkollals@quicinc.com
+Cc: stable@vger.kernel.org
+Fixes: 7edc3e3b975b5 ("drm: Add helpers for locking an array of BO reservations.")
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220630200405.1883897-2-dmitry.osipenko@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/core.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_gem.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 46a3b8941e40..ecec9cdfa0a6 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -157,9 +157,13 @@ static void __dwc3_set_mode(struct work_struct *work)
- 		break;
+--- a/drivers/gpu/drm/drm_gem.c
++++ b/drivers/gpu/drm/drm_gem.c
+@@ -1226,7 +1226,7 @@ retry:
+ 		ret = dma_resv_lock_slow_interruptible(obj->resv,
+ 								 acquire_ctx);
+ 		if (ret) {
+-			ww_acquire_done(acquire_ctx);
++			ww_acquire_fini(acquire_ctx);
+ 			return ret;
+ 		}
  	}
+@@ -1251,7 +1251,7 @@ retry:
+ 				goto retry;
+ 			}
  
--	/* For DRD host or device mode only */
--	if ((DWC3_IP_IS(DWC3) || DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
--	    dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG) {
-+	/*
-+	 * When current_dr_role is not set, there's no role switching.
-+	 * Only perform GCTL.CoreSoftReset when there's DRD role switching.
-+	 */
-+	if (dwc->current_dr_role && ((DWC3_IP_IS(DWC3) ||
-+			DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
-+			dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG)) {
- 		reg = dwc3_readl(dwc->regs, DWC3_GCTL);
- 		reg |= DWC3_GCTL_CORESOFTRESET;
- 		dwc3_writel(dwc->regs, DWC3_GCTL, reg);
--- 
-2.35.1
-
+-			ww_acquire_done(acquire_ctx);
++			ww_acquire_fini(acquire_ctx);
+ 			return ret;
+ 		}
+ 	}
 
 
