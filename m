@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECFEC32757
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A391C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351355AbiHOWmB (ORCPT
+        id S1351310AbiHOWlx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
+        Mon, 15 Aug 2022 18:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350877AbiHOWhQ (ORCPT
+        with ESMTP id S1350830AbiHOWhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01DD5F12B;
-        Mon, 15 Aug 2022 12:50:38 -0700 (PDT)
+        Mon, 15 Aug 2022 18:37:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E877A193D1;
+        Mon, 15 Aug 2022 12:50:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37A5160FB5;
-        Mon, 15 Aug 2022 19:49:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E40C433C1;
-        Mon, 15 Aug 2022 19:49:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE4C3B81150;
+        Mon, 15 Aug 2022 19:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DE35C433C1;
+        Mon, 15 Aug 2022 19:49:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592987;
-        bh=u3MJlF94TEUlwGT6XhEOyGzd+wXV3YqFsvsnUO3j5f8=;
+        s=korg; t=1660593000;
+        bh=GAem095nFytx1SxT0FqDPzb4tbJ/6JEBo/T1YvkRwYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ld0sjg0NMsfMteaAwSPQyGG3+WPVE50Om7/lZ2o6voLHzC03sTa3qLHY0sNXkqACp
-         U+7GQv/qszIxZaAm1x8JndbF/cXivX6ew4nqYZI8w8SxvVFw4OSyWjdC/7+ZOCceuo
-         KvTC6CLZVH3L05GmApBVCRRuEerotYy788IXqv0M=
+        b=YfeRKkid/VIYsjh+S56NEHbb3Uh8IM68QCW2TAWrzV9neQCx7AYEzxkzK0P26qGgw
+         kS4AzoLTY040zHLtidIp+nIoHNUOYK9mAX5Flw8kc73+YfM8JmH+YBeHFp7PIOFB7V
+         PGXjnnNYIUi8iLwU/5m+aieJt7XIOCi/q91HywfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        YC Hung <yc.hung@mediatek.com>, Li-Yu Yu <afg984@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        KuanHsun Cheng <Allen-KH.Cheng@mediatek.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0876/1095] ASoC: SOF: mediatek: fix mt8195 StatvectorSel wrong setting
-Date:   Mon, 15 Aug 2022 20:04:35 +0200
-Message-Id: <20220815180505.597440635@linuxfoundation.org>
+Subject: [PATCH 5.18 0860/1095] tty: n_gsm: fix race condition in gsmld_write()
+Date:   Mon, 15 Aug 2022 20:04:19 +0200
+Message-Id: <20220815180504.915112317@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -55,39 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YC Hung <yc.hung@mediatek.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 99bad468846f7a255dcfc95454401c83ae02e89b ]
+[ Upstream commit 32dd59f96924f45e33bc79854f7a00679c0fa28e ]
 
-Fix StatVectorSel wrong setting.
+The function may be used by the user directly and also by the n_gsm
+internal functions. They can lead into a race condition which results in
+interleaved frames if both are writing at the same time. The receiving side
+is not able to decode those interleaved frames correctly.
 
-Fixes: b7f6503830 ("ASoC: SOF: mediatek: Add fw loader and mt8195 dsp ops to load firmware")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Signed-off-by: YC Hung <yc.hung@mediatek.com>
-Reviewed-by: Li-Yu Yu <afg984@gmail.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: KuanHsun Cheng <Allen-KH.Cheng@mediatek.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220708203904.29214-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Add a lock around the low side tty write to avoid race conditions and frame
+interleaving between user originated writes and n_gsm writes.
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220701061652.39604-9-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/mediatek/mt8195/mt8195-loader.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/sof/mediatek/mt8195/mt8195-loader.c b/sound/soc/sof/mediatek/mt8195/mt8195-loader.c
-index ed18d6379e92..ef2664c3cd47 100644
---- a/sound/soc/sof/mediatek/mt8195/mt8195-loader.c
-+++ b/sound/soc/sof/mediatek/mt8195/mt8195-loader.c
-@@ -21,7 +21,7 @@ void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index e95004217292..e02f761a3a31 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2863,11 +2863,24 @@ static ssize_t gsmld_read(struct tty_struct *tty, struct file *file,
+ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
+ 			   const unsigned char *buf, size_t nr)
+ {
+-	int space = tty_write_room(tty);
++	struct gsm_mux *gsm = tty->disc_data;
++	unsigned long flags;
++	int space;
++	int ret;
++
++	if (!gsm)
++		return -ENODEV;
++
++	ret = -ENOBUFS;
++	spin_lock_irqsave(&gsm->tx_lock, flags);
++	space = tty_write_room(tty);
+ 	if (space >= nr)
+-		return tty->ops->write(tty, buf, nr);
+-	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+-	return -ENOBUFS;
++		ret = tty->ops->write(tty, buf, nr);
++	else
++		set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
++	spin_unlock_irqrestore(&gsm->tx_lock, flags);
++
++	return ret;
+ }
  
- 	/* pull high StatVectorSel to use AltResetVec (set bit4 to 1) */
- 	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,
--				DSP_RESET_SW, DSP_RESET_SW);
-+				STATVECTOR_SEL, STATVECTOR_SEL);
- 
- 	/* toggle  DReset & BReset */
- 	/* pull high DReset & BReset */
+ /**
 -- 
 2.35.1
 
