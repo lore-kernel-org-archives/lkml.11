@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEC3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F88C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343619AbiHOTJT (ORCPT
+        id S1343627AbiHOTJY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
+        Mon, 15 Aug 2022 15:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245730AbiHOTGK (ORCPT
+        with ESMTP id S245731AbiHOTGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:06:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122942CDD7;
-        Mon, 15 Aug 2022 11:34:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3D7D6105C;
-        Mon, 15 Aug 2022 18:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D8CAC433C1;
-        Mon, 15 Aug 2022 18:34:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588489;
-        bh=JDV9LBwF5joWK8HGi4wBwjEykNxNVY96ePmNBMJjcug=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PanmB8eaXtt/yJVlCZRVxWagEdwhHo+HOVYMzbb4QbIf5FUC1xe+grFWQku3bF1VG
-         M3Gy1JXvg+Ucfrb9MN0vimUiAOzQg6VR+79L8DTPmlnTyl9cEgpPbK9C+Xh+YTV5kn
-         Qvd9V4bD311QgunN+OiL7JP8f1TgRWS5RFLxiWHg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Liang Yang <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 392/779] mtd: rawnand: meson: Fix a potential double free issue
-Date:   Mon, 15 Aug 2022 20:00:36 +0200
-Message-Id: <20220815180354.051787381@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749F533E20
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:34:50 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id 17so7060769plj.10
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:34:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=fpZDxV3FuvKhUJk99+fRvjd0nkg0TSmKhn6atJ1wty8=;
+        b=a1K+P6NVeHSYaQMtXr/LyitVsOi7nOVeQHeTYjzFN9ULPSC59iBbE8SiHTl0W/rmkp
+         fRSn62nD1SfUPJnD+khvkRZfhjIkb2buWTPfmjYE3iLXaj2PL8HpwpVeWMCpyn+VPoPA
+         EcvW9DMwcscmwN1+PMPMPCK4ZnFmomRZxjvDv9faTz7z4byWzH/tYj6oi6dl+MLug7+Z
+         iXye3WTEZwDkiCrqGp9qidOfFhjaQC+Q46v85npKusBU4nnWRSViJMpATPWWUVZwU50E
+         Tz7Fqbxb/Rv+uksfmWRJ21PhkVNDlBvCWVKL8X2xJkMapqilUATc3QDp6N0ERShI+EYf
+         fZEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=fpZDxV3FuvKhUJk99+fRvjd0nkg0TSmKhn6atJ1wty8=;
+        b=4XWxrZAoZ/Joe9DFwjdgNH9aJd9u6I3r0Ui49Y5ivFaCKc5E1y/W5Vs2cOwMBhHHHh
+         h7Sur61hfKCBQQs1cKJ7oU63Bh1HGbJhLipGwjBIb6hdChrrJGVehi0q6ivTLO+B23w8
+         T71E4UhH6SN2+JtrhotB50Y3GbsbVQvp8BT0HCXwmKpwL7vn1QGvjn6K9vNkrR27om5h
+         /k0B85BocNDwf8OElcjQs+tlG9xwA72t5lWsZMo4Kl+fjJv4TglXn8vOKlklrlwDSp/F
+         iheSZK/eXQWjgcxnh1y4ZC6ibx0owH5+oVH0Uo8FpyAcsfpOWMh2eapr06nWAq/LuImS
+         HNig==
+X-Gm-Message-State: ACgBeo0rLaU8sr+upBRxa2M1fS1Ef80M4h3O510YEjUmBJgQEpj4rmP4
+        oM0BzJEYxV2T1vdiV8r9GYY=
+X-Google-Smtp-Source: AA6agR6DID+aTGefAK9b7+8YBYaTXPl4EGnNCw/qrKaz5t3HTdVMKH0b7FbPSyTAVyNyT+6GEmiRqg==
+X-Received: by 2002:a17:903:2601:b0:16d:b055:2985 with SMTP id jd1-20020a170903260100b0016db0552985mr18216404plb.161.1660588489692;
+        Mon, 15 Aug 2022 11:34:49 -0700 (PDT)
+Received: from fedora.. ([103.159.189.148])
+        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0016c78f9f024sm7305175plb.104.2022.08.15.11.34.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 11:34:49 -0700 (PDT)
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+To:     Ruijing Dong <ruijing.dong@amd.com>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Pan Xinhui <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, James Zhu <James.Zhu@amd.com>,
+        Leo Liu <leo.liu@amd.com>, Sonny Jiang <sonny.jiang@amd.com>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Khalid Masum <khalid.masum.92@gmail.com>
+Subject: [PATCH linux-next] drm/amdgpu/vcn: Return void from the stop_dbg_mode
+Date:   Tue, 16 Aug 2022 00:34:25 +0600
+Message-Id: <20220815183425.14867-1-khalid.masum.92@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+There is no point in returning an int here. It only returns 0 which
+the caller never uses. Therefore return void and remove the unnecessary 
+assignment.
 
-[ Upstream commit ec0da06337751b18f6dee06b6526e0f0d6e80369 ]
-
-When meson_nfc_nand_chip_cleanup() is called, it will call:
-	meson_nfc_free_buffer(&meson_chip->nand);
-	nand_cleanup(&meson_chip->nand);
-
-nand_cleanup() in turn will call nand_detach() which calls the
-.detach_chip() which is here meson_nand_detach_chip().
-
-meson_nand_detach_chip() already calls meson_nfc_free_buffer(), so we
-could double free some memory.
-
-Fix it by removing the unneeded explicit call to meson_nfc_free_buffer().
-
-Fixes: 8fae856c5350 ("mtd: rawnand: meson: add support for Amlogic NAND flash controller")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Liang Yang <liang.yang@amlogic.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/ec15c358b8063f7c50ff4cd628cf0d2e14e43f49.1653064877.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Addresses-Coverity: 1504988 ("Unused value")
+Fixes: 8da1170a16e4 ("drm/amdgpu: add VCN4 ip block support")
+Suggested-by: Ruijing Dong <ruijing.dong@amd.com>
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
 ---
- drivers/mtd/nand/raw/meson_nand.c | 1 -
- 1 file changed, 1 deletion(-)
+Past discussions:
+- V1 Link: https://lore.kernel.org/lkml/20220815070056.10816-1-khalid.masum.92@gmail.com/
 
-diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
-index ac3be92872d0..032180183339 100644
---- a/drivers/mtd/nand/raw/meson_nand.c
-+++ b/drivers/mtd/nand/raw/meson_nand.c
-@@ -1307,7 +1307,6 @@ static int meson_nfc_nand_chip_cleanup(struct meson_nfc *nfc)
- 		if (ret)
- 			return ret;
+Changes since V1:
+- Make stop_dbg_mode return void
+- Update commit description
+
+ drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
+index ca14c3ef742e..fb2d74f30448 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
+@@ -1115,7 +1115,7 @@ static int vcn_v4_0_start(struct amdgpu_device *adev)
+  *
+  * Stop VCN block with dpg mode
+  */
+-static int vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
++static void vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
+ {
+ 	uint32_t tmp;
  
--		meson_nfc_free_buffer(&meson_chip->nand);
- 		nand_cleanup(&meson_chip->nand);
- 		list_del(&meson_chip->node);
- 	}
+@@ -1133,7 +1133,6 @@ static int vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
+ 	/* disable dynamic power gating mode */
+ 	WREG32_P(SOC15_REG_OFFSET(VCN, inst_idx, regUVD_POWER_STATUS), 0,
+ 		~UVD_POWER_STATUS__UVD_PG_MODE_MASK);
+-	return 0;
+ }
+ 
+ /**
+@@ -1154,7 +1153,7 @@ static int vcn_v4_0_stop(struct amdgpu_device *adev)
+ 		fw_shared->sq.queue_mode |= FW_QUEUE_DPG_HOLD_OFF;
+ 
+ 		if (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG) {
+-			r = vcn_v4_0_stop_dpg_mode(adev, i);
++			vcn_v4_0_stop_dpg_mode(adev, i);
+ 			continue;
+ 		}
+ 
 -- 
-2.35.1
-
-
+2.37.1
 
