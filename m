@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07D0C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F13C4C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349715AbiHOWdo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
+        id S232226AbiHOWdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351027AbiHOW11 (ORCPT
+        with ESMTP id S1351020AbiHOW11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:27:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D2674B8C;
-        Mon, 15 Aug 2022 12:46:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7E66CD21;
+        Mon, 15 Aug 2022 12:46:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DA3D4CE1262;
-        Mon, 15 Aug 2022 19:46:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD821C433D6;
-        Mon, 15 Aug 2022 19:46:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5776122E;
+        Mon, 15 Aug 2022 19:46:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 621A9C433D6;
+        Mon, 15 Aug 2022 19:46:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592771;
-        bh=8FaatRZzs5J89s4nJSmm66AsNZkhJ2K5cP0SUBU4jF0=;
+        s=korg; t=1660592768;
+        bh=1P0QJ7as0hYzhD5ijHWEvqmNPZKo7he6CYz7tYoqMF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XuJzCuD5KuKe+MrQ5o9efc9LnfJ5b0l10iMev0NKwJXWEpzWLMYorhnrk8pKzs4ky
-         XNyrxFr9tS8J0e0iLSDZPYYRCzkTvEHve3FgfDlqGDl63bn0QrgrgtHfL/DD4UMDuN
-         zHDubwMQQExTw59oW3Dr7Paml173C7QHOGSy2upI=
+        b=c7ciNKPKhbMRdX4Rv3O235jKXhD1zp2ppVD8+QXasTfZE2tIcpDNjb0oIpOYytA+O
+         njsNYqEUgXC805Ly/rxdk++oOtr2G0/j8wkOh5SCkzOusA+nMei/vjvx4CQqpUaUWh
+         QiTNbLiyyGEmGFfi0ZJMg9GJk48iUNiZGsrmWNEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@163.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0162/1157] irqchip/mips-gic: Check the return value of ioremap() in gic_of_init()
-Date:   Mon, 15 Aug 2022 19:51:58 +0200
-Message-Id: <20220815180446.167919790@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Suman Anna <s-anna@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0842/1095] remoteproc: k3-r5: Fix refcount leak in k3_r5_cluster_of_init
+Date:   Mon, 15 Aug 2022 20:04:01 +0200
+Message-Id: <20220815180504.180823954@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@163.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 71349cc85e5930dce78ed87084dee098eba24b59 ]
+[ Upstream commit fa220c05d282e7479abe08b54e3bdffd06c25e97 ]
 
-The function ioremap() in gic_of_init() can fail, so
-its return value should be checked.
+Every iteration of for_each_available_child_of_node() decrements
+the reference count of the previous node.
+When breaking early from a for_each_available_child_of_node() loop,
+we need to explicitly call of_node_put() on the child node.
+Add missing of_node_put() to avoid refcount leak.
 
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@163.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220723100128.2964304-1-williamsukatube@163.com
+Fixes: 6dedbd1d5443 ("remoteproc: k3-r5: Add a remoteproc driver for R5F subsystem")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Suman Anna <s-anna@ti.com>
+Link: https://lore.kernel.org/r/20220605083334.23942-1-linmq006@gmail.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-mips-gic.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/remoteproc/ti_k3_r5_remoteproc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index 8a9efb6ae587..1ba0f1555c80 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -783,6 +783,10 @@ static int __init gic_of_init(struct device_node *node,
- 	}
+diff --git a/drivers/remoteproc/ti_k3_r5_remoteproc.c b/drivers/remoteproc/ti_k3_r5_remoteproc.c
+index 4840ad906018..0481926c6975 100644
+--- a/drivers/remoteproc/ti_k3_r5_remoteproc.c
++++ b/drivers/remoteproc/ti_k3_r5_remoteproc.c
+@@ -1655,6 +1655,7 @@ static int k3_r5_cluster_of_init(struct platform_device *pdev)
+ 		if (!cpdev) {
+ 			ret = -ENODEV;
+ 			dev_err(dev, "could not get R5 core platform device\n");
++			of_node_put(child);
+ 			goto fail;
+ 		}
  
- 	mips_gic_base = ioremap(gic_base, gic_len);
-+	if (!mips_gic_base) {
-+		pr_err("Failed to ioremap gic_base\n");
-+		return -ENOMEM;
-+	}
+@@ -1663,6 +1664,7 @@ static int k3_r5_cluster_of_init(struct platform_device *pdev)
+ 			dev_err(dev, "k3_r5_core_of_init failed, ret = %d\n",
+ 				ret);
+ 			put_device(&cpdev->dev);
++			of_node_put(child);
+ 			goto fail;
+ 		}
  
- 	gicconfig = read_gic_config();
- 	gic_shared_intrs = FIELD_GET(GIC_CONFIG_NUMINTERRUPTS, gicconfig);
 -- 
 2.35.1
 
