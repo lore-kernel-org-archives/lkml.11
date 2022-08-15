@@ -2,99 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C870BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9377CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242311AbiHON7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
+        id S242468AbiHOOAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbiHON70 (ORCPT
+        with ESMTP id S242205AbiHOOAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:59:26 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D60521279;
-        Mon, 15 Aug 2022 06:59:16 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 4020C3200951;
-        Mon, 15 Aug 2022 09:59:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 15 Aug 2022 09:59:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1660571952; x=1660658352; bh=avieeFTqme
-        6FMbKv6uuCDr9epn/YVsXKNuu4CsdX0I0=; b=WUUOOC3ERVb3rDC/N4vhPVAOFQ
-        JoBgdT+mVU5oLxnWLgugeXoQR3bngQAuPs1c4aeHulGZQ2944ZzAZnvqPuwTT7oj
-        ifhKWzbCPQCNFHm0j8fnm4vhYiDg1oiT04wptulI2KEpU9ZqXSD740BSNI7KoEAG
-        curhDqI+U2fyeN+TDEq4WDH7LFO8Q8oH8WXMI7R9+DT2GZqVpXrdMgcpdyqErXkX
-        3QBfVQeflZsB2cx/ZylB5j7U9oH/DMhm6T1yf6wu9hMFiTvEpeN2F2DMrvUZwiRb
-        imxb8jsKzIkSJpxCddQliIOGojwp8kqHG3t9w6CMq5gCQl2AqW9UELXPmgzA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660571952; x=1660658352; bh=avieeFTqme6FMbKv6uuCDr9epn/Y
-        VsXKNuu4CsdX0I0=; b=nUHumxp3CSzchlE6Swleeer1J8MgsY28S7IlNrSSA8uI
-        HMRh4dCPu5qXCwFd4YsBhaofiWDqJ+yfGmxofYyAd4dDrjiXjyCwvLWLhXFM9THq
-        r4waN3gR/QHT/CyNezTiYLzGlZXqSQQ/J2t0PPz8AW4SpHGp3zSU8mcQBx6QB/nw
-        QHMIZ+vT8NRpeRGcJD6oOGw4yFKtwgGJcZM7sNmbFApXt4b7fo0BvcSEDHi7si6d
-        jW+l9bdMXSa87dEoUawMxSgVmC93zKfWRQvMmcIoKLy3icDo3BHhuCZ8uYKlyCRd
-        0y+9CSYlU3CNslyAIMop1E+RkC+PzLRvw5nr1/A19g==
-X-ME-Sender: <xms:L1H6YpOM2fUq-Ziok4oI4Xhh9gxYeH4nYDPyW6lL4jpy9n8GzJPTrg>
-    <xme:L1H6Yr8IZ3t2vU_F5Y1PKkMEQQ35VMosDTa9Kxc8Qs1jI_F3lK0CcYjdGDOXcsw6M
-    megntRXUOdQESk8ork>
-X-ME-Received: <xmr:L1H6YoSrLsbbV9Vgh2bx7lGAYjpJKg7N3XQW6Tfo79-StWeH2rF4DVDS56fXrA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgjeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepvfihtghh
-    ohcutehnuggvrhhsvghnuceothihtghhohesthihtghhohdrphhiiiiirgeqnecuggftrf
-    grthhtvghrnhepueettdetgfejfeffheffffekjeeuveeifeduleegjedutdefffetkeel
-    hfelleetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epthihtghhohesthihtghhohdrphhiiiiirg
-X-ME-Proxy: <xmx:L1H6YlsLiyoEN-vGW9ECOAZjK0nWE4tchFaF1a_ejqAzSVnMnA0L-w>
-    <xmx:L1H6Yhdcj6eSQNLNqTEQw1llYSnIdao-JDtiPG8xGhEPTEJPllVb0w>
-    <xmx:L1H6Yh184Xxw897AACpnERHgb6kNtBGm_psUlTQGTURWpzq-RAixpw>
-    <xmx:MFH6YqGNVnt3ArbsyZ-f7MrbiziWk5z5IzDUYdYPc_kecMG_C7gUaQ>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 09:59:10 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 07:59:08 -0600
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>, Oleg Nesterov <oleg@redhat.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [RFC][PATCH v2] fuse: In fuse_flush only wait if someone wants
- the return code
-Message-ID: <YvpRLJ79GRWYjLdf@tycho.pizza>
-References: <20220728091220.GA11207@redhat.com>
- <YuL9uc8WfiYlb2Hw@tycho.pizza>
- <87pmhofr1q.fsf@email.froward.int.ebiederm.org>
- <YuPlqp0jSvVu4WBK@tycho.pizza>
- <87v8rfevz3.fsf@email.froward.int.ebiederm.org>
- <YuQPc51yXhnBHjIx@tycho.pizza>
- <87h72zes14.fsf_-_@email.froward.int.ebiederm.org>
- <20220729204730.GA3625@redhat.com>
- <YuR4MRL8WxA88il+@ZenIV>
- <875yjfdw3a.fsf_-_@email.froward.int.ebiederm.org>
+        Mon, 15 Aug 2022 10:00:17 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BE3BE;
+        Mon, 15 Aug 2022 07:00:14 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oNadS-00041B-2k; Mon, 15 Aug 2022 16:00:06 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, Samuel Holland <samuel@sholland.org>
+Subject: Re: [PATCH v2 04/10] soc: sunxi: sram: Prevent the driver from being unbound
+Date:   Mon, 15 Aug 2022 16:00:05 +0200
+Message-ID: <2458395.Sgy9Pd6rRy@diego>
+In-Reply-To: <20220815041248.53268-5-samuel@sholland.org>
+References: <20220815041248.53268-1-samuel@sholland.org> <20220815041248.53268-5-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875yjfdw3a.fsf_-_@email.froward.int.ebiederm.org>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Am Montag, 15. August 2022, 06:12:41 CEST schrieb Samuel Holland:
+> This driver exports a regmap tied to the platform device (as opposed to
+> a syscon, which exports a regmap tied to the OF node). Because of this,
+> the driver can never be unbound, as that would destroy the regmap. Use
+> builtin_platform_driver_probe() to enforce this limitation.
+> 
+> Fixes: 5828729bebbb ("soc: sunxi: export a regmap for EMAC clock reg on A64")
+> Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
-On Sat, Jul 30, 2022 at 12:10:33AM -0500, Eric W. Biederman wrote:
-> Al, vfs folks? (igrab/iput sorted so as not to be distractions).
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
 
-Any movement on this? Can you resend (or I can) the patch with the
-fixes for fuse at the very least?
 
-Thanks,
