@@ -2,90 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E15C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C67C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231258AbiHOSLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
+        id S232008AbiHOSNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233157AbiHOSBG (ORCPT
+        with ESMTP id S230136AbiHOSNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:01:06 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DEB24F15;
-        Mon, 15 Aug 2022 11:01:02 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oNeOJ-0003w4-L3; Mon, 15 Aug 2022 20:00:44 +0200
-Message-ID: <a7d10605-87e3-c4bd-4a76-f07a04f5751c@leemhuis.info>
-Date:   Mon, 15 Aug 2022 20:00:42 +0200
+        Mon, 15 Aug 2022 14:13:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EA822BF6;
+        Mon, 15 Aug 2022 11:13:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B75A61277;
+        Mon, 15 Aug 2022 18:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57012C433C1;
+        Mon, 15 Aug 2022 18:13:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660587199;
+        bh=mJLB57aEqIaz+HV2H36Lja9DKkMfUjQL7wsu/WKcVUw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CwfJ7zUd7YqQeP8yAkwlYdbgyleAdX31/CxEqgPPb25T8ibtMY00Gg2O3SGbrM3zF
+         BYWHHD+ghrUP7A1IF7xT7lSSUNmmwJqT3DdiJsbjgBr1cazoioP997vRej3VXUt55g
+         uOic0ORDTWaS25YPUK6cGa9Ad8/2MlgdjaTVaxCo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 001/779] Makefile: link with -z noexecstack --no-warn-rwx-segments
+Date:   Mon, 15 Aug 2022 19:54:05 +0200
+Message-Id: <20220815180337.214556614@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH 0/3] x86: make pat and mtrr independent from each other
-To:     Chuck Zmudzinski <brchuckz@netscape.net>
-Cc:     jbeulich@suse.com, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, Juergen Gross <jgross@suse.com>
-References: <20220715142549.25223-1-jgross@suse.com>
- <efbde93b-e280-0e40-798d-dc7bf8ca83cf@leemhuis.info>
- <a0ce2f59-b653-fa8b-a016-1335f05c86ae@netscape.net>
- <32ed59c9-c894-c426-dd27-3602625cf3b1@netscape.net>
- <c88ea08c-a9d5-ef6a-333a-db9e00c6da6f@suse.com>
- <bd66b5bc-4d07-d968-f46c-40cf624499a7@netscape.net>
- <a29a66e0-2075-8084-84ad-8bd3e8a9fd4a@netscape.net>
-Content-Language: en-US
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <a29a66e0-2075-8084-84ad-8bd3e8a9fd4a@netscape.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1660586462;6091e165;
-X-HE-SMSGID: 1oNeOJ-0003w4-L3
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chuck!
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-On 15.08.22 18:56, Chuck Zmudzinski wrote:
-> 
-> I am forwarding this to you to help you cut through the noise.
+commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
 
-Sorry for not replying earlier, I ignored this thread and all other
-non-urgent mail in the past two weeks: I was on vacation until a few
-days ago and when I came home I had to deal with some other stuff first.
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
 
-> I do not apologize for trying to get
-> the fix for this regression rolling again.
+  ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: vmlinux has a LOAD segment with RWX permissions
 
-Yeah, it's important to ensure regressions don't simply fall though the
-cracks, but my advice in this case: let things rest for a few days now,
-the right people have the issue on their radar again; give them time to
-breath and work out a solution: it's not something that can be fixed
-easily within a few minutes by one person alone, as previous discussions
-have shown (also keep in mind that the merge window was open until
-yesterday, which keeps many maintainers quite busy).
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
 
-And FWIW: I've seen indicators that a solution to resolve this is
-hopefully pretty close now.
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
 
->  After all, it has been over three months
-> since the regression was first reported.
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
 
-Yes, things take/took to long, as a few things were far from ideal how
-this regression was dealt with. But that happens sometimes, we're all
-just humans and make errors. I did a few as well and learned a thing or
-two from then. Due to that I'll do a few things slightly different in
-the future to hopefully get similar situations resolved a lot quicker in
-the future.
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Makefile |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-Ciao, Thorsten
+--- a/Makefile
++++ b/Makefile
+@@ -1078,6 +1078,11 @@ KBUILD_CFLAGS   += $(KCFLAGS)
+ KBUILD_LDFLAGS_MODULE += --build-id=sha1
+ LDFLAGS_vmlinux += --build-id=sha1
+ 
++KBUILD_LDFLAGS	+= -z noexecstack
++ifeq ($(CONFIG_LD_IS_BFD),y)
++KBUILD_LDFLAGS	+= $(call ld-option,--no-warn-rwx-segments)
++endif
++
+ ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
+ LDFLAGS_vmlinux	+= $(call ld-option, -X,)
+ endif
+
+
