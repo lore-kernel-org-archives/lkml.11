@@ -2,187 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F148C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4B4C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233467AbiHPEyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
+        id S231678AbiHPEyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233658AbiHPEvb (ORCPT
+        with ESMTP id S233656AbiHPEvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:51:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39313DB064;
-        Mon, 15 Aug 2022 13:49:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C210260FC4;
-        Mon, 15 Aug 2022 20:49:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9B3C433D6;
-        Mon, 15 Aug 2022 20:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596541;
-        bh=WxKy7OIihBZFfS6tzIpJMPQGFP/yMFa8G1Q4lBvrQmM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G9ev6CbuvQ1NPmuVW5+3qra3RXAQKblRd7qS1eXU9t+wqAmf2dD76f2pdIGpGcTeB
-         LM5/LFpRXJkfkSjSJOA6eP9V1hZcBHg0Jr9EN5BiRQDve41v32o8Gyn7nJ7IiQI1KN
-         AbiMifDdR/5J2mPG4/SLkw9+BW1DpzYvCEYCaZOg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Snitzer <snitzer@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1111/1157] dm: fix dm-raid crash if md_handle_request() splits bio
-Date:   Mon, 15 Aug 2022 20:07:47 +0200
-Message-Id: <20220815180524.748652319@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921C4B81C6
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:48:47 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id h9-20020a9d5549000000b0063727299bb4so6198614oti.9
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:48:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=Q7YZzg5zy6bNcVY2jRxF79+UC83JmaUvI/+TZ/8tdUU=;
+        b=BtGr6YAH+McAQv+oqie8OGaJM/LJeNoC0wnHIAAgPPsUHCURZFFq4ZtHHEOZfCkTwy
+         qrVKqv6R4OnltqFh0jVJjy15wouZSYVMICRCovcxHhYyZ7anlzhwvo4gWJA2rcIrrK0w
+         X9xYYt1a09r5jeSYZ9ROa8b7Wllp33F8mIiKJtbOPczRNhc6G7zDxumyb197be+G/bn3
+         6sAzHbY+bsBk33LutarZ4ewzKTvXvVt9HmAAHIHktC8xcxNMcJY2I2EYhW9pWVw94nIu
+         DhAGh2EpI+JPmwJ51nZhaRay2+uMS+lyV91SoY76sNolfpgUlHLI0fQt/RqbQsYQJ4IF
+         0cug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=Q7YZzg5zy6bNcVY2jRxF79+UC83JmaUvI/+TZ/8tdUU=;
+        b=5Nnm7h0VqnYZdE/goFaB2IlceNEqBQ/lQqbibEPBo2Tnt6El8KmQ29R8qh9VCOgr7k
+         dDCvu7U9V6MU3wYyiUQ4cMNAeJirfEZTL2qg0QBIBICMNirvMlMTtCkn4Bvx9kn9xThW
+         z8s0ZtI9O/QcxYmoIiaf0JhtC+wDi5O4ZX8TluCbaB8UxGE3lUs/qwZ160YY/KsR25qh
+         J8IAmPMmCNrw110017PAQREqCPs4ZU+/dqrB19KkWeQYiJPLB4H6YToN3qRNpp/pDrYp
+         XZV8WBswhBRuqfRZJejMZmO+YqV4Un5HNEqCR+EgLvNxIEYQiWHxyTvM7zP7w01z90n9
+         Rg2g==
+X-Gm-Message-State: ACgBeo1SduH2HWYBWy56Zd8YkL1RsLr0HjLJiv9V9ftRSFxB2dZ8BDdB
+        Ok8zWC5rSChC+EzmhKRQaxNBkP9MlOqGfAkgLjc=
+X-Google-Smtp-Source: AA6agR4AxpLwfS11OLIkrikL4YqYc2UykZk/chEQqqURGqAW/fKLVeujmnfvUO/aVUYqw02150ZzKLzbWVka5N/5oac=
+X-Received: by 2002:a9d:c64:0:b0:636:df4c:e766 with SMTP id
+ 91-20020a9d0c64000000b00636df4ce766mr6666652otr.12.1660596526370; Mon, 15 Aug
+ 2022 13:48:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220815183425.14867-1-khalid.masum.92@gmail.com> <SJ1PR12MB6194F4ADBF5DEBB1AEEF1E5295689@SJ1PR12MB6194.namprd12.prod.outlook.com>
+In-Reply-To: <SJ1PR12MB6194F4ADBF5DEBB1AEEF1E5295689@SJ1PR12MB6194.namprd12.prod.outlook.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 15 Aug 2022 16:48:35 -0400
+Message-ID: <CADnq5_NkQqLdQxeD_Za=0bsS-3BGTRPBs3iF0nnWxR2t2mJtfw@mail.gmail.com>
+Subject: Re: [PATCH linux-next] drm/amdgpu/vcn: Return void from the stop_dbg_mode
+To:     "Dong, Ruijing" <Ruijing.Dong@amd.com>
+Cc:     Khalid Masum <khalid.masum.92@gmail.com>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        David Airlie <airlied@linux.ie>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        "Jiang, Sonny" <Sonny.Jiang@amd.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Zhu, James" <James.Zhu@amd.com>, "Liu, Leo" <Leo.Liu@amd.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@kernel.org>
+Applied.  Thanks!
 
-[ Upstream commit 9dd1cd3220eca534f2d47afad7ce85f4c40118d8 ]
+Alex
 
-Commit ca522482e3eaf ("dm: pass NULL bdev to bio_alloc_clone")
-introduced the optimization to _not_ perform bio_associate_blkg()'s
-relatively costly work when DM core clones its bio. But in doing so it
-exposed the possibility for DM's cloned bio to alter DM target
-behavior (e.g. crash) if a target were to issue IO without first
-calling bio_set_dev().
-
-The DM raid target can trigger an MD crash due to its need to split
-the DM bio that is passed to md_handle_request(). The split will
-recurse to submit_bio_noacct() using a bio with an uninitialized
-->bi_blkg. This NULL bio->bi_blkg causes blk_throtl_bio() to
-dereference a NULL blkg_to_tg(bio->bi_blkg).
-
-Fix this in DM core by adding a new 'needs_bio_set_dev' target flag that
-will make alloc_tio() call bio_set_dev() on behalf of the target.
-dm-raid is the only target that requires this flag. bio_set_dev()
-initializes the DM cloned bio's ->bi_blkg, using bio_associate_blkg,
-before passing the bio to md_handle_request().
-
-Long-term fix would be to audit and refactor MD code to rely on DM to
-split its bio, using dm_accept_partial_bio(), but there are MD raid
-personalities (e.g. raid1 and raid10) whose implementation are tightly
-coupled to handling the bio splitting inline.
-
-Fixes: ca522482e3eaf ("dm: pass NULL bdev to bio_alloc_clone")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/md/dm-raid.c          |  1 +
- drivers/md/dm.c               | 13 ++++++-------
- include/linux/device-mapper.h |  6 ++++++
- include/uapi/linux/dm-ioctl.h |  4 ++--
- 4 files changed, 15 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
-index a55fc28d2a29..ba3638d1d046 100644
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -3097,6 +3097,7 @@ static int raid_ctr(struct dm_target *ti, unsigned int argc, char **argv)
- 	INIT_WORK(&rs->md.event_work, do_table_event);
- 	ti->private = rs;
- 	ti->num_flush_bios = 1;
-+	ti->needs_bio_set_dev = true;
- 
- 	/* Restore any requested new layout for conversion decision */
- 	rs_config_restore(rs, &rs_layout);
-diff --git a/drivers/md/dm.c b/drivers/md/dm.c
-index 2b75f1ef7386..36c704b50ac3 100644
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -578,9 +578,6 @@ static struct dm_io *alloc_io(struct mapped_device *md, struct bio *bio)
- 	struct bio *clone;
- 
- 	clone = bio_alloc_clone(NULL, bio, GFP_NOIO, &md->mempools->io_bs);
--	/* Set default bdev, but target must bio_set_dev() before issuing IO */
--	clone->bi_bdev = md->disk->part0;
--
- 	tio = clone_to_tio(clone);
- 	tio->flags = 0;
- 	dm_tio_set_flag(tio, DM_TIO_INSIDE_DM_IO);
-@@ -614,6 +611,7 @@ static void free_io(struct dm_io *io)
- static struct bio *alloc_tio(struct clone_info *ci, struct dm_target *ti,
- 			     unsigned target_bio_nr, unsigned *len, gfp_t gfp_mask)
- {
-+	struct mapped_device *md = ci->io->md;
- 	struct dm_target_io *tio;
- 	struct bio *clone;
- 
-@@ -623,14 +621,10 @@ static struct bio *alloc_tio(struct clone_info *ci, struct dm_target *ti,
- 		/* alloc_io() already initialized embedded clone */
- 		clone = &tio->clone;
- 	} else {
--		struct mapped_device *md = ci->io->md;
--
- 		clone = bio_alloc_clone(NULL, ci->bio, gfp_mask,
- 					&md->mempools->bs);
- 		if (!clone)
- 			return NULL;
--		/* Set default bdev, but target must bio_set_dev() before issuing IO */
--		clone->bi_bdev = md->disk->part0;
- 
- 		/* REQ_DM_POLL_LIST shouldn't be inherited */
- 		clone->bi_opf &= ~REQ_DM_POLL_LIST;
-@@ -646,6 +640,11 @@ static struct bio *alloc_tio(struct clone_info *ci, struct dm_target *ti,
- 	tio->len_ptr = len;
- 	tio->old_sector = 0;
- 
-+	/* Set default bdev, but target must bio_set_dev() before issuing IO */
-+	clone->bi_bdev = md->disk->part0;
-+	if (unlikely(ti->needs_bio_set_dev))
-+		bio_set_dev(clone, md->disk->part0);
-+
- 	if (len) {
- 		clone->bi_iter.bi_size = to_bytes(*len);
- 		if (bio_integrity(clone))
-diff --git a/include/linux/device-mapper.h b/include/linux/device-mapper.h
-index 47a01c7cffdf..e9c043f12e53 100644
---- a/include/linux/device-mapper.h
-+++ b/include/linux/device-mapper.h
-@@ -373,6 +373,12 @@ struct dm_target {
- 	 * after returning DM_MAPIO_SUBMITTED from its map function.
- 	 */
- 	bool accounts_remapped_io:1;
-+
-+	/*
-+	 * Set if the target will submit the DM bio without first calling
-+	 * bio_set_dev(). NOTE: ideally a target should _not_ need this.
-+	 */
-+	bool needs_bio_set_dev:1;
- };
- 
- void *dm_per_bio_data(struct bio *bio, size_t data_size);
-diff --git a/include/uapi/linux/dm-ioctl.h b/include/uapi/linux/dm-ioctl.h
-index 2e9550fef90f..27ad9671f2df 100644
---- a/include/uapi/linux/dm-ioctl.h
-+++ b/include/uapi/linux/dm-ioctl.h
-@@ -286,9 +286,9 @@ enum {
- #define DM_DEV_SET_GEOMETRY	_IOWR(DM_IOCTL, DM_DEV_SET_GEOMETRY_CMD, struct dm_ioctl)
- 
- #define DM_VERSION_MAJOR	4
--#define DM_VERSION_MINOR	46
-+#define DM_VERSION_MINOR	47
- #define DM_VERSION_PATCHLEVEL	0
--#define DM_VERSION_EXTRA	"-ioctl (2022-02-22)"
-+#define DM_VERSION_EXTRA	"-ioctl (2022-07-28)"
- 
- /* Status bits */
- #define DM_READONLY_FLAG	(1 << 0) /* In/Out */
--- 
-2.35.1
-
-
-
+On Mon, Aug 15, 2022 at 2:40 PM Dong, Ruijing <Ruijing.Dong@amd.com> wrote:
+>
+> [AMD Official Use Only - General]
+>
+> This patch is
+>
+> Reviewed-by: Ruijing Dong <ruijing.dong@amd.com>
+>
+> Thanks,
+> Ruijing
+>
+> -----Original Message-----
+> From: Khalid Masum <khalid.masum.92@gmail.com>
+> Sent: Monday, August 15, 2022 2:34 PM
+> To: Dong, Ruijing <Ruijing.Dong@amd.com>; amd-gfx@lists.freedesktop.org; =
+dri-devel@lists.freedesktop.org; linux-kernel@vger.kernel.org
+> Cc: Deucher, Alexander <Alexander.Deucher@amd.com>; Koenig, Christian <Ch=
+ristian.Koenig@amd.com>; Pan, Xinhui <Xinhui.Pan@amd.com>; David Airlie <ai=
+rlied@linux.ie>; Daniel Vetter <daniel@ffwll.ch>; Zhu, James <James.Zhu@amd=
+.com>; Liu, Leo <Leo.Liu@amd.com>; Jiang, Sonny <Sonny.Jiang@amd.com>; Wan =
+Jiabing <wanjiabing@vivo.com>; Greg Kroah-Hartman <gregkh@linuxfoundation.o=
+rg>; Khalid Masum <khalid.masum.92@gmail.com>
+> Subject: [PATCH linux-next] drm/amdgpu/vcn: Return void from the stop_dbg=
+_mode
+>
+> There is no point in returning an int here. It only returns 0 which the c=
+aller never uses. Therefore return void and remove the unnecessary assignme=
+nt.
+>
+> Addresses-Coverity: 1504988 ("Unused value")
+> Fixes: 8da1170a16e4 ("drm/amdgpu: add VCN4 ip block support")
+> Suggested-by: Ruijing Dong <ruijing.dong@amd.com>
+> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+> ---
+> Past discussions:
+> - V1 Link: https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A=
+%2F%2Flore.kernel.org%2Flkml%2F20220815070056.10816-1-khalid.masum.92%40gma=
+il.com%2F&amp;data=3D05%7C01%7Cruijing.dong%40amd.com%7C017222a9e81f49ea336=
+f08da7eecd6c8%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C6379618529504644=
+12%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1h=
+aWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DTyXtoF2flWNqabtiJ%2BDVcR2vds=
+nLZ19qr3b%2BQT2DBQA%3D&amp;reserved=3D0
+>
+> Changes since V1:
+> - Make stop_dbg_mode return void
+> - Update commit description
+>
+>  drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c b/drivers/gpu/drm/amd/=
+amdgpu/vcn_v4_0.c
+> index ca14c3ef742e..fb2d74f30448 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
+> @@ -1115,7 +1115,7 @@ static int vcn_v4_0_start(struct amdgpu_device *ade=
+v)
+>   *
+>   * Stop VCN block with dpg mode
+>   */
+> -static int vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_i=
+dx)
+> +static void vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int
+> +inst_idx)
+>  {
+>         uint32_t tmp;
+>
+> @@ -1133,7 +1133,6 @@ static int vcn_v4_0_stop_dpg_mode(struct amdgpu_dev=
+ice *adev, int inst_idx)
+>         /* disable dynamic power gating mode */
+>         WREG32_P(SOC15_REG_OFFSET(VCN, inst_idx, regUVD_POWER_STATUS), 0,
+>                 ~UVD_POWER_STATUS__UVD_PG_MODE_MASK);
+> -       return 0;
+>  }
+>
+>  /**
+> @@ -1154,7 +1153,7 @@ static int vcn_v4_0_stop(struct amdgpu_device *adev=
+)
+>                 fw_shared->sq.queue_mode |=3D FW_QUEUE_DPG_HOLD_OFF;
+>
+>                 if (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG) {
+> -                       r =3D vcn_v4_0_stop_dpg_mode(adev, i);
+> +                       vcn_v4_0_stop_dpg_mode(adev, i);
+>                         continue;
+>                 }
+>
+> --
+> 2.37.1
+>
