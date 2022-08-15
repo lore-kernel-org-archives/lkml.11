@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AC1C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CADD5C28B2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243971AbiHPAmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
+        id S245719AbiHPAm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:42:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244919AbiHPAjo (ORCPT
+        with ESMTP id S245211AbiHPAkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:39:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31CAD34F9;
-        Mon, 15 Aug 2022 13:38:43 -0700 (PDT)
+        Mon, 15 Aug 2022 20:40:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9492CD34CE;
+        Mon, 15 Aug 2022 13:38:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C6898CE12C6;
-        Mon, 15 Aug 2022 20:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EE5C433C1;
-        Mon, 15 Aug 2022 20:38:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D750611E2;
+        Mon, 15 Aug 2022 20:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E4EC433D6;
+        Mon, 15 Aug 2022 20:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595920;
-        bh=wiCUhAHDhxGJi4ufS9Hr7pAE+pr7JKbHhtWjygcB68g=;
+        s=korg; t=1660595916;
+        bh=FZm0ShEHKWhg1mnr4viGY8SZFullQW4AgpJgBMOed3o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MTyNcYHoAvXzX4Xb6P/G5omJcdat1toIjRbjvzAnEw6tR1k7NFzfBmxSP5g9tsoZH
-         iBKuLkwhGrwtN5awWwifJ82p0OPESw73EuQlLlkjL5qh30Wp4DtvDgP+NsQicHoNH0
-         6YHmm2xQtSg3LVoiD/6+6Aq/sOs1b8vTlei0hCN0=
+        b=LzZaYNV46XNEGJTmuAa56BZkXfFju1yZtAN45wOZeyI8/hqEOLrKf14/zqUPoYkVr
+         pAUx62Y09cuaqqBPXWDctiDhppA26QDonWYq12yuWhL2xl+kaUxTCg5Dhvr277kkkY
+         hA8VnNR4uxp6gB4Dx28phWUCaYie3CnZJmzfYluk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0899/1157] serial: 8250: Create serial_lsr_in()
-Date:   Mon, 15 Aug 2022 20:04:15 +0200
-Message-Id: <20220815180515.413383265@linuxfoundation.org>
+Subject: [PATCH 5.19 0916/1157] ASoC: samsung: h1940_uda1380: include proepr GPIO consumer header
+Date:   Mon, 15 Aug 2022 20:04:32 +0200
+Message-Id: <20220815180516.089414389@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,120 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit bdb70c424df1543bc02ee2639aecebd20318c599 ]
+[ Upstream commit bd10b0dafdcf0ec1677cad70101e1f97b9e28f2e ]
 
-LSR register readers need to be careful in order to not lose bits that
-are not preserved across reads. Create a helper that takes care of
-storing the non-preserved bits into lsr_save_flags.
+h1940_uda1380 uses gpiod*/GPIOD* so it should include GPIO consumer
+header.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220608095431.18376-3-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9666e27f90b9 ("ASoC: samsung: h1940: turn into platform driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220627141900.470469-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250.h      | 20 ++++++++++++++++++++
- drivers/tty/serial/8250/8250_core.c |  3 +--
- drivers/tty/serial/8250/8250_port.c | 15 ++++-----------
- 3 files changed, 25 insertions(+), 13 deletions(-)
+ sound/soc/samsung/h1940_uda1380.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 696030cfcb09..c89cb881d9b0 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -123,6 +123,26 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
- 	up->port.serial_out(&up->port, offset, value);
- }
+diff --git a/sound/soc/samsung/h1940_uda1380.c b/sound/soc/samsung/h1940_uda1380.c
+index 907266aee839..fa45a54ab18f 100644
+--- a/sound/soc/samsung/h1940_uda1380.c
++++ b/sound/soc/samsung/h1940_uda1380.c
+@@ -8,7 +8,7 @@
+ // Based on version from Arnaud Patard <arnaud.patard@rtp-net.org>
  
-+/**
-+ *	serial_lsr_in - Read LSR register and preserve flags across reads
-+ *	@up:	uart 8250 port
-+ *
-+ *	Read LSR register and handle saving non-preserved flags across reads.
-+ *	The flags that are not preserved across reads are stored into
-+ *	up->lsr_saved_flags.
-+ *
-+ *	Returns LSR value or'ed with the preserved flags (if any).
-+ */
-+static inline unsigned int serial_lsr_in(struct uart_8250_port *up)
-+{
-+	unsigned int lsr = up->lsr_saved_flags;
-+
-+	lsr |= serial_in(up, UART_LSR);
-+	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
-+
-+	return lsr;
-+}
-+
- /*
-  * For the 16C950
-  */
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 3f56dbc9432b..82726cda6066 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -277,8 +277,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 	 * the "Diva" UART used on the management processor on many HP
- 	 * ia64 and parisc boxes.
- 	 */
--	lsr = serial_in(up, UART_LSR);
--	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+	lsr = serial_lsr_in(up);
- 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
- 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
- 	    (lsr & UART_LSR_THRE)) {
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 3c36a06a20b0..c9d8c0de56e5 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1514,11 +1514,9 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 	struct uart_8250_em485 *em485 = p->em485;
+ #include <linux/types.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/module.h>
  
- 	if (em485) {
--		unsigned char lsr = serial_in(p, UART_LSR);
-+		unsigned char lsr = serial_lsr_in(p);
- 		u64 stop_delay = 0;
- 
--		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
--
- 		if (!(lsr & UART_LSR_THRE))
- 			return;
- 		/*
-@@ -1573,10 +1571,8 @@ static inline void __start_tx(struct uart_port *port)
- 
- 	if (serial8250_set_THRI(up)) {
- 		if (up->bugs & UART_BUG_TXEN) {
--			unsigned char lsr;
-+			unsigned char lsr = serial_lsr_in(up);
- 
--			lsr = serial_in(up, UART_LSR);
--			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
- 			if (lsr & UART_LSR_THRE)
- 				serial8250_tx_chars(up);
- 		}
-@@ -2007,8 +2003,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- 	serial8250_rpm_get(up);
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	lsr = serial_port_in(port, UART_LSR);
--	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+	lsr = serial_lsr_in(up);
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	serial8250_rpm_put(up);
-@@ -2084,9 +2079,7 @@ static void wait_for_lsr(struct uart_8250_port *up, int bits)
- 
- 	/* Wait up to 10ms for the character(s) to be sent. */
- 	for (;;) {
--		status = serial_in(up, UART_LSR);
--
--		up->lsr_saved_flags |= status & LSR_SAVE_FLAGS;
-+		status = serial_lsr_in(up);
- 
- 		if ((status & bits) == bits)
- 			break;
+ #include <sound/soc.h>
 -- 
 2.35.1
 
