@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EEAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFE5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351554AbiHOWst (ORCPT
+        id S1351589AbiHOWs7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60450 "EHLO
+        Mon, 15 Aug 2022 18:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351870AbiHOWrQ (ORCPT
+        with ESMTP id S1351868AbiHOWrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:47:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1F0134BA2;
-        Mon, 15 Aug 2022 12:52:59 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD2A134BA0;
+        Mon, 15 Aug 2022 12:52:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C346861178;
-        Mon, 15 Aug 2022 19:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C849DC433D6;
-        Mon, 15 Aug 2022 19:52:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62227B81142;
+        Mon, 15 Aug 2022 19:52:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2096C433C1;
+        Mon, 15 Aug 2022 19:52:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593178;
-        bh=DoVPNPsANI42njFz6pFTjfBTPpPa5wfXXRlQm9pBfy4=;
+        s=korg; t=1660593175;
+        bh=NfEflS+XGbbTxMU1Q5X9tKOLlBZmZJ2ffzxDGM/bjCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yC493F2MkfJ6eWtJd2IbYL6p2qY9L+9vcAn30fg+q78S4TMcqUO1y6XBHZHSEVvYN
-         Ym45T3krmuQnkWmftmWMEJ8NlCM/tir6Yw/0TLZYvsmf6opCVwK05M5SC6TwbW6p8f
-         gL2i9kwTcH962ZJz0ABhDVFB0UOCkD3GZRLxtCgs=
+        b=XEMdlSdVorJdjhW4g5wvwtnvnYGB5gj70i54su/YXEKH7i0ociPNNK6jOfzhGbldP
+         AEWaJThruiB+VkN1UfYSx7qRv4ZtfF4Wgv1No3wWqq4zcm4vKyed0gHqoSCH/oQxCO
+         Lgh9MCxFsqOG3WLOsJigK/v2fuGAUyIA79uBh8AE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0907/1095] ASoC: audio-graph-card2: Add of_node_put() in fail path
-Date:   Mon, 15 Aug 2022 20:05:06 +0200
-Message-Id: <20220815180506.817368388@linuxfoundation.org>
+        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0225/1157] block: fix infinite loop for invalid zone append
+Date:   Mon, 15 Aug 2022 19:53:01 +0200
+Message-Id: <20220815180448.589187534@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 8ebc4dd8250fd1cb5da2869c0fe6ae3686fe41e9 ]
+[ Upstream commit b82d9fa257cb3725c49d94d2aeafc4677c34448a ]
 
-In asoc_simple_parse_dai(), we should call of_node_put() for the
-reference returned by of_graph_get_port_parent() in fail path.
+Returning 0 early from __bio_iov_append_get_pages() for the
+max_append_sectors warning just creates an infinite loop since 0 means
+success, and the bio will never fill from the unadvancing iov_iter. We
+could turn the return into an error value, but it will already be turned
+into an error value later on, so just remove the warning. Clearly no one
+ever hit it anyway.
 
-Fixes: 6e5f68fe3f2d ("ASoC: add Audio Graph Card2 driver")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220722141801.1304854-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 0512a75b98f84 ("block: Introduce REQ_OP_ZONE_APPEND")
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Link: https://lore.kernel.org/r/20220610195830.3574005-2-kbusch@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/audio-graph-card2.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ block/bio.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
-index ba3551d9a040..da782403316f 100644
---- a/sound/soc/generic/audio-graph-card2.c
-+++ b/sound/soc/generic/audio-graph-card2.c
-@@ -445,8 +445,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
- 	 *    if he unbinded CPU or Codec.
- 	 */
- 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
--	if (ret < 0)
-+	if (ret < 0) {
-+		of_node_put(node);
- 		return ret;
-+	}
+diff --git a/block/bio.c b/block/bio.c
+index 51c99f2c5c90..d9ff51fc457e 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1229,9 +1229,6 @@ static int __bio_iov_append_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	size_t offset;
+ 	int ret = 0;
  
- 	dlc->of_node = node;
- 
+-	if (WARN_ON_ONCE(!max_append_sectors))
+-		return 0;
+-
+ 	/*
+ 	 * Move page array up in the allocated memory for the bio vecs as far as
+ 	 * possible so that we can start filling biovecs from the beginning
 -- 
 2.35.1
 
