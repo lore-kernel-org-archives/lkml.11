@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0591C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABDBC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348531AbiHOWX7 (ORCPT
+        id S1348562AbiHOWYH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        Mon, 15 Aug 2022 18:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350789AbiHOWSd (ORCPT
+        with ESMTP id S1350787AbiHOWSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:18:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F5D6557E;
-        Mon, 15 Aug 2022 12:41:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72D3419BE;
+        Mon, 15 Aug 2022 12:41:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E85FEB80EA9;
-        Mon, 15 Aug 2022 19:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39DB8C433C1;
-        Mon, 15 Aug 2022 19:41:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63E0360FB9;
+        Mon, 15 Aug 2022 19:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52409C433C1;
+        Mon, 15 Aug 2022 19:41:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592497;
-        bh=+kx/jLvczudwRcK6z8GXOx7aUu/65FgT7dznEfehYwY=;
+        s=korg; t=1660592500;
+        bh=nunt+JU2j4MkkLoTkzivF571n8HJ9HbPahxcqNDdBjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDHf75R5o2KeDjD2By42z6bncpxul2IbjyggYsaKznM7F8CbMNwwGIjj2YuNS2MIo
-         MFZy8O9JmBHg9OlEGAKDIiFxOuSbCVx5r00+qkdkJGJ/FH6aI9UeKbKGTSCY4Lu0br
-         SrKt5curViY5G2Jpz5cc8niqSjWIa+G3ybgKg0ug=
+        b=1o7CMuCiWp0gQHbvh1wwaSLtqX1nrNN3jcRphp7ZmiaFemfiJLFEa7FlXm2uilvgT
+         fIaDW/1QBo3Rw1SSmshwe9ropqungeFReiKjKnFqdE78IMyIi0DtPjPNtnFczPZpVq
+         5qTrz94WQp+jYJ/1OMk0ZAY8xdNUQf13oz6yKfzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michael=20Sch=C3=B6ne?= <michael.schoene@rhebo.com>,
-        Paul Spooren <paul.spooren@rhebo.com>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0799/1095] platform/x86: pmc_atom: Match all Lex BayTrail boards with critclk_systems DMI table
-Date:   Mon, 15 Aug 2022 20:03:18 +0200
-Message-Id: <20220815180502.315854500@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.19 0121/1157] mbcache: add functions to delete entry if unused
+Date:   Mon, 15 Aug 2022 19:51:17 +0200
+Message-Id: <20220815180444.457512737@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,68 +49,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit c9d959fc32a5f9312282817052d8986614f2dc08 ]
+commit 3dc96bba65f53daa217f0a8f43edad145286a8f5 upstream.
 
-The critclk_systems[] DMI match table already contains 2 Lex BayTrail
-boards and patches were just submitted to add 3 more entries for the
-following models: 3I380NX, 3I380A, 3I380CW.
+Add function mb_cache_entry_delete_or_get() to delete mbcache entry if
+it is unused and also add a function to wait for entry to become unused
+- mb_cache_entry_wait_unused(). We do not share code between the two
+deleting function as one of them will go away soon.
 
-Looking at: https://www.lex.com.tw/products/embedded-ipc-board/
-we can see that Lex BayTrail makes many embedded boards with
-multiple ethernet boards and none of their products are battery
-powered so we don't need to worry (too much) about power consumption
-when suspended.
-
-Add a new DMI match which simply matches all Lex BayTrail boards and drop
-the 2 existing board specific quirks.
-
-Fixes: 648e921888ad ("clk: x86: Stop marking clocks as CLK_IS_CRITICAL")
-Reported-by: Michael Schöne <michael.schoene@rhebo.com>
-Reported-by: Paul Spooren <paul.spooren@rhebo.com>
-Reported-by: Matwey V. Kornilov <matwey@sai.msu.ru>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: 82939d7999df ("ext4: convert to mbcache2")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220712105436.32204-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/pmc_atom.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ fs/mbcache.c            |   66 ++++++++++++++++++++++++++++++++++++++++++++++--
+ include/linux/mbcache.h |   10 ++++++-
+ 2 files changed, 73 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
-index a40fae6edc84..f24ab24f2927 100644
---- a/drivers/platform/x86/pmc_atom.c
-+++ b/drivers/platform/x86/pmc_atom.c
-@@ -402,21 +402,16 @@ static const struct dmi_system_id critclk_systems[] = {
- 		},
- 	},
- 	{
--		/* pmc_plt_clk0 - 3 are used for the 4 ethernet controllers */
--		.ident = "Lex 3I380D",
-+		/*
-+		 * Lex System / Lex Computech Co. makes a lot of Bay Trail
-+		 * based embedded boards which often come with multiple
-+		 * ethernet controllers using multiple pmc_plt_clks. See:
-+		 * https://www.lex.com.tw/products/embedded-ipc-board/
-+		 */
-+		.ident = "Lex BayTrail",
- 		.callback = dmi_callback,
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "3I380D"),
--		},
--	},
--	{
--		/* pmc_plt_clk* - are used for ethernet controllers */
--		.ident = "Lex 2I385SW",
--		.callback = dmi_callback,
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "2I385SW"),
- 		},
- 	},
- 	{
--- 
-2.35.1
-
+--- a/fs/mbcache.c
++++ b/fs/mbcache.c
+@@ -11,7 +11,7 @@
+ /*
+  * Mbcache is a simple key-value store. Keys need not be unique, however
+  * key-value pairs are expected to be unique (we use this fact in
+- * mb_cache_entry_delete()).
++ * mb_cache_entry_delete_or_get()).
+  *
+  * Ext2 and ext4 use this cache for deduplication of extended attribute blocks.
+  * Ext4 also uses it for deduplication of xattr values stored in inodes.
+@@ -125,6 +125,19 @@ void __mb_cache_entry_free(struct mb_cac
+ }
+ EXPORT_SYMBOL(__mb_cache_entry_free);
+ 
++/*
++ * mb_cache_entry_wait_unused - wait to be the last user of the entry
++ *
++ * @entry - entry to work on
++ *
++ * Wait to be the last user of the entry.
++ */
++void mb_cache_entry_wait_unused(struct mb_cache_entry *entry)
++{
++	wait_var_event(&entry->e_refcnt, atomic_read(&entry->e_refcnt) <= 3);
++}
++EXPORT_SYMBOL(mb_cache_entry_wait_unused);
++
+ static struct mb_cache_entry *__entry_find(struct mb_cache *cache,
+ 					   struct mb_cache_entry *entry,
+ 					   u32 key)
+@@ -217,7 +230,7 @@ out:
+ }
+ EXPORT_SYMBOL(mb_cache_entry_get);
+ 
+-/* mb_cache_entry_delete - remove a cache entry
++/* mb_cache_entry_delete - try to remove a cache entry
+  * @cache - cache we work with
+  * @key - key
+  * @value - value
+@@ -254,6 +267,55 @@ void mb_cache_entry_delete(struct mb_cac
+ }
+ EXPORT_SYMBOL(mb_cache_entry_delete);
+ 
++/* mb_cache_entry_delete_or_get - remove a cache entry if it has no users
++ * @cache - cache we work with
++ * @key - key
++ * @value - value
++ *
++ * Remove entry from cache @cache with key @key and value @value. The removal
++ * happens only if the entry is unused. The function returns NULL in case the
++ * entry was successfully removed or there's no entry in cache. Otherwise the
++ * function grabs reference of the entry that we failed to delete because it
++ * still has users and return it.
++ */
++struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
++						    u32 key, u64 value)
++{
++	struct hlist_bl_node *node;
++	struct hlist_bl_head *head;
++	struct mb_cache_entry *entry;
++
++	head = mb_cache_entry_head(cache, key);
++	hlist_bl_lock(head);
++	hlist_bl_for_each_entry(entry, node, head, e_hash_list) {
++		if (entry->e_key == key && entry->e_value == value) {
++			if (atomic_read(&entry->e_refcnt) > 2) {
++				atomic_inc(&entry->e_refcnt);
++				hlist_bl_unlock(head);
++				return entry;
++			}
++			/* We keep hash list reference to keep entry alive */
++			hlist_bl_del_init(&entry->e_hash_list);
++			hlist_bl_unlock(head);
++			spin_lock(&cache->c_list_lock);
++			if (!list_empty(&entry->e_list)) {
++				list_del_init(&entry->e_list);
++				if (!WARN_ONCE(cache->c_entry_count == 0,
++		"mbcache: attempt to decrement c_entry_count past zero"))
++					cache->c_entry_count--;
++				atomic_dec(&entry->e_refcnt);
++			}
++			spin_unlock(&cache->c_list_lock);
++			mb_cache_entry_put(cache, entry);
++			return NULL;
++		}
++	}
++	hlist_bl_unlock(head);
++
++	return NULL;
++}
++EXPORT_SYMBOL(mb_cache_entry_delete_or_get);
++
+ /* mb_cache_entry_touch - cache entry got used
+  * @cache - cache the entry belongs to
+  * @entry - entry that got used
+--- a/include/linux/mbcache.h
++++ b/include/linux/mbcache.h
+@@ -30,15 +30,23 @@ void mb_cache_destroy(struct mb_cache *c
+ int mb_cache_entry_create(struct mb_cache *cache, gfp_t mask, u32 key,
+ 			  u64 value, bool reusable);
+ void __mb_cache_entry_free(struct mb_cache_entry *entry);
++void mb_cache_entry_wait_unused(struct mb_cache_entry *entry);
+ static inline int mb_cache_entry_put(struct mb_cache *cache,
+ 				     struct mb_cache_entry *entry)
+ {
+-	if (!atomic_dec_and_test(&entry->e_refcnt))
++	unsigned int cnt = atomic_dec_return(&entry->e_refcnt);
++
++	if (cnt > 0) {
++		if (cnt <= 3)
++			wake_up_var(&entry->e_refcnt);
+ 		return 0;
++	}
+ 	__mb_cache_entry_free(entry);
+ 	return 1;
+ }
+ 
++struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
++						    u32 key, u64 value);
+ void mb_cache_entry_delete(struct mb_cache *cache, u32 key, u64 value);
+ struct mb_cache_entry *mb_cache_entry_get(struct mb_cache *cache, u32 key,
+ 					  u64 value);
 
 
