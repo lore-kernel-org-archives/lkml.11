@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B98C2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B6DC2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344185AbiHOTgV (ORCPT
+        id S1344340AbiHOTge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
+        Mon, 15 Aug 2022 15:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245027AbiHOTaS (ORCPT
+        with ESMTP id S1343725AbiHOTa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:30:18 -0400
+        Mon, 15 Aug 2022 15:30:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327D85F121;
-        Mon, 15 Aug 2022 11:44:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2B25F9AF;
+        Mon, 15 Aug 2022 11:44:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B95E2611E4;
-        Mon, 15 Aug 2022 18:44:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3749AC433D7;
-        Mon, 15 Aug 2022 18:44:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D900E6113D;
+        Mon, 15 Aug 2022 18:44:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA1AC433D6;
+        Mon, 15 Aug 2022 18:44:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589050;
-        bh=DF7PTMewUFfS/ZB+3tf2747d7ms+FLwktLmvT2BQnNg=;
+        s=korg; t=1660589057;
+        bh=g0WUy9z2Xp8PZ4Dnmj9bYY/NRZgrjr5Aw07PKgj/mhs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1he8+7HXFA+tPy2sVZHyNBRovOJbl7VJbLwB696YuBKTRcOhvJP4Yj8pwvie89eud
-         y7ZoVN2LsOCoGhlWTXqrh6N09gHaD6zyAfOuAwRj1au8hLhgLtdxqL1lV0sdG7mfCm
-         d1nUR0N5V6sFxhDPlJEr3T+gdYqdnzPZkuK5549I=
+        b=KeC4sl56WtYy01k+zxFQ8O+5QHLhMzX1JR6VcGdLLsJCV6Fn86gJqRRdhKkcfTykr
+         Zuiwl58baT/Epmj8gX7Q2FX2fVlflEsJCAENuWhRVB7bT0gKNCjQ/mqwh3H94qc+HA
+         zc8b/jOxYrD/FWCcgofNbZnDG/KllXnQy2Ea3CwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Li Lingfeng <lilingfeng3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 565/779] ASoC: mt6797-mt6351: Fix refcount leak in mt6797_mt6351_dev_probe
-Date:   Mon, 15 Aug 2022 20:03:29 +0200
-Message-Id: <20220815180401.467155717@linuxfoundation.org>
+Subject: [PATCH 5.15 557/779] ext4: recover csum seed of tmp_inode after migrating to extents
+Date:   Mon, 15 Aug 2022 20:03:21 +0200
+Message-Id: <20220815180401.134739403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,47 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Li Lingfeng <lilingfeng3@huawei.com>
 
-[ Upstream commit 7472eb8d7dd12b6b9b1a4f4527719cc9c7f5965f ]
+[ Upstream commit 07ea7a617d6b278fb7acedb5cbe1a81ce2de7d0c ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+When migrating to extents, the checksum seed of temporary inode
+need to be replaced by inode's, otherwise the inode checksums
+will be incorrect when swapping the inodes data.
 
-Fixes: f0ab0bf250da ("ASoC: add mt6797-mt6351 driver and config option")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603083417.9011-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+However, the temporary inode can not match it's checksum to
+itself since it has lost it's own checksum seed.
+
+mkfs.ext4 -F /dev/sdc
+mount /dev/sdc /mnt/sdc
+xfs_io -fc "pwrite 4k 4k" -c "fsync" /mnt/sdc/testfile
+chattr -e /mnt/sdc/testfile
+chattr +e /mnt/sdc/testfile
+umount /dev/sdc
+fsck -fn /dev/sdc
+
+========
+...
+Pass 1: Checking inodes, blocks, and sizes
+Inode 13 passes checks, but checksum does not match inode.  Fix? no
+...
+========
+
+The fix is simple, save the checksum seed of temporary inode, and
+recover it after migrating to extents.
+
+Fixes: e81c9302a6c3 ("ext4: set csum seed in tmp inode while migrating to extents")
+Signed-off-by: Li Lingfeng <lilingfeng3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220617062515.2113438-1-lilingfeng3@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt6797/mt6797-mt6351.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ fs/ext4/migrate.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/mediatek/mt6797/mt6797-mt6351.c b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-index 496f32bcfb5e..d2f6213a6bfc 100644
---- a/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-+++ b/sound/soc/mediatek/mt6797/mt6797-mt6351.c
-@@ -217,7 +217,8 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
- 	if (!codec_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	for_each_card_prelinks(card, i, dai_link) {
- 		if (dai_link->codecs->name)
-@@ -230,6 +231,9 @@ static int mt6797_mt6351_dev_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
+diff --git a/fs/ext4/migrate.c b/fs/ext4/migrate.c
+index ff8916e1d38e..af5a75a89e6e 100644
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -417,7 +417,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	struct inode *tmp_inode = NULL;
+ 	struct migrate_struct lb;
+ 	unsigned long max_entries;
+-	__u32 goal;
++	__u32 goal, tmp_csum_seed;
+ 	uid_t owner[2];
  
-+	of_node_put(codec_node);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
- }
+ 	/*
+@@ -465,6 +465,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	 * the migration.
+ 	 */
+ 	ei = EXT4_I(inode);
++	tmp_csum_seed = EXT4_I(tmp_inode)->i_csum_seed;
+ 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+@@ -575,6 +576,7 @@ int ext4_ext_migrate(struct inode *inode)
+ 	 * the inode is not visible to user space.
+ 	 */
+ 	tmp_inode->i_blocks = 0;
++	EXT4_I(tmp_inode)->i_csum_seed = tmp_csum_seed;
  
+ 	/* Reset the extent details */
+ 	ext4_ext_tree_init(handle, tmp_inode);
 -- 
 2.35.1
 
