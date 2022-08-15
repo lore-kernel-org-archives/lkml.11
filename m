@@ -2,126 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C89C32762
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A152C32763
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354982AbiHOXqz (ORCPT
+        id S1355093AbiHOXrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        Mon, 15 Aug 2022 19:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354329AbiHOXlx (ORCPT
+        with ESMTP id S1354325AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:53 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9CE2C66F;
-        Mon, 15 Aug 2022 13:12:46 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id f28so7517886pfk.1;
-        Mon, 15 Aug 2022 13:12:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=4ge96+G7p+gdjTYmHEuqmuSxfOOy8/jVGuHx76Z8uTY=;
-        b=pLp2CiRi+Q0codn/rk0EUtKXWKYbBTq4iQ1i0IS8oj2p881Cp5/783eDfJBXDkuqIU
-         jjJs9qY3y/DHGcUDIdRbaCh9dkPrWj84/Rf0ZzDNoWCj5sxoRKDDNuhsaFm17B4b9Hx1
-         k5KRl39FLK4MkAbHYeLrBvTexfeNTeu5cWnaKgf+BzKHrGhDfTH8hbj0MNMbBvTs/kJR
-         JU+Lrnbjt1EkY2ulXYMkOIvCmOR82l6Y0YYJxkjR4IWoHNW0+9Xc5kyrR50WROX/+ti+
-         HBGuR+L4Qx0G3vttyZ4FBcnOUp87yMYKnWnvuNZOe2ozDCx+kp3Qra4iWOZHUpnVyQE5
-         frUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=4ge96+G7p+gdjTYmHEuqmuSxfOOy8/jVGuHx76Z8uTY=;
-        b=r317OAC0h36DYF9qZ3IRAqC/aUntS3lW6pb4Tvz3WqflMdCjn088GhyA5JdKPQTsLO
-         aFCYWd20KBtNMtQEcq+TPISb1bS+cNb/8AWLoIe1xUDgVM7k6KUhxRFxkCYAhd5DC5Y5
-         05dAh/VrGw7OzHNFrhTNGWwOEq/VH7WwCMFwsJNDULOmFKIgDGDHc+S1Tw/WfWFl01/R
-         nx/vWKUGskQhqWvyK+GUy2mHnEGuudgw2co78AG5wviYfYTOH7WtpegiizyqXUY1TTmg
-         z9x3rJ9A+Oj61GxeyXkNtox5PoYcBuFQQWPF3lnXp17lypAAZ7Sq2xPVTWP3dosn3Zrx
-         TUAQ==
-X-Gm-Message-State: ACgBeo3/pOD1/7sF+OW1nCK3u/CFUPnckAKDimA5+KeflnIoUzjqwJA8
-        ir85kvuTco8l1v3dZ+/8iBA=
-X-Google-Smtp-Source: AA6agR5sTy8gJWEQW/VbC65qEQq6LDfwouCpv9FRONRd3eINTHpJls4f7qaUYSGKduWFCqZn2f6waA==
-X-Received: by 2002:a65:6bc4:0:b0:3c2:2f7c:cc74 with SMTP id e4-20020a656bc4000000b003c22f7ccc74mr14854282pgw.307.1660594366059;
-        Mon, 15 Aug 2022 13:12:46 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:3a69])
-        by smtp.gmail.com with ESMTPSA id w9-20020a627b09000000b0052ddccd7b64sm6877339pfc.205.2022.08.15.13.12.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 13:12:45 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 15 Aug 2022 10:12:44 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Zhaoyang Huang <huangzhaoyang@gmail.com>
-Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        cgroups mailinglist <cgroups@vger.kernel.org>,
-        Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Suren Baghdasaryan <surenb@google.com>
-Subject: Re: [RFC PATCH] cgroup: use root_mem_cgroup as css when current is
- not enabled
-Message-ID: <YvqovLtVv8C3Zifj@slm.duckdns.org>
-References: <1660298966-11493-1-git-send-email-zhaoyang.huang@unisoc.com>
- <YvakpukeF9d35Bc8@slm.duckdns.org>
- <CAGWkznG6n=+v7hUKR8Rmg8VEF=BTDegk8bh6aHfvOU5TbmeXDw@mail.gmail.com>
- <CAGWkznHa9WTV2oK=HB1OVEdKeMZ1V2omDDiNrRdyBdyYd=q5Fg@mail.gmail.com>
- <CAGWkznEQ_njmNt8usr-DyaiYDAHJE-niC2QxoXPQkDqY7v_Mqg@mail.gmail.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048B32C66C;
+        Mon, 15 Aug 2022 13:12:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E4A60B9B;
+        Mon, 15 Aug 2022 20:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8002EC433D6;
+        Mon, 15 Aug 2022 20:12:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660594360;
+        bh=wGmzxuR/0P2E5LaW6gBwW3BBKMxMqFowNKE4fr6qJi8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A/U5D6ihR8X8GMc3cP/tiDUxvyZq7vh582+kcuxOOQkJswbKzFFNUEnn483mnntLW
+         Ac7fG64volYeU+fAtjzHNNTEHkMQjOkZ00y3IgjLJ80WvF5Fi8jzMRJR4Su0eIj6CJ
+         wvyGRBGgGJu4GD90W43Pp+FPaiGqUuTs5vnlqaXg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0421/1157] drm/vc4: hdmi: Fix timings for interlaced modes
+Date:   Mon, 15 Aug 2022 19:56:17 +0200
+Message-Id: <20220815180456.509015789@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGWkznEQ_njmNt8usr-DyaiYDAHJE-niC2QxoXPQkDqY7v_Mqg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
 
-On Mon, Aug 15, 2022 at 05:17:03PM +0800, Zhaoyang Huang wrote:
-> > > IMHO, I would like to say if it makes more sense as "A given cgroup
-> > > always encompasses all the resources consumed in its ENABLED
-> > > self-including subtree." Otherwise, how should I couple with the
-> > > scenarios I raised in the commit message which I prefer parts of the
-> > > subtrees compete for "memory" while others are free for it. The free
-> > > here is not only without "min/low/high watermarks" but also not
-> > > charged to their own LRU.
-> > I would like to state more why these make sense. Memory cgroup is a
-> > little bit different to other cgroups, that is, memcg will have real
-> > physical resources attached, say pages. From perspective of memory
-> > reclaiming, it is odd to find that pages under free memcgs are charged
-> > to separate LRUs but without any management(no watermark control) and
-> > perhaps affect workingset mechanism by LRU reason. Furthermore, v2
-> > should grant the groups with the right to reject the subsys which
-> > introduced by sibling enable, which could be deemed as v2's
-> > inconvenient. The memcg could also apply subtree_control to enroll all
-> > memory back whenever it want.
-> As suggested by zefan, raise the practical scenario here to make more
-> sense. The issue is observed in android system where per-app cgroup is
-> demanded by freezer subsys and part of them require memory control.
-> Under this scenario, less efficient memory reclaim is observed when
-> comparing with no memory control. It is believed that multi LRU
-> scanning introduces some of the overhead. Furthermore, page thrashing
-> is also heavier than global LRU which could be the consequences of
-> partial failure of WORKINGSET mechanism as LRU is too short to protect
-> the active pages.
+[ Upstream commit 0ee5a40152b15f200ed3a0d51e8aa782ea979c6a ]
 
-The basic architecture isn't gonna change and there are fundamental reasons
-why things are the way they are. The resources, especially the main ones,
-are entangled with each other - e.g. memory, io and cpu are entangled with
-each other through reclaim. While we aren't capturing the cpu part yet but
-we now do a largely acceptable job of controlling memory and io together.
+Increase the number of post-sync blanking lines on odd fields instead of
+decreasing it on even fields. This makes the total number of lines
+properly match the modelines.
 
-This is reduction of flexibility compared to cgroup1 and can cause some
-inconvenience when transitioning from cgroup1 but the experience has been
-that the pros clearly outweigh the cons. Even here, none of the problems
-you're listing are architectural. If there are memcg behavior problems, we
-should fix them in memcg, not work around by twisting the basic
-architecture. Are the problematic memcg behaviors reproducible in upstream?
-If so, can you please make a detailed report on those?
+Additionally fix the value of PV_VCONTROL_ODD_DELAY, which did not take
+pixels_per_clock into account, causing some displays to invert the
+fields when driven by bcm2711.
 
-Thanks.
+Fixes: 682e62c45406 ("drm/vc4: Fix support for interlaced modes on HDMI.")
+Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-31-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/vc4/vc4_crtc.c |  7 ++++---
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 12 ++++++------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 12a5944ee980..b2628afcb327 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -346,7 +346,8 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
+ 				 PV_HORZB_HACTIVE));
+ 
+ 	CRTC_WRITE(PV_VERTA,
+-		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
++		   VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
++				 interlace,
+ 				 PV_VERTA_VBP) |
+ 		   VC4_SET_FIELD(mode->crtc_vsync_end - mode->crtc_vsync_start,
+ 				 PV_VERTA_VSYNC));
+@@ -358,7 +359,7 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
+ 	if (interlace) {
+ 		CRTC_WRITE(PV_VERTA_EVEN,
+ 			   VC4_SET_FIELD(mode->crtc_vtotal -
+-					 mode->crtc_vsync_end - 1,
++					 mode->crtc_vsync_end,
+ 					 PV_VERTA_VBP) |
+ 			   VC4_SET_FIELD(mode->crtc_vsync_end -
+ 					 mode->crtc_vsync_start,
+@@ -378,7 +379,7 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
+ 			   PV_VCONTROL_CONTINUOUS |
+ 			   (is_dsi ? PV_VCONTROL_DSI : 0) |
+ 			   PV_VCONTROL_INTERLACE |
+-			   VC4_SET_FIELD(mode->htotal * pixel_rep / 2,
++			   VC4_SET_FIELD(mode->htotal * pixel_rep / (2 * ppc),
+ 					 PV_VCONTROL_ODD_DELAY));
+ 		CRTC_WRITE(PV_VSYNCD_EVEN, 0);
+ 	} else {
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index f3e0de6515e0..674bd29a7cf2 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -988,12 +988,12 @@ static void vc4_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
+ 				   VC4_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC4_HDMI_VERTA_VAL));
+ 	u32 vertb = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
++				   interlaced,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC4_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end -
+-					interlaced,
++					mode->crtc_vsync_end,
+ 					VC4_HDMI_VERTB_VBP));
+ 	unsigned long flags;
+ 
+@@ -1041,12 +1041,12 @@ static void vc5_hdmi_set_timings(struct vc4_hdmi *vc4_hdmi,
+ 				   VC5_HDMI_VERTA_VFP) |
+ 		     VC4_SET_FIELD(mode->crtc_vdisplay, VC5_HDMI_VERTA_VAL));
+ 	u32 vertb = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+-		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end,
++		     VC4_SET_FIELD(mode->crtc_vtotal - mode->crtc_vsync_end +
++				   interlaced,
+ 				   VC4_HDMI_VERTB_VBP));
+ 	u32 vertb_even = (VC4_SET_FIELD(0, VC5_HDMI_VERTB_VSPO) |
+ 			  VC4_SET_FIELD(mode->crtc_vtotal -
+-					mode->crtc_vsync_end -
+-					interlaced,
++					mode->crtc_vsync_end,
+ 					VC4_HDMI_VERTB_VBP));
+ 	unsigned long flags;
+ 	unsigned char gcp;
 -- 
-tejun
+2.35.1
+
+
+
