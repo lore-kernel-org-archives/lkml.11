@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 274E7C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA57C25B0D
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352731AbiHPAUk (ORCPT
+        id S1353143AbiHPAUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
+        Mon, 15 Aug 2022 20:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357631AbiHPAN5 (ORCPT
+        with ESMTP id S1357655AbiHPAN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:13:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147C8178C34;
-        Mon, 15 Aug 2022 13:30:35 -0700 (PDT)
+        Mon, 15 Aug 2022 20:13:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A70D1782AE;
+        Mon, 15 Aug 2022 13:30:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32BB3B80EB1;
-        Mon, 15 Aug 2022 20:30:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81BBCC433D7;
-        Mon, 15 Aug 2022 20:30:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A6A7611B1;
+        Mon, 15 Aug 2022 20:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A126C433C1;
+        Mon, 15 Aug 2022 20:30:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595432;
-        bh=94xa95o8KqgbjETlbVwuPqDvmR7RMIi6Gf8mC9KqAAg=;
+        s=korg; t=1660595423;
+        bh=bZ788B6z466vmlS6LVITTCvYlqYe/U/IhX4N2/r73Is=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KzGHOxpndLkRBVAqtN52TBgNsZsftMuPviFP9kJjd6YBOufAsY3B9wCccNzL5vSb8
-         fZlhqqwnb4Fz4fodm7bXF+vflq0pr0074TJbgL/Zr3Mm01m1PhDcwzfCckULa+pHW5
-         lUVg4o0JPtGcIxzkvJSnXCdXbqnxM5i13J/X7Gz8=
+        b=EoroEjCmFOVGV5KfVxdfwd8dedhu8kGHYMjmIBcB3rNjCQDHO37n2Jdj6IRIvWkAM
+         hbmfwogzabzDD1HBNa4J4DBdfsJi7+K92bZCrUNfVr6e105oYWbWcm/74S4V2JT8wQ
+         Tv8jhaf22ppsSVJoXNCYukFvI7XqnB5Q2i5ukdM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0730/1157] KVM: selftests: Convert s390x/diag318_test_handler away from VCPU_ID
-Date:   Mon, 15 Aug 2022 20:01:26 +0200
-Message-Id: <20220815180508.661549997@linuxfoundation.org>
+Subject: [PATCH 5.19 0727/1157] lib/test_hmm: avoid accessing uninitialized pages
+Date:   Mon, 15 Aug 2022 20:01:23 +0200
+Message-Id: <20220815180508.560058174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,57 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit 7cdcdfe50d8d68b7b9ba2e1b0345ff47fdda390f ]
+[ Upstream commit ed913b055a74b723976f8e885a3395162a0371e6 ]
 
-Convert diag318_test_handler to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of passing around vCPU IDs.  Note, this is
-a "functional" change in the sense that the test now creates a vCPU with
-vcpu_id==0 instead of vcpu_id==6.  The non-zero VCPU_ID was 100% arbitrary
-and added little to no validation coverage.  If testing non-zero vCPU IDs
-is desirable for generic tests, that can be done in the future by tweaking
-the VM creation helpers.
+If make_device_exclusive_range() fails or returns pages marked for
+exclusive access less than required, remaining fields of pages will left
+uninitialized.  So dmirror_atomic_map() will access those yet
+uninitialized fields of pages.  To fix it, do dmirror_atomic_map() iff all
+pages are marked for exclusive access (we will break if mapped is less
+than required anyway) so we won't access those uninitialized fields of
+pages.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lkml.kernel.org/r/20220609130835.35110-1-linmiaohe@huawei.com
+Fixes: b659baea7546 ("mm: selftests for exclusive device memory")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Jerome Glisse <jglisse@redhat.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/kvm/lib/s390x/diag318_test_handler.c       | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ lib/test_hmm.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c b/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c
-index 86b9e611ad87..21c31fe10c1a 100644
---- a/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c
-+++ b/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c
-@@ -8,8 +8,6 @@
- #include "test_util.h"
- #include "kvm_util.h"
+diff --git a/lib/test_hmm.c b/lib/test_hmm.c
+index cfe632047839..f2c3015c5c82 100644
+--- a/lib/test_hmm.c
++++ b/lib/test_hmm.c
+@@ -732,7 +732,7 @@ static int dmirror_exclusive(struct dmirror *dmirror,
  
--#define VCPU_ID	6
--
- #define ICPT_INSTRUCTION	0x04
- #define IPA0_DIAG		0x8300
+ 	mmap_read_lock(mm);
+ 	for (addr = start; addr < end; addr = next) {
+-		unsigned long mapped;
++		unsigned long mapped = 0;
+ 		int i;
  
-@@ -27,14 +25,15 @@ static void guest_code(void)
-  */
- static uint64_t diag318_handler(void)
- {
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	uint64_t reg;
- 	uint64_t diag318_info;
+ 		if (end < addr + (ARRAY_SIZE(pages) << PAGE_SHIFT))
+@@ -741,7 +741,13 @@ static int dmirror_exclusive(struct dmirror *dmirror,
+ 			next = addr + (ARRAY_SIZE(pages) << PAGE_SHIFT);
  
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	vcpu_run(vm, VCPU_ID);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	vcpu_run(vm, vcpu->id);
-+	run = vcpu->run;
- 
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
- 		    "DIAGNOSE 0x0318 instruction was not intercepted");
+ 		ret = make_device_exclusive_range(mm, addr, next, pages, NULL);
+-		mapped = dmirror_atomic_map(addr, next, pages, dmirror);
++		/*
++		 * Do dmirror_atomic_map() iff all pages are marked for
++		 * exclusive access to avoid accessing uninitialized
++		 * fields of pages.
++		 */
++		if (ret == (next - addr) >> PAGE_SHIFT)
++			mapped = dmirror_atomic_map(addr, next, pages, dmirror);
+ 		for (i = 0; i < ret; i++) {
+ 			if (pages[i]) {
+ 				unlock_page(pages[i]);
 -- 
 2.35.1
 
