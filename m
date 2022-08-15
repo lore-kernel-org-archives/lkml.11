@@ -2,168 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960C5C2BBC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A11C32757
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348341AbiHPAwF (ORCPT
+        id S1348486AbiHPAwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
+        Mon, 15 Aug 2022 20:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349372AbiHPAqh (ORCPT
+        with ESMTP id S1349653AbiHPAqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4996FB5E6B;
-        Mon, 15 Aug 2022 13:45:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C90CB80EB1;
-        Mon, 15 Aug 2022 20:45:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11E8C433D6;
-        Mon, 15 Aug 2022 20:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596312;
-        bh=rBDcUaW6y7qrMZnKzZg6t/2s8g0030ERifBQbxVCGxs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oi2Ad80h9+Rm15rgTSKLZeUrMulW0k7Z2MYWtEMFDU5QFAtbVtaahhQiAYlj/5K3N
-         +0zYU1NSzdzwrDh4g8uZIAtblMtc7kODFfmeTvPEC0YFE5fXt3bpH3Jj0mp404X8uf
-         AYic8+GuF5JZ7e3bQjNS5+GiImjaRQrUTT3mtXvQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 1038/1157] scsi: qla2xxx: Fix crash due to stale SRB access around I/O timeouts
-Date:   Mon, 15 Aug 2022 20:06:34 +0200
-Message-Id: <20220815180521.511042881@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 20:46:42 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D84D87F6;
+        Mon, 15 Aug 2022 13:45:04 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id ha11so7925146pjb.2;
+        Mon, 15 Aug 2022 13:45:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=XS5K4OzaHR63BIa1xws9D0ReOq3Svv2Wh4Lbm5YbAfM=;
+        b=POQ4Lda376BXN0B9b1jtVn5dk06uCU+dpZ0TVOwcNXMKz4thbYFRfKcbTZRu413o8T
+         joeFgGN35weFYtqnpQK0bxOorsyX2IoaQh8HFvWBT/pU8Rgg6U19N8K63aJ5xdrVPx1e
+         SAUAQ3qOPpIMIzPMdtk3n3Dpv7rKWuDRvcnWMTOxAFeiGUd39rD3fkovoFIg4QpAbLSb
+         xzyyCNrPDZsmdqII7ChdtrONVxQiXbqyAvjmUwRC/QwxbXSxSi93uZ690b4+QkfteDr/
+         1wBzjH901vu1iRNR39joY4Mg6o1vDcJR3SEKW37tqYsqJbiCLvc+UZpiEZpzbrhcLKaM
+         L38g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=XS5K4OzaHR63BIa1xws9D0ReOq3Svv2Wh4Lbm5YbAfM=;
+        b=nB5l36PIt7XEClDlGameqp/4JDCrkNci1d1Thl8yYGJGKnqxDhLSe3Ng1Cj6+w/yEN
+         C7vLxIw8sChKdPWZYAA3io/lNg9ekpGIYmWv666FU+73crlsJ1J6iMA17zXIrcrSFvNY
+         uLa4WXFpMl72W9A94ZBwc6xXicwqdXFl4p0S9YQsPNES4iF11UBywT9xaMtzBB6HnzYp
+         cfyBBcGsIfTSdGdCCEKOmSswDg2umBrbA+qTETAydI2agOqrzDUOIIgAptRPwb1PJ9+X
+         aFxhrRaIrpkRdyzXIwyP6yOvbQWW8e80zBmBj8yt8f2jGk5vrssiWV6LhZhT/FGY5Zfv
+         wxYg==
+X-Gm-Message-State: ACgBeo2VoytQoriU2gkA+6vpHbMjzv9nJ/nCdsqIeBuEDf8isrXHgTIk
+        HN533OR/De3w625Uj6oYNQw=
+X-Google-Smtp-Source: AA6agR5hpN5Jw5Lb8baKNCmKSASjXILStRaT2kte+VwGknYpI/t1N4jPKG7MFOa60MRd2+2GnQcNFg==
+X-Received: by 2002:a17:902:720b:b0:16d:2c4c:b52a with SMTP id ba11-20020a170902720b00b0016d2c4cb52amr18276430plb.155.1660596304001;
+        Mon, 15 Aug 2022 13:45:04 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id y11-20020a17090322cb00b0016c40f8cb58sm7386806plg.81.2022.08.15.13.45.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 13:45:03 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 15 Aug 2022 13:45:02 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Andres Freund <andres@anarazel.de>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        c@redhat.com
+Subject: Re: upstream kernel crashes
+Message-ID: <20220815204502.GC509309@roeck-us.net>
+References: <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
+ <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
+ <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
+ <20220815034532-mutt-send-email-mst@kernel.org>
+ <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
+ <20220815042623-mutt-send-email-mst@kernel.org>
+ <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
+ <20220815113729-mutt-send-email-mst@kernel.org>
+ <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
+ <20220815124748-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815124748-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+Michael,
 
-commit c39587bc0abaf16593f7abcdf8aeec3c038c7d52 upstream.
+On Mon, Aug 15, 2022 at 12:50:52PM -0400, Michael S. Tsirkin wrote:
+[ ...]
+> 
+> Okay! And just to be 100% sure, can you try the following on top of 5.19:
+> 
 
-Ensure SRB is returned during I/O timeout error escalation. If that is not
-possible fail the escalation path.
+You should now be able to test any patches using the syzkaller
+infrastructure. Pick any (or all) of the now-published syzkaller
+reports from the linux-kernel mailing list, reply with:
 
-Following crash stack was seen:
+#syz test git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git v5.19
 
-BUG: unable to handle kernel paging request at 0000002f56aa90f8
-IP: qla_chk_edif_rx_sa_delete_pending+0x14/0x30 [qla2xxx]
-Call Trace:
- ? qla2x00_status_entry+0x19f/0x1c50 [qla2xxx]
- ? qla2x00_start_sp+0x116/0x1170 [qla2xxx]
- ? dma_pool_alloc+0x1d6/0x210
- ? mempool_alloc+0x54/0x130
- ? qla24xx_process_response_queue+0x548/0x12b0 [qla2xxx]
- ? qla_do_work+0x2d/0x40 [qla2xxx]
- ? process_one_work+0x14c/0x390
+and provide your patch as attachment.
 
-Link: https://lore.kernel.org/r/20220616053508.27186-6-njavali@marvell.com
-Fixes: d74595278f4a ("scsi: qla2xxx: Add multiple queue pair functionality.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/qla2xxx/qla_os.c |   43 ++++++++++++++++++++++++++++++------------
- 1 file changed, 31 insertions(+), 12 deletions(-)
-
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -1337,21 +1337,20 @@ qla2xxx_eh_abort(struct scsi_cmnd *cmd)
- /*
-  * Returns: QLA_SUCCESS or QLA_FUNCTION_FAILED.
-  */
--int
--qla2x00_eh_wait_for_pending_commands(scsi_qla_host_t *vha, unsigned int t,
--	uint64_t l, enum nexus_wait_type type)
-+static int
-+__qla2x00_eh_wait_for_pending_commands(struct qla_qpair *qpair, unsigned int t,
-+				       uint64_t l, enum nexus_wait_type type)
- {
- 	int cnt, match, status;
- 	unsigned long flags;
--	struct qla_hw_data *ha = vha->hw;
--	struct req_que *req;
-+	scsi_qla_host_t *vha = qpair->vha;
-+	struct req_que *req = qpair->req;
- 	srb_t *sp;
- 	struct scsi_cmnd *cmd;
- 
- 	status = QLA_SUCCESS;
- 
--	spin_lock_irqsave(&ha->hardware_lock, flags);
--	req = vha->req;
-+	spin_lock_irqsave(qpair->qp_lock_ptr, flags);
- 	for (cnt = 1; status == QLA_SUCCESS &&
- 		cnt < req->num_outstanding_cmds; cnt++) {
- 		sp = req->outstanding_cmds[cnt];
-@@ -1378,12 +1377,32 @@ qla2x00_eh_wait_for_pending_commands(scs
- 		if (!match)
- 			continue;
- 
--		spin_unlock_irqrestore(&ha->hardware_lock, flags);
-+		spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
- 		status = qla2x00_eh_wait_on_command(cmd);
--		spin_lock_irqsave(&ha->hardware_lock, flags);
-+		spin_lock_irqsave(qpair->qp_lock_ptr, flags);
- 	}
--	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-+	spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
-+
-+	return status;
-+}
-+
-+int
-+qla2x00_eh_wait_for_pending_commands(scsi_qla_host_t *vha, unsigned int t,
-+				     uint64_t l, enum nexus_wait_type type)
-+{
-+	struct qla_qpair *qpair;
-+	struct qla_hw_data *ha = vha->hw;
-+	int i, status = QLA_SUCCESS;
- 
-+	status = __qla2x00_eh_wait_for_pending_commands(ha->base_qpair, t, l,
-+							type);
-+	for (i = 0; status == QLA_SUCCESS && i < ha->max_qpairs; i++) {
-+		qpair = ha->queue_pair_map[i];
-+		if (!qpair)
-+			continue;
-+		status = __qla2x00_eh_wait_for_pending_commands(qpair, t, l,
-+								type);
-+	}
- 	return status;
- }
- 
-@@ -1420,7 +1439,7 @@ qla2xxx_eh_device_reset(struct scsi_cmnd
- 		return err;
- 
- 	if (fcport->deleted)
--		return SUCCESS;
-+		return FAILED;
- 
- 	ql_log(ql_log_info, vha, 0x8009,
- 	    "DEVICE RESET ISSUED nexus=%ld:%d:%llu cmd=%p.\n", vha->host_no,
-@@ -1488,7 +1507,7 @@ qla2xxx_eh_target_reset(struct scsi_cmnd
- 		return err;
- 
- 	if (fcport->deleted)
--		return SUCCESS;
-+		return FAILED;
- 
- 	ql_log(ql_log_info, vha, 0x8009,
- 	    "TARGET RESET ISSUED nexus=%ld:%d cmd=%p.\n", vha->host_no,
-
-
+Guenter
