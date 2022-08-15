@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 917E6C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AEEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244165AbiHOVJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
+        id S232063AbiHOVJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243106AbiHOVFI (ORCPT
+        with ESMTP id S244915AbiHOVFb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:05:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A60151A0E;
-        Mon, 15 Aug 2022 12:14:55 -0700 (PDT)
+        Mon, 15 Aug 2022 17:05:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9C9D5985;
+        Mon, 15 Aug 2022 12:14:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF685B810C6;
-        Mon, 15 Aug 2022 19:14:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28F3C433D6;
-        Mon, 15 Aug 2022 19:14:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E32C60EF0;
+        Mon, 15 Aug 2022 19:14:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 107E2C433D6;
+        Mon, 15 Aug 2022 19:14:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590892;
-        bh=BAEcyU3+ShsFXc6JgX0vieoDWdx4El55H+ZjK+qyTOY=;
+        s=korg; t=1660590898;
+        bh=A8eKkdgs0YzVymdzU8dECFJ/F2mnGOelqyLESFLxkg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=re7yNE4C08PXBfdXIWgdFu42FiukIZwkCP7Qv89qsmenzteUFtxAe9PPl98NWTNyo
-         MvWOEn9MVtWDr8FHRsriSf6Eu7Dc3aMjoxGPYaBSx+fgLC2v2IjPE0psqRmRPsv7vP
-         cJVBLb3L+MxZOcTp1OhuaJK5GQqG//r6TixLq62o=
+        b=ZlobHPjJbJyUj7aggrQ4WqEt+h7413xB5O+NFXeev0KXOw3ID5qPSDuTns9vbn3rK
+         IU9juZtqhjZ0zTXbW9jseeoQ512DjPENpCF5vYn60F669X4neXEjQm1SCVtGue/TxV
+         3qbhsojs1KhaNSQaQ9TM50H7JgvSyBA9/+1ymsi4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0405/1095] net: mscc: ocelot: minimize holes in struct ocelot_port
-Date:   Mon, 15 Aug 2022 19:56:44 +0200
-Message-Id: <20220815180446.469088623@linuxfoundation.org>
+Subject: [PATCH 5.18 0407/1095] net: dsa: felix: keep reference on entire tc-taprio config
+Date:   Mon, 15 Aug 2022 19:56:46 +0200
+Message-Id: <20220815180446.545983881@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,143 +51,114 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 6d0be600477089026c76fe529bd96fad4cf69c3b ]
+[ Upstream commit 1c9017e44af2eee94b1001af18c401ae440ad77c ]
 
-Reorder members of struct ocelot_port to eliminate holes and reduce
-structure size. Pahole says:
-
-Before:
-
-struct ocelot_port {
-        struct ocelot *            ocelot;               /*     0     8 */
-        struct regmap *            target;               /*     8     8 */
-        bool                       vlan_aware;           /*    16     1 */
-
-        /* XXX 7 bytes hole, try to pack */
-
-        const struct ocelot_bridge_vlan  * pvid_vlan;    /*    24     8 */
-        unsigned int               ptp_skbs_in_flight;   /*    32     4 */
-        u8                         ptp_cmd;              /*    36     1 */
-
-        /* XXX 3 bytes hole, try to pack */
-
-        struct sk_buff_head        tx_skbs;              /*    40    96 */
-        /* --- cacheline 2 boundary (128 bytes) was 8 bytes ago --- */
-        u8                         ts_id;                /*   136     1 */
-
-        /* XXX 3 bytes hole, try to pack */
-
-        phy_interface_t            phy_mode;             /*   140     4 */
-        bool                       is_dsa_8021q_cpu;     /*   144     1 */
-        bool                       learn_ena;            /*   145     1 */
-
-        /* XXX 6 bytes hole, try to pack */
-
-        struct net_device *        bond;                 /*   152     8 */
-        bool                       lag_tx_active;        /*   160     1 */
-
-        /* XXX 1 byte hole, try to pack */
-
-        u16                        mrp_ring_id;          /*   162     2 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        struct net_device *        bridge;               /*   168     8 */
-        int                        bridge_num;           /*   176     4 */
-        u8                         stp_state;            /*   180     1 */
-
-        /* XXX 3 bytes hole, try to pack */
-
-        int                        speed;                /*   184     4 */
-
-        /* size: 192, cachelines: 3, members: 18 */
-        /* sum members: 161, holes: 7, sum holes: 27 */
-        /* padding: 4 */
-};
-
-After:
-
-struct ocelot_port {
-        struct ocelot *            ocelot;               /*     0     8 */
-        struct regmap *            target;               /*     8     8 */
-        struct net_device *        bond;                 /*    16     8 */
-        struct net_device *        bridge;               /*    24     8 */
-        const struct ocelot_bridge_vlan  * pvid_vlan;    /*    32     8 */
-        phy_interface_t            phy_mode;             /*    40     4 */
-        unsigned int               ptp_skbs_in_flight;   /*    44     4 */
-        struct sk_buff_head        tx_skbs;              /*    48    96 */
-        /* --- cacheline 2 boundary (128 bytes) was 16 bytes ago --- */
-        u16                        mrp_ring_id;          /*   144     2 */
-        u8                         ptp_cmd;              /*   146     1 */
-        u8                         ts_id;                /*   147     1 */
-        u8                         stp_state;            /*   148     1 */
-        bool                       vlan_aware;           /*   149     1 */
-        bool                       is_dsa_8021q_cpu;     /*   150     1 */
-        bool                       learn_ena;            /*   151     1 */
-        bool                       lag_tx_active;        /*   152     1 */
-
-        /* XXX 3 bytes hole, try to pack */
-
-        int                        bridge_num;           /*   156     4 */
-        int                        speed;                /*   160     4 */
-
-        /* size: 168, cachelines: 3, members: 18 */
-        /* sum members: 161, holes: 1, sum holes: 3 */
-        /* padding: 4 */
-        /* last cacheline: 40 bytes */
-};
+In a future change we will need to remember the entire tc-taprio config
+on all ports rather than just the base time, so use the
+taprio_offload_get() helper function to replace ocelot_port->base_time
+with ocelot_port->taprio.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/soc/mscc/ocelot.h | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 23 +++++++++++++----------
+ include/soc/mscc/ocelot.h              |  5 ++---
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index f21d9ff40af3..3d86f061802d 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1207,6 +1207,9 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 
++		taprio_offload_free(ocelot_port->taprio);
++		ocelot_port->taprio = NULL;
++
+ 		mutex_unlock(&ocelot->tas_lock);
+ 		return 0;
+ 	}
+@@ -1255,8 +1258,6 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
+ 		       QSYS_TAG_CONFIG, port);
+ 
+-	ocelot_port->base_time = taprio->base_time;
+-
+ 	vsc9959_new_base_time(ocelot, taprio->base_time,
+ 			      taprio->cycle_time, &base_ts);
+ 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
+@@ -1279,6 +1280,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	ret = readx_poll_timeout(vsc9959_tas_read_cfg_status, ocelot, val,
+ 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
+ 				 10, 100000);
++	if (ret)
++		goto err;
++
++	ocelot_port->taprio = taprio_offload_get(taprio);
+ 
+ err:
+ 	mutex_unlock(&ocelot->tas_lock);
+@@ -1288,17 +1293,18 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 
+ static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
+ {
++	struct tc_taprio_qopt_offload *taprio;
+ 	struct ocelot_port *ocelot_port;
+ 	struct timespec64 base_ts;
+-	u64 cycletime;
+ 	int port;
+ 	u32 val;
+ 
+ 	mutex_lock(&ocelot->tas_lock);
+ 
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
+-		if (!(val & QSYS_TAG_CONFIG_ENABLE))
++		ocelot_port = ocelot->ports[port];
++		taprio = ocelot_port->taprio;
++		if (!taprio)
+ 			continue;
+ 
+ 		ocelot_rmw(ocelot,
+@@ -1312,11 +1318,8 @@ static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 
+-		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
+-		ocelot_port = ocelot->ports[port];
+-
+-		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
+-				      cycletime, &base_ts);
++		vsc9959_new_base_time(ocelot, taprio->base_time,
++				      taprio->cycle_time, &base_ts);
+ 
+ 		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
+ 		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index b191f0a7fe26..bae2ddb06731 100644
+index b944fc670c72..c90a9a2f77a9 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -652,28 +652,30 @@ struct ocelot_port {
- 
- 	struct regmap			*target;
- 
--	bool				vlan_aware;
-+	struct net_device		*bond;
-+	struct net_device		*bridge;
-+
+@@ -659,6 +659,8 @@ struct ocelot_port {
  	/* VLAN that untagged frames are classified to, on ingress */
  	const struct ocelot_bridge_vlan	*pvid_vlan;
  
-+	phy_interface_t			phy_mode;
++	struct tc_taprio_qopt_offload	*taprio;
 +
+ 	phy_interface_t			phy_mode;
+ 
  	unsigned int			ptp_skbs_in_flight;
--	u8				ptp_cmd;
- 	struct sk_buff_head		tx_skbs;
--	u8				ts_id;
- 
--	phy_interface_t			phy_mode;
-+	u16				mrp_ring_id;
- 
-+	u8				ptp_cmd;
-+	u8				ts_id;
-+
-+	u8				stp_state;
-+	bool				vlan_aware;
- 	bool				is_dsa_8021q_cpu;
- 	bool				learn_ena;
- 
--	struct net_device		*bond;
- 	bool				lag_tx_active;
- 
--	u16				mrp_ring_id;
--
--	struct net_device		*bridge;
+@@ -679,9 +681,6 @@ struct ocelot_port {
  	int				bridge_num;
--	u8				stp_state;
  
  	int				speed;
+-
+-	/* Store the AdminBaseTime of EST fetched from userspace. */
+-	s64				base_time;
  };
+ 
+ struct ocelot {
 -- 
 2.35.1
 
