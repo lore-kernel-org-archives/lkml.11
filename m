@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9819C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F28C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245037AbiHOXUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        id S244223AbiHOXUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353125AbiHOXP5 (ORCPT
+        with ESMTP id S1353188AbiHOXQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C344146CED;
-        Mon, 15 Aug 2022 13:02:56 -0700 (PDT)
+        Mon, 15 Aug 2022 19:16:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C3F146CDB;
+        Mon, 15 Aug 2022 13:02:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1449F612E4;
-        Mon, 15 Aug 2022 20:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0708C433C1;
-        Mon, 15 Aug 2022 20:02:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 092106068D;
+        Mon, 15 Aug 2022 20:02:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F2B0C433D6;
+        Mon, 15 Aug 2022 20:02:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593775;
-        bh=VHaLffJQoHaI+IOtGGNDfDZgg2sKNs5qPuw8gRU1Og8=;
+        s=korg; t=1660593778;
+        bh=z0WCtzWyS+jOwGpNrrIHrFVwGek7uF+4CfKOIqfi9QQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J1JwuGdCa+ibvAmw02UbD58s1FCY22nDrZzh7I5wQi8wFYXc1m5JFaRz9oPXnZyEX
-         TVKTKq1lgQpUlspYS/D73eAzzPQam7Qo2hcW0BQHJvZ3q1wAFCeHqbol0O7h+aW24/
-         T/Qn3S8puWLcB4x+nGA4jCW1vx+SD4jeGMUpcDkM=
+        b=pWitRIZa3SPLE5hmpCK6K3v1MfG+Jl1R+jTP4IH3d2uZUWfAoX6i4CRV/EZ1R9SVs
+         iZxkN9nDfsZ0xuX6m63+JVY5Qg+mMdZnuEQ7HysZjuzT7wj/6czmZXyD2eQftMZUtb
+         qkIsEuGbmuSPU9cbhUmcFvZYPzdKT1KNJ8XMw0LY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Rudo <prudo@linux.ibm.com>,
-        kexec@lists.infradead.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        "Lee, Chun-Yi" <jlee@suse.com>, Baoquan He <bhe@redhat.com>,
-        Coiby Xu <coxu@redhat.com>, Heiko Carstens <hca@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1004/1095] kexec, KEYS, s390: Make use of built-in and secondary keyring for signature verification
-Date:   Mon, 15 Aug 2022 20:06:43 +0200
-Message-Id: <20220815180510.636878336@linuxfoundation.org>
+        stable@vger.kernel.org, Ajay Singh <ajay.kathat@microchip.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0324/1157] wifi: wilc1000: use correct sequence of RESET for chip Power-UP/Down
+Date:   Mon, 15 Aug 2022 19:54:40 +0200
+Message-Id: <20220815180452.618596240@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,69 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+From: Ajay Singh <ajay.kathat@microchip.com>
 
-[ Upstream commit 0828c4a39be57768b8788e8cbd0d84683ea757e5 ]
+[ Upstream commit fcf690b0b47494df51d214db5c5a714a400b0257 ]
 
-commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
-adds support for KEXEC_SIG verification with keys from platform keyring
-but the built-in keys and secondary keyring are not used.
+For power-up sequence, WILC expects RESET set to high 5ms after making
+chip_en(enable) so corrected chip power-up sequence by making RESET high.
+For Power-Down sequence, the correct sequence make RESET and CHIP_EN low
+without any extra delay.
 
-Add support for the built-in keys and secondary keyring as x86 does.
-
-Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
-Cc: stable@vger.kernel.org
-Cc: Philipp Rudo <prudo@linux.ibm.com>
-Cc: kexec@lists.infradead.org
-Cc: keyrings@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
-Acked-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Coiby Xu <coxu@redhat.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: ec031ac4792c ("wilc1000: Add reset/enable GPIO support to SPI driver")
+Signed-off-by: Ajay Singh <ajay.kathat@microchip.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220524120606.9675-1-ajay.kathat@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/machine_kexec_file.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ drivers/net/wireless/microchip/wilc1000/spi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/s390/kernel/machine_kexec_file.c b/arch/s390/kernel/machine_kexec_file.c
-index 8f43575a4dd3..fc6d5f58debe 100644
---- a/arch/s390/kernel/machine_kexec_file.c
-+++ b/arch/s390/kernel/machine_kexec_file.c
-@@ -31,6 +31,7 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
- 	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
- 	struct module_signature *ms;
- 	unsigned long sig_len;
-+	int ret;
- 
- 	/* Skip signature verification when not secure IPLed. */
- 	if (!ipl_secure_flag)
-@@ -65,11 +66,18 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
- 		return -EBADMSG;
+diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
+index 18420e954402..2ae8dd3411ac 100644
+--- a/drivers/net/wireless/microchip/wilc1000/spi.c
++++ b/drivers/net/wireless/microchip/wilc1000/spi.c
+@@ -191,11 +191,11 @@ static void wilc_wlan_power(struct wilc *wilc, bool on)
+ 		/* assert ENABLE: */
+ 		gpiod_set_value(gpios->enable, 1);
+ 		mdelay(5);
+-		/* deassert RESET: */
+-		gpiod_set_value(gpios->reset, 0);
+-	} else {
+ 		/* assert RESET: */
+ 		gpiod_set_value(gpios->reset, 1);
++	} else {
++		/* deassert RESET: */
++		gpiod_set_value(gpios->reset, 0);
+ 		/* deassert ENABLE: */
+ 		gpiod_set_value(gpios->enable, 0);
  	}
- 
--	return verify_pkcs7_signature(kernel, kernel_len,
--				      kernel + kernel_len, sig_len,
--				      VERIFY_USE_PLATFORM_KEYRING,
--				      VERIFYING_MODULE_SIGNATURE,
--				      NULL, NULL);
-+	ret = verify_pkcs7_signature(kernel, kernel_len,
-+				     kernel + kernel_len, sig_len,
-+				     VERIFY_USE_SECONDARY_KEYRING,
-+				     VERIFYING_MODULE_SIGNATURE,
-+				     NULL, NULL);
-+	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))
-+		ret = verify_pkcs7_signature(kernel, kernel_len,
-+					     kernel + kernel_len, sig_len,
-+					     VERIFY_USE_PLATFORM_KEYRING,
-+					     VERIFYING_MODULE_SIGNATURE,
-+					     NULL, NULL);
-+	return ret;
- }
- #endif /* CONFIG_KEXEC_SIG */
- 
 -- 
 2.35.1
 
