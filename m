@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBDA0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F92C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344022AbiHOUFh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S233022AbiHOUCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244283AbiHOUEm (ORCPT
+        with ESMTP id S1345940AbiHOUBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:04:42 -0400
+        Mon, 15 Aug 2022 16:01:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325587FE7A;
-        Mon, 15 Aug 2022 11:54:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCC77B1F4;
+        Mon, 15 Aug 2022 11:53:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6025F61232;
-        Mon, 15 Aug 2022 18:54:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC34C433C1;
-        Mon, 15 Aug 2022 18:54:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D41561227;
+        Mon, 15 Aug 2022 18:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A22FC433C1;
+        Mon, 15 Aug 2022 18:53:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589673;
-        bh=A2T5wdmGF4aULUtI8KpEZm75T/Ycw//PdyT8oKjiM4Y=;
+        s=korg; t=1660589607;
+        bh=qmAwL4dfCbVkHN98smibt7siZPH+IcCOgX81JiDmpik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JnRWLv5RbCsElQMzGykShcNxcWJjY1OhPB9bB+N2QkUJZthXWSr3wea6uv6DIu0Dn
-         7YwV3ItlhYN8b0ni2Dqqh95lJ5ceDh2JsrxSOS2eIgoStWKUKb5Jzl+MlZ1K3vtaD7
-         fQR52G8eRdNXIz8Xm/oaxIusTc256RVyeaOkLfaA=
+        b=M8kM0y3Iqp9+BKVF0lcSIR2JcS8nGqVv0goczF6VeZy4x3ZlTcARhzCpHzBBNpoq+
+         CTkCcSMIeDBL8c7wg6aG8DlcQAm5GzxGGQqb+fwDU1OkdJzFOt02W2cTQfygvI8roW
+         gqITkQS//GvnD6yfZgM2tDOuLmm2Hyan2512SrQE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syed sabakareem <Syed.SabaKareem@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        David Korth <gerbilsoft@gerbilsoft.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.18 0013/1095] ASoC: amd: yc: Update DMI table entries
-Date:   Mon, 15 Aug 2022 19:50:12 +0200
-Message-Id: <20220815180429.877047670@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH 5.15 772/779] drm/meson: Fix refcount leak in meson_encoder_hdmi_init
+Date:   Mon, 15 Aug 2022 20:06:56 +0200
+Message-Id: <20220815180410.395878169@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,80 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: syed sabakareem <Syed.SabaKareem@amd.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit be0aa8d4b0fcb4532bf7973141e911998ab39508 upstream.
+commit 7381076809586528e2a812a709e2758916318a99 upstream.
 
-Removed intel DMI product id's 21AW/21AX/21D8/21D9/21BN/21BQ
-in DMI table and updated DMI entry for AMD platform X13 Gen 3
-platform 21CM/21CN.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() in error path to avoid refcount
+leak.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216267
-
-Signed-off-by: syed sabakareem <Syed.SabaKareem@amd.com>
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Reported-by: David Korth <gerbilsoft@gerbilsoft.com>
-Fixes: fa991481b8b2 ("ASoC: amd: add YC machine driver using dmic")
-Link: https://lore.kernel.org/r/20220722134603.316668-1-Syed.SabaKareem@amd.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 0af5e0b41110 ("drm/meson: encoder_hdmi: switch to bridge DRM_BRIDGE_ATTACH_NO_CONNECTOR")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511054052.51981-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/amd/yc/acp6x-mach.c |   32 ++------------------------------
- 1 file changed, 2 insertions(+), 30 deletions(-)
+ drivers/gpu/drm/meson/meson_encoder_hdmi.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/sound/soc/amd/yc/acp6x-mach.c
-+++ b/sound/soc/amd/yc/acp6x-mach.c
-@@ -104,28 +104,14 @@ static const struct dmi_system_id yc_acp
- 		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21AW"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "21CM"),
- 		}
- 	},
- 	{
- 		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21AX"),
--		}
--	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21BN"),
--		}
--	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21BQ"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "21CN"),
- 		}
- 	},
- 	{
-@@ -156,20 +142,6 @@ static const struct dmi_system_id yc_acp
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CL"),
- 		}
- 	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21D8"),
--		}
--	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21D9"),
--		}
--	},
- 	{}
- };
+--- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
++++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
+@@ -438,8 +438,10 @@ int meson_encoder_hdmi_init(struct meson
+ 		cec_fill_conn_info_from_drm(&conn_info, meson_encoder_hdmi->connector);
  
+ 		notifier = cec_notifier_conn_register(&pdev->dev, NULL, &conn_info);
+-		if (!notifier)
++		if (!notifier) {
++			put_device(&pdev->dev);
+ 			return -ENOMEM;
++		}
+ 
+ 		meson_encoder_hdmi->cec_notifier = notifier;
+ 	}
 
 
