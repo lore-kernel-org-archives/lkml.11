@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B35C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 275B5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349501AbiHOWdK (ORCPT
+        id S1349605AbiHOWdP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        Mon, 15 Aug 2022 18:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350983AbiHOW1X (ORCPT
+        with ESMTP id S1350981AbiHOW1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:27:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83896C759;
-        Mon, 15 Aug 2022 12:45:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72CE12A550;
+        Mon, 15 Aug 2022 12:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 530706068D;
-        Mon, 15 Aug 2022 19:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 606C3C433C1;
-        Mon, 15 Aug 2022 19:45:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60F866068D;
+        Mon, 15 Aug 2022 19:45:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34DEEC433C1;
+        Mon, 15 Aug 2022 19:45:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592758;
-        bh=OoS7fDsTLFt5o448KvE98tJDqMqP3yvI9Hoy2tKilo0=;
+        s=korg; t=1660592755;
+        bh=KevEOarrveuP8fPe+sKJzKOnhAYtNeLfYjkThID+/xs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HTkmYxm4RetZyI7Vj8NAjVj5Nf1AudxK4+G43wi1ODMbrJxM/TwRtEXRElcOKgqg0
-         tHZMqN+1ABSpuj0m33KqXlMCzNgD5GMYOEMUoaQOBPj12K2CDKD2qcnnjz7C2pnF9/
-         YmeG9zClmdR9sglIALX6Nj4I6CMlBvdgm5YvoIP4=
+        b=WrJ6l2+1UIpnwIMwqehKBsCcWDYeqp+kfwv79Atw9uyEYGiKeJ3965HFjGJd+Oj7L
+         zZ88dcfbRhnoG/dte24WbgdZXp9Hk9utXhJYGmay5hnI55Od94wehcH4gws5OWMTaB
+         2M+/v4i6o01S+1x15/9mvIGIYq6Jz6IC8z0BmkCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wyes Karny <wyes.karny@amd.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Zhang Rui <rui.zhang@intel.com>,
+        stable@vger.kernel.org, David Chen <david.chen@nutanix.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0147/1157] x86: Handle idle=nomwait cmdline properly for x86_idle
-Date:   Mon, 15 Aug 2022 19:51:43 +0200
-Message-Id: <20220815180445.531664968@linuxfoundation.org>
+Subject: [PATCH 5.19 0160/1157] sched/fair: fix case with reduced capacity CPU
+Date:   Mon, 15 Aug 2022 19:51:56 +0200
+Message-Id: <20220815180446.099180584@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,95 +52,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wyes Karny <wyes.karny@amd.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-[ Upstream commit 8bcedb4ce04750e1ccc9a6b6433387f6a9166a56 ]
+[ Upstream commit c82a69629c53eda5233f13fc11c3c01585ef48a2 ]
 
-When kernel is booted with idle=nomwait do not use MWAIT as the
-default idle state.
+The capacity of the CPU available for CFS tasks can be reduced because of
+other activities running on the latter. In such case, it's worth trying to
+move CFS tasks on a CPU with more available capacity.
 
-If the user boots the kernel with idle=nomwait, it is a clear
-direction to not use mwait as the default idle state.
-However, the current code does not take this into consideration
-while selecting the default idle state on x86.
+The rework of the load balance has filtered the case when the CPU is
+classified to be fully busy but its capacity is reduced.
 
-Fix it by checking for the idle=nomwait boot option in
-prefer_mwait_c1_over_halt().
+Check if CPU's capacity is reduced while gathering load balance statistic
+and classify it group_misfit_task instead of group_fully_busy so we can
+try to move the load on another CPU.
 
-Also update the documentation around idle=nomwait appropriately.
-
-[ dhansen: tweak commit message ]
-
-Signed-off-by: Wyes Karny <wyes.karny@amd.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Tested-by: Zhang Rui <rui.zhang@intel.com>
-Link: https://lkml.kernel.org/r/fdc2dc2d0a1bc21c2f53d989ea2d2ee3ccbc0dbe.1654538381.git-series.wyes.karny@amd.com
+Reported-by: David Chen <david.chen@nutanix.com>
+Reported-by: Zhang Qiao <zhangqiao22@huawei.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: David Chen <david.chen@nutanix.com>
+Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
+Link: https://lkml.kernel.org/r/20220708154401.21411-1-vincent.guittot@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/pm/cpuidle.rst | 15 +++++++++------
- arch/x86/kernel/process.c                |  9 ++++++---
- 2 files changed, 15 insertions(+), 9 deletions(-)
+ kernel/sched/fair.c | 54 +++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 42 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/admin-guide/pm/cpuidle.rst b/Documentation/admin-guide/pm/cpuidle.rst
-index aec2cd2aaea7..19754beb5a4e 100644
---- a/Documentation/admin-guide/pm/cpuidle.rst
-+++ b/Documentation/admin-guide/pm/cpuidle.rst
-@@ -612,8 +612,8 @@ the ``menu`` governor to be used on the systems that use the ``ladder`` governor
- by default this way, for example.
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 3fb857a35b16..9d6058b0a3d4 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -7597,8 +7597,8 @@ enum group_type {
+ 	 */
+ 	group_fully_busy,
+ 	/*
+-	 * SD_ASYM_CPUCAPACITY only: One task doesn't fit with CPU's capacity
+-	 * and must be migrated to a more powerful CPU.
++	 * One task doesn't fit with CPU's capacity and must be migrated to a
++	 * more powerful CPU.
+ 	 */
+ 	group_misfit_task,
+ 	/*
+@@ -8681,6 +8681,19 @@ sched_asym(struct lb_env *env, struct sd_lb_stats *sds,  struct sg_lb_stats *sgs
+ 	return sched_asym_prefer(env->dst_cpu, group->asym_prefer_cpu);
+ }
  
- The other kernel command line parameters controlling CPU idle time management
--described below are only relevant for the *x86* architecture and some of
--them affect Intel processors only.
-+described below are only relevant for the *x86* architecture and references
-+to ``intel_idle`` affect Intel processors only.
- 
- The *x86* architecture support code recognizes three kernel command line
- options related to CPU idle time management: ``idle=poll``, ``idle=halt``,
-@@ -635,10 +635,13 @@ idle, so it very well may hurt single-thread computations performance as well as
- energy-efficiency.  Thus using it for performance reasons may not be a good idea
- at all.]
- 
--The ``idle=nomwait`` option disables the ``intel_idle`` driver and causes
--``acpi_idle`` to be used (as long as all of the information needed by it is
--there in the system's ACPI tables), but it is not allowed to use the
--``MWAIT`` instruction of the CPUs to ask the hardware to enter idle states.
-+The ``idle=nomwait`` option prevents the use of ``MWAIT`` instruction of
-+the CPU to enter idle states. When this option is used, the ``acpi_idle``
-+driver will use the ``HLT`` instruction instead of ``MWAIT``. On systems
-+running Intel processors, this option disables the ``intel_idle`` driver
-+and forces the use of the ``acpi_idle`` driver instead. Note that in either
-+case, ``acpi_idle`` driver will function only if all the information needed
-+by it is in the system's ACPI tables.
- 
- In addition to the architecture-level kernel command line options affecting CPU
- idle time management, there are parameters affecting individual ``CPUIdle``
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index d456ce21c255..9346c95e8879 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -821,6 +821,10 @@ static void amd_e400_idle(void)
-  */
- static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
- {
-+	/* User has disallowed the use of MWAIT. Fallback to HALT */
-+	if (boot_option_idle_override == IDLE_NOMWAIT)
-+		return 0;
++static inline bool
++sched_reduced_capacity(struct rq *rq, struct sched_domain *sd)
++{
++	/*
++	 * When there is more than 1 task, the group_overloaded case already
++	 * takes care of cpu with reduced capacity
++	 */
++	if (rq->cfs.h_nr_running != 1)
++		return false;
 +
- 	if (c->x86_vendor != X86_VENDOR_INTEL)
- 		return 0;
++	return check_cpu_capacity(rq, sd);
++}
++
+ /**
+  * update_sg_lb_stats - Update sched_group's statistics for load balancing.
+  * @env: The load balancing environment.
+@@ -8703,8 +8716,9 @@ static inline void update_sg_lb_stats(struct lb_env *env,
  
-@@ -932,9 +936,8 @@ static int __init idle_setup(char *str)
- 	} else if (!strcmp(str, "nomwait")) {
- 		/*
- 		 * If the boot option of "idle=nomwait" is added,
--		 * it means that mwait will be disabled for CPU C2/C3
--		 * states. In such case it won't touch the variable
--		 * of boot_option_idle_override.
-+		 * it means that mwait will be disabled for CPU C1/C2/C3
-+		 * states.
- 		 */
- 		boot_option_idle_override = IDLE_NOMWAIT;
- 	} else
+ 	for_each_cpu_and(i, sched_group_span(group), env->cpus) {
+ 		struct rq *rq = cpu_rq(i);
++		unsigned long load = cpu_load(rq);
+ 
+-		sgs->group_load += cpu_load(rq);
++		sgs->group_load += load;
+ 		sgs->group_util += cpu_util_cfs(i);
+ 		sgs->group_runnable += cpu_runnable(rq);
+ 		sgs->sum_h_nr_running += rq->cfs.h_nr_running;
+@@ -8734,11 +8748,17 @@ static inline void update_sg_lb_stats(struct lb_env *env,
+ 		if (local_group)
+ 			continue;
+ 
+-		/* Check for a misfit task on the cpu */
+-		if (env->sd->flags & SD_ASYM_CPUCAPACITY &&
+-		    sgs->group_misfit_task_load < rq->misfit_task_load) {
+-			sgs->group_misfit_task_load = rq->misfit_task_load;
+-			*sg_status |= SG_OVERLOAD;
++		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
++			/* Check for a misfit task on the cpu */
++			if (sgs->group_misfit_task_load < rq->misfit_task_load) {
++				sgs->group_misfit_task_load = rq->misfit_task_load;
++				*sg_status |= SG_OVERLOAD;
++			}
++		} else if ((env->idle != CPU_NOT_IDLE) &&
++			   sched_reduced_capacity(rq, env->sd)) {
++			/* Check for a task running on a CPU with reduced capacity */
++			if (sgs->group_misfit_task_load < load)
++				sgs->group_misfit_task_load = load;
+ 		}
+ 	}
+ 
+@@ -8791,7 +8811,8 @@ static bool update_sd_pick_busiest(struct lb_env *env,
+ 	 * CPUs in the group should either be possible to resolve
+ 	 * internally or be covered by avg_load imbalance (eventually).
+ 	 */
+-	if (sgs->group_type == group_misfit_task &&
++	if ((env->sd->flags & SD_ASYM_CPUCAPACITY) &&
++	    (sgs->group_type == group_misfit_task) &&
+ 	    (!capacity_greater(capacity_of(env->dst_cpu), sg->sgc->max_capacity) ||
+ 	     sds->local_stat.group_type != group_has_spare))
+ 		return false;
+@@ -9412,9 +9433,18 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
+ 	busiest = &sds->busiest_stat;
+ 
+ 	if (busiest->group_type == group_misfit_task) {
+-		/* Set imbalance to allow misfit tasks to be balanced. */
+-		env->migration_type = migrate_misfit;
+-		env->imbalance = 1;
++		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
++			/* Set imbalance to allow misfit tasks to be balanced. */
++			env->migration_type = migrate_misfit;
++			env->imbalance = 1;
++		} else {
++			/*
++			 * Set load imbalance to allow moving task from cpu
++			 * with reduced capacity.
++			 */
++			env->migration_type = migrate_load;
++			env->imbalance = busiest->group_misfit_task_load;
++		}
+ 		return;
+ 	}
+ 
 -- 
 2.35.1
 
