@@ -2,78 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F84C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B47C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241909AbiHOO5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        id S242514AbiHOO5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232761AbiHOO5S (ORCPT
+        with ESMTP id S240377AbiHOO5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 10:57:18 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D7F1D0E2
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 07:57:16 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 288355FD05;
-        Mon, 15 Aug 2022 17:57:15 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660575435;
-        bh=eVmKsXilaaeaag+6Y+vf9YfiLDdi0kPlQA8ggC+dY5s=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=TPkbQQCiN5jyM3Ve4kMjTKswenYP+jMlop+SxBACkP6LmfpRMemwfIHiNdmA2o748
-         eZa7mmUY/YVzPabn0egFLpOZHdOmtRCTQD5bsQMI7JBIraAVETe8vnc6XhPjJ0Glp5
-         iy99C/+ALGRV/xr624wziuuwD9EDHJK9/zKu3LM9irNxzm64FSWbOFIcfjibw8MtF4
-         hrfY0XulUVGbcChPTIh8Ir97UpzNkMNqXwsXdOk3MGoPAk3H3fg63FN10hxli7mHdK
-         kEwcmafAdxHBMf03WhPa40tX9QyX5D1Aj2yhcorNH7eVanbXrNOmKxA8tl2xkQpTCd
-         dwZjuL3+eAMmg==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 17:57:14 +0300 (MSK)
-From:   Aleksey Romanov <AVRomanov@sberdevices.ru>
-To:     "minchan@kernel.org" <minchan@kernel.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [PATCH v2 0/2] tidy up zsmalloc implementation
-Thread-Topic: [PATCH v2 0/2] tidy up zsmalloc implementation
-Thread-Index: AQHYsKP3svqZzORsXEKi9NYMzcnUs62v2wOA
-Date:   Mon, 15 Aug 2022 14:56:23 +0000
-Message-ID: <20220815145709.qptdso5bcuhlfnmn@CAB-WSD-0003100.sigma.sbrf.ru>
-References: <20220815123930.37736-1-avromanov@sberdevices.ru>
-In-Reply-To: <20220815123930.37736-1-avromanov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C9F424A42CE8C94994FE780DDA8B0248@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Mon, 15 Aug 2022 10:57:24 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C510B1C114;
+        Mon, 15 Aug 2022 07:57:23 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FEsflu014721;
+        Mon, 15 Aug 2022 14:57:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=8ZTg0G+Wa4/8+mqlKuuc4tufXoqRTRsIKVo19S0zDC0=;
+ b=P3+NnXyCWwQT1/K4lvaBzOtLYCFi+n+K7f0STa4RjjMc94GQgTHWaA8OCUdcFxvT18Gu
+ o5cdIaYGwREx+OUQuHe/WLDrgcZfdBUsi2TyHT4suyta02Boq3XVuX4frYupeuYzPAOp
+ f8xbTTNc8266SiqFpaVSeImTn9gJSqNhui9gfTvH4m71AedrhXzluH50Llvy1ehj+aIX
+ unKDUI5jHYfFGqW7YMrdL1T7TNYxGnVKdZE8uPYGuVnYqct5gwgiHMlN4HRZOK5Dkezc
+ 2lYquK+gAipaYuwXV9YJ1B1PlI0KcA3sytLETHj16snFmhIniOtPRVvNVOfki0rr74vL 7A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyratr18c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:09 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FEsc9T014618;
+        Mon, 15 Aug 2022 14:57:09 GMT
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyratr180-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:09 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FEoHIB018077;
+        Mon, 15 Aug 2022 14:57:08 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma01wdc.us.ibm.com with ESMTP id 3hx3k94jan-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:08 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FEv7o923593406
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 14:57:07 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4AD0113604F;
+        Mon, 15 Aug 2022 14:57:07 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 683CA136051;
+        Mon, 15 Aug 2022 14:57:06 +0000 (GMT)
+Received: from slate16.aus.stglabs.ibm.com (unknown [9.77.146.160])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon, 15 Aug 2022 14:57:06 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     jic23@kernel.org
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, eajames@linux.ibm.com,
+        andy.shevchenko@gmail.com, joel@jms.id.au
+Subject: [PATCH v5 0/2] iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
+Date:   Mon, 15 Aug 2022 09:57:03 -0500
+Message-Id: <20220815145705.203017-1-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/15 12:17:00 #20121227
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 63zzjKSfGn8_H0hPmYbanUxRUB8zKibq
+X-Proofpoint-GUID: TLXgZYmcAp48EC3iOf81oHLjmYrDO9dm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=999 clxscore=1015
+ malwarescore=0 spamscore=0 impostorscore=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208150056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!=20
+Corruption of the MEAS_CFG register has been observed soon after
+system boot. In order to recover this scenario, check MEAS_CFG if
+measurement isn't ready, and if it's incorrect, reset the DPS310
+and execute the startup procedure. Include a patch to move the
+startup procedure into a function.
 
-I accidientally send v2 patchset instead of send a single change=20
-from 1/2 patch based on linux-next tree. Please, ignore this patchset
-and see the change I send in a separate email.
+Changes since v4:
+ - Just check for rc rather than rc < 0 in some cases
+ - Split declaration and init of rc
 
-Sorry for the noise.
+Changes since v3:
+ - Don't check regmap* return codes for < 0
+ - Fix comment spelling
 
---=20
-Thank you,
-Alexey=
+Changes since v2:
+ - Add some comments
+ - Fix the clunky control flow
+
+Changes since v1:
+ - Separate into two patches
+ - Rename 'dps310_verify_meas_cfg' to 'dps310_check_reset_meas_cfg'
+
+Eddie James (2):
+  iio: pressure: dps310: Refactor startup procedure
+  iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
+
+ drivers/iio/pressure/dps310.c | 277 +++++++++++++++++++++-------------
+ 1 file changed, 173 insertions(+), 104 deletions(-)
+
+-- 
+2.31.1
+
