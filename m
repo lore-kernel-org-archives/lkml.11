@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D99FC2BB43
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A16C2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244498AbiHOVQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46194 "EHLO
+        id S244859AbiHOVQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348014AbiHOVH4 (ORCPT
+        with ESMTP id S1348038AbiHOVIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:56 -0400
+        Mon, 15 Aug 2022 17:08:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CAC2DABE;
-        Mon, 15 Aug 2022 12:17:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3EE3C8D7;
+        Mon, 15 Aug 2022 12:18:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A48C7B8107A;
-        Mon, 15 Aug 2022 19:17:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA626C433D6;
-        Mon, 15 Aug 2022 19:17:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC732B81106;
+        Mon, 15 Aug 2022 19:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12156C433C1;
+        Mon, 15 Aug 2022 19:17:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591065;
-        bh=4Ad6WHw+VEo7Yt24zjkg9al8JR/d0E217Ezuc9hpe3s=;
+        s=korg; t=1660591077;
+        bh=lbTs/5k4Wl+Wd+pYJniOD4sGSRSPcOtCJRp3bCpZ5HQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Amv5AsxWYHSfZ87qjf5Zz6+mUd+BWMF4HikuKyt9IgpFGS3/Mo6h7v9nFFYJgeKJ6
-         pl7H+WdFpChSQqNL9BDdtcVkH7O81Du93YEWCrQbgHfMSSc8fZlGO28XjhQVhxlspH
-         6J+294X4cDmLRtf/2wZTYBE2LQbvNl3MLKrXqnDc=
+        b=arYoZvUYIf8O3wuGUl5+0ZT7tm0p0IvyyTo0NJHaiiaJ96nOMvSSrMoqCMOYOwTrQ
+         EpZYBgxYKmkaFMKz8U/j3UFHP5pglNi2LkDLJSvXm+lwDp2MkKoSP9RfcfDB861deD
+         MGP8CKqVdhBRb+TocG2FYw+WAhdqzw8Hla1xB/Vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0459/1095] kunit: executor: Fix a memory leak on failure in kunit_filter_tests
-Date:   Mon, 15 Aug 2022 19:57:38 +0200
-Message-Id: <20220815180448.591050196@linuxfoundation.org>
+Subject: [PATCH 5.18 0434/1095] media: hantro: HEVC: Fix output frame chroma offset
+Date:   Mon, 15 Aug 2022 19:57:13 +0200
+Message-Id: <20220815180447.634825691@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,55 +51,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-[ Upstream commit 94681e289bf5d10c9db9db143d1a22d8717205c5 ]
+[ Upstream commit 579846ec52593e6ca123c30379103377cd25728a ]
 
-It's possible that memory allocation for 'filtered' will fail, but for the
-copy of the suite to succeed. In this case, the copy could be leaked.
+Hantro decoder doesn't take care of the requested and aligned size
+of the capture buffer.
+Stop using the bitstream width/height and use capture frame size
+stored in the context to get the correct values.
 
-Properly free 'copy' in the error case for the allocation of 'filtered'
-failing.
+hantro_hevc_chroma_offset() and hantro_hevc_motion_vectors_offset()
+are only used in hantro_g2_hevc_dec.c so take the opportunity
+to move them here.
 
-Note that there may also have been a similar issue in
-kunit_filter_subsuites, before it was removed in "kunit: flatten
-kunit_suite*** to kunit_suite** in .kunit_test_suites".
+fluster HEVC score goes up from 77 to 85 successful tests (over 147)
+with this patch.
 
-This was reported by clang-analyzer via the kernel test robot, here:
-https://lore.kernel.org/all/c8073b8e-7b9e-0830-4177-87c12f16349c@intel.com/
-
-And by smatch via Dan Carpenter and the kernel test robot:
-https://lore.kernel.org/all/202207101328.ASjx88yj-lkp@intel.com/
-
-Fixes: a02353f49162 ("kunit: bail out of test filtering logic quicker if OOM")
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/kunit/executor.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../staging/media/hantro/hantro_g2_hevc_dec.c | 19 ++++++++++++++++---
+ drivers/staging/media/hantro/hantro_hevc.c    | 17 -----------------
+ drivers/staging/media/hantro/hantro_hw.h      |  2 --
+ 3 files changed, 16 insertions(+), 22 deletions(-)
 
-diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
-index 96f96e42ce06..16fb88c0aca3 100644
---- a/lib/kunit/executor.c
-+++ b/lib/kunit/executor.c
-@@ -76,8 +76,10 @@ kunit_filter_tests(struct kunit_suite *const suite, const char *test_glob)
- 	memcpy(copy, suite, sizeof(*copy));
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index a4642ed1f463..7c046d456038 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -8,6 +8,20 @@
+ #include "hantro_hw.h"
+ #include "hantro_g2_regs.h"
  
- 	filtered = kcalloc(n + 1, sizeof(*filtered), GFP_KERNEL);
--	if (!filtered)
-+	if (!filtered) {
-+		kfree(copy);
- 		return ERR_PTR(-ENOMEM);
-+	}
++#define G2_ALIGN	16
++
++static size_t hantro_hevc_chroma_offset(struct hantro_ctx *ctx)
++{
++	return ctx->dst_fmt.width * ctx->dst_fmt.height;
++}
++
++static size_t hantro_hevc_motion_vectors_offset(struct hantro_ctx *ctx)
++{
++	size_t cr_offset = hantro_hevc_chroma_offset(ctx);
++
++	return ALIGN((cr_offset * 3) / 2, G2_ALIGN);
++}
++
+ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
+ {
+ 	struct hantro_dev *vpu = ctx->dev;
+@@ -330,7 +344,6 @@ static void set_ref_pic_list(struct hantro_ctx *ctx)
+ static int set_ref(struct hantro_ctx *ctx)
+ {
+ 	const struct hantro_hevc_dec_ctrls *ctrls = &ctx->hevc_dec.ctrls;
+-	const struct v4l2_ctrl_hevc_sps *sps = ctrls->sps;
+ 	const struct v4l2_ctrl_hevc_pps *pps = ctrls->pps;
+ 	const struct v4l2_ctrl_hevc_decode_params *decode_params = ctrls->decode_params;
+ 	const struct v4l2_hevc_dpb_entry *dpb = decode_params->dpb;
+@@ -338,8 +351,8 @@ static int set_ref(struct hantro_ctx *ctx)
+ 	struct hantro_dev *vpu = ctx->dev;
+ 	struct vb2_v4l2_buffer *vb2_dst;
+ 	struct hantro_decoded_buffer *dst;
+-	size_t cr_offset = hantro_hevc_chroma_offset(sps);
+-	size_t mv_offset = hantro_hevc_motion_vectors_offset(sps);
++	size_t cr_offset = hantro_hevc_chroma_offset(ctx);
++	size_t mv_offset = hantro_hevc_motion_vectors_offset(ctx);
+ 	u32 max_ref_frames;
+ 	u16 dpb_longterm_e;
+ 	static const struct hantro_reg cur_poc[] = {
+diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
+index 9c351f7fe6bd..b3a057beaf19 100644
+--- a/drivers/staging/media/hantro/hantro_hevc.c
++++ b/drivers/staging/media/hantro/hantro_hevc.c
+@@ -27,23 +27,6 @@
  
- 	n = 0;
- 	kunit_suite_for_each_test_case(suite, test_case) {
+ #define UNUSED_REF	-1
+ 
+-#define G2_ALIGN		16
+-
+-size_t hantro_hevc_chroma_offset(const struct v4l2_ctrl_hevc_sps *sps)
+-{
+-	int bytes_per_pixel = sps->bit_depth_luma_minus8 == 0 ? 1 : 2;
+-
+-	return sps->pic_width_in_luma_samples *
+-	       sps->pic_height_in_luma_samples * bytes_per_pixel;
+-}
+-
+-size_t hantro_hevc_motion_vectors_offset(const struct v4l2_ctrl_hevc_sps *sps)
+-{
+-	size_t cr_offset = hantro_hevc_chroma_offset(sps);
+-
+-	return ALIGN((cr_offset * 3) / 2, G2_ALIGN);
+-}
+-
+ static void hantro_hevc_ref_init(struct hantro_ctx *ctx)
+ {
+ 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
+diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
+index c5dc77125fb7..df142f31e31b 100644
+--- a/drivers/staging/media/hantro/hantro_hw.h
++++ b/drivers/staging/media/hantro/hantro_hw.h
+@@ -341,8 +341,6 @@ int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
+ dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, int poc);
+ int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr);
+ void hantro_hevc_ref_remove_unused(struct hantro_ctx *ctx);
+-size_t hantro_hevc_chroma_offset(const struct v4l2_ctrl_hevc_sps *sps);
+-size_t hantro_hevc_motion_vectors_offset(const struct v4l2_ctrl_hevc_sps *sps);
+ 
+ static inline unsigned short hantro_vp9_num_sbs(unsigned short dimension)
+ {
 -- 
 2.35.1
 
