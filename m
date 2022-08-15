@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17217C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7848CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351937AbiHOWuA (ORCPT
+        id S1351946AbiHOWuE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
+        Mon, 15 Aug 2022 18:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351471AbiHOWnw (ORCPT
+        with ESMTP id S1350882AbiHOWpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:43:52 -0400
+        Mon, 15 Aug 2022 18:45:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95D5133A4A;
-        Mon, 15 Aug 2022 12:52:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE92C134217;
+        Mon, 15 Aug 2022 12:52:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 519A760FB5;
-        Mon, 15 Aug 2022 19:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29629C433D6;
-        Mon, 15 Aug 2022 19:52:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 670636122B;
+        Mon, 15 Aug 2022 19:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57259C433D6;
+        Mon, 15 Aug 2022 19:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593153;
-        bh=okJrlgzBj1K0AXC4N2+ssJGxbgJwbYicAEw9OP6fVVY=;
+        s=korg; t=1660593162;
+        bh=iLeyVKw30Yurlo2472vxw9O6/4uq54uc70v/ViiSn4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O1mzi740kLq5+FT0fiDCe+WHSWil3lrWwKZbrkGcGT61kcUhBzrfiZo6G+JQlbLFW
-         H1zB4BCFAhQylhho5rKZRSzyVaP0ywIsyvidsQW4QSntaUTwpdRS2zHKd7/M4nXx6L
-         qw3pm0RQcosM41P3NEJxpmPdKrbar+avuo0pW2VU=
+        b=Tr5W+6RLUOve8ganZwyvCpfn209rJUVX2quEC+0B68WxlyQjuxUGK0m6O4Ph8a3vV
+         MKJt88T0yuVbNM3F/xKuadfYcqoC4orTqVSQrvn79xofj2yTka7EL8aCfNTkvRGPn6
+         lbTjZsNvXr8yU4iNBQdh5NGIl7fuJnOm9cIhIuQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0222/1157] arm64: dts: qcom: sc7180: Remove ipa_fw_mem node on trogdor
-Date:   Mon, 15 Aug 2022 19:52:58 +0200
-Message-Id: <20220815180448.463546438@linuxfoundation.org>
+Subject: [PATCH 5.18 0905/1095] fuse: Remove the control interface for virtio-fs
+Date:   Mon, 15 Aug 2022 20:05:04 +0200
+Message-Id: <20220815180506.738034007@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit e60414644cf3a703e10ed4429c15263095945ffe ]
+[ Upstream commit c64797809a64c73497082aa05e401a062ec1af34 ]
 
-We don't use this carveout on trogdor boards, and having it defined in
-the sc7180 SoC file causes an overlap message to be printed at boot.
+The commit 15c8e72e88e0 ("fuse: allow skipping control interface and forced
+unmount") tries to remove the control interface for virtio-fs since it does
+not support aborting requests which are being processed. But it doesn't
+work now.
 
- OF: reserved mem: OVERLAP DETECTED!
- memory@86000000 (0x0000000086000000--0x000000008ec00000) overlaps with memory@8b700000 (0x000000008b700000--0x000000008b710000)
+This patch fixes it by skipping creating the control interface if
+fuse_conn->no_control is set.
 
-Delete the node in the trogdor dtsi file to fix the overlap problem and
-remove the error message.
-
-Cc: Alex Elder <elder@linaro.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Fixes: 310b266655a3 ("arm64: dts: qcom: sc7180: define ipa_fw_mem node")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220517193307.3034602-1-swboyd@chromium.org
+Fixes: 15c8e72e88e0 ("fuse: allow skipping control interface and forced unmount")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ fs/fuse/control.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-index e55dbaa6dc12..a071b8f5d7dc 100644
---- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
-@@ -43,6 +43,7 @@ charger-crit {
-  */
+diff --git a/fs/fuse/control.c b/fs/fuse/control.c
+index 7cede9a3bc96..247ef4f76761 100644
+--- a/fs/fuse/control.c
++++ b/fs/fuse/control.c
+@@ -258,7 +258,7 @@ int fuse_ctl_add_conn(struct fuse_conn *fc)
+ 	struct dentry *parent;
+ 	char name[32];
  
- /delete-node/ &hyp_mem;
-+/delete-node/ &ipa_fw_mem;
- /delete-node/ &xbl_mem;
- /delete-node/ &aop_mem;
- /delete-node/ &sec_apps_mem;
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return 0;
+ 
+ 	parent = fuse_control_sb->s_root;
+@@ -296,7 +296,7 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc)
+ {
+ 	int i;
+ 
+-	if (!fuse_control_sb)
++	if (!fuse_control_sb || fc->no_control)
+ 		return;
+ 
+ 	for (i = fc->ctl_ndents - 1; i >= 0; i--) {
 -- 
 2.35.1
 
