@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B43C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CA2C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232973AbiHPEuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
+        id S232981AbiHPEuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232989AbiHPEqT (ORCPT
+        with ESMTP id S233090AbiHPEqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:46:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D85AF0F9;
-        Mon, 15 Aug 2022 13:43:03 -0700 (PDT)
+        Tue, 16 Aug 2022 00:46:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4B5B2D9E;
+        Mon, 15 Aug 2022 13:43:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 222A261234;
-        Mon, 15 Aug 2022 20:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DDCFC433D7;
-        Mon, 15 Aug 2022 20:43:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84BA76123C;
+        Mon, 15 Aug 2022 20:43:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB13C433D6;
+        Mon, 15 Aug 2022 20:43:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596182;
-        bh=t8+OKYEpZiL7sn8D1gWVgX+z5A0ortSwMLKz+gHOD5s=;
+        s=korg; t=1660596213;
+        bh=I97Qp1dWAVy3IsQkQEdYvQBwCJj951psvxNp2YnwJ5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XpRMNeLEsrzc0N9qCURVjpZNE9stKdsF5BTenJvtqJAJZB6DFtZF6vcNst0BGwgU6
-         HVnXUI3byGbUea9mJqLIoDTfYIK6G1xPdtlFufSIooX84s2OMBIzpQIXnUHzvgAsct
-         ztr/EDw6yW0GQKuu2WL5Q01BUup6DWk4x4mTUgy8=
+        b=tUx/nUGppp/Yc8+bwObEFjec06RBCnCIIU8cuUwY9QXK7DdFEJDqASVn8eMj2guUd
+         VIgDsBRsu4Rw3u3FTvhy/Aw0nUmaTRjlC/VgbuMH03z+n31bQ6KSsjbjPvvqEBS/Kn
+         yfLiYCV1z3gE+ipryfqXc4qr5vssT7J9P4/NQi+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0998/1157] powerpc/iommu: Fix iommu_table_in_use for a small default DMA window case
-Date:   Mon, 15 Aug 2022 20:05:54 +0200
-Message-Id: <20220815180519.688633465@linuxfoundation.org>
+Subject: [PATCH 5.19 0975/1157] s390/crash: fix incorrect number of bytes to copy to user space
+Date:   Mon, 15 Aug 2022 20:05:31 +0200
+Message-Id: <20220815180518.726494498@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,52 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit d80f6de9d601c30b53c17f00cb7cfe3169f2ddad ]
+[ Upstream commit f6749da17a34eb08c9665f072ce7c812ff68aad2 ]
 
-The existing iommu_table_in_use() helper checks if the kernel is using
-any of TCEs. There are some reserved TCEs:
-1) the very first one if DMA window starts from 0 to avoid having a zero
-but still valid DMA handle;
-2) it_reserved_start..it_reserved_end to exclude MMIO32 window in case
-the default window spans across that - this is the default for the first
-DMA window on PowerNV.
+The number of bytes in a chunk is correctly calculated, but instead
+the total number of bytes is passed to copy_to_user_real() function.
 
-When 1) is the case and 2) is not the helper does not skip 1) and returns
-wrong status.
-
-This only seems occurring when passing through a PCI device to a nested
-guest (not something we support really well) so it has not been seen
-before.
-
-This fixes the bug by adding a special case for no MMIO32 reservation.
-
-Fixes: 3c33066a2190 ("powerpc/kernel/iommu: Add new iommu_table_in_use() helper")
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220714081119.3714605-1-aik@ozlabs.ru
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Fixes: df9694c7975f ("s390/dump: streamline oldmem copy functions")
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/s390/kernel/crash_dump.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-index 7e56ddb3e0b9..caebe1431596 100644
---- a/arch/powerpc/kernel/iommu.c
-+++ b/arch/powerpc/kernel/iommu.c
-@@ -775,6 +775,11 @@ bool iommu_table_in_use(struct iommu_table *tbl)
- 	/* ignore reserved bit0 */
- 	if (tbl->it_offset == 0)
- 		start = 1;
-+
-+	/* Simple case with no reserved MMIO32 region */
-+	if (!tbl->it_reserved_start && !tbl->it_reserved_end)
-+		return find_next_bit(tbl->it_map, tbl->it_size, start) != tbl->it_size;
-+
- 	end = tbl->it_reserved_start - tbl->it_offset;
- 	if (find_next_bit(tbl->it_map, end, start) != end)
- 		return true;
+diff --git a/arch/s390/kernel/crash_dump.c b/arch/s390/kernel/crash_dump.c
+index 28124d0fa1d5..f8ebdd70dd31 100644
+--- a/arch/s390/kernel/crash_dump.c
++++ b/arch/s390/kernel/crash_dump.c
+@@ -199,7 +199,7 @@ static int copy_oldmem_user(void __user *dst, unsigned long src, size_t count)
+ 			} else {
+ 				len = count;
+ 			}
+-			rc = copy_to_user_real(dst, src, count);
++			rc = copy_to_user_real(dst, src, len);
+ 			if (rc)
+ 				return rc;
+ 		}
 -- 
 2.35.1
 
