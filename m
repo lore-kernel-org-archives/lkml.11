@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDA7C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50183C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351652AbiHOWqG (ORCPT
+        id S1351670AbiHOWqK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
+        Mon, 15 Aug 2022 18:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350689AbiHOWmx (ORCPT
+        with ESMTP id S1350747AbiHOWnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:42:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE537C515;
+        Mon, 15 Aug 2022 18:43:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3347C50E;
         Mon, 15 Aug 2022 12:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D3C661206;
-        Mon, 15 Aug 2022 19:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AEC5C433D6;
-        Mon, 15 Aug 2022 19:52:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 67E54CE12C4;
+        Mon, 15 Aug 2022 19:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409D6C433D6;
+        Mon, 15 Aug 2022 19:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593144;
-        bh=ZrmD6NIvlvB4c/OD2NuWsSHOYZ1Vb1Ay9jCFCc1P/sY=;
+        s=korg; t=1660593141;
+        bh=Xt2o7rk5oJFU6iJYe4PvvzmIa68P7B6CvIJ8ffPlNYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kZGc4H/HSuH7YRHJREmt994wazBXYuLTokoz/NY1blcsTKtK3p/4iN0c5vhXKsj4P
-         +N64QuyMqP/mDj6OJ+fyrPsdLP77hvIqjKyrI/DWfRlOcGUXAAkHEdIikel+8bP+Je
-         +Xrx3J1ih/JcIwvXArUx0e/kafZ6WQ8Xh40hYMhI=
+        b=SwpBwQk+/UIqACyhKTH61D+SiyZYSIsMHTnuYsgV7dQD0dsFeNOsmFmrDitJc4dVl
+         UyWpP4NiXZjwYoF+e7NI8XMLKGcytGGXPdDbquyGv3C9RnWBPaGrra/lMj2+FH2KyN
+         hwzWItTJ6GVkO9r69W2o0mkMwIw/7h/oDvxKdcmw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0902/1095] ASoC: fsl_easrc: use snd_pcm_format_t type for sample_format
-Date:   Mon, 15 Aug 2022 20:05:01 +0200
-Message-Id: <20220815180506.620039701@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0220/1157] arm64: cpufeature: Allow different PMU versions in ID_DFR0_EL1
+Date:   Mon, 15 Aug 2022 19:52:56 +0200
+Message-Id: <20220815180448.389459453@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,105 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Alexandru Elisei <alexandru.elisei@arm.com>
 
-[ Upstream commit de27216cf2d645c2fd14e513707bdcd54e5b1de4 ]
+[ Upstream commit 506506cad3947b942425b119ffa2b06715d5d804 ]
 
-Fix sparse warning:
-sound/soc/fsl/fsl_easrc.c:562:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:563:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:565:38: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:566:39: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:608:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:609:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:615:40: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:616:41: sparse: warning: restricted snd_pcm_format_t degrades to integer
+Commit b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in
+PMU implementations") made it possible to run Linux on a machine with PMUs
+with different versions without tainting the kernel. The patch relaxed the
+restriction only for the ID_AA64DFR0_EL1.PMUVer field, and missed doing the
+same for ID_DFR0_EL1.PerfMon , which also reports the PMU version, but for
+the AArch32 state.
 
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    got restricted snd_pcm_format_t [usertype] format
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    got restricted snd_pcm_format_t [usertype] format
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse: warning: incorrect type in argument 2 (different base types)
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    expected restricted snd_pcm_format_t [usertype] *in_raw_format
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    got unsigned int *
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    expected restricted snd_pcm_format_t [usertype] *out_raw_format
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    got unsigned int *
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    expected unsigned int [usertype] *out_value
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    got restricted snd_pcm_format_t *
-sound/soc/fsl/fsl_easrc.c:1943:49: sparse: warning: restricted snd_pcm_format_t degrades to integer
+For example, with Linux running on two clusters with different PMU
+versions, the kernel is tainted when bringing up secondaries with the
+following message:
 
-Fixes: 955ac624058f ("ASoC: fsl_easrc: Add EASRC ASoC CPU DAI drivers")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1658399393-28777-5-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+[    0.097027] smp: Bringing up secondary CPUs ...
+[..]
+[    0.142805] Detected PIPT I-cache on CPU4
+[    0.142805] CPU features: SANITY CHECK: Unexpected variation in SYS_ID_DFR0_EL1. Boot CPU: 0x00000004011088, CPU4: 0x00000005011088
+[    0.143555] CPU features: Unsupported CPU feature variation detected.
+[    0.143702] GICv3: CPU4: found redistributor 10000 region 0:0x000000002f180000
+[    0.143702] GICv3: CPU4: using allocated LPI pending table @0x00000008800d0000
+[    0.144888] CPU4: Booted secondary processor 0x0000010000 [0x410fd0f0]
+
+The boot CPU implements FEAT_PMUv3p1 (ID_DFR0_EL1.PerfMon, bits 27:24, is
+0b0100), but CPU4, part of the other cluster, implements FEAT_PMUv3p4
+(ID_DFR0_EL1.PerfMon = 0b0101).
+
+Treat the PerfMon field as FTR_NONSTRICT and FTR_EXACT to pass the sanity
+check and to match how PMUVer is treated for the 64bit ID register.
+
+Fixes: b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in PMU implementations")
+Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
+Link: https://lore.kernel.org/r/20220617111332.203061-1-alexandru.elisei@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_easrc.c | 9 ++++++---
- sound/soc/fsl/fsl_easrc.h | 2 +-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ arch/arm64/kernel/cpufeature.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/fsl_easrc.c b/sound/soc/fsl/fsl_easrc.c
-index be14f84796cb..cf0e10d17dbe 100644
---- a/sound/soc/fsl/fsl_easrc.c
-+++ b/sound/soc/fsl/fsl_easrc.c
-@@ -476,7 +476,8 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
- 	struct fsl_asrc_pair *ctx;
- 	struct device *dev;
- 	u32 inrate, outrate, offset = 0;
--	u32 in_s_rate, out_s_rate, in_s_fmt, out_s_fmt;
-+	u32 in_s_rate, out_s_rate;
-+	snd_pcm_format_t in_s_fmt, out_s_fmt;
- 	int ret, i;
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 90018643d424..ebdfbd1cf207 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -562,7 +562,7 @@ static const struct arm64_ftr_bits ftr_id_pfr2[] = {
  
- 	if (!easrc)
-@@ -1873,6 +1874,7 @@ static int fsl_easrc_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	struct device_node *np;
- 	void __iomem *regs;
-+	u32 asrc_fmt = 0;
- 	int ret, irq;
- 
- 	easrc = devm_kzalloc(dev, sizeof(*easrc), GFP_KERNEL);
-@@ -1933,13 +1935,14 @@ static int fsl_easrc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	ret = of_property_read_u32(np, "fsl,asrc-format", &easrc->asrc_format);
-+	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc_fmt);
-+	easrc->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
- 	if (ret) {
- 		dev_err(dev, "failed to asrc format\n");
- 		return ret;
- 	}
- 
--	if (!(FSL_EASRC_FORMATS & (1ULL << easrc->asrc_format))) {
-+	if (!(FSL_EASRC_FORMATS & (pcm_format_to_bits(easrc->asrc_format)))) {
- 		dev_warn(dev, "unsupported format, switching to S24_LE\n");
- 		easrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
- 	}
-diff --git a/sound/soc/fsl/fsl_easrc.h b/sound/soc/fsl/fsl_easrc.h
-index 30620d56252c..5b8469757c12 100644
---- a/sound/soc/fsl/fsl_easrc.h
-+++ b/sound/soc/fsl/fsl_easrc.h
-@@ -569,7 +569,7 @@ struct fsl_easrc_io_params {
- 	unsigned int access_len;
- 	unsigned int fifo_wtmk;
- 	unsigned int sample_rate;
--	unsigned int sample_format;
-+	snd_pcm_format_t sample_format;
- 	unsigned int norm_rate;
- };
- 
+ static const struct arm64_ftr_bits ftr_id_dfr0[] = {
+ 	/* [31:28] TraceFilt */
+-	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_PERFMON_SHIFT, 4, 0xf),
++	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_EXACT, ID_DFR0_PERFMON_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MPROFDBG_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MMAPTRC_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_COPTRC_SHIFT, 4, 0),
 -- 
 2.35.1
 
