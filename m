@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7169DC2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F70CC2BB45
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350315AbiHOWgT (ORCPT
+        id S1350411AbiHOWgd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
+        Mon, 15 Aug 2022 18:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351129AbiHOW1j (ORCPT
+        with ESMTP id S1351237AbiHOW14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90ED6E2D1;
-        Mon, 15 Aug 2022 12:47:26 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965066F56F;
+        Mon, 15 Aug 2022 12:47:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB79061233;
-        Mon, 15 Aug 2022 19:47:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFC73C433C1;
-        Mon, 15 Aug 2022 19:47:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2E856122C;
+        Mon, 15 Aug 2022 19:47:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AA6C433C1;
+        Mon, 15 Aug 2022 19:47:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592845;
-        bh=TxIdxAULtQl4TEOplGI6YrvA/gSOQygjmNf5HVhevT4=;
+        s=korg; t=1660592864;
+        bh=yhuN0DL0yv2xRFCMow4wX3R8JWRCMkUfnbUAKDjrUfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8DPly8/UaNRpbW4/P6EkPDGT06uSfcoC5c1U/IXid4O0ZDMKfad12gCKYat7hnz3
-         SBqkVMDDkP5yWAF4os3FsPwp/z7pkU0vcxBgU6YPz9z/Az5I1tmz/hCW2xge62VYq4
-         pK9kDRP6ByHccKPypweo9fne2NJ7CkDDXXy/tsIA=
+        b=Exun67G81V2XPHJxiKtDxFxVMaCfuGybNbpfecSPZgzZOMVCV79ONBS6+AuX4I0ZA
+         j0fQ6k64B/eRGQB8mcij+/ox5I16U+pf3qrbIeKrbkxvssl/CqeXSJPwikyRaBwHfg
+         oGgVCc3m4FnJgdzVsrzGvbz5+IBAk8yQZORFIHXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0853/1095] net/ice: fix initializing the bitmap in the switch code
-Date:   Mon, 15 Aug 2022 20:04:12 +0200
-Message-Id: <20220815180504.612499136@linuxfoundation.org>
+Subject: [PATCH 5.18 0829/1095] ASoC: imx-audmux: Silence a clang warning
+Date:   Mon, 15 Aug 2022 20:03:48 +0200
+Message-Id: <20220815180503.608132466@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,66 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 2f7ee2a72ccec8b85a05c4644d7ec9f40c1c50c8 ]
+[ Upstream commit 2f4a8171da06609bb6a063630ed546ee3d93dad7 ]
 
-Kbuild spotted the following bug during the testing of one of
-the optimizations:
+Change the of_device_get_match_data() cast to (uintptr_t)
+to silence the following clang warning:
 
-In file included from include/linux/cpumask.h:12,
-[...]
-                from drivers/net/ethernet/intel/ice/ice_switch.c:4:
-drivers/net/ethernet/intel/ice/ice_switch.c: In function 'ice_find_free_recp_res_idx.constprop':
-include/linux/bitmap.h:447:22: warning: 'possible_idx[0]' is used uninitialized [-Wuninitialized]
-  447 |                 *map |= GENMASK(start + nbits - 1, start);
-      |                      ^~
-In file included from drivers/net/ethernet/intel/ice/ice.h:7,
-                 from drivers/net/ethernet/intel/ice/ice_lib.h:7,
-                 from drivers/net/ethernet/intel/ice/ice_switch.c:4:
-drivers/net/ethernet/intel/ice/ice_switch.c:4929:24: note: 'possible_idx[0]' was declared here
- 4929 |         DECLARE_BITMAP(possible_idx, ICE_MAX_FV_WORDS);
-      |                        ^~~~~~~~~~~~
-include/linux/types.h:11:23: note: in definition of macro 'DECLARE_BITMAP'
-   11 |         unsigned long name[BITS_TO_LONGS(bits)]
-      |                       ^~~~
+sound/soc/fsl/imx-audmux.c:301:16: warning: cast to smaller integer type 'enum imx_audmux_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
 
-%ICE_MAX_FV_WORDS is 48, so bitmap_set() here was initializing only
-48 bits, leaving a junk in the rest 16.
-It was previously hidden due to that filling 48 bits makes
-bitmap_set() call external __bitmap_set(), but after making it use
-plain bit arithmetics on small bitmaps, compilers started seeing
-the issue. It was still working because those 16 weren't used
-anywhere anyhow.
-bitmap_{clear,set}() are not really intended to initialize bitmaps,
-rather to modify already initialized ones, as they don't do anything
-past the passed number of bits. The correct function to do this in
-that particular case is bitmap_fill(), so use it here. It will do
-`*possible_idx = ~0UL` instead of `*possible_idx |= GENMASK(47, 0)`,
-not leaving anything in an undefined state.
-
-Fixes: fd2a6b71e300 ("ice: create advanced switch recipe")
 Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Fixes: 6a8b8b582db1 ("ASoC: imx-audmux: Remove unused .id_table")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20220526010543.1164793-1-festevam@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_switch.c | 2 +-
+ sound/soc/fsl/imx-audmux.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 25b8f6f726eb..73960c8f9dba 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -4874,7 +4874,7 @@ ice_find_free_recp_res_idx(struct ice_hw *hw, const unsigned long *profiles,
- 	bitmap_zero(recipes, ICE_MAX_NUM_RECIPES);
- 	bitmap_zero(used_idx, ICE_MAX_FV_WORDS);
+diff --git a/sound/soc/fsl/imx-audmux.c b/sound/soc/fsl/imx-audmux.c
+index dfa05d40b276..a8e5e0f57faf 100644
+--- a/sound/soc/fsl/imx-audmux.c
++++ b/sound/soc/fsl/imx-audmux.c
+@@ -298,7 +298,7 @@ static int imx_audmux_probe(struct platform_device *pdev)
+ 		audmux_clk = NULL;
+ 	}
  
--	bitmap_set(possible_idx, 0, ICE_MAX_FV_WORDS);
-+	bitmap_fill(possible_idx, ICE_MAX_FV_WORDS);
+-	audmux_type = (enum imx_audmux_type)of_device_get_match_data(&pdev->dev);
++	audmux_type = (uintptr_t)of_device_get_match_data(&pdev->dev);
  
- 	/* For each profile we are going to associate the recipe with, add the
- 	 * recipes that are associated with that profile. This will give us
+ 	switch (audmux_type) {
+ 	case IMX31_AUDMUX:
 -- 
 2.35.1
 
