@@ -2,220 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52652C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175E5C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 14:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242883AbiHOO6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36840 "EHLO
+        id S232444AbiHOO6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbiHOO50 (ORCPT
+        with ESMTP id S242167AbiHOO5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 10:57:26 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7671D0E2;
-        Mon, 15 Aug 2022 07:57:25 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FEOq3K010791;
-        Mon, 15 Aug 2022 14:57:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=OvlQmTVemG8EiyWu0yU7RSGgTkAK6+cyFaZlq4Pif14=;
- b=kp+LstZm9FQh6AKzparnStKWEunea4bKHlByN3UOuKCK3VSfdBsYniWj2hGk+xfRzwxp
- hZun/T9dS3OmJXnth3BSEtwiOoBsoOYkNGoUVvtNubcn7Ae1La75ihi13WvzGpvfK8IO
- iDpeGJ+4BS4szhv9CrVQ7b2BItfBWFZ3JwtQ1XBmuE5P/hLjGR159R7GWa8S+fKHFojq
- +4i/BgfwxA9+x7+AKrIFsa7dBCfTBTUcBb/nEHYzG5aah5OGJ03wDOanl8/3TURil4KS
- HmQ67C44l42gdDXiy8Zn6JjwUHz3L73M2LQgzHU6MpVdvz8XrxbmJovjTUEH4YAIIGW5 WA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyqvtgtkh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 14:57:11 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FEv4fA013401;
-        Mon, 15 Aug 2022 14:57:11 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyqvtgtjn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 14:57:11 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FEoIN7018080;
-        Mon, 15 Aug 2022 14:57:10 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma01wdc.us.ibm.com with ESMTP id 3hx3k94jas-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 14:57:10 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FEv9NQ2294400
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Aug 2022 14:57:09 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 50A31136051;
-        Mon, 15 Aug 2022 14:57:09 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7A91613604F;
-        Mon, 15 Aug 2022 14:57:08 +0000 (GMT)
-Received: from slate16.aus.stglabs.ibm.com (unknown [9.77.146.160])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 14:57:08 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, eajames@linux.ibm.com,
-        andy.shevchenko@gmail.com, joel@jms.id.au
-Subject: [PATCH v5 2/2] iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
-Date:   Mon, 15 Aug 2022 09:57:05 -0500
-Message-Id: <20220815145705.203017-3-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220815145705.203017-1-eajames@linux.ibm.com>
-References: <20220815145705.203017-1-eajames@linux.ibm.com>
+        Mon, 15 Aug 2022 10:57:47 -0400
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8360D1FCFC
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 07:57:45 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 14328 invoked from network); 15 Aug 2022 16:57:42 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1660575462; bh=ZUSvVpgY85aUwoJT/VD92DZwtlhEXu1oicdr14fi0zU=;
+          h=From:To:Subject;
+          b=VhKSeIN2cSZTxgb63u3nfIzRa++3ftlaaW15BOboxYlAjbgVkEa8O8/wqUQYkIf6+
+           CVrSsvkXAJfJUzJqxrfxTeGXpTTIzH00wEZalsDMQWOmzY6D4YVmddm4V/P+ZvSmU2
+           Z4B8AiJGS1hgbunvOE1KYswyLvTkiCiMT3GE8EZU=
+Received: from ip-137-21.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.21])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <hauke@hauke-m.de>; 15 Aug 2022 16:57:42 +0200
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, olek2@wp.pl,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2 0/3] net: lantiq_xrx200: fix errors under memory pressure
+Date:   Mon, 15 Aug 2022 16:57:37 +0200
+Message-Id: <20220815145740.12075-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: p2d5rfkBPMceb7wf9FAXzPwN6vNY5AaJ
-X-Proofpoint-ORIG-GUID: c1KLPz-_6lUu6MSaGWcFDSpSpofrcSCq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- priorityscore=1501 adultscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0
- malwarescore=0 phishscore=0 impostorscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208150056
+X-WP-MailID: 955d87834941e9400fd02a20d217498d
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [IbMk]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Corruption of the MEAS_CFG register has been observed soon after
-system boot. In order to recover this scenario, check MEAS_CFG if
-measurement isn't ready, and if it's incorrect, reset the DPS310
-and execute the startup procedure.
+This series fixes issues that can occur in the driver under memory pressure.
+Situations when the system cannot allocate memory are rare, so the mentioned bugs
+have been fixed recently. The patches have been tested on a BT Home router with the
+Lantiq xRX200 chipset.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
- drivers/iio/pressure/dps310.c | 89 +++++++++++++++++++++++++++++------
- 1 file changed, 74 insertions(+), 15 deletions(-)
+Changelog:
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index c706a8b423b5..bbeb2f3bcc8a 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -393,6 +393,45 @@ static int dps310_get_temp_k(struct dps310_data *data)
- 	return scale_factors[ilog2(rc)];
- }
- 
-+/*
-+ * Called with lock held. Returns a negative value on error, a positive value
-+ * when the device is not ready, and zero when the device is ready.
-+ */
-+static int dps310_check_reset_meas_cfg(struct dps310_data *data, int ready_bit)
-+{
-+	int rc;
-+	int meas_cfg;
-+
-+	rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &meas_cfg);
-+	if (rc)
-+		return rc;
-+
-+	/* Device is ready, proceed to measurement */
-+	if (meas_cfg & ready_bit)
-+		return 0;
-+
-+	/* Device is OK, just not ready */
-+	if (meas_cfg & (DPS310_PRS_EN | DPS310_TEMP_EN | DPS310_BACKGROUND))
-+		return 1;
-+
-+	/* DPS310 register state corrupt, better start from scratch */
-+	rc = regmap_write(data->regmap, DPS310_RESET, DPS310_RESET_MAGIC);
-+	if (rc)
-+		return rc;
-+
-+	/* Wait for device chip access: 2.5ms in specification */
-+	usleep_range(2500, 12000);
-+
-+	/* Reinitialize the chip */
-+	rc = dps310_startup(data);
-+	if (rc)
-+		return rc;
-+
-+	dev_info(&data->client->dev,
-+		 "recovered from corrupted MEAS_CFG=%02x\n", meas_cfg);
-+	return 1;
-+}
-+
- static int dps310_read_pres_raw(struct dps310_data *data)
- {
- 	int rc;
-@@ -405,16 +444,26 @@ static int dps310_read_pres_raw(struct dps310_data *data)
- 	if (mutex_lock_interruptible(&data->lock))
- 		return -EINTR;
- 
--	rate = dps310_get_pres_samp_freq(data);
--	timeout = DPS310_POLL_TIMEOUT_US(rate);
--
--	/* Poll for sensor readiness; base the timeout upon the sample rate. */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_PRS_RDY,
--				      DPS310_POLL_SLEEP_US(timeout), timeout);
--	if (rc)
-+	rc = dps310_check_reset_meas_cfg(data, DPS310_PRS_RDY);
-+	if (rc < 0)
- 		goto done;
- 
-+	if (rc > 0) {
-+		rate = dps310_get_pres_samp_freq(data);
-+		timeout = DPS310_POLL_TIMEOUT_US(rate);
-+
-+		/*
-+		 * Poll for sensor readiness; base the timeout upon the sample
-+		 * rate.
-+		 */
-+		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-+					      ready, ready & DPS310_PRS_RDY,
-+					      DPS310_POLL_SLEEP_US(timeout),
-+					      timeout);
-+		if (rc)
-+			goto done;
-+	}
-+
- 	rc = regmap_bulk_read(data->regmap, DPS310_PRS_BASE, val, sizeof(val));
- 	if (rc < 0)
- 		goto done;
-@@ -454,16 +503,26 @@ static int dps310_read_temp_raw(struct dps310_data *data)
- 	if (mutex_lock_interruptible(&data->lock))
- 		return -EINTR;
- 
--	rate = dps310_get_temp_samp_freq(data);
--	timeout = DPS310_POLL_TIMEOUT_US(rate);
--
--	/* Poll for sensor readiness; base the timeout upon the sample rate. */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_TMP_RDY,
--				      DPS310_POLL_SLEEP_US(timeout), timeout);
-+	rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY);
- 	if (rc < 0)
- 		goto done;
- 
-+	if (rc > 0) {
-+		rate = dps310_get_temp_samp_freq(data);
-+		timeout = DPS310_POLL_TIMEOUT_US(rate);
-+
-+		/*
-+		 * Poll for sensor readiness; base the timeout upon the sample
-+		 * rate.
-+		 */
-+		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-+					      ready, ready & DPS310_TMP_RDY,
-+					      DPS310_POLL_SLEEP_US(timeout),
-+					      timeout);
-+		if (rc)
-+			goto done;
-+	}
-+
- 	rc = dps310_read_temp_ready(data);
- 
- done:
+  v2:
+  - the second patch has been changed, so that under memory pressure situation
+    the driver will not receive packets indefinitely regardless of the NAPI budget,
+  - the third patch has been added.
+
+Aleksander Jan Bajkowski (3):
+  net: lantiq_xrx200: confirm skb is allocated before using
+  net: lantiq_xrx200: fix lock under memory pressure
+  net: lantiq_xrx200: restore buffer if memory allocation failed
+
+ drivers/net/ethernet/lantiq_xrx200.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
 -- 
-2.31.1
+2.30.2
 
