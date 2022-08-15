@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EBD6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A49C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352240AbiHOWxb (ORCPT
+        id S1351534AbiHOWyJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        Mon, 15 Aug 2022 18:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352486AbiHOWv6 (ORCPT
+        with ESMTP id S1352523AbiHOWwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:51:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CD91394F2;
-        Mon, 15 Aug 2022 12:54:32 -0700 (PDT)
+        Mon, 15 Aug 2022 18:52:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827C3139D9C;
+        Mon, 15 Aug 2022 12:54:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E16BDCE12C3;
-        Mon, 15 Aug 2022 19:54:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F67C433D7;
-        Mon, 15 Aug 2022 19:54:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F29D5B80EAB;
+        Mon, 15 Aug 2022 19:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7B4C433C1;
+        Mon, 15 Aug 2022 19:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593269;
-        bh=6XuJs42zzSrif2xWDq8unK8xnPK6ex258jMWQ5IyGWo=;
+        s=korg; t=1660593275;
+        bh=NyrMSadPHQ4iOESHOAaie42MIzNfVPpbp8GQaIaUq50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0dVrWgp9CFmW/7/jkcU4kK1oSHZP+GiuSFHEXsIY6fCSqSWp4tML99F+Qsxz1hA3G
-         wCG9L7L7hBKVSVZowvCTbSPRLpXhdm9goYAWuFiWeExGHRsyg2iMVFSsaxs7k5W3rf
-         fkY7XIGDszwbVcEWBVvlz0FBjMud2NMEnVl8Tz8o=
+        b=crVojArAddWL8TEFv2CoxWU/hm46YQiGRTrJ7opNiZWLI8zHM2+cLblv4pQvnSEHU
+         OsA+Jh3fbVw7HZ2wNDHJMf93myScUNzG/a4Bk5w1D77ClTY9c0SugHOmg+BHhhrYRC
+         N9B9NZR7F/mffetvf03A4iUfPXKX5sJH+qHfefMA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0239/1157] ARM: dts: qcom: replace gcc PXO with pxo_board fixed clock
-Date:   Mon, 15 Aug 2022 19:53:15 +0200
-Message-Id: <20220815180449.120282434@linuxfoundation.org>
+Subject: [PATCH 5.18 0921/1095] powerpc/pci: Prefer PCI domain assignment via DT linux,pci-domain and alias
+Date:   Mon, 15 Aug 2022 20:05:20 +0200
+Message-Id: <20220815180507.367988683@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit eb9e93937756a05787977875830c0dc482cb57e0 ]
+[ Upstream commit 0fe1e96fef0a5c53b4c0d1500d356f3906000f81 ]
 
-Replace gcc PXO phandle to pxo_board fixed clock declared in the dts.
-gcc driver doesn't provide PXO_SRC as it's a fixed-clock. This cause a
-kernel panic if any driver actually try to use it.
+Other Linux architectures use DT property 'linux,pci-domain' for
+specifying fixed PCI domain of PCI controller specified in Device-Tree.
 
-Fixes: 40cf5c884a96 ("ARM: dts: qcom: add L2CC and RPM for IPQ8064")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220430055118.1947-2-ansuelsmth@gmail.com
+And lot of Freescale powerpc boards have defined numbered pci alias in
+Device-Tree for every PCIe controller which number specify preferred PCI
+domain.
+
+So prefer usage of DT property 'linux,pci-domain' (via function
+of_get_pci_domain_nr()) and DT pci alias (via function
+of_alias_get_id()) on powerpc architecture for assigning PCI domain to
+PCI controller.
+
+Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220706102148.5060-2-pali@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/pci-common.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 808ea1862283..d09354ca100d 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -784,7 +784,7 @@ tcsr: syscon@1a400000 {
- 		l2cc: clock-controller@2011000 {
- 			compatible = "qcom,kpss-gcc", "syscon";
- 			reg = <0x2011000 0x1000>;
--			clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
-+			clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
- 			clock-names = "pll8_vote", "pxo";
- 			clock-output-names = "acpu_l2_aux";
- 		};
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 9a97a93bd11c..7daa00f3942e 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -74,16 +74,30 @@ void __init set_pci_dma_ops(const struct dma_map_ops *dma_ops)
+ static int get_phb_number(struct device_node *dn)
+ {
+ 	int ret, phb_id = -1;
+-	u32 prop_32;
+ 	u64 prop;
+ 
+ 	/*
+ 	 * Try fixed PHB numbering first, by checking archs and reading
+-	 * the respective device-tree properties. Firstly, try powernv by
+-	 * reading "ibm,opal-phbid", only present in OPAL environment.
++	 * the respective device-tree properties. Firstly, try reading
++	 * standard "linux,pci-domain", then try reading "ibm,opal-phbid"
++	 * (only present in powernv OPAL environment), then try device-tree
++	 * alias and as the last try to use lower bits of "reg" property.
+ 	 */
+-	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
++	ret = of_get_pci_domain_nr(dn);
++	if (ret >= 0) {
++		prop = ret;
++		ret = 0;
++	}
++	if (ret)
++		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
++	if (ret)
++		ret = of_alias_get_id(dn, "pci");
++	if (ret >= 0) {
++		prop = ret;
++		ret = 0;
++	}
+ 	if (ret) {
++		u32 prop_32;
+ 		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
+ 		prop = prop_32;
+ 	}
+@@ -95,10 +109,7 @@ static int get_phb_number(struct device_node *dn)
+ 	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
+ 		return phb_id;
+ 
+-	/*
+-	 * If not pseries nor powernv, or if fixed PHB numbering tried to add
+-	 * the same PHB number twice, then fallback to dynamic PHB numbering.
+-	 */
++	/* If everything fails then fallback to dynamic PHB numbering. */
+ 	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
+ 	BUG_ON(phb_id >= MAX_PHBS);
+ 	set_bit(phb_id, phb_bitmap);
 -- 
 2.35.1
 
