@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE47C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31089C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353851AbiHOXir (ORCPT
+        id S1353861AbiHOXiy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
+        Mon, 15 Aug 2022 19:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233663AbiHOXeC (ORCPT
+        with ESMTP id S1353488AbiHOXe6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:34:02 -0400
+        Mon, 15 Aug 2022 19:34:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0D065645;
-        Mon, 15 Aug 2022 13:09:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E682265817;
+        Mon, 15 Aug 2022 13:09:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4876860B6E;
-        Mon, 15 Aug 2022 20:09:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE09C433C1;
-        Mon, 15 Aug 2022 20:08:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DD9E6069F;
+        Mon, 15 Aug 2022 20:09:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6744EC433C1;
+        Mon, 15 Aug 2022 20:09:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594139;
-        bh=QNFvrSfmF8jPkO6xUgA/cBgya04LXm/x8wg9L+Oyn58=;
+        s=korg; t=1660594142;
+        bh=xhkzJaIPw6uC5XDjaB+Qwpm4wrgUSw4VM161AgL9y7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dm/cD26K5fi7Fn3wbY4Y1NOttyccfcVsPa7NW6eND7ySTgyCIS6LpSyLLA1Jdq0Ea
-         1iItk3WeQyyKWxWhB3Eph7D2Dq9K84kZhCaOVkteJLGhbRXyqInlUWbBYdzr5xsPnp
-         rna53rHQlaAnCfa0yl0fHMxX8BNyZ8aGsyHEQc7M=
+        b=K6XdLLw0n40tIdThYUBRwMf9d1ZBIWNmjASgDC3sdQXHVNfbM1XwvMKipsiB8sABo
+         YT+hiJUwcOj79U0IWl/mdBdlMerK1ZNz0Gy1dpZ/goT6JB3lRkye5EuOmtvWsMn9U4
+         cPnUSdTYDGm6nH3bQ/fHc3aS5cR4fOev7uFZq+48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Lukas Czerner <lczerner@redhat.com>,
-        Andreas Dilger <adilger@dilger.ca>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1062/1095] ext4: make sure ext4_append() always allocates new block
-Date:   Mon, 15 Aug 2022 20:07:41 +0200
-Message-Id: <20220815180512.959795540@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0385/1157] drm/radeon: fix incorrrect SPDX-License-Identifiers
+Date:   Mon, 15 Aug 2022 19:55:41 +0200
+Message-Id: <20220815180455.113184781@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,61 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Czerner <lczerner@redhat.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b ]
+[ Upstream commit 1f43b8903f3aae4a26a603c36f6d5dd25d6edb51 ]
 
-ext4_append() must always allocate a new block, otherwise we run the
-risk of overwriting existing directory block corrupting the directory
-tree in the process resulting in all manner of problems later on.
+radeon is MIT.  This were incorrectly changed in
+commit b24413180f56 ("License cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+and
+commit d198b34f3855 (".gitignore: add SPDX License Identifier")
+and:
+commit ec8f24b7faaf ("treewide: Add SPDX license identifier - Makefile/Kconfig")
 
-Add a sanity check to see if the logical block is already allocated and
-error out if it is.
-
-Cc: stable@kernel.org
-Signed-off-by: Lukas Czerner <lczerner@redhat.com>
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: d198b34f3855 (".gitignore: add SPDX License Identifier")
+Fixes: ec8f24b7faaf ("treewide: Add SPDX license identifier - Makefile/Kconfig")
+Fixes: b24413180f56 ("License cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2053
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/gpu/drm/radeon/.gitignore | 2 +-
+ drivers/gpu/drm/radeon/Kconfig    | 2 +-
+ drivers/gpu/drm/radeon/Makefile   | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index 2bc3e4b27204..13b6265848c2 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -54,6 +54,7 @@ static struct buffer_head *ext4_append(handle_t *handle,
- 					struct inode *inode,
- 					ext4_lblk_t *block)
- {
-+	struct ext4_map_blocks map;
- 	struct buffer_head *bh;
- 	int err;
+diff --git a/drivers/gpu/drm/radeon/.gitignore b/drivers/gpu/drm/radeon/.gitignore
+index 9c1a94153983..d8777383a64a 100644
+--- a/drivers/gpu/drm/radeon/.gitignore
++++ b/drivers/gpu/drm/radeon/.gitignore
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: MIT
+ mkregtable
+ *_reg_safe.h
  
-@@ -63,6 +64,21 @@ static struct buffer_head *ext4_append(handle_t *handle,
- 		return ERR_PTR(-ENOSPC);
- 
- 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
-+	map.m_lblk = *block;
-+	map.m_len = 1;
-+
-+	/*
-+	 * We're appending new directory block. Make sure the block is not
-+	 * allocated yet, otherwise we will end up corrupting the
-+	 * directory.
-+	 */
-+	err = ext4_map_blocks(NULL, inode, &map, 0);
-+	if (err < 0)
-+		return ERR_PTR(err);
-+	if (err) {
-+		EXT4_ERROR_INODE(inode, "Logical block already allocated");
-+		return ERR_PTR(-EFSCORRUPTED);
-+	}
- 
- 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
- 	if (IS_ERR(bh))
+diff --git a/drivers/gpu/drm/radeon/Kconfig b/drivers/gpu/drm/radeon/Kconfig
+index 6f60f4840cc5..52819e7f1fca 100644
+--- a/drivers/gpu/drm/radeon/Kconfig
++++ b/drivers/gpu/drm/radeon/Kconfig
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: MIT
+ config DRM_RADEON_USERPTR
+ 	bool "Always enable userptr support"
+ 	depends on DRM_RADEON
+diff --git a/drivers/gpu/drm/radeon/Makefile b/drivers/gpu/drm/radeon/Makefile
+index ea5380e24c3c..e3ab3aca1396 100644
+--- a/drivers/gpu/drm/radeon/Makefile
++++ b/drivers/gpu/drm/radeon/Makefile
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: MIT
+ #
+ # Makefile for the drm device driver.  This driver provides support for the
+ # Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
 -- 
 2.35.1
 
