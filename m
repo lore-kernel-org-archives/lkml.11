@@ -2,138 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8D6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D9CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244029AbiHOStC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
+        id S244037AbiHOStH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243301AbiHOSno (ORCPT
+        with ESMTP id S243319AbiHOSnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:43:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3BF2F667;
-        Mon, 15 Aug 2022 11:27:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F2AF60FA2;
-        Mon, 15 Aug 2022 18:27:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69524C433C1;
-        Mon, 15 Aug 2022 18:27:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588021;
-        bh=o+CfgAyj9rPLk8ZM6G7S0zQl0iS1yoI3dsi9OirsY7s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xKoPm8gmfl015jRxmOoYPwPioT1GuPhRNtH402ldaMk4RsbXeHAzChBXCvrT4Xj3r
-         fTUUekLYKxBIv6Zd8F1qAS+ayOoN3NK1AhrWchrlaeysR7EirQcdUmS4k0YWbN9AK4
-         hFQTeAjJPIfHfCuDvqSldsGlZe4QNfKcvrspLKcw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Shijie Qin <shijie.qin@nxp.com>,
-        Zhou Peng <eagle.zhou@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@oss.nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 271/779] media: imx-jpeg: use NV12M to represent non contiguous NV12
-Date:   Mon, 15 Aug 2022 19:58:35 +0200
-Message-Id: <20220815180348.911162679@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:43:45 -0400
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1212A27A;
+        Mon, 15 Aug 2022 11:27:06 -0700 (PDT)
+Received: by mail-qt1-f179.google.com with SMTP id y18so6080648qtv.5;
+        Mon, 15 Aug 2022 11:27:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Vcsd5KIyv5vV0yCbV3qFPHVddWMzIuIgoz3STTGEAYU=;
+        b=uIiD6Ts40QOW1TjikMRkvOaMO7e6FKqka8Qn//VNQbDMVkPrUY8i774p3D2eMsthzx
+         L9KCiTAZe1EmyFiWtjlPnER5jILnXeTh238ddrb9YYY8Xgt0UMLb8zqI7C0R2tmrEdY7
+         mtT+pwXBymNagfhb00YjCOqK1T0ys4X043g91WPDASEZagGLtiw6/tfJY/rn41GY1M8g
+         chiVHbbF8j/hutpzG0WJClfrkmfPHuW0G9535JRJnqjEd/+1xsn5WpduAoRgRnx9WnL+
+         3M7nBU8WQ0T9VYftqAeHmSyAdRoxT8dFCdLOimj3e87evrJ2JNvambYmn/yHJyLUS8TU
+         Lryw==
+X-Gm-Message-State: ACgBeo38ZLPgNnF+feHoSdJ1l+YC+28luS/KlEvD1JBi3IR8FsBMZVh+
+        3XSd/YF5Fu0jXWQihlwBthtm8Up8HCCoQziI
+X-Google-Smtp-Source: AA6agR73fi5TMze5z6JjXEYZsN1wjE8krOqfrS0/e5sGppd1GBH6z3DpmA+z5Zf59Zf6ZDeVLGpT0Q==
+X-Received: by 2002:ac8:574e:0:b0:344:555f:cbe4 with SMTP id 14-20020ac8574e000000b00344555fcbe4mr8382283qtx.276.1660588025872;
+        Mon, 15 Aug 2022 11:27:05 -0700 (PDT)
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
+        by smtp.gmail.com with ESMTPSA id r2-20020a05620a298200b006b5f68bc106sm10010153qkp.110.2022.08.15.11.27.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 11:27:04 -0700 (PDT)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-32868f43dd6so93656047b3.8;
+        Mon, 15 Aug 2022 11:27:04 -0700 (PDT)
+X-Received: by 2002:a05:6902:100a:b0:676:ed53:25b0 with SMTP id
+ w10-20020a056902100a00b00676ed5325b0mr11651790ybt.365.1660588023793; Mon, 15
+ Aug 2022 11:27:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220630195703.10155-1-bvanassche@acm.org> <20220630195703.10155-3-bvanassche@acm.org>
+ <alpine.DEB.2.22.394.2207191125130.1006766@ramsan.of.borg>
+ <db19ed29-e7f9-e5b0-3a6c-f2812078a07d@acm.org> <CAMuHMdVzsgSYtbJQnaigNax_JbxPsQfU+gHcteS-ojWbxUdMfw@mail.gmail.com>
+ <CAMuHMdWtxBj8ug7AHTqentF8UD4jpO2sgoWWcQCOvEKLJtdq8A@mail.gmail.com>
+ <506ca1a6-1122-5755-fc74-60f7c7bfbd0d@acm.org> <CAMuHMdVQ2K2v8jpsFfOMk99DG_sBB4_ioiQRroC7K_Ov1wvp9w@mail.gmail.com>
+ <6f70e742-9d8a-f389-0482-0ba9696bf445@acm.org> <CAMuHMdVc+ATGV-=R3uV6RyF0-mZiuKv7HpmogRBgqGVyO-MKWg@mail.gmail.com>
+ <54e20a27-a10b-b77a-e950-1d3398e2e907@acm.org> <CAMuHMdURQpAEGgv4cY7v0rqzs12v2TT=Amt26Y0OoBSW7YAoaw@mail.gmail.com>
+ <084e7c5a-f98d-d61e-de81-83525851ecf9@acm.org> <CAMuHMdW2vOC8ZsE_XF8TbSNoF9zCrwq7UkGZ5jXen1E1mTZe+g@mail.gmail.com>
+ <14ec47f3-f3b8-61c7-2c64-d96d00dd7076@acm.org> <CAMuHMdW7nGxV_3Z2JV_TCM+WtTdYv5P+0cE6Tw=6krcseNCdAw@mail.gmail.com>
+ <40700595-8c83-1b61-ea93-ea9554bfb2db@acm.org>
+In-Reply-To: <40700595-8c83-1b61-ea93-ea9554bfb2db@acm.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 15 Aug 2022 20:26:52 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV_hzvd2YkJfRqXm8SmKuibWiUy-c7XpGCnEr86HMx=_Q@mail.gmail.com>
+Message-ID: <CAMuHMdV_hzvd2YkJfRqXm8SmKuibWiUy-c7XpGCnEr86HMx=_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] scsi: sd: Rework asynchronous resume support
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Ming Lei <ming.lei@redhat.com>, Hannes Reinecke <hare@suse.de>,
+        John Garry <john.garry@huawei.com>, ericspero@icloud.com,
+        jason600.groome@gmail.com,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-ide@vger.kernel.org,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+Hoi Bart,
 
-[ Upstream commit 784a1883cff07e7510a81ad3041d6ec443d51944 ]
+On Mon, Aug 15, 2022 at 3:49 PM Bart Van Assche <bvanassche@acm.org> wrote:
+> On 8/15/22 03:13, Geert Uytterhoeven wrote:
+> > Showing all locks held in the system:
+> > 1 lock held by rcu_tasks_kthre/10:
+> >   #0: ffff800009575c38 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at:
+> > rcu_tasks_one_gp+0x34/0x4c8
+> > 4 locks held by kworker/0:10/104:
+> >   #0: ffff0004c0008738 ((wq_completion)events){+.+.}-{0:0}, at:
+> > process_one_work+0x1f4/0x6a0
+> >   #1: ffff80000a90bde0
+> > ((work_completion)(&ap->scsi_rescan_task)){+.+.}-{0:0}, at:
+> > process_one_work+0x1f4/0x6a0
+> >   #2: ffff0004c2b6bf60 (&ap->scsi_scan_mutex){+.+.}-{3:3}, at:
+> > ata_scsi_dev_rescan+0x28/0x118
+> >   #3: ffff0004c2902368 (&dev->mutex){....}-{3:3}, at:
+> > scsi_rescan_device+0x28/0x78
+> > 1 lock held by in:imklog/636:
+> >   #0: ffff0004c5ee86e8 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0x54/0x68
+> > 1 lock held by hd/1013:
+> >   #0: ffff0004c06388b8 (mapping.invalidate_lock#2){.+.+}-{3:3}, at:
+> > page_cache_ra_unbounded+0x64/0x1a8
+>
+> Thank you for having shared this information. I will take a closer look
+> and see what I can derive from the above information.
+>
+> > I've just tried with a USB storage device on the same platform,
+> > and it can be read fine after s2idle.  So it looks like the issue
+> > is related to SATA.
+>
+> Unfortunately the above does not learn us anything new. The code
+> modified by commit 88f1669019bd ("scsi: sd: Rework asynchronous resume
+> support") is only called if sdev->manage_start_stop != 1. Only the SATA
+> code, the Firewire code and the manage_start_stop sysfs attribute store
+> method set that member variable:
+>
+> $ git grep -nH 'manage_start_stop = '
+> drivers/ata/libata-scsi.c:1083:         sdev->manage_start_stop = 1;
+> drivers/firewire/sbp2.c:1521:           sdev->manage_start_stop = 1;
+> drivers/scsi/sd.c:240:  sdp->manage_start_stop = v;
+>
+> Would it be possible to share the output of the command below? That
+> should reveal which ATA driver is active on the test setup.
+>
+> find /sys -name proc_name | xargs grep -aH .
 
-V4L2_PIX_FMT_NV12 requires num_planes equals to 1,
-V4L2_PIX_FMT_NV12M requires num_planes equals to 2.
-and mxc-jpeg supports 2 planes for nv12,
-so we should use 4L2_PIX_FMT_NV12M instead of V4L2_PIX_FMT_NV12,
-otherwise it will confuses gstreamer and prevent encoding and decoding.
+/sys/devices/platform/soc/ee300000.sata/ata1/host0/scsi_host/host0/proc_name:sata_rcar
 
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Shijie Qin <shijie.qin@nxp.com>
-Signed-off-by: Zhou Peng <eagle.zhou@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Gr{oetje,eeting}s,
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index bc66c09b807a..1ec60f54d5a1 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -96,7 +96,7 @@ static const struct mxc_jpeg_fmt mxc_formats[] = {
- 	},
- 	{
- 		.name		= "YUV420", /* 1st plane = Y, 2nd plane = UV */
--		.fourcc		= V4L2_PIX_FMT_NV12,
-+		.fourcc		= V4L2_PIX_FMT_NV12M,
- 		.subsampling	= V4L2_JPEG_CHROMA_SUBSAMPLING_420,
- 		.nc		= 3,
- 		.depth		= 12, /* 6 bytes (4Y + UV) for 4 pixels */
-@@ -390,7 +390,7 @@ static enum mxc_jpeg_image_format mxc_jpeg_fourcc_to_imgfmt(u32 fourcc)
- 		return MXC_JPEG_GRAY;
- 	case V4L2_PIX_FMT_YUYV:
- 		return MXC_JPEG_YUV422;
--	case V4L2_PIX_FMT_NV12:
-+	case V4L2_PIX_FMT_NV12M:
- 		return MXC_JPEG_YUV420;
- 	case V4L2_PIX_FMT_YUV24:
- 		return MXC_JPEG_YUV444;
-@@ -660,7 +660,7 @@ static int mxc_jpeg_fixup_sof(struct mxc_jpeg_sof *sof,
- 	_bswap16(&sof->width);
- 
- 	switch (fourcc) {
--	case V4L2_PIX_FMT_NV12:
-+	case V4L2_PIX_FMT_NV12M:
- 		sof->components_no = 3;
- 		sof->comp[0].v = 0x2;
- 		sof->comp[0].h = 0x2;
-@@ -696,7 +696,7 @@ static int mxc_jpeg_fixup_sos(struct mxc_jpeg_sos *sos,
- 	u8 *sof_u8 = (u8 *)sos;
- 
- 	switch (fourcc) {
--	case V4L2_PIX_FMT_NV12:
-+	case V4L2_PIX_FMT_NV12M:
- 		sos->components_no = 3;
- 		break;
- 	case V4L2_PIX_FMT_YUYV:
-@@ -1179,7 +1179,7 @@ static void mxc_jpeg_bytesperline(struct mxc_jpeg_q_data *q,
- 		/* bytesperline unused for compressed formats */
- 		q->bytesperline[0] = 0;
- 		q->bytesperline[1] = 0;
--	} else if (q->fmt->fourcc == V4L2_PIX_FMT_NV12) {
-+	} else if (q->fmt->fourcc == V4L2_PIX_FMT_NV12M) {
- 		/* When the image format is planar the bytesperline value
- 		 * applies to the first plane and is divided by the same factor
- 		 * as the width field for the other planes
-@@ -1211,7 +1211,7 @@ static void mxc_jpeg_sizeimage(struct mxc_jpeg_q_data *q)
- 	} else {
- 		q->sizeimage[0] = q->bytesperline[0] * q->h;
- 		q->sizeimage[1] = 0;
--		if (q->fmt->fourcc == V4L2_PIX_FMT_NV12)
-+		if (q->fmt->fourcc == V4L2_PIX_FMT_NV12M)
- 			q->sizeimage[1] = q->sizeimage[0] / 2;
- 	}
- }
--- 
-2.35.1
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
