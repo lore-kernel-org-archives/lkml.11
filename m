@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 877D4C28B2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED0FC2BB47
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350363AbiHOWg3 (ORCPT
+        id S1350548AbiHOWgn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        Mon, 15 Aug 2022 18:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351225AbiHOW1y (ORCPT
+        with ESMTP id S1351039AbiHOW1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C586F559;
-        Mon, 15 Aug 2022 12:47:43 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48A219006;
+        Mon, 15 Aug 2022 12:46:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4287CB81148;
-        Mon, 15 Aug 2022 19:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75765C433D6;
-        Mon, 15 Aug 2022 19:47:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA59B80EB2;
+        Mon, 15 Aug 2022 19:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 798B2C433D6;
+        Mon, 15 Aug 2022 19:46:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592860;
-        bh=uY13mo9qtASTnrLurEscpXAMDs4UVUh1xoWThPdMtxw=;
+        s=korg; t=1660592778;
+        bh=iErS5oo2Oc5DNTVd9UDyKVUFsYmh4vo+LGU2SJ245lM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8DABog2vUMBLH3wIgjsgKJsHe09eaqVdvMiwnK9CNOcEiMjVqkMFNpiBlf4ggf+5
-         c2kbsGf5Lh3ANWrCGSZZPIy9QYocymxp2x99FQa1A8B4K9c6QXCTAiKd3hPoY9Kzmh
-         x5evWHXBX2esCw39RIgqx7LyRnxAE8BSiBpDlTV8=
+        b=1VfZRar0anHv9PgwuEQaLz5t29prNGmduatse0/zCN4BdK0nDAn9bVIgKGwxtn69B
+         VVfGjo2wHn3156MD4duwlkcluFeRXUf7l5vbwISg0iDdw81jTiyRwAl+NW2B9DhAxr
+         ah+zuEh+MW8H/B0LHEIzryNZA0aVCq3sGKwzc3A8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0175/1157] ARM: OMAP2+: display: Fix refcount leak bug
-Date:   Mon, 15 Aug 2022 19:52:11 +0200
-Message-Id: <20220815180446.729429046@linuxfoundation.org>
+Subject: [PATCH 5.19 0163/1157] ARM: dts: imx6ul: add missing properties for sram
+Date:   Mon, 15 Aug 2022 19:51:59 +0200
+Message-Id: <20220815180446.204500812@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,34 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
+[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
 
-In omapdss_init_fbdev(), of_find_node_by_name() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+All 3 properties are required by sram.yaml. Fixes the dtbs_check
+warning:
+sram@900000: '#address-cells' is a required property
+sram@900000: '#size-cells' is a required property
+sram@900000: 'ranges' is a required property
 
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617145803.4050918-1-windhl@126.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/imx6ul.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index 21413a9b7b6c..eb09a25e3b45 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
- 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
- 	if (node)
- 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
-+	of_node_put(node);
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index afeec01f6522..1d435a46fc5c 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -149,6 +149,9 @@ soc {
+ 		ocram: sram@900000 {
+ 			compatible = "mmio-sram";
+ 			reg = <0x00900000 0x20000>;
++			ranges = <0 0x00900000 0x20000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 		};
  
- 	return 0;
- }
+ 		intc: interrupt-controller@a01000 {
 -- 
 2.35.1
 
