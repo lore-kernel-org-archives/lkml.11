@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B503C2BB43
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B8FC282E7
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343556AbiHOUNT (ORCPT
+        id S1346227AbiHOUNW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        Mon, 15 Aug 2022 16:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346161AbiHOUKz (ORCPT
+        with ESMTP id S1346498AbiHOULa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:10:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F657670;
-        Mon, 15 Aug 2022 11:56:50 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50B148E8C;
+        Mon, 15 Aug 2022 11:57:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0857EB8109E;
-        Mon, 15 Aug 2022 18:56:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3069FC433C1;
-        Mon, 15 Aug 2022 18:56:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F03C5B81082;
+        Mon, 15 Aug 2022 18:57:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56C7BC43140;
+        Mon, 15 Aug 2022 18:57:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589807;
-        bh=oaG8uRFFATYpJIIbw+3NNlxAQIMb14Wg6pkWXbXB2uw=;
+        s=korg; t=1660589866;
+        bh=lyksit9egkFgQzevi8lT0Oeq5R1tu5DzG6yzRvGK+bk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLArbumIyyQIwgSxpDdUDl07W53UIOTHHAcxcZ0WnqYJcjKNEi1W3M5M0+SQi97db
-         DDqtH1PtzaNAAvb4BhnIdgvQx/Zx9nK1lhtDyvsHS6z1JQOE4XZ6t/hHqnljFIJQ8g
-         kQ2FXWQYAlpdePPxPslP88f0PomNGQDzP+rCd+Uw=
+        b=SjU6+90tOHUf63uoiwgQy29OBhfMyeh5sTHFvrm0sIQBaCF7pm7BhMHNfehTQwac3
+         04b0Px0b50IzPGeZ6HUCjC6JF7Si1k8PGpFZ20+LLlxmCDkO2jHGPSltYvbi1TJO7z
+         X6hvnhAWdbTdzhMyZlL0/BxB+HQRVSed7U9xmXtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Peter Gonda <pgonda@google.com>,
-        John Allen <john.allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.18 0054/1095] crypto: ccp - Use kzalloc for sev ioctl interfaces to prevent kernel memory leak
-Date:   Mon, 15 Aug 2022 19:50:53 +0200
-Message-Id: <20220815180431.705430741@linuxfoundation.org>
+        stable@vger.kernel.org, Mathew McBride <matt@traverse.com.au>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.18 0074/1095] rtc: rx8025: fix 12/24 hour mode detection on RX-8035
+Date:   Mon, 15 Aug 2022 19:51:13 +0200
+Message-Id: <20220815180432.583993518@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,84 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Allen <john.allen@amd.com>
+From: Mathew McBride <matt@traverse.com.au>
 
-commit 13dc15a3f5fd7f884e4bfa8c011a0ae868df12ae upstream.
+commit 71af91565052214ad86f288e0d8ffb165f790995 upstream.
 
-For some sev ioctl interfaces, input may be passed that is less than or
-equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data that PSP
-firmware returns. In this case, kmalloc will allocate memory that is the
-size of the input rather than the size of the data. Since PSP firmware
-doesn't fully overwrite the buffer, the sev ioctl interfaces with the
-issue may return uninitialized slab memory.
+The 12/24hr flag in the RX-8035 can be found in the hour register,
+instead of the CTRL1 on the RX-8025. This was overlooked when
+support for the RX-8035 was added, and was causing read errors when
+the hour register 'overflowed'.
 
-Currently, all of the ioctl interfaces in the ccp driver are safe, but
-to prevent future problems, change all ioctl interfaces that allocate
-memory with kmalloc to use kzalloc and memset the data buffer to zero
-in sev_ioctl_do_platform_status.
+To deal with the relevant register not always being visible in
+the relevant functions, determine the 12/24 mode at startup and
+store it in the driver state.
 
-Fixes: 38103671aad3 ("crypto: ccp: Use the stack and common buffer for status commands")
-Fixes: e799035609e15 ("crypto: ccp: Implement SEV_PEK_CSR ioctl command")
-Fixes: 76a2b524a4b1d ("crypto: ccp: Implement SEV_PDH_CERT_EXPORT ioctl command")
-Fixes: d6112ea0cb344 ("crypto: ccp - introduce SEV_GET_ID2 command")
+Signed-off-by: Mathew McBride <matt@traverse.com.au>
+Fixes: f120e2e33ac8 ("rtc: rx8025: implement RX-8035 support")
 Cc: stable@vger.kernel.org
-Reported-by: Andy Nguyen <theflow@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Suggested-by: Peter Gonda <pgonda@google.com>
-Signed-off-by: John Allen <john.allen@amd.com>
-Reviewed-by: Peter Gonda <pgonda@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220706074236.24011-1-matt@traverse.com.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/ccp/sev-dev.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/rtc/rtc-rx8025.c |   22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -577,6 +577,8 @@ static int sev_ioctl_do_platform_status(
- 	struct sev_user_data_status data;
- 	int ret;
+--- a/drivers/rtc/rtc-rx8025.c
++++ b/drivers/rtc/rtc-rx8025.c
+@@ -55,6 +55,8 @@
+ #define RX8025_BIT_CTRL2_XST	BIT(5)
+ #define RX8025_BIT_CTRL2_VDET	BIT(6)
  
-+	memset(&data, 0, sizeof(data));
++#define RX8035_BIT_HOUR_1224	BIT(7)
 +
- 	ret = __sev_do_cmd_locked(SEV_CMD_PLATFORM_STATUS, &data, &argp->error);
- 	if (ret)
- 		return ret;
-@@ -630,7 +632,7 @@ static int sev_ioctl_do_pek_csr(struct s
- 	if (input.length > SEV_FW_BLOB_MAX_SIZE)
- 		return -EFAULT;
+ /* Clock precision adjustment */
+ #define RX8025_ADJ_RESOLUTION	3050 /* in ppb */
+ #define RX8025_ADJ_DATA_MAX	62
+@@ -78,6 +80,7 @@ struct rx8025_data {
+ 	struct rtc_device *rtc;
+ 	enum rx_model model;
+ 	u8 ctrl1;
++	int is_24;
+ };
  
--	blob = kmalloc(input.length, GFP_KERNEL);
-+	blob = kzalloc(input.length, GFP_KERNEL);
- 	if (!blob)
- 		return -ENOMEM;
+ static s32 rx8025_read_reg(const struct i2c_client *client, u8 number)
+@@ -226,7 +229,7 @@ static int rx8025_get_time(struct device
  
-@@ -854,7 +856,7 @@ static int sev_ioctl_do_get_id2(struct s
- 	input_address = (void __user *)input.address;
+ 	dt->tm_sec = bcd2bin(date[RX8025_REG_SEC] & 0x7f);
+ 	dt->tm_min = bcd2bin(date[RX8025_REG_MIN] & 0x7f);
+-	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
++	if (rx8025->is_24)
+ 		dt->tm_hour = bcd2bin(date[RX8025_REG_HOUR] & 0x3f);
+ 	else
+ 		dt->tm_hour = bcd2bin(date[RX8025_REG_HOUR] & 0x1f) % 12
+@@ -254,7 +257,7 @@ static int rx8025_set_time(struct device
+ 	 */
+ 	date[RX8025_REG_SEC] = bin2bcd(dt->tm_sec);
+ 	date[RX8025_REG_MIN] = bin2bcd(dt->tm_min);
+-	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
++	if (rx8025->is_24)
+ 		date[RX8025_REG_HOUR] = bin2bcd(dt->tm_hour);
+ 	else
+ 		date[RX8025_REG_HOUR] = (dt->tm_hour >= 12 ? 0x20 : 0)
+@@ -279,6 +282,7 @@ static int rx8025_init_client(struct i2c
+ 	struct rx8025_data *rx8025 = i2c_get_clientdata(client);
+ 	u8 ctrl[2], ctrl2;
+ 	int need_clear = 0;
++	int hour_reg;
+ 	int err;
  
- 	if (input.address && input.length) {
--		id_blob = kmalloc(input.length, GFP_KERNEL);
-+		id_blob = kzalloc(input.length, GFP_KERNEL);
- 		if (!id_blob)
- 			return -ENOMEM;
+ 	err = rx8025_read_regs(client, RX8025_REG_CTRL1, 2, ctrl);
+@@ -303,6 +307,16 @@ static int rx8025_init_client(struct i2c
  
-@@ -973,14 +975,14 @@ static int sev_ioctl_do_pdh_export(struc
- 	if (input.cert_chain_len > SEV_FW_BLOB_MAX_SIZE)
- 		return -EFAULT;
+ 		err = rx8025_write_reg(client, RX8025_REG_CTRL2, ctrl2);
+ 	}
++
++	if (rx8025->model == model_rx_8035) {
++		/* In RX-8035, 12/24 flag is in the hour register */
++		hour_reg = rx8025_read_reg(client, RX8025_REG_HOUR);
++		if (hour_reg < 0)
++			return hour_reg;
++		rx8025->is_24 = (hour_reg & RX8035_BIT_HOUR_1224);
++	} else {
++		rx8025->is_24 = (ctrl[1] & RX8025_BIT_CTRL1_1224);
++	}
+ out:
+ 	return err;
+ }
+@@ -329,7 +343,7 @@ static int rx8025_read_alarm(struct devi
+ 	/* Hardware alarms precision is 1 minute! */
+ 	t->time.tm_sec = 0;
+ 	t->time.tm_min = bcd2bin(ald[0] & 0x7f);
+-	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
++	if (rx8025->is_24)
+ 		t->time.tm_hour = bcd2bin(ald[1] & 0x3f);
+ 	else
+ 		t->time.tm_hour = bcd2bin(ald[1] & 0x1f) % 12
+@@ -350,7 +364,7 @@ static int rx8025_set_alarm(struct devic
+ 	int err;
  
--	pdh_blob = kmalloc(input.pdh_cert_len, GFP_KERNEL);
-+	pdh_blob = kzalloc(input.pdh_cert_len, GFP_KERNEL);
- 	if (!pdh_blob)
- 		return -ENOMEM;
- 
- 	data.pdh_cert_address = __psp_pa(pdh_blob);
- 	data.pdh_cert_len = input.pdh_cert_len;
- 
--	cert_blob = kmalloc(input.cert_chain_len, GFP_KERNEL);
-+	cert_blob = kzalloc(input.cert_chain_len, GFP_KERNEL);
- 	if (!cert_blob) {
- 		ret = -ENOMEM;
- 		goto e_free_pdh;
+ 	ald[0] = bin2bcd(t->time.tm_min);
+-	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
++	if (rx8025->is_24)
+ 		ald[1] = bin2bcd(t->time.tm_hour);
+ 	else
+ 		ald[1] = (t->time.tm_hour >= 12 ? 0x20 : 0)
 
 
