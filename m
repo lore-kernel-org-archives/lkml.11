@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8153C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91643C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245581AbiHPBDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        id S234185AbiHPBEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348626AbiHPA5q (ORCPT
+        with ESMTP id S1348688AbiHPA5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:57:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01411DB062;
-        Mon, 15 Aug 2022 13:49:10 -0700 (PDT)
+        Mon, 15 Aug 2022 20:57:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B0ADB05B;
+        Mon, 15 Aug 2022 13:49:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D766F6126A;
-        Mon, 15 Aug 2022 20:49:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B31C433C1;
-        Mon, 15 Aug 2022 20:49:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1FD6B811A6;
+        Mon, 15 Aug 2022 20:49:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7E8C433C1;
+        Mon, 15 Aug 2022 20:49:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596547;
-        bh=k/jl+hiL7h61ReI0pIPxD1nbi8Tvs1yvqiCnRfOIhME=;
+        s=korg; t=1660596544;
+        bh=w43Nn+CdXHZ0uAurAwKFhgQo8GpfGScQCXNh5qjlBX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J4eJBWPuxbY6xpQiElASrl8zB3WSnD6nxoCC52+oBIVqfJPb7CJ4tMM+4buR8Z1Lc
-         SebwG13sPfQQ+bxOm7X24z83lMcmLaZNqnXRf9gt0RXUNP75YKKc8/2z54UWk1iWgj
-         2zuL6ist79J2c1hnU7K7C2R3YDDWWT0GAZvsyPIs=
+        b=BuiOuTb3ZXWi88VF/YKT0XARd7yWJa7ec3KJ3PtWknjZeNqvIk/4YSlFzl/905qE2
+         PlIfML5cAdi5HaUWrUcnCfkKXI0jT0TteXdU68Il47xds78x+2kyLDbUrFcJMMkPzK
+         sPB9pkHF7GMuMUEapdU2WwaeZ5IIEDMjdWv3Th5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        SeongJae Park <sj@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1113/1157] hugetlb_cgroup: fix wrong hugetlb cgroup numa stat
-Date:   Mon, 15 Aug 2022 20:07:49 +0200
-Message-Id: <20220815180524.831965088@linuxfoundation.org>
+Subject: [PATCH 5.19 1112/1157] mm/damon/reclaim: fix potential memory leak in damon_reclaim_init()
+Date:   Mon, 15 Aug 2022 20:07:48 +0200
+Message-Id: <20220815180524.793320919@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,41 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 2727cfe4072a35ce813e3708f74c135de7da8897 ]
+[ Upstream commit 188043c7f4f2bd662f2a55957d684fffa543e600 ]
 
-We forget to set cft->private for numa stat file.  As a result, numa stat
-of hstates[0] is always showed for all hstates.  Encode the hstates index
-into cft->private to fix this issue.
+damon_reclaim_init() allocates a memory chunk for ctx with
+damon_new_ctx().  When damon_select_ops() fails, ctx is not released,
+which will lead to a memory leak.
 
-Link: https://lkml.kernel.org/r/20220723073804.53035-1-linmiaohe@huawei.com
-Fixes: f47761999052 ("hugetlb: add hugetlb.*.numa_stat file")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Mina Almasry <almasrymina@google.com>
-Cc: Shakeel Butt <shakeelb@google.com>
+We should release the ctx with damon_destroy_ctx() when damon_select_ops()
+fails to fix the memory leak.
+
+Link: https://lkml.kernel.org/r/20220714063746.2343549-1-niejianglei2021@163.com
+Fixes: 4d69c3457821 ("mm/damon/reclaim: use damon_select_ops() instead of damon_{v,p}a_set_operations()")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Reviewed-by: SeongJae Park <sj@kernel.org>
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/hugetlb_cgroup.c | 1 +
- 1 file changed, 1 insertion(+)
+ mm/damon/reclaim.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/mm/hugetlb_cgroup.c b/mm/hugetlb_cgroup.c
-index f9942841df18..c86691c431fd 100644
---- a/mm/hugetlb_cgroup.c
-+++ b/mm/hugetlb_cgroup.c
-@@ -772,6 +772,7 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
- 	/* Add the numa stat file */
- 	cft = &h->cgroup_files_dfl[6];
- 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.numa_stat", buf);
-+	cft->private = MEMFILE_PRIVATE(idx, 0);
- 	cft->seq_show = hugetlb_cgroup_read_numa_stat;
- 	cft->flags = CFTYPE_NOT_ON_ROOT;
+diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+index 4b07c29effe9..0b3c7396cb90 100644
+--- a/mm/damon/reclaim.c
++++ b/mm/damon/reclaim.c
+@@ -441,8 +441,10 @@ static int __init damon_reclaim_init(void)
+ 	if (!ctx)
+ 		return -ENOMEM;
  
+-	if (damon_select_ops(ctx, DAMON_OPS_PADDR))
++	if (damon_select_ops(ctx, DAMON_OPS_PADDR)) {
++		damon_destroy_ctx(ctx);
+ 		return -EINVAL;
++	}
+ 
+ 	ctx->callback.after_wmarks_check = damon_reclaim_after_wmarks_check;
+ 	ctx->callback.after_aggregation = damon_reclaim_after_aggregation;
 -- 
 2.35.1
 
