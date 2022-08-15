@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC708C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E46CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240629AbiHOUzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S245186AbiHOUz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346668AbiHOUyP (ORCPT
+        with ESMTP id S1346677AbiHOUyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 16:54:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABF82B194;
-        Mon, 15 Aug 2022 12:11:04 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1379CBE4D5;
+        Mon, 15 Aug 2022 12:11:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 493AC6069E;
-        Mon, 15 Aug 2022 19:11:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F7CFC433C1;
-        Mon, 15 Aug 2022 19:11:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44F3BB810A3;
+        Mon, 15 Aug 2022 19:10:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D0C9C433C1;
+        Mon, 15 Aug 2022 19:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590663;
-        bh=phN+qSxQHO3xHdsp0Cmw0hMbLrUCSsjAQLXTncAvUFU=;
+        s=korg; t=1660590644;
+        bh=bwO1Mm4K1TDzi0Wmw7DeJjExMDBZD3OMknw3wAmxiZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnQAPmum1MN7kLtjOPgzsN5NYJwPtu+1nO5uS850+Ghtgfp372YCd0wqg3tPZgFs4
-         UPUVpZmCPEHPDanDHTeDURtHlJL7Ac13jIau/bzbgfZaCiEyFJ1AecHdrnAIK7aRaL
-         03RrVzlATk6rhFq54fvpFgjCyRSJeDoWDZowxq4A=
+        b=Qadc7zT1/V6qERdkAcoFH7MR09tW2vtqgYeL6I982X6GLTW81bAS8z9QP4b2zSQ/7
+         QiZ5J80AuPTAmh7U/Om1gxWDvqtO+vz/8ZDLrUWmhUwFHkdU5TyIYWs2++0oaQ5B3k
+         4J42hAZl3vFezddTUdIUbNpO22SRB79eQDM9sYgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0300/1095] pwm: sifive: Shut down hardware only after pwmchip_remove() completed
-Date:   Mon, 15 Aug 2022 19:54:59 +0200
-Message-Id: <20220815180442.192147527@linuxfoundation.org>
+Subject: [PATCH 5.18 0324/1095] drm/meson: encoder_cvbs: Fix refcount leak in meson_encoder_cvbs_init
+Date:   Mon, 15 Aug 2022 19:55:23 +0200
+Message-Id: <20220815180443.193159994@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,45 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2375e964d541bb09158cd2dff67b5d74e8de61cd ]
+[ Upstream commit 7d255ddbbf679aa47e041cbf68520fd985ed2279 ]
 
-The PWMs are expected to be functional until pwmchip_remove() is called.
-So disable the clks only afterwards.
+of_graph_get_remote_node() returns remote device nodepointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 9e37a53eb051 ("pwm: sifive: Add a driver for SiFive SoC PWM")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: 318ba02cd8a8 ("drm/meson: encoder_cvbs: switch to bridge with ATTACH_NO_CONNECTOR")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220601033927.47814-2-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-sifive.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/meson/meson_encoder_cvbs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index 3936fda53366..58347fcd4812 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -321,6 +321,9 @@ static int pwm_sifive_remove(struct platform_device *dev)
- 	struct pwm_device *pwm;
- 	int ch;
- 
-+	pwmchip_remove(&ddata->chip);
-+	clk_notifier_unregister(ddata->clk, &ddata->notifier);
-+
- 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
- 		pwm = &ddata->chip.pwms[ch];
- 		if (pwm->state.enabled)
-@@ -328,8 +331,6 @@ static int pwm_sifive_remove(struct platform_device *dev)
+diff --git a/drivers/gpu/drm/meson/meson_encoder_cvbs.c b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+index fd8db97ba8ba..8110a6e39320 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_cvbs.c
++++ b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+@@ -238,6 +238,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
  	}
  
- 	clk_unprepare(ddata->clk);
--	pwmchip_remove(&ddata->chip);
--	clk_notifier_unregister(ddata->clk, &ddata->notifier);
- 
- 	return 0;
- }
+ 	meson_encoder_cvbs->next_bridge = of_drm_find_bridge(remote);
++	of_node_put(remote);
+ 	if (!meson_encoder_cvbs->next_bridge) {
+ 		dev_err(priv->dev, "Failed to find CVBS Connector bridge\n");
+ 		return -EPROBE_DEFER;
 -- 
 2.35.1
 
