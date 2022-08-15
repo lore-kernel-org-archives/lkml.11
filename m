@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D935C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 494EDC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347723AbiHOV0K (ORCPT
+        id S1347643AbiHOV0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
+        Mon, 15 Aug 2022 17:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345376AbiHOVRq (ORCPT
+        with ESMTP id S1343941AbiHOVRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C0D58B77;
-        Mon, 15 Aug 2022 12:21:03 -0700 (PDT)
+        Mon, 15 Aug 2022 17:17:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B1529829;
+        Mon, 15 Aug 2022 12:20:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9E7360FDA;
-        Mon, 15 Aug 2022 19:21:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70E3C433D6;
-        Mon, 15 Aug 2022 19:21:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3550B810A3;
+        Mon, 15 Aug 2022 19:20:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFAD8C433C1;
+        Mon, 15 Aug 2022 19:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591262;
-        bh=V8KFlUt8vc+S/5k6oJNap1osqTZ/7ZMM2KhwKESJ2xM=;
+        s=korg; t=1660591231;
+        bh=77p0F+fhXx8FwC7ansFUH3g5OXXvP6hKPXv1B2Jh3cc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vMO48c0ZtCNxfe60URy3MdIBmgqIDagb1cmvFvxJYg9pTMJIQgYPtV2AAD7n7nGIu
-         cDl/zoQvX9TMjf4bBAaWuLd7z77DyBqIGmeZr2Am32Zn1+imzX6rsWOM5XiKB8G0iL
-         zLBKImH7xPbe2bdYRl0i/rAexLABipug7t5BAbBs=
+        b=sQMS38i4JHbgM7Qhdn68Z63JifgT9mUqkSmb930Ur4aWVzTtCnk4usiX76eUXAptt
+         IUuMbpZsu9TemAaC1+MaeCIHRMaBqIlmN/bOsOtTpdZtnB066jxDuwbNFr2S9ZbkbR
+         WUosSeb1VwkCKiu1PgKkWdwvFFlsu5BESIhQ3YxU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0523/1095] crypto: hisilicon/sec - fix auth key size error
-Date:   Mon, 15 Aug 2022 19:58:42 +0200
-Message-Id: <20220815180451.193254865@linuxfoundation.org>
+Subject: [PATCH 5.18 0514/1095] net/mlx5e: xsk: Account for XSK RQ UMRs when calculating ICOSQ size
+Date:   Mon, 15 Aug 2022 19:58:33 +0200
+Message-Id: <20220815180450.804339679@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,57 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Ye <yekai13@huawei.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 45f5d0176d8426cc1ab0bab84fbd8ef5c57526c6 ]
+[ Upstream commit 52586d2f56b3e4f528ca7268d65074e92c936681 ]
 
-The authentication algorithm supports a maximum of 128-byte keys.
-The allocated key memory is insufficient.
+ICOSQ is used to post UMR WQEs for both regular RQ and XSK RQ. However,
+space in ICOSQ is reserved only for the regular RQ, which may cause
+ICOSQ overflows when using XSK (the most risk is on activating
+channels).
 
-Fixes: 2f072d75d1ab ("crypto: hisilicon - Add aead support on SEC2")
-Signed-off-by: Kai Ye <yekai13@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+This commit fixes the issue by reserving space for XSK UMR WQEs as well.
+As XSK may be enabled without restarting the channel and recreating the
+ICOSQ, this space is reserved unconditionally.
+
+Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/sec2/sec_crypto.c | 6 +++---
- drivers/crypto/hisilicon/sec2/sec_crypto.h | 1 +
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
-index f193d6b6fa16..dbaa6c918cfd 100644
---- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
-+++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
-@@ -620,7 +620,7 @@ static int sec_auth_init(struct sec_ctx *ctx)
- {
- 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 08fd1370a8b0..75da12e1b0c7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -797,8 +797,20 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
+ 		return MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
  
--	a_ctx->a_key = dma_alloc_coherent(ctx->dev, SEC_MAX_KEY_SIZE,
-+	a_ctx->a_key = dma_alloc_coherent(ctx->dev, SEC_MAX_AKEY_SIZE,
- 					  &a_ctx->a_key_dma, GFP_KERNEL);
- 	if (!a_ctx->a_key)
- 		return -ENOMEM;
-@@ -632,8 +632,8 @@ static void sec_auth_uninit(struct sec_ctx *ctx)
- {
- 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
- 
--	memzero_explicit(a_ctx->a_key, SEC_MAX_KEY_SIZE);
--	dma_free_coherent(ctx->dev, SEC_MAX_KEY_SIZE,
-+	memzero_explicit(a_ctx->a_key, SEC_MAX_AKEY_SIZE);
-+	dma_free_coherent(ctx->dev, SEC_MAX_AKEY_SIZE,
- 			  a_ctx->a_key, a_ctx->a_key_dma);
+ 	wqebbs = MLX5E_UMR_WQEBBS * BIT(mlx5e_get_rq_log_wq_sz(rqp->rqc));
++
++	/* If XDP program is attached, XSK may be turned on at any time without
++	 * restarting the channel. ICOSQ must be big enough to fit UMR WQEs of
++	 * both regular RQ and XSK RQ.
++	 * Although mlx5e_mpwqe_get_log_rq_size accepts mlx5e_xsk_param, it
++	 * doesn't affect its return value, as long as params->xdp_prog != NULL,
++	 * so we can just multiply by 2.
++	 */
++	if (params->xdp_prog)
++		wqebbs *= 2;
++
+ 	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
+ 		wqebbs += mlx5e_shampo_icosq_sz(mdev, params, rqp);
++
+ 	return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE, order_base_2(wqebbs));
  }
- 
-diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.h b/drivers/crypto/hisilicon/sec2/sec_crypto.h
-index 5e039b50e9d4..d033f63b583f 100644
---- a/drivers/crypto/hisilicon/sec2/sec_crypto.h
-+++ b/drivers/crypto/hisilicon/sec2/sec_crypto.h
-@@ -7,6 +7,7 @@
- #define SEC_AIV_SIZE		12
- #define SEC_IV_SIZE		24
- #define SEC_MAX_KEY_SIZE	64
-+#define SEC_MAX_AKEY_SIZE	128
- #define SEC_COMM_SCENE		0
- #define SEC_MIN_BLOCK_SZ	1
  
 -- 
 2.35.1
