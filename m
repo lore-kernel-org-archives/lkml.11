@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67451C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD156C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244346AbiHOXCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
+        id S244786AbiHOXCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352566AbiHOW76 (ORCPT
+        with ESMTP id S245104AbiHOXAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:59:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E324D7757F;
-        Mon, 15 Aug 2022 12:57:32 -0700 (PDT)
+        Mon, 15 Aug 2022 19:00:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E89D78215;
+        Mon, 15 Aug 2022 12:57:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F286B80EAD;
-        Mon, 15 Aug 2022 19:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 782C6C43470;
-        Mon, 15 Aug 2022 19:57:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B120460FD8;
+        Mon, 15 Aug 2022 19:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F89CC433C1;
+        Mon, 15 Aug 2022 19:57:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593449;
-        bh=qTrRxe6w0Z+uWcp4krLAZw9IEg3f36QngPy9the/PDs=;
+        s=korg; t=1660593453;
+        bh=fsOMfTvKS1OwyHIHiFZi4yp3lzMzwBLEDwhB4KCaDkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PjOkA4wdDBhrDxFP6L5fCLO4zfzqylGB4h/7uynAzreo8Wu9uuC0SaGBpk34nt56f
-         x9YfiC/8ASVFbOv30YDIf+Q3KAK1FOzKv1prgs/znRnGrACsREK0GUs2s76zc95Hu6
-         7Xe6cWErWYPx9qtEN0q1LqqAf/jw3tAR8QSreMFs=
+        b=jtMXy5dvCtwB66Jtf0ziuNaLAdCCzOwNn+VYi1PfZMEvFgp0BewYruWazUeGClJZx
+         +7zmz+3m0Jp2HyJhr5969z3gVZfQ47wsojd3kydmt1O8ZCaswOYt5e8exl2+hn4KIN
+         byMHTMRpNcmJvybI3EUukqwmqN22ssO2ACyUI97I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nandhini Srikandan <nandhini.srikandan@intel.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0269/1157] spi: dw: Fix IP-core versions macro
-Date:   Mon, 15 Aug 2022 19:53:45 +0200
-Message-Id: <20220815180450.380740204@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0948/1095] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
+Date:   Mon, 15 Aug 2022 20:05:47 +0200
+Message-Id: <20220815180508.344597258@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nandhini Srikandan <nandhini.srikandan@intel.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 5d76b7509cb223e94ff73a672273e58f1957ac68 ]
+[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
 
-Add the missing underscore in IP version macro to avoid compilation issue.
-The macro is used for IP version comparison in the current patchset.
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug
+in:
+  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
+with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
+and then in:
+  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
+we'll get a division-by-zero.
 
-Fixes: 2cc8d9227bbb ("spi: dw: Introduce Synopsys IP-core versions interface")
-Signed-off-by: Nandhini Srikandan <nandhini.srikandan@intel.com>
-Acked-by: Serge Semin <fancer.lancer@gmail.com>
-Link: https://lore.kernel.org/r/20220713042223.1458-2-nandhini.srikandan@intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The following log can reveal it:
+
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
+RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+
+Fix this by checking the argument of ark_set_pixclock() first.
+
+Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-dw.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/arkfb.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-dw.h b/drivers/spi/spi-dw.h
-index d5ee5130601e..79d853f6d192 100644
---- a/drivers/spi/spi-dw.h
-+++ b/drivers/spi/spi-dw.h
-@@ -23,7 +23,7 @@
- 	((_dws)->ip == DW_ ## _ip ## _ID)
+diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
+index eb3e47c58c5f..ed76ddc7df3d 100644
+--- a/drivers/video/fbdev/arkfb.c
++++ b/drivers/video/fbdev/arkfb.c
+@@ -781,7 +781,12 @@ static int arkfb_set_par(struct fb_info *info)
+ 		return -EINVAL;
+ 	}
  
- #define __dw_spi_ver_cmp(_dws, _ip, _ver, _op) \
--	(dw_spi_ip_is(_dws, _ip) && (_dws)->ver _op DW_ ## _ip ## _ver)
-+	(dw_spi_ip_is(_dws, _ip) && (_dws)->ver _op DW_ ## _ip ## _ ## _ver)
- 
- #define dw_spi_ver_is(_dws, _ip, _ver) __dw_spi_ver_cmp(_dws, _ip, _ver, ==)
- 
+-	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
++	value = (hdiv * info->var.pixclock) / hmul;
++	if (!value) {
++		fb_dbg(info, "invalid pixclock\n");
++		value = 1;
++	}
++	ark_set_pixclock(info, value);
+ 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
+ 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
+ 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
 -- 
 2.35.1
 
