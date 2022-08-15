@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BF0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBECC25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243556AbiHOXCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        id S1344858AbiHOXCr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352794AbiHOXBI (ORCPT
+        with ESMTP id S1352847AbiHOXBQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:01:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463415D120;
-        Mon, 15 Aug 2022 12:57:47 -0700 (PDT)
+        Mon, 15 Aug 2022 19:01:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA473857F3;
+        Mon, 15 Aug 2022 12:57:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06ACB6113B;
-        Mon, 15 Aug 2022 19:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17BEEC433C1;
-        Mon, 15 Aug 2022 19:57:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB533B8114A;
+        Mon, 15 Aug 2022 19:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F539C433C1;
+        Mon, 15 Aug 2022 19:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593465;
-        bh=5T4neKr3Jd7AuPZGVA14c6D8Q45msYSSscOIE8m2h88=;
+        s=korg; t=1660593468;
+        bh=fCYDI+F88UGUTrDjbcNz8uPK++EHHjAD50nTwpOJZGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y9Fd99E4ToYyTfqcuSOan+9UggqRPLwoYUctFPKj9AYfqIertvlhwqB3irmnUu+V6
-         9c84OhqhGkikivImG5FYn4eBJGBdQ22IxGms7BVB2h+oqGhSS9xSG3guKylnLd4LSN
-         hKWlEcjK9TeMcSYbT8xan9vN0umSJw4iRWGLYSS4=
+        b=YsvtdqR+JtbGWywOsxNwOdDAQZ57ljPaTtf0PoFW4ZrUH17v3GgHy9r6fyUPeC6ZT
+         2k2EHKORV6vrD+ZG4++/QWPa9B87ouq57IjgcfJ4WhIQhSHZumtb8CPe2cwKEKnNS4
+         lVGj8RJKsTkvVJxBvEFgPnWtnjd9SCyejcikEPy4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Valentin Schneider <vschneid@redhat.com>,
-        Tianchen Ding <dtcccc@linux.alibaba.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0950/1095] sched: Fix the check of nr_running at queue wakelist
-Date:   Mon, 15 Aug 2022 20:05:49 +0200
-Message-Id: <20220815180508.412896351@linuxfoundation.org>
+Subject: [PATCH 5.19 0272/1157] hwmon: (sch56xx-common) Add DMI override table
+Date:   Mon, 15 Aug 2022 19:53:48 +0200
+Message-Id: <20220815180450.494000788@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianchen Ding <dtcccc@linux.alibaba.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit 28156108fecb1f808b21d216e8ea8f0d205a530c ]
+[ Upstream commit fd2d53c367ae9983c2100ac733a834e0c79d7537 ]
 
-The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-stacking when WF_ON_CPU.
+Some devices like the Fujitsu Celsius W380 do contain
+a working sch56xx hardware monitoring device, but do
+not contain the necessary DMI onboard device.
 
-Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-the deactivate_task() in __schedule(), thus p has been accounted out of
-rq->nr_running. As such, the task being the only runnable task on the rq
-implies reading rq->nr_running == 0 at that point.
+Do not check for the presence of an suitable onboard device
+on these machines. The list of affected machines was created
+using data collected by the Linux Hardware Project.
 
-The benchmark result is in [1].
+Tested on a Fujitsu Esprimo P720, but sadly not on a affected
+machine.
 
-[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
-
-Suggested-by: Valentin Schneider <vschneid@redhat.com>
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Link: https://lore.kernel.org/r/20220608233412.327341-2-dtcccc@linux.alibaba.com
+Fixes: 393935baa45e (hwmon: (sch56xx-common) Add automatic module loading on supported devices)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220604220200.2567-1-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/hwmon/sch56xx-common.c | 44 ++++++++++++++++++++++++++--------
+ 1 file changed, 34 insertions(+), 10 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index b0f3ded147cb..4e99f0cf727a 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3832,8 +3832,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	 * CPU then use the wakelist to offload the task activation to
- 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
- 	 * nr_running is checked to avoid unnecessary task stacking.
-+	 *
-+	 * Note that we can only get here with (wakee) p->on_rq=0,
-+	 * p->on_cpu can be whatever, we've done the dequeue, so
-+	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
-+	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
- 		return true;
+diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+index 3ece53adabd6..de3a0886c2f7 100644
+--- a/drivers/hwmon/sch56xx-common.c
++++ b/drivers/hwmon/sch56xx-common.c
+@@ -523,6 +523,28 @@ static int __init sch56xx_device_add(int address, const char *name)
+ 	return PTR_ERR_OR_ZERO(sch56xx_pdev);
+ }
  
- 	return false;
++static const struct dmi_system_id sch56xx_dmi_override_table[] __initconst = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "CELSIUS W380"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "ESPRIMO P710"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "ESPRIMO E9900"),
++		},
++	},
++	{ }
++};
++
+ /* For autoloading only */
+ static const struct dmi_system_id sch56xx_dmi_table[] __initconst = {
+ 	{
+@@ -543,16 +565,18 @@ static int __init sch56xx_init(void)
+ 		if (!dmi_check_system(sch56xx_dmi_table))
+ 			return -ENODEV;
+ 
+-		/*
+-		 * Some machines like the Esprimo P720 and Esprimo C700 have
+-		 * onboard devices named " Antiope"/" Theseus" instead of
+-		 * "Antiope"/"Theseus", so we need to check for both.
+-		 */
+-		if (!dmi_find_device(DMI_DEV_TYPE_OTHER, "Antiope", NULL) &&
+-		    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Antiope", NULL) &&
+-		    !dmi_find_device(DMI_DEV_TYPE_OTHER, "Theseus", NULL) &&
+-		    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Theseus", NULL))
+-			return -ENODEV;
++		if (!dmi_check_system(sch56xx_dmi_override_table)) {
++			/*
++			 * Some machines like the Esprimo P720 and Esprimo C700 have
++			 * onboard devices named " Antiope"/" Theseus" instead of
++			 * "Antiope"/"Theseus", so we need to check for both.
++			 */
++			if (!dmi_find_device(DMI_DEV_TYPE_OTHER, "Antiope", NULL) &&
++			    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Antiope", NULL) &&
++			    !dmi_find_device(DMI_DEV_TYPE_OTHER, "Theseus", NULL) &&
++			    !dmi_find_device(DMI_DEV_TYPE_OTHER, " Theseus", NULL))
++				return -ENODEV;
++		}
+ 	}
+ 
+ 	/*
 -- 
 2.35.1
 
