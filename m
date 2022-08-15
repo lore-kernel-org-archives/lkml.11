@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F22FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C558BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349116AbiHOVk2 (ORCPT
+        id S1349131AbiHOVkc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
+        Mon, 15 Aug 2022 17:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348642AbiHOVg5 (ORCPT
+        with ESMTP id S239483AbiHOVhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:36:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC0AAD;
-        Mon, 15 Aug 2022 12:26:38 -0700 (PDT)
+        Mon, 15 Aug 2022 17:37:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB48EBC;
+        Mon, 15 Aug 2022 12:26:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC3C4610A3;
-        Mon, 15 Aug 2022 19:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA80C433C1;
-        Mon, 15 Aug 2022 19:26:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2E1B4CE12C4;
+        Mon, 15 Aug 2022 19:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BEBFC433C1;
+        Mon, 15 Aug 2022 19:26:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591597;
-        bh=K1mckkucQ53SKXsVQAHvieVbLZoUpM1bXDgk3yp9K1w=;
+        s=korg; t=1660591603;
+        bh=MYq0vri+hL6QZjF+gfUQ6522RBfujaX6ufFN70VX1Qs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dTrL2BBN3uJOj5JieFAzFoIAn6byj9kAOQVubirjAJmnZk5YQdeRDqfXB0CqVE6OY
-         7h/2JyIZuGGmXho8W/1nuw/0yWQx/KWODCRQwK1QkG38mYh5hbJrnaFg86N+Z5spDE
-         bVKkCSTjxzV00ZxTEJrXLb5T8VFncUphfjO5yJ2Q=
+        b=fTyF1Ho3Mec4OLEU09mT7EuA2tST94H+v03cI691NFlv6nDI3ob19Jjh90JS44YBd
+         G2tyCIItArGCO0CKozp+pWlNe+UVsLKBEvwMMikNUWn8Ppj/4t33tRRhacgN36P4Bj
+         T1eAfpIaAmax0VXPKG6cRlwjC2N74Ar4N9iGwow8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Paul Cercueil <paul@crapouillou.net>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0632/1095] iio: dac: ad5592r: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:31 +0200
-Message-Id: <20220815180455.589344187@linuxfoundation.org>
+Subject: [PATCH 5.18 0634/1095] iio: dac: ad5755: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:33 +0200
+Message-Id: <20220815180455.655796517@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,44 +53,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 4a4a79c06caeec47003bcbee1cf3094479f26e24 ]
+[ Upstream commit d0c167ceff2d833ee493dd58164dc87bd36e48aa ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
+Update the comment to include 'may'.
+
+Fixes: c499d029d805 ("iio:dac: Add ad5755 driver")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Paul Cercueil <paul@crapouillou.net>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-49-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-51-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad5592r-base.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/dac/ad5755.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5592r-base.h b/drivers/iio/dac/ad5592r-base.h
-index 2a22ef691996..cc7be426cbc8 100644
---- a/drivers/iio/dac/ad5592r-base.h
-+++ b/drivers/iio/dac/ad5592r-base.h
-@@ -14,6 +14,8 @@
- #include <linux/mutex.h>
- #include <linux/gpio/driver.h>
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+index 7a62e6e1d5f1..bbb345323b69 100644
+--- a/drivers/iio/dac/ad5755.c
++++ b/drivers/iio/dac/ad5755.c
+@@ -189,14 +189,14 @@ struct ad5755_state {
+ 	struct mutex			lock;
  
-+#include <linux/iio/iio.h>
-+
- struct device;
- struct ad5592r_state;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
  
-@@ -65,7 +67,7 @@ struct ad5592r_state {
- 	u8 gpio_in;
- 	u8 gpio_val;
- 
--	__be16 spi_msg ____cacheline_aligned;
-+	__be16 spi_msg __aligned(IIO_DMA_MINALIGN);
- 	__be16 spi_msg_nop;
+ 	union {
+ 		__be32 d32;
+ 		u8 d8[4];
+-	} data[2] ____cacheline_aligned;
++	} data[2] __aligned(IIO_DMA_MINALIGN);
  };
  
+ enum ad5755_type {
 -- 
 2.35.1
 
