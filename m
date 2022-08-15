@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 907DEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A43E8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352622AbiHOXD1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        id S243969AbiHOXDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352984AbiHOXBs (ORCPT
+        with ESMTP id S1352997AbiHOXBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:01:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CF113F20C;
-        Mon, 15 Aug 2022 12:58:05 -0700 (PDT)
+        Mon, 15 Aug 2022 19:01:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D68D13F207;
+        Mon, 15 Aug 2022 12:58:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3943612B1;
-        Mon, 15 Aug 2022 19:58:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E58BCC433D7;
-        Mon, 15 Aug 2022 19:58:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF337612BC;
+        Mon, 15 Aug 2022 19:58:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0AAFC433D6;
+        Mon, 15 Aug 2022 19:58:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593484;
-        bh=NxNXOIqovvENtDMuxyXRJZc6jarusv6Z/+p9FTbIHzI=;
+        s=korg; t=1660593481;
+        bh=pSqFm/F+9c2KAa07HAvyYA0Ppsjj8HHDA+WUMgJeHDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y5nYGd5111GkCdzQxUo10yO0NVd2aLmpp9m9BShJpoI7eVeZummUU4przmNs7ckXX
-         60UERURXLx1FhLI3O5KHlffGhfzY5uP6B69AVmOsflOtusN7+BNdo3m02N0USNHz5H
-         1+rdR7k5PVtaOZNXMkZUOpOMkHous+vwOfzPvufU=
+        b=DTiPLbAX0T4AfNg6X8gIBYSfF9rDJHxcc2exgmTh0zuSlwtD2QTRgyKAB9DpRS/QI
+         S3AAAumMDg0Wz/FZOgykVLPRu/+eMjlfA9d72I7rAf72ZtYqvJkDqV35xK6xDstVZd
+         24lVKL9Qjtp6IlehHrpxyL8eoVWjGuKfrOKZZ3ng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Junichi Nomura <junichi.nomura@nec.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Mike Christie <michael.christie@oracle.com>,
-        Li Zefan <lizf@cn.fujitsu.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0274/1157] blktrace: Trace remapped requests correctly
-Date:   Mon, 15 Aug 2022 19:53:50 +0200
-Message-Id: <20220815180450.571170856@linuxfoundation.org>
+        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
+        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0952/1095] sched/core: Do not requeue task on CPU excluded from cpus_mask
+Date:   Mon, 15 Aug 2022 20:05:51 +0200
+Message-Id: <20220815180508.490711459@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,41 +48,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Mel Gorman <mgorman@techsingularity.net>
 
-[ Upstream commit 22c80aac882f712897b88b7ea8f5a74ea19019df ]
+[ Upstream commit 751d4cbc43879229dbc124afefe240b70fd29a85 ]
 
-Trace the remapped operation and its flags instead of only the data
-direction of remapped operations. This issue was detected by analyzing
-the warnings reported by sparse related to the new blk_opf_t type.
+The following warning was triggered on a large machine early in boot on
+a distribution kernel but the same problem should also affect mainline.
 
-Reviewed-by: Jun'ichi Nomura <junichi.nomura@nec.com>
-Cc: Mike Snitzer <snitzer@kernel.org>
-Cc: Mike Christie <michael.christie@oracle.com>
-Cc: Li Zefan <lizf@cn.fujitsu.com>
-Cc: Chaitanya Kulkarni <kch@nvidia.com>
-Fixes: 1b9a9ab78b0a ("blktrace: use op accessors")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Link: https://lore.kernel.org/r/20220714180729.1065367-11-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+   WARNING: CPU: 439 PID: 10 at ../kernel/workqueue.c:2231 process_one_work+0x4d/0x440
+   Call Trace:
+    <TASK>
+    rescuer_thread+0x1f6/0x360
+    kthread+0x156/0x180
+    ret_from_fork+0x22/0x30
+    </TASK>
+
+Commit c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+optimises ttwu by queueing a task that is descheduling on the wakelist,
+but does not check if the task descheduling is still allowed to run on that CPU.
+
+In this warning, the problematic task is a workqueue rescue thread which
+checks if the rescue is for a per-cpu workqueue and running on the wrong CPU.
+While this is early in boot and it should be possible to create workers,
+the rescue thread may still used if the MAYDAY_INITIAL_TIMEOUT is reached
+or MAYDAY_INTERVAL and on a sufficiently large machine, the rescue
+thread is being used frequently.
+
+Tracing confirmed that the task should have migrated properly using the
+stopper thread to handle the migration. However, a parallel wakeup from udev
+running on another CPU that does not share CPU cache observes p->on_cpu and
+uses task_cpu(p), queues the task on the old CPU and triggers the warning.
+
+Check that the wakee task that is descheduling is still allowed to run
+on its current CPU and if not, wait for the descheduling to complete
+and select an allowed CPU.
+
+Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220804092119.20137-1-mgorman@techsingularity.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/blktrace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
-index fe04c6f96ca5..b334c033cee7 100644
---- a/kernel/trace/blktrace.c
-+++ b/kernel/trace/blktrace.c
-@@ -1058,7 +1058,7 @@ static void blk_add_trace_rq_remap(void *ignore, struct request *rq, dev_t dev,
- 	r.sector_from = cpu_to_be64(from);
- 
- 	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
--			rq_data_dir(rq), 0, BLK_TA_REMAP, 0,
-+			req_op(rq), rq->cmd_flags, BLK_TA_REMAP, 0,
- 			sizeof(r), &r, blk_trace_request_get_cgid(rq));
- 	rcu_read_unlock();
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index df4a8c9d1070..9671796a11cc 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3811,7 +3811,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
+ 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
  }
+ 
+-static inline bool ttwu_queue_cond(int cpu)
++static inline bool ttwu_queue_cond(struct task_struct *p, int cpu)
+ {
+ 	/*
+ 	 * Do not complicate things with the async wake_list while the CPU is
+@@ -3820,6 +3820,10 @@ static inline bool ttwu_queue_cond(int cpu)
+ 	if (!cpu_active(cpu))
+ 		return false;
+ 
++	/* Ensure the task will still be allowed to run on the CPU. */
++	if (!cpumask_test_cpu(cpu, p->cpus_ptr))
++		return false;
++
+ 	/*
+ 	 * If the CPU does not share cache, then queue the task on the
+ 	 * remote rqs wakelist to avoid accessing remote data.
+@@ -3849,7 +3853,7 @@ static inline bool ttwu_queue_cond(int cpu)
+ 
+ static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ {
+-	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
++	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(p, cpu)) {
+ 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
+ 		__ttwu_queue_wakelist(p, cpu, wake_flags);
+ 		return true;
 -- 
 2.35.1
 
