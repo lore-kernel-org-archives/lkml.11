@@ -2,157 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761E9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A72C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 11:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbiHOLkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 07:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
+        id S232413AbiHOLkT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 07:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiHOLj5 (ORCPT
+        with ESMTP id S232011AbiHOLkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 07:39:57 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89EA2494D
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 04:39:56 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4M5slJ0jsYzDqK1;
-        Mon, 15 Aug 2022 11:39:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1660563596; bh=Ivqcw69hFHNcDctihAUBvHj1D0kLXqB98wgJ/RA5tWE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hKrothk0wjrhN77qvM5nwlFVUnPyBG6Gbz9tj2cPbPNlwTbeLgpbDKHll+fKJYuz2
-         UruRzIjQdpkqLe+YoFeGrrqecsiNljTaXfjbnAJ43yAadII+ppcHhoNaNOYz410+Qt
-         NJxrcGf7fQjCE75hcS7puQXfHehhuzau4/9Hxyog=
-X-Riseup-User-ID: 5C95B1E76654EB79FDDDDCF7BCA1D906FA5A58BFC84BF5DDBD905CEDE6B5A695
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4M5slD0M1kz5vXT;
-        Mon, 15 Aug 2022 11:39:51 +0000 (UTC)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-To:     Alex Deucher <alexander.deucher@amd.com>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     mwen@igalia.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
-        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Subject: [PATCH] drm/amdgpu: Fix use-after-free on amdgpu_bo_list mutex
-Date:   Mon, 15 Aug 2022 08:39:31 -0300
-Message-Id: <20220815113931.53226-1-mairacanal@riseup.net>
+        Mon, 15 Aug 2022 07:40:17 -0400
+Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732941ED;
+        Mon, 15 Aug 2022 04:40:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
+        s=42; h=From:Cc:To:Date:Message-ID;
+        bh=I4kcLuOI9QLkFp6Xx5xV8uExa8DcDiyV34XA38HR150=; b=McBLV2os4UzFnUyyptk1VDPsRT
+        rYIIQ9rFdiXwsVdAdG4+rsQw1K2th3kRpjCiwJ/P84PJY2jvoP2IzbOlpTS/y65JN9PC4p3aHT9ko
+        o1lWg5qtMJWchNNHQHiiYndJwBtKwfSe1UV07QxBJ/tAo/PbxR5EkHrlflfP8PyWmyKxzWXRjI9Jd
+        sFX25GLvUwWaBRqyaWycOl1Rnv8BH0S6XJb+9bTzHKGpCDigwj3hA87izQLhCTfrljxkoOhFXC2x8
+        i+FUSnJIJohw1oPDQDsFmZq/RhS8IAH0quMEatJb+3wCMoUvI0u44AeDOo7gQut5ZMlJI6+itfcMT
+        3/tb2xDiXDHhJ3dkJefgPeTz1ajItnQ6Rm3YLBnzMrA/XNctZxwOEtM9jLRdDZ0SE2acLhW26Q888
+        FhA6aEUAUh6KDz5cm2jD19wl/SsKztvnlVY2JsbCLo9Pwjw9ZOAsxFSl0AUltGsIAOBTEGO+c96uj
+        nrSodYrz80sQsYGHxysPqWpH;
+Received: from [127.0.0.2] (localhost [127.0.0.1])
+        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
+        (Exim)
+        id 1oNYRv-000Fwz-9b; Mon, 15 Aug 2022 11:40:03 +0000
+Message-ID: <246ef163-5711-01d6-feac-396fc176e14e@samba.org>
+Date:   Mon, 15 Aug 2022 13:40:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1653992701.git.asml.silence@gmail.com>
+ <228d4841af5eeb9a4b73955136559f18cb7e43a0.1653992701.git.asml.silence@gmail.com>
+ <cccec667-d762-9bfd-f5a5-1c9fb46df5af@samba.org>
+ <56631a36-fec8-9c41-712b-195ad7e4cb9f@gmail.com>
+ <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
+ <db7bbfcd-fdd0-ed8e-3d8e-78d76f278af8@gmail.com>
+From:   Stefan Metzmacher <metze@samba.org>
+Subject: Re: [RFC net-next v3 23/29] io_uring: allow to pass addr into sendzc
+In-Reply-To: <db7bbfcd-fdd0-ed8e-3d8e-78d76f278af8@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If amdgpu_cs_vm_handling returns r != 0, then it will unlock the
-bo_list_mutex inside the function amdgpu_cs_vm_handling and again on
-amdgpu_cs_parser_fini. This problem results in the following
-use-after-free problem:
+Hi Pavel,
 
-[ 220.280990] ------------[ cut here ]------------
-[ 220.281000] refcount_t: underflow; use-after-free.
-[ 220.281019] WARNING: CPU: 1 PID: 3746 at lib/refcount.c:28 refcount_warn_saturate+0xba/0x110
-[ 220.281029] ------------[ cut here ]------------
-[ 220.281415] CPU: 1 PID: 3746 Comm: chrome:cs0 Tainted: G W L ------- --- 5.20.0-0.rc0.20220812git7ebfc85e2cd7.10.fc38.x86_64 #1
-[ 220.281421] Hardware name: System manufacturer System Product Name/ROG STRIX X570-I GAMING, BIOS 4403 04/27/2022
-[ 220.281426] RIP: 0010:refcount_warn_saturate+0xba/0x110
-[ 220.281431] Code: 01 01 e8 79 4a 6f 00 0f 0b e9 42 47 a5 00 80 3d de
-7e be 01 00 75 85 48 c7 c7 f8 98 8e 98 c6 05 ce 7e be 01 01 e8 56 4a
-6f 00 <0f> 0b e9 1f 47 a5 00 80 3d b9 7e be 01 00 0f 85 5e ff ff ff 48
-c7
-[ 220.281437] RSP: 0018:ffffb4b0d18d7a80 EFLAGS: 00010282
-[ 220.281443] RAX: 0000000000000026 RBX: 0000000000000003 RCX: 0000000000000000
-[ 220.281448] RDX: 0000000000000001 RSI: ffffffff988d06dc RDI: 00000000ffffffff
-[ 220.281452] RBP: 00000000ffffffff R08: 0000000000000000 R09: ffffb4b0d18d7930
-[ 220.281457] R10: 0000000000000003 R11: ffffa0672e2fffe8 R12: ffffa058ca360400
-[ 220.281461] R13: ffffa05846c50a18 R14: 00000000fffffe00 R15: 0000000000000003
-[ 220.281465] FS: 00007f82683e06c0(0000) GS:ffffa066e2e00000(0000) knlGS:0000000000000000
-[ 220.281470] CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 220.281475] CR2: 00003590005cc000 CR3: 00000001fca46000 CR4: 0000000000350ee0
-[ 220.281480] Call Trace:
-[ 220.281485] <TASK>
-[ 220.281490] amdgpu_cs_ioctl+0x4e2/0x2070 [amdgpu]
-[ 220.281806] ? amdgpu_cs_find_mapping+0xe0/0xe0 [amdgpu]
-[ 220.282028] drm_ioctl_kernel+0xa4/0x150
-[ 220.282043] drm_ioctl+0x21f/0x420
-[ 220.282053] ? amdgpu_cs_find_mapping+0xe0/0xe0 [amdgpu]
-[ 220.282275] ? lock_release+0x14f/0x460
-[ 220.282282] ? _raw_spin_unlock_irqrestore+0x30/0x60
-[ 220.282290] ? _raw_spin_unlock_irqrestore+0x30/0x60
-[ 220.282297] ? lockdep_hardirqs_on+0x7d/0x100
-[ 220.282305] ? _raw_spin_unlock_irqrestore+0x40/0x60
-[ 220.282317] amdgpu_drm_ioctl+0x4a/0x80 [amdgpu]
-[ 220.282534] __x64_sys_ioctl+0x90/0xd0
-[ 220.282545] do_syscall_64+0x5b/0x80
-[ 220.282551] ? futex_wake+0x6c/0x150
-[ 220.282568] ? lock_is_held_type+0xe8/0x140
-[ 220.282580] ? do_syscall_64+0x67/0x80
-[ 220.282585] ? lockdep_hardirqs_on+0x7d/0x100
-[ 220.282592] ? do_syscall_64+0x67/0x80
-[ 220.282597] ? do_syscall_64+0x67/0x80
-[ 220.282602] ? lockdep_hardirqs_on+0x7d/0x100
-[ 220.282609] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[ 220.282616] RIP: 0033:0x7f8282a4f8bf
-[ 220.282639] Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10
-00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00
-0f 05 <89> c2 3d 00 f0 ff ff 77 18 48 8b 44 24 18 64 48 2b 04 25 28 00
-00
-[ 220.282644] RSP: 002b:00007f82683df410 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-[ 220.282651] RAX: ffffffffffffffda RBX: 00007f82683df588 RCX: 00007f8282a4f8bf
-[ 220.282655] RDX: 00007f82683df4d0 RSI: 00000000c0186444 RDI: 0000000000000018
-[ 220.282659] RBP: 00007f82683df4d0 R08: 00007f82683df5e0 R09: 00007f82683df4b0
-[ 220.282663] R10: 00001d04000a0600 R11: 0000000000000246 R12: 00000000c0186444
-[ 220.282667] R13: 0000000000000018 R14: 00007f82683df588 R15: 0000000000000003
-[ 220.282689] </TASK>
-[ 220.282693] irq event stamp: 6232311
-[ 220.282697] hardirqs last enabled at (6232319): [<ffffffff9718cd7e>] __up_console_sem+0x5e/0x70
-[ 220.282704] hardirqs last disabled at (6232326): [<ffffffff9718cd63>] __up_console_sem+0x43/0x70
-[ 220.282709] softirqs last enabled at (6232072): [<ffffffff970ff669>] __irq_exit_rcu+0xf9/0x170
-[ 220.282716] softirqs last disabled at (6232061): [<ffffffff970ff669>] __irq_exit_rcu+0xf9/0x170
-[ 220.282722] ---[ end trace 0000000000000000 ]---
+> Thanks for giving a thought about the API, are you trying
+> to use it in samba?
 
-Therefore, remove the mutex_unlock from the amdgpu_cs_vm_handling
-function, so that amdgpu_cs_submit and amdgpu_cs_parser_fini can handle
-the unlock.
+Yes, but I'd need SENDMSGZC and then I'd like to test,
+which variant gives the best performance. It also depends
+on the configured samba vfs module stack.
 
-Fixes: 90af0ca047f3 ("drm/amdgpu: Protect the amdgpu_bo_list list with a mutex v2")
-Reported-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Signed-off-by: Maíra Canal <mairacanal@riseup.net>
----
-Thanks Melissa and Christian for the feedback on mutex_unlock.
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+My current prototype uses IO_SENDMSG for the header < 250 bytes
+followed by up to 8MBytes via IO_SPLICE if the storage backend also
+supports splice, otherwise I'd try to use IO_SENDMSGZC for header + 8 MBytes payload
+together. If there's encryption turned actice on the connection we would
+most likely always use a bounce buffer and hit the IO_SENDMSGZC case.
+So all in all I'd say we'll use it.
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-index d8f1335bc68f..b7bae833c804 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -837,16 +837,12 @@ static int amdgpu_cs_vm_handling(struct amdgpu_cs_parser *p)
- 			continue;
- 
- 		r = amdgpu_vm_bo_update(adev, bo_va, false);
--		if (r) {
--			mutex_unlock(&p->bo_list->bo_list_mutex);
-+		if (r)
- 			return r;
--		}
- 
- 		r = amdgpu_sync_fence(&p->job->sync, bo_va->last_pt_update);
--		if (r) {
--			mutex_unlock(&p->bo_list->bo_list_mutex);
-+		if (r)
- 			return r;
--		}
- 	}
- 
- 	r = amdgpu_vm_handle_moved(adev, vm);
--- 
-2.37.2
+I guess it would be useful for userspace to notice if zero was possible or not.
+
+__msg_zerocopy_callback() sets SO_EE_CODE_ZEROCOPY_COPIED, maybe
+io_uring_tx_zerocopy_callback() should have something like:
+
+if (!success)
+     notif->cqe.res = SO_EE_CODE_ZEROCOPY_COPIED;
+
+This would make it a bit easier to judge if SENDZC is useful for the
+application or not. Or at least have debug message, which would explain
+be able to explain degraded performance to the admin/developer.
+
+>>>> Given that this fills in msg almost completely can we also have
+>>>> a version of SENDMSGZC, it would be very useful to also allow
+>>>> msg_control to be passed and as well as an iovec.
+>>>>
+>>>> Would that be possible?
+>>>
+>>> Right, I left it to follow ups as the series is already too long.
+>>>
+>>> fwiw, I'm going to also add addr to IORING_OP_SEND.
+>>
+>>
+>> Given the minimal differences, which were left between
+>> IORING_OP_SENDZC and IORING_OP_SEND, wouldn't it be better
+>> to merge things to IORING_OP_SEND using a IORING_RECVSEND_ZC_NOTIF
+>> as indication to use the notif slot.
+> 
+> And will be even more similar in for-next, but with notifications
+> I'd still prefer different opcodes to get a little bit more
+> flexibility and not making the normal io_uring send path messier.
+
+Ok, we should just remember the opcode is only u8
+and we already have ~ 50 out of ~250 allocated in ~3 years
+time.
+
+>> It would means we don't need to waste two opcodes for
+>> IORING_OP_SENDZC and IORING_OP_SENDMSGZC (and maybe more)
+>>
+>>
+>> I also noticed a problem in io_notif_update()
+>>
+>>          for (; idx < idx_end; idx++) {
+>>                  struct io_notif_slot *slot = &ctx->notif_slots[idx];
+>>
+>>                  if (!slot->notif)
+>>                          continue;
+>>                  if (up->arg)
+>>                          slot->tag = up->arg;
+>>                  io_notif_slot_flush_submit(slot, issue_flags);
+>>          }
+>>
+>>   slot->tag = up->arg is skipped if there is no notif already.
+>>
+>> So you can't just use a 2 linked sqe's with
+>>
+>> IORING_RSRC_UPDATE_NOTIF followed by IORING_OP_SENDZC(with IORING_RECVSEND_NOTIF_FLUSH)
+> 
+> slot->notif is lazily initialised with the first send attached to it,
+> so in your example IORING_OP_SENDZC will first create a notification
+> to execute the send and then will flush it.
+> 
+> This "if" is there is only to have a more reliable API. We can
+> go over the range and allocate all empty slots and then flush
+> all of them, but allocation failures should be propagated to the
+> userspace when currently the function it can't fail.
+> 
+>> I think the if (!slot->notif) should be moved down a bit.
+> 
+> Not sure what you mean
+
+I think it should be:
+
+                   if (up->arg)
+                           slot->tag = up->arg;
+                   if (!slot->notif)
+                           continue;
+                   io_notif_slot_flush_submit(slot, issue_flags);
+
+or even:
+
+                   slot->tag = up->arg;
+                   if (!slot->notif)
+                           continue;
+                   io_notif_slot_flush_submit(slot, issue_flags);
+
+otherwise IORING_RSRC_UPDATE_NOTIF would not be able to reset the tag,
+if notif was never created or already be flushed.
+
+>> It would somehow be nice to avoid the notif slots at all and somehow
+>> use some kind of multishot request in order to generate two qces.
+> 
+> It is there first to ammortise overhead of zerocopy infra and bits
+> for second CQE posting. But more importantly, without it for TCP
+> the send payload size would need to be large enough or performance
+> would suffer, but all depends on the use case. TL;DR; it would be
+> forced to create a new SKB for each new send.
+> 
+> For something simpler, I'll push another zc variant that doesn't
+> have notifiers and posts only one CQE and only after the buffers
+> are no more in use by the kernel. This works well for UDP and for
+> some TCP scenarios, but doesn't cover all cases.
+
+I think (at least for stream sockets) it would be more useful to
+get two CQEs:
+1. The first signals userspace that it can
+    issue the next send-like operation (SEND,SENDZC,SENDMSG,SPLICE)
+    on the stream without the risk of byte ordering problem within the stream
+    and avoid too high latency (which would happen, if we wait for a send to
+    leave the hardware nic, before sending the next PDU).
+2. The 2nd signals userspace that the buffer can be reused or released.
+
+In that case it would be useful to also provide a separate 'user_data' element
+for the 2nd CQE.
+
+>> I'm also wondering what will happen if a notif will be referenced by the net layer
+>> but the io_uring instance is already closed, wouldn't
+>> io_uring_tx_zerocopy_callback() or __io_notif_complete_tw() crash
+>> because notif->ctx is a stale pointer, of notif itself is already gone...
+> 
+> io_uring will flush all slots and wait for all notifications
+> to fire, i.e. io_uring_tx_zerocopy_callback(), so it's not a
+> problem.
+
+I can't follow :-(
+
+What I see is that io_notif_unregister():
+
+                 nd = io_notif_to_data(notif);
+                 slot->notif = NULL;
+                 if (!refcount_dec_and_test(&nd->uarg.refcnt))
+                         continue;
+
+So if the net layer still has a reference we just go on.
+
+Only a wild guess, is it something of:
+
+io_alloc_notif():
+         ...
+         notif->task = current;
+         io_get_task_refs(1);
+         notif->rsrc_node = NULL;
+         io_req_set_rsrc_node(notif, ctx, 0);
+         ...
+
+and
+
+__io_req_complete_put():
+                 ...
+                 io_req_put_rsrc(req);
+                 /*
+                  * Selected buffer deallocation in io_clean_op() assumes that
+                  * we don't hold ->completion_lock. Clean them here to avoid
+                  * deadlocks.
+                  */
+                 io_put_kbuf_comp(req);
+                 io_dismantle_req(req);
+                 io_put_task(req->task, 1);
+                 ...
+
+that causes io_ring_exit_work() to wait for it.
+It would be great if you or someone else could explain this in detail
+and maybe adding some comments into the code.
+
+metze
 
