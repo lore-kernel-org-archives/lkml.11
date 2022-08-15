@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FAFC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8DDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353888AbiHOXrm (ORCPT
+        id S1354341AbiHOXrs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        Mon, 15 Aug 2022 19:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354355AbiHOXl6 (ORCPT
+        with ESMTP id S1354369AbiHOXmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:58 -0400
+        Mon, 15 Aug 2022 19:42:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D171326D4;
-        Mon, 15 Aug 2022 13:13:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BBE326F7;
+        Mon, 15 Aug 2022 13:13:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A40F260F0C;
-        Mon, 15 Aug 2022 20:13:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2793C433C1;
-        Mon, 15 Aug 2022 20:13:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD4F60B6E;
+        Mon, 15 Aug 2022 20:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C173FC433C1;
+        Mon, 15 Aug 2022 20:13:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594394;
-        bh=qEpQ0ORfio4GJ377cmHUYJ9BxN5FNFj0Pwgm6gFsi3w=;
+        s=korg; t=1660594400;
+        bh=O32KjmjGtEz5kxgsoDsuRehpZm+3m/s2m5HKJPyj5pE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gGCVphEezcamr4mUz1Ye2rBvO4lozTMQq9+vs8C/p2RgiFuwJfoJiEk0aEC2R6Oeo
-         tqLg4mO6X9nyzFEu64MA51jT/OWG3FmXSSCnmMwVKlnh9a3X9P03EUD2tlpMKQ5Ytm
-         Y1XKqn6t2XyJuSCOSTCD4S0jCKkGxCyZeb2eO4HU=
+        b=HNZN2Kt+hnTvwVSDsw4UEmMvjFPEsrC8Y+62GRgMKp3n0odwMwJ/D+L32lSsxdfui
+         ndzKt2C+kqD8OomK9ZIEVNYpbBcwx7mnya8AHa5jxLrRJG8FvcMPXUN/WfjSWnEI/I
+         cXkieBYhmj7A53GmsJRXp8m7vnetzE36YQnrnxyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0431/1157] selftests: net: fib_rule_tests: fix support for running individual tests
-Date:   Mon, 15 Aug 2022 19:56:27 +0200
-Message-Id: <20220815180456.899438908@linuxfoundation.org>
+Subject: [PATCH 5.19 0433/1157] drm/rockchip: Fix an error handling path rockchip_dp_probe()
+Date:   Mon, 15 Aug 2022 19:56:29 +0200
+Message-Id: <20220815180456.972800173@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,55 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 9c154ab47f5e5ff632d2b7af6342c027d7e04b92 ]
+[ Upstream commit 5074376822fe99fa4ce344b851c5016d00c0444f ]
 
-parsing and usage of -t got missed in the previous patch.
-this patch fixes it
+Should component_add() fail, we should call analogix_dp_remove() in the
+error handling path, as already done in the remove function.
 
-Fixes: 816cda9ae531 ("selftests: net: fib_rule_tests: add support to select a test to run")
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 152cce0006ab ("drm/bridge: analogix_dp: Split bind() into probe() and real bind()")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/b719d9061bb97eb85145fbd3c5e63f4549f2e13e.1655572071.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fib_rule_tests.sh | 23 +++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/gpu/drm/rockchip/analogix_dp-rockchip.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
-index bbe3b379927a..c245476fa29d 100755
---- a/tools/testing/selftests/net/fib_rule_tests.sh
-+++ b/tools/testing/selftests/net/fib_rule_tests.sh
-@@ -303,6 +303,29 @@ run_fibrule_tests()
- 	log_section "IPv6 fib rule"
- 	fib_rule6_test
- }
-+################################################################################
-+# usage
-+
-+usage()
-+{
-+	cat <<EOF
-+usage: ${0##*/} OPTS
-+
-+        -t <test>   Test(s) to run (default: all)
-+                    (options: $TESTS)
-+EOF
-+}
-+
-+################################################################################
-+# main
-+
-+while getopts ":t:h" opt; do
-+	case $opt in
-+		t) TESTS=$OPTARG;;
-+		h) usage; exit 0;;
-+		*) usage; exit 1;;
-+	esac
-+done
+diff --git a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+index 70be64ca0a00..ad2d3ae7e621 100644
+--- a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
++++ b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+@@ -408,7 +408,15 @@ static int rockchip_dp_probe(struct platform_device *pdev)
+ 	if (IS_ERR(dp->adp))
+ 		return PTR_ERR(dp->adp);
  
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
+-	return component_add(dev, &rockchip_dp_component_ops);
++	ret = component_add(dev, &rockchip_dp_component_ops);
++	if (ret)
++		goto err_dp_remove;
++
++	return 0;
++
++err_dp_remove:
++	analogix_dp_remove(dp->adp);
++	return ret;
+ }
+ 
+ static int rockchip_dp_remove(struct platform_device *pdev)
 -- 
 2.35.1
 
