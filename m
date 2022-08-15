@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACD9C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCBDAC282E7
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243548AbiHOVPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
+        id S244030AbiHOVQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348007AbiHOVH4 (ORCPT
+        with ESMTP id S1348022AbiHOVH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:07:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA1E3C16E;
-        Mon, 15 Aug 2022 12:17:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71722371A1;
+        Mon, 15 Aug 2022 12:17:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AAD4B81109;
-        Mon, 15 Aug 2022 19:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C07C433C1;
-        Mon, 15 Aug 2022 19:17:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02B8E60EF0;
+        Mon, 15 Aug 2022 19:17:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C31C433D6;
+        Mon, 15 Aug 2022 19:17:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591059;
-        bh=6yHQWsJK6FndKB55IeRJzI/BbMbACLOwRSgfytfxKLQ=;
+        s=korg; t=1660591071;
+        bh=wuOSQasS4O7g9t9kdiLWCgRp6fK3GbiBlpL7zqz9SuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=btmFoF4S939Epcl1AymoW1AawIwtiP/7ttaJlF8zTQuOFLDhkvFbpPoDCL0BgZr73
-         TGs4Rk4MhXYWFSK4Dmrpo/P4ZeDD1weVN8W4VUcfboLbrhzk3ZfOY60P1kqRzsMT7x
-         lRs/M434NjTevVQIQfuwNARjVAC6pRpqJUTTxbl8=
+        b=cmSdyviezgaVPQu/OAadFy3pCkrSouCdpIHRAmdF2taW/uPtisTpfj4K2Ji1yw0jE
+         TyuvgsDmmR7ksstz1+6XpqsqeTKVSYXnwnFbBsQSj4zQh3qrN0Hj5L426Rm9kES/hm
+         7wfE/+xVCwxOcBl24oJhMHKOEJ+MxJlWCoXiE6U0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anquan Wu <leiqi96@hotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        John Stultz <jstultz@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0458/1095] libbpf: Fix the name of a reused map
-Date:   Mon, 15 Aug 2022 19:57:37 +0200
-Message-Id: <20220815180448.543475078@linuxfoundation.org>
+Subject: [PATCH 5.18 0461/1095] selftests: timers: clocksource-switch: fix passing errors from child
+Date:   Mon, 15 Aug 2022 19:57:40 +0200
+Message-Id: <20220815180448.675806950@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,68 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anquan Wu <leiqi96@hotmail.com>
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-[ Upstream commit bf3f00378524adae16628cbadbd11ba7211863bb ]
+[ Upstream commit 4d8f52ac5fa9eede7b7aa2f2d67c841d9eeb655f ]
 
-BPF map name is limited to BPF_OBJ_NAME_LEN.
-A map name is defined as being longer than BPF_OBJ_NAME_LEN,
-it will be truncated to BPF_OBJ_NAME_LEN when a userspace program
-calls libbpf to create the map. A pinned map also generates a path
-in the /sys. If the previous program wanted to reuse the map，
-it can not get bpf_map by name, because the name of the map is only
-partially the same as the name which get from pinned path.
+The return value from system() is a waitpid-style integer. Do not return
+it directly because with the implicit masking in exit() it will always
+return 0. Access it with appropriate macros to really pass on errors.
 
-The syscall information below show that map name "process_pinned_map"
-is truncated to "process_pinned_".
-
-    bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/process_pinned_map",
-    bpf_fd=0, file_flags=0}, 144) = -1 ENOENT (No such file or directory)
-
-    bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_HASH, key_size=4,
-    value_size=4,max_entries=1024, map_flags=0, inner_map_fd=0,
-    map_name="process_pinned_",map_ifindex=0, btf_fd=3, btf_key_type_id=6,
-    btf_value_type_id=10,btf_vmlinux_value_type_id=0}, 72) = 4
-
-This patch check that if the name of pinned map are the same as the
-actual name for the first (BPF_OBJ_NAME_LEN - 1),
-bpf map still uses the name which is included in bpf object.
-
-Fixes: 26736eb9a483 ("tools: libbpf: allow map reuse")
-Signed-off-by: Anquan Wu <leiqi96@hotmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/OSZP286MB1725CEA1C95C5CB8E7CCC53FB8869@OSZP286MB1725.JPNP286.PROD.OUTLOOK.COM
+Fixes: 7290ce1423c3 ("selftests/timers: Add clocksource-switch test from timetest suite")
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Acked-by: John Stultz <jstultz@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ tools/testing/selftests/timers/clocksource-switch.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 881ea905ca81..2323d3e38a8e 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4271,7 +4271,7 @@ static int bpf_get_map_info_from_fdinfo(int fd, struct bpf_map_info *info)
- int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- {
- 	struct bpf_map_info info = {};
--	__u32 len = sizeof(info);
-+	__u32 len = sizeof(info), name_len;
- 	int new_fd, err;
- 	char *new_name;
+diff --git a/tools/testing/selftests/timers/clocksource-switch.c b/tools/testing/selftests/timers/clocksource-switch.c
+index ef8eb3604595..b57f0a9be490 100644
+--- a/tools/testing/selftests/timers/clocksource-switch.c
++++ b/tools/testing/selftests/timers/clocksource-switch.c
+@@ -110,10 +110,10 @@ int run_tests(int secs)
  
-@@ -4281,7 +4281,12 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- 	if (err)
- 		return libbpf_err(err);
+ 	sprintf(buf, "./inconsistency-check -t %i", secs);
+ 	ret = system(buf);
+-	if (ret)
+-		return ret;
++	if (WIFEXITED(ret) && WEXITSTATUS(ret))
++		return WEXITSTATUS(ret);
+ 	ret = system("./nanosleep");
+-	return ret;
++	return WIFEXITED(ret) ? WEXITSTATUS(ret) : 0;
+ }
  
--	new_name = strdup(info.name);
-+	name_len = strlen(info.name);
-+	if (name_len == BPF_OBJ_NAME_LEN - 1 && strncmp(map->name, info.name, name_len) == 0)
-+		new_name = strdup(map->name);
-+	else
-+		new_name = strdup(info.name);
-+
- 	if (!new_name)
- 		return libbpf_err(-errno);
  
 -- 
 2.35.1
