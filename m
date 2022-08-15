@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0283C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22237C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245026AbiHOTFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
+        id S245423AbiHOTFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245277AbiHOTBo (ORCPT
+        with ESMTP id S245360AbiHOTBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4114B4B9;
-        Mon, 15 Aug 2022 11:33:04 -0700 (PDT)
+        Mon, 15 Aug 2022 15:01:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDFA4BD1E;
+        Mon, 15 Aug 2022 11:33:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F40461029;
-        Mon, 15 Aug 2022 18:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFE9C433D6;
-        Mon, 15 Aug 2022 18:33:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED306B8106C;
+        Mon, 15 Aug 2022 18:33:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF7DC433C1;
+        Mon, 15 Aug 2022 18:33:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588383;
-        bh=HlTfPbXchC5cAD7jsM/6p4KFPwSHFJtQRD++oV1z8MA=;
+        s=korg; t=1660588386;
+        bh=jGYDKm0Tw+bfYKYZH5hqWm2mnwiYORDMGSxt/7Z6A0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IsIYxZvoCcuTipC0wvZ5KPlNUK7eYA3mEmIR0rofJwRnpz8ELQh+s2XulVlUgzWR5
-         EDn4CLbvDzId73oFPirwEcSeFAlriH/vKKEmDaJY7yy2zPgvuZAvMy6b599BvjbYvu
-         pWjBevSg8xQ9BPe9vM/bxXzY567w4j+7XXAm3094=
+        b=e2itnGBRP/8Ps4gyFvhJHG7K7fesmFCpvnKFk+Ta96Buwox2e9+I4cU2x9WN+fdZ4
+         VNCoS3p2YqKjVX7WULRxpsyfx4CCas5aMe3vdnR9UMUPRIvR5r7/VjS1sgn4cwqanY
+         xov8X/RREU+QZIaHsdjfeXQygfAXmKPjtP9FhVD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 385/779] net: usb: make USB_RTL8153_ECM non user configurable
-Date:   Mon, 15 Aug 2022 20:00:29 +0200
-Message-Id: <20220815180353.747685622@linuxfoundation.org>
+Subject: [PATCH 5.15 359/779] can: error: specify the values of data[5..7] of CAN error frames
+Date:   Mon, 15 Aug 2022 20:00:03 +0200
+Message-Id: <20220815180352.587551937@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,98 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit f56530dcdb0684406661ac9f1accf48319d07600 ]
+[ Upstream commit e70a3263a7eed768d5f947b8f2aff8d2a79c9d97 ]
 
-This refixes:
+Currently, data[5..7] of struct can_frame, when used as a CAN error
+frame, are defined as being "controller specific". Device specific
+behaviours are problematic because it prevents someone from writing
+code which is portable between devices.
 
-    commit 7da17624e7948d5d9660b910f8079d26d26ce453
-    nt: usb: USB_RTL8153_ECM should not default to y
+As a matter of fact, data[5] is never used, data[6] is always used to
+report TX error counter and data[7] is always used to report RX error
+counter. can-utils also relies on this.
 
-    In general, device drivers should not be enabled by default.
+This patch updates the comment in the uapi header to specify that
+data[5] is reserved (and thus should not be used) and that data[6..7]
+are used for error counters.
 
-which basically broke the commit it claimed to fix, ie:
-
-    commit 657bc1d10bfc23ac06d5d687ce45826c760744f9
-    r8153_ecm: avoid to be prior to r8152 driver
-
-    Avoid r8153_ecm is compiled as built-in, if r8152 driver is compiled
-    as modules. Otherwise, the r8153_ecm would be used, even though the
-    device is supported by r8152 driver.
-
-this commit amounted to:
-
-drivers/net/usb/Kconfig:
-
-+config USB_RTL8153_ECM
-+       tristate "RTL8153 ECM support"
-+       depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
-+       default y
-+       help
-+         This option supports ECM mode for RTL8153 ethernet adapter, when
-+         CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
-+         supported by r8152 driver.
-
-drivers/net/usb/Makefile:
-
--obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o r8153_ecm.o
-+obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o
-+obj-$(CONFIG_USB_RTL8153_ECM)  += r8153_ecm.o
-
-And as can be seen it pulls a piece of the cdc_ether driver out into
-a separate config option to be able to make this piece modular in case
-cdc_ether is builtin, while r8152 is modular.
-
-While in general, device drivers should indeed not be enabled by default:
-this isn't a device driver per say, but rather this is support code for
-the CDCETHER (ECM) driver, and should thus be enabled if it is enabled.
-
-See also email thread at:
-  https://www.spinics.net/lists/netdev/msg767649.html
-
-In:
-  https://www.spinics.net/lists/netdev/msg768284.html
-
-Jakub wrote:
-  And when we say "removed" we can just hide it from what's prompted
-  to the user (whatever such internal options are called)? I believe
-  this way we don't bring back Marek's complaint.
-
-Side note: these incorrect defaults will result in Android 13
-on 5.15 GKI kernels lacking USB_RTL8153_ECM support while having
-USB_NET_CDCETHER (luckily we also have USB_RTL8150 and USB_RTL8152,
-so it's probably only an issue for very new RTL815x hardware with
-no native 5.15 driver).
-
-Fixes: 7da17624e7948d5d ("nt: usb: USB_RTL8153_ECM should not default to y")
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Hayes Wang <hayeswang@realtek.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Link: https://lore.kernel.org/r/20220730230113.4138858-1-zenczykowski@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 0d66548a10cb ("[CAN]: Add PF_CAN core module")
+Link: https://lore.kernel.org/all/20220719143550.3681-11-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/uapi/linux/can/error.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
-index b554054a7560..8939e5fbd50a 100644
---- a/drivers/net/usb/Kconfig
-+++ b/drivers/net/usb/Kconfig
-@@ -636,8 +636,9 @@ config USB_NET_AQC111
- 	  * Aquantia AQtion USB to 5GbE
+diff --git a/include/uapi/linux/can/error.h b/include/uapi/linux/can/error.h
+index 34633283de64..a1000cb63063 100644
+--- a/include/uapi/linux/can/error.h
++++ b/include/uapi/linux/can/error.h
+@@ -120,6 +120,9 @@
+ #define CAN_ERR_TRX_CANL_SHORT_TO_GND  0x70 /* 0111 0000 */
+ #define CAN_ERR_TRX_CANL_SHORT_TO_CANH 0x80 /* 1000 0000 */
  
- config USB_RTL8153_ECM
--	tristate "RTL8153 ECM support"
-+	tristate
- 	depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
-+	default y
- 	help
- 	  This option supports ECM mode for RTL8153 ethernet adapter, when
- 	  CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
+-/* controller specific additional information / data[5..7] */
++/* data[5] is reserved (do not use) */
++
++/* TX error counter / data[6] */
++/* RX error counter / data[7] */
+ 
+ #endif /* _UAPI_CAN_ERROR_H */
 -- 
 2.35.1
 
