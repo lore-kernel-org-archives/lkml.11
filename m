@@ -2,244 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F9AC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E996C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242017AbiHOJa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
+        id S232055AbiHOJbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiHOJa0 (ORCPT
+        with ESMTP id S230431AbiHOJbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:30:26 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE85292;
-        Mon, 15 Aug 2022 02:30:23 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M5pny1d6zz1M8w3;
-        Mon, 15 Aug 2022 17:27:02 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 15 Aug 2022 17:30:20 +0800
-From:   Yicong Yang <yangyicong@huawei.com>
-To:     <will@kernel.org>, <mark.rutland@arm.com>, <Frank.li@nxp.com>,
-        <shawnguo@kernel.org>, <s.hauer@pengutronix.de>
-CC:     <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
-        <zhangshaokun@hisilicon.com>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <konrad.dybcio@somainline.org>,
-        <khuong@os.amperecomputing.com>, <john.garry@huawei.com>,
-        <jonathan.cameron@huawei.com>, <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH] drivers/perf: Change WARN_ON() to dev_err() on irq_set_affinity() failure
-Date:   Mon, 15 Aug 2022 17:28:15 +0800
-Message-ID: <20220815092815.11597-1-yangyicong@huawei.com>
-X-Mailer: git-send-email 2.31.0
+        Mon, 15 Aug 2022 05:31:21 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985BBE011;
+        Mon, 15 Aug 2022 02:31:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=lsCtyoJst0y6igAhNKtZzd9Wf3Mi9HXJ47UnqiGz/dY=; b=Es8b23DGOno0sq+qAcTDpP28cE
+        eICM+0KvmeHXtIXGFX7EnCbk5lY1jxvAZhsD5Evze7Asya4tbcAc1OZL+AdF87g69P1xjQh12gE+/
+        c224yJOKia0znaba31tJ6pbPlkSuZ2w3qjgg7ISWuoAWYoVWbZJrDCdb9vJxN2muMW34nPE0iHCdd
+        FTOu5rJf+vcsGRk3TFuYMHZokvPWBU7FFvBBsf/3mbdMdLvlW6WfRxad91rLbenDMQMFNetifOSnw
+        cBFYjvVwyBGuzj2mPedq6tTe9RgE45nnYkV0vr/W0MqcOxP9fcRyHfUmTlZIEYNxilCqURo7YLnwU
+        fKcMM+QA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNWRF-002dQM-HZ; Mon, 15 Aug 2022 09:31:13 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id F0CF3980153; Mon, 15 Aug 2022 11:31:11 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 11:31:11 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Like Xu <like.xu.linux@gmail.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: Re: [PATCH v2 1/7] perf/x86/core: Update x86_pmu.pebs_capable for
+ ICELAKE_{X,D}
+Message-ID: <YvoSXyy7ojZ9ird/@worktop.programming.kicks-ass.net>
+References: <20220721103549.49543-1-likexu@tencent.com>
+ <20220721103549.49543-2-likexu@tencent.com>
+ <959fedce-aada-50e4-ce8d-a842d18439fa@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <959fedce-aada-50e4-ce8d-a842d18439fa@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yicong Yang <yangyicong@hisilicon.com>
+On Fri, Aug 12, 2022 at 09:52:13AM +0200, Paolo Bonzini wrote:
+> On 7/21/22 12:35, Like Xu wrote:
+> > From: Like Xu <likexu@tencent.com>
+> > 
+> > Ice Lake microarchitecture with EPT-Friendly PEBS capability also support
+> > the Extended feature, which means that all counters (both fixed function
+> > and general purpose counters) can be used for PEBS events.
+> > 
+> > Update x86_pmu.pebs_capable like SPR to apply PEBS_ALL semantics.
+> > 
+> > Cc: Kan Liang <kan.liang@linux.intel.com>
+> > Fixes: fb358e0b811e ("perf/x86/intel: Add EPT-Friendly PEBS for Ice Lake Server")
+> > Signed-off-by: Like Xu <likexu@tencent.com>
+> > ---
+> >   arch/x86/events/intel/core.c | 1 +
+> >   1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+> > index 4e9b7af9cc45..e46fd496187b 100644
+> > --- a/arch/x86/events/intel/core.c
+> > +++ b/arch/x86/events/intel/core.c
+> > @@ -6239,6 +6239,7 @@ __init int intel_pmu_init(void)
+> >   	case INTEL_FAM6_ICELAKE_X:
+> >   	case INTEL_FAM6_ICELAKE_D:
+> >   		x86_pmu.pebs_ept = 1;
+> > +		x86_pmu.pebs_capable = ~0ULL;
+> >   		pmem = true;
+> >   		fallthrough;
+> >   	case INTEL_FAM6_ICELAKE_L:
+> 
+> Peter, can you please ack this (you were not CCed on this KVM series but
+> this patch is really perf core)?
 
-The WARN_ON() on irq_set_affinity() failure is misused according to the [1]
-and may crash people's box unintentionally. This may also be redundant since
-in the failure case we may also trigger the WARN and dump the stack in the
-perf core[2] for a second time.
+I would much rather see something like this; except I don't know if it
+is fully correct. I can never find what models support what... Kan do
+you know?
 
-So change the WARN_ON() to dev_err() to just print the failure message.
 
-[1] https://github.com/torvalds/linux/blob/master/include/asm-generic/bug.h#L74
-[2] https://github.com/torvalds/linux/blob/master/kernel/events/core.c#L313
-
-Suggested-by: Greg KH <gregkh@linuxfoundation.org>
-[https://lore.kernel.org/lkml/YuOi3i0XHV++z1YI@kroah.com/]
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/perf/arm-ccn.c                   | 5 +++--
- drivers/perf/arm_dmc620_pmu.c            | 3 ++-
- drivers/perf/arm_smmuv3_pmu.c            | 6 ++++--
- drivers/perf/fsl_imx8_ddr_perf.c         | 3 ++-
- drivers/perf/hisilicon/hisi_pcie_pmu.c   | 6 ++++--
- drivers/perf/hisilicon/hisi_uncore_pmu.c | 6 ++++--
- drivers/perf/qcom_l2_pmu.c               | 8 ++++++--
- drivers/perf/xgene_pmu.c                 | 6 ++++--
- 8 files changed, 29 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/perf/arm-ccn.c b/drivers/perf/arm-ccn.c
-index 728d13d8e98a..83abd909ba49 100644
---- a/drivers/perf/arm-ccn.c
-+++ b/drivers/perf/arm-ccn.c
-@@ -1210,8 +1210,9 @@ static int arm_ccn_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 		return 0;
- 	perf_pmu_migrate_context(&dt->pmu, cpu, target);
- 	dt->cpu = target;
--	if (ccn->irq)
--		WARN_ON(irq_set_affinity(ccn->irq, cpumask_of(dt->cpu)));
-+	if (ccn->irq && irq_set_affinity(ccn->irq, cpumask_of(dt->cpu)))
-+		dev_err(ccn->dev, "Failed to set interrupt affinity\n");
-+
- 	return 0;
- }
- 
-diff --git a/drivers/perf/arm_dmc620_pmu.c b/drivers/perf/arm_dmc620_pmu.c
-index 280a6ae3e27c..b59d3d9eb779 100644
---- a/drivers/perf/arm_dmc620_pmu.c
-+++ b/drivers/perf/arm_dmc620_pmu.c
-@@ -621,7 +621,8 @@ static int dmc620_pmu_cpu_teardown(unsigned int cpu,
- 		perf_pmu_migrate_context(&dmc620_pmu->pmu, irq->cpu, target);
- 	mutex_unlock(&dmc620_pmu_irqs_lock);
- 
--	WARN_ON(irq_set_affinity(irq->irq_num, cpumask_of(target)));
-+	if (irq_set_affinity(irq->irq_num, cpumask_of(target)))
-+		dev_err(dmc620_pmu->pmu.dev, "Failed to set interrupt affinity\n");
- 	irq->cpu = target;
- 
- 	return 0;
-diff --git a/drivers/perf/arm_smmuv3_pmu.c b/drivers/perf/arm_smmuv3_pmu.c
-index 00d4c45a8017..05e1b3e274d7 100644
---- a/drivers/perf/arm_smmuv3_pmu.c
-+++ b/drivers/perf/arm_smmuv3_pmu.c
-@@ -646,7 +646,8 @@ static int smmu_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 
- 	perf_pmu_migrate_context(&smmu_pmu->pmu, cpu, target);
- 	smmu_pmu->on_cpu = target;
--	WARN_ON(irq_set_affinity(smmu_pmu->irq, cpumask_of(target)));
-+	if (irq_set_affinity(smmu_pmu->irq, cpumask_of(target)))
-+		dev_err(smmu_pmu->dev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-@@ -892,7 +893,8 @@ static int smmu_pmu_probe(struct platform_device *pdev)
- 
- 	/* Pick one CPU to be the preferred one to use */
- 	smmu_pmu->on_cpu = raw_smp_processor_id();
--	WARN_ON(irq_set_affinity(smmu_pmu->irq, cpumask_of(smmu_pmu->on_cpu)));
-+	if (irq_set_affinity(smmu_pmu->irq, cpumask_of(smmu_pmu->on_cpu)))
-+		dev_err(dev, "Failed to set interrupt affinity\n");
- 
- 	err = cpuhp_state_add_instance_nocalls(cpuhp_state_num,
- 					       &smmu_pmu->node);
-diff --git a/drivers/perf/fsl_imx8_ddr_perf.c b/drivers/perf/fsl_imx8_ddr_perf.c
-index 8e058e08fe81..c44192e2d9db 100644
---- a/drivers/perf/fsl_imx8_ddr_perf.c
-+++ b/drivers/perf/fsl_imx8_ddr_perf.c
-@@ -671,7 +671,8 @@ static int ddr_perf_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 	perf_pmu_migrate_context(&pmu->pmu, cpu, target);
- 	pmu->cpu = target;
- 
--	WARN_ON(irq_set_affinity(pmu->irq, cpumask_of(pmu->cpu)));
-+	if (irq_set_affinity(pmu->irq, cpumask_of(pmu->cpu)))
-+		dev_err(pmu->dev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-diff --git a/drivers/perf/hisilicon/hisi_pcie_pmu.c b/drivers/perf/hisilicon/hisi_pcie_pmu.c
-index 21771708597d..90aed9e51396 100644
---- a/drivers/perf/hisilicon/hisi_pcie_pmu.c
-+++ b/drivers/perf/hisilicon/hisi_pcie_pmu.c
-@@ -655,7 +655,8 @@ static int hisi_pcie_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
- 
- 	if (pcie_pmu->on_cpu == -1) {
- 		pcie_pmu->on_cpu = cpu;
--		WARN_ON(irq_set_affinity(pcie_pmu->irq, cpumask_of(cpu)));
-+		if (irq_set_affinity(pcie_pmu->irq, cpumask_of(cpu)))
-+			pci_err(pcie_pmu->pdev, "Failed to set interrupt affinity\n");
- 	}
- 
- 	return 0;
-@@ -681,7 +682,8 @@ static int hisi_pcie_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 	perf_pmu_migrate_context(&pcie_pmu->pmu, cpu, target);
- 	/* Use this CPU for event counting */
- 	pcie_pmu->on_cpu = target;
--	WARN_ON(irq_set_affinity(pcie_pmu->irq, cpumask_of(target)));
-+	if (irq_set_affinity(pcie_pmu->irq, cpumask_of(target)))
-+		pci_err(pcie_pmu->pdev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-index fbc8a93d5eac..74397b5ec889 100644
---- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
-+++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-@@ -492,7 +492,8 @@ int hisi_uncore_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
- 	hisi_pmu->on_cpu = cpu;
- 
- 	/* Overflow interrupt also should use the same CPU */
--	WARN_ON(irq_set_affinity(hisi_pmu->irq, cpumask_of(cpu)));
-+	if (irq_set_affinity(hisi_pmu->irq, cpumask_of(cpu)))
-+		dev_err(hisi_pmu->dev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-@@ -525,7 +526,8 @@ int hisi_uncore_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 	perf_pmu_migrate_context(&hisi_pmu->pmu, cpu, target);
- 	/* Use this CPU for event counting */
- 	hisi_pmu->on_cpu = target;
--	WARN_ON(irq_set_affinity(hisi_pmu->irq, cpumask_of(target)));
-+	if (irq_set_affinity(hisi_pmu->irq, cpumask_of(target)))
-+		dev_err(hisi_pmu->dev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-diff --git a/drivers/perf/qcom_l2_pmu.c b/drivers/perf/qcom_l2_pmu.c
-index 30234c261b05..c6fe01c7e637 100644
---- a/drivers/perf/qcom_l2_pmu.c
-+++ b/drivers/perf/qcom_l2_pmu.c
-@@ -793,7 +793,9 @@ static int l2cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
- 	cpumask_set_cpu(cpu, &l2cache_pmu->cpumask);
- 	cluster_pmu_reset();
- 
--	WARN_ON(irq_set_affinity(cluster->irq, cpumask_of(cpu)));
-+	if (irq_set_affinity(cluster->irq, cpumask_of(cpu)))
-+		dev_err(&l2cache_pmu->pdev->dev,
-+			"Failed to set interrupt affinity\n");
- 	enable_irq(cluster->irq);
- 
- 	return 0;
-@@ -831,7 +833,9 @@ static int l2cache_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 	perf_pmu_migrate_context(&l2cache_pmu->pmu, cpu, target);
- 	cluster->on_cpu = target;
- 	cpumask_set_cpu(target, &l2cache_pmu->cpumask);
--	WARN_ON(irq_set_affinity(cluster->irq, cpumask_of(target)));
-+	if (irq_set_affinity(cluster->irq, cpumask_of(target)))
-+		dev_err(&l2cache_pmu->pdev->dev,
-+			"Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-diff --git a/drivers/perf/xgene_pmu.c b/drivers/perf/xgene_pmu.c
-index 0c32dffc7ede..f31e678fdb69 100644
---- a/drivers/perf/xgene_pmu.c
-+++ b/drivers/perf/xgene_pmu.c
-@@ -1790,7 +1790,8 @@ static int xgene_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
- 		cpumask_set_cpu(cpu, &xgene_pmu->cpu);
- 
- 	/* Overflow interrupt also should use the same CPU */
--	WARN_ON(irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu));
-+	if (irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu))
-+		dev_err(xgene_pmu->dev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
-@@ -1823,7 +1824,8 @@ static int xgene_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- 
- 	cpumask_set_cpu(target, &xgene_pmu->cpu);
- 	/* Overflow interrupt also should use the same CPU */
--	WARN_ON(irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu));
-+	if (irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu))
-+		dev_err(xgene_pmu->dev, "Failed to set interrupt affinity\n");
- 
- 	return 0;
- }
--- 
-2.24.0
-
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 2db93498ff71..b42c1beb9924 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -5933,7 +5933,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_aliases = NULL;
+ 		x86_pmu.pebs_prec_dist = true;
+ 		x86_pmu.lbr_pt_coexist = true;
+-		x86_pmu.pebs_capable = ~0ULL;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+ 		x86_pmu.get_event_constraints = glp_get_event_constraints;
+@@ -6291,7 +6290,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_aliases = NULL;
+ 		x86_pmu.pebs_prec_dist = true;
+ 		x86_pmu.pebs_block = true;
+-		x86_pmu.pebs_capable = ~0ULL;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+ 		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+@@ -6337,7 +6335,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_aliases = NULL;
+ 		x86_pmu.pebs_prec_dist = true;
+ 		x86_pmu.pebs_block = true;
+-		x86_pmu.pebs_capable = ~0ULL;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+ 		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index ba60427caa6d..e2da643632b9 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -2258,6 +2258,7 @@ void __init intel_ds_init(void)
+ 			x86_pmu.drain_pebs = intel_pmu_drain_pebs_icl;
+ 			x86_pmu.pebs_record_size = sizeof(struct pebs_basic);
+ 			if (x86_pmu.intel_cap.pebs_baseline) {
++				x86_pmu.pebs_capable = ~0ULL;
+ 				x86_pmu.large_pebs_flags |=
+ 					PERF_SAMPLE_BRANCH_STACK |
+ 					PERF_SAMPLE_TIME;
