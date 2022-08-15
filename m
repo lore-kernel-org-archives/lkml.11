@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7946C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93927C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245024AbiHOTA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
+        id S245233AbiHOTBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245117AbiHOS4s (ORCPT
+        with ESMTP id S245157AbiHOS4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:48 -0400
+        Mon, 15 Aug 2022 14:56:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3BF32B8B;
-        Mon, 15 Aug 2022 11:31:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C89B32DBB;
+        Mon, 15 Aug 2022 11:31:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8818B81084;
-        Mon, 15 Aug 2022 18:31:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31CBDC43141;
-        Mon, 15 Aug 2022 18:31:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CECF3B81082;
+        Mon, 15 Aug 2022 18:31:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053A9C433C1;
+        Mon, 15 Aug 2022 18:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588299;
-        bh=VV8gink0WExPDdKn781lcIG6OPIv8hTyhv2dKHY8ToM=;
+        s=korg; t=1660588312;
+        bh=UNse/8MvXDfLtiLsFDhl/AJsP8hoheWPNg98s6jZGdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kaRNJ83agi5rLMCstyZ2Ccmc/pX7WUfoY0yN9sWrZwHYmTD4jk8zZF9G+PysKvUiW
-         cjWsXe3clLscc3+e5X6uSE9Jg6EPjyiMs9WEE57/ZVlSnKkMNeIu0qud90elWigvDD
-         wv3Uq6jL0/zz12LRTDVg9C9JEGD4UIiB7NKQyMWg=
+        b=abxF6zHlVgj2Md8Kd/Jk2TmmxKYxhaFPe169wY3AgtaA+Cj8w9/HeIFbww7dItNE6
+         KdcJrr3wikOzN2LLWxWIGxnLWETJP4XWiHHEF6F+H6u/oTYKIGlMr/Re2DglE0r2u3
+         5Lv1df24yXD/r8nYaNS3fwiRxDuDG0PlKmfXLBJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 328/779] ieee80211: add EHT 1K aggregation definitions
-Date:   Mon, 15 Aug 2022 19:59:32 +0200
-Message-Id: <20220815180351.314176311@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 332/779] mediatek: mt76: eeprom: fix missing of_node_put() in mt76_find_power_limits_node()
+Date:   Mon, 15 Aug 2022 19:59:36 +0200
+Message-Id: <20220815180351.473557798@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,114 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mordechay Goodstein <mordechay.goodstein@intel.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 2a2c86f15e17c5013b9897b67d895e64a25ae3cb ]
+[ Upstream commit 3bd53ea02d77917c2314ec7be9e2d05be22f87d3 ]
 
-We add the fields for parsing extended ADDBA request/respond,
-and new max 1K aggregation for limit ADDBA request/respond.
+We should use of_node_put() for the reference 'np' returned by
+of_get_child_by_name() which will increase the refcount.
 
-Adjust drivers to use the proper macro, IEEE80211_MAX_AMPDU_BUF ->
-IEEE80211_MAX_AMPDU_BUF_HE.
-
-Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
-Link: https://lore.kernel.org/r/20220214173004.b8b447ce95b7.I0ee2554c94e89abc7a752b0f7cc7fd79c273efea@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 22b980badc0f ("mt76: add functions for parsing rate power limits from DT")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c            | 2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c     | 4 ++--
- drivers/net/wireless/mediatek/mt76/mt7915/init.c | 4 ++--
- include/linux/ieee80211.h                        | 6 +++++-
- net/mac80211/agg-rx.c                            | 2 +-
- 5 files changed, 11 insertions(+), 7 deletions(-)
+ drivers/net/wireless/mediatek/mt76/eeprom.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index f85fd341557e..c7ee373a9d2c 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6566,7 +6566,7 @@ static int __ath11k_mac_register(struct ath11k *ar)
- 	ar->hw->queues = ATH11K_HW_MAX_QUEUES;
- 	ar->hw->wiphy->tx_queue_len = ATH11K_QUEUE_LEN;
- 	ar->hw->offchannel_tx_hw_queue = ATH11K_HW_MAX_QUEUES - 1;
--	ar->hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF;
-+	ar->hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
+diff --git a/drivers/net/wireless/mediatek/mt76/eeprom.c b/drivers/net/wireless/mediatek/mt76/eeprom.c
+index 3b47e85e95e7..db0cd56c8dc7 100644
+--- a/drivers/net/wireless/mediatek/mt76/eeprom.c
++++ b/drivers/net/wireless/mediatek/mt76/eeprom.c
+@@ -146,10 +146,13 @@ mt76_find_power_limits_node(struct mt76_dev *dev)
+ 		}
  
- 	ar->hw->vif_data_size = sizeof(struct ath11k_vif);
- 	ar->hw->sta_data_size = sizeof(struct ath11k_sta);
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-index c77d98c88811..eeb81808db08 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -761,12 +761,12 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
- 	if (!hw)
- 		return NULL;
- 
--	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF;
-+	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
- 
- 	if (cfg->max_tx_agg_size)
- 		hw->max_tx_aggregation_subframes = cfg->max_tx_agg_size;
- 	else
--		hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF;
-+		hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
- 
- 	op_mode = hw->priv;
- 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-index b171027e0cfa..1ae42ef147c8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-@@ -217,8 +217,8 @@ mt7915_init_wiphy(struct ieee80211_hw *hw)
- 	struct wiphy *wiphy = hw->wiphy;
- 
- 	hw->queues = 4;
--	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF;
--	hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF;
-+	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
-+	hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
- 	hw->netdev_features = NETIF_F_RXCSUM;
- 
- 	hw->radiotap_timestamp.units_pos =
-diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
-index 694264503119..00ed7c17698d 100644
---- a/include/linux/ieee80211.h
-+++ b/include/linux/ieee80211.h
-@@ -1023,6 +1023,8 @@ struct ieee80211_tpc_report_ie {
- #define IEEE80211_ADDBA_EXT_FRAG_LEVEL_MASK	GENMASK(2, 1)
- #define IEEE80211_ADDBA_EXT_FRAG_LEVEL_SHIFT	1
- #define IEEE80211_ADDBA_EXT_NO_FRAG		BIT(0)
-+#define IEEE80211_ADDBA_EXT_BUF_SIZE_MASK	GENMASK(7, 5)
-+#define IEEE80211_ADDBA_EXT_BUF_SIZE_SHIFT	10
- 
- struct ieee80211_addba_ext_ie {
- 	u8 data;
-@@ -1697,10 +1699,12 @@ struct ieee80211_ht_operation {
-  * A-MPDU buffer sizes
-  * According to HT size varies from 8 to 64 frames
-  * HE adds the ability to have up to 256 frames.
-+ * EHT adds the ability to have up to 1K frames.
-  */
- #define IEEE80211_MIN_AMPDU_BUF		0x8
- #define IEEE80211_MAX_AMPDU_BUF_HT	0x40
--#define IEEE80211_MAX_AMPDU_BUF		0x100
-+#define IEEE80211_MAX_AMPDU_BUF_HE	0x100
-+#define IEEE80211_MAX_AMPDU_BUF_EHT	0x400
- 
- 
- /* Spatial Multiplexing Power Save Modes (for capability) */
-diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
-index ef729b1e39ea..e43176794149 100644
---- a/net/mac80211/agg-rx.c
-+++ b/net/mac80211/agg-rx.c
-@@ -310,7 +310,7 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
+ 		if (mt76_string_prop_find(country, dev->alpha2) ||
+-		    mt76_string_prop_find(regd, region_name))
++		    mt76_string_prop_find(regd, region_name)) {
++			of_node_put(np);
+ 			return cur;
++		}
  	}
  
- 	if (sta->sta.he_cap.has_he)
--		max_buf_size = IEEE80211_MAX_AMPDU_BUF;
-+		max_buf_size = IEEE80211_MAX_AMPDU_BUF_HE;
- 	else
- 		max_buf_size = IEEE80211_MAX_AMPDU_BUF_HT;
++	of_node_put(np);
+ 	return fallback;
+ }
  
 -- 
 2.35.1
