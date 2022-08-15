@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54376C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 377C5C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346598AbiHPAcP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
+        id S245480AbiHPAcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346640AbiHPAaV (ORCPT
+        with ESMTP id S245073AbiHPAaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFB61849D2;
-        Mon, 15 Aug 2022 13:35:48 -0700 (PDT)
+        Mon, 15 Aug 2022 20:30:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9D81834A4;
+        Mon, 15 Aug 2022 13:35:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C11C6121A;
-        Mon, 15 Aug 2022 20:35:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15BECC433C1;
-        Mon, 15 Aug 2022 20:35:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40C09B811AC;
+        Mon, 15 Aug 2022 20:35:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9045BC433C1;
+        Mon, 15 Aug 2022 20:35:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595747;
-        bh=KM2BqJ70Ryu+d2ZegbEKyHkGysngUz+E2aiY5tWpnY8=;
+        s=korg; t=1660595729;
+        bh=XEGr8ZTVfDXH93OXuG62+2LbOYpoEPfLG9d2e+FqSMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vgOmT7c6YNq86Y2SmXT3AvEZPJRMy9UQrxU/yVJXJkC9azjJkDlf025p5AFfC/NxI
-         98G4Jgcbu20F/2kY//5BrlRbMVQ3Qnq6fjZ2hJ4sMdl7LAnODfOtqqqNP5mTsYBuMs
-         vtm9Nxz+0XXDmJTOd48JboZD1k4JKII3oAl9HBeY=
+        b=iPOEGE/gf/EV60VYHFPnQa93OSYAj+ubkA3x9ws8qXTZe7144Do5jMVwWPLlOKk2O
+         FBRkAllPPo36u4x3zyxNEdUCYH85sczjHZw6Sv65HzNCUhZB/xhkJnNeTrF/DKZ4ev
+         BGpcdpq8x0Jlhh/QQoPtrxNqUWIQQTaX0J0fQPMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0861/1157] RDMA/srpt: Introduce a reference count in struct srpt_device
-Date:   Mon, 15 Aug 2022 20:03:37 +0200
-Message-Id: <20220815180513.904605508@linuxfoundation.org>
+Subject: [PATCH 5.19 0829/1157] iio: cros: Register FIFO callback after sensor is registered
+Date:   Mon, 15 Aug 2022 20:03:05 +0200
+Message-Id: <20220815180512.643442829@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,92 +50,262 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Gwendal Grignou <gwendal@chromium.org>
 
-[ Upstream commit aa7dfbb41b5a60ab90e244d6f586b8cb5c791c3e ]
+[ Upstream commit 0b4ae3f6d1210c11f9baf159009c7227eacf90f2 ]
 
-This will be used to keep struct srpt_device around as long as either the
-RDMA port exists or a LIO target port is associated with the struct
-srpt_device.
+Instead of registering callback to process sensor events right at
+initialization time, wait for the sensor to be register in the iio
+subsystem.
 
-Link: https://lore.kernel.org/r/20220727193415.1583860-3-bvanassche@acm.org
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Events can come at probe time (in case the kernel rebooted abruptly
+without switching the sensor off for  instance), and be sent to IIO core
+before the sensor is fully registered.
+
+Fixes: aa984f1ba4a4 ("iio: cros_ec: Register to cros_ec_sensorhub when EC supports FIFO")
+Reported-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220711144716.642617-1-gwendal@chromium.org
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/srpt/ib_srpt.c | 17 +++++++++++++++--
- drivers/infiniband/ulp/srpt/ib_srpt.h |  2 ++
- 2 files changed, 17 insertions(+), 2 deletions(-)
+ drivers/iio/accel/cros_ec_accel_legacy.c      |  4 +-
+ .../cros_ec_sensors/cros_ec_lid_angle.c       |  4 +-
+ .../common/cros_ec_sensors/cros_ec_sensors.c  |  6 +-
+ .../cros_ec_sensors/cros_ec_sensors_core.c    | 58 ++++++++++++++-----
+ drivers/iio/light/cros_ec_light_prox.c        |  6 +-
+ drivers/iio/pressure/cros_ec_baro.c           |  6 +-
+ .../linux/iio/common/cros_ec_sensors_core.h   |  7 ++-
+ 7 files changed, 60 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
-index 8253d55b9c26..1fbce9225424 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.c
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
-@@ -3104,6 +3104,18 @@ static int srpt_use_srq(struct srpt_device *sdev, bool use_srq)
- 	return ret;
- }
- 
-+static void srpt_free_sdev(struct kref *refcnt)
-+{
-+	struct srpt_device *sdev = container_of(refcnt, typeof(*sdev), refcnt);
-+
-+	kfree(sdev);
-+}
-+
-+static void srpt_sdev_put(struct srpt_device *sdev)
-+{
-+	kref_put(&sdev->refcnt, srpt_free_sdev);
-+}
-+
- /**
-  * srpt_add_one - InfiniBand device addition callback function
-  * @device: Describes a HCA.
-@@ -3122,6 +3134,7 @@ static int srpt_add_one(struct ib_device *device)
- 	if (!sdev)
+diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+index b6f3471b62dc..3b77fded2dc0 100644
+--- a/drivers/iio/accel/cros_ec_accel_legacy.c
++++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+@@ -215,7 +215,7 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
  		return -ENOMEM;
  
-+	kref_init(&sdev->refcnt);
- 	sdev->device = device;
- 	mutex_init(&sdev->sdev_mutex);
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+-					cros_ec_sensors_capture, NULL);
++					cros_ec_sensors_capture);
+ 	if (ret)
+ 		return ret;
  
-@@ -3217,7 +3230,7 @@ static int srpt_add_one(struct ib_device *device)
- 	srpt_free_srq(sdev);
- 	ib_dealloc_pd(sdev->pd);
- free_dev:
--	kfree(sdev);
-+	srpt_sdev_put(sdev);
- 	pr_info("%s(%s) failed.\n", __func__, dev_name(&device->dev));
- 	return ret;
- }
-@@ -3261,7 +3274,7 @@ static void srpt_remove_one(struct ib_device *device, void *client_data)
+@@ -235,7 +235,7 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
+ 		state->sign[CROS_EC_SENSOR_Z] = -1;
+ 	}
  
- 	ib_dealloc_pd(sdev->pd);
- 
--	kfree(sdev);
-+	srpt_sdev_put(sdev);
+-	return devm_iio_device_register(dev, indio_dev);
++	return cros_ec_sensors_core_register(dev, indio_dev, NULL);
  }
  
- static struct ib_client srpt_client = {
-diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
-index 3844a7058559..0cb867d580f1 100644
---- a/drivers/infiniband/ulp/srpt/ib_srpt.h
-+++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
-@@ -434,6 +434,7 @@ struct srpt_port {
+ static struct platform_driver cros_ec_accel_platform_driver = {
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+index af801e203623..02d3cf36acb0 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+@@ -97,7 +97,7 @@ static int cros_ec_lid_angle_probe(struct platform_device *pdev)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	ret = cros_ec_sensors_core_init(pdev, indio_dev, false, NULL, NULL);
++	ret = cros_ec_sensors_core_init(pdev, indio_dev, false, NULL);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -113,7 +113,7 @@ static int cros_ec_lid_angle_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	return cros_ec_sensors_core_register(dev, indio_dev, NULL);
+ }
+ 
+ static const struct platform_device_id cros_ec_lid_angle_ids[] = {
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index 376a5b30010a..5cce34fdff02 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -235,8 +235,7 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+-					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data);
++					cros_ec_sensors_capture);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -297,7 +296,8 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
+ 	else
+ 		state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	return cros_ec_sensors_core_register(dev, indio_dev,
++			cros_ec_sensors_push_data);
+ }
+ 
+ static const struct platform_device_id cros_ec_sensors_ids[] = {
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index 5976aca48e3b..310d1511f376 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -234,21 +234,18 @@ static void cros_ec_sensors_core_clean(void *arg)
  
  /**
-  * struct srpt_device - information associated by SRPT with a single HCA
-+ * @refcnt:	   Reference count for this device.
-  * @device:        Backpointer to the struct ib_device managed by the IB core.
-  * @pd:            IB protection domain.
-  * @lkey:          L_Key (local key) with write access to all local memory.
-@@ -449,6 +450,7 @@ struct srpt_port {
-  * @port:          Information about the ports owned by this HCA.
+  * cros_ec_sensors_core_init() - basic initialization of the core structure
+- * @pdev:		platform device created for the sensors
++ * @pdev:		platform device created for the sensor
+  * @indio_dev:		iio device structure of the device
+  * @physical_device:	true if the device refers to a physical device
+  * @trigger_capture:    function pointer to call buffer is triggered,
+  *    for backward compatibility.
+- * @push_data:          function to call when cros_ec_sensorhub receives
+- *    a sample for that sensor.
+  *
+  * Return: 0 on success, -errno on failure.
   */
- struct srpt_device {
-+	struct kref		refcnt;
- 	struct ib_device	*device;
- 	struct ib_pd		*pd;
- 	u32			lkey;
+ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			      struct iio_dev *indio_dev,
+ 			      bool physical_device,
+-			      cros_ec_sensors_capture_t trigger_capture,
+-			      cros_ec_sensorhub_push_data_cb_t push_data)
++			      cros_ec_sensors_capture_t trigger_capture)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct cros_ec_sensors_core_state *state = iio_priv(indio_dev);
+@@ -338,17 +335,6 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			if (ret)
+ 				return ret;
+ 
+-			ret = cros_ec_sensorhub_register_push_data(
+-					sensor_hub, sensor_platform->sensor_num,
+-					indio_dev, push_data);
+-			if (ret)
+-				return ret;
+-
+-			ret = devm_add_action_or_reset(
+-					dev, cros_ec_sensors_core_clean, pdev);
+-			if (ret)
+-				return ret;
+-
+ 			/* Timestamp coming from FIFO are in ns since boot. */
+ 			ret = iio_device_set_clock(indio_dev, CLOCK_BOOTTIME);
+ 			if (ret)
+@@ -370,6 +356,46 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_init);
+ 
++/**
++ * cros_ec_sensors_core_register() - Register callback to FIFO and IIO when
++ * sensor is ready.
++ * It must be called at the end of the sensor probe routine.
++ * @dev:		device created for the sensor
++ * @indio_dev:		iio device structure of the device
++ * @push_data:          function to call when cros_ec_sensorhub receives
++ *    a sample for that sensor.
++ *
++ * Return: 0 on success, -errno on failure.
++ */
++int cros_ec_sensors_core_register(struct device *dev,
++				  struct iio_dev *indio_dev,
++				  cros_ec_sensorhub_push_data_cb_t push_data)
++{
++	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
++	struct cros_ec_sensorhub *sensor_hub = dev_get_drvdata(dev->parent);
++	struct platform_device *pdev = to_platform_device(dev);
++	struct cros_ec_dev *ec = sensor_hub->ec;
++	int ret;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
++		return ret;
++
++	if (!push_data ||
++	    !cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO))
++		return 0;
++
++	ret = cros_ec_sensorhub_register_push_data(
++			sensor_hub, sensor_platform->sensor_num,
++			indio_dev, push_data);
++	if (ret)
++		return ret;
++
++	return devm_add_action_or_reset(
++			dev, cros_ec_sensors_core_clean, pdev);
++}
++EXPORT_SYMBOL_GPL(cros_ec_sensors_core_register);
++
+ /**
+  * cros_ec_motion_send_host_cmd() - send motion sense host command
+  * @state:		pointer to state information for device
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index de472f23d1cb..16b893bae388 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -181,8 +181,7 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+-					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data);
++					cros_ec_sensors_capture);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -240,7 +239,8 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
+ 
+ 	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	return cros_ec_sensors_core_register(dev, indio_dev,
++					     cros_ec_sensors_push_data);
+ }
+ 
+ static const struct platform_device_id cros_ec_light_prox_ids[] = {
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index 2f882e109423..0511edbf868d 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -138,8 +138,7 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+-					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data);
++					cros_ec_sensors_capture);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -186,7 +185,8 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
+ 
+ 	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	return cros_ec_sensors_core_register(dev, indio_dev,
++					     cros_ec_sensors_push_data);
+ }
+ 
+ static const struct platform_device_id cros_ec_baro_ids[] = {
+diff --git a/include/linux/iio/common/cros_ec_sensors_core.h b/include/linux/iio/common/cros_ec_sensors_core.h
+index c582e1a14232..7b5dbd749995 100644
+--- a/include/linux/iio/common/cros_ec_sensors_core.h
++++ b/include/linux/iio/common/cros_ec_sensors_core.h
+@@ -95,8 +95,11 @@ int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev, unsigned long scan_mask,
+ struct platform_device;
+ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			      struct iio_dev *indio_dev, bool physical_device,
+-			      cros_ec_sensors_capture_t trigger_capture,
+-			      cros_ec_sensorhub_push_data_cb_t push_data);
++			      cros_ec_sensors_capture_t trigger_capture);
++
++int cros_ec_sensors_core_register(struct device *dev,
++				  struct iio_dev *indio_dev,
++				  cros_ec_sensorhub_push_data_cb_t push_data);
+ 
+ irqreturn_t cros_ec_sensors_capture(int irq, void *p);
+ int cros_ec_sensors_push_data(struct iio_dev *indio_dev,
 -- 
 2.35.1
 
