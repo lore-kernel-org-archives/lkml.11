@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F70BC2BB47
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C0AC2BB41
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345552AbiHOX0v (ORCPT
+        id S1345070AbiHOX0i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
+        Mon, 15 Aug 2022 19:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240822AbiHOXTE (ORCPT
+        with ESMTP id S1349988AbiHOXVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:19:04 -0400
+        Mon, 15 Aug 2022 19:21:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2E014A1C6;
-        Mon, 15 Aug 2022 13:03:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EA514AEF2;
+        Mon, 15 Aug 2022 13:04:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2496B61089;
-        Mon, 15 Aug 2022 20:03:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23159C433C1;
-        Mon, 15 Aug 2022 20:03:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2591B60693;
+        Mon, 15 Aug 2022 20:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117DEC433C1;
+        Mon, 15 Aug 2022 20:04:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593834;
-        bh=tR7DPSIp4Nw+YZPrGRHaKGiNk5UW/pvct4lAxpVCj08=;
+        s=korg; t=1660593892;
+        bh=bYjTcbptDzrg7/HEdTWPzKHGF7oKXRTTcTi+jj9lZZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nrdL13bSKEznogFdPbVIvB+7s0hP+iIErED+ead6zkymWpW7e13NspikS6vjoHW/w
-         ZeDuQpCIhe3Tq15QHvzxPwnzSZNPt+ILkkHEVTYAIbnePGTVBJveqx+qq22/B9mCYG
-         YYgPg242FOfsubtbX7j8kc41y99HdBTCAWTjnKm4=
+        b=Yg8vZ+ox6IUY7ndwRZ+W9SFQwkrFcsfanSTXP+YTWvbwYTmjnq7AHDqkSWf6ZL5km
+         VUyTDdpu4BLeMCM9NU7dNCOaaxrEojwEm6VyCnGeOey+M8oSK+fD1w6132QfZPfqob
+         j7NPKr7Yuik43cj8dVdcAzQjMIS7cCofrO3bVsqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Krunoslav Kovac <Krunoslav.Kovac@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Martin <martin.leung@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1013/1095] btrfs: ensure pages are unlocked on cow_file_range() failure
-Date:   Mon, 15 Aug 2022 20:06:52 +0200
-Message-Id: <20220815180511.013269350@linuxfoundation.org>
+Subject: [PATCH 5.19 0344/1157] drm/amdgpu/display: Prepare for new interfaces
+Date:   Mon, 15 Aug 2022 19:55:00 +0200
+Message-Id: <20220815180453.462354102@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,194 +53,394 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Leung, Martin <Martin.Leung@amd.com>
 
-[ Upstream commit 9ce7466f372d83054c7494f6b3e4b9abaf3f0355 ]
+[ Upstream commit a820190204aef0739aa3a067d00273d117f9367c ]
 
-There is a hung_task report on zoned btrfs like below.
+why:
+lut pipeline will be hooked up differently in some asics
+need to add new interfaces
 
-https://github.com/naota/linux/issues/59
+how:
+add them
 
-  [726.328648] INFO: task rocksdb:high0:11085 blocked for more than 241 seconds.
-  [726.329839]       Not tainted 5.16.0-rc1+ #1
-  [726.330484] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-  [726.331603] task:rocksdb:high0   state:D stack:    0 pid:11085 ppid: 11082 flags:0x00000000
-  [726.331608] Call Trace:
-  [726.331611]  <TASK>
-  [726.331614]  __schedule+0x2e5/0x9d0
-  [726.331622]  schedule+0x58/0xd0
-  [726.331626]  io_schedule+0x3f/0x70
-  [726.331629]  __folio_lock+0x125/0x200
-  [726.331634]  ? find_get_entries+0x1bc/0x240
-  [726.331638]  ? filemap_invalidate_unlock_two+0x40/0x40
-  [726.331642]  truncate_inode_pages_range+0x5b2/0x770
-  [726.331649]  truncate_inode_pages_final+0x44/0x50
-  [726.331653]  btrfs_evict_inode+0x67/0x480
-  [726.331658]  evict+0xd0/0x180
-  [726.331661]  iput+0x13f/0x200
-  [726.331664]  do_unlinkat+0x1c0/0x2b0
-  [726.331668]  __x64_sys_unlink+0x23/0x30
-  [726.331670]  do_syscall_64+0x3b/0xc0
-  [726.331674]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-  [726.331677] RIP: 0033:0x7fb9490a171b
-  [726.331681] RSP: 002b:00007fb943ffac68 EFLAGS: 00000246 ORIG_RAX: 0000000000000057
-  [726.331684] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fb9490a171b
-  [726.331686] RDX: 00007fb943ffb040 RSI: 000055a6bbe6ec20 RDI: 00007fb94400d300
-  [726.331687] RBP: 00007fb943ffad00 R08: 0000000000000000 R09: 0000000000000000
-  [726.331688] R10: 0000000000000031 R11: 0000000000000246 R12: 00007fb943ffb000
-  [726.331690] R13: 00007fb943ffb040 R14: 0000000000000000 R15: 00007fb943ffd260
-  [726.331693]  </TASK>
-
-While we debug the issue, we found running fstests generic/551 on 5GB
-non-zoned null_blk device in the emulated zoned mode also had a
-similar hung issue.
-
-Also, we can reproduce the same symptom with an error injected
-cow_file_range() setup.
-
-The hang occurs when cow_file_range() fails in the middle of
-allocation. cow_file_range() called from do_allocation_zoned() can
-split the give region ([start, end]) for allocation depending on
-current block group usages. When btrfs can allocate bytes for one part
-of the split regions but fails for the other region (e.g. because of
--ENOSPC), we return the error leaving the pages in the succeeded regions
-locked. Technically, this occurs only when @unlock == 0. Otherwise, we
-unlock the pages in an allocated region after creating an ordered
-extent.
-
-Considering the callers of cow_file_range(unlock=0) won't write out
-the pages, we can unlock the pages on error exit from
-cow_file_range(). So, we can ensure all the pages except @locked_page
-are unlocked on error case.
-
-In summary, cow_file_range now behaves like this:
-
-- page_started == 1 (return value)
-  - All the pages are unlocked. IO is started.
-- unlock == 1
-  - All the pages except @locked_page are unlocked in any case
-- unlock == 0
-  - On success, all the pages are locked for writing out them
-  - On failure, all the pages except @locked_page are unlocked
-
-Fixes: 42c011000963 ("btrfs: zoned: introduce dedicated data write path for zoned filesystems")
-CC: stable@vger.kernel.org # 5.12+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Reviewed-by: Krunoslav Kovac <Krunoslav.Kovac@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Martin <martin.leung@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/inode.c | 72 ++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 64 insertions(+), 8 deletions(-)
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  2 +
+ drivers/gpu/drm/amd/display/dc/core/dc_link.c | 17 +++++-
+ .../gpu/drm/amd/display/dc/core/dc_link_dp.c  | 52 +++++++++++--------
+ drivers/gpu/drm/amd/display/dc/dc.h           |  1 +
+ .../display/dc/dce110/dce110_hw_sequencer.c   | 23 ++++++--
+ .../gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c | 13 +++--
+ .../gpu/drm/amd/display/dc/dcn31/dcn31_dccg.h |  2 +-
+ drivers/gpu/drm/amd/display/dc/inc/hw/dccg.h  |  4 +-
+ drivers/gpu/drm/amd/display/dc/inc/hw/mpc.h   |  5 ++
+ .../amd/display/dc/inc/hw_sequencer_private.h |  2 +
+ 10 files changed, 83 insertions(+), 38 deletions(-)
 
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 5d15e374d032..54afa9e538c5 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -1097,6 +1097,28 @@ static u64 get_extent_allocation_hint(struct btrfs_inode *inode, u64 start,
-  * *page_started is set to one if we unlock locked_page and do everything
-  * required to start IO on it.  It may be clean and already done with
-  * IO when we return.
-+ *
-+ * When unlock == 1, we unlock the pages in successfully allocated regions.
-+ * When unlock == 0, we leave them locked for writing them out.
-+ *
-+ * However, we unlock all the pages except @locked_page in case of failure.
-+ *
-+ * In summary, page locking state will be as follow:
-+ *
-+ * - page_started == 1 (return value)
-+ *     - All the pages are unlocked. IO is started.
-+ *     - Note that this can happen only on success
-+ * - unlock == 1
-+ *     - All the pages except @locked_page are unlocked in any case
-+ * - unlock == 0
-+ *     - On success, all the pages are locked for writing out them
-+ *     - On failure, all the pages except @locked_page are unlocked
-+ *
-+ * When a failure happens in the second or later iteration of the
-+ * while-loop, the ordered extents created in previous iterations are kept
-+ * intact. So, the caller must clean them up by calling
-+ * btrfs_cleanup_ordered_extents(). See btrfs_run_delalloc_range() for
-+ * example.
-  */
- static noinline int cow_file_range(struct btrfs_inode *inode,
- 				   struct page *locked_page,
-@@ -1106,6 +1128,7 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 	struct btrfs_root *root = inode->root;
- 	struct btrfs_fs_info *fs_info = root->fs_info;
- 	u64 alloc_hint = 0;
-+	u64 orig_start = start;
- 	u64 num_bytes;
- 	unsigned long ram_size;
- 	u64 cur_alloc_size = 0;
-@@ -1293,18 +1316,44 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 	btrfs_dec_block_group_reservations(fs_info, ins.objectid);
- 	btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, 1);
- out_unlock:
-+	/*
-+	 * Now, we have three regions to clean up:
-+	 *
-+	 * |-------(1)----|---(2)---|-------------(3)----------|
-+	 * `- orig_start  `- start  `- start + cur_alloc_size  `- end
-+	 *
-+	 * We process each region below.
-+	 */
-+
- 	clear_bits = EXTENT_LOCKED | EXTENT_DELALLOC | EXTENT_DELALLOC_NEW |
- 		EXTENT_DEFRAG | EXTENT_CLEAR_META_RESV;
- 	page_ops = PAGE_UNLOCK | PAGE_START_WRITEBACK | PAGE_END_WRITEBACK;
-+
- 	/*
--	 * If we reserved an extent for our delalloc range (or a subrange) and
--	 * failed to create the respective ordered extent, then it means that
--	 * when we reserved the extent we decremented the extent's size from
--	 * the data space_info's bytes_may_use counter and incremented the
--	 * space_info's bytes_reserved counter by the same amount. We must make
--	 * sure extent_clear_unlock_delalloc() does not try to decrement again
--	 * the data space_info's bytes_may_use counter, therefore we do not pass
--	 * it the flag EXTENT_CLEAR_DATA_RESV.
-+	 * For the range (1). We have already instantiated the ordered extents
-+	 * for this region. They are cleaned up by
-+	 * btrfs_cleanup_ordered_extents() in e.g,
-+	 * btrfs_run_delalloc_range(). EXTENT_LOCKED | EXTENT_DELALLOC are
-+	 * already cleared in the above loop. And, EXTENT_DELALLOC_NEW |
-+	 * EXTENT_DEFRAG | EXTENT_CLEAR_META_RESV are handled by the cleanup
-+	 * function.
-+	 *
-+	 * However, in case of unlock == 0, we still need to unlock the pages
-+	 * (except @locked_page) to ensure all the pages are unlocked.
-+	 */
-+	if (!unlock && orig_start < start)
-+		extent_clear_unlock_delalloc(inode, orig_start, start - 1,
-+					     locked_page, 0, page_ops);
-+
-+	/*
-+	 * For the range (2). If we reserved an extent for our delalloc range
-+	 * (or a subrange) and failed to create the respective ordered extent,
-+	 * then it means that when we reserved the extent we decremented the
-+	 * extent's size from the data space_info's bytes_may_use counter and
-+	 * incremented the space_info's bytes_reserved counter by the same
-+	 * amount. We must make sure extent_clear_unlock_delalloc() does not try
-+	 * to decrement again the data space_info's bytes_may_use counter,
-+	 * therefore we do not pass it the flag EXTENT_CLEAR_DATA_RESV.
- 	 */
- 	if (extent_reserved) {
- 		extent_clear_unlock_delalloc(inode, start,
-@@ -1316,6 +1365,13 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 		if (start >= end)
- 			goto out;
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 3087dd1a1856..d055d3c7eed6 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -1563,6 +1563,8 @@ static int amdgpu_dm_init(struct amdgpu_device *adev)
+ 		DRM_INFO("Seamless boot condition check passed\n");
  	}
+ 
++	init_data.flags.enable_mipi_converter_optimization = true;
 +
-+	/*
-+	 * For the range (3). We never touched the region. In addition to the
-+	 * clear_bits above, we add EXTENT_CLEAR_DATA_RESV to release the data
-+	 * space_info's bytes_may_use counter, reserved in
-+	 * btrfs_check_data_free_space().
-+	 */
- 	extent_clear_unlock_delalloc(inode, start, end, locked_page,
- 				     clear_bits | EXTENT_CLEAR_DATA_RESV,
- 				     page_ops);
+ 	INIT_LIST_HEAD(&adev->dm.da_list);
+ 
+ 	retrieve_dmi_info(&adev->dm);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link.c b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
+index a789ea8af27f..55a8f58ee239 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
+@@ -235,7 +235,8 @@ bool dc_link_detect_sink(struct dc_link *link, enum dc_connection_type *type)
+ 
+ 	if (link->connector_signal == SIGNAL_TYPE_EDP) {
+ 		/*in case it is not on*/
+-		link->dc->hwss.edp_power_control(link, true);
++		if (!link->dc->config.edp_no_power_sequencing)
++			link->dc->hwss.edp_power_control(link, true);
+ 		link->dc->hwss.edp_wait_for_hpd_ready(link, true);
+ 	}
+ 
+@@ -1016,6 +1017,7 @@ static bool detect_link_and_local_sink(struct dc_link *link,
+ 	bool same_edid = false;
+ 	enum dc_edid_status edid_status;
+ 	struct dc_context *dc_ctx = link->ctx;
++	struct dc *dc = dc_ctx->dc;
+ 	struct dc_sink *sink = NULL;
+ 	struct dc_sink *prev_sink = NULL;
+ 	struct dpcd_caps prev_dpcd_caps;
+@@ -1095,6 +1097,16 @@ static bool detect_link_and_local_sink(struct dc_link *link,
+ 
+ 			detect_edp_sink_caps(link);
+ 			read_current_link_settings_on_detect(link);
++
++			/* Disable power sequence on MIPI panel + converter
++			 */
++			if (dc->config.enable_mipi_converter_optimization &&
++				dc_ctx->dce_version == DCN_VERSION_3_01 &&
++				link->dpcd_caps.sink_dev_id == DP_BRANCH_DEVICE_ID_0022B9 &&
++				memcmp(&link->dpcd_caps.branch_dev_name, DP_SINK_BRANCH_DEV_NAME_7580,
++					sizeof(link->dpcd_caps.branch_dev_name)) == 0)
++				dc->config.edp_no_power_sequencing = true;
++
+ 			sink_caps.transaction_type = DDC_TRANSACTION_TYPE_I2C_OVER_AUX;
+ 			sink_caps.signal = SIGNAL_TYPE_EDP;
+ 			break;
+@@ -1993,7 +2005,8 @@ static enum dc_status enable_link_dp(struct dc_state *state,
+ 
+ 	if (pipe_ctx->stream->signal == SIGNAL_TYPE_EDP) {
+ 		/*in case it is not on*/
+-		link->dc->hwss.edp_power_control(link, true);
++		if (!link->dc->config.edp_no_power_sequencing)
++			link->dc->hwss.edp_power_control(link, true);
+ 		link->dc->hwss.edp_wait_for_hpd_ready(link, true);
+ 	}
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+index d8eee89e63ce..a4fc9a6c850e 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -2074,7 +2074,8 @@ static enum link_training_result dp_perform_128b_132b_channel_eq_done_sequence(
+ 	uint32_t wait_time = 0;
+ 	union lane_align_status_updated dpcd_lane_status_updated = {0};
+ 	union lane_status dpcd_lane_status[LANE_COUNT_DP_MAX] = {0};
+-	enum link_training_result status = LINK_TRAINING_SUCCESS;
++	enum dc_status status = DC_OK;
++	enum link_training_result result = LINK_TRAINING_SUCCESS;
+ 	union lane_adjust dpcd_lane_adjust[LANE_COUNT_DP_MAX] = {0};
+ 
+ 	/* Transmit 128b/132b_TPS1 over Main-Link */
+@@ -2099,22 +2100,24 @@ static enum link_training_result dp_perform_128b_132b_channel_eq_done_sequence(
+ 			lt_settings->pattern_for_eq, DPRX);
+ 
+ 	/* poll for channel EQ done */
+-	while (status == LINK_TRAINING_SUCCESS) {
++	while (result == LINK_TRAINING_SUCCESS) {
+ 		dp_wait_for_training_aux_rd_interval(link, aux_rd_interval);
+ 		wait_time += aux_rd_interval;
+-		dp_get_lane_status_and_lane_adjust(link, lt_settings, dpcd_lane_status,
++		status = dp_get_lane_status_and_lane_adjust(link, lt_settings, dpcd_lane_status,
+ 				&dpcd_lane_status_updated, dpcd_lane_adjust, DPRX);
+ 		dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
+ 			lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
+ 		dpcd_128b_132b_get_aux_rd_interval(link, &aux_rd_interval);
+-		if (dp_is_ch_eq_done(lt_settings->link_settings.lane_count,
++		if (status != DC_OK) {
++			result = LINK_TRAINING_ABORT;
++		} else if (dp_is_ch_eq_done(lt_settings->link_settings.lane_count,
+ 				dpcd_lane_status)) {
+ 			/* pass */
+ 			break;
+ 		} else if (loop_count >= lt_settings->eq_loop_count_limit) {
+-			status = DP_128b_132b_MAX_LOOP_COUNT_REACHED;
++			result = DP_128b_132b_MAX_LOOP_COUNT_REACHED;
+ 		} else if (dpcd_lane_status_updated.bits.LT_FAILED_128b_132b) {
+-			status = DP_128b_132b_LT_FAILED;
++			result = DP_128b_132b_LT_FAILED;
+ 		} else {
+ 			dp_set_hw_lane_settings(link, link_res, lt_settings, DPRX);
+ 			dpcd_set_lane_settings(link, lt_settings, DPRX);
+@@ -2123,24 +2126,26 @@ static enum link_training_result dp_perform_128b_132b_channel_eq_done_sequence(
+ 	}
+ 
+ 	/* poll for EQ interlane align done */
+-	while (status == LINK_TRAINING_SUCCESS) {
+-		if (dpcd_lane_status_updated.bits.EQ_INTERLANE_ALIGN_DONE_128b_132b) {
++	while (result == LINK_TRAINING_SUCCESS) {
++		if (status != DC_OK) {
++			result = LINK_TRAINING_ABORT;
++		} else if (dpcd_lane_status_updated.bits.EQ_INTERLANE_ALIGN_DONE_128b_132b) {
+ 			/* pass */
+ 			break;
+ 		} else if (wait_time >= lt_settings->eq_wait_time_limit) {
+-			status = DP_128b_132b_CHANNEL_EQ_DONE_TIMEOUT;
++			result = DP_128b_132b_CHANNEL_EQ_DONE_TIMEOUT;
+ 		} else if (dpcd_lane_status_updated.bits.LT_FAILED_128b_132b) {
+-			status = DP_128b_132b_LT_FAILED;
++			result = DP_128b_132b_LT_FAILED;
+ 		} else {
+ 			dp_wait_for_training_aux_rd_interval(link,
+ 					lt_settings->eq_pattern_time);
+ 			wait_time += lt_settings->eq_pattern_time;
+-			dp_get_lane_status_and_lane_adjust(link, lt_settings, dpcd_lane_status,
++			status = dp_get_lane_status_and_lane_adjust(link, lt_settings, dpcd_lane_status,
+ 					&dpcd_lane_status_updated, dpcd_lane_adjust, DPRX);
+ 		}
+ 	}
+ 
+-	return status;
++	return result;
+ }
+ 
+ static enum link_training_result dp_perform_128b_132b_cds_done_sequence(
+@@ -2149,7 +2154,8 @@ static enum link_training_result dp_perform_128b_132b_cds_done_sequence(
+ 		struct link_training_settings *lt_settings)
+ {
+ 	/* Assumption: assume hardware has transmitted eq pattern */
+-	enum link_training_result status = LINK_TRAINING_SUCCESS;
++	enum dc_status status = DC_OK;
++	enum link_training_result result = LINK_TRAINING_SUCCESS;
+ 	union lane_align_status_updated dpcd_lane_status_updated = {0};
+ 	union lane_status dpcd_lane_status[LANE_COUNT_DP_MAX] = {0};
+ 	union lane_adjust dpcd_lane_adjust[LANE_COUNT_DP_MAX] = { { {0} } };
+@@ -2159,24 +2165,26 @@ static enum link_training_result dp_perform_128b_132b_cds_done_sequence(
+ 	dpcd_set_training_pattern(link, lt_settings->pattern_for_cds);
+ 
+ 	/* poll for CDS interlane align done and symbol lock */
+-	while (status == LINK_TRAINING_SUCCESS) {
++	while (result  == LINK_TRAINING_SUCCESS) {
+ 		dp_wait_for_training_aux_rd_interval(link,
+ 				lt_settings->cds_pattern_time);
+ 		wait_time += lt_settings->cds_pattern_time;
+-		dp_get_lane_status_and_lane_adjust(link, lt_settings, dpcd_lane_status,
++		status = dp_get_lane_status_and_lane_adjust(link, lt_settings, dpcd_lane_status,
+ 						&dpcd_lane_status_updated, dpcd_lane_adjust, DPRX);
+-		if (dp_is_symbol_locked(lt_settings->link_settings.lane_count, dpcd_lane_status) &&
++		if (status != DC_OK) {
++			result = LINK_TRAINING_ABORT;
++		} else if (dp_is_symbol_locked(lt_settings->link_settings.lane_count, dpcd_lane_status) &&
+ 				dpcd_lane_status_updated.bits.CDS_INTERLANE_ALIGN_DONE_128b_132b) {
+ 			/* pass */
+ 			break;
+ 		} else if (dpcd_lane_status_updated.bits.LT_FAILED_128b_132b) {
+-			status = DP_128b_132b_LT_FAILED;
++			result = DP_128b_132b_LT_FAILED;
+ 		} else if (wait_time >= lt_settings->cds_wait_time_limit) {
+-			status = DP_128b_132b_CDS_DONE_TIMEOUT;
++			result = DP_128b_132b_CDS_DONE_TIMEOUT;
+ 		}
+ 	}
+ 
+-	return status;
++	return result;
+ }
+ 
+ static enum link_training_result dp_perform_8b_10b_link_training(
+@@ -7099,7 +7107,8 @@ void dp_enable_link_phy(
+ 	unsigned int i;
+ 
+ 	if (link->connector_signal == SIGNAL_TYPE_EDP) {
+-		link->dc->hwss.edp_power_control(link, true);
++		if (!link->dc->config.edp_no_power_sequencing)
++			link->dc->hwss.edp_power_control(link, true);
+ 		link->dc->hwss.edp_wait_for_hpd_ready(link, true);
+ 	}
+ 
+@@ -7226,7 +7235,8 @@ void dp_disable_link_phy(struct dc_link *link, const struct link_resource *link_
+ 			link->dc->hwss.edp_backlight_control(link, false);
+ 		if (link_hwss->ext.disable_dp_link_output)
+ 			link_hwss->ext.disable_dp_link_output(link, link_res, signal);
+-		link->dc->hwss.edp_power_control(link, false);
++		if (!link->dc->config.edp_no_power_sequencing)
++			link->dc->hwss.edp_power_control(link, false);
+ 	} else {
+ 		if (dmcu != NULL && dmcu->funcs->lock_phy)
+ 			dmcu->funcs->lock_phy(dmcu);
+diff --git a/drivers/gpu/drm/amd/display/dc/dc.h b/drivers/gpu/drm/amd/display/dc/dc.h
+index 817028d3c4a0..11b02a98cf0f 100644
+--- a/drivers/gpu/drm/amd/display/dc/dc.h
++++ b/drivers/gpu/drm/amd/display/dc/dc.h
+@@ -337,6 +337,7 @@ struct dc_config {
+ 	bool is_single_rank_dimm;
+ 	bool use_pipe_ctx_sync_logic;
+ 	bool ignore_dpref_ss;
++	bool enable_mipi_converter_optimization;
+ };
+ 
+ enum visual_confirm {
+diff --git a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
+index 5f2afa5b4814..aee31c785aa9 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
+@@ -1245,8 +1245,18 @@ void dce110_blank_stream(struct pipe_ctx *pipe_ctx)
+ 			 * has changed or they enter protection state and hang.
+ 			 */
+ 			msleep(60);
+-		} else if (pipe_ctx->stream->signal == SIGNAL_TYPE_EDP)
+-			edp_receiver_ready_T9(link);
++		} else if (pipe_ctx->stream->signal == SIGNAL_TYPE_EDP) {
++			if (!link->dc->config.edp_no_power_sequencing) {
++				/*
++				 * Sometimes, DP receiver chip power-controlled externally by an
++				 * Embedded Controller could be treated and used as eDP,
++				 * if it drives mobile display. In this case,
++				 * we shouldn't be doing power-sequencing, hence we can skip
++				 * waiting for T9-ready.
++				 */
++				edp_receiver_ready_T9(link);
++			}
++		}
+ 	}
+ 
+ }
+@@ -2161,15 +2171,18 @@ static void dce110_setup_audio_dto(
+ 			build_audio_output(context, pipe_ctx, &audio_output);
+ 
+ 			if (dc->res_pool->dccg && dc->res_pool->dccg->funcs->set_audio_dtbclk_dto) {
+-				/* disable audio DTBCLK DTO */
+-				dc->res_pool->dccg->funcs->set_audio_dtbclk_dto(
+-					dc->res_pool->dccg, 0);
++				struct dtbclk_dto_params dto_params = {0};
+ 
+ 				pipe_ctx->stream_res.audio->funcs->wall_dto_setup(
+ 						pipe_ctx->stream_res.audio,
+ 						pipe_ctx->stream->signal,
+ 						&audio_output.crtc_info,
+ 						&audio_output.pll_info);
++
++				dc->res_pool->dccg->funcs->set_audio_dtbclk_dto(
++					dc->res_pool->dccg,
++					&dto_params);
++
+ 			} else
+ 				pipe_ctx->stream_res.audio->funcs->wall_dto_setup(
+ 					pipe_ctx->stream_res.audio,
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
+index bbc58d167c63..4519ecef2e7b 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
+@@ -513,7 +513,7 @@ void dccg31_set_physymclk(
+ /* Controls the generation of pixel valid for OTG in (OTG -> HPO case) */
+ static void dccg31_set_dtbclk_dto(
+ 		struct dccg *dccg,
+-		struct dtbclk_dto_params *params)
++		const struct dtbclk_dto_params *params)
+ {
+ 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
+ 	int req_dtbclk_khz = params->pixclk_khz;
+@@ -579,18 +579,17 @@ static void dccg31_set_dtbclk_dto(
+ 
+ void dccg31_set_audio_dtbclk_dto(
+ 		struct dccg *dccg,
+-		uint32_t req_audio_dtbclk_khz)
++		const struct dtbclk_dto_params *params)
+ {
+ 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
+ 
+-	if (dccg->ref_dtbclk_khz && req_audio_dtbclk_khz) {
++	if (params->ref_dtbclk_khz && params->req_audio_dtbclk_khz) {
+ 		uint32_t modulo, phase;
+ 
+ 		// phase / modulo = dtbclk / dtbclk ref
+-		modulo = dccg->ref_dtbclk_khz * 1000;
+-		phase = div_u64((((unsigned long long)modulo * req_audio_dtbclk_khz) + dccg->ref_dtbclk_khz - 1),
+-			dccg->ref_dtbclk_khz);
+-
++		modulo = params->ref_dtbclk_khz * 1000;
++		phase = div_u64((((unsigned long long)modulo * params->req_audio_dtbclk_khz) + params->ref_dtbclk_khz - 1),
++			params->ref_dtbclk_khz);
+ 
+ 		REG_WRITE(DCCG_AUDIO_DTBCLK_DTO_MODULO, modulo);
+ 		REG_WRITE(DCCG_AUDIO_DTBCLK_DTO_PHASE, phase);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.h b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.h
+index 269cabbea72a..f158c1ea214b 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.h
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.h
+@@ -192,7 +192,7 @@ void dccg31_set_physymclk(
+ 
+ void dccg31_set_audio_dtbclk_dto(
+ 		struct dccg *dccg,
+-		uint32_t req_audio_dtbclk_khz);
++		const struct dtbclk_dto_params *params);
+ 
+ void dccg31_set_hdmistreamclk(
+ 		struct dccg *dccg,
+diff --git a/drivers/gpu/drm/amd/display/dc/inc/hw/dccg.h b/drivers/gpu/drm/amd/display/dc/inc/hw/dccg.h
+index c7021915bac8..c1023cc84f55 100644
+--- a/drivers/gpu/drm/amd/display/dc/inc/hw/dccg.h
++++ b/drivers/gpu/drm/amd/display/dc/inc/hw/dccg.h
+@@ -120,11 +120,11 @@ struct dccg_funcs {
+ 
+ 	void (*set_dtbclk_dto)(
+ 			struct dccg *dccg,
+-			struct dtbclk_dto_params *dto_params);
++			const struct dtbclk_dto_params *params);
+ 
+ 	void (*set_audio_dtbclk_dto)(
+ 			struct dccg *dccg,
+-			uint32_t req_audio_dtbclk_khz);
++			const struct dtbclk_dto_params *params);
+ 
+ 	void (*set_dispclk_change_mode)(
+ 			struct dccg *dccg,
+diff --git a/drivers/gpu/drm/amd/display/dc/inc/hw/mpc.h b/drivers/gpu/drm/amd/display/dc/inc/hw/mpc.h
+index f5fd2a067323..5097037e3962 100644
+--- a/drivers/gpu/drm/amd/display/dc/inc/hw/mpc.h
++++ b/drivers/gpu/drm/amd/display/dc/inc/hw/mpc.h
+@@ -346,6 +346,11 @@ struct mpc_funcs {
+ 			int mpcc_id,
+ 			const struct mpc_grph_gamut_adjustment *adjust);
+ 
++	bool (*program_1dlut)(
++			struct mpc *mpc,
++			const struct pwl_params *params,
++			uint32_t rmu_idx);
++
+ 	bool (*program_shaper)(
+ 			struct mpc *mpc,
+ 			const struct pwl_params *params,
+diff --git a/drivers/gpu/drm/amd/display/dc/inc/hw_sequencer_private.h b/drivers/gpu/drm/amd/display/dc/inc/hw_sequencer_private.h
+index 8c2f190c4712..d2cb0e794500 100644
+--- a/drivers/gpu/drm/amd/display/dc/inc/hw_sequencer_private.h
++++ b/drivers/gpu/drm/amd/display/dc/inc/hw_sequencer_private.h
+@@ -140,6 +140,8 @@ struct hwseq_private_funcs {
+ 			const struct dc_plane_state *plane_state);
+ 	bool (*set_shaper_3dlut)(struct pipe_ctx *pipe_ctx,
+ 			const struct dc_plane_state *plane_state);
++	bool (*set_mcm_luts)(struct pipe_ctx *pipe_ctx,
++			const struct dc_plane_state *plane_state);
+ 	void (*PLAT_58856_wa)(struct dc_state *context,
+ 			struct pipe_ctx *pipe_ctx);
+ 	void (*setup_hpo_hw_control)(const struct dce_hwseq *hws, bool enable);
 -- 
 2.35.1
 
