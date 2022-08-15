@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF29C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45107C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240906AbiHOUPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
+        id S229585AbiHOUPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346363AbiHOULP (ORCPT
+        with ESMTP id S242663AbiHOUJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C3F31373;
-        Mon, 15 Aug 2022 11:57:39 -0700 (PDT)
+        Mon, 15 Aug 2022 16:09:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169DB83F25;
+        Mon, 15 Aug 2022 11:56:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C8F460A71;
-        Mon, 15 Aug 2022 18:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068E6C433C1;
-        Mon, 15 Aug 2022 18:57:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A286B81082;
+        Mon, 15 Aug 2022 18:56:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7508BC433C1;
+        Mon, 15 Aug 2022 18:55:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589857;
-        bh=tMbRNLEwJhzBn3I2NtkHXpA8he1iH1lPv6QR3bX1QbM=;
+        s=korg; t=1660589759;
+        bh=ii10Fs2g9tmcQoujzfpb1e/bISm5/ymiR4b6QYyeZEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ke0btZn/ca66Ownbl3i4AXFvJjcvxFenmxyFsprPYeJTEELnF2C2CFFmac9qwvSg7
-         /9cS9yuFRL3ASECkQS90TcHdAGP1iNAwKf4nHjymdk201MNE+ZLBA7+9pGhVEeVrJT
-         CICbQPur37iF0iDyThQnwWoTsA2jfV621SqZQHNs=
+        b=CvCVoxssRdoRGe+8pq7PZo7pRe59BE7zxg1VHZh8i7ois8r6oosgSbPW0rjfQNvry
+         b0WTeUeL6/EDzgr3KvyE5iYPhijpfPTjeYEkc9xEPb33876ivClECJbZQfOwWmYXFV
+         5VuhnyxJi6FkPLX4MIJCVQMN+RgRL+CdSS6E20cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@rivosinc.com>, Guo Ren <guoren@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 0071/1095] RISC-V: Update user page mapping only once during start
-Date:   Mon, 15 Aug 2022 19:51:10 +0200
-Message-Id: <20220815180432.452222140@linuxfoundation.org>
+        stable@vger.kernel.org, David Woodhouse <dwmw@amazon.co.uk>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 0040/1095] KVM: x86: do not report preemption if the steal time cache is stale
+Date:   Mon, 15 Aug 2022 19:50:39 +0200
+Message-Id: <20220815180431.074751502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,50 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit 133a6d1fe7d7ad8393af025c4dde379c0616661f upstream.
+commit c3c28d24d910a746b02f496d190e0e8c6560224b upstream.
 
-Currently, riscv_pmu_event_set_period updates the userpage mapping.
-However, the caller of riscv_pmu_event_set_period should update
-the userpage mapping because the counter can not be updated/started
-from set_period function in counter overflow path.
+Commit 7e2175ebd695 ("KVM: x86: Fix recording of guest steal time
+/ preempted status", 2021-11-11) open coded the previous call to
+kvm_map_gfn, but in doing so it dropped the comparison between the cached
+guest physical address and the one in the MSR.  This cause an incorrect
+cache hit if the guest modifies the steal time address while the memslots
+remain the same.  This can happen with kexec, in which case the preempted
+bit is written at the address used by the old kernel instead of
+the old one.
 
-Invoke the perf_event_update_userpage at the caller so that it
-doesn't get invoked twice during counter start path.
-
-Fixes: f5bfa23f576f ("RISC-V: Add a perf core library for pmu drivers")
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220711174632.4186047-3-atishp@rivosinc.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 7e2175ebd695 ("KVM: x86: Fix recording of guest steal time / preempted status")
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/riscv_pmu.c     |    1 -
- drivers/perf/riscv_pmu_sbi.c |    1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/x86.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/perf/riscv_pmu.c
-+++ b/drivers/perf/riscv_pmu.c
-@@ -170,7 +170,6 @@ int riscv_pmu_event_set_period(struct pe
- 		left = (max_period >> 1);
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4614,6 +4614,7 @@ static void kvm_steal_time_set_preempted
+ 	struct kvm_steal_time __user *st;
+ 	struct kvm_memslots *slots;
+ 	static const u8 preempted = KVM_VCPU_PREEMPTED;
++	gpa_t gpa = vcpu->arch.st.msr_val & KVM_STEAL_VALID_BITS;
  
- 	local64_set(&hwc->prev_count, (u64)-left);
--	perf_event_update_userpage(event);
+ 	/*
+ 	 * The vCPU can be marked preempted if and only if the VM-Exit was on
+@@ -4641,6 +4642,7 @@ static void kvm_steal_time_set_preempted
+ 	slots = kvm_memslots(vcpu->kvm);
  
- 	return overflow;
- }
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -542,6 +542,7 @@ static inline void pmu_sbi_start_overflo
- 			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
- 				  flag, init_val, 0, 0);
- #endif
-+			perf_event_update_userpage(event);
- 		}
- 		ctr_ovf_mask = ctr_ovf_mask >> 1;
- 		idx++;
+ 	if (unlikely(slots->generation != ghc->generation ||
++		     gpa != ghc->gpa ||
+ 		     kvm_is_error_hva(ghc->hva) || !ghc->memslot))
+ 		return;
+ 
 
 
