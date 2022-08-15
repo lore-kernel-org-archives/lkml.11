@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD71C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C77CC2BB41
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353665AbiHOXfv (ORCPT
+        id S1353768AbiHOXgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
+        Mon, 15 Aug 2022 19:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353355AbiHOXbh (ORCPT
+        with ESMTP id S1345716AbiHOXaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:31:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ADD14F961;
-        Mon, 15 Aug 2022 13:08:11 -0700 (PDT)
+        Mon, 15 Aug 2022 19:30:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6644BB921;
+        Mon, 15 Aug 2022 13:08:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86FF160DEB;
-        Mon, 15 Aug 2022 20:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A72C433D7;
-        Mon, 15 Aug 2022 20:08:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00B5CB80EA9;
+        Mon, 15 Aug 2022 20:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B578C433C1;
+        Mon, 15 Aug 2022 20:07:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594089;
-        bh=zfIZ+r3tJPCB2oToX0Vxr7pLYk/MjTYFsb8+1JVJSZI=;
+        s=korg; t=1660594077;
+        bh=QZhC4OWnf79y4pgVUj71VLW5Nv7lL1FdigrexeGZP/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QVjB2uwU7Aw6NOuAvpow9TQxNBKc6+D36x6Xk31UhnQcov7/7MhAqvYkwQ5Oga7Fc
-         KiyorJkgLYa3MFj8z3/teij6+U4buqMhSxjvc2cxoHks0rSv+rwvmV202UvOpOkMmM
-         fiRTS+wyUy5XFkllS3tLxMTKrcKXBY6Lci/OlPUY=
+        b=Uvo6GOLrxntgHwN4H/QgQNsYeTQVQyHzPppVU0Ai6EYsoYi/FEckUj6P8uzQVcjxF
+         zW6o1AwwM4ajFerv75H9S1+5EsulIfcw93CYZ7ryNcFUEH4gB+RFRbB2MP7cjIuB8V
+         EdxGyNPHFijuZuyKYu9hJG24W5B7OZPNSW9NIDcQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0372/1157] media: camss: csid: fix wrong size passed to devm_kmalloc_array()
-Date:   Mon, 15 Aug 2022 19:55:28 +0200
-Message-Id: <20220815180454.596391973@linuxfoundation.org>
+Subject: [PATCH 5.19 0342/1157] drm/bridge: lt9611uxc: Cancel only drivers work
+Date:   Mon, 15 Aug 2022 19:54:58 +0200
+Message-Id: <20220815180453.375636905@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,35 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-[ Upstream commit 4c25384d136642d72098e36201ca988533e73065 ]
+[ Upstream commit dfa687bffc8a4a21ed929c7dececf01b8f1f52ee ]
 
-'supplies' is a pointer, the real size of struct regulator_bulk_data
-should be pass to devm_kmalloc_array().
+During device remove care needs to be taken that no work is pending
+before it removes the underlying DRM bridge etc, but this can be done on
+the specific work rather than waiting for the flush of the system-wide
+workqueue.
 
-Fixes: 0d8140179715 ("media: camss: Add regulator_bulk support")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: bc6fa8676ebb ("drm/bridge/lontium-lt9611uxc: move HPD notification out of IRQ handler")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220601233818.1877963-1-bjorn.andersson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/camss/camss-csid.c | 2 +-
+ drivers/gpu/drm/bridge/lontium-lt9611uxc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csid.c b/drivers/media/platform/qcom/camss/camss-csid.c
-index f993f349b66b..80628801cf09 100644
---- a/drivers/media/platform/qcom/camss/camss-csid.c
-+++ b/drivers/media/platform/qcom/camss/camss-csid.c
-@@ -666,7 +666,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
- 	if (csid->num_supplies) {
- 		csid->supplies = devm_kmalloc_array(camss->dev,
- 						    csid->num_supplies,
--						    sizeof(csid->supplies),
-+						    sizeof(*csid->supplies),
- 						    GFP_KERNEL);
- 		if (!csid->supplies)
- 			return -ENOMEM;
+diff --git a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+index 3d62e6bf6892..310b3b194491 100644
+--- a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
++++ b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+@@ -982,7 +982,7 @@ static int lt9611uxc_remove(struct i2c_client *client)
+ 	struct lt9611uxc *lt9611uxc = i2c_get_clientdata(client);
+ 
+ 	disable_irq(client->irq);
+-	flush_scheduled_work();
++	cancel_work_sync(&lt9611uxc->work);
+ 	lt9611uxc_audio_exit(lt9611uxc);
+ 	drm_bridge_remove(&lt9611uxc->bridge);
+ 
 -- 
 2.35.1
 
