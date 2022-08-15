@@ -2,79 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9430C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C90C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232808AbiHODiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        id S230303AbiHODnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232766AbiHODiJ (ORCPT
+        with ESMTP id S232605AbiHODm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:38:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC7913EB4
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:38:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19812B80CF2
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 03:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB18C433D6;
-        Mon, 15 Aug 2022 03:38:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660534683;
-        bh=VsYtEaLrultUzMYq2W9FqRUKe3E7Yctk9vn8SCRVUCs=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=EvOM/yGowHJ9MBWHDjna0JIomwNTVgijPeGdq6G3VY8JUttonvroTfsUwAvjQvCrw
-         Fqb2/qo2zTVQ8zbM+J6iY2T2cqj2svwY62g0ZZp4yRHDjmgvjitEbd8nX7hmpTifOV
-         DAUPbKubdiEl81nimPayRZ2jxXl0XCHpNEyK+7SasLXgZdTBPkrw0BNmIdNLnfG8JD
-         qmdkI6y1/s0wnfvCGBMzfVxMMLbPXst5buOxtVy7knkYE/I8LAU4Z+a298DvTmir/n
-         kakBEk/4l2qb4AFMFO3vo3GWk7NmLh2J50hDwgl2hhxONvlddVnj6DLFSpMN+HxgPp
-         OLhGcU2nwM7Fw==
-Message-ID: <f13d4881-820f-f6cd-4a70-c46ca3c5089f@kernel.org>
-Date:   Mon, 15 Aug 2022 11:38:00 +0800
+        Sun, 14 Aug 2022 23:42:59 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E43A11451;
+        Sun, 14 Aug 2022 20:42:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660534978; x=1692070978;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UMqmxjssfvr9MGTku5Xh+2RDGy3WR7MtBK+2rqnJ73o=;
+  b=Glbz5xAh/JdvKqiotz1iYhZD9Lw75CPU+C2700g48PvVKpKWmaNlFEyq
+   MF2iIBwuXU2r3tlcMrAoM6iWQY6s0zXVC5E4aNmgW+lrFizfS9b1byoC4
+   Hcuw3JqQBs7/adWbpp1ILHD+BXEYjdMmOoI0VyW730b/c9W6fXlinQ3mL
+   HJ6ogsitMOzab5XD5C+k5WrPlqVqDaSxMq3HSX3urxLxVWqleERFjJmK4
+   Cv7+Mh8MrGqImAZyu9BOnOL8UXmWpXmgaCOWEGkMTXADASB9vLlf7Yzq+
+   KxtR89+B+isgJdoTvkvXOvoNXEg6vagQtbD6Dn7KKXeWIPU4aJkUFWGVL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="272276443"
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="272276443"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 20:42:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="709633356"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Aug 2022 20:42:55 -0700
+Date:   Mon, 15 Aug 2022 11:33:52 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Conor Dooley <conor.dooley@microchip.com>,
+        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Tom Rix <trix@redhat.com>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: fpga: microchip,mpf-spi-fpga-mgr: use
+ spi-peripheral-props.yaml
+Message-ID: <Yvm+oPCzNnTDcrFd@yilunxu-OptiPlex-7050>
+References: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [f2fs-dev] [PATCH] f2fs: zoned device does not support ATGC
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220811225454.2125297-1-jaegeuk@kernel.org>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220811225454.2125297-1-jaegeuk@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/12 6:54, Jaegeuk Kim wrote:
-> ATGC is using SSR which violates zoned device. >
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-> ---
->   fs/f2fs/super.c | 4 ++++
->   1 file changed, 4 insertions(+)
+On 2022-07-27 at 18:43:47 +0200, Krzysztof Kozlowski wrote:
+> Instead of listing directly properties typical for SPI peripherals,
+> reference the spi-peripheral-props.yaml schema.  This allows using all
+> properties typical for SPI-connected devices, even these which device
+> bindings author did not tried yet.
 > 
-> diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-> index 2451623c05a7..212ec2b4926b 100644
-> --- a/fs/f2fs/super.c
-> +++ b/fs/f2fs/super.c
-> @@ -1298,6 +1298,10 @@ static int parse_options(struct super_block *sb, char *options, bool is_remount)
->   			F2FS_OPTION(sbi).discard_unit =
->   					DISCARD_UNIT_SECTION;
->   		}
-> +		if (test_opt(sbi, ATGC)) {
-> +			f2fs_err(sbi, "Zoned block device doesn't support ATGC.");
-> +			return -EINVAL;
-> +		}
+> Remove the spi-* properties which now come via spi-peripheral-props.yaml
+> schema, except for the cases when device schema adds some constraints
+> like maximum frequency.
+> 
+> While changing additionalProperties->unevaluatedProperties, put it in
+> typical place, just before example DTS.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-ATGC is incompatible with LFS mode, we can check f2fs_lfs_mode() and ATGC
-mountoption instead, as zoned device depends on LFS mode.
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+
+Applied to for-next.
 
 Thanks,
+Yilun
 
->   	}
->   
->   #ifdef CONFIG_F2FS_FS_COMPRESSION
+> 
+> ---
+> 
+> Technically, this depends on [1] merged to SPI tree, if we want to
+> preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+> schemas in this patch.
+> 
+> If this patch comes independently via different tree, the SPI CPHA and
+> CPOL will be allowed for brief period of time, before [1] is merged.
+> This will not have negative impact, just DT schema checks will be
+> loosened for that period.
+> 
+> [1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+> ---
+>  .../bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml          | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+> index aee45cb15592..527532f039ce 100644
+> --- a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+> +++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+> @@ -22,13 +22,14 @@ properties:
+>      description: SPI chip select
+>      maxItems: 1
+>  
+> -  spi-max-frequency: true
+> -
+>  required:
+>    - compatible
+>    - reg
+>  
+> -additionalProperties: false
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +unevaluatedProperties: false
+>  
+>  examples:
+>    - |
+> -- 
+> 2.34.1
+> 
