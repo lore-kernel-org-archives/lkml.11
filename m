@@ -2,135 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D71C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 658A6C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233190AbiHPFEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
+        id S232533AbiHPFFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232992AbiHPFDl (ORCPT
+        with ESMTP id S233148AbiHPFEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:03:41 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24EAC6E94
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:01:33 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-328303afa6eso103160407b3.10
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:01:33 -0700 (PDT)
+        Tue, 16 Aug 2022 01:04:25 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789F218DC04
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:03:05 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id ch17-20020a17090af41100b001fa74771f61so178839pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=elGV48BlDszZRuy8S9+m13PY1kqIqtWfREXP+EXFmrg=;
-        b=r8NjbapBTS67+vpVF7+sCFfdYsvuzVpSbreXNSPasBnVSUXsEkW2Tdiy0vBzbOigcM
-         qkHezPAEwRYmAfuMzU7q6qw4S5wZy3KRTtCpEP69ti5057pFT/Te3P5tEFe+xNHwZC+m
-         Tf3GeanOn8C43ORFxDvYPY4oID2CctIoeScmjdwsfdlI5xtnUMR9bJ2JRxwTzOdhN6B/
-         Q2jJ//9GPDv5iPdQrFBgt1hXlMV7dlgnVz+CxBkfIXZqtN0HMa5iF1fqfIMMDJHs3IbN
-         gHVjl6QzTSIciKflXKOAYtOtwqyjwYxUfM2HGX2gXXOcMk2jxDLBXTVALHOUX/KDTSv6
-         vfmg==
+        d=gmail.com; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc;
+        bh=je9mkTd7hK9getobpinLs+IwDRRu6tp5EWDUYT/znxA=;
+        b=S4kstyT5ya1G60oqBCS4kOWjOPbd/1oj1NF42PQ/N+lgI6ykau/pCdSRLa+keQoBaS
+         ImmmkcX3Zfp11vHkCcPMHm2jmJNLihnMe0bReHPfh8JbAAzZkDUn/J/2QWt3VVJjWpCr
+         PTmUrGryJggALRRwrbIj8LQQgsn29MgBMRQMHPOY4DzHJ1E+7bF3t4oiH9vAoEEVAkow
+         nw6AJR2BwnlV/HcHjStl5eVON5+EBs5gDgPEREtG5mMTqxjOTvwNgok0uAPsACFqcl56
+         Lawtkygv+S6s1iVWyn5x3EHnt41c7L5Q6jWqCO4I9EP8pc/oG2rhfw/CkFPZ/mUSIY4D
+         8cOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=elGV48BlDszZRuy8S9+m13PY1kqIqtWfREXP+EXFmrg=;
-        b=er0MNSwHxh146w7ofhi63PZ7AckI5qyNucqSmj2fpjSHAS20GLSt7FNqw5jp52p0U3
-         cgoLr2+iZ9VhQNnynAHQVcrf5FaGecpVAVXx2MVqYT0hYfg0jkqxmsXM7VEGCwTauJYd
-         KKeLAkUl0rZ30/Zwplw37fLEGlkkmxtw36mWT63M+wlHosIXQskD9RNyt0d1amRuB+bP
-         KQPIlS/gb75r4//iuXIqaTl8SflDfqwUjXrz8vBrw4MFxlkf2cjE20srBsf4qgAVxKm0
-         bJenNPAW9rYfy5Y77fzDxOlMrVKbvhQj6D+sZPz4NggkJIunnvKSG0ROs8fiDkhWHghL
-         mtvA==
-X-Gm-Message-State: ACgBeo3MHfrr7hvGDf11tbXPen4AKUowhE/jvjxltXVIb1D8BPzl+wso
-        3avvCBR4R0phyzFy7jlAMzmA3yPOgOkp8MOaJRf0SQ==
-X-Google-Smtp-Source: AA6agR41q4yHanMi1A+gXLO08ia/kXxxT1OUdvxPqS+JZ3AYLwYDjl7erHXWMxbaY8NeTp1jebE8Ei5/XTiAHc+ZS+o=
-X-Received: by 2002:a25:6612:0:b0:670:7c81:3aa6 with SMTP id
- a18-20020a256612000000b006707c813aa6mr13305548ybc.530.1660597293043; Mon, 15
- Aug 2022 14:01:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220810060040.321697-1-saravanak@google.com> <20220810060040.321697-10-saravanak@google.com>
- <YvYhoGdemyKEx++d@atomide.com> <CAGETcx_SdxJKV56jGSx8GbmA4y_zaoP6z8n8xKZGZbCcmewvDQ@mail.gmail.com>
- <YvoglKDbsDLHq2S0@atomide.com>
-In-Reply-To: <YvoglKDbsDLHq2S0@atomide.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 15 Aug 2022 14:00:57 -0700
-Message-ID: <CAGETcx-wz0k13K2fOjTN9RfuMzUPti=UQqY5Mq9XYLK8vudYng@mail.gmail.com>
-Subject: Re: [PATCH v1 9/9] of: property: Simplify of_link_to_phandle()
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, Abel Vesa <abel.vesa@linaro.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        John Stultz <jstultz@google.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc;
+        bh=je9mkTd7hK9getobpinLs+IwDRRu6tp5EWDUYT/znxA=;
+        b=5VJYfp++4WYu8438RLK4FaYMf8SNnJdcdT/uAxQYasnvfJhmaPLXII3q/ezq3JJAMi
+         gFNBxcWYcjlrKhN0I9+6JYIquYVEmtFqGX97rKyMGrqvNDKJJ2VSHfjjdLbV2ynFRCRo
+         XFGsFf32lLd1qamhsGCsw5CAwIvU93Qx37qbYA7/TD3VR4Tioa8StNPGreMYcuW5yVVS
+         Z/pHe5K1RnecjcIDRYuU5w7UodVjBriGZgndn1Q/aj+vp84wWCSm86cTeOG6viCvcKXk
+         sljtRhgOV8AMbS442v8dJ5x54J/2xOKKBOdZ1IigAYNX8B4agdQTduxRh6pR1TukKs99
+         MTyA==
+X-Gm-Message-State: ACgBeo2ztN3nHxmGAVnq6Ni8hJPg41Chlqz1H2eubhG9WBxwkWRClPcq
+        av1o2YOs53hitiHre++S2M6n1jjF9h5CFg==
+X-Google-Smtp-Source: AA6agR44+ifgWCDgmkrzaLC4LcN0Pzmv1dnZPiz9dx0VkCSF+V99u1IA17b1bjC3rh7w1WfFZsIzuQ==
+X-Received: by 2002:a17:90b:390f:b0:1f4:e394:8c18 with SMTP id ob15-20020a17090b390f00b001f4e3948c18mr19648896pjb.141.1660597384068;
+        Mon, 15 Aug 2022 14:03:04 -0700 (PDT)
+Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net. [24.6.216.183])
+        by smtp.gmail.com with ESMTPSA id y13-20020a17090322cd00b0016dbb878f8asm7420251plg.82.2022.08.15.14.03.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Aug 2022 14:03:03 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH v3 5/7] mm: Remember young/dirty bit for page migrations
+From:   Nadav Amit <nadav.amit@gmail.com>
+In-Reply-To: <5B21352C-2BE6-4070-BB6B-C1B7A5D4D225@gmail.com>
+Date:   Mon, 15 Aug 2022 14:03:01 -0700
+Cc:     "Huang, Ying" <ying.huang@intel.com>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Minchan Kim <minchan@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andi Kleen <andi.kleen@intel.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E37036E0-566E-40C7-AD15-720CDB003227@gmail.com>
+References: <20220809220100.20033-1-peterx@redhat.com>
+ <20220809220100.20033-6-peterx@redhat.com> <YvUeB0jc6clz59z5@xz-m1.local>
+ <87pmh6dwdr.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <YvqcGq44oonHNyCO@xz-m1.local>
+ <5B21352C-2BE6-4070-BB6B-C1B7A5D4D225@gmail.com>
+To:     Peter Xu <peterx@redhat.com>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 3:31 AM Tony Lindgren <tony@atomide.com> wrote:
->
-> * Saravana Kannan <saravanak@google.com> [220813 00:30]:
-> > On Fri, Aug 12, 2022 at 2:47 AM Tony Lindgren <tony@atomide.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > * Saravana Kannan <saravanak@google.com> [220810 05:54]:
-> > > > The driver core now:
-> > > > - Has the parent device of a supplier pick up the consumers if the
-> > > >   supplier never has a device created for it.
-> > > > - Ignores a supplier if the supplier has no parent device and will never
-> > > >   be probed by a driver
-> > > >
-> > > > And already prevents creating a device link with the consumer as a
-> > > > supplier of a parent.
-> > > >
-> > > > So, we no longer need to find the "compatible" node of the supplier or
-> > > > do any other checks in of_link_to_phandle(). We simply need to make sure
-> > > > that the supplier is available in DT.
-> > >
-> > > This patch fixes booting for me, so it should be applied as a fix and
-> > > tagged with:
-> > >
-> > > Fixes: 5a46079a9645 ("PM: domains: Delete usage of driver_deferred_probe_check_state()")
-> > >
-> > > If there are dependencies to the other patches in this series, it might
-> > > make sense to revert commit 5a46079a9645 instead.
-> >
-> > Yes, there are dependencies on the rest of the patches in this series.
-> > For linux-next, I think we should pick up this series once we get more
-> > Tested-bys.
-> >
-> >  So if 5a46079a9645 is causing any regression in stable branches, we
-> > should pick up the revert series [1] instead of this series we are
-> > replying to.
->
-> Agreed we should apply the reverts in [1] for v6.0-rc series. At least
-> several generations of the TI 32-bit ARM SoCs are failing to boot
-> otherwise.
+On Aug 15, 2022, at 1:52 PM, Nadav Amit <nadav.amit@gmail.com> wrote:
 
-Actually I wasn't clear in my earlier email. I meant to say "releases
-branches", as in 5.19.xxx and not "stable branches". So for 5.19.xxx
-we'd pick up these reverts.
+> On Aug 15, 2022, at 12:18 PM, Peter Xu <peterx@redhat.com> wrote:
+>=20
+>> On Fri, Aug 12, 2022 at 10:32:48AM +0800, Huang, Ying wrote:
+>>> Peter Xu <peterx@redhat.com> writes:
+>>>=20
+>>>> On Tue, Aug 09, 2022 at 06:00:58PM -0400, Peter Xu wrote:
+>>>>> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
+>>>>> index 27fb37d65476..699f821b8443 100644
+>>>>> --- a/mm/migrate_device.c
+>>>>> +++ b/mm/migrate_device.c
+>>>>> @@ -221,6 +221,10 @@ static int migrate_vma_collect_pmd(pmd_t =
+*pmdp,
+>>>>> 			else
+>>>>> 				entry =3D make_readable_migration_entry(
+>>>>> 							=
+page_to_pfn(page));
+>>>>> +			if (pte_young(pte))
+>>>>> +				entry =3D =
+make_migration_entry_young(entry);
+>>>>> +			if (pte_dirty(pte))
+>>>>> +				entry =3D =
+make_migration_entry_dirty(entry);
+>>>>> 			swp_pte =3D swp_entry_to_pte(entry);
+>>>>> 			if (pte_present(pte)) {
+>>>>> 				if (pte_soft_dirty(pte))
+>>>>=20
+>>>> This change needs to be wrapped with pte_present() at least..
+>>>>=20
+>>>> I also just noticed that this change probably won't help anyway =
+because:
+>>>>=20
+>>>> (1) When ram->device, the pte will finally be replaced with a =
+device
+>>>>     private entry, and device private entry does not yet support =
+A/D, it
+>>>>     means A/D will be dropped again,
+>>>>=20
+>>>> (2) When device->ram, we are missing information on either A/D =
+bits, or
+>>>>     even if device private entries start to suport A/D, it's still =
+not
+>>>>     clear whether we should take device read/write into =
+considerations
+>>>>     too on the page A/D bits to be accurate.
+>>>>=20
+>>>> I think I'll probably keep the code there for completeness, but I =
+think it
+>>>> won't really help much until more things are done.
+>>>=20
+>>> It appears that there are more issues.  Between "pte =3D *ptep" and =
+pte
+>>> clear, CPU may set A/D bit in PTE, so we may need to update pte when
+>>> clearing PTE.
+>>=20
+>> Agreed, I didn't see it a huge problem with current code, but it =
+should be
+>> better in that way.
+>>=20
+>>> And I don't find the TLB is flushed in some cases after PTE is =
+cleared.
+>>=20
+>> I think it's okay to not flush tlb if pte not present.  But maybe =
+you're
+>> talking about something else?
+>=20
+> I think Huang refers to situation in which the PTE is cleared, still =
+not
+> flushed, and then A/D is being set by the hardware.
+>=20
+> At least on x86, the hardware is not supposed to do so. The only case =
+I
+> remember (and sometimes misremembers) is with KNL erratum, which =
+perhaps
+> needs to be considered:
+>=20
+> =
+https://lore.kernel.org/all/20160708001911.9A3FD2B6@viggo.jf.intel.com/
 
-And for v6.0-rc if my other patch series [1] fixes the issue, I'd
-rather apply [1] than this series. Because this series is meant to be
-temporary (I'll be reverting this in the future).
+I keep not remembering this erratum correctly. IIRC, the erratum says =
+that
+the access/dirty might be set, but it does not mean that a write is =
+possible
+after the PTE is cleared (i.e., the dirty/access might be set on the
+non-present PTE, but the access itself would fail). So it is not an =
+issue in
+this case - losing A/D would not impact correctness since the access =
+should
+fail.
 
--Saravana
+Dave Hansen hates when I get confused with this one, but I cc him if he
+wants to confirm.
 
-[1] - https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
+[ Having said all of that, in general the lack of regard to
+  mm->tlb_flush_pending is always concerning in such functions. ]=
