@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD4FC00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC93C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354545AbiHOXpu (ORCPT
+        id S1354579AbiHOXp5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
+        Mon, 15 Aug 2022 19:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354306AbiHOXlu (ORCPT
+        with ESMTP id S1354304AbiHOXlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F0E2BB1E;
-        Mon, 15 Aug 2022 13:12:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30D42B63D;
+        Mon, 15 Aug 2022 13:11:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3FB860B9B;
-        Mon, 15 Aug 2022 20:12:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C697FC433D6;
-        Mon, 15 Aug 2022 20:12:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83F92B80EAD;
+        Mon, 15 Aug 2022 20:11:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA22C433C1;
+        Mon, 15 Aug 2022 20:11:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594322;
-        bh=WwVJv/m6SIj3U5ym2807dfymP7Wgx7pdU7xSjgNIU38=;
+        s=korg; t=1660594316;
+        bh=fZqr0HeqVX/CO92GLshtVf3UowJIdnYMudi1aIHwhnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y2tBSokME5AXd44j5CH+9aF0LvDu8EPAplZ7zXqSS+Kd3iQ+ddr52BIrFj+6PIYRU
-         ergnKsvBwGn90WDaM60xfPOjBr2ua5Gn2bucfVu0fb21/W7TQjOsUISLCnPQAHII6c
-         0iWZDfpW0NIT4tL7sb748KV5AF0jSbanwat8AydM=
+        b=DcSsukGBKTw0Se3s5MAUUNuPacO7YI8CJy54qpn+kUQsZfEuKxUYS3Wk9bQtbWK/G
+         yYhw+knKEar2cpqr1tN4RSqKPvtdvUqehSQf+1hLhTAHki9I1KCH3AT8hZYYZo5IEA
+         KVU3pli8ZSzlQgie9qySbSRQKgldqi86mM3kHdIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Dong <yunfei.dong@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0405/1157] media: mediatek: vcodec: Fix non subdev architecture open power fail
-Date:   Mon, 15 Aug 2022 19:56:01 +0200
-Message-Id: <20220815180455.862791814@linuxfoundation.org>
+Subject: [PATCH 5.19 0413/1157] drm/vc4: dsi: Fix dsi0 interrupt support
+Date:   Mon, 15 Aug 2022 19:56:09 +0200
+Message-Id: <20220815180456.166538245@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,37 +51,199 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Dong <yunfei.dong@mediatek.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit 083f54a7c9c66496b9d9f3c50dfdca24e6aa7012 ]
+[ Upstream commit bc5b815e06f90cccdb6461aba1e49fdc2f3c8cd1 ]
 
-According to subdev_bitmap bit value to open hardware power, need to
-set subdev_bitmap value for non subdev architecture.
+DSI0 seemingly had very little or no testing as a load of
+the register mappings were incorrect/missing, so host
+transfers always timed out due to enabling/checking incorrect
+bits in the interrupt enable and status registers.
 
-Fixes: c05bada35f01 ("media: mtk-vcodec: Add to support multi hardware decode")
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-16-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 111 ++++++++++++++++++++++++++--------
+ 1 file changed, 85 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-index 95a53385a61c..99d7b15f2b9d 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-@@ -388,6 +388,8 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 			mtk_v4l2_err("Main device of_platform_populate failed.");
- 			goto err_reg_cont;
- 		}
-+	} else {
-+		set_bit(MTK_VDEC_CORE, dev->subdev_bitmap);
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 97a258c934af..333ea96fcde4 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -181,8 +181,50 @@
+ 
+ #define DSI0_TXPKT_PIX_FIFO		0x20 /* AKA PIX_FIFO */
+ 
+-#define DSI0_INT_STAT		0x24
+-#define DSI0_INT_EN		0x28
++#define DSI0_INT_STAT			0x24
++#define DSI0_INT_EN			0x28
++# define DSI0_INT_FIFO_ERR		BIT(25)
++# define DSI0_INT_CMDC_DONE_MASK	VC4_MASK(24, 23)
++# define DSI0_INT_CMDC_DONE_SHIFT	23
++#  define DSI0_INT_CMDC_DONE_NO_REPEAT		1
++#  define DSI0_INT_CMDC_DONE_REPEAT		3
++# define DSI0_INT_PHY_DIR_RTF		BIT(22)
++# define DSI0_INT_PHY_D1_ULPS		BIT(21)
++# define DSI0_INT_PHY_D1_STOP		BIT(20)
++# define DSI0_INT_PHY_RXLPDT		BIT(19)
++# define DSI0_INT_PHY_RXTRIG		BIT(18)
++# define DSI0_INT_PHY_D0_ULPS		BIT(17)
++# define DSI0_INT_PHY_D0_LPDT		BIT(16)
++# define DSI0_INT_PHY_D0_FTR		BIT(15)
++# define DSI0_INT_PHY_D0_STOP		BIT(14)
++/* Signaled when the clock lane enters the given state. */
++# define DSI0_INT_PHY_CLK_ULPS		BIT(13)
++# define DSI0_INT_PHY_CLK_HS		BIT(12)
++# define DSI0_INT_PHY_CLK_FTR		BIT(11)
++/* Signaled on timeouts */
++# define DSI0_INT_PR_TO			BIT(10)
++# define DSI0_INT_TA_TO			BIT(9)
++# define DSI0_INT_LPRX_TO		BIT(8)
++# define DSI0_INT_HSTX_TO		BIT(7)
++/* Contention on a line when trying to drive the line low */
++# define DSI0_INT_ERR_CONT_LP1		BIT(6)
++# define DSI0_INT_ERR_CONT_LP0		BIT(5)
++/* Control error: incorrect line state sequence on data lane 0. */
++# define DSI0_INT_ERR_CONTROL		BIT(4)
++# define DSI0_INT_ERR_SYNC_ESC		BIT(3)
++# define DSI0_INT_RX2_PKT		BIT(2)
++# define DSI0_INT_RX1_PKT		BIT(1)
++# define DSI0_INT_CMD_PKT		BIT(0)
++
++#define DSI0_INTERRUPTS_ALWAYS_ENABLED	(DSI0_INT_ERR_SYNC_ESC | \
++					 DSI0_INT_ERR_CONTROL |	 \
++					 DSI0_INT_ERR_CONT_LP0 | \
++					 DSI0_INT_ERR_CONT_LP1 | \
++					 DSI0_INT_HSTX_TO |	 \
++					 DSI0_INT_LPRX_TO |	 \
++					 DSI0_INT_TA_TO |	 \
++					 DSI0_INT_PR_TO)
++
+ # define DSI1_INT_PHY_D3_ULPS		BIT(30)
+ # define DSI1_INT_PHY_D3_STOP		BIT(29)
+ # define DSI1_INT_PHY_D2_ULPS		BIT(28)
+@@ -892,6 +934,9 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 
+ 		DSI_PORT_WRITE(PHY_AFEC0, afec0);
+ 
++		/* AFEC reset hold time */
++		mdelay(1);
++
+ 		DSI_PORT_WRITE(PHY_AFEC1,
+ 			       VC4_SET_FIELD(6,  DSI0_PHY_AFEC1_IDR_DLANE1) |
+ 			       VC4_SET_FIELD(6,  DSI0_PHY_AFEC1_IDR_DLANE0) |
+@@ -1058,12 +1103,9 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 		DSI_PORT_WRITE(CTRL, DSI_PORT_READ(CTRL) | DSI1_CTRL_EN);
+ 
+ 	/* Bring AFE out of reset. */
+-	if (dsi->variant->port == 0) {
+-	} else {
+-		DSI_PORT_WRITE(PHY_AFEC0,
+-			       DSI_PORT_READ(PHY_AFEC0) &
+-			       ~DSI1_PHY_AFEC0_RESET);
+-	}
++	DSI_PORT_WRITE(PHY_AFEC0,
++		       DSI_PORT_READ(PHY_AFEC0) &
++		       ~DSI_PORT_BIT(PHY_AFEC0_RESET));
+ 
+ 	vc4_dsi_ulps(dsi, false);
+ 
+@@ -1182,13 +1224,28 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
+ 	/* Enable the appropriate interrupt for the transfer completion. */
+ 	dsi->xfer_result = 0;
+ 	reinit_completion(&dsi->xfer_completion);
+-	DSI_PORT_WRITE(INT_STAT, DSI1_INT_TXPKT1_DONE | DSI1_INT_PHY_DIR_RTF);
+-	if (msg->rx_len) {
+-		DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
+-					DSI1_INT_PHY_DIR_RTF));
++	if (dsi->variant->port == 0) {
++		DSI_PORT_WRITE(INT_STAT,
++			       DSI0_INT_CMDC_DONE_MASK | DSI1_INT_PHY_DIR_RTF);
++		if (msg->rx_len) {
++			DSI_PORT_WRITE(INT_EN, (DSI0_INTERRUPTS_ALWAYS_ENABLED |
++						DSI0_INT_PHY_DIR_RTF));
++		} else {
++			DSI_PORT_WRITE(INT_EN,
++				       (DSI0_INTERRUPTS_ALWAYS_ENABLED |
++					VC4_SET_FIELD(DSI0_INT_CMDC_DONE_NO_REPEAT,
++						      DSI0_INT_CMDC_DONE)));
++		}
+ 	} else {
+-		DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
+-					DSI1_INT_TXPKT1_DONE));
++		DSI_PORT_WRITE(INT_STAT,
++			       DSI1_INT_TXPKT1_DONE | DSI1_INT_PHY_DIR_RTF);
++		if (msg->rx_len) {
++			DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
++						DSI1_INT_PHY_DIR_RTF));
++		} else {
++			DSI_PORT_WRITE(INT_EN, (DSI1_INTERRUPTS_ALWAYS_ENABLED |
++						DSI1_INT_TXPKT1_DONE));
++		}
  	}
  
- 	ret = video_register_device(vfd_dec, VFL_TYPE_VIDEO, -1);
+ 	/* Send the packet. */
+@@ -1205,7 +1262,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
+ 		ret = dsi->xfer_result;
+ 	}
+ 
+-	DSI_PORT_WRITE(INT_EN, DSI1_INTERRUPTS_ALWAYS_ENABLED);
++	DSI_PORT_WRITE(INT_EN, DSI_PORT_BIT(INTERRUPTS_ALWAYS_ENABLED));
+ 
+ 	if (ret)
+ 		goto reset_fifo_and_return;
+@@ -1251,7 +1308,7 @@ static ssize_t vc4_dsi_host_transfer(struct mipi_dsi_host *host,
+ 		       DSI_PORT_BIT(CTRL_RESET_FIFOS));
+ 
+ 	DSI_PORT_WRITE(TXPKT1C, 0);
+-	DSI_PORT_WRITE(INT_EN, DSI1_INTERRUPTS_ALWAYS_ENABLED);
++	DSI_PORT_WRITE(INT_EN, DSI_PORT_BIT(INTERRUPTS_ALWAYS_ENABLED));
+ 	return ret;
+ }
+ 
+@@ -1388,26 +1445,28 @@ static irqreturn_t vc4_dsi_irq_handler(int irq, void *data)
+ 	DSI_PORT_WRITE(INT_STAT, stat);
+ 
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_ERR_SYNC_ESC, "LPDT sync");
++			 DSI_PORT_BIT(INT_ERR_SYNC_ESC), "LPDT sync");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_ERR_CONTROL, "data lane 0 sequence");
++			 DSI_PORT_BIT(INT_ERR_CONTROL), "data lane 0 sequence");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_ERR_CONT_LP0, "LP0 contention");
++			 DSI_PORT_BIT(INT_ERR_CONT_LP0), "LP0 contention");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_ERR_CONT_LP1, "LP1 contention");
++			 DSI_PORT_BIT(INT_ERR_CONT_LP1), "LP1 contention");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_HSTX_TO, "HSTX timeout");
++			 DSI_PORT_BIT(INT_HSTX_TO), "HSTX timeout");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_LPRX_TO, "LPRX timeout");
++			 DSI_PORT_BIT(INT_LPRX_TO), "LPRX timeout");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_TA_TO, "turnaround timeout");
++			 DSI_PORT_BIT(INT_TA_TO), "turnaround timeout");
+ 	dsi_handle_error(dsi, &ret, stat,
+-			 DSI1_INT_PR_TO, "peripheral reset timeout");
++			 DSI_PORT_BIT(INT_PR_TO), "peripheral reset timeout");
+ 
+-	if (stat & (DSI1_INT_TXPKT1_DONE | DSI1_INT_PHY_DIR_RTF)) {
++	if (stat & ((dsi->variant->port ? DSI1_INT_TXPKT1_DONE :
++					  DSI0_INT_CMDC_DONE_MASK) |
++		    DSI_PORT_BIT(INT_PHY_DIR_RTF))) {
+ 		complete(&dsi->xfer_completion);
+ 		ret = IRQ_HANDLED;
+-	} else if (stat & DSI1_INT_HSTX_TO) {
++	} else if (stat & DSI_PORT_BIT(INT_HSTX_TO)) {
+ 		complete(&dsi->xfer_completion);
+ 		dsi->xfer_result = -ETIMEDOUT;
+ 		ret = IRQ_HANDLED;
 -- 
 2.35.1
 
