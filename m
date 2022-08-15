@@ -2,96 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AEAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D54C25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232621AbiHONcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
+        id S242513AbiHONcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242838AbiHONb6 (ORCPT
+        with ESMTP id S229752AbiHONca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:31:58 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC874193D3
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:31:56 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso6752641pjl.4
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=CWRYKYmUqt8eEOVX3nqSEB+R46yZlA/ZWTwGwK50XRc=;
-        b=1JvETOAQmXm37KQowrJ3QDzbrxnjCS1Z37/PrrmPiJq0cAFAC/z8C6bfKCJbjLMhfU
-         Wn1lB/C/YxR/jb0C0S0xWHbqFHZ5/Fm6JxZWRL1Bi3Hy0chxGfVHDeg8OWOU+z0yjxWp
-         GoP1kl7UZb0r31lXL0ndr1Cs4gOjHU7gCjsYzTxjXQMxbyTLviAtY+w7ICua4DmWDMoJ
-         AFKarS3GDw+voIKQmo0nF8GYGr6CTG+TGbBsE74l/9fsvXuHR/MFRPBatdZsraDsvzCd
-         JnXQ9xbRsGEGtCo6lINqk2daqFdnCjGkHUjQ1eE3hyfmZZxHELF0zrJL2KWhcNsCdykF
-         ne1w==
+        Mon, 15 Aug 2022 09:32:30 -0400
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE5D15718
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:32:29 -0700 (PDT)
+Received: by mail-pg1-f179.google.com with SMTP id v4so2163316pgi.10
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:32:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=CWRYKYmUqt8eEOVX3nqSEB+R46yZlA/ZWTwGwK50XRc=;
-        b=LjlFmZredRrwcM/4+QpFf+s4TSBHT8DCoG2JmgyASjrlLES3gvtlSMS1vTCCGYOGH4
-         iQT9+rze7QZcvEmDOj8j08XD5J7nxyc4bAbgwD+yZfWB/1MqN6iiftfyrZjygvsi4i56
-         l85R2eJ5cwNJd6ljYkTlgJ0L9AuZlNLjXoHTVqMMxQoduZidgd9M4daBnrZxwtKwBNP/
-         DFIjvkavydktz8vYjvjuFMVkwFyUGQxk+pNKu6xyqgI2wbFU+z9+fS3OwBHcKDbnjKeg
-         VZM2+j/MJp8X9XI2dJds3QbaVc61h6P92ZVfmfxFIq3YjKJlYzWpwgX8yyvKRsfIGRlO
-         YSAA==
-X-Gm-Message-State: ACgBeo3b8zufL/ExF1cv+rFLXc1e+gpeo8zosR0lHaHjhyX6jjcFKVaj
-        i9ugd+7bqPpzNHIOeCJozD0lug==
-X-Google-Smtp-Source: AA6agR45i9MBYCzQk5IilUQ9i5f+P0H1KhnQJj5vU34O1XkKW5Tt41hQDcSIDioHFtGR9o8/zlsaPw==
-X-Received: by 2002:a17:902:ea07:b0:16e:daf6:6087 with SMTP id s7-20020a170902ea0700b0016edaf66087mr16882997plg.68.1660570316249;
-        Mon, 15 Aug 2022 06:31:56 -0700 (PDT)
-Received: from [10.94.58.189] ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id d65-20020a621d44000000b0052c7ff2ac74sm6784740pfd.17.2022.08.15.06.31.53
+        bh=6+NKr8x81snqBPCrj5grt+MbWltUZu5PmZe6P/3T6aM=;
+        b=Eul1FE/WL+1pSC4oKQfwt0TaAzuyWzUDhfnkAN+OA90ZE/aJ2hEj1YpVFWr8Tq5qY2
+         hJLegOObGkmNUJ58dBxBfyqa8+kJY1nuTAbLSRwecjajL/W3XAb02jzbnEoNHlZ9FcFQ
+         2k5bnhaQsmuAjOVmjPz1QHj8Nd5xZVq1zW8SIuddsvYmKGKAbfun7wxJIFZ5Q2EE0CMO
+         9mbsuf/Se0atpkQMB2OCOO2nEfhMjL7NF6dP59uZXDzSfGtf3fWL/kkoukUQiUH1mbH1
+         qoV/T1gsskmIisHJCE/CKz4Opi6xwthdFa+zVfdlugWjMjap44hitMoF2yesNmmlnW76
+         zCLQ==
+X-Gm-Message-State: ACgBeo2caYNjgVopazMY8Kvr6UO7xuyJJSmGJFq7lK7tkSUoIe7V/dsE
+        N/h1IL6lLos04USNPK0SRoM=
+X-Google-Smtp-Source: AA6agR6oSpgHxc+dt63vqfcdjwfag3ms5XkVohiacbxfketzvYVSYHIwNqzSsvU+tSB9zeLx0MXvcQ==
+X-Received: by 2002:aa7:85da:0:b0:52f:c5bc:cb41 with SMTP id z26-20020aa785da000000b0052fc5bccb41mr16401699pfn.31.1660570348933;
+        Mon, 15 Aug 2022 06:32:28 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id q5-20020a170902eb8500b0016dbe5f5308sm6916750plg.79.2022.08.15.06.32.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 06:31:55 -0700 (PDT)
-Message-ID: <141052b4-35f6-e2d2-1921-0ffa44d4b7ce@bytedance.com>
-Date:   Mon, 15 Aug 2022 21:31:51 +0800
+        Mon, 15 Aug 2022 06:32:27 -0700 (PDT)
+Message-ID: <ab15191c-d79f-b5de-7568-d15b8f8a8aa8@acm.org>
+Date:   Mon, 15 Aug 2022 06:32:24 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH 0/5] sched/fair: SIS improvements and cleanups
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: lockdep splat due to klist iteration from atomic context in Intel
+ IOMMU driver
 Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
-        linux-kernel@vger.kernel.org, Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-References: <20220712082036.5130-1-wuyun.abel@bytedance.com>
-From:   Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <20220712082036.5130-1-wuyun.abel@bytedance.com>
+To:     Lennert Buytenhek <buytenh@wantstofly.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev
+Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        linux-kernel@vger.kernel.org,
+        Scarlett Gourley <scarlett@arista.com>,
+        James Sewart <jamessewart@arista.com>,
+        Jack O'Sullivan <jack@arista.com>
+References: <Yvo2dfpEh/WC+Wrr@wantstofly.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <Yvo2dfpEh/WC+Wrr@wantstofly.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter, it would be appreciate if you can offer some advice!
+On 8/15/22 05:05, Lennert Buytenhek wrote:
+> On a build of 7ebfc85e2cd7 ("Merge tag 'net-6.0-rc1' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net"), with
+> CONFIG_INTEL_IOMMU_DEBUGFS enabled, I am seeing the lockdep splat
+> below when an I/O page fault occurs on a machine with an Intel
+> IOMMU in it.
+> 
+> The issue seems to be the klist iterator functions using
+> spin_*lock_irq*() but the klist insertion functions using
+> spin_*lock(), combined with the Intel DMAR IOMMU driver iterating
+> over klists from atomic (hardirq) context as of commit 8ac0b64b9735
+> ("iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()")
+> when CONFIG_INTEL_IOMMU_DEBUGFS is enabled, where
+> pci_get_domain_bus_and_slot() calls into bus_find_device() which
+> iterates over klists.
+> 
+> I found this commit from 2018:
+> 
+> 	commit 624fa7790f80575a4ec28fbdb2034097dc18d051
+> 	Author: Bart Van Assche <bvanassche@acm.org>
+> 	Date:   Fri Jun 22 14:54:49 2018 -0700
+> 
+> 	    scsi: klist: Make it safe to use klists in atomic context
+> 
+> This commit switched lib/klist.c:klist_{prev,next} from
+> spin_{,un}lock() to spin_{lock_irqsave,unlock_irqrestore}(), but left
+> the spin_{,un}lock() calls in add_{head,tail}() untouched.
+> 
+> The simplest fix for this would be to switch lib/klist.c:add_{head,tail}()
+> over to use the IRQ-safe spinlock variants as well?
 
-Thanks & Best,
-Abel
+Another possibility would be to evaluate whether it is safe to revert 
+commit 624fa7790f80 ("scsi: klist: Make it safe to use klists in atomic 
+context"). That commit is no longer needed by the SRP transport driver 
+since the legacy block layer has been removed from the kernel.
 
-On 7/12/22 4:20 PM, Abel Wu Wrote:
-> The first patch ignores the new sched_feat SIS_UTIL when
-> there are idle cores available to make full use of cpus
-> as possible.
-> 
-> The other patches come from the SIS filter patchset [1],
-> since they are irrelevant to the filter.
-> 
-> [1] https://lore.kernel.org/lkml/20220619120451.95251-1-wuyun.abel@bytedance.com/
-> 
-> Abel Wu (5):
->    sched/fair: ignore SIS_UTIL when has idle core
->    sched/fair: default to false in test_idle_cores
->    sched/fair: remove redundant check in select_idle_smt
->    sched/fair: avoid double search on same cpu
->    sched/fair: remove useless check in select_idle_core
-> 
->   kernel/sched/fair.c | 45 ++++++++++++++++++++++-----------------------
->   1 file changed, 22 insertions(+), 23 deletions(-)
-> 
+Thanks,
+
+Bart.
+
+
