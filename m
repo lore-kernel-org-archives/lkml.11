@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7320C2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891E3C2BB41
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346493AbiHOUlf (ORCPT
+        id S1346362AbiHOUl0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
+        Mon, 15 Aug 2022 16:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345694AbiHOUfW (ORCPT
+        with ESMTP id S1346098AbiHOUff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:35:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4D84E632;
-        Mon, 15 Aug 2022 12:06:28 -0700 (PDT)
+        Mon, 15 Aug 2022 16:35:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47DE2AE3A;
+        Mon, 15 Aug 2022 12:06:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB76B61019;
-        Mon, 15 Aug 2022 19:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8276C433D6;
-        Mon, 15 Aug 2022 19:06:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 822E661019;
+        Mon, 15 Aug 2022 19:06:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F1A4C433D6;
+        Mon, 15 Aug 2022 19:06:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590387;
-        bh=j55TNd95ho6ZbsHNHDPW0cph+TjLYNpouX6nY95nTmk=;
+        s=korg; t=1660590402;
+        bh=mxljtDHMst5iwqEorc0AT/oDFsf1xLqdqqSlxIcDaPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0oVKIhpISZ0Gevu9AhBtkFwWAQIKOwihP/4gRr7Y9Q7kpSKqcikNNuP+GnTRLrsOb
-         QptKy+Pp2qVzSN8FdFJyHgBeAKlbXHjPxGYTyNACLuupMTYXA6WvM46/0F0lN4GjLY
-         jOxjMGCyHKEm2I7hDlm0Wagg1cl5nXFvIl525vmY=
+        b=zmks4f3fQmOMKXXz5MFXoAmKtXVIFKpn4cQhrs8ygKeZQMY2RGEOZnmN1rbveBpIX
+         x9AavJWf7uR091NJcTiNh1uWdClO2ZJuMtOzp2NcFb0vo694FNBzCs32PVFKPq/qu+
+         WsWJBfEp15gE3Cnjcyh/8G26GZyQPjYcKX1U4hnI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Brian Masney <masneyb@onstation.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        John Garry <john.garry@huawei.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0244/1095] soc: qcom: ocmem: Fix refcount leak in of_get_ocmem
-Date:   Mon, 15 Aug 2022 19:54:03 +0200
-Message-Id: <20220815180439.880980484@linuxfoundation.org>
+Subject: [PATCH 5.18 0248/1095] bus: hisi_lpc: fix missing platform_device_put() in hisi_lpc_acpi_probe()
+Date:   Mon, 15 Aug 2022 19:54:07 +0200
+Message-Id: <20220815180440.034340010@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,47 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 92a563fcf14b3093226fb36f12e9b5cf630c5a5d ]
+[ Upstream commit 54872fea6a5ac967ec2272aea525d1438ac6735a ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
+In error case in hisi_lpc_acpi_probe() after calling platform_device_add(),
+hisi_lpc_acpi_remove() can't release the failed 'pdev', so it will be leak,
+call platform_device_put() to fix this problem.
+I'v constructed this error case and tested this patch on D05 board.
 
-Fixes: 88c1e9404f1d ("soc: qcom: add OCMEM driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Brian Masney <masneyb@onstation.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220602042430.1114-1-linmq006@gmail.com
+Fixes: 99c0228d6ff1 ("HISI LPC: Re-Add ACPI child enumeration support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/ocmem.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/bus/hisi_lpc.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
-index 97fd24c178f8..c92d26b73e6f 100644
---- a/drivers/soc/qcom/ocmem.c
-+++ b/drivers/soc/qcom/ocmem.c
-@@ -194,14 +194,17 @@ struct ocmem *of_get_ocmem(struct device *dev)
- 	devnode = of_parse_phandle(dev->of_node, "sram", 0);
- 	if (!devnode || !devnode->parent) {
- 		dev_err(dev, "Cannot look up sram phandle\n");
-+		of_node_put(devnode);
- 		return ERR_PTR(-ENODEV);
+diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+index 378f5d62a991..e7eaa8784fee 100644
+--- a/drivers/bus/hisi_lpc.c
++++ b/drivers/bus/hisi_lpc.c
+@@ -503,13 +503,13 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
+ {
+ 	struct acpi_device *adev = ACPI_COMPANION(hostdev);
+ 	struct acpi_device *child;
++	struct platform_device *pdev;
+ 	int ret;
+ 
+ 	/* Only consider the children of the host */
+ 	list_for_each_entry(child, &adev->children, node) {
+ 		const char *hid = acpi_device_hid(child);
+ 		const struct hisi_lpc_acpi_cell *cell;
+-		struct platform_device *pdev;
+ 		const struct resource *res;
+ 		bool found = false;
+ 		int num_res;
+@@ -571,22 +571,24 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
+ 
+ 		ret = platform_device_add_resources(pdev, res, num_res);
+ 		if (ret)
+-			goto fail;
++			goto fail_put_device;
+ 
+ 		ret = platform_device_add_data(pdev, cell->pdata,
+ 					       cell->pdata_size);
+ 		if (ret)
+-			goto fail;
++			goto fail_put_device;
+ 
+ 		ret = platform_device_add(pdev);
+ 		if (ret)
+-			goto fail;
++			goto fail_put_device;
+ 
+ 		acpi_device_set_enumerated(child);
  	}
  
- 	pdev = of_find_device_by_node(devnode->parent);
- 	if (!pdev) {
- 		dev_err(dev, "Cannot find device node %s\n", devnode->name);
-+		of_node_put(devnode);
- 		return ERR_PTR(-EPROBE_DEFER);
- 	}
-+	of_node_put(devnode);
+ 	return 0;
  
- 	ocmem = platform_get_drvdata(pdev);
- 	if (!ocmem) {
++fail_put_device:
++	platform_device_put(pdev);
+ fail:
+ 	hisi_lpc_acpi_remove(hostdev);
+ 	return ret;
 -- 
 2.35.1
 
