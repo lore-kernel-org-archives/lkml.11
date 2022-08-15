@@ -2,143 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AFCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6763C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346483AbiHOU3c (ORCPT
+        id S1346087AbiHOU3i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52590 "EHLO
+        Mon, 15 Aug 2022 16:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347304AbiHOUWO (ORCPT
+        with ESMTP id S1347309AbiHOUWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:22:14 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EDE33A2D
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:02:17 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id z12so10072798wrs.9
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:02:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=mu6VIMQHZgu7hW6pnoLsBEY5Z10dgE369agK010Rc84=;
-        b=YdFKfQNGHVM61QkiB3IPZDX0xemD9MegWIARaiXMcyMrJUIRQQ34gClP1mCfoYeOqr
-         IhjSyQkSZmScv6UvwboH2nUBjj0NW0MEeHwszC4o3K6B1PgApa3tD8cmPntGMzY5/zCJ
-         wWBwQ/gpYf2AhwA0ZbOPJ4c0uk1ziO0r/vkMCNIZslb+ChTJQBKjHYzgABsK00Hb5IcO
-         50nuuN9gqMSIIcFTledr7Gbw9+NDDdPiVmpMQs6ePBMXBxlK+lw3v3pnNTcsXXL1dTvq
-         +nhSQ8YrSzhxfi0qQ2lV9PMYbUx2Y6sequrRQmTd++xzIU23CmYNuDAySzrWnpxUjxmj
-         TGgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=mu6VIMQHZgu7hW6pnoLsBEY5Z10dgE369agK010Rc84=;
-        b=eKTb9f6HOnVeimhTVq0PKz7FO919ENmEywCXwExqXY0ATi5H8mRhbbbi1RGLvYBBm6
-         62C7DwpH2qegCIp2fH3tRNkW1kF79rDd+GP17+rpWTdjYtSIYsaNU/8ZJa9UCSbNLx4t
-         DgUF6M33NqRoD584sJ2Dm3Yf1uKse6/92XbOvYYqDzne+ZL5FUq/yWB8BxpAJSNEMCCh
-         Q/k8KC91qtH78FqJ/dHWsCsX3DZ+92Oc7wFS7GH5Rf7knSKSYUVAoHwgvpJSmAHtCTeT
-         iY+Nv7esLavTWKeBEQEA6uD6LPANZr2fFzvwWxp1A0svUhcX6z4WuPjWuupGz+ZllSUd
-         bFtA==
-X-Gm-Message-State: ACgBeo1Vs0woyDYNuIkg+Ph/VrRS0frd9XnE4ba/VwRdR3aTOL2609iq
-        b/BULEELJKD8gx3hew0f10J5n8ahtJUsCQ==
-X-Google-Smtp-Source: AA6agR4oN0w6cTpWbsmWpZL8bo4Si3qBVlLe6HqOhimCRoyeTxAPSdKHiWRpfMnic7xMqQTrI8coeg==
-X-Received: by 2002:a5d:5965:0:b0:224:f75e:2646 with SMTP id e37-20020a5d5965000000b00224f75e2646mr5769089wri.173.1660590136081;
-        Mon, 15 Aug 2022 12:02:16 -0700 (PDT)
-Received: from [192.168.2.1] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id z7-20020a05600c0a0700b003a5c2abc412sm11580846wmp.44.2022.08.15.12.02.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 12:02:15 -0700 (PDT)
-Message-ID: <2ab74b1a-7087-cbfc-3f05-92e0eef30ca9@linaro.org>
-Date:   Mon, 15 Aug 2022 21:02:05 +0200
+        Mon, 15 Aug 2022 16:22:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2181333A3B;
+        Mon, 15 Aug 2022 12:02:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1B8461281;
+        Mon, 15 Aug 2022 19:02:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C88DC433D6;
+        Mon, 15 Aug 2022 19:02:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660590138;
+        bh=KXsiz/clbAFn5tBxvwlcvQAnIlwUuukB5cDniMj0fBY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h3VGVVMwGUaW8RuWvSZu+uCfTIG+ghJKjTUlyLhp1CNN/68vX+8OeLwhW2TOnFUgD
+         a3KP1cjKBieGsmmHGga4OKkPAMOQqAYS6MUaHSrF6BXQBz++3kpHPDCt/k/254p3LP
+         YBDPH6HzvSLcb5J5ngGAcdYCzDJBz6Qlai/bgaX0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.18 0131/1095] netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
+Date:   Mon, 15 Aug 2022 19:52:10 +0200
+Message-Id: <20220815180434.997918368@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 00/32] New thermal OF code
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Daniel Lezcano <daniel.lezcano@linexp.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        damien.lemoal@opensource.wdc.com, Heiko Stuebner <heiko@sntech.de>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        mhiramat@kernel.org, Talel Shenhar <talel@amazon.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>, anarsoul@gmail.com,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        glaroque@baylibre.com, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Keerthy <j-keerthy@ti.com>
-References: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
- <35457e1c-fe6b-2212-9624-70369f04ef0d@linaro.org>
- <CAJZ5v0g5gtQGyLM2C+D5-Y-T_7+GHp4=Ptt7Reh6xgL-D77asQ@mail.gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <CAJZ5v0g5gtQGyLM2C+D5-Y-T_7+GHp4=Ptt7Reh6xgL-D77asQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-Hi Rafael,
+commit 95f466d22364a33d183509629d0879885b4f547e upstream.
 
-On 28/07/2022 16:37, Rafael J. Wysocki wrote:
-> Hi Daniel,
-> 
-> On Wed, Jul 27, 2022 at 11:46 PM Daniel Lezcano
-> <daniel.lezcano@linaro.org> wrote:
->>
->>
->> Hi Rafael,
->>
->> we are close to release v5.19.
->>
->> I want to send a PR this week but it would be nice if this series could
->> be part of it, so the trip point rework we discussed earlier (it is a
->> long series) could be merged more easily for v5.21-rc1 as it will depend
->> on these changes.
->>
->> This series was tested on different platforms, rk3399, broadcom and
->> rcar. The external drivers as ata, touchscreen, regulator, hwmon were
->> acked/reviewed and some other thermal drivers reviewed also. Some others
->> remain without feedback because the maintainer is unresponsive or the
->> driver is orphaned, falling under the thermal framework maintenance
->> umbrella. All the drivers changes are the same.
->>
->> I do believe it does a nice cleanup and consolidation of the OF thermal
->> code and realign it with the core thermal framework.
->>
->> Is it ok to merge the series?
-> 
-> I would prefer to put it into linux-next for a few days.
-> 
-> Why don't you send 2 pull requests, one with all of the other material
-> you have for 5.20 and another one with this series (it may be on top
-> of the first one)?
-> 
-> I will be able to defer pushing the second one till the second half of
-> the merge window.
+When doing lookups for chains on the same batch by using its ID, a chain
+from a different table can be used. If a rule is added to a table but
+refers to a chain in a different table, it will be linked to the chain in
+table2, but would have expressions referring to objects in table1.
 
-I setup a branch with the patches and the fixes.
+Then, when table1 is removed, the rule will not be removed as its linked to
+a chain in table2. When expressions in the rule are processed or removed,
+that will lead to a use-after-free.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git/log/?h=thermal/v6.0-rc1-2
+When looking for chains by ID, use the table that was used for the lookup
+by name, and only return chains belonging to that same table.
 
-Is there still time for a PR ?
+Fixes: 837830a4b439 ("netfilter: nf_tables: add NFTA_RULE_CHAIN_ID attribute")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/netfilter/nf_tables_api.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2472,6 +2472,7 @@ err:
+ }
+ 
+ static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
++					       const struct nft_table *table,
+ 					       const struct nlattr *nla)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -2482,6 +2483,7 @@ static struct nft_chain *nft_chain_looku
+ 		struct nft_chain *chain = trans->ctx.chain;
+ 
+ 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
++		    chain->table == table &&
+ 		    id == nft_trans_chain_id(trans))
+ 			return chain;
+ 	}
+@@ -3415,7 +3417,7 @@ static int nf_tables_newrule(struct sk_b
+ 			return -EOPNOTSUPP;
+ 
+ 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
+-		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
++		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
+ 		if (IS_ERR(chain)) {
+ 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
+ 			return PTR_ERR(chain);
+@@ -9597,7 +9599,7 @@ static int nft_verdict_init(const struct
+ 						 tb[NFTA_VERDICT_CHAIN],
+ 						 genmask);
+ 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
+-			chain = nft_chain_lookup_byid(ctx->net,
++			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
+ 						      tb[NFTA_VERDICT_CHAIN_ID]);
+ 			if (IS_ERR(chain))
+ 				return PTR_ERR(chain);
 
 
