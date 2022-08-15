@@ -2,246 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F23C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 16:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E08C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 16:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232682AbiHOQVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 12:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39616 "EHLO
+        id S232844AbiHOQVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 12:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232566AbiHOQUm (ORCPT
+        with ESMTP id S232455AbiHOQUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 12:20:42 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD691D0DC
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 09:20:37 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-10ea30a098bso8658936fac.8
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 09:20:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=lHIcVgvWJN3OdYYSsC7RBMC65yCdGzXPq7WonvXuURg=;
-        b=RvEV/vtBES4QRTvsEVNe4a5Hi5zkKvoQo4b6nwm41wBEK6GofgwjNoYoz10qjXdup+
-         MvGKBgcg8caPoHTuStaUp/U5En+8Hy9TjJ4WRUDbgB47RU/ULRTbNYYa1ZoiPDqGDqeE
-         ytBifsdreKSg5RvG/bMzaPl3czA5/79GcxKJU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=lHIcVgvWJN3OdYYSsC7RBMC65yCdGzXPq7WonvXuURg=;
-        b=5Dl2XuVhmMGkqiDV8JNfhNOAgH8jOLAYwwYSJMcaC1bf894KunUw1JjfSZFPfCcjtP
-         kbKt9A/yFsePw5dQIUClbQsplpkb+PKCnogx/6Qb7W7XQLiyTWx03QF031Be60IUybbD
-         oE2EMILOKalIOkKQQi5OedcJH7A/k9zljGs7443A3Vy0afrrC4vRF+Byw0dRbHRgUBq+
-         7zdYP1kUebCQF7DwYX9N1P4Q+Stz2M+rPoquTmKLfC8d60uSSnG2Vlf8jOcgawxLATLS
-         s1ILml9At/GD4nPuea0wFYN+R12ANGDqgWKM+0rX/6WQJWVtWiyVcepdUtNiF6Qwlu0x
-         yy8g==
-X-Gm-Message-State: ACgBeo0yahmjY2JxkFiDl43jwz1ukX/xUgmLFfGKNkq4/sV/5OLSYZ+i
-        DSggUqazBs5pRCkBQoL7KLlMWw==
-X-Google-Smtp-Source: AA6agR650fvSfcKdkYWoRVUrzHcgjSsjMtiAbKZqBqqTc2hdtVBGXw6xkiFF2LwUv+jWcic87SCttg==
-X-Received: by 2002:a05:6870:8984:b0:10d:d981:151f with SMTP id f4-20020a056870898400b0010dd981151fmr11077864oaq.212.1660580437137;
+        Mon, 15 Aug 2022 12:20:41 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 918AD18B15
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 09:20:36 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 01339113E;
         Mon, 15 Aug 2022 09:20:37 -0700 (PDT)
-Received: from localhost.localdomain ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id x91-20020a9d37e4000000b00636ee04e7aesm2163371otb.67.2022.08.15.09.20.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 09:20:36 -0700 (PDT)
-From:   Frederick Lawler <fred@cloudflare.com>
-To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com, tixxdz@gmail.com,
-        Frederick Lawler <fred@cloudflare.com>
-Subject: [PATCH v5 1/4] security, lsm: Introduce security_create_user_ns()
-Date:   Mon, 15 Aug 2022 11:20:25 -0500
-Message-Id: <20220815162028.926858-2-fred@cloudflare.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
-References: <20220815162028.926858-1-fred@cloudflare.com>
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BC1963F70D;
+        Mon, 15 Aug 2022 09:20:34 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org
+Cc:     will@kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+        kevin.tian@intel.com, suravee.suthikulpanit@amd.com,
+        vasant.hegde@amd.com, mjrosato@linux.ibm.com,
+        schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 08/16] iommu/arm-smmu-v3: Clean up bus_set_iommu()
+Date:   Mon, 15 Aug 2022 17:20:09 +0100
+Message-Id: <6235f07df013776656a61bb642023ecce07f46cc.1660572783.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
+In-Reply-To: <cover.1660572783.git.robin.murphy@arm.com>
+References: <cover.1660572783.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-User namespaces are an effective tool to allow programs to run with
-permission without requiring the need for a program to run as root. User
-namespaces may also be used as a sandboxing technique. However, attackers
-sometimes leverage user namespaces as an initial attack vector to perform
-some exploit. [1,2,3]
+Stop calling bus_set_iommu() since it's now unnecessary, and simplify
+the probe failure path accordingly.
 
-While it is not the unprivileged user namespace functionality, which
-causes the kernel to be exploitable, users/administrators might want to
-more granularly limit or at least monitor how various processes use this
-functionality, while vulnerable kernel subsystems are being patched.
-
-Preventing user namespace already creation comes in a few of forms in
-order of granularity:
-
-        1. /proc/sys/user/max_user_namespaces sysctl
-        2. Distro specific patch(es)
-        3. CONFIG_USER_NS
-
-To block a task based on its attributes, the LSM hook cred_prepare is a
-decent candidate for use because it provides more granular control, and
-it is called before create_user_ns():
-
-        cred = prepare_creds()
-                security_prepare_creds()
-                        call_int_hook(cred_prepare, ...
-        if (cred)
-                create_user_ns(cred)
-
-Since security_prepare_creds() is meant for LSMs to copy and prepare
-credentials, access control is an unintended use of the hook. [4]
-Further, security_prepare_creds() will always return a ENOMEM if the
-hook returns any non-zero error code.
-
-This hook also does not handle the clone3 case which requires us to
-access a user space pointer to know if we're in the CLONE_NEW_USER
-call path which may be subject to a TOCTTOU attack.
-
-Lastly, cred_prepare is called in many call paths, and a targeted hook
-further limits the frequency of calls which is a beneficial outcome.
-Therefore introduce a new function security_create_user_ns() with an
-accompanying userns_create LSM hook.
-
-With the new userns_create hook, users will have more control over the
-observability and access control over user namespace creation. Users
-should expect that normal operation of user namespaces will behave as
-usual, and only be impacted when controls are implemented by users or
-administrators.
-
-This hook takes the prepared creds for LSM authors to write policy
-against. On success, the new namespace is applied to credentials,
-otherwise an error is returned.
-
-Links:
-1. https://nvd.nist.gov/vuln/detail/CVE-2022-0492
-2. https://nvd.nist.gov/vuln/detail/CVE-2022-25636
-3. https://nvd.nist.gov/vuln/detail/CVE-2022-34918
-4. https://lore.kernel.org/all/1c4b1c0d-12f6-6e9e-a6a3-cdce7418110c@schaufler-ca.com/
-
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Reviewed-by: KP Singh <kpsingh@kernel.org>
-Signed-off-by: Frederick Lawler <fred@cloudflare.com>
-
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
-Changes since v4:
-- Update commit description
-Changes since v3:
-- No changes
-Changes since v2:
-- Rename create_user_ns hook to userns_create
-Changes since v1:
-- Changed commit wording
-- Moved execution to be after id mapping check
-- Changed signature to only accept a const struct cred *
----
- include/linux/lsm_hook_defs.h | 1 +
- include/linux/lsm_hooks.h     | 4 ++++
- include/linux/security.h      | 6 ++++++
- kernel/user_namespace.c       | 5 +++++
- security/security.c           | 5 +++++
- 5 files changed, 21 insertions(+)
 
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 806448173033..aa7272e83626 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -224,6 +224,7 @@ LSM_HOOK(int, -ENOSYS, task_prctl, int option, unsigned long arg2,
- 	 unsigned long arg3, unsigned long arg4, unsigned long arg5)
- LSM_HOOK(void, LSM_RET_VOID, task_to_inode, struct task_struct *p,
- 	 struct inode *inode)
-+LSM_HOOK(int, 0, userns_create, const struct cred *cred)
- LSM_HOOK(int, 0, ipc_permission, struct kern_ipc_perm *ipcp, short flag)
- LSM_HOOK(void, LSM_RET_VOID, ipc_getsecid, struct kern_ipc_perm *ipcp,
- 	 u32 *secid)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 84a0d7e02176..2e11a2a22ed1 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -806,6 +806,10 @@
-  *	security attributes, e.g. for /proc/pid inodes.
-  *	@p contains the task_struct for the task.
-  *	@inode contains the inode structure for the inode.
-+ * @userns_create:
-+ *	Check permission prior to creating a new user namespace.
-+ *	@cred points to prepared creds.
-+ *	Return 0 if successful, otherwise < 0 error code.
-  *
-  * Security hooks for Netlink messaging.
-  *
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 1bc362cb413f..767802fe9bfa 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -437,6 +437,7 @@ int security_task_kill(struct task_struct *p, struct kernel_siginfo *info,
- int security_task_prctl(int option, unsigned long arg2, unsigned long arg3,
- 			unsigned long arg4, unsigned long arg5);
- void security_task_to_inode(struct task_struct *p, struct inode *inode);
-+int security_create_user_ns(const struct cred *cred);
- int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag);
- void security_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid);
- int security_msg_msg_alloc(struct msg_msg *msg);
-@@ -1194,6 +1195,11 @@ static inline int security_task_prctl(int option, unsigned long arg2,
- static inline void security_task_to_inode(struct task_struct *p, struct inode *inode)
- { }
+v4: No change
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 53 +--------------------
+ 1 file changed, 2 insertions(+), 51 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index d32b02336411..e17ed5870f77 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -28,8 +28,6 @@
+ #include <linux/pci-ats.h>
+ #include <linux/platform_device.h>
  
-+static inline int security_create_user_ns(const struct cred *cred)
-+{
-+	return 0;
-+}
-+
- static inline int security_ipc_permission(struct kern_ipc_perm *ipcp,
- 					  short flag)
- {
-diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 5481ba44a8d6..3f464bbda0e9 100644
---- a/kernel/user_namespace.c
-+++ b/kernel/user_namespace.c
-@@ -9,6 +9,7 @@
- #include <linux/highuid.h>
- #include <linux/cred.h>
- #include <linux/securebits.h>
-+#include <linux/security.h>
- #include <linux/keyctl.h>
- #include <linux/key-type.h>
- #include <keys/user-type.h>
-@@ -113,6 +114,10 @@ int create_user_ns(struct cred *new)
- 	    !kgid_has_mapping(parent_ns, group))
- 		goto fail_dec;
+-#include <linux/amba/bus.h>
+-
+ #include "arm-smmu-v3.h"
+ #include "../../iommu-sva-lib.h"
  
-+	ret = security_create_user_ns(new);
-+	if (ret < 0)
-+		goto fail_dec;
-+
- 	ret = -ENOMEM;
- 	ns = kmem_cache_zalloc(user_ns_cachep, GFP_KERNEL);
- 	if (!ns)
-diff --git a/security/security.c b/security/security.c
-index 14d30fec8a00..1e60c4b570ec 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -1909,6 +1909,11 @@ void security_task_to_inode(struct task_struct *p, struct inode *inode)
- 	call_void_hook(task_to_inode, p, inode);
+@@ -3673,43 +3671,6 @@ static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
+ 		return SZ_128K;
  }
  
-+int security_create_user_ns(const struct cred *cred)
-+{
-+	return call_int_hook(userns_create, 0, cred);
-+}
-+
- int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag)
+-static int arm_smmu_set_bus_ops(struct iommu_ops *ops)
+-{
+-	int err;
+-
+-#ifdef CONFIG_PCI
+-	if (pci_bus_type.iommu_ops != ops) {
+-		err = bus_set_iommu(&pci_bus_type, ops);
+-		if (err)
+-			return err;
+-	}
+-#endif
+-#ifdef CONFIG_ARM_AMBA
+-	if (amba_bustype.iommu_ops != ops) {
+-		err = bus_set_iommu(&amba_bustype, ops);
+-		if (err)
+-			goto err_reset_pci_ops;
+-	}
+-#endif
+-	if (platform_bus_type.iommu_ops != ops) {
+-		err = bus_set_iommu(&platform_bus_type, ops);
+-		if (err)
+-			goto err_reset_amba_ops;
+-	}
+-
+-	return 0;
+-
+-err_reset_amba_ops:
+-#ifdef CONFIG_ARM_AMBA
+-	bus_set_iommu(&amba_bustype, NULL);
+-#endif
+-err_reset_pci_ops: __maybe_unused;
+-#ifdef CONFIG_PCI
+-	bus_set_iommu(&pci_bus_type, NULL);
+-#endif
+-	return err;
+-}
+-
+ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
+ 				      resource_size_t size)
  {
- 	return call_int_hook(ipc_permission, 0, ipcp, flag);
+@@ -3848,27 +3809,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register iommu\n");
+-		goto err_sysfs_remove;
++		iommu_device_sysfs_remove(&smmu->iommu);
++		return ret;
+ 	}
+ 
+-	ret = arm_smmu_set_bus_ops(&arm_smmu_ops);
+-	if (ret)
+-		goto err_unregister_device;
+-
+ 	return 0;
+-
+-err_unregister_device:
+-	iommu_device_unregister(&smmu->iommu);
+-err_sysfs_remove:
+-	iommu_device_sysfs_remove(&smmu->iommu);
+-	return ret;
+ }
+ 
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
+-	arm_smmu_set_bus_ops(NULL);
+ 	iommu_device_unregister(&smmu->iommu);
+ 	iommu_device_sysfs_remove(&smmu->iommu);
+ 	arm_smmu_device_disable(smmu);
 -- 
-2.30.2
+2.36.1.dirty
 
