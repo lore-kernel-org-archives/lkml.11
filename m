@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABD0C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 354E0C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346491AbiHPAhy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
+        id S239505AbiHPAiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350640AbiHPAgJ (ORCPT
+        with ESMTP id S1350742AbiHPAgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:36:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8841894DC;
-        Mon, 15 Aug 2022 13:37:35 -0700 (PDT)
+        Mon, 15 Aug 2022 20:36:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C201894E1;
+        Mon, 15 Aug 2022 13:37:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A724BB8114A;
-        Mon, 15 Aug 2022 20:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57A8C433C1;
-        Mon, 15 Aug 2022 20:37:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72E5CB80EA8;
+        Mon, 15 Aug 2022 20:37:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3930C433D6;
+        Mon, 15 Aug 2022 20:37:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595852;
-        bh=I2Uxh4EvJCSOE07CYqNhIoCNwu9Uw3Ub0lGO2+m236M=;
+        s=korg; t=1660595846;
+        bh=yhuN0DL0yv2xRFCMow4wX3R8JWRCMkUfnbUAKDjrUfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uSb5nlUVSs7UeIz8797dC0ymrYnSL+xFQsLEacYeukABo0MXHJ4J7Pg6dFAyvUaF5
-         +bUZa8I1QUibV/lfyiG3xKd8prt/jE6VBf8WP6SB3/0YF4w08BkHzTfN0i0It05yxd
-         tUxJE2orGOTVvjDOj17dxzodFRfkPILPR/HY1kW8=
+        b=TzlRNDlXIcex49HLKDKb8U1I6l8zPmejfBBls5zRIzDFt9u/xXIiim4SJS+OSUlBU
+         LB+ka3lIStZQDjFbPz7iGhvYtM6fCM59xVjsXoPPqm84SzEvjW51DQYZu3wUmqsPvP
+         /Yrxb9Jevu01uPn5bory1N8Ln5674HfGZGj9MRfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Steve Lee <steve.lee.analog@gmail.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0894/1157] ASoC: max98390: use linux/gpio/consumer.h to fix build
-Date:   Mon, 15 Aug 2022 20:04:10 +0200
-Message-Id: <20220815180515.194039678@linuxfoundation.org>
+Subject: [PATCH 5.19 0892/1157] ASoC: imx-audmux: Silence a clang warning
+Date:   Mon, 15 Aug 2022 20:04:08 +0200
+Message-Id: <20220815180515.123236133@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -55,50 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit aa7407f807b250eca7697e5fe9a699bc6c2fab71 ]
+[ Upstream commit 2f4a8171da06609bb6a063630ed546ee3d93dad7 ]
 
-Change the header file to fix build errors in max98390.c:
+Change the of_device_get_match_data() cast to (uintptr_t)
+to silence the following clang warning:
 
-../sound/soc/codecs/max98390.c: In function 'max98390_i2c_probe':
-../sound/soc/codecs/max98390.c:1076:22: error: implicit declaration of function 'devm_gpiod_get_optional'; did you mean 'devm_regulator_get_optional'? [-Werror=implicit-function-declaration]
- 1076 |         reset_gpio = devm_gpiod_get_optional(&i2c->dev,
-../sound/soc/codecs/max98390.c:1077:55: error: 'GPIOD_OUT_HIGH' undeclared (first use in this function); did you mean 'GPIOF_INIT_HIGH'?
- 1077 |                                              "reset", GPIOD_OUT_HIGH);
-../sound/soc/codecs/max98390.c:1077:55: note: each undeclared identifier is reported only once for each function it appears in
-../sound/soc/codecs/max98390.c:1083:17: error: implicit declaration of function 'gpiod_set_value_cansleep'; did you mean 'gpio_set_value_cansleep'? [-Werror=implicit-function-declaration]
- 1083 |                 gpiod_set_value_cansleep(reset_gpio, 0);
+sound/soc/fsl/imx-audmux.c:301:16: warning: cast to smaller integer type 'enum imx_audmux_type' from 'const void *' [-Wvoid-pointer-to-enum-cast]
 
-Fixes: 397ff0249606 ("ASoC: max98390: Add reset gpio control")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Reported-by: kernel test robot <lkp@intel.com>
-Cc: Steve Lee <steve.lee.analog@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Jaroslav Kysela <perex@perex.cz>
-Cc: Takashi Iwai <tiwai@suse.com>
-Cc: alsa-devel@alsa-project.org
-Link: https://lore.kernel.org/r/20220605163123.23537-1-rdunlap@infradead.org
+Fixes: 6a8b8b582db1 ("ASoC: imx-audmux: Remove unused .id_table")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20220526010543.1164793-1-festevam@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98390.c | 2 +-
+ sound/soc/fsl/imx-audmux.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/max98390.c b/sound/soc/codecs/max98390.c
-index 2a6b1648c884..d83f81d9ff4e 100644
---- a/sound/soc/codecs/max98390.c
-+++ b/sound/soc/codecs/max98390.c
-@@ -10,7 +10,7 @@
- #include <linux/cdev.h>
- #include <linux/dmi.h>
- #include <linux/firmware.h>
--#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/module.h>
- #include <linux/of_gpio.h>
+diff --git a/sound/soc/fsl/imx-audmux.c b/sound/soc/fsl/imx-audmux.c
+index dfa05d40b276..a8e5e0f57faf 100644
+--- a/sound/soc/fsl/imx-audmux.c
++++ b/sound/soc/fsl/imx-audmux.c
+@@ -298,7 +298,7 @@ static int imx_audmux_probe(struct platform_device *pdev)
+ 		audmux_clk = NULL;
+ 	}
+ 
+-	audmux_type = (enum imx_audmux_type)of_device_get_match_data(&pdev->dev);
++	audmux_type = (uintptr_t)of_device_get_match_data(&pdev->dev);
+ 
+ 	switch (audmux_type) {
+ 	case IMX31_AUDMUX:
 -- 
 2.35.1
 
