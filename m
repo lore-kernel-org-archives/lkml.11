@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CB6C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B21C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353858AbiHOXmv (ORCPT
+        id S1353920AbiHOXmy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58746 "EHLO
+        Mon, 15 Aug 2022 19:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353955AbiHOXkP (ORCPT
+        with ESMTP id S1353976AbiHOXk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:40:15 -0400
+        Mon, 15 Aug 2022 19:40:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DED263F00;
-        Mon, 15 Aug 2022 13:10:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E64DF8C;
+        Mon, 15 Aug 2022 13:10:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD2EDB80EA8;
-        Mon, 15 Aug 2022 20:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBF4C433D6;
-        Mon, 15 Aug 2022 20:10:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24C51B80EAB;
+        Mon, 15 Aug 2022 20:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 282C8C433C1;
+        Mon, 15 Aug 2022 20:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594213;
-        bh=xjwEAjQmDMvwXBghWtChvjHsn8c+SsVYe94+bRZyOQY=;
+        s=korg; t=1660594216;
+        bh=+RDC+fA7ra6cCH+DXFwe/HZEoHRonNZiVTAAfjz3wCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hIH7gHdRIwguCdIk09jrzJ62inqsVJpWelTwzOdbmY8XzTI0n5WgG1ayjL/1fr3ki
-         KY7h+/xz8MeZjOyTLEUn1xqPYU0Zk83axljLu93b/vbEJf/ToP5m4QV3RL/XVCEnun
-         meiw1mEmeuHl/UT+AWXFcBomzqReW1PuOYJW9smg=
+        b=duwp1yIWYwsc+QoHCdux09gjhl5Z6kX8TDifYid941WLaic4bRHhlQWHnGRI3xWuC
+         ZLGagMOlb2DOhLClmdxaJ5IM4Jaaawyr/nsDLQfAVVQEQ/d17uUbLCDj6rSfdZyA2x
+         VF1BDMLTy3bItNsLHie/aqCUURNLEHnJLPLLcscI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 1073/1095] powerpc: Fix eh field when calling lwarx on PPC32
-Date:   Mon, 15 Aug 2022 20:07:52 +0200
-Message-Id: <20220815180513.434410333@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0396/1157] media: amphion: output firmware error message
+Date:   Mon, 15 Aug 2022 19:55:52 +0200
+Message-Id: <20220815180455.521689307@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,98 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Ming Qian <ming.qian@nxp.com>
 
-commit 18db466a9a306406dab3b134014d9f6ed642471c upstream.
+[ Upstream commit 89e3f3fb3d9014efa59ed6bb526d5f1a00168452 ]
 
-Commit 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of
-PPC_LWARX/LDARX macros") properly handled the eh field of lwarx
-in asm/bitops.h but failed to clear it for PPC32 in
-asm/simple_spinlock.h
+Firmware may send the error event with some error message,
+and it help locate the firmware error,
+so output the error message if it exists
 
-So, do as in arch_atomic_try_cmpxchg_lock(), set it to 1 if PPC64
-but set it to 0 if PPC32. For that use IS_ENABLED(CONFIG_PPC64) which
-returns 1 when CONFIG_PPC64 is set and 0 otherwise.
-
-Fixes: 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of PPC_LWARX/LDARX macros")
-Cc: stable@vger.kernel.org # v5.15+
-Reported-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Tested-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-[mpe: Use symbolic names, use 'n' constraint per Segher]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/a1176e19e627dd6a1b8d24c6c457a8ab874b7d12.1659430931.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 61cbf1c1fa6d7 ("media: amphion: implement vpu core communication based on mailbox")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/simple_spinlock.h |   15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/media/platform/amphion/vpu_msgs.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/include/asm/simple_spinlock.h
-+++ b/arch/powerpc/include/asm/simple_spinlock.h
-@@ -48,10 +48,11 @@ static inline int arch_spin_is_locked(ar
- static inline unsigned long __arch_spin_trylock(arch_spinlock_t *lock)
+diff --git a/drivers/media/platform/amphion/vpu_msgs.c b/drivers/media/platform/amphion/vpu_msgs.c
+index d5850df8f1d5..d8247f36d84b 100644
+--- a/drivers/media/platform/amphion/vpu_msgs.c
++++ b/drivers/media/platform/amphion/vpu_msgs.c
+@@ -150,7 +150,12 @@ static void vpu_session_handle_eos(struct vpu_inst *inst, struct vpu_rpc_event *
+ 
+ static void vpu_session_handle_error(struct vpu_inst *inst, struct vpu_rpc_event *pkt)
  {
- 	unsigned long tmp, token;
-+	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
- 
- 	token = LOCK_TOKEN;
- 	__asm__ __volatile__(
--"1:	lwarx		%0,0,%2,1\n\
-+"1:	lwarx		%0,0,%2,%[eh]\n\
- 	cmpwi		0,%0,0\n\
- 	bne-		2f\n\
- 	stwcx.		%1,0,%2\n\
-@@ -59,7 +60,7 @@ static inline unsigned long __arch_spin_
- 	PPC_ACQUIRE_BARRIER
- "2:"
- 	: "=&r" (tmp)
--	: "r" (token), "r" (&lock->slock)
-+	: "r" (token), "r" (&lock->slock), [eh] "n" (eh)
- 	: "cr0", "memory");
- 
- 	return tmp;
-@@ -156,9 +157,10 @@ static inline void arch_spin_unlock(arch
- static inline long __arch_read_trylock(arch_rwlock_t *rw)
- {
- 	long tmp;
-+	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
- 
- 	__asm__ __volatile__(
--"1:	lwarx		%0,0,%1,1\n"
-+"1:	lwarx		%0,0,%1,%[eh]\n"
- 	__DO_SIGN_EXTEND
- "	addic.		%0,%0,1\n\
- 	ble-		2f\n"
-@@ -166,7 +168,7 @@ static inline long __arch_read_trylock(a
- 	bne-		1b\n"
- 	PPC_ACQUIRE_BARRIER
- "2:"	: "=&r" (tmp)
--	: "r" (&rw->lock)
-+	: "r" (&rw->lock), [eh] "n" (eh)
- 	: "cr0", "xer", "memory");
- 
- 	return tmp;
-@@ -179,17 +181,18 @@ static inline long __arch_read_trylock(a
- static inline long __arch_write_trylock(arch_rwlock_t *rw)
- {
- 	long tmp, token;
-+	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
- 
- 	token = WRLOCK_TOKEN;
- 	__asm__ __volatile__(
--"1:	lwarx		%0,0,%2,1\n\
-+"1:	lwarx		%0,0,%2,%[eh]\n\
- 	cmpwi		0,%0,0\n\
- 	bne-		2f\n"
- "	stwcx.		%1,0,%2\n\
- 	bne-		1b\n"
- 	PPC_ACQUIRE_BARRIER
- "2:"	: "=&r" (tmp)
--	: "r" (token), "r" (&rw->lock)
-+	: "r" (token), "r" (&rw->lock), [eh] "n" (eh)
- 	: "cr0", "memory");
- 
- 	return tmp;
+-	dev_err(inst->dev, "unsupported stream\n");
++	char *str = (char *)pkt->data;
++
++	if (strlen(str))
++		dev_err(inst->dev, "instance %d firmware error : %s\n", inst->id, str);
++	else
++		dev_err(inst->dev, "instance %d is unsupported stream\n", inst->id);
+ 	call_void_vop(inst, event_notify, VPU_MSG_ID_UNSUPPORTED, NULL);
+ 	vpu_v4l2_set_error(inst);
+ }
+-- 
+2.35.1
+
 
 
