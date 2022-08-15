@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3035CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC20C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbiHPAbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S243624AbiHPAb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348329AbiHPAaC (ORCPT
+        with ESMTP id S240843AbiHPAaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:30:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144CA18348F;
-        Mon, 15 Aug 2022 13:35:30 -0700 (PDT)
+        Mon, 15 Aug 2022 20:30:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B0BAA4EE;
+        Mon, 15 Aug 2022 13:35:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 526F3B81197;
-        Mon, 15 Aug 2022 20:34:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 888CBC433C1;
-        Mon, 15 Aug 2022 20:34:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 014C0B811A0;
+        Mon, 15 Aug 2022 20:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332DBC433C1;
+        Mon, 15 Aug 2022 20:34:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595692;
-        bh=IDIwAkQQ1rgpwdaDGimBIwi8KjFH42GBtfyya8ZSpmI=;
+        s=korg; t=1660595685;
+        bh=njgtn/5vil/3SWQGkDVgSDn7wCT+1DXns7cLGzDpX1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tQ2VBzoUrUSaO73WQtV9hc+91HexVSaJYdP3cuFnvacsGSh69H4EPS0PLwF/PGh3E
-         FbtjLGqRITlSQGx/OPGzOXttDgN+m/KGEwPIzowgvJ0ZR5z+POpG5ffwLfO2dQ5LTH
-         86n2t4U/kjuSCx1qKvPegX730mtVAe/m3VLjz2Yk=
+        b=i/0VpBIrBOv39WBpdKr/jcJ7HYXtxUSC3WeoxtiasKa0yeM2QpDZ/ANRE/6DeiC54
+         28QY+GzhLqXxppg3AB90xUBHDjiLhNeujG1Fy3gBwPU1yPrCamqjihivDbuIj4vTAa
+         ZM12cNxHEkJwd7HY7uYMEu7qLNIgo0O+UcGVZi8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Md Haris Iqbal <haris.phnx@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Robert Richter <rric@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0845/1157] RDMA/rxe: For invalidate compare according to set keys in mr
-Date:   Mon, 15 Aug 2022 20:03:21 +0200
-Message-Id: <20220815180513.307964974@linuxfoundation.org>
+Subject: [PATCH 5.19 0843/1157] mmc: cavium-thunderx: Add of_node_put() when breaking out of loop
+Date:   Mon, 15 Aug 2022 20:03:19 +0200
+Message-Id: <20220815180513.220935822@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,76 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Md Haris Iqbal <haris.phnx@gmail.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 174e7b137042f19b5ce88beb4fc0ff4ec6b0c72a ]
+[ Upstream commit 7ee480795e41db314f2c445c65ed854a5d6e8e32 ]
 
-The 'rkey' input can be an lkey or rkey, and in rxe the lkey or rkey have
-the same value, including the variant bits.
+In thunder_mmc_probe(), we should call of_node_put() when breaking
+out of for_each_child_of_node() which has increased and decreased
+the refcount during each iteration.
 
-So, if mr->rkey is set, compare the invalidate key with it, otherwise
-compare with the mr->lkey.
-
-Since we already did a lookup on the non-varient bits to get this far, the
-check's only purpose is to confirm that the wqe has the correct variant
-bits.
-
-Fixes: 001345339f4c ("RDMA/rxe: Separate HW and SW l/rkeys")
-Link: https://lore.kernel.org/r/20220707073006.328737-1-haris.phnx@gmail.com
-Signed-off-by: Md Haris Iqbal <haris.phnx@gmail.com>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 166bac38c3c5 ("mmc: cavium: Add MMC PCI driver for ThunderX SOCs")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Robert Richter <rric@kernel.org>
+Link: https://lore.kernel.org/r/20220719095216.1241601-2-windhl@126.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_loc.h |  2 +-
- drivers/infiniband/sw/rxe/rxe_mr.c  | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/mmc/host/cavium-thunderx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_loc.h b/drivers/infiniband/sw/rxe/rxe_loc.h
-index 0e022ae1b8a5..37484a559d20 100644
---- a/drivers/infiniband/sw/rxe/rxe_loc.h
-+++ b/drivers/infiniband/sw/rxe/rxe_loc.h
-@@ -77,7 +77,7 @@ struct rxe_mr *lookup_mr(struct rxe_pd *pd, int access, u32 key,
- 			 enum rxe_mr_lookup_type type);
- int mr_check_range(struct rxe_mr *mr, u64 iova, size_t length);
- int advance_dma_data(struct rxe_dma_info *dma, unsigned int length);
--int rxe_invalidate_mr(struct rxe_qp *qp, u32 rkey);
-+int rxe_invalidate_mr(struct rxe_qp *qp, u32 key);
- int rxe_reg_fast_mr(struct rxe_qp *qp, struct rxe_send_wqe *wqe);
- int rxe_mr_set_page(struct ib_mr *ibmr, u64 addr);
- int rxe_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata);
-diff --git a/drivers/infiniband/sw/rxe/rxe_mr.c b/drivers/infiniband/sw/rxe/rxe_mr.c
-index fc3942e04a1f..3add52129006 100644
---- a/drivers/infiniband/sw/rxe/rxe_mr.c
-+++ b/drivers/infiniband/sw/rxe/rxe_mr.c
-@@ -576,22 +576,22 @@ struct rxe_mr *lookup_mr(struct rxe_pd *pd, int access, u32 key,
- 	return mr;
- }
+diff --git a/drivers/mmc/host/cavium-thunderx.c b/drivers/mmc/host/cavium-thunderx.c
+index 76013bbbcff3..202b1d6da678 100644
+--- a/drivers/mmc/host/cavium-thunderx.c
++++ b/drivers/mmc/host/cavium-thunderx.c
+@@ -142,8 +142,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
+ 				continue;
  
--int rxe_invalidate_mr(struct rxe_qp *qp, u32 rkey)
-+int rxe_invalidate_mr(struct rxe_qp *qp, u32 key)
- {
- 	struct rxe_dev *rxe = to_rdev(qp->ibqp.device);
- 	struct rxe_mr *mr;
- 	int ret;
- 
--	mr = rxe_pool_get_index(&rxe->mr_pool, rkey >> 8);
-+	mr = rxe_pool_get_index(&rxe->mr_pool, key >> 8);
- 	if (!mr) {
--		pr_err("%s: No MR for rkey %#x\n", __func__, rkey);
-+		pr_err("%s: No MR for key %#x\n", __func__, key);
- 		ret = -EINVAL;
- 		goto err;
- 	}
- 
--	if (rkey != mr->rkey) {
--		pr_err("%s: rkey (%#x) doesn't match mr->rkey (%#x)\n",
--			__func__, rkey, mr->rkey);
-+	if (mr->rkey ? (key != mr->rkey) : (key != mr->lkey)) {
-+		pr_err("%s: wr key (%#x) doesn't match mr key (%#x)\n",
-+			__func__, key, (mr->rkey ? mr->rkey : mr->lkey));
- 		ret = -EINVAL;
- 		goto err_drop_ref;
+ 			ret = cvm_mmc_of_slot_probe(&host->slot_pdev[i]->dev, host);
+-			if (ret)
++			if (ret) {
++				of_node_put(child_node);
+ 				goto error;
++			}
+ 		}
+ 		i++;
  	}
 -- 
 2.35.1
