@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E877C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 388F4C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbiHPEhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57608 "EHLO
+        id S231425AbiHPEhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbiHPEgx (ORCPT
+        with ESMTP id S231156AbiHPEgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:36:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A0A9DB5E;
-        Mon, 15 Aug 2022 13:27:16 -0700 (PDT)
+        Tue, 16 Aug 2022 00:36:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37D99C2D0;
+        Mon, 15 Aug 2022 13:26:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11642B811A2;
-        Mon, 15 Aug 2022 20:27:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A178C43141;
-        Mon, 15 Aug 2022 20:27:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E2B5B81197;
+        Mon, 15 Aug 2022 20:26:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79027C433D6;
+        Mon, 15 Aug 2022 20:26:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595232;
-        bh=PatvG9eaTtQbGqYAXTyhKleN5tMw5LZqmxtcyReqGO4=;
+        s=korg; t=1660595208;
+        bh=gjLriqIdzmeysA+p9MegAImHwIi1C5sySXkdAMnieJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yfoKCw4C/2xjQtWAziJQwomT6AIe0iqbWUTBhQ0WwBgXe/GDFX+OsPfcI6TvsWvNh
-         gDeRLm6hdKjvOlGlxgYG19BDmQytiMDbpIN2ZMFDaDo/cmcrS2XNlMkNK29Jc/uf9K
-         QlWIWGdHrqvEmFlsbhZkumjL/z39KRQyVoEN4C3w=
+        b=pju+3NPd3O3LPf69s4V9MVgq4Lz4JD6iTbiIXeYkBI+L62iCx3zwWqBLKeR9/A4pH
+         Ckx4VjHU81T1TNJf+qDysF7OlQX5jZ/dinxK8Vx9zy7gB0nXzv41MdpD7lOF1sbTkJ
+         U0FwQTzc3eX2RsKEAUgxCU4lSs4XZO8KflOfc/xI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0700/1157] iio: frequency: adrf6780: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:56 +0200
-Message-Id: <20220815180507.610123308@linuxfoundation.org>
+Subject: [PATCH 5.19 0659/1157] iio: adc: ti-adc108s102: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:15 +0200
+Message-Id: <20220815180506.089544338@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,35 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 9a5b11884cb72780cb824cac8aab47094654a84f ]
+[ Upstream commit 6909fe17888b66ea53ebb15640f82b97daa587a0 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 63aaf6d06d87 ("iio: frequency: adrf6780: add support for ADRF6780")
+Dual fixes tags as two cases that were introduced in different patches.
+One of those patches is a fix however and likely to have been backported
+to stable kernels.
+
+Note the second alignment marking is likely to be unnecessary, but is
+left for now to keep this fix simple.
+
+Fixes: 3691e5a69449 ("iio: adc: add driver for the ti-adc084s021 chip")
+Fixes: cbe5c6977604 ("iio: adc: ti-adc108s102: Fix alignment of buffer pushed to iio buffers.")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-72-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-31-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/frequency/adrf6780.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ti-adc108s102.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/frequency/adrf6780.c b/drivers/iio/frequency/adrf6780.c
-index 8255ffd174f6..21878bad0909 100644
---- a/drivers/iio/frequency/adrf6780.c
-+++ b/drivers/iio/frequency/adrf6780.c
-@@ -86,7 +86,7 @@ struct adrf6780_state {
- 	bool			uc_bias_en;
- 	bool			lo_sideband;
- 	bool			vdet_out_en;
--	u8			data[3] ____cacheline_aligned;
-+	u8			data[3] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
+index c8e48881c37f..c82a161630e1 100644
+--- a/drivers/iio/adc/ti-adc108s102.c
++++ b/drivers/iio/adc/ti-adc108s102.c
+@@ -77,8 +77,8 @@ struct adc108s102_state {
+ 	 *  tx_buf: 8 channel read commands, plus 1 dummy command
+ 	 *  rx_buf: 1 dummy response, 8 channel responses
+ 	 */
+-	__be16				rx_buf[9] ____cacheline_aligned;
+-	__be16				tx_buf[9] ____cacheline_aligned;
++	__be16				rx_buf[9] __aligned(IIO_DMA_MINALIGN);
++	__be16				tx_buf[9] __aligned(IIO_DMA_MINALIGN);
  };
  
- static int __adrf6780_spi_read(struct adrf6780_state *st, unsigned int reg,
+ #define ADC108S102_V_CHAN(index)					\
 -- 
 2.35.1
 
