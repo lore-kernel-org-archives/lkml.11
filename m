@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97681C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEBCC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350195AbiHOVwQ (ORCPT
+        id S1350220AbiHOVwV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        Mon, 15 Aug 2022 17:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350263AbiHOVrd (ORCPT
+        with ESMTP id S1350272AbiHOVre (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:33 -0400
+        Mon, 15 Aug 2022 17:47:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3272B62B;
-        Mon, 15 Aug 2022 12:31:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9885FAE3;
+        Mon, 15 Aug 2022 12:31:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88F3960FB9;
-        Mon, 15 Aug 2022 19:31:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91FD3C433D6;
-        Mon, 15 Aug 2022 19:31:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC8ED6101B;
+        Mon, 15 Aug 2022 19:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3221C433C1;
+        Mon, 15 Aug 2022 19:31:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591889;
-        bh=/aQnZQ5JFG9L15x7QKi8JUfhjGN48NNx0wirGU2yGxo=;
+        s=korg; t=1660591892;
+        bh=wtp6p6RMN1MZpTJuYtBu272z3ieJ8QwXzu/VzXe3Qcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eQz+OFFnxXhTIIG2cKs/jrqH9t0rjYV+cHDx1JfPvIu/vgHFolOmD7PPQkbXcQSOY
-         j6a0NaLqdgojfTYoVxu8DhLM5KPDFUIWKIO6CceCGa6dSJY1kna+WAsAg4UvKgG6lD
-         bWCR7kEHzTdNNiD1+Jj81aJSMJVlDiZoaNkT5rXk=
+        b=IM3brOL24ONhaiR1/31iflriA5AT0dLukJz6RH2kYpG65OH07Jne2ajgHHNUC2IHP
+         qTY/NWe7lMsqwVlANQrU6CxtVK0I9wvepk08kR/GV8wRpnprvXbFM3CIBUviSb+GDV
+         564DXJW1994zwOPU8vq1jHGmOggNG4YIQWQaNJ0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nico Boehr <nrb@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: [PATCH 5.19 0026/1157] KVM: s390: pv: dont present the ecall interrupt twice
-Date:   Mon, 15 Aug 2022 19:49:42 +0200
-Message-Id: <20220815180440.466734194@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0700/1095] clk: qcom: gcc-msm8939: Add missing SYSTEM_MM_NOC_BFDCD_CLK_SRC
+Date:   Mon, 15 Aug 2022 20:01:39 +0200
+Message-Id: <20220815180458.339813454@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,100 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nico Boehr <nrb@linux.ibm.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit c3f0e5fd2d33d80c5a5a8b5e5d2bab2841709cc8 upstream.
+[ Upstream commit 07e7fcf1714c5f9930ad27613fea940aedba68da ]
 
-When the SIGP interpretation facility is present and a VCPU sends an
-ecall to another VCPU in enabled wait, the sending VCPU receives a 56
-intercept (partial execution), so KVM can wake up the receiving CPU.
-Note that the SIGP interpretation facility will take care of the
-interrupt delivery and KVM's only job is to wake the receiving VCPU.
+When adding in the indexes for this clock-controller we missed
+SYSTEM_MM_NOC_BFDCD_CLK_SRC.
 
-For PV, the sending VCPU will receive a 108 intercept (pv notify) and
-should continue like in the non-PV case, i.e. wake the receiving VCPU.
+Add it in now.
 
-For PV and non-PV guests the interrupt delivery will occur through the
-SIGP interpretation facility on SIE entry when SIE finds the X bit in
-the status field set.
-
-However, in handle_pv_notification(), there was no special handling for
-SIGP, which leads to interrupt injection being requested by KVM for the
-next SIE entry. This results in the interrupt being delivered twice:
-once by the SIGP interpretation facility and once by KVM through the
-IICTL.
-
-Add the necessary special handling in handle_pv_notification(), similar
-to handle_partial_execution(), which simply wakes the receiving VCPU and
-leave interrupt delivery to the SIGP interpretation facility.
-
-In contrast to external calls, emergency calls are not interpreted but
-also cause a 108 intercept, which is why we still need to call
-handle_instruction() for SIGP orders other than ecall.
-
-Since kvm_s390_handle_sigp_pei() is now called for all SIGP orders which
-cause a 108 intercept - even if they are actually handled by
-handle_instruction() - move the tracepoint in kvm_s390_handle_sigp_pei()
-to avoid possibly confusing trace messages.
-
-Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
-Cc: <stable@vger.kernel.org> # 5.7
-Fixes: da24a0cc58ed ("KVM: s390: protvirt: Instruction emulation")
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220718130434.73302-1-nrb@linux.ibm.com
-Message-Id: <20220718130434.73302-1-nrb@linux.ibm.com>
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4c71d6abc4fc ("clk: qcom: Add DT bindings for MSM8939 GCC")
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220504163835.40130-2-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kvm/intercept.c |   15 +++++++++++++++
- arch/s390/kvm/sigp.c      |    4 ++--
- 2 files changed, 17 insertions(+), 2 deletions(-)
+ include/dt-bindings/clock/qcom,gcc-msm8939.h | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/s390/kvm/intercept.c
-+++ b/arch/s390/kvm/intercept.c
-@@ -528,12 +528,27 @@ static int handle_pv_uvc(struct kvm_vcpu
+diff --git a/include/dt-bindings/clock/qcom,gcc-msm8939.h b/include/dt-bindings/clock/qcom,gcc-msm8939.h
+index 0634467c4ce5..2d545ed0d35a 100644
+--- a/include/dt-bindings/clock/qcom,gcc-msm8939.h
++++ b/include/dt-bindings/clock/qcom,gcc-msm8939.h
+@@ -192,6 +192,7 @@
+ #define GCC_VENUS0_CORE0_VCODEC0_CLK		183
+ #define GCC_VENUS0_CORE1_VCODEC0_CLK		184
+ #define GCC_OXILI_TIMER_CLK			185
++#define SYSTEM_MM_NOC_BFDCD_CLK_SRC		186
  
- static int handle_pv_notification(struct kvm_vcpu *vcpu)
- {
-+	int ret;
-+
- 	if (vcpu->arch.sie_block->ipa == 0xb210)
- 		return handle_pv_spx(vcpu);
- 	if (vcpu->arch.sie_block->ipa == 0xb220)
- 		return handle_pv_sclp(vcpu);
- 	if (vcpu->arch.sie_block->ipa == 0xb9a4)
- 		return handle_pv_uvc(vcpu);
-+	if (vcpu->arch.sie_block->ipa >> 8 == 0xae) {
-+		/*
-+		 * Besides external call, other SIGP orders also cause a
-+		 * 108 (pv notify) intercept. In contrast to external call,
-+		 * these orders need to be emulated and hence the appropriate
-+		 * place to handle them is in handle_instruction().
-+		 * So first try kvm_s390_handle_sigp_pei() and if that isn't
-+		 * successful, go on with handle_instruction().
-+		 */
-+		ret = kvm_s390_handle_sigp_pei(vcpu);
-+		if (!ret)
-+			return ret;
-+	}
- 
- 	return handle_instruction(vcpu);
- }
---- a/arch/s390/kvm/sigp.c
-+++ b/arch/s390/kvm/sigp.c
-@@ -480,9 +480,9 @@ int kvm_s390_handle_sigp_pei(struct kvm_
- 	struct kvm_vcpu *dest_vcpu;
- 	u8 order_code = kvm_s390_get_base_disp_rs(vcpu, NULL);
- 
--	trace_kvm_s390_handle_sigp_pei(vcpu, order_code, cpu_addr);
--
- 	if (order_code == SIGP_EXTERNAL_CALL) {
-+		trace_kvm_s390_handle_sigp_pei(vcpu, order_code, cpu_addr);
-+
- 		dest_vcpu = kvm_get_vcpu_by_id(vcpu->kvm, cpu_addr);
- 		BUG_ON(dest_vcpu == NULL);
- 
+ /* Indexes for GDSCs */
+ #define BIMC_GDSC				0
+-- 
+2.35.1
+
 
 
