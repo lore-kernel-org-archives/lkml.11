@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F31BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9188C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348074AbiHOXtY (ORCPT
+        id S1354682AbiHOXt3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        Mon, 15 Aug 2022 19:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353897AbiHOXmx (ORCPT
+        with ESMTP id S1354067AbiHOXnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:42:53 -0400
+        Mon, 15 Aug 2022 19:43:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724A885A95;
-        Mon, 15 Aug 2022 13:13:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1D585F9D;
+        Mon, 15 Aug 2022 13:13:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD4E860B9B;
-        Mon, 15 Aug 2022 20:13:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBFE7C433C1;
-        Mon, 15 Aug 2022 20:13:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF8BD60B9B;
+        Mon, 15 Aug 2022 20:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5CF7C433D6;
+        Mon, 15 Aug 2022 20:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594428;
-        bh=gm9GfrC0J6whizYs8N/CPAxYEFys+ekiI6l13kMrfHY=;
+        s=korg; t=1660594431;
+        bh=DifRuWLDUKTF16Tjj2WmuoGaULdZ8SmwCsUER15xP5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xf6q2te4PfRAc8WaWJQ4MwA1DSu1iPdnuaeEBgunW8KuHiTeY+RYOrs2KMZvtbpPz
-         8zEnDoDmHTsysqCpJb05NytazlNK36siEI1Pukng6KKMd3S1/bKUJvPFYqIo2jj8sB
-         gKrtpR9ENLGvfU7e8K3G3R+SXkJ26oFbRdFRcEu4=
+        b=qFTbN+G7pUukMEC1vD5HnWfCXcoCgv/G4nGBs0F4CcjuXGs4siZa7wOoNbV159D8N
+         hHKr3KezNZOcceJg9tVk1mue30FTr3dQp5qYNmrxU6Vuda2BhKznfmmM0/osnkBCih
+         LcPH11X6WCBTZBY4TAWyFPdHOzArcul4V4gPGAOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
         Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0408/1157] drm/vc4: plane: Fix margin calculations for the right/bottom edges
-Date:   Mon, 15 Aug 2022 19:56:04 +0200
-Message-Id: <20220815180455.975639104@linuxfoundation.org>
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: [PATCH 5.18 1087/1095] drm/bridge: tc358767: Fix (e)DP bridge endpoint parsing in dedicated function
+Date:   Mon, 15 Aug 2022 20:08:06 +0200
+Message-Id: <20220815180514.002598256@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit b7c3d6821627861f4ea3e1f2b595d0ed9e80aac8 ]
+commit 9030a9e571b3ba250d3d450a98310e3c74ecaff4 upstream.
 
-The current plane margin calculation code clips the right and bottom
-edges of the range based using the left and top margins.
+Per toshiba,tc358767.yaml DT binding document, port@2 the output (e)DP
+port is optional. In case this port is not described in DT, the bridge
+driver operates in DPI-to-DP mode. The drm_of_find_panel_or_bridge()
+call in tc_probe_edp_bridge_endpoint() returns -ENODEV in case port@2
+is not present in DT and this specific return value is incorrectly
+propagated outside of tc_probe_edp_bridge_endpoint() function. All
+other error values must be propagated and are propagated correctly.
 
-This is obviously wrong, so let's fix it.
+Return 0 in case the port@2 is missing instead, that reinstates the
+original behavior before the commit this patch fixes.
 
-Fixes: 666e73587f90 ("drm/vc4: Take margin setup into account when updating planes")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-6-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8478095a8c4b ("drm/bridge: tc358767: Move (e)DP bridge endpoint parsing into dedicated function")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220428213132.447890-1-marex@denx.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_plane.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/bridge/tc358767.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
-index 67402da89213..568371aa89c5 100644
---- a/drivers/gpu/drm/vc4/vc4_plane.c
-+++ b/drivers/gpu/drm/vc4/vc4_plane.c
-@@ -310,16 +310,16 @@ static int vc4_plane_margins_adj(struct drm_plane_state *pstate)
- 					       adjhdisplay,
- 					       crtc_state->mode.hdisplay);
- 	vc4_pstate->crtc_x += left;
--	if (vc4_pstate->crtc_x > crtc_state->mode.hdisplay - left)
--		vc4_pstate->crtc_x = crtc_state->mode.hdisplay - left;
-+	if (vc4_pstate->crtc_x > crtc_state->mode.hdisplay - right)
-+		vc4_pstate->crtc_x = crtc_state->mode.hdisplay - right;
+--- a/drivers/gpu/drm/bridge/tc358767.c
++++ b/drivers/gpu/drm/bridge/tc358767.c
+@@ -1573,7 +1573,7 @@ static int tc_probe_edp_bridge_endpoint(
+ 		tc->bridge.type = DRM_MODE_CONNECTOR_DisplayPort;
+ 	}
  
- 	adjvdisplay = crtc_state->mode.vdisplay - (top + bottom);
- 	vc4_pstate->crtc_y = DIV_ROUND_CLOSEST(vc4_pstate->crtc_y *
- 					       adjvdisplay,
- 					       crtc_state->mode.vdisplay);
- 	vc4_pstate->crtc_y += top;
--	if (vc4_pstate->crtc_y > crtc_state->mode.vdisplay - top)
--		vc4_pstate->crtc_y = crtc_state->mode.vdisplay - top;
-+	if (vc4_pstate->crtc_y > crtc_state->mode.vdisplay - bottom)
-+		vc4_pstate->crtc_y = crtc_state->mode.vdisplay - bottom;
+-	return ret;
++	return 0;
+ }
  
- 	vc4_pstate->crtc_w = DIV_ROUND_CLOSEST(vc4_pstate->crtc_w *
- 					       adjhdisplay,
--- 
-2.35.1
-
+ static void tc_clk_disable(void *data)
 
 
