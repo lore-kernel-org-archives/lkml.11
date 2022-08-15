@@ -2,148 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F97C38145
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F16FC48BEA
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356138AbiHPAHE (ORCPT
+        id S1356190AbiHPAHJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
+        Mon, 15 Aug 2022 20:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354536AbiHOX6z (ORCPT
+        with ESMTP id S1354305AbiHOX6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:58:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3751180F75;
-        Mon, 15 Aug 2022 13:21:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C66EB61007;
-        Mon, 15 Aug 2022 20:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75EBAC433D6;
-        Mon, 15 Aug 2022 20:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594859;
-        bh=COkNRrEX6w4UbdnjU7Ri0CSOfhCU3mGHHhJ6+4yGcDU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l+YWZz62TSciX/DjESD4WwD3+NrVwdDU4xkbQylVWjoCif+gp+jTdURxLcdW7FDa4
-         tbiBO4tTf0GSTChnJu1Z+yy5l0GFKOASGO4vJJGgf9MAf9KwaLoNW0Vq8efuBmKgrY
-         suUcfptns7VVzTCDDkXBj7RmEsbDeb9rBXH1qaAU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
-        Prakhar Srivastava <prsriva@linux.microsoft.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Rob Herring <robh@kernel.org>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0580/1157] of: check previous kernels ima-kexec-buffer against memory bounds
-Date:   Mon, 15 Aug 2022 19:58:56 +0200
-Message-Id: <20220815180502.850825253@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4305C4AD59
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:22:10 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id u9so9732611oiv.12
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=KUREXGO6jnd0bVGmD0b7wZHGhfBeIpSV7ISn3FBvF0g=;
+        b=JVd7W9eNeC0LVvIMOinSk+P3PbZ0QvzqiK78lUWaC/aeWGVRVPfOuQQ2twhXTjfHIF
+         u7BSqTsZjJkD9tVZIpymEVjuC4ijnZY8oTKHpf3/hmtRAZ+vLY+mOb1wcFGEZSP8Xla0
+         67Mvs50TMjeV/4b48ccuKW4FRtzxqKJlYj/+8+D6zDhzo0v8ZVqHx5e2sQbkjAY6Cp7j
+         uMkulLi3/iZr+pBL0o5Rc4uEVpQShr3ROTP8nfBYSrf/0yNJLlX6gxWkBOeI2O9IBcJo
+         L57K2iFjZ2MYb2AVioKHP59giORw537DKt1r57cFQ8DS6hH5ar+OWJOKMCf385hAp/8J
+         9Wmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=KUREXGO6jnd0bVGmD0b7wZHGhfBeIpSV7ISn3FBvF0g=;
+        b=hhFz4vMZFyi4qnSSGI4dNz34rArMwXp/fccjbwK0zDRwuSjcjZ0fNllS5WX0LWHqa/
+         v3xqw+yp2+uanXP82xcsAudiPQNvIevPU0G/YU83qfGHhZ/xXp8of0sTrWenJtJ5Ltsl
+         BUiFf71XwyvDTL4cuhlyAKpaAqdt8KZVagzuqKbxtw5+f4taxOdM9q337w4/YlcurAdH
+         RcTWN/nxSRxMrwydEo0pAYl1pdcCg/fjVtax6ESLiRwoKW7ro9NBERijUTXp1ElDwNn7
+         aMH6j78jGYXu0QqyxJvaMKpd/FJDn24Yi86eZVi7i0pdzEBNHpW3WAVzioi/xRkSHZJT
+         Jc/w==
+X-Gm-Message-State: ACgBeo0k4SQrf5olVKAkKNDJqMuwuWmKnCNMYwoj9ZKTe4+zMD14WVhg
+        A5CtSyC76VtUKS+F6s+UwArNO+qTIPIsJpeElYRLppxU
+X-Google-Smtp-Source: AA6agR6/HoPU6iiFYk8vyjp+FTggm6uWYFAiy68hDHp9aGnJKMy5dFHVdevch5QQawGn+Cd4BEr765eFuhcI+C+eawI=
+X-Received: by 2002:a05:6808:1491:b0:343:7543:1a37 with SMTP id
+ e17-20020a056808149100b0034375431a37mr6706596oiw.106.1660594929626; Mon, 15
+ Aug 2022 13:22:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220719103954.6737-1-strochuk@ispras.ru> <fac8ce6e-6f5f-598d-35cc-7bf01ac90f30@amd.com>
+ <f750ab62-7deb-21a1-753e-1ee838386265@amd.com>
+In-Reply-To: <f750ab62-7deb-21a1-753e-1ee838386265@amd.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 15 Aug 2022 16:21:58 -0400
+Message-ID: <CADnq5_ORzjVFR9nxaJO6giVoGT8_BVtdq8PURjPrzOd7jpoH7g@mail.gmail.com>
+Subject: Re: [PATCH] drm/amdgpu: remove useless condition in amdgpu_job_stop_all_jobs_on_sched()
+To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Andrey Strachuk <strochuk@ispras.ru>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        dri-devel@lists.freedesktop.org, ldv-project@linuxtesting.org,
+        Jack Zhang <Jack.Zhang1@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
+        Surbhi Kakarya <surbhi.kakarya@amd.com>,
+        Melissa Wen <mwen@igalia.com>, amd-gfx@lists.freedesktop.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hawking Zhang <Hawking.Zhang@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vaibhav Jain <vaibhav@linux.ibm.com>
+Applied.  Thanks!
 
-[ Upstream commit cbf9c4b9617b6767886a913705ca14b7600c77db ]
-
-Presently ima_get_kexec_buffer() doesn't check if the previous kernel's
-ima-kexec-buffer lies outside the addressable memory range. This can result
-in a kernel panic if the new kernel is booted with 'mem=X' arg and the
-ima-kexec-buffer was allocated beyond that range by the previous kernel.
-The panic is usually of the form below:
-
-$ sudo kexec --initrd initrd vmlinux --append='mem=16G'
-
-<snip>
- BUG: Unable to handle kernel data access on read at 0xc000c01fff7f0000
- Faulting instruction address: 0xc000000000837974
- Oops: Kernel access of bad area, sig: 11 [#1]
-<snip>
- NIP [c000000000837974] ima_restore_measurement_list+0x94/0x6c0
- LR [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
- Call Trace:
- [c00000000371fa80] [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
- [c00000000371fb00] [c0000000020512c4] ima_init+0x80/0x108
- [c00000000371fb70] [c0000000020514dc] init_ima+0x4c/0x120
- [c00000000371fbf0] [c000000000012240] do_one_initcall+0x60/0x2c0
- [c00000000371fcc0] [c000000002004ad0] kernel_init_freeable+0x344/0x3ec
- [c00000000371fda0] [c0000000000128a4] kernel_init+0x34/0x1b0
- [c00000000371fe10] [c00000000000ce64] ret_from_kernel_thread+0x5c/0x64
- Instruction dump:
- f92100b8 f92100c0 90e10090 910100a0 4182050c 282a0017 3bc00000 40810330
- 7c0802a6 fb610198 7c9b2378 f80101d0 <a1240000> 2c090001 40820614 e9240010
- ---[ end trace 0000000000000000 ]---
-
-Fix this issue by checking returned PFN range of previous kernel's
-ima-kexec-buffer with page_is_ram() to ensure correct memory bounds.
-
-Fixes: 467d27824920 ("powerpc: ima: get the kexec buffer passed by the previous kernel")
-Cc: Frank Rowand <frowand.list@gmail.com>
-Cc: Prakhar Srivastava <prsriva@linux.microsoft.com>
-Cc: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
-Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Ritesh Harjani <ritesh.list@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220531041446.3334259-1-vaibhav@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/of/kexec.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index 8d374cc552be..91b04b04eec4 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -126,6 +126,7 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
- {
- 	int ret, len;
- 	unsigned long tmp_addr;
-+	unsigned long start_pfn, end_pfn;
- 	size_t tmp_size;
- 	const void *prop;
- 
-@@ -140,6 +141,22 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
- 	if (ret)
- 		return ret;
- 
-+	/* Do some sanity on the returned size for the ima-kexec buffer */
-+	if (!tmp_size)
-+		return -ENOENT;
-+
-+	/*
-+	 * Calculate the PFNs for the buffer and ensure
-+	 * they are with in addressable memory.
-+	 */
-+	start_pfn = PHYS_PFN(tmp_addr);
-+	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
-+	if (!page_is_ram(start_pfn) || !page_is_ram(end_pfn)) {
-+		pr_warn("IMA buffer at 0x%lx, size = 0x%zx beyond memory\n",
-+			tmp_addr, tmp_size);
-+		return -EINVAL;
-+	}
-+
- 	*addr = __va(tmp_addr);
- 	*size = tmp_size;
- 
--- 
-2.35.1
-
-
-
+On Fri, Aug 12, 2022 at 7:13 AM Christian K=C3=B6nig
+<christian.koenig@amd.com> wrote:
+>
+> @Alex was that one already picked up?
+>
+> Am 25.07.22 um 18:40 schrieb Andrey Grodzovsky:
+> > Reviewed-by: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+> >
+> > Andrey
+> >
+> > On 2022-07-19 06:39, Andrey Strachuk wrote:
+> >> Local variable 'rq' is initialized by an address
+> >> of field of drm_sched_job, so it does not make
+> >> sense to compare 'rq' with NULL.
+> >>
+> >> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> >>
+> >> Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+> >> Fixes: 7c6e68c777f1 ("drm/amdgpu: Avoid HW GPU reset for RAS.")
+> >> ---
+> >>   drivers/gpu/drm/amd/amdgpu/amdgpu_job.c | 4 ----
+> >>   1 file changed, 4 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
+> >> b/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
+> >> index 67f66f2f1809..600401f2a98f 100644
+> >> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
+> >> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
+> >> @@ -285,10 +285,6 @@ void amdgpu_job_stop_all_jobs_on_sched(struct
+> >> drm_gpu_scheduler *sched)
+> >>       /* Signal all jobs not yet scheduled */
+> >>       for (i =3D DRM_SCHED_PRIORITY_COUNT - 1; i >=3D
+> >> DRM_SCHED_PRIORITY_MIN; i--) {
+> >>           struct drm_sched_rq *rq =3D &sched->sched_rq[i];
+> >> -
+> >> -        if (!rq)
+> >> -            continue;
+> >> -
+> >>           spin_lock(&rq->lock);
+> >>           list_for_each_entry(s_entity, &rq->entities, list) {
+> >>               while ((s_job =3D
+> >> to_drm_sched_job(spsc_queue_pop(&s_entity->job_queue)))) {
+>
