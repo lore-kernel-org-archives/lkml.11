@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E7FC28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B4EC2BB41
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346421AbiHPAvL (ORCPT
+        id S1346771AbiHPAvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        Mon, 15 Aug 2022 20:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348565AbiHPAqX (ORCPT
+        with ESMTP id S1348453AbiHPAqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FE4195825;
-        Mon, 15 Aug 2022 13:44:49 -0700 (PDT)
+        Mon, 15 Aug 2022 20:46:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02393194E64;
+        Mon, 15 Aug 2022 13:44:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CA9DB81197;
-        Mon, 15 Aug 2022 20:44:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF290C433D6;
-        Mon, 15 Aug 2022 20:44:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 929ED611E2;
+        Mon, 15 Aug 2022 20:44:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81263C433D6;
+        Mon, 15 Aug 2022 20:44:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596287;
-        bh=blUag92h8eWnSLEZbHuaNvoEH/qbG9jaiisbiWnHFkM=;
+        s=korg; t=1660596275;
+        bh=HSYtq/8VlNbrxLv2/e0LpVYwwGCzQZuFENn4nztUwSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TfJo81JiTttzwhlW9ybGnUV9Gs7/VBmoukrTcyaEJEvAX+BXR/v/u8pRRzhCmBRek
-         hkd6RciBuU91o8dHuOBhY+mHx6ls0MpmPB2b41c56/LFmf/fOoyQ1xQVDCB3k5aFQ1
-         JKauiz9OkrcSLTHszspHdeq5+KLjgjW/n5TCqNHg=
+        b=DVxcFtC14MbZHlhDPdfVa0BiLB8i83KqIYwelvbZ45wPtTyJcufdoSYvWRhCNhQ4F
+         9NYKd6UyjRNsPQ8sgxu5NiGVzenpipFgCwLWXeR+uTadBgjSSe/NWGCwUHjc4YFewq
+         TYC5HMw3ENwhtrnqXyVxVYIEvG309psrVTMSeYbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1031/1157] video: fbdev: arkfb: Check the size of screen before memset_io()
-Date:   Mon, 15 Aug 2022 20:06:27 +0200
-Message-Id: <20220815180521.202515046@linuxfoundation.org>
+        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
+        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1027/1157] sched/core: Do not requeue task on CPU excluded from cpus_mask
+Date:   Mon, 15 Aug 2022 20:06:23 +0200
+Message-Id: <20220815180521.025791014@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,48 +49,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Mel Gorman <mgorman@techsingularity.net>
 
-[ Upstream commit 96b550971c65d54d64728d8ba973487878a06454 ]
+[ Upstream commit 751d4cbc43879229dbc124afefe240b70fd29a85 ]
 
-In the function arkfb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+The following warning was triggered on a large machine early in boot on
+a distribution kernel but the same problem should also affect mainline.
 
-[  659.399066] BUG: unable to handle page fault for address: ffffc90003000000
-[  659.399077] #PF: supervisor write access in kernel mode
-[  659.399079] #PF: error_code(0x0002) - not-present page
-[  659.399094] RIP: 0010:memset_orig+0x33/0xb0
-[  659.399116] Call Trace:
-[  659.399122]  arkfb_set_par+0x143f/0x24c0
-[  659.399130]  fb_set_var+0x604/0xeb0
-[  659.399161]  do_fb_ioctl+0x234/0x670
-[  659.399189]  fb_ioctl+0xdd/0x130
+   WARNING: CPU: 439 PID: 10 at ../kernel/workqueue.c:2231 process_one_work+0x4d/0x440
+   Call Trace:
+    <TASK>
+    rescuer_thread+0x1f6/0x360
+    kthread+0x156/0x180
+    ret_from_fork+0x22/0x30
+    </TASK>
 
-Fix the this by checking the value of 'screen_size' before memset_io().
+Commit c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+optimises ttwu by queueing a task that is descheduling on the wakelist,
+but does not check if the task descheduling is still allowed to run on that CPU.
 
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+In this warning, the problematic task is a workqueue rescue thread which
+checks if the rescue is for a per-cpu workqueue and running on the wrong CPU.
+While this is early in boot and it should be possible to create workers,
+the rescue thread may still used if the MAYDAY_INITIAL_TIMEOUT is reached
+or MAYDAY_INTERVAL and on a sufficiently large machine, the rescue
+thread is being used frequently.
+
+Tracing confirmed that the task should have migrated properly using the
+stopper thread to handle the migration. However, a parallel wakeup from udev
+running on another CPU that does not share CPU cache observes p->on_cpu and
+uses task_cpu(p), queues the task on the old CPU and triggers the warning.
+
+Check that the wakee task that is descheduling is still allowed to run
+on its current CPU and if not, wait for the descheduling to complete
+and select an allowed CPU.
+
+Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220804092119.20137-1-mgorman@techsingularity.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/arkfb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/sched/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index ed76ddc7df3d..a2a381631628 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -797,6 +797,8 @@ static int arkfb_set_par(struct fb_info *info)
- 	value = ((value * hmul / hdiv) / 8) - 5;
- 	vga_wcrt(par->state.vgabase, 0x42, (value + 1) / 2);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 0066b9d66e25..d4af56927a4d 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3808,7 +3808,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
+ 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
+ }
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
+-static inline bool ttwu_queue_cond(int cpu)
++static inline bool ttwu_queue_cond(struct task_struct *p, int cpu)
+ {
+ 	/*
+ 	 * Do not complicate things with the async wake_list while the CPU is
+@@ -3817,6 +3817,10 @@ static inline bool ttwu_queue_cond(int cpu)
+ 	if (!cpu_active(cpu))
+ 		return false;
+ 
++	/* Ensure the task will still be allowed to run on the CPU. */
++	if (!cpumask_test_cpu(cpu, p->cpus_ptr))
++		return false;
++
+ 	/*
+ 	 * If the CPU does not share cache, then queue the task on the
+ 	 * remote rqs wakelist to avoid accessing remote data.
+@@ -3846,7 +3850,7 @@ static inline bool ttwu_queue_cond(int cpu)
+ 
+ static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ {
+-	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
++	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(p, cpu)) {
+ 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
+ 		__ttwu_queue_wakelist(p, cpu, wake_flags);
+ 		return true;
 -- 
 2.35.1
 
