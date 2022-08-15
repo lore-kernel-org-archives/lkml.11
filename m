@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6CBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A67C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243544AbiHOSe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S243673AbiHOSef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243634AbiHOSdy (ORCPT
+        with ESMTP id S243645AbiHOSeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:33:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BA637FA6;
-        Mon, 15 Aug 2022 11:22:00 -0700 (PDT)
+        Mon, 15 Aug 2022 14:34:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C9137FB7;
+        Mon, 15 Aug 2022 11:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6B1FB81074;
-        Mon, 15 Aug 2022 18:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A727C433D7;
-        Mon, 15 Aug 2022 18:21:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68B9A60BE9;
+        Mon, 15 Aug 2022 18:22:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD18C433C1;
+        Mon, 15 Aug 2022 18:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587716;
-        bh=lC1PDtOD4kVcf3eDjo4yBR1rOPmdYM1OQZgn1WPyCNM=;
+        s=korg; t=1660587723;
+        bh=xkDeGgrBP1lMuy0ZuJSezWTUfVMP7+8pc66PNFfSDzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c1NFdBa2RxBSDr/Tvdt5maO47mjS0+noafwBOEzuKD/zZvTE/VaaEKIl0Km4S+juG
-         LJFca0mthf5VbD3VHou0y7cpM6eUni7+h5ngPfBMvp3XccNvK4/e9rKLOL47GFR88h
-         kUq4tPluTCNuYmDS/qtRL43wM+Yb2hgOwbBWUfAs=
+        b=ZlLbJGjh2+3AHsEfDFQtkLkEqZNVTG5UfFnleNjrFTTdloXxxDqo8rMjWzyjQpSNL
+         Dq4XGKsMTHNOqFPCyfLdPlt6JbIcb4ggNb6Rmy2kRcrZ6xchrbc51zJkefUhiTsMPv
+         zhfGlknewTwM10aOIUoc9nU4LE6rTTSjXPUtnKG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/779] ARM: findbit: fix overflowing offset
-Date:   Mon, 15 Aug 2022 19:56:39 +0200
-Message-Id: <20220815180343.948725163@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 174/779] arm64: cpufeature: Allow different PMU versions in ID_DFR0_EL1
+Date:   Mon, 15 Aug 2022 19:56:58 +0200
+Message-Id: <20220815180344.722563582@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,74 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Alexandru Elisei <alexandru.elisei@arm.com>
 
-[ Upstream commit ec85bd369fd2bfaed6f45dd678706429d4f75b48 ]
+[ Upstream commit 506506cad3947b942425b119ffa2b06715d5d804 ]
 
-When offset is larger than the size of the bit array, we should not
-attempt to access the array as we can perform an access beyond the
-end of the array. Fix this by changing the pre-condition.
+Commit b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in
+PMU implementations") made it possible to run Linux on a machine with PMUs
+with different versions without tainting the kernel. The patch relaxed the
+restriction only for the ID_AA64DFR0_EL1.PMUVer field, and missed doing the
+same for ID_DFR0_EL1.PerfMon , which also reports the PMU version, but for
+the AArch32 state.
 
-Using "cmp r2, r1; bhs ..." covers us for the size == 0 case, since
-this will always take the branch when r1 is zero, irrespective of
-the value of r2. This means we can fix this bug without adding any
-additional code!
+For example, with Linux running on two clusters with different PMU
+versions, the kernel is tainted when bringing up secondaries with the
+following message:
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+[    0.097027] smp: Bringing up secondary CPUs ...
+[..]
+[    0.142805] Detected PIPT I-cache on CPU4
+[    0.142805] CPU features: SANITY CHECK: Unexpected variation in SYS_ID_DFR0_EL1. Boot CPU: 0x00000004011088, CPU4: 0x00000005011088
+[    0.143555] CPU features: Unsupported CPU feature variation detected.
+[    0.143702] GICv3: CPU4: found redistributor 10000 region 0:0x000000002f180000
+[    0.143702] GICv3: CPU4: using allocated LPI pending table @0x00000008800d0000
+[    0.144888] CPU4: Booted secondary processor 0x0000010000 [0x410fd0f0]
+
+The boot CPU implements FEAT_PMUv3p1 (ID_DFR0_EL1.PerfMon, bits 27:24, is
+0b0100), but CPU4, part of the other cluster, implements FEAT_PMUv3p4
+(ID_DFR0_EL1.PerfMon = 0b0101).
+
+Treat the PerfMon field as FTR_NONSTRICT and FTR_EXACT to pass the sanity
+check and to match how PMUVer is treated for the 64bit ID register.
+
+Fixes: b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in PMU implementations")
+Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
+Link: https://lore.kernel.org/r/20220617111332.203061-1-alexandru.elisei@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/lib/findbit.S | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ arch/arm64/kernel/cpufeature.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/lib/findbit.S b/arch/arm/lib/findbit.S
-index b5e8b9ae4c7d..7fd3600db8ef 100644
---- a/arch/arm/lib/findbit.S
-+++ b/arch/arm/lib/findbit.S
-@@ -40,8 +40,8 @@ ENDPROC(_find_first_zero_bit_le)
-  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
-  */
- ENTRY(_find_next_zero_bit_le)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
-  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
-@@ -81,8 +81,8 @@ ENDPROC(_find_first_bit_le)
-  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
-  */
- ENTRY(_find_next_bit_le)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
-  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
-@@ -115,8 +115,8 @@ ENTRY(_find_first_zero_bit_be)
- ENDPROC(_find_first_zero_bit_be)
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index e71c9cfb46e8..474aa55c2f68 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -536,7 +536,7 @@ static const struct arm64_ftr_bits ftr_id_pfr2[] = {
  
- ENTRY(_find_next_zero_bit_be)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
- 		eor	r3, r2, #0x18		@ big endian byte ordering
-@@ -149,8 +149,8 @@ ENTRY(_find_first_bit_be)
- ENDPROC(_find_first_bit_be)
- 
- ENTRY(_find_next_bit_be)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
- 		eor	r3, r2, #0x18		@ big endian byte ordering
+ static const struct arm64_ftr_bits ftr_id_dfr0[] = {
+ 	/* [31:28] TraceFilt */
+-	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_PERFMON_SHIFT, 4, 0xf),
++	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_EXACT, ID_DFR0_PERFMON_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MPROFDBG_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MMAPTRC_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_COPTRC_SHIFT, 4, 0),
 -- 
 2.35.1
 
