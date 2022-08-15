@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6780C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C79C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350052AbiHOWfc (ORCPT
+        id S1350079AbiHOWfh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43870 "EHLO
+        Mon, 15 Aug 2022 18:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351090AbiHOW1f (ORCPT
+        with ESMTP id S1351083AbiHOW1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282BF422E6;
-        Mon, 15 Aug 2022 12:47:12 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868DA422E4;
+        Mon, 15 Aug 2022 12:47:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2769B80EB2;
-        Mon, 15 Aug 2022 19:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE37C433D6;
-        Mon, 15 Aug 2022 19:47:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 232BF6122B;
+        Mon, 15 Aug 2022 19:47:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13803C433C1;
+        Mon, 15 Aug 2022 19:47:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592829;
-        bh=ZYta0xWaaaX3NVY+blxrrshyWYllF3ppbUR9PCuCCpc=;
+        s=korg; t=1660592826;
+        bh=vqJjCMDqvWGP/37g/8tBgDb5TlWKENjQTGDkXK8Ik5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S02tSGYNebssgymk4QypzxyqCjNls6S6kgVGDY5i1hfDZ753LyHrfDw/fg5nz5EyQ
-         mJA+6gDZ70nDYJL9UU/ZUYwfOgc4L834EpTqoMOZrBfWKOGQg9mptdZ3Duk4zeirtU
-         LQKAui8bV1rn6lWYMMSrkK/N2BsV3l517naeUQJc=
+        b=oAR0V26ww6itSjzz0+U2mkLSSMEDP43uE2n0zxD3Es3Prlb5Cm9nMY5KzIhl4JEQy
+         I17YeXe+Mx0hrEneSBmfEtQvl8Ijy4I14DqEWLeJiBAjrbLwJwLuXWKGz9MztGGgOf
+         bS9SVLqc9X2QmID0TgWBvWNJ2xiJT1MTGYlpRiEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0148/1157] arch: make TRACE_IRQFLAGS_NMI_SUPPORT generic
-Date:   Mon, 15 Aug 2022 19:51:44 +0200
-Message-Id: <20220815180445.581946288@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0170/1157] ARM: dts: ux500: Fix Janice accelerometer mounting matrix
+Date:   Mon, 15 Aug 2022 19:52:06 +0200
+Message-Id: <20220815180446.523239858@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,93 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 4510bffb4d0246cdcc1f14c7367c026b807a862d ]
+[ Upstream commit 013fda41c03e6bcb3dc416669187b609e9e5fdbc ]
 
-On most architectures, IRQ flag tracing is disabled in NMI context, and
-architectures need to define and select TRACE_IRQFLAGS_NMI_SUPPORT in
-order to enable this.
+This was fixed wrong so fix it again. Now verified by using
+iio-sensor-proxy monitor-sensor test program.
 
-Commit:
-
-  859d069ee1ddd878 ("lockdep: Prepare for NMI IRQ state tracking")
-
-Permitted IRQ flag tracing in NMI context, allowing lockdep to work in
-NMI context where an architecture had suitable entry logic. At the time,
-most architectures did not have such suitable entry logic, and this broke
-lockdep on such architectures. Thus, this was partially disabled in
-commit:
-
-  ed00495333ccc80f ("locking/lockdep: Fix TRACE_IRQFLAGS vs. NMIs")
-
-... with architectures needing to select TRACE_IRQFLAGS_NMI_SUPPORT to
-enable IRQ flag tracing in NMI context.
-
-Currently TRACE_IRQFLAGS_NMI_SUPPORT is defined under
-arch/x86/Kconfig.debug. Move it to arch/Kconfig so architectures can
-select it without having to provide their own definition.
-
-Since the regular TRACE_IRQFLAGS_SUPPORT is selected by
-arch/x86/Kconfig, the select of TRACE_IRQFLAGS_NMI_SUPPORT is moved
-there too.
-
-There should be no functional change as a result of this patch.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220511131733.4074499-2-mark.rutland@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220609083516.329281-1-linus.walleij@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/Kconfig           | 3 +++
- arch/x86/Kconfig       | 1 +
- arch/x86/Kconfig.debug | 3 ---
- 3 files changed, 4 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/ste-ux500-samsung-janice.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 71b9272acb28..5ea3e3838c21 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -223,6 +223,9 @@ config HAVE_FUNCTION_DESCRIPTORS
- config TRACE_IRQFLAGS_SUPPORT
- 	bool
- 
-+config TRACE_IRQFLAGS_NMI_SUPPORT
-+	bool
-+
- #
- # An arch should select this if it provides all these things:
- #
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 52a7f91527fe..25e2b8b75e40 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -278,6 +278,7 @@ config X86
- 	select SYSCTL_EXCEPTION_TRACE
- 	select THREAD_INFO_IN_TASK
- 	select TRACE_IRQFLAGS_SUPPORT
-+	select TRACE_IRQFLAGS_NMI_SUPPORT
- 	select USER_STACKTRACE_SUPPORT
- 	select VIRT_TO_BUS
- 	select HAVE_ARCH_KCSAN			if X86_64
-diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
-index 340399f69954..bdfe08f1a930 100644
---- a/arch/x86/Kconfig.debug
-+++ b/arch/x86/Kconfig.debug
-@@ -1,8 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- 
--config TRACE_IRQFLAGS_NMI_SUPPORT
--	def_bool y
--
- config EARLY_PRINTK_USB
- 	bool
- 
+diff --git a/arch/arm/boot/dts/ste-ux500-samsung-janice.dts b/arch/arm/boot/dts/ste-ux500-samsung-janice.dts
+index e6d4fd0eb5f4..ed5c79c3d04b 100644
+--- a/arch/arm/boot/dts/ste-ux500-samsung-janice.dts
++++ b/arch/arm/boot/dts/ste-ux500-samsung-janice.dts
+@@ -633,8 +633,8 @@ i2c-gate {
+ 					accelerometer@8 {
+ 						compatible = "bosch,bma222";
+ 						reg = <0x08>;
+-						mount-matrix = "0", "1", "0",
+-							       "-1", "0", "0",
++						mount-matrix = "0", "-1", "0",
++							       "1", "0", "0",
+ 							       "0", "0", "1";
+ 						vddio-supply = <&ab8500_ldo_aux2_reg>; // 1.8V
+ 						vdd-supply = <&ab8500_ldo_aux1_reg>; // 3V
 -- 
 2.35.1
 
