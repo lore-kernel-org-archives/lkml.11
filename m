@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E94B5C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0283C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245396AbiHOTFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
+        id S245026AbiHOTFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245248AbiHOTBl (ORCPT
+        with ESMTP id S245277AbiHOTBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A6F33A1E;
-        Mon, 15 Aug 2022 11:33:00 -0700 (PDT)
+        Mon, 15 Aug 2022 15:01:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4114B4B9;
+        Mon, 15 Aug 2022 11:33:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA9AFB8105D;
-        Mon, 15 Aug 2022 18:32:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E085C433D6;
-        Mon, 15 Aug 2022 18:32:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F40461029;
+        Mon, 15 Aug 2022 18:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFE9C433D6;
+        Mon, 15 Aug 2022 18:33:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588374;
-        bh=1wr7CAmYtvRQCyqKCWnL96CuCnp+lTL5P0DPj5UZM94=;
+        s=korg; t=1660588383;
+        bh=HlTfPbXchC5cAD7jsM/6p4KFPwSHFJtQRD++oV1z8MA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kw1PnymjhgZSRro1o2uBAM4OiR+J7LTMlOC7kG63JOAxfQ8YTtLJThJtnlO2MKgbY
-         MFr8E2ujchHptY+QiU2u0bVcXjHiSlpoXCWKXnnm1EyXrIoAPWykiae24Tlz1/FGdY
-         BXnaqyYarV42wEArrozx+GUoCSkhDvjIIBWBdZck=
+        b=IsIYxZvoCcuTipC0wvZ5KPlNUK7eYA3mEmIR0rofJwRnpz8ELQh+s2XulVlUgzWR5
+         EDn4CLbvDzId73oFPirwEcSeFAlriH/vKKEmDaJY7yy2zPgvuZAvMy6b599BvjbYvu
+         pWjBevSg8xQ9BPe9vM/bxXzY567w4j+7XXAm3094=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Hayes Wang <hayeswang@realtek.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 382/779] net: rose: fix netdev reference changes
-Date:   Mon, 15 Aug 2022 20:00:26 +0200
-Message-Id: <20220815180353.616960976@linuxfoundation.org>
+Subject: [PATCH 5.15 385/779] net: usb: make USB_RTL8153_ECM non user configurable
+Date:   Mon, 15 Aug 2022 20:00:29 +0200
+Message-Id: <20220815180353.747685622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,108 +53,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Maciej Żenczykowski <maze@google.com>
 
-[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
+[ Upstream commit f56530dcdb0684406661ac9f1accf48319d07600 ]
 
-Bernard reported that trying to unload rose module would lead
-to infamous messages:
+This refixes:
 
-unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
+    commit 7da17624e7948d5d9660b910f8079d26d26ce453
+    nt: usb: USB_RTL8153_ECM should not default to y
 
-This patch solves the issue, by making sure each socket referring to
-a netdevice holds a reference count on it, and properly releases it
-in rose_release().
+    In general, device drivers should not be enabled by default.
 
-rose_dev_first() is also fixed to take a device reference
-before leaving the rcu_read_locked section.
+which basically broke the commit it claimed to fix, ie:
 
-Following patch will add ref_tracker annotations to ease
-future bug hunting.
+    commit 657bc1d10bfc23ac06d5d687ce45826c760744f9
+    r8153_ecm: avoid to be prior to r8152 driver
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Bernard Pidoux <f6bvp@free.fr>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Tested-by: Bernard Pidoux <f6bvp@free.fr>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+    Avoid r8153_ecm is compiled as built-in, if r8152 driver is compiled
+    as modules. Otherwise, the r8153_ecm would be used, even though the
+    device is supported by r8152 driver.
+
+this commit amounted to:
+
+drivers/net/usb/Kconfig:
+
++config USB_RTL8153_ECM
++       tristate "RTL8153 ECM support"
++       depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
++       default y
++       help
++         This option supports ECM mode for RTL8153 ethernet adapter, when
++         CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
++         supported by r8152 driver.
+
+drivers/net/usb/Makefile:
+
+-obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o r8153_ecm.o
++obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o
++obj-$(CONFIG_USB_RTL8153_ECM)  += r8153_ecm.o
+
+And as can be seen it pulls a piece of the cdc_ether driver out into
+a separate config option to be able to make this piece modular in case
+cdc_ether is builtin, while r8152 is modular.
+
+While in general, device drivers should indeed not be enabled by default:
+this isn't a device driver per say, but rather this is support code for
+the CDCETHER (ECM) driver, and should thus be enabled if it is enabled.
+
+See also email thread at:
+  https://www.spinics.net/lists/netdev/msg767649.html
+
+In:
+  https://www.spinics.net/lists/netdev/msg768284.html
+
+Jakub wrote:
+  And when we say "removed" we can just hide it from what's prompted
+  to the user (whatever such internal options are called)? I believe
+  this way we don't bring back Marek's complaint.
+
+Side note: these incorrect defaults will result in Android 13
+on 5.15 GKI kernels lacking USB_RTL8153_ECM support while having
+USB_NET_CDCETHER (luckily we also have USB_RTL8150 and USB_RTL8152,
+so it's probably only an issue for very new RTL815x hardware with
+no native 5.15 driver).
+
+Fixes: 7da17624e7948d5d ("nt: usb: USB_RTL8153_ECM should not default to y")
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hayes Wang <hayeswang@realtek.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Link: https://lore.kernel.org/r/20220730230113.4138858-1-zenczykowski@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rose/af_rose.c    | 11 +++++++++--
- net/rose/rose_route.c |  2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/usb/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index cf7d974e0f61..29a208ed8fb8 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -191,6 +191,7 @@ static void rose_kill_by_device(struct net_device *dev)
- 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
- 			if (rose->neighbour)
- 				rose->neighbour->use--;
-+			dev_put(rose->device);
- 			rose->device = NULL;
- 		}
- 	}
-@@ -591,6 +592,8 @@ static struct sock *rose_make_new(struct sock *osk)
- 	rose->idle	= orose->idle;
- 	rose->defer	= orose->defer;
- 	rose->device	= orose->device;
-+	if (rose->device)
-+		dev_hold(rose->device);
- 	rose->qbitincl	= orose->qbitincl;
+diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
+index b554054a7560..8939e5fbd50a 100644
+--- a/drivers/net/usb/Kconfig
++++ b/drivers/net/usb/Kconfig
+@@ -636,8 +636,9 @@ config USB_NET_AQC111
+ 	  * Aquantia AQtion USB to 5GbE
  
- 	return sk;
-@@ -644,6 +647,7 @@ static int rose_release(struct socket *sock)
- 		break;
- 	}
- 
-+	dev_put(rose->device);
- 	sock->sk = NULL;
- 	release_sock(sk);
- 	sock_put(sk);
-@@ -720,7 +724,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	struct rose_sock *rose = rose_sk(sk);
- 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
- 	unsigned char cause, diagnostic;
--	struct net_device *dev;
- 	ax25_uid_assoc *user;
- 	int n, err = 0;
- 
-@@ -777,9 +780,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	}
- 
- 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
-+		struct net_device *dev;
-+
- 		sock_reset_flag(sk, SOCK_ZAPPED);
- 
--		if ((dev = rose_dev_first()) == NULL) {
-+		dev = rose_dev_first();
-+		if (!dev) {
- 			err = -ENETUNREACH;
- 			goto out_release;
- 		}
-@@ -787,6 +793,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 		user = ax25_findbyuid(current_euid());
- 		if (!user) {
- 			err = -EINVAL;
-+			dev_put(dev);
- 			goto out_release;
- 		}
- 
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index 764a726debb1..66aa05db5390 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -615,6 +615,8 @@ struct net_device *rose_dev_first(void)
- 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
- 				first = dev;
- 	}
-+	if (first)
-+		dev_hold(first);
- 	rcu_read_unlock();
- 
- 	return first;
+ config USB_RTL8153_ECM
+-	tristate "RTL8153 ECM support"
++	tristate
+ 	depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
++	default y
+ 	help
+ 	  This option supports ECM mode for RTL8153 ethernet adapter, when
+ 	  CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
 -- 
 2.35.1
 
