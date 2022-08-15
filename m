@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E870C2BB47
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CFDC2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355120AbiHOXrH (ORCPT
+        id S1355005AbiHOXq5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
+        Mon, 15 Aug 2022 19:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354341AbiHOXlz (ORCPT
+        with ESMTP id S1354326AbiHOXlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134032CC81;
-        Mon, 15 Aug 2022 13:13:01 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73572C665;
+        Mon, 15 Aug 2022 13:12:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9997B80EA8;
-        Mon, 15 Aug 2022 20:12:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA18C433D6;
-        Mon, 15 Aug 2022 20:12:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C116077B;
+        Mon, 15 Aug 2022 20:12:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 541F9C433C1;
+        Mon, 15 Aug 2022 20:12:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594378;
-        bh=YcUUB4RedbZ+lubJgf+hTcDCMOcGMS1Aj3kO+WeMkUI=;
+        s=korg; t=1660594356;
+        bh=Y7dWTjLqANNjbJKqLAbtLdNNLRyhsxmBAvgy0geNrzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qC8NMKNDCdfDzOX7eT97IqQs7gckwxOHXo/H+m1puFaRKUOyuiEIKX5Z4OBdY/tVj
-         KDMQ3spl2+f8qhdQ1i9520rRUPfdL9gT8SdSG4RGq3sgb2FrCsO00qUa1rBzBn1Oom
-         BSf0ryBpJAIwdxzaHTXcolSw6Znf2wRk/sk6oJF0=
+        b=TTv6G4IfScpWIDNA/Vnmb1rtgz2GFc9biFIAP7ZR2rjEBl9PAIjq169ih7PhWV4yd
+         ItbccRauNFSoJHo9ZVq+bvwlFB2s/6e/IPcIh44SZAY5sNwq2RBlH7IfW00TVf9SVY
+         SDldB4yVGLtVrKFU6Ocy5cbb84HF/tqmwoEwCfgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0427/1157] selftests/xsk: Destroy BPF resources only when ctx refcount drops to 0
-Date:   Mon, 15 Aug 2022 19:56:23 +0200
-Message-Id: <20220815180456.742270917@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 1084/1095] net: dsa: felix: fix min gate len calculation for tc when its first gate is closed
+Date:   Mon, 15 Aug 2022 20:08:03 +0200
+Message-Id: <20220815180513.883761274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,76 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 39e940d4abfabb08b6937a315546b24d10be67e3 ]
+commit 7e4babffa6f340a74c820d44d44d16511e666424 upstream.
 
-Currently, xsk_socket__delete frees BPF resources regardless of ctx
-refcount. Xdpxceiver has a test to verify whether underlying BPF
-resources would not be wiped out after closing XSK socket that was
-bound to interface with other active sockets. From library's xsk part
-perspective it also means that the internal xsk context is shared and
-its refcount is bumped accordingly.
+min_gate_len[tc] is supposed to track the shortest interval of
+continuously open gates for a traffic class. For example, in the
+following case:
 
-After a switch to loading XDP prog based on previously opened XSK
-socket, mentioned xdpxceiver test fails with:
+TC 76543210
 
-  not ok 16 [xdpxceiver.c:swap_xsk_resources:1334]: ERROR: 9/"Bad file descriptor
+t0 00000001b 200000 ns
+t1 00000010b 200000 ns
 
-which means that in swap_xsk_resources(), xsk_socket__delete() released
-xskmap which in turn caused a failure of xsk_socket__update_xskmap().
+min_gate_len[0] and min_gate_len[1] should be 200000, while
+min_gate_len[2-7] should be 0.
 
-To fix this, when deleting socket, decrement ctx refcount before
-releasing BPF resources and do so only when refcount dropped to 0 which
-means there are no more active sockets for this ctx so BPF resources can
-be freed safely.
+However what happens is that min_gate_len[0] is 200000, but
+min_gate_len[1] ends up being 0 (despite gate_len[1] being 200000 at the
+point where the logic detects the gate close event for TC 1).
 
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Link: https://lore.kernel.org/bpf/20220629143458.934337-5-maciej.fijalkowski@intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The problem is that the code considers a "gate close" event whenever it
+sees that there is a 0 for that TC (essentially it's level rather than
+edge triggered). By doing that, any time a gate is seen as closed
+without having been open prior, gate_len, which is 0, will be written
+into min_gate_len. Once min_gate_len becomes 0, it's impossible for it
+to track anything higher than that (the length of actually open
+intervals).
+
+To fix this, we make the writing to min_gate_len[tc] be edge-triggered,
+which avoids writes for gates that are closed in consecutive intervals.
+However what this does is it makes us need to special-case the
+permanently closed gates at the end.
+
+Fixes: 55a515b1f5a9 ("net: dsa: felix: drop oversized frames with tc-taprio instead of hanging the port")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220804202817.1677572-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/bpf/xsk.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c |   15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index af136f73b09d..67dc010e9fe3 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -1147,8 +1147,6 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 		goto out_mmap_tx;
- 	}
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1133,6 +1133,7 @@ static void vsc9959_tas_min_gate_lengths
+ {
+ 	struct tc_taprio_sched_entry *entry;
+ 	u64 gate_len[OCELOT_NUM_TC];
++	u8 gates_ever_opened = 0;
+ 	int tc, i, n;
  
--	ctx->prog_fd = -1;
--
- 	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
- 		err = __xsk_setup_xdp_prog(xsk, NULL);
- 		if (err)
-@@ -1229,7 +1227,10 @@ void xsk_socket__delete(struct xsk_socket *xsk)
- 
- 	ctx = xsk->ctx;
- 	umem = ctx->umem;
--	if (ctx->prog_fd != -1) {
-+
-+	xsk_put_ctx(ctx, true);
-+
-+	if (!ctx->refcount) {
- 		xsk_delete_bpf_maps(xsk);
- 		close(ctx->prog_fd);
- 		if (ctx->has_bpf_link)
-@@ -1248,8 +1249,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+ 	/* Initialize arrays */
+@@ -1160,16 +1161,28 @@ static void vsc9959_tas_min_gate_lengths
+ 		for (tc = 0; tc < OCELOT_NUM_TC; tc++) {
+ 			if (entry->gate_mask & BIT(tc)) {
+ 				gate_len[tc] += entry->interval;
++				gates_ever_opened |= BIT(tc);
+ 			} else {
+ 				/* Gate closes now, record a potential new
+ 				 * minimum and reinitialize length
+ 				 */
+-				if (min_gate_len[tc] > gate_len[tc])
++				if (min_gate_len[tc] > gate_len[tc] &&
++				    gate_len[tc])
+ 					min_gate_len[tc] = gate_len[tc];
+ 				gate_len[tc] = 0;
+ 			}
  		}
  	}
++
++	/* min_gate_len[tc] actually tracks minimum *open* gate time, so for
++	 * permanently closed gates, min_gate_len[tc] will still be U64_MAX.
++	 * Therefore they are currently indistinguishable from permanently
++	 * open gates. Overwrite the gate len with 0 when we know they're
++	 * actually permanently closed, i.e. after the loop above.
++	 */
++	for (tc = 0; tc < OCELOT_NUM_TC; tc++)
++		if (!(gates_ever_opened & BIT(tc)))
++			min_gate_len[tc] = 0;
+ }
  
--	xsk_put_ctx(ctx, true);
--
- 	umem->refcount--;
- 	/* Do not close an fd that also has an associated umem connected
- 	 * to it.
--- 
-2.35.1
-
+ /* Update QSYS_PORT_MAX_SDU to make sure the static guard bands added by the
 
 
