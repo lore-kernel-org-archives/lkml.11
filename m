@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E55C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B99C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348447AbiHOWae (ORCPT
+        id S1349420AbiHOWa5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
+        Mon, 15 Aug 2022 18:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348783AbiHOWZp (ORCPT
+        with ESMTP id S1349546AbiHOW0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:25:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A2D12695D;
-        Mon, 15 Aug 2022 12:44:31 -0700 (PDT)
+        Mon, 15 Aug 2022 18:26:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D091272F7;
+        Mon, 15 Aug 2022 12:44:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A12761206;
-        Mon, 15 Aug 2022 19:44:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F003C43147;
-        Mon, 15 Aug 2022 19:44:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7629CB80EAD;
+        Mon, 15 Aug 2022 19:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDFD9C433D7;
+        Mon, 15 Aug 2022 19:44:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592670;
-        bh=fARe67w7ny+A6i7gN0xjocrEatnsn/It0giNt8OH2e4=;
+        s=korg; t=1660592680;
+        bh=kJiAJLBI1zI4upGRqmYNzAq/cmr+YVYjwMY4ik5mLsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dinWvH1usGVROLcjbq9plkjJ36WMtGAadNRaYnYFPJADaiVnPsnKa51zijsg0tGwe
-         I/bZu9TZmmsH5udAlBltr6ps4SMpTlMy+xI6W/DpzHs9SK0cxZdypvfEhaI9H9MWfT
-         LWnuu5bPG0vobN8VkOMID8e1WK8gS7sF3V/P7B2A=
+        b=msf7ebpSh+ffhLZQZr2U1t6CoY9OYXTUQYdCW+U0jxzfHceJ7+Av1AlG/k1u45tuo
+         beHguJRKqiY6Hjhd52m2GweuRQ+jyLQFFlQ5E125MMZPXAOlYLxsy2BgOC6/eDd1Oj
+         pEoVXY4sqPELt3OQatVNx6i412fP9o/XHsVN852k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0824/1095] jbd2: fix assertion jh->b_frozen_data == NULL failure when journal aborted
-Date:   Mon, 15 Aug 2022 20:03:43 +0200
-Message-Id: <20220815180503.390849749@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0797/1095] KVM: nVMX: Set UMIP bit CR4_FIXED1 MSR when emulating UMIP
+Date:   Mon, 15 Aug 2022 20:03:16 +0200
+Message-Id: <20220815180502.226505304@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,107 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 4a734f0869f970b8a9b65062ea40b09a5da9dba8 ]
+[ Upstream commit a910b5ab6b250a88fff1866bf708642d83317466 ]
 
-Following process will fail assertion 'jh->b_frozen_data == NULL' in
-jbd2_journal_dirty_metadata():
+Make UMIP an "allowed-1" bit CR4_FIXED1 MSR when KVM is emulating UMIP.
+KVM emulates UMIP for both L1 and L2, and so should enumerate that L2 is
+allowed to have CR4.UMIP=1.  Not setting the bit doesn't immediately
+break nVMX, as KVM does set/clear the bit in CR4_FIXED1 in response to a
+guest CPUID update, i.e. KVM will correctly (dis)allow nested VM-Entry
+based on whether or not UMIP is exposed to L1.  That said, KVM should
+enumerate the bit as being allowed from time zero, e.g. userspace will
+see the wrong value if the MSR is read before CPUID is written.
 
-                   jbd2_journal_commit_transaction
-unlink(dir/a)
- jh->b_transaction = trans1
- jh->b_jlist = BJ_Metadata
-                    journal->j_running_transaction = NULL
-                    trans1->t_state = T_COMMIT
-unlink(dir/b)
- handle->h_trans = trans2
- do_get_write_access
-  jh->b_modified = 0
-  jh->b_frozen_data = frozen_buffer
-  jh->b_next_transaction = trans2
- jbd2_journal_dirty_metadata
-  is_handle_aborted
-   is_journal_aborted // return false
-
-           --> jbd2 abort <--
-
-                     while (commit_transaction->t_buffers)
-                      if (is_journal_aborted)
-                       jbd2_journal_refile_buffer
-                        __jbd2_journal_refile_buffer
-                         WRITE_ONCE(jh->b_transaction,
-						jh->b_next_transaction)
-                         WRITE_ONCE(jh->b_next_transaction, NULL)
-                         __jbd2_journal_file_buffer(jh, BJ_Reserved)
-        J_ASSERT_JH(jh, jh->b_frozen_data == NULL) // assertion failure !
-
-The reproducer (See detail in [Link]) reports:
- ------------[ cut here ]------------
- kernel BUG at fs/jbd2/transaction.c:1629!
- invalid opcode: 0000 [#1] PREEMPT SMP
- CPU: 2 PID: 584 Comm: unlink Tainted: G        W
- 5.19.0-rc6-00115-g4a57a8400075-dirty #697
- RIP: 0010:jbd2_journal_dirty_metadata+0x3c5/0x470
- RSP: 0018:ffffc90000be7ce0 EFLAGS: 00010202
- Call Trace:
-  <TASK>
-  __ext4_handle_dirty_metadata+0xa0/0x290
-  ext4_handle_dirty_dirblock+0x10c/0x1d0
-  ext4_delete_entry+0x104/0x200
-  __ext4_unlink+0x22b/0x360
-  ext4_unlink+0x275/0x390
-  vfs_unlink+0x20b/0x4c0
-  do_unlinkat+0x42f/0x4c0
-  __x64_sys_unlink+0x37/0x50
-  do_syscall_64+0x35/0x80
-
-After journal aborting, __jbd2_journal_refile_buffer() is executed with
-holding @jh->b_state_lock, we can fix it by moving 'is_handle_aborted()'
-into the area protected by @jh->b_state_lock.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216251
-Fixes: 470decc613ab20 ("[PATCH] jbd2: initial copy of files from jbd")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Link: https://lore.kernel.org/r/20220715125152.4022726-1-chengzhihao1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 0367f205a3b7 ("KVM: vmx: add support for emulating UMIP")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220607213604.3346000-12-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jbd2/transaction.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
-index fcb9175016a5..49f109699933 100644
---- a/fs/jbd2/transaction.c
-+++ b/fs/jbd2/transaction.c
-@@ -1486,8 +1486,6 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
- 	struct journal_head *jh;
- 	int ret = 0;
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index c632df13ada2..aa287302f991 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6790,6 +6790,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	rdmsrl(MSR_IA32_VMX_CR0_FIXED1, msrs->cr0_fixed1);
+ 	rdmsrl(MSR_IA32_VMX_CR4_FIXED1, msrs->cr4_fixed1);
  
--	if (is_handle_aborted(handle))
--		return -EROFS;
- 	if (!buffer_jbd(bh))
- 		return -EUCLEAN;
- 
-@@ -1534,6 +1532,18 @@ int jbd2_journal_dirty_metadata(handle_t *handle, struct buffer_head *bh)
- 	journal = transaction->t_journal;
- 	spin_lock(&jh->b_state_lock);
- 
-+	if (is_handle_aborted(handle)) {
-+		/*
-+		 * Check journal aborting with @jh->b_state_lock locked,
-+		 * since 'jh->b_transaction' could be replaced with
-+		 * 'jh->b_next_transaction' during old transaction
-+		 * committing if journal aborted, which may fail
-+		 * assertion on 'jh->b_frozen_data == NULL'.
-+		 */
-+		ret = -EROFS;
-+		goto out_unlock_bh;
-+	}
++	if (vmx_umip_emulated())
++		msrs->cr4_fixed1 |= X86_CR4_UMIP;
 +
- 	if (jh->b_modified == 0) {
- 		/*
- 		 * This buffer's got modified and becoming part
+ 	msrs->vmcs_enum = nested_vmx_calc_vmcs_enum_msr();
+ }
+ 
 -- 
 2.35.1
 
