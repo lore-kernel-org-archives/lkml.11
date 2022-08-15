@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF47CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C8EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344243AbiHPAfX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        id S245124AbiHPAf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354475AbiHPAbh (ORCPT
+        with ESMTP id S1354500AbiHPAbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:31:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C491863F4;
-        Mon, 15 Aug 2022 13:36:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995BE18730D;
+        Mon, 15 Aug 2022 13:37:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6571611D2;
-        Mon, 15 Aug 2022 20:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37631C433D6;
-        Mon, 15 Aug 2022 20:36:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8020611E2;
+        Mon, 15 Aug 2022 20:37:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7008C433D6;
+        Mon, 15 Aug 2022 20:36:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595789;
-        bh=SaEPwYx2ijtoy0c6+KKibgnQEVVb7+tcLnxELbgSUkw=;
+        s=korg; t=1660595820;
+        bh=o1kO/kGJcleySV8cZnjcpWdXy1DYRXJbPorvBfsbIFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aF5vSAkQE9cxkNi+QDUe9fr1nzfxZ+1nL/hwjguuIGjVyntZOpLJMfKUHN2bgdh04
-         Em0APSZGuGNIwwN+RjG9UJPNjP2FVledm5MZaKQglu3wpCSdSlfhTMFU67PvRRNNrz
-         km69/2aLs2twSeOO9gPILrkUhr5JvKmktzQleAzs=
+        b=NXKwfK8W8S3EesA2wvIIAVwNVhfgcsNNklK0iNurQmvoEJKAGaEfs8rnrR4AgWekb
+         y7Kle4omvZ7NCoJfzyVNsOhvpdyqqjigchi1gvO0a5ahBx2pl1IJFIIxJE0P6su18m
+         cj5h1YWQtutr6mooM0dMl79jiR4RnLDf9TRG2iOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, gi-oh.kim@ionos.com,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Jack Wang <jinpu.wang@ionos.com>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0876/1157] block/rnbd-srv: Set keep_id to true after mutex_trylock
-Date:   Mon, 15 Aug 2022 20:03:52 +0200
-Message-Id: <20220815180514.498172914@linuxfoundation.org>
+Subject: [PATCH 5.19 0885/1157] jbd2: fix outstanding credits assert in jbd2_journal_commit_transaction()
+Date:   Mon, 15 Aug 2022 20:04:01 +0200
+Message-Id: <20220815180514.839532242@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,44 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Md Haris Iqbal <haris.iqbal@ionos.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit 4bc14f3101364877dd59085f39e068a2a7ec9f2d ]
+[ Upstream commit a89573ce4ad32f19f43ec669771726817e185be0 ]
 
-After setting keep_id if the mutex trylock fails, the keep_id stays set
-for the rest of the sess_dev lifetime.
+We catch an assert problem in jbd2_journal_commit_transaction() when
+doing fsstress and request falut injection tests. The problem is
+happened in a race condition between jbd2_journal_commit_transaction()
+and ext4_end_io_end(). Firstly, ext4_writepages() writeback dirty pages
+and start reserved handle, and then the journal was aborted due to some
+previous metadata IO error, jbd2_journal_abort() start to commit current
+running transaction, the committing procedure could be raced by
+ext4_end_io_end() and lead to subtract j_reserved_credits twice from
+commit_transaction->t_outstanding_credits, finally the
+t_outstanding_credits is mistakenly smaller than t_nr_buffers and
+trigger assert.
 
-Therefore, set keep_id to true after mutex_trylock succeeds, so that a
-failure of trylock does'nt touch keep_id.
+kjournald2           kworker
 
-Fixes: b168e1d85cf3 ("block/rnbd-srv: Prevent a deadlock generated by accessing sysfs in parallel")
-Cc: gi-oh.kim@ionos.com
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-Link: https://lore.kernel.org/r/20220707143122.460362-2-haris.iqbal@ionos.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+jbd2_journal_commit_transaction()
+ write_unlock(&journal->j_state_lock);
+ atomic_sub(j_reserved_credits, t_outstanding_credits); //sub once
+
+     	             jbd2_journal_start_reserved()
+     	              start_this_handle()  //detect aborted journal
+     	              jbd2_journal_free_reserved()  //get running transaction
+                       read_lock(&journal->j_state_lock)
+     	                __jbd2_journal_unreserve_handle()
+     	               atomic_sub(j_reserved_credits, t_outstanding_credits);
+                       //sub again
+                       read_unlock(&journal->j_state_lock);
+
+ journal->j_running_transaction = NULL;
+ J_ASSERT(t_nr_buffers <= t_outstanding_credits) //bomb!!!
+
+Fix this issue by using journal->j_state_lock to protect the subtraction
+in jbd2_journal_commit_transaction().
+
+Fixes: 96f1e0974575 ("jbd2: avoid long hold times of j_state_lock while committing a transaction")
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220611130426.2013258-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/rnbd/rnbd-srv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/jbd2/commit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/rnbd/rnbd-srv.c b/drivers/block/rnbd/rnbd-srv.c
-index beaef43a67b9..cf9e29a08db2 100644
---- a/drivers/block/rnbd/rnbd-srv.c
-+++ b/drivers/block/rnbd/rnbd-srv.c
-@@ -323,10 +323,11 @@ void rnbd_srv_sess_dev_force_close(struct rnbd_srv_sess_dev *sess_dev,
- {
- 	struct rnbd_srv_session	*sess = sess_dev->sess;
+diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
+index eb315e81f1a6..af1a9191368c 100644
+--- a/fs/jbd2/commit.c
++++ b/fs/jbd2/commit.c
+@@ -553,13 +553,13 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+ 	 */
+ 	jbd2_journal_switch_revoke_table(journal);
  
--	sess_dev->keep_id = true;
- 	/* It is already started to close by client's close message. */
- 	if (!mutex_trylock(&sess->lock))
- 		return;
-+
-+	sess_dev->keep_id = true;
- 	/* first remove sysfs itself to avoid deadlock */
- 	sysfs_remove_file_self(&sess_dev->kobj, &attr->attr);
- 	rnbd_srv_destroy_dev_session_sysfs(sess_dev);
++	write_lock(&journal->j_state_lock);
+ 	/*
+ 	 * Reserved credits cannot be claimed anymore, free them
+ 	 */
+ 	atomic_sub(atomic_read(&journal->j_reserved_credits),
+ 		   &commit_transaction->t_outstanding_credits);
+ 
+-	write_lock(&journal->j_state_lock);
+ 	trace_jbd2_commit_flushing(journal, commit_transaction);
+ 	stats.run.rs_flushing = jiffies;
+ 	stats.run.rs_locked = jbd2_time_diff(stats.run.rs_locked,
 -- 
 2.35.1
 
