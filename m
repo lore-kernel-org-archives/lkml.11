@@ -2,172 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9BCC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DAEC19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 05:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbiHPFxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
+        id S231159AbiHPFxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 01:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231173AbiHPFwj (ORCPT
+        with ESMTP id S230480AbiHPFx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 01:52:39 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3CA25E87
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:56:34 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id j6so6992814qkl.10
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:56:34 -0700 (PDT)
+        Tue, 16 Aug 2022 01:53:26 -0400
+Received: from mail-io1-xd4a.google.com (mail-io1-xd4a.google.com [IPv6:2607:f8b0:4864:20::d4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DD375FD5
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:59:40 -0700 (PDT)
+Received: by mail-io1-xd4a.google.com with SMTP id k22-20020a6bf716000000b0068898c0b395so975671iog.3
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 15:59:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=Ac3JvCwAmKuPc3kldTLNS+yBvHZ3Bhe8L1hxK+NbPB0=;
-        b=EOCISOZ/yFup2jyMuBNguNp9UguY0b5klvmRasgAPspUx0XeDol7zNXd2FHAp/a2E9
-         E+E/1Yv7HCBsSCbL6kxzhSE8j0/UJoNQ29K/dNK+sRWUUsHSw6uPsIH5nl8JMlandbYg
-         XeHm5bjDHpCfH9Vdqsey5mNysJaDKWffheKd9zOcowlh10rX05VuDIiitCb5Yf2CA9uf
-         ErfrCjAm6fVzqMbulXFlb0GpQYs8OrZcwNQizGwtOvUYY3PhXvFRhuS3i5Sjls7xJJrg
-         DwZDoBrwrC95sjNOqyMFtMXqehVTBExgtV2lWy074ZKe7Ko3n13dZIqKpOND6TRtgSdT
-         dVlQ==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=qjxTwNs46mBErQ+98eCyfxk5QZmIEb2cOA8EBrFu9oc=;
+        b=tWMtvPeknQYFBSL7spt7SaiV96nFguiXlCt/bQ7nMaSfG0Ja6ya07XtqMamEMvhd1W
+         4bSb8u8+o/lu8KhKDgL81BN8gcBFGQCbuW4AKcGObZznNTP8Myhij12FwXjx63XmzpVv
+         UO5s0LWwv0gezIKQ4fMMdr1H7nGxLd1Idz+jwZbwXlLlIeGGN40yAffJjtUZLXvyJuDq
+         UouPrm2CJArWx3SxGMKo64k/QuDSC1DRp9YXUNc5B+gMH2fusgPg9+iuMHz4SUW+cOLi
+         tE8xZsxM4ZXJM2hEROEE9SQuFD9JQa+eflvKrMNcZSI05x8Rkmo77Tqlsdn+Z2Em9b1N
+         ZRRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=Ac3JvCwAmKuPc3kldTLNS+yBvHZ3Bhe8L1hxK+NbPB0=;
-        b=cj5xgLdUgoUki+Ry66fMxIDxBWgSMUJcdzM1/DGjQwSnksBR/L2EYkAKdxOIhMW5iQ
-         n4t+OW7kSi+9xu8ST//pKgEN+qYzYAHhk2ZDcxHmwZuVlFTALUansBtyqx4uhB7fgSaG
-         xs+ytgNCB9i5wqpivxVhy83I5i+kAoTAlaHhXBQjKFIIIklLH7PpOo/p5z5dkl0jCjW3
-         gQo/5n7VzxXTE4hISeMZYEd4zfZtK87TJPYTdTOBK3ThgqJHgmhfpYjusHMqe98UPAhu
-         BuqR/i8FwkGB4H+2COE6CILuElU9206HxhVnrC/ATAr0wyVpeVeY4JucCjJlC15Lb0GX
-         l20g==
-X-Gm-Message-State: ACgBeo33uIrz5Olb8GcCTj82WWEVOQpkKsiymSCs4UIn41oeDgNe9xlL
-        cY92Hpw9W+Gbsbq9X8soWJSv4A==
-X-Google-Smtp-Source: AA6agR4OgMytBVHSK2x+UfrqWfy6TQ0pQFCJYAId3wdKwXnNjgcxkBn0lXdyDAanMZ2UFmVoEsND9Q==
-X-Received: by 2002:a05:620a:8014:b0:6b9:2866:c7f0 with SMTP id ee20-20020a05620a801400b006b92866c7f0mr12971491qkb.23.1660604193224;
-        Mon, 15 Aug 2022 15:56:33 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id h11-20020a05620a244b00b006b633dc839esm10497057qkn.66.2022.08.15.15.56.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 15:56:32 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Frede@cmslaser.com,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH] iio: stx104: Move to addac subdirectory
-Date:   Mon, 15 Aug 2022 18:29:21 -0400
-Message-Id: <20220815222921.138945-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.37.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=qjxTwNs46mBErQ+98eCyfxk5QZmIEb2cOA8EBrFu9oc=;
+        b=0brMCCCvehY7nSJX+xtL3wmLaMCQ42P1neZiqmqc9AUPh/RZzZzzSezOjg5oTBEbjC
+         Vq5/F1GVmO4eGAfu6p5z7BtuzhZNWbw8msjFgMJEvYZMlpD7He7rdJNl8qIYW7qmJea2
+         XdmGWI5aA7UKcFcNmrSlVA4inQwdZGm4VqxACHkSUJY/mxz98d46bkLd/VVL6VdIUpMy
+         EH//SVTahRMAjEkFEQ6KP8Ls3Gg3luY6GpholcPpkmKH4Veu9rbKcldXHzssuHqLZfFr
+         aW87qpoEnWBhw/qaE9wCWXtr6yhAyDkso+NftPUCxHj5kqkveaHMbr570kRbzArp2DJF
+         /zwQ==
+X-Gm-Message-State: ACgBeo3Xhv8H+puiQJRUsie1ntqrcTkbG/ye5VCcXf7iD6E1B5wlJteU
+        WMPs/6QmjBIEU1TdrrfBo2qKbai3Eiy2PQ==
+X-Google-Smtp-Source: AA6agR43YtkaciFxA5o18koQqVw4sEaVs9oQNrp2PsIfD5FgZeY7kwnbEQ2XUNzLjISkxrXBhtslS3mC6VvyoQ==
+X-Received: from riochico.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:b3e])
+ (user=rsilvera job=sendgmr) by 2002:a92:9506:0:b0:2e0:ed70:ea7d with SMTP id
+ y6-20020a929506000000b002e0ed70ea7dmr8114959ilh.207.1660604380104; Mon, 15
+ Aug 2022 15:59:40 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 22:59:22 +0000
+Message-Id: <20220815225922.2118745-1-rsilvera@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [PATCH v4] perf inject: Add a command line option to specify build ids.
+From:   Raul Silvera <rsilvera@google.com>
+To:     Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Raul Silvera <rsilvera@google.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The stx104 driver supports both ADC and DAC functionality.
+This commit adds the option --known-build-ids to perf inject.
+It allows the user to explicitly specify the build id for a given
+path, instead of retrieving it from the current system. This is
+useful in cases where a perf.data file is processed on a different
+system from where it was collected, or if some of the binaries are
+no longer available.
 
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+The build ids and paths are specified in pairs in the command line.
+Using the file:// specifier, build ids can be loaded from a file
+directly generated by perf buildid-list. This is convenient to copy
+build ids from one perf.data file to another.
+
+** Example: In this example we use perf record to create two
+perf.data files, one with build ids and another without, and use
+perf buildid-list and perf inject to copy the build ids from the
+first file to the second.
+
+ $ perf record ls /tmp
+ $ perf record --no-buildid -o perf.data.no-buildid ls /tmp
+ $ perf buildid-list > build-ids.txt
+ $ perf inject -b --known-build-ids='file://build-ids.txt' \
+        -i perf.data.no-buildid -o perf.data.buildid
+
+Signed-off-by: Raul Silvera <rsilvera@google.com>
 ---
- MAINTAINERS                         |  2 +-
- drivers/iio/adc/Kconfig             | 16 ----------------
- drivers/iio/adc/Makefile            |  1 -
- drivers/iio/addac/Kconfig           | 16 ++++++++++++++++
- drivers/iio/addac/Makefile          |  1 +
- drivers/iio/{adc => addac}/stx104.c |  0
- 6 files changed, 18 insertions(+), 18 deletions(-)
- rename drivers/iio/{adc => addac}/stx104.c (100%)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b8b6544ba27c..f4ef070f474a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1382,7 +1382,7 @@ APEX EMBEDDED SYSTEMS STX104 IIO DRIVER
- M:	William Breathitt Gray <william.gray@linaro.org>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
--F:	drivers/iio/adc/stx104.c
-+F:	drivers/iio/addac/stx104.c
- 
- APM DRIVER
- M:	Jiri Kosina <jikos@kernel.org>
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 5a3e8d9ae26c..e3c2881ed23a 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1037,22 +1037,6 @@ config STMPE_ADC
- 	  Say yes here to build support for ST Microelectronics STMPE
- 	  built-in ADC block (stmpe811).
- 
--config STX104
--	tristate "Apex Embedded Systems STX104 driver"
--	depends on PC104 && X86
--	select ISA_BUS_API
--	select GPIOLIB
--	help
--	  Say yes here to build support for the Apex Embedded Systems STX104
--	  integrated analog PC/104 card.
--
--	  This driver supports the 16 channels of single-ended (8 channels of
--	  differential) analog inputs, 2 channels of analog output, 4 digital
--	  inputs, and 4 digital outputs provided by the STX104.
--
--	  The base port addresses for the devices may be configured via the base
--	  array module parameter.
--
- config SUN4I_GPADC
- 	tristate "Support for the Allwinner SoCs GPADC"
- 	depends on IIO
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index c1a861a978ad..ab084094263b 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -89,7 +89,6 @@ obj-$(CONFIG_RICHTEK_RTQ6056) += rtq6056.o
- obj-$(CONFIG_RZG2L_ADC) += rzg2l_adc.o
- obj-$(CONFIG_SC27XX_ADC) += sc27xx_adc.o
- obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
--obj-$(CONFIG_STX104) += stx104.o
- obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
- obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
- obj-$(CONFIG_STM32_ADC) += stm32-adc.o
-diff --git a/drivers/iio/addac/Kconfig b/drivers/iio/addac/Kconfig
-index 138492362f20..fcf6d2269bfc 100644
---- a/drivers/iio/addac/Kconfig
-+++ b/drivers/iio/addac/Kconfig
-@@ -17,4 +17,20 @@ config AD74413R
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad74413r.
- 
-+config STX104
-+	tristate "Apex Embedded Systems STX104 driver"
-+	depends on PC104 && X86
-+	select ISA_BUS_API
-+	select GPIOLIB
-+	help
-+	  Say yes here to build support for the Apex Embedded Systems STX104
-+	  integrated analog PC/104 card.
-+
-+	  This driver supports the 16 channels of single-ended (8 channels of
-+	  differential) analog inputs, 2 channels of analog output, 4 digital
-+	  inputs, and 4 digital outputs provided by the STX104.
-+
-+	  The base port addresses for the devices may be configured via the base
-+	  array module parameter.
-+
- endmenu
-diff --git a/drivers/iio/addac/Makefile b/drivers/iio/addac/Makefile
-index cfd4bbe64ad3..17de20ef0d8e 100644
---- a/drivers/iio/addac/Makefile
-+++ b/drivers/iio/addac/Makefile
-@@ -5,3 +5,4 @@
- 
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_AD74413R) += ad74413r.o
-+obj-$(CONFIG_STX104) += stx104.o
-diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/addac/stx104.c
-similarity index 100%
-rename from drivers/iio/adc/stx104.c
-rename to drivers/iio/addac/stx104.c
+  V3 -> V4: Perform upfront validation of build ids
+  V2 -> V3: Added documentation and removed unnecessary temps
+  V1 -> V2: Cleaned up patch description, deleted the strlist during
+            cleanup, and updated validation of the build id strings
+	    
+ tools/perf/Documentation/perf-inject.txt |  7 +-
+ tools/perf/builtin-inject.c              | 85 ++++++++++++++++++++++++
+ 2 files changed, 91 insertions(+), 1 deletion(-)
 
-base-commit: b82217e73b5aa6db8453ad91b929ca2366e47184
+diff --git a/tools/perf/Documentation/perf-inject.txt b/tools/perf/Documentation/perf-inject.txt
+index ffc293fdf61d..70e2ac3cc91a 100644
+--- a/tools/perf/Documentation/perf-inject.txt
++++ b/tools/perf/Documentation/perf-inject.txt
+@@ -27,9 +27,14 @@ OPTIONS
+ --build-ids::
+         Inject build-ids into the output stream
+ 
+---buildid-all:
++--buildid-all::
+ 	Inject build-ids of all DSOs into the output stream
+ 
++--known-build-ids=::
++	Override build-ids to inject using these comma-separated pairs of
++	build-id and path. Understands file://filename to read these pairs
++	from a file, which can be generated with perf buildid-list.
++
+ -v::
+ --verbose::
+ 	Be more verbose.
+diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
+index 2a0f992ca0be..8ec955402488 100644
+--- a/tools/perf/builtin-inject.c
++++ b/tools/perf/builtin-inject.c
+@@ -21,6 +21,7 @@
+ #include "util/data.h"
+ #include "util/auxtrace.h"
+ #include "util/jit.h"
++#include "util/string2.h"
+ #include "util/symbol.h"
+ #include "util/synthetic-events.h"
+ #include "util/thread.h"
+@@ -38,6 +39,7 @@
+ #include <linux/string.h>
+ #include <linux/zalloc.h>
+ #include <linux/hash.h>
++#include <ctype.h>
+ #include <errno.h>
+ #include <signal.h>
+ #include <inttypes.h>
+@@ -123,6 +125,7 @@ struct perf_inject {
+ 	char			event_copy[PERF_SAMPLE_MAX_SIZE];
+ 	struct perf_file_section secs[HEADER_FEAT_BITS];
+ 	struct guest_session	guest_session;
++	struct strlist		*known_build_ids;
+ };
+ 
+ struct event_entry {
+@@ -634,9 +637,73 @@ static int dso__read_build_id(struct dso *dso)
+ 	return dso->has_build_id ? 0 : -1;
+ }
+ 
++static struct strlist *perf_inject__parse_known_build_ids(
++	const char *known_build_ids_string)
++{
++	struct str_node *pos, *tmp;
++	struct strlist *known_build_ids;
++	int bid_len;
++
++	known_build_ids = strlist__new(known_build_ids_string, NULL);
++	if (known_build_ids == NULL)
++		return NULL;
++	strlist__for_each_entry_safe(pos, tmp, known_build_ids) {
++		const char *build_id, *dso_name;
++
++		build_id = skip_spaces(pos->s);
++		dso_name = strchr(build_id, ' ');
++		if (dso_name == NULL) {
++			strlist__remove(known_build_ids, pos);
++			continue;
++		}
++		bid_len = dso_name - pos->s;
++		dso_name = skip_spaces(dso_name);
++		if (bid_len % 2 != 0 || bid_len >= SBUILD_ID_SIZE) {
++			strlist__remove(known_build_ids, pos);
++			continue;
++		}
++		for (int ix = 0; 2 * ix + 1 < bid_len; ++ix) {
++			if (!isxdigit(build_id[2 * ix]) ||
++			    !isxdigit(build_id[2 * ix + 1])) {
++				strlist__remove(known_build_ids, pos);
++				break;
++			}
++		}
++	}
++	return known_build_ids;
++}
++
++static bool perf_inject__lookup_known_build_id(struct perf_inject *inject,
++					       struct dso *dso)
++{
++	struct str_node *pos;
++	int bid_len;
++
++	strlist__for_each_entry(pos, inject->known_build_ids) {
++		const char *build_id, *dso_name;
++
++		build_id = skip_spaces(pos->s);
++		dso_name = strchr(build_id, ' ');
++		bid_len = dso_name - pos->s;
++		dso_name = skip_spaces(dso_name);
++		if (strcmp(dso->long_name, dso_name))
++			continue;
++		for (int ix = 0; 2 * ix + 1 < bid_len; ++ix) {
++			dso->bid.data[ix] = (hex(build_id[2 * ix]) << 4 |
++					     hex(build_id[2 * ix + 1]));
++		}
++		dso->bid.size = bid_len / 2;
++		dso->has_build_id = 1;
++		return true;
++	}
++	return false;
++}
++
+ static int dso__inject_build_id(struct dso *dso, struct perf_tool *tool,
+ 				struct machine *machine, u8 cpumode, u32 flags)
+ {
++	struct perf_inject *inject = container_of(tool, struct perf_inject,
++						  tool);
+ 	int err;
+ 
+ 	if (is_anon_memory(dso->long_name) || flags & MAP_HUGETLB)
+@@ -644,6 +711,10 @@ static int dso__inject_build_id(struct dso *dso, struct perf_tool *tool,
+ 	if (is_no_dso_memory(dso->long_name))
+ 		return 0;
+ 
++	if (inject->known_build_ids != NULL &&
++	    perf_inject__lookup_known_build_id(inject, dso))
++		return 1;
++
+ 	if (dso__read_build_id(dso) < 0) {
+ 		pr_debug("no build_id found for %s\n", dso->long_name);
+ 		return -1;
+@@ -2112,12 +2183,16 @@ int cmd_inject(int argc, const char **argv)
+ 	};
+ 	int ret;
+ 	bool repipe = true;
++	const char *known_build_ids = NULL;
+ 
+ 	struct option options[] = {
+ 		OPT_BOOLEAN('b', "build-ids", &inject.build_ids,
+ 			    "Inject build-ids into the output stream"),
+ 		OPT_BOOLEAN(0, "buildid-all", &inject.build_id_all,
+ 			    "Inject build-ids of all DSOs into the output stream"),
++		OPT_STRING(0, "known-build-ids", &known_build_ids,
++			   "buildid path [,buildid path...]",
++			   "build-ids to use for given paths"),
+ 		OPT_STRING('i', "input", &inject.input_name, "file",
+ 			   "input file name"),
+ 		OPT_STRING('o', "output", &inject.output.path, "file",
+@@ -2257,6 +2332,15 @@ int cmd_inject(int argc, const char **argv)
+ 		 */
+ 		inject.tool.ordered_events = true;
+ 		inject.tool.ordering_requires_timestamps = true;
++		if (known_build_ids != NULL) {
++			inject.known_build_ids =
++				perf_inject__parse_known_build_ids(known_build_ids);
++
++			if (inject.known_build_ids == NULL) {
++				pr_err("Couldn't parse known build ids.\n");
++				goto out_delete;
++			}
++		}
+ 	}
+ 
+ 	if (inject.sched_stat) {
+@@ -2285,6 +2369,7 @@ int cmd_inject(int argc, const char **argv)
+ 	guest_session__exit(&inject.guest_session);
+ 
+ out_delete:
++	strlist__delete(inject.known_build_ids);
+ 	zstd_fini(&(inject.session->zstd_data));
+ 	perf_session__delete(inject.session);
+ out_close_output:
 -- 
-2.37.2
+2.37.1.595.g718a3a8f04-goog
 
