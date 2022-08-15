@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9746BC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B675AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350658AbiHOWkF (ORCPT
+        id S1348504AbiHOWkN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
+        Mon, 15 Aug 2022 18:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348953AbiHOWeM (ORCPT
+        with ESMTP id S1349525AbiHOWeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:34:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EB470E72;
-        Mon, 15 Aug 2022 12:49:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91F712E27B;
+        Mon, 15 Aug 2022 12:49:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C89D06122B;
-        Mon, 15 Aug 2022 19:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E5FC433D6;
-        Mon, 15 Aug 2022 19:49:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B713F61226;
+        Mon, 15 Aug 2022 19:48:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC39C433C1;
+        Mon, 15 Aug 2022 19:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592974;
-        bh=HAgF+QZyq7BwwqLqpaRvWir0GnzA1N0v4RZ9HqRJ7ko=;
+        s=korg; t=1660592933;
+        bh=DLJUHjw7dNV0aVabRJZ7xLg7ayVN5gRvxA5ZVDd6Pmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iUQ12fr9DzSratNurm9taG/M/U0q9bOQfTY85XxK36BP0zjCwNOqF5zXW/0LboxlD
-         svvGirAcT/W6erj3IQppyzID8ckua+vf6Fi38ESASVAGTw3EawZUrCa88VSxY8ZRa5
-         uTo3/l84A8yHrY76Bn9C2qDQDLv8UY2ccktlWF5c=
+        b=wuZNS7tj07HjVqLceG2oSWL6+OnVZde+hoEC4/r56mKkhYezE2TKNhcoVoiQ/laDl
+         EklbFk/KPyF8DVzaZ0wmqhjSzuNkaUkhLS4/dw7wKT6Ulk2nCWqiQntKc89QXVHbC+
+         inPIyGhauAyNrptm1v/P537qudIq8gtqE8Huwsq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0874/1095] tty: n_gsm: fix missing corner cases in gsmld_poll()
-Date:   Mon, 15 Aug 2022 20:04:33 +0200
-Message-Id: <20220815180505.522422313@linuxfoundation.org>
+Subject: [PATCH 5.18 0868/1095] vfio/ccw: Do not change FSM state in subchannel event
+Date:   Mon, 15 Aug 2022 20:04:27 +0200
+Message-Id: <20220815180505.273234596@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,46 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Eric Farman <farman@linux.ibm.com>
 
-[ Upstream commit 7e5b4322cde067e1d0f1bf8f490e93f664a7c843 ]
+[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
 
-gsmld_poll() currently fails to handle the following corner cases correctly:
-- remote party closed the associated tty
+The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
+specifically machine checks, on behalf of vfio-ccw. It correctly calls
+cio_update_schib(), and if that fails (meaning the subchannel is gone)
+it makes an FSM event call to mark the subchannel Not Operational.
 
-Add the missing checks and map those to EPOLLHUP.
-Reorder the checks to group them by their reaction.
+If that worked, however, then it decides that if the FSM state was already
+Not Operational (implying the subchannel just came back), then it should
+simply change the FSM to partially- or fully-open.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-4-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Remove this trickery, since a subchannel returning will require more
+probing than simply "oh all is well again" to ensure it works correctly.
+
+Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 7749de4f269a..3dd71ede4cd4 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -3057,12 +3057,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
+diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
+index 789175221e9a..e76a4a3cf1ce 100644
+--- a/drivers/s390/cio/vfio_ccw_drv.c
++++ b/drivers/s390/cio/vfio_ccw_drv.c
+@@ -302,19 +302,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
+ 	if (work_pending(&sch->todo_work))
+ 		goto out_unlock;
  
- 	poll_wait(file, &tty->read_wait, wait);
- 	poll_wait(file, &tty->write_wait, wait);
+-	if (cio_update_schib(sch)) {
+-		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
+-		rc = 0;
+-		goto out_unlock;
+-	}
+-
+-	private = dev_get_drvdata(&sch->dev);
+-	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
+-		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
+-				 VFIO_CCW_STATE_STANDBY;
+-	}
+ 	rc = 0;
+ 
++	if (cio_update_schib(sch))
++		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
 +
-+	if (gsm->dead)
-+		mask |= EPOLLHUP;
- 	if (tty_hung_up_p(file))
- 		mask |= EPOLLHUP;
-+	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
-+		mask |= EPOLLHUP;
- 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
--	if (gsm->dead)
--		mask |= EPOLLHUP;
- 	return mask;
- }
+ out_unlock:
+ 	spin_unlock_irqrestore(sch->lock, flags);
  
 -- 
 2.35.1
