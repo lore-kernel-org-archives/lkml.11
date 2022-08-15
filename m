@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51605C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6212CC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240271AbiHPAsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
+        id S239742AbiHPAsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231464AbiHPApk (ORCPT
+        with ESMTP id S243828AbiHPApj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1906193560;
-        Mon, 15 Aug 2022 13:41:27 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17033D4772;
+        Mon, 15 Aug 2022 13:40:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80599B80EAD;
-        Mon, 15 Aug 2022 20:41:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D63EDC433C1;
-        Mon, 15 Aug 2022 20:41:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66481B8119A;
+        Mon, 15 Aug 2022 20:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FC6C433C1;
+        Mon, 15 Aug 2022 20:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596085;
-        bh=s4A1Jy/S8LXvZAeUlaIQ8UiQ7aw0H0x3aKCk6dSoVOc=;
+        s=korg; t=1660596053;
+        bh=cxXucUSZz/3hhprAB3D1nyqJ+G2drWUuZmqO81cbMuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ca3yoNnRiBg/W63cH50b0wS5v7loVNyajbRxoKAorThCeRrSiyJbnImapQXwBj0iV
-         +10k3dbPDynMUKaPkXHevvPnbXSHYomgi3I7Wc9ykx0C5wMBuWn6KnHtXxse2ICAHC
-         MLJ8CKopIYAfJ2ulVkLdS91o4rty5Y2QsmoW7iPY=
+        b=SOStMD9zTDsu9J34tA48cE83YpzADPtnO+tWMgKlcyvNpFZYzRhyrIX93TTnDKqTL
+         PE9+R2LhahDGeK/6++pRjCLK642ra3/uUjYCCVMY0FESR10frE1ynZDYUe/oQgvhbu
+         0SRwNo08Moa7A1zBeW+UOGCrygLtW2151I+3+jAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Siddharth Gupta <sidgup@codeaurora.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0967/1157] remoteproc: qcom: pas: Check if coredump is enabled
-Date:   Mon, 15 Aug 2022 20:05:23 +0200
-Message-Id: <20220815180518.356773031@linuxfoundation.org>
+Subject: [PATCH 5.19 0958/1157] 9p: Drop kref usage
+Date:   Mon, 15 Aug 2022 20:05:14 +0200
+Message-Id: <20220815180517.953367760@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,38 +52,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddharth Gupta <sidgup@codeaurora.org>
+From: Kent Overstreet <kent.overstreet@gmail.com>
 
-[ Upstream commit 7b6ece968fca4ec9e42d34caff7e06dc84c45717 ]
+[ Upstream commit 6cda12864cb0f99810a5809e11e3ee5b102c9a47 ]
 
-Client drivers need to check if coredump is enabled for the rproc before
-continuing with coredump generation. This change adds a check in the PAS
-driver.
+An upcoming patch is going to require passing the client through
+p9_req_put() -> p9_req_free(), but that's awkward with the kref
+indirection - so this patch switches to using refcount_t directly.
 
-Fixes: 8ed8485c4f05 ("remoteproc: qcom: Add capability to collect minidumps")
-Signed-off-by: Siddharth Gupta <sidgup@codeaurora.org>
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1657022900-2049-5-git-send-email-quic_sibis@quicinc.com
+Link: https://lkml.kernel.org/r/20220704014243.153050-1-kent.overstreet@gmail.com
+Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+Cc: Eric Van Hensbergen <ericvh@gmail.com>
+Cc: Latchesar Ionkov <lucho@ionkov.net>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_q6v5_pas.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/net/9p/client.h |  6 +++---
+ net/9p/client.c         | 19 ++++++++-----------
+ 2 files changed, 11 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
-index 6ae39c5653b1..1c170d278b29 100644
---- a/drivers/remoteproc/qcom_q6v5_pas.c
-+++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -87,6 +87,9 @@ static void adsp_minidump(struct rproc *rproc)
- {
- 	struct qcom_adsp *adsp = rproc->priv;
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index ec1d1706f43c..c038c2d73dae 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -76,7 +76,7 @@ enum p9_req_status_t {
+ struct p9_req_t {
+ 	int status;
+ 	int t_err;
+-	struct kref refcount;
++	refcount_t refcount;
+ 	wait_queue_head_t wq;
+ 	struct p9_fcall tc;
+ 	struct p9_fcall rc;
+@@ -227,12 +227,12 @@ struct p9_req_t *p9_tag_lookup(struct p9_client *c, u16 tag);
  
-+	if (rproc->dump_conf == RPROC_COREDUMP_DISABLED)
-+		return;
-+
- 	qcom_minidump(rproc, adsp->minidump_id);
+ static inline void p9_req_get(struct p9_req_t *r)
+ {
+-	kref_get(&r->refcount);
++	refcount_inc(&r->refcount);
  }
+ 
+ static inline int p9_req_try_get(struct p9_req_t *r)
+ {
+-	return kref_get_unless_zero(&r->refcount);
++	return refcount_inc_not_zero(&r->refcount);
+ }
+ 
+ int p9_req_put(struct p9_req_t *r);
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 8bba0d9cf975..0ee48e8b7220 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -305,7 +305,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
+ 	 * callback), so p9_client_cb eats the second ref there
+ 	 * as the pointer is duplicated directly by virtqueue_add_sgs()
+ 	 */
+-	refcount_set(&req->refcount.refcount, 2);
++	refcount_set(&req->refcount, 2);
+ 
+ 	return req;
+ 
+@@ -370,18 +370,15 @@ static int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
+ 	return p9_req_put(r);
+ }
+ 
+-static void p9_req_free(struct kref *ref)
+-{
+-	struct p9_req_t *r = container_of(ref, struct p9_req_t, refcount);
+-
+-	p9_fcall_fini(&r->tc);
+-	p9_fcall_fini(&r->rc);
+-	kmem_cache_free(p9_req_cache, r);
+-}
+-
+ int p9_req_put(struct p9_req_t *r)
+ {
+-	return kref_put(&r->refcount, p9_req_free);
++	if (refcount_dec_and_test(&r->refcount)) {
++		p9_fcall_fini(&r->tc);
++		p9_fcall_fini(&r->rc);
++		kmem_cache_free(p9_req_cache, r);
++		return 1;
++	}
++	return 0;
+ }
+ EXPORT_SYMBOL(p9_req_put);
  
 -- 
 2.35.1
