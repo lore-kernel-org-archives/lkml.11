@@ -2,196 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6068C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B82C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232134AbiHOMRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58962 "EHLO
+        id S233365AbiHOMUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbiHOMRw (ORCPT
+        with ESMTP id S229482AbiHOMUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:17:52 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0C42654B
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:17:51 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id 130so6228058pfy.6
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:17:51 -0700 (PDT)
+        Mon, 15 Aug 2022 08:20:01 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0931826557
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:20:00 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id bv3so8887499wrb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:19:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=cUekWLrPgUEora35ZdVnAqX5JYjKG5HOy4KX6css4CI=;
-        b=4490P2xkuOisHhUpa77ZcnlGEiu9BU+0wE3DXUw6UgYeooZH/Q0uKWsbb5HekhPAQH
-         0qTx7VNR/K72+n0Pde9baHkJO7jpE/5pdIeG2AkyL4MJ1A9PlaWEUxQQquHaGMdp5jEB
-         mPva3RUUbF3RsFufeTvDc3KxYVgykafRAu7/LG9yjWlVS649JlYLghXT/E96Ftw36pzN
-         mggTSwH6fD+I8jrFf5u/Cno9p1LHwtB7/2kWfk1WK9z5Uqbphl+08s0zMVmGICh6cWoK
-         hQa9Njc2737trbwWn1moWR06/fDUgm3e44ZEMgC1QX78r63WgZ3kDqwet9rpd0BjEy04
-         tihg==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Cb0QvKMoKu2xzU2m5fn8KpdSBP1r0jNnjaCG9BaoJf8=;
+        b=f+PqK1yxoLrzKdv8s2Gx0dw1GGRi6kzs2WtESzUBUGQG7gNf8/5tPqz5d6f0l+0Ky6
+         7ndLFsBkewX2QTK2z0l3UYTB2sYOin1HS0/9taL7mPO08fZK3Ju66PG/VFHq94m2oaF+
+         xVn2KK9BpqqxxaBq8/HQSQPgTz8TLhYBRrgAI0TAzDciDdidR9yGAx1Vb+KW/jTmVTvW
+         35zTA2WK3EaDTcXPDxVeqvlGQPHGM5mhZocrw0Lv8IHEB6LzqY7dlPwJ/CKQch2sTKkE
+         wehf/6PQ3X71Wj4IIRU+XYRTJGVM6u4iK8XAGfIHRuquPeHL2hFylVMgyUdwkXpDILqd
+         vDwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=cUekWLrPgUEora35ZdVnAqX5JYjKG5HOy4KX6css4CI=;
-        b=YBUyN3ubkCgoD0jlWJk36Y9O0W9f7TzuSPm68z6wDJ08xWq2aPHDTequ07E6T7vjRx
-         Y5nYwznVK8WSc8Mro8uyd5HL1IjswW1222VuCR7BbHLS6NaufozuKXqs91jSLqzT35GV
-         HnSRziSoBPg+6WF7y7MiASouFMC7kfNP+aqomVowVyR+qBfNPvEcGq08rJTmJPs7fpMJ
-         1UXo2nw4Mi6+Tf0scMgbwtiIhN5Uzh6jpuh46Ef4QP1caFQ+AL6CDITsTa6f/5+Db4un
-         uUeVOAGpPLAHsAD0fQa1XOXwqkK3aHS+NtkZGP+PidGWCDL17UVj6us6buyJ01SMOS6p
-         lthg==
-X-Gm-Message-State: ACgBeo1/0hzPD8AE+bMj0f0D+OQQkEsLDdcfUAjI8hTUrJbmAZOdcIE4
-        92g0uIIS5o4H5dqYpvpZ7+Cn8g==
-X-Google-Smtp-Source: AA6agR5kwbs9Z7t2h+8pZnKXZrAu5actb4HMToutdOX1VQTm2BfRzIJG3FSxfbyavyKEKtkQXRBdIw==
-X-Received: by 2002:a05:6a00:88f:b0:530:dec:81fd with SMTP id q15-20020a056a00088f00b005300dec81fdmr16349134pfj.64.1660565871335;
-        Mon, 15 Aug 2022 05:17:51 -0700 (PDT)
-Received: from MacBook-Pro.local.bytedance.net ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id b12-20020a170903228c00b0016be596c8afsm6821222plh.282.2022.08.15.05.17.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Aug 2022 05:17:51 -0700 (PDT)
-From:   lizhe.67@bytedance.com
-To:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
-        hpa@zytor.com
-Cc:     linux-kernel@vger.kernel.org, lizefan.x@bytedance.com,
-        yuanzhu@bytedance.com, lizhe.67@bytedance.com
-Subject: [PATCH] x86/mm/dump_pagetables: Allow dumping pagetables by pid
-Date:   Mon, 15 Aug 2022 20:17:37 +0800
-Message-Id: <20220815121737.66687-1-lizhe.67@bytedance.com>
-X-Mailer: git-send-email 2.32.0
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Cb0QvKMoKu2xzU2m5fn8KpdSBP1r0jNnjaCG9BaoJf8=;
+        b=01Zgp35xLm98J7h3iRPV3IGV4hq9MJi62iCuYfCV2dqrN26o9Zz14SyNw81R0dhmeG
+         LvWuzr7eu0yqRdg8swAYSsJHQKsO1xRN2TkVKvsYXNd7y9QVXHUoJD209LYY2ScntBW7
+         6Rh1EC60jZmor6y0tPPRdAIbphZoQcoTaM+dDtHtSDFllWJBau5DMvvbNoYCBqxKTAjF
+         ARLCEuvlb7Q4AXBCsiuC2NJliahqH0bDGiXR2jEh3x9tBK7dRsHZuMsXuVP7IDUP+G0W
+         j20aowfn9HnHoHX7AAkhr/qs9HF0WagF/TrKSle5Ax9tW2xKlisQlqRzWsYU8LdRXvfr
+         f4hQ==
+X-Gm-Message-State: ACgBeo1KHpsV4+CKLtguUGNfvbrdWynw7p3WSylSUu2N77Sk3it4j/Ra
+        MpG15YM3aNQVtwbgRrCwjtub9Q==
+X-Google-Smtp-Source: AA6agR5jpGzcnMVoqZ1w4ypUaJvlsmJvJ2YUHA0qHL2TGohWVGn+LfqxLQC+7LvF2t549pKJvp84Vg==
+X-Received: by 2002:a5d:684e:0:b0:220:63df:3760 with SMTP id o14-20020a5d684e000000b0022063df3760mr8120665wrw.508.1660565998532;
+        Mon, 15 Aug 2022 05:19:58 -0700 (PDT)
+Received: from blmsp ([2001:4090:a243:8036:200c:a862:4253:884])
+        by smtp.gmail.com with ESMTPSA id x15-20020a5d490f000000b002205a5de337sm7084777wrq.102.2022.08.15.05.19.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 05:19:57 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 14:19:57 +0200
+From:   Markus Schneider-Pargmann <msp@baylibre.com>
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] clk: mediatek: gate: Export
+ mtk_clk_register_gates_with_dev
+Message-ID: <20220815121957.hmdjsznp4zj2ijmh@blmsp>
+References: <20220813083249.45427-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220813083249.45427-1-y.oudjana@protonmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Zhe <lizhe.67@bytedance.com>
+Hi Yassine,
 
-In current kernel we can only dump a user task's pagetable
-by task itself. Sometimes we need to inspect the page table
-attributes of different memory maps to user space to meet
-the relevant development and debugging requirements. This
-patch helps us to make our works easier. It add two file
-named 'pid' and 'pid_pgtable_show'. We can use 'pid' to
-input the task we want to inspect and get pagetable info
-from 'pid_pgtable_show'.
+On Sat, Aug 13, 2022 at 09:32:49AM +0100, Yassine Oudjana wrote:
+> From: Yassine Oudjana <y.oudjana@protonmail.com>
+> 
+> This allows it to be used in drivers built as modules.
+> 
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-User space can use file 'pid' and 'pid_pgtable_show' as follows.
-====
-$ echo $pid > /sys/kernel/debug/page_tables/pid
-$ cat /sys/kernel/debug/page_tables/pid_pgtable_show
+This change overlaps with my patch [1], I added export symbol for more
+functions as it was necessary to build the mt8365 clock driver as a
+module. I will rebase after this one was applied.
 
-Signed-off-by: Li Zhe <lizhe.67@bytedance.com>
----
- arch/x86/mm/debug_pagetables.c | 82 ++++++++++++++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
+You already have two reviewed-bys, but if you need one more, here you go
+;)
 
-diff --git a/arch/x86/mm/debug_pagetables.c b/arch/x86/mm/debug_pagetables.c
-index 092ea436c7e6..53a8ced44080 100644
---- a/arch/x86/mm/debug_pagetables.c
-+++ b/arch/x86/mm/debug_pagetables.c
-@@ -4,6 +4,8 @@
- #include <linux/module.h>
- #include <linux/seq_file.h>
- #include <linux/pgtable.h>
-+#include <linux/slab.h>
-+#include <linux/sched/mm.h>
- 
- static int ptdump_show(struct seq_file *m, void *v)
- {
-@@ -31,6 +33,84 @@ static int ptdump_curusr_show(struct seq_file *m, void *v)
- }
- 
- DEFINE_SHOW_ATTRIBUTE(ptdump_curusr);
-+
-+static pid_t trace_pid;
-+static int ptdump_pid_pgtable_show(struct seq_file *m, void *v)
-+{
-+	struct task_struct *task;
-+	struct mm_struct *mm;
-+
-+	if (trace_pid == 0)
-+		return 0;
-+
-+	rcu_read_lock();
-+	task = find_task_by_vpid(trace_pid);
-+	if (!task) {
-+		rcu_read_unlock();
-+		return -ESRCH;
-+	}
-+	mm = get_task_mm(task);
-+	rcu_read_unlock();
-+
-+	if (mm && mm->pgd)
-+		ptdump_walk_pgd_level_debugfs(m, mm, true);
-+
-+	if (mm)
-+		mmput(mm);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(ptdump_pid_pgtable);
-+
-+static ssize_t ptdump_pid_write(struct file *file, const char __user *buffer,
-+				size_t count, loff_t *f_pos)
-+{
-+	pid_t pid;
-+	int ret = -ENOMEM;
-+	char *tmp = kzalloc(count, GFP_KERNEL);
-+
-+	if (!tmp)
-+		return ret;
-+
-+	if (copy_from_user(tmp, buffer, count)) {
-+		ret = -EFAULT;
-+		goto out;
-+	}
-+
-+	ret = kstrtoint(tmp, 0, &pid);
-+	if (ret) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+	kfree(tmp);
-+	trace_pid = pid;
-+	return count;
-+
-+out:
-+	kfree(tmp);
-+	return ret;
-+}
-+
-+static int ptdump_show_pid(struct seq_file *m, void *v)
-+{
-+	seq_printf(m, "%d\n", trace_pid);
-+	return 0;
-+}
-+
-+static int ptdump_open_pid(struct inode *inode, struct file *filp)
-+{
-+	return single_open(filp, ptdump_show_pid, NULL);
-+}
-+
-+static const struct file_operations ptdump_pid_fops = {
-+	.owner		= THIS_MODULE,
-+	.open		= ptdump_open_pid,
-+	.write		= ptdump_pid_write,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= single_release,
-+};
- #endif
- 
- #if defined(CONFIG_EFI) && defined(CONFIG_X86_64)
-@@ -57,6 +137,8 @@ static int __init pt_dump_debug_init(void)
- #ifdef CONFIG_PAGE_TABLE_ISOLATION
- 	debugfs_create_file("current_user", 0400, dir, NULL,
- 			    &ptdump_curusr_fops);
-+	debugfs_create_file("pid_pgtable_show", 0400, dir, NULL, &ptdump_pid_pgtable_fops);
-+	debugfs_create_file("pid", 0400, dir, NULL, &ptdump_pid_fops);
- #endif
- #if defined(CONFIG_EFI) && defined(CONFIG_X86_64)
- 	debugfs_create_file("efi", 0400, dir, NULL, &ptdump_efi_fops);
--- 
-2.20.1
+Reviewed-by: Markus Schneider-Pargmann <msp@baylibre.com>
 
+Best,
+Markus
+
+[1] https://lore.kernel.org/linux-mediatek/20220811084433.2598575-4-msp@baylibre.com/
+
+> ---
+> This patch was originally part of a series, and is sent alone now since
+> it doesn't depend on the rest of it and can be applied directly:
+> https://lore.kernel.org/linux-clk/20220519134728.456643-1-y.oudjana@protonmail.com/
+> 
+>  drivers/clk/mediatek/clk-gate.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
+> index 421806236228..0c867136e49d 100644
+> --- a/drivers/clk/mediatek/clk-gate.c
+> +++ b/drivers/clk/mediatek/clk-gate.c
+> @@ -261,6 +261,7 @@ int mtk_clk_register_gates_with_dev(struct device_node *node,
+>  
+>  	return PTR_ERR(hw);
+>  }
+> +EXPORT_SYMBOL_GPL(mtk_clk_register_gates_with_dev);
+>  
+>  int mtk_clk_register_gates(struct device_node *node,
+>  			   const struct mtk_gate *clks, int num,
+> -- 
+> 2.37.1
+> 
+> 
