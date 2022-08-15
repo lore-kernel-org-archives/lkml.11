@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E6FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 659F2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345740AbiHOUDW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55800 "EHLO
+        id S233255AbiHOUD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346069AbiHOUBj (ORCPT
+        with ESMTP id S1346211AbiHOUBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:01:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBC57C196;
-        Mon, 15 Aug 2022 11:53:44 -0700 (PDT)
+        Mon, 15 Aug 2022 16:01:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0F17D1D2;
+        Mon, 15 Aug 2022 11:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D6B461019;
-        Mon, 15 Aug 2022 18:53:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55651C433D7;
-        Mon, 15 Aug 2022 18:53:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29147B810A2;
+        Mon, 15 Aug 2022 18:53:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 746FBC433C1;
+        Mon, 15 Aug 2022 18:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589613;
-        bh=AMlWcZjBdByjeCvbHrodQDRtAK5e6/sYLxTWDNuMlm4=;
+        s=korg; t=1660589635;
+        bh=vDkvebUt7MZA8+U3hS5joEOkD7qc/yPP/d1mBQwSSSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xq0H3OCDJIESm35H26f8QWdo5eRX+aEF2zW+t7h70RysvRdG05ywCenZMhBtVxNCb
-         DOSqU4zIb0qmFHldREuqsCOOJReeNzX0bgZbSdhitSn57knVQitNrzMQ354TOFl/Z7
-         Ho6VCCBeAevlPKMIi2H7vUUWyEtxlILXQpwc1/94=
+        b=v0c/NMwkaW1FioGdS3uC/aME3rs3lNq+8Lo83Rl7X93MqcyT9tbKH28Rn6DMZnRpj
+         /++reb+quQuAhhz/9SIxT6PEKSmYIVpOj3OSdve7wnmnvNjnPk8p/3lC/+1+M1oEVv
+         U2k2TdPpczjZ1+ViJhU4iyH/5FJ9U/CSqFbKpBd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
-        Jose Alonso <joalonsof@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 774/779] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-Date:   Mon, 15 Aug 2022 20:06:58 +0200
-Message-Id: <20220815180410.484211155@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 764/779] crypto: lib/blake2s - reduce stack frame usage in self test
+Date:   Mon, 15 Aug 2022 20:06:48 +0200
+Message-Id: <20220815180410.068767541@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,123 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Alonso <joalonsof@gmail.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
+commit d6c14da474bf260d73953fbf7992c98d9112aec7 upstream.
 
-This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
+Using 3 blocks here doesn't give us much more than using 2, and it
+causes a stack frame size warning on certain compiler/config/arch
+combinations:
 
-The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
-versions that have no issues.
+   lib/crypto/blake2s-selftest.c: In function 'blake2s_selftest':
+>> lib/crypto/blake2s-selftest.c:632:1: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+     632 | }
+         | ^
 
-The FLAG_SEND_ZLP is not safe to use in this context.
-See:
-https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
-The original problem needs another way to solve.
+So this patch just reduces the block from 3 to 2, which makes the
+warning go away.
 
-Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
-Cc: stable@vger.kernel.org
-Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
-Link: https://bugs.archlinux.org/task/75491
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/linux-crypto/202206200851.gE3MHCgd-lkp@intel.com
+Fixes: 2d16803c562e ("crypto: blake2s - remove shash module")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c |   20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ lib/crypto/blake2s-selftest.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1796,7 +1796,7 @@ static const struct driver_info ax88179_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1809,7 +1809,7 @@ static const struct driver_info ax88178a
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1822,7 +1822,7 @@ static const struct driver_info cypress_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1835,7 +1835,7 @@ static const struct driver_info dlink_du
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1848,7 +1848,7 @@ static const struct driver_info sitecom_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1861,7 +1861,7 @@ static const struct driver_info samsung_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1874,7 +1874,7 @@ static const struct driver_info lenovo_i
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1887,7 +1887,7 @@ static const struct driver_info belkin_i
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1900,7 +1900,7 @@ static const struct driver_info toshiba_
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1913,7 +1913,7 @@ static const struct driver_info mct_info
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
+--- a/lib/crypto/blake2s-selftest.c
++++ b/lib/crypto/blake2s-selftest.c
+@@ -593,7 +593,7 @@ bool __init blake2s_selftest(void)
+ 		enum { TEST_ALIGNMENT = 16 };
+ 		u8 unaligned_block[BLAKE2S_BLOCK_SIZE + TEST_ALIGNMENT - 1]
+ 					__aligned(TEST_ALIGNMENT);
+-		u8 blocks[BLAKE2S_BLOCK_SIZE * 3];
++		u8 blocks[BLAKE2S_BLOCK_SIZE * 2];
+ 		struct blake2s_state state1, state2;
+ 
+ 		get_random_bytes(blocks, sizeof(blocks));
+@@ -603,8 +603,8 @@ bool __init blake2s_selftest(void)
+     defined(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S)
+ 		memcpy(&state1, &state, sizeof(state1));
+ 		memcpy(&state2, &state, sizeof(state2));
+-		blake2s_compress(&state1, blocks, 3, BLAKE2S_BLOCK_SIZE);
+-		blake2s_compress_generic(&state2, blocks, 3, BLAKE2S_BLOCK_SIZE);
++		blake2s_compress(&state1, blocks, 2, BLAKE2S_BLOCK_SIZE);
++		blake2s_compress_generic(&state2, blocks, 2, BLAKE2S_BLOCK_SIZE);
+ 		if (memcmp(&state1, &state2, sizeof(state1))) {
+ 			pr_err("blake2s random compress self-test %d: FAIL\n",
+ 			       i + 1);
 
 
