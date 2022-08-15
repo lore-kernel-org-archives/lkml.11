@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1817C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57C1C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245380AbiHOTEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
+        id S245387AbiHOTEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245208AbiHOTBc (ORCPT
+        with ESMTP id S245230AbiHOTBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01CD32EFF;
-        Mon, 15 Aug 2022 11:32:59 -0700 (PDT)
+        Mon, 15 Aug 2022 15:01:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87B133A1D;
+        Mon, 15 Aug 2022 11:33:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDD4AB81085;
-        Mon, 15 Aug 2022 18:32:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34100C433D6;
-        Mon, 15 Aug 2022 18:32:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19E5260F7A;
+        Mon, 15 Aug 2022 18:33:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15794C433C1;
+        Mon, 15 Aug 2022 18:32:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588371;
-        bh=rCJ5IZlcujA+VBDei++2b8s3UWpJOoJg5ymsyUzwOQ8=;
+        s=korg; t=1660588380;
+        bh=HrPimmobdIk2vbtJv/TMugZDKgUGpjvpS3KaV+bxIQk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aWeyRXExIdfa+T8TL2K4Y4lfi2x37DW/B8W8ZH41AHuwJo+D1JiIcXWW4HHRjuEdl
-         j6lNxtM7YpmIToT4GleD/yIzmphvYTO1CfXeEpzgANtDN5+wgEdgKFNf9nkBCLMEat
-         hurM8yb+06eIqYcWhzFacG7OgdijwhexGzZAHSXk=
+        b=VikBquhg9sLn8uVIOtkpPOLlxszMI0fsRJLB8T72mMSDU/xsGYdTpwh5YN7BxXb43
+         GhbJYdRfUKsX33KkPJHS6GywOf5K2CzTyxHAgVv6HvlnoUbwhSmNKsvjLJGHQi4+8b
+         iA55iKbzcg/Lj2ZkRIeE98jetLTaOG4Y5NBYIiT4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 381/779] netdevsim: Avoid allocation warnings triggered from user space
-Date:   Mon, 15 Aug 2022 20:00:25 +0200
-Message-Id: <20220815180353.583783799@linuxfoundation.org>
+Subject: [PATCH 5.15 384/779] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
+Date:   Mon, 15 Aug 2022 20:00:28 +0200
+Message-Id: <20220815180353.698944137@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,52 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit d0b80a9edb1a029ff913e81b47540e57ad034329 ]
+[ Upstream commit a41b17ff9dacd22f5f118ee53d82da0f3e52d5e3 ]
 
-We need to suppress warnings from sily map sizes. Also switch
-from GFP_USER to GFP_KERNEL_ACCOUNT, I'm pretty sure I misunderstood
-the flags when writing this code.
+In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
+will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
+released before sock_alloc_send_skb and then relocked after
+sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
+to add skb to an already full sk_write_queue:
 
-Fixes: 395cacb5f1a0 ("netdevsim: bpf: support fake map offload")
-Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
+thread1--->lock
+thread1--->dccp_qpolicy_full: queue is full. drop a skb
+thread1--->unlock
+thread2--->lock
+thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
+thread2--->unlock
+thread1--->lock
+thread1--->dccp_qpolicy_push: add a skb. queue is full.
+thread1--->unlock
+thread2--->lock
+thread2--->dccp_qpolicy_push: add a skb!
+thread2--->unlock
+
+Fix this by moving dccp_qpolicy_full.
+
+Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220729110027.40569-1-hbh25y@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220726213605.154204-1-kuba@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/netdevsim/bpf.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ net/dccp/proto.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
-index a43820212932..50854265864d 100644
---- a/drivers/net/netdevsim/bpf.c
-+++ b/drivers/net/netdevsim/bpf.c
-@@ -351,10 +351,12 @@ nsim_map_alloc_elem(struct bpf_offloaded_map *offmap, unsigned int idx)
- {
- 	struct nsim_bpf_bound_map *nmap = offmap->dev_priv;
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index fc44dadc778b..c4de716f4994 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -747,11 +747,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
  
--	nmap->entry[idx].key = kmalloc(offmap->map.key_size, GFP_USER);
-+	nmap->entry[idx].key = kmalloc(offmap->map.key_size,
-+				       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (!nmap->entry[idx].key)
- 		return -ENOMEM;
--	nmap->entry[idx].value = kmalloc(offmap->map.value_size, GFP_USER);
-+	nmap->entry[idx].value = kmalloc(offmap->map.value_size,
-+					 GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (!nmap->entry[idx].value) {
- 		kfree(nmap->entry[idx].key);
- 		nmap->entry[idx].key = NULL;
-@@ -496,7 +498,7 @@ nsim_bpf_map_alloc(struct netdevsim *ns, struct bpf_offloaded_map *offmap)
- 	if (offmap->map.map_flags)
- 		return -EINVAL;
+ 	lock_sock(sk);
  
--	nmap = kzalloc(sizeof(*nmap), GFP_USER);
-+	nmap = kzalloc(sizeof(*nmap), GFP_KERNEL_ACCOUNT);
- 	if (!nmap)
- 		return -ENOMEM;
+-	if (dccp_qpolicy_full(sk)) {
+-		rc = -EAGAIN;
+-		goto out_release;
+-	}
+-
+ 	timeo = sock_sndtimeo(sk, noblock);
  
+ 	/*
+@@ -770,6 +765,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	if (skb == NULL)
+ 		goto out_release;
+ 
++	if (dccp_qpolicy_full(sk)) {
++		rc = -EAGAIN;
++		goto out_discard;
++	}
++
+ 	if (sk->sk_state == DCCP_CLOSED) {
+ 		rc = -ENOTCONN;
+ 		goto out_discard;
 -- 
 2.35.1
 
