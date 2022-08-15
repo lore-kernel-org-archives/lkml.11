@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBFFC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D23A9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243080AbiHOStl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
+        id S243895AbiHOStq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243380AbiHOSoA (ORCPT
+        with ESMTP id S233146AbiHOSoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:44:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BDF2F67D;
-        Mon, 15 Aug 2022 11:27:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6343460691;
-        Mon, 15 Aug 2022 18:27:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C03C433D7;
-        Mon, 15 Aug 2022 18:27:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588034;
-        bh=zYrR9oYzIaayks9bURRjZG2gtT1h3u/amPt6DIA3Tbs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Up3TCvAg00RnUBp1wt8OIqYsKpa9reYRLQ+oWxrpJnyGfiTaNco6sKsYa3+8X/APs
-         rjD50MXBELr09KwUFGzIGOuvFDDxrUqFKizImvRc3cFKrgjpwt2quUMOYD1FirE9nz
-         peJwplh6QDl042FLh8hfyZ0eBU/ZS9FEfLQC0yf8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 257/779] drm/virtio: Fix NULL vs IS_ERR checking in virtio_gpu_object_shmem_init
-Date:   Mon, 15 Aug 2022 19:58:21 +0200
-Message-Id: <20220815180348.333416901@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:44:01 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC632FFC3;
+        Mon, 15 Aug 2022 11:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=pQgnV2W+m6IHyd1sfXNyPuGcZpvyoD3dq7ndy9+1QWY=; b=nOms3/1Uq5YOF1bwlhQz39B/xq
+        lhJn4Xz+bgO4S+tzCDXYpLB8VrlkUqBdIrbUt95mBrUHdr683sUAqzaa2EL8z+RDmYP2StzlwdOJ2
+        dlu4xtB6GtZ7UapVk2WD/TlGptwIfUv0tciWlGulljYY9+Fcpo2ICJpMpb0BJvuXzzX0zDUpw9zyU
+        KyGPgpkB3lZyjCE3mM8iw+OX+wUW/BWlIlrIvAWaQoFKHxiKHBkFWxJrLM4RNSV+3QMORX/AlleaD
+        vpDR4/Jp7QyIvjl5gi8PPa6yPcN0ObjLRunLjv/8GqjUnNkTYLzal4MQ7zci7VkeymEdMAPpsPy07
+        le8oCyVA==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oNent-004kaQ-Ps;
+        Mon, 15 Aug 2022 18:27:10 +0000
+Date:   Mon, 15 Aug 2022 19:27:09 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-nilfs <linux-nilfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiacheng Xu <stitch@zju.edu.cn>,
+        Mudong Liang <mudongliangabcd@gmail.com>
+Subject: Re: [PATCH] nilfs2: fix use-after-free bug in nilfs_mdt_destroy()
+Message-ID: <YvqP/f2P2YgIIO9U@ZenIV>
+References: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815175114.23576-1-konishi.ryusuke@gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+On Tue, Aug 16, 2022 at 02:51:14AM +0900, Ryusuke Konishi wrote:
+> In alloc_inode(), inode_init_always() could return -ENOMEM if
+> security_inode_alloc() fails.  If this happens for nilfs2,
+> nilfs_free_inode() is called without initializing inode->i_private and
+> nilfs_free_inode() wrongly calls nilfs_mdt_destroy(), which frees
+> uninitialized inode->i_private and can trigger a crash.
+> 
+> Fix this bug by initializing inode->i_private in nilfs_alloc_inode().
+> 
+> Link: https://lkml.kernel.org/r/CAFcO6XOcf1Jj2SeGt=jJV59wmhESeSKpfR0omdFRq+J9nD1vfQ@mail.gmail.com
+> Link: https://lkml.kernel.org/r/20211011030956.2459172-1-mudongliangabcd@gmail.com
+> Reported-by: butt3rflyh4ck <butterflyhuangxx@gmail.com>
+> Reported-by: Hao Sun <sunhao.th@gmail.com>
+> Reported-by: Jiacheng Xu <stitch@zju.edu.cn>
+> Reported-by: Mudong Liang <mudongliangabcd@gmail.com>
+> Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> ---
+>  fs/nilfs2/super.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/fs/nilfs2/super.c b/fs/nilfs2/super.c
+> index ba108f915391..aca5614f1b44 100644
+> --- a/fs/nilfs2/super.c
+> +++ b/fs/nilfs2/super.c
+> @@ -159,6 +159,7 @@ struct inode *nilfs_alloc_inode(struct super_block *sb)
+>  	ii->i_cno = 0;
+>  	ii->i_assoc_inode = NULL;
+>  	ii->i_bmap = &ii->i_bmap_data;
+> +	ii->vfs_inode.i_private = NULL;
+>  	return &ii->vfs_inode;
+>  }
 
-[ Upstream commit c24968734abfed81c8f93dc5f44a7b7a9aecadfa ]
-
-Since drm_prime_pages_to_sg() function return error pointers.
-The drm_gem_shmem_get_sg_table() function returns error pointers too.
-Using IS_ERR() to check the return value to fix this.
-
-Fixes: 2f2aa13724d5 ("drm/virtio: move virtio_gpu_mem_entry initialization to new function")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: http://patchwork.freedesktop.org/patch/msgid/20220602104223.54527-1-linmq006@gmail.com
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/virtio/virtgpu_object.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virtio/virtgpu_object.c
-index 187e10da2f17..9af9f355e0a7 100644
---- a/drivers/gpu/drm/virtio/virtgpu_object.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_object.c
-@@ -167,9 +167,9 @@ static int virtio_gpu_object_shmem_init(struct virtio_gpu_device *vgdev,
- 	 * since virtio_gpu doesn't support dma-buf import from other devices.
- 	 */
- 	shmem->pages = drm_gem_shmem_get_sg_table(&bo->base);
--	if (!shmem->pages) {
-+	if (IS_ERR(shmem->pages)) {
- 		drm_gem_shmem_unpin(&bo->base);
--		return -EINVAL;
-+		return PTR_ERR(shmem->pages);
- 	}
- 
- 	if (use_dma_api) {
--- 
-2.35.1
-
-
-
+FWIW, I think it's better to deal with that in inode_init_always(), but
+not just moving ->i_private initialization up - we ought to move
+security_inode_alloc() to the very end.  No sense playing whack-a-mole
+with further possible bugs of that sort...
