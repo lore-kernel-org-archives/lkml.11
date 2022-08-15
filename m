@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C43C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFC3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348529AbiHOVdd (ORCPT
+        id S1348547AbiHOVdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
+        Mon, 15 Aug 2022 17:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348569AbiHOVbg (ORCPT
+        with ESMTP id S1348603AbiHOVbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:31:36 -0400
+        Mon, 15 Aug 2022 17:31:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E954DF0745;
-        Mon, 15 Aug 2022 12:24:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC7EEF9F3;
+        Mon, 15 Aug 2022 12:24:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AC3610A2;
-        Mon, 15 Aug 2022 19:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D027BC433D7;
-        Mon, 15 Aug 2022 19:24:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E18B16100A;
+        Mon, 15 Aug 2022 19:24:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727C5C433C1;
+        Mon, 15 Aug 2022 19:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591452;
-        bh=i8hmpQ53bR+sr3him2AXH2AmyhXku3SVxEQnzBlMJxQ=;
+        s=korg; t=1660591449;
+        bh=E7a/8oKrx2+k0GllHy1FIIfAK9lmfDORKu43LLWGCG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=foa4AwPr9KderzW8y2tdRNnWslYsCfUBWEavbUKkaBbE+WCawk5wqEpoSA+lTrGmJ
-         Cdy6bJAvDz+PEmWkDmKbKFUnm5YbjE+rd+KqUvnmzWXfh8BXTwISrh9Cx3/blJFVOb
-         WR3DHE8MH1pCl0FpjFTf5CX2mkFjqRitZrAJoZ10=
+        b=jKzxuJZmkD3BF+TnldaT478IpeYyGM0Vz75AdVdpA2VzyhhjlI6oyszWRBFBN4cj4
+         7TiaGbg2Chx3ipPOOicZuWgDFxP0ifCgI8T7wjhbX+5DwiW+JRD1Mu6YKoZ1vXczcU
+         oym1h2nlGMqdkxDOfZJtgq/TKCQwZe8pxXjx46FU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0577/1095] scsi: qla2xxx: edif: Tear down session if keys have been removed
-Date:   Mon, 15 Aug 2022 19:59:36 +0200
-Message-Id: <20220815180453.443224603@linuxfoundation.org>
+Subject: [PATCH 5.18 0534/1095] net: ionic: fix error check for vlan flags in ionic_set_nic_features()
+Date:   Mon, 15 Aug 2022 19:58:53 +0200
+Message-Id: <20220815180451.637770373@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,52 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit d7e2e4a68fc047a025afcd200e6b7e1fbc8b1999 ]
+[ Upstream commit a86e86db5e6d72c82724a63ca1c5293409a21518 ]
 
-If all keys for a session have been deleted, trigger a session teardown.
+The prototype of input features of ionic_set_nic_features() is
+netdev_features_t, but the vlan_flags is using the private
+definition of ionic drivers. It should use the variable
+ctx.cmd.lif_setattr.features, rather than features to check
+the vlan flags. So fixes it.
 
-Link: https://lore.kernel.org/r/20220608115849.16693-6-njavali@marvell.com
-Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Acked-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h | 5 +++++
- drivers/scsi/qla2xxx/qla_isr.c | 1 +
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_def.h b/drivers/scsi/qla2xxx/qla_def.h
-index c2b92a6fef90..4062d46f33a6 100644
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -2158,6 +2158,11 @@ typedef struct {
- #define CS_IOCB_ERROR		0x31	/* Generic error for IOCB request
- 					   failure */
- #define CS_REJECT_RECEIVED	0x4E	/* Reject received */
-+#define CS_EDIF_AUTH_ERROR	0x63	/* decrypt error */
-+#define CS_EDIF_PAD_LEN_ERROR	0x65	/* pad > frame size, not 4byte align */
-+#define CS_EDIF_INV_REQ		0x66	/* invalid request */
-+#define CS_EDIF_SPI_ERROR	0x67	/* rx frame unable to locate sa */
-+#define CS_EDIF_HDR_ERROR	0x69	/* data frame != expected len */
- #define CS_BAD_PAYLOAD		0x80	/* Driver defined */
- #define CS_UNKNOWN		0x81	/* Driver defined */
- #define CS_RETRY		0x82	/* Driver defined */
-diff --git a/drivers/scsi/qla2xxx/qla_isr.c b/drivers/scsi/qla2xxx/qla_isr.c
-index 5deea6bff09f..ad55eace66aa 100644
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -3424,6 +3424,7 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
- 	case CS_PORT_UNAVAILABLE:
- 	case CS_TIMEOUT:
- 	case CS_RESET:
-+	case CS_EDIF_INV_REQ:
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index f3568901eb91..1443f788ee37 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1437,7 +1437,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+ 	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
+ 		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
  
- 		/*
- 		 * We are going to have the fc class block the rport
+-	if ((vlan_flags & features) &&
++	if ((vlan_flags & le64_to_cpu(ctx.cmd.lif_setattr.features)) &&
+ 	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
+ 		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
+ 
 -- 
 2.35.1
 
