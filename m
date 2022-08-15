@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F23C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF24C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233962AbiHPE5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S233980AbiHPE5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234152AbiHPE4Z (ORCPT
+        with ESMTP id S234167AbiHPE40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:56:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E661FBBA50;
-        Mon, 15 Aug 2022 13:51:22 -0700 (PDT)
+        Tue, 16 Aug 2022 00:56:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879A6BB6A8;
+        Mon, 15 Aug 2022 13:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7675ECE12C3;
-        Mon, 15 Aug 2022 20:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF23C433C1;
-        Mon, 15 Aug 2022 20:50:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8225861089;
+        Mon, 15 Aug 2022 20:51:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D06C433D6;
+        Mon, 15 Aug 2022 20:51:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596653;
-        bh=l8T1bFz4R/GbxK6CIV6og1RrUXHJ5KWwpqh2rejeafg=;
+        s=korg; t=1660596681;
+        bh=eSju7C3yRhZNi5hkK0/J5yLVf4TRaMXFKrFi3jlI5tg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bm9+/Ju4fZvC5fz+pMF9jK7Bnew+MGUtQ9WCBr6B7GH5ryD5LVDJNlO7XoELXSHUM
-         x1yAM84xPU4rAUsSfIrbhwn49anzX+/zVDoMG8ndKZou+lPsCGEMfKtEVYm5FcUj3m
-         wtYDIeR0gsMRGM9vfoaN7RfCqD28lZQWB1ZRPyqg=
+        b=Nbhw+fo/PrWwYh3m9ohE5rU3dmDz5HEbDYYrIL7o6dbUORHDFnkOQHr6aBhSnlsuL
+         fAnL6MFjNaHjgK6fJm9aAN8bBBqnnCJyBB2lShPBfDQj9xmQD+FTIKiK0QMiqZ1djV
+         joah2hZaO3kR/XjPJuszHuFc/6tN/wAtJ2FbrLXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+90d912872157e63589e4@syzkaller.appspotmail.com,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.19 1147/1157] wifi: cfg80211: handle IBSS in channel switch
-Date:   Mon, 15 Aug 2022 20:08:23 +0200
-Message-Id: <20220815180526.397830233@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Wang Jianjian <wangjianjian3@huawei.com>,
+        linux-ext4@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1124/1157] Documentation: ext4: fix cell spacing of table heading on blockmap table
+Date:   Mon, 15 Aug 2022 20:08:00 +0200
+Message-Id: <20220815180525.307454244@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,34 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
-commit 77e7b6ba78edf817bddfa97fadb15a971992b1ee upstream.
+[ Upstream commit 442ec1e5bb7c46c72c41898e13a5744c84cadf51 ]
 
-Prior to commit 7b0a0e3c3a88 ("wifi: cfg80211: do some
-rework towards MLO link APIs") the interface type didn't
-really matter here, but now we need to handle all of the
-possible cases. Add IBSS ("ADHOC") and handle it.
+Commit 3103084afcf234 ("ext4, doc: remove unnecessary escaping") removes
+redundant underscore escaping, however the cell spacing in heading row of
+blockmap table became not aligned anymore, hence triggers malformed table
+warning:
 
-Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
-Reported-by: syzbot+90d912872157e63589e4@syzkaller.appspotmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Documentation/filesystems/ext4/blockmap.rst:3: WARNING: Malformed table.
+
++---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| i.i_block Offset   | Where It Points                                                                                                                                                                                                              |
+<snipped>...
+
+The warning caused the table not being loaded.
+
+Realign the heading row cell by adding missing space at the first cell
+to fix the warning.
+
+Fixes: 3103084afcf234 ("ext4, doc: remove unnecessary escaping")
+Cc: stable@kernel.org
+Cc: Andreas Dilger <adilger.kernel@dilger.ca>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Wang Jianjian <wangjianjian3@huawei.com>
+Cc: linux-ext4@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220619072938.7334-1-bagasdotme@gmail.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c |    3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/filesystems/ext4/blockmap.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -18294,6 +18294,9 @@ void cfg80211_ch_switch_notify(struct ne
- 	case NL80211_IFTYPE_P2P_GO:
- 		wdev->links[link_id].ap.chandef = *chandef;
- 		break;
-+	case NL80211_IFTYPE_ADHOC:
-+		wdev->u.ibss.chandef = *chandef;
-+		break;
- 	default:
- 		WARN_ON(1);
- 		break;
+diff --git a/Documentation/filesystems/ext4/blockmap.rst b/Documentation/filesystems/ext4/blockmap.rst
+index 2bd990402a5c..cc596541ce79 100644
+--- a/Documentation/filesystems/ext4/blockmap.rst
++++ b/Documentation/filesystems/ext4/blockmap.rst
+@@ -1,7 +1,7 @@
+ .. SPDX-License-Identifier: GPL-2.0
+ 
+ +---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+-| i.i_block Offset   | Where It Points                                                                                                                                                                                                              |
++| i.i_block Offset    | Where It Points                                                                                                                                                                                                              |
+ +=====================+==============================================================================================================================================================================================================================+
+ | 0 to 11             | Direct map to file blocks 0 to 11.                                                                                                                                                                                           |
+ +---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+-- 
+2.35.1
+
 
 
