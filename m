@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A1FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1985C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356618AbiHPACk (ORCPT
+        id S1356428AbiHPACY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
+        Mon, 15 Aug 2022 20:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356578AbiHOXyo (ORCPT
+        with ESMTP id S1356509AbiHOXyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:54:44 -0400
+        Mon, 15 Aug 2022 19:54:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAD91617F5;
-        Mon, 15 Aug 2022 13:19:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9478716101D;
+        Mon, 15 Aug 2022 13:19:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AC06B81181;
-        Mon, 15 Aug 2022 20:19:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D148CC433D6;
-        Mon, 15 Aug 2022 20:19:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE769B81136;
+        Mon, 15 Aug 2022 20:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11103C433C1;
+        Mon, 15 Aug 2022 20:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594771;
-        bh=4RHd20ascr7WjRRQ03cxtX2b/qudhSpb5JatRmaVYo8=;
+        s=korg; t=1660594755;
+        bh=R6stR1XDXcR4UhrtoDaEKY1aUuGWKo8noBF9JPYHjng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJT+08Qp+h24lU+qt4JiweGozDOheYGALarPpLg1SlQ8TQZyIzogOeEUM5cbrS/LU
-         jHUoqwXXs9kBWiWuPD/KXf4Yjo9l9DQEtFsXqA+hkowLb67rLVVSWCjhcUZUtZhj3c
-         HcC1fDNjgebzEv+2bTTleEs6Vnp7W6SSaYo8oe/o=
+        b=lpNa2a109kjWAFX65GydCQJcstB6AeEz8YSVDOEo9Y5kyOkafFP3IdlFJRXKR6Zu/
+         VxgUPwTGOz2YSLPeAZ05BsPKPv5wOTMNYavfJiu8z+jZi5Jyg4TfOCN0UTjDt1qOKT
+         CnREGTsdUSo8pnAqLrjteL6K/LvdiaEmgCouoOlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0512/1157] bpf: fix potential 32-bit overflow when accessing ARRAY map element
-Date:   Mon, 15 Aug 2022 19:57:48 +0200
-Message-Id: <20220815180500.176226318@linuxfoundation.org>
+Subject: [PATCH 5.19 0517/1157] can: rcar_can: do not report txerr and rxerr during bus-off
+Date:   Mon, 15 Aug 2022 19:57:53 +0200
+Message-Id: <20220815180500.384810585@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,107 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 87ac0d600943994444e24382a87aa19acc4cd3d4 ]
+[ Upstream commit a37b7245e831a641df360ca41db6a71c023d3746 ]
 
-If BPF array map is bigger than 4GB, element pointer calculation can
-overflow because both index and elem_size are u32. Fix this everywhere
-by forcing 64-bit multiplication. Extract this formula into separate
-small helper and use it consistently in various places.
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-Speculative-preventing formula utilizing index_mask trick is left as is,
-but explicit u64 casts are added in both places.
-
-Fixes: c85d69135a91 ("bpf: move memory size checks to bpf_map_charge_init()")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/r/20220715053146.1291891-2-andrii@kernel.org
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
+Link: https://lore.kernel.org/all/20220719143550.3681-3-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/arraymap.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ drivers/net/can/rcar/rcar_can.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index fe40d3b9458f..1d05d63e6fa5 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -156,6 +156,11 @@ static struct bpf_map *array_map_alloc(union bpf_attr *attr)
- 	return &array->map;
- }
- 
-+static void *array_map_elem_ptr(struct bpf_array* array, u32 index)
-+{
-+	return array->value + (u64)array->elem_size * index;
-+}
-+
- /* Called from syscall or from eBPF program */
- static void *array_map_lookup_elem(struct bpf_map *map, void *key)
- {
-@@ -165,7 +170,7 @@ static void *array_map_lookup_elem(struct bpf_map *map, void *key)
- 	if (unlikely(index >= array->map.max_entries))
- 		return NULL;
- 
--	return array->value + array->elem_size * (index & array->index_mask);
-+	return array->value + (u64)array->elem_size * (index & array->index_mask);
- }
- 
- static int array_map_direct_value_addr(const struct bpf_map *map, u64 *imm,
-@@ -339,7 +344,7 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		       value, map->value_size);
- 	} else {
- 		val = array->value +
--			array->elem_size * (index & array->index_mask);
-+			(u64)array->elem_size * (index & array->index_mask);
- 		if (map_flags & BPF_F_LOCK)
- 			copy_map_value_locked(map, val, value, false);
- 		else
-@@ -408,8 +413,7 @@ static void array_map_free_timers(struct bpf_map *map)
- 		return;
- 
- 	for (i = 0; i < array->map.max_entries; i++)
--		bpf_timer_cancel_and_free(array->value + array->elem_size * i +
--					  map->timer_off);
-+		bpf_timer_cancel_and_free(array_map_elem_ptr(array, i) + map->timer_off);
- }
- 
- /* Called when map->refcnt goes to zero, either from workqueue or from syscall */
-@@ -420,7 +424,7 @@ static void array_map_free(struct bpf_map *map)
- 
- 	if (map_value_has_kptrs(map)) {
- 		for (i = 0; i < array->map.max_entries; i++)
--			bpf_map_free_kptrs(map, array->value + array->elem_size * i);
-+			bpf_map_free_kptrs(map, array_map_elem_ptr(array, i));
- 		bpf_map_free_kptr_off_tab(map);
+diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
+index d45762f1cf6b..24d7a71def6a 100644
+--- a/drivers/net/can/rcar/rcar_can.c
++++ b/drivers/net/can/rcar/rcar_can.c
+@@ -232,11 +232,8 @@ static void rcar_can_error(struct net_device *ndev)
+ 	if (eifr & (RCAR_CAN_EIFR_EWIF | RCAR_CAN_EIFR_EPIF)) {
+ 		txerr = readb(&priv->regs->tecr);
+ 		rxerr = readb(&priv->regs->recr);
+-		if (skb) {
++		if (skb)
+ 			cf->can_id |= CAN_ERR_CRTL;
+-			cf->data[6] = txerr;
+-			cf->data[7] = rxerr;
+-		}
  	}
- 
-@@ -556,7 +560,7 @@ static void *bpf_array_map_seq_start(struct seq_file *seq, loff_t *pos)
- 	index = info->index & array->index_mask;
- 	if (info->percpu_value_buf)
- 	       return array->pptrs[index];
--	return array->value + array->elem_size * index;
-+	return array_map_elem_ptr(array, index);
- }
- 
- static void *bpf_array_map_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-@@ -575,7 +579,7 @@ static void *bpf_array_map_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- 	index = info->index & array->index_mask;
- 	if (info->percpu_value_buf)
- 	       return array->pptrs[index];
--	return array->value + array->elem_size * index;
-+	return array_map_elem_ptr(array, index);
- }
- 
- static int __bpf_array_map_seq_show(struct seq_file *seq, void *v)
-@@ -690,7 +694,7 @@ static int bpf_for_each_array_elem(struct bpf_map *map, bpf_callback_t callback_
- 		if (is_percpu)
- 			val = this_cpu_ptr(array->pptrs[i]);
- 		else
--			val = array->value + array->elem_size * i;
-+			val = array_map_elem_ptr(array, i);
- 		num_elems++;
- 		key = i;
- 		ret = callback_fn((u64)(long)map, (u64)(long)&key,
+ 	if (eifr & RCAR_CAN_EIFR_BEIF) {
+ 		int rx_errors = 0, tx_errors = 0;
+@@ -336,6 +333,9 @@ static void rcar_can_error(struct net_device *ndev)
+ 		can_bus_off(ndev);
+ 		if (skb)
+ 			cf->can_id |= CAN_ERR_BUSOFF;
++	} else if (skb) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
+ 	}
+ 	if (eifr & RCAR_CAN_EIFR_ORIF) {
+ 		netdev_dbg(priv->ndev, "Receive overrun error interrupt\n");
 -- 
 2.35.1
 
