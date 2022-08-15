@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BE7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BBFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231857AbiHOSZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
+        id S240464AbiHOSZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:25:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241164AbiHOSYo (ORCPT
+        with ESMTP id S241516AbiHOSY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:24:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5F05FC2;
-        Mon, 15 Aug 2022 11:18:24 -0700 (PDT)
+        Mon, 15 Aug 2022 14:24:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB5513E90;
+        Mon, 15 Aug 2022 11:18:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B38F6B80F99;
-        Mon, 15 Aug 2022 18:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04E43C433D6;
-        Mon, 15 Aug 2022 18:18:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7951B81072;
+        Mon, 15 Aug 2022 18:18:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4CCFC433C1;
+        Mon, 15 Aug 2022 18:18:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587485;
-        bh=fhXmri8Qjp0EzDtGXhrJdIiFlwZJ7xvylvHa/3A9hao=;
+        s=korg; t=1660587498;
+        bh=ZM6vYaCVQmYjmggAgwDup8mSvZXzP1AWtKqfz4xpgts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jw2qSFe5+3Pwiw5DLj7S2Px01dBYgJhafcI6oAb8GKwd5lQ2RPRelxv5Cf1J8PHu/
-         ucBnd92L5E6WXprwK/CHHXlKwkp+ocTOkULoCIHXomnd7Ol1Dwf3HMPt8IMlklOCqU
-         RYAQVVCfVGXI0olgFlDSuBzrMRiuxOzy06wV9W4I=
+        b=k74eGyHkPH1gi5sq8Qq2qRtqs3tYJgguVEo2LacNwnBg4v10tOlIv69IIv8tKs07h
+         pOVe5uBFSsUC+qh/vbdJU5LNicNNdfDV0vNWXXFv7/Ys8B52XbsE/IKoDM+1KvPqyf
+         1b0qLUk8hjg82JRdbUBeqNylcJQ+QrT0iQfJmRwk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable <stable@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Subject: [PATCH 5.15 100/779] USB: HCD: Fix URB giveback issue in tasklet function
-Date:   Mon, 15 Aug 2022 19:55:44 +0200
-Message-Id: <20220815180341.576168483@linuxfoundation.org>
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [PATCH 5.15 104/779] usb: dwc3: gadget: refactor dwc3_repare_one_trb
+Date:   Mon, 15 Aug 2022 19:55:48 +0200
+Message-Id: <20220815180341.762158140@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,124 +48,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-commit 26c6c2f8a907c9e3a2f24990552a4d77235791e6 upstream.
+commit 23385cec5f354794dadced7f28c31da7ae3eb54c upstream.
 
-Usb core introduce the mechanism of giveback of URB in tasklet context to
-reduce hardware interrupt handling time. On some test situation(such as
-FIO with 4KB block size), when tasklet callback function called to
-giveback URB, interrupt handler add URB node to the bh->head list also.
-If check bh->head list again after finish all URB giveback of local_list,
-then it may introduce a "dynamic balance" between giveback URB and add URB
-to bh->head list. This tasklet callback function may not exit for a long
-time, which will cause other tasklet function calls to be delayed. Some
-real-time applications(such as KB and Mouse) will see noticeable lag.
+The function __dwc3_prepare_one_trb has many parameters. Since it is
+only used in dwc3_prepare_one_trb there is no point in keeping the
+function. We merge both functions and get rid of the big list of
+parameters.
 
-In order to prevent the tasklet function from occupying the cpu for a long
-time at a time, new URBS will not be added to the local_list even though
-the bh->head list is not empty. But also need to ensure the left URB
-giveback to be processed in time, so add a member high_prio for structure
-giveback_urb_bh to prioritize tasklet and schelule this tasklet again if
-bh->head list is not empty.
-
-At the same time, we are able to prioritize tasklet through structure
-member high_prio. So, replace the local high_prio_bh variable with this
-structure member in usb_hcd_giveback_urb.
-
-Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+Fixes: 40d829fb2ec6 ("usb: dwc3: gadget: Correct ISOC DATA PIDs for short packets")
 Cc: stable <stable@kernel.org>
-Reviewed-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Link: https://lore.kernel.org/r/20220726074918.5114-1-WeitaoWang-oc@zhaoxin.com
+Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Link: https://lore.kernel.org/r/20220704141812.1532306-2-m.grzeschik@pengutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/hcd.c  |   26 +++++++++++++++-----------
- include/linux/usb/hcd.h |    1 +
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ drivers/usb/dwc3/gadget.c |   92 ++++++++++++++++++++--------------------------
+ 1 file changed, 40 insertions(+), 52 deletions(-)
 
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1691,7 +1691,6 @@ static void usb_giveback_urb_bh(struct t
- 
- 	spin_lock_irq(&bh->lock);
- 	bh->running = true;
-- restart:
- 	list_replace_init(&bh->head, &local_list);
- 	spin_unlock_irq(&bh->lock);
- 
-@@ -1705,10 +1704,17 @@ static void usb_giveback_urb_bh(struct t
- 		bh->completing_ep = NULL;
- 	}
- 
--	/* check if there are new URBs to giveback */
-+	/*
-+	 * giveback new URBs next time to prevent this function
-+	 * from not exiting for a long time.
-+	 */
- 	spin_lock_irq(&bh->lock);
--	if (!list_empty(&bh->head))
--		goto restart;
-+	if (!list_empty(&bh->head)) {
-+		if (bh->high_prio)
-+			tasklet_hi_schedule(&bh->bh);
-+		else
-+			tasklet_schedule(&bh->bh);
-+	}
- 	bh->running = false;
- 	spin_unlock_irq(&bh->lock);
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -1169,17 +1169,49 @@ static u32 dwc3_calc_trbs_left(struct dw
+ 	return trbs_left;
  }
-@@ -1737,7 +1743,7 @@ static void usb_giveback_urb_bh(struct t
- void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ 
+-static void __dwc3_prepare_one_trb(struct dwc3_ep *dep, struct dwc3_trb *trb,
+-		dma_addr_t dma, unsigned int length, unsigned int chain,
+-		unsigned int node, unsigned int stream_id,
+-		unsigned int short_not_ok, unsigned int no_interrupt,
+-		unsigned int is_last, bool must_interrupt)
++/**
++ * dwc3_prepare_one_trb - setup one TRB from one request
++ * @dep: endpoint for which this request is prepared
++ * @req: dwc3_request pointer
++ * @trb_length: buffer size of the TRB
++ * @chain: should this TRB be chained to the next?
++ * @node: only for isochronous endpoints. First TRB needs different type.
++ * @use_bounce_buffer: set to use bounce buffer
++ * @must_interrupt: set to interrupt on TRB completion
++ */
++static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
++		struct dwc3_request *req, unsigned int trb_length,
++		unsigned int chain, unsigned int node, bool use_bounce_buffer,
++		bool must_interrupt)
  {
- 	struct giveback_urb_bh *bh;
--	bool running, high_prio_bh;
-+	bool running;
++	struct dwc3_trb		*trb;
++	dma_addr_t		dma;
++	unsigned int		stream_id = req->request.stream_id;
++	unsigned int		short_not_ok = req->request.short_not_ok;
++	unsigned int		no_interrupt = req->request.no_interrupt;
++	unsigned int		is_last = req->request.is_last;
+ 	struct dwc3		*dwc = dep->dwc;
+ 	struct usb_gadget	*gadget = dwc->gadget;
+ 	enum usb_device_speed	speed = gadget->speed;
  
- 	/* pass status to tasklet via unlinked */
- 	if (likely(!urb->unlinked))
-@@ -1748,13 +1754,10 @@ void usb_hcd_giveback_urb(struct usb_hcd
- 		return;
- 	}
- 
--	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
-+	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
- 		bh = &hcd->high_prio_bh;
--		high_prio_bh = true;
--	} else {
+-	trb->size = DWC3_TRB_SIZE_LENGTH(length);
++	if (use_bounce_buffer)
++		dma = dep->dwc->bounce_addr;
++	else if (req->request.num_sgs > 0)
++		dma = sg_dma_address(req->start_sg);
 +	else
- 		bh = &hcd->low_prio_bh;
--		high_prio_bh = false;
++		dma = req->request.dma;
++
++	trb = &dep->trb_pool[dep->trb_enqueue];
++
++	if (!req->trb) {
++		dwc3_gadget_move_started_request(req);
++		req->trb = trb;
++		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
++	}
++
++	req->num_trbs++;
++
++	trb->size = DWC3_TRB_SIZE_LENGTH(trb_length);
+ 	trb->bpl = lower_32_bits(dma);
+ 	trb->bph = upper_32_bits(dma);
+ 
+@@ -1219,10 +1251,10 @@ static void __dwc3_prepare_one_trb(struc
+ 				unsigned int mult = 2;
+ 				unsigned int maxp = usb_endpoint_maxp(ep->desc);
+ 
+-				if (length <= (2 * maxp))
++				if (trb_length <= (2 * maxp))
+ 					mult--;
+ 
+-				if (length <= maxp)
++				if (trb_length <= maxp)
+ 					mult--;
+ 
+ 				trb->size |= DWC3_TRB_SIZE_PCM1(mult);
+@@ -1291,50 +1323,6 @@ static void __dwc3_prepare_one_trb(struc
+ 	trace_dwc3_prepare_trb(dep, trb);
+ }
+ 
+-/**
+- * dwc3_prepare_one_trb - setup one TRB from one request
+- * @dep: endpoint for which this request is prepared
+- * @req: dwc3_request pointer
+- * @trb_length: buffer size of the TRB
+- * @chain: should this TRB be chained to the next?
+- * @node: only for isochronous endpoints. First TRB needs different type.
+- * @use_bounce_buffer: set to use bounce buffer
+- * @must_interrupt: set to interrupt on TRB completion
+- */
+-static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
+-		struct dwc3_request *req, unsigned int trb_length,
+-		unsigned int chain, unsigned int node, bool use_bounce_buffer,
+-		bool must_interrupt)
+-{
+-	struct dwc3_trb		*trb;
+-	dma_addr_t		dma;
+-	unsigned int		stream_id = req->request.stream_id;
+-	unsigned int		short_not_ok = req->request.short_not_ok;
+-	unsigned int		no_interrupt = req->request.no_interrupt;
+-	unsigned int		is_last = req->request.is_last;
+-
+-	if (use_bounce_buffer)
+-		dma = dep->dwc->bounce_addr;
+-	else if (req->request.num_sgs > 0)
+-		dma = sg_dma_address(req->start_sg);
+-	else
+-		dma = req->request.dma;
+-
+-	trb = &dep->trb_pool[dep->trb_enqueue];
+-
+-	if (!req->trb) {
+-		dwc3_gadget_move_started_request(req);
+-		req->trb = trb;
+-		req->trb_dma = dwc3_trb_dma_offset(dep, trb);
 -	}
- 
- 	spin_lock(&bh->lock);
- 	list_add_tail(&urb->urb_list, &bh->head);
-@@ -1763,7 +1766,7 @@ void usb_hcd_giveback_urb(struct usb_hcd
- 
- 	if (running)
- 		;
--	else if (high_prio_bh)
-+	else if (bh->high_prio)
- 		tasklet_hi_schedule(&bh->bh);
- 	else
- 		tasklet_schedule(&bh->bh);
-@@ -2959,6 +2962,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
- 
- 	/* initialize tasklets */
- 	init_giveback_urb_bh(&hcd->high_prio_bh);
-+	hcd->high_prio_bh.high_prio = true;
- 	init_giveback_urb_bh(&hcd->low_prio_bh);
- 
- 	/* enable irqs just before we start the controller,
---- a/include/linux/usb/hcd.h
-+++ b/include/linux/usb/hcd.h
-@@ -66,6 +66,7 @@
- 
- struct giveback_urb_bh {
- 	bool running;
-+	bool high_prio;
- 	spinlock_t lock;
- 	struct list_head  head;
- 	struct tasklet_struct bh;
+-
+-	req->num_trbs++;
+-
+-	__dwc3_prepare_one_trb(dep, trb, dma, trb_length, chain, node,
+-			stream_id, short_not_ok, no_interrupt, is_last,
+-			must_interrupt);
+-}
+-
+ static bool dwc3_needs_extra_trb(struct dwc3_ep *dep, struct dwc3_request *req)
+ {
+ 	unsigned int maxp = usb_endpoint_maxp(dep->endpoint.desc);
 
 
