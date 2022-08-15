@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8BEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA67DC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239946AbiHOSTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
+        id S240196AbiHOSTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239939AbiHOSSP (ORCPT
+        with ESMTP id S239596AbiHOSST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:18:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE932AE00;
-        Mon, 15 Aug 2022 11:15:40 -0700 (PDT)
+        Mon, 15 Aug 2022 14:18:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63622B600;
+        Mon, 15 Aug 2022 11:15:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5A7061255;
-        Mon, 15 Aug 2022 18:15:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D98FCC433B5;
-        Mon, 15 Aug 2022 18:15:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F6AFB80F99;
+        Mon, 15 Aug 2022 18:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB4CC433D6;
+        Mon, 15 Aug 2022 18:15:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587339;
-        bh=64GOvRkBrhUR5wvwysffJ90hpRPPEctL1mlsIzaZvE0=;
+        s=korg; t=1660587348;
+        bh=JmnDMjwkWsvNqz6dp+MmN/LDD/MPsnsmOvEuvPBt5DU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F4fFIRaaQoK4k2lGfc1jeHO8jAjAEaVbatKgNE6VYRMmuHBYlqVDkTqrp4FagkXuy
-         Ch3gadgF96h5uxdtF45yuSOP8G7Id5PmiGwfPcEBoAhGuxL79PYRpbjQj3BA8j/Dkc
-         NFJCXdXQe39mA1Uyx+UxXWalvobLPVLVOjRl6seg=
+        b=Dp+nX2s841eveU3CnSzPsvTvVX9aMsp7jhaCd8H8DvuviS7NIob6QCt7u9UI3T/0Q
+         XTIHfvuwLR5sSYdhceEKaOiAXXRrUHlOlIJHXWzAT2/vl3fWF33waTceFaBmijWGNj
+         XXbNGCTPNzBSIn97j8+2gOLFevy3f8/+DS39+KBg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 021/779] KVM: nVMX: Snapshot pre-VM-Enter DEBUGCTL for !nested_run_pending case
-Date:   Mon, 15 Aug 2022 19:54:25 +0200
-Message-Id: <20220815180338.114870928@linuxfoundation.org>
+Subject: [PATCH 5.15 024/779] KVM: x86: Split kvm_is_valid_cr4() and export only the non-vendor bits
+Date:   Mon, 15 Aug 2022 19:54:28 +0200
+Message-Id: <20220815180338.250121372@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,51 +50,102 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-commit 764643a6be07445308e492a528197044c801b3ba upstream.
+commit c33f6f2228fe8517e38941a508e9f905f99ecba9 upstream.
 
-If a nested run isn't pending, snapshot vmcs01.GUEST_IA32_DEBUGCTL
-irrespective of whether or not VM_ENTRY_LOAD_DEBUG_CONTROLS is set in
-vmcs12.  When restoring nested state, e.g. after migration, without a
-nested run pending, prepare_vmcs02() will propagate
-nested.vmcs01_debugctl to vmcs02, i.e. will load garbage/zeros into
-vmcs02.GUEST_IA32_DEBUGCTL.
+Split the common x86 parts of kvm_is_valid_cr4(), i.e. the reserved bits
+checks, into a separate helper, __kvm_is_valid_cr4(), and export only the
+inner helper to vendor code in order to prevent nested VMX from calling
+back into vmx_is_valid_cr4() via kvm_is_valid_cr4().
 
-If userspace restores nested state before MSRs, then loading garbage is a
-non-issue as loading DEBUGCTL will also update vmcs02.  But if usersepace
-restores MSRs first, then KVM is responsible for propagating L2's value,
-which is actually thrown into vmcs01, into vmcs02.
+On SVM, this is a nop as SVM doesn't place any additional restrictions on
+CR4.
 
-Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
-is all kinds of bizarre and ideally would not be supported.  Sadly, some
-VMMs do exactly that and rely on KVM to make things work.
+On VMX, this is also currently a nop, but only because nested VMX is
+missing checks on reserved CR4 bits for nested VM-Enter.  That bug will
+be fixed in a future patch, and could simply use kvm_is_valid_cr4() as-is,
+but nVMX has _another_ bug where VMXON emulation doesn't enforce VMX's
+restrictions on CR0/CR4.  The cleanest and most intuitive way to fix the
+VMXON bug is to use nested_host_cr{0,4}_valid().  If the CR4 variant
+routes through kvm_is_valid_cr4(), using nested_host_cr4_valid() won't do
+the right thing for the VMXON case as vmx_is_valid_cr4() enforces VMX's
+restrictions if and only if the vCPU is post-VMXON.
 
-Note, there's still a lurking SMM bug, as propagating vmcs01's DEBUGCTL
-to vmcs02 across RSM may corrupt L2's DEBUGCTL.  But KVM's entire VMX+SMM
-emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
-"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
-
-Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
-Fixes: 8fcc4b5923af ("kvm: nVMX: Introduce KVM_CAP_NESTED_STATE")
 Cc: stable@vger.kernel.org
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220614215831.3762138-3-seanjc@google.com>
+Message-Id: <20220607213604.3346000-2-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/nested.c |    3 ++-
+ arch/x86/kvm/vmx/vmx.c    |    4 ++--
+ arch/x86/kvm/x86.c        |   12 +++++++++---
+ arch/x86/kvm/x86.h        |    2 +-
+ 4 files changed, 14 insertions(+), 7 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3364,7 +3364,8 @@ enum nvmx_vmentry_status nested_vmx_ente
- 	if (likely(!evaluate_pending_interrupts) && kvm_vcpu_apicv_active(vcpu))
- 		evaluate_pending_interrupts |= vmx_has_apicv_interrupt(vcpu);
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -275,7 +275,8 @@ static bool nested_vmcb_check_cr3_cr4(st
+ 			return false;
+ 	}
  
--	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
-+	if (!vmx->nested.nested_run_pending ||
-+	    !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
- 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
- 	if (kvm_mpx_supported() &&
- 	    (!vmx->nested.nested_run_pending ||
+-	if (CC(!kvm_is_valid_cr4(vcpu, save->cr4)))
++	/* Note, SVM doesn't have any additional restrictions on CR4. */
++	if (CC(!__kvm_is_valid_cr4(vcpu, save->cr4)))
+ 		return false;
+ 
+ 	return true;
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -3213,8 +3213,8 @@ static bool vmx_is_valid_cr4(struct kvm_
+ {
+ 	/*
+ 	 * We operate under the default treatment of SMM, so VMX cannot be
+-	 * enabled under SMM.  Note, whether or not VMXE is allowed at all is
+-	 * handled by kvm_is_valid_cr4().
++	 * enabled under SMM.  Note, whether or not VMXE is allowed at all,
++	 * i.e. is a reserved bit, is handled by common x86 code.
+ 	 */
+ 	if ((cr4 & X86_CR4_VMXE) && is_smm(vcpu))
+ 		return false;
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1031,7 +1031,7 @@ int kvm_emulate_xsetbv(struct kvm_vcpu *
+ }
+ EXPORT_SYMBOL_GPL(kvm_emulate_xsetbv);
+ 
+-bool kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
++bool __kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
+ {
+ 	if (cr4 & cr4_reserved_bits)
+ 		return false;
+@@ -1039,9 +1039,15 @@ bool kvm_is_valid_cr4(struct kvm_vcpu *v
+ 	if (cr4 & vcpu->arch.cr4_guest_rsvd_bits)
+ 		return false;
+ 
+-	return static_call(kvm_x86_is_valid_cr4)(vcpu, cr4);
++	return true;
++}
++EXPORT_SYMBOL_GPL(__kvm_is_valid_cr4);
++
++static bool kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
++{
++	return __kvm_is_valid_cr4(vcpu, cr4) &&
++	       static_call(kvm_x86_is_valid_cr4)(vcpu, cr4);
+ }
+-EXPORT_SYMBOL_GPL(kvm_is_valid_cr4);
+ 
+ void kvm_post_set_cr4(struct kvm_vcpu *vcpu, unsigned long old_cr4, unsigned long cr4)
+ {
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -448,7 +448,7 @@ static inline void kvm_machine_check(voi
+ void kvm_load_guest_xsave_state(struct kvm_vcpu *vcpu);
+ void kvm_load_host_xsave_state(struct kvm_vcpu *vcpu);
+ int kvm_spec_ctrl_test_value(u64 value);
+-bool kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4);
++bool __kvm_is_valid_cr4(struct kvm_vcpu *vcpu, unsigned long cr4);
+ int kvm_handle_memory_failure(struct kvm_vcpu *vcpu, int r,
+ 			      struct x86_exception *e);
+ int kvm_handle_invpcid(struct kvm_vcpu *vcpu, unsigned long type, gva_t gva);
 
 
