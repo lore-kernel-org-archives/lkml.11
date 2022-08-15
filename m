@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5FFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF6AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiHOUES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39540 "EHLO
+        id S239805AbiHOUEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345780AbiHOUD0 (ORCPT
+        with ESMTP id S230438AbiHOUDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:03:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF107E022;
-        Mon, 15 Aug 2022 11:54:16 -0700 (PDT)
+        Mon, 15 Aug 2022 16:03:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614027E310;
+        Mon, 15 Aug 2022 11:54:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91102611D6;
-        Mon, 15 Aug 2022 18:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16186C433D6;
-        Mon, 15 Aug 2022 18:54:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BD23B8105D;
+        Mon, 15 Aug 2022 18:54:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C189CC433D6;
+        Mon, 15 Aug 2022 18:54:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589655;
-        bh=0dG4uuL291nO1aV8Tjx0Cq3qOuuLfuwV842Ght+TL5Q=;
+        s=korg; t=1660589658;
+        bh=ScgBIY3HQMCcOzB+zPgCsLe9LaGbzeQNrwHYt+biqjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mac2T1PVCxmOtUJ1WiFKMJVHTVvUKAvZGGMWgQAEsJspn6v0L/LcO94ps8y4mGpFi
-         DhwRpf6kYrCWZg40NCyxmpWJAleQNVUDCRXzZAjd4i5ORE2XVqCIK26ZSsVLxL+RI8
-         0eb3oWG9oS0P+TvSMrEC1yGU4wkoX7diWgPVKl3s=
+        b=lMo7c5wPmVajByEIjqnR1dSWAhL4IK9516rtYaSjZgtcOZFzZS5biOBqkcMMYpSG7
+         SHhnTxdRWnAL7O/AK+Hdj7duj4NZlrM+kpmVAAi826HGVblHxyqlxhniHv6+DB9CBR
+         kFqAhJTLZm9MVjm1YwL8Nq14oBdaYWWdToE18QuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.15 770/779] tracing/perf: Avoid -Warray-bounds warning for __rel_loc macro
-Date:   Mon, 15 Aug 2022 20:06:54 +0200
-Message-Id: <20220815180410.302077206@linuxfoundation.org>
+        stable@vger.kernel.org, Zhenpeng Lin <zplin@u.northwestern.edu>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Kamal Mostafa <kamal@canonical.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 761/779] net_sched: cls_route: remove from list when handle is 0
+Date:   Mon, 15 Aug 2022 20:06:45 +0200
+Message-Id: <20220815180409.960854834@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,72 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit c6d777acdf8f62d4ebaef0e5c6cd8fedbd6e8546 upstream.
+commit 9ad36309e2719a884f946678e0296be10f0bb4c1 upstream.
 
-As done for trace_events.h, also fix the __rel_loc macro in perf.h,
-which silences the -Warray-bounds warning:
+When a route filter is replaced and the old filter has a 0 handle, the old
+one won't be removed from the hashtable, while it will still be freed.
 
-In file included from ./include/linux/string.h:253,
-                 from ./include/linux/bitmap.h:11,
-                 from ./include/linux/cpumask.h:12,
-                 from ./include/linux/mm_types_task.h:14,
-                 from ./include/linux/mm_types.h:5,
-                 from ./include/linux/buildid.h:5,
-                 from ./include/linux/module.h:14,
-                 from samples/trace_events/trace-events-sample.c:2:
-In function '__fortify_strcpy',
-    inlined from 'perf_trace_foo_rel_loc' at samples/trace_events/./trace-events-sample.h:519:1:
-./include/linux/fortify-string.h:47:33: warning: '__builtin_strcpy' offset 12 is out of the bounds [
-0, 4] [-Warray-bounds]
-   47 | #define __underlying_strcpy     __builtin_strcpy
-      |                                 ^
-./include/linux/fortify-string.h:445:24: note: in expansion of macro '__underlying_strcpy'
-  445 |                 return __underlying_strcpy(p, q);
-      |                        ^~~~~~~~~~~~~~~~~~~
+The test was there since before commit 1109c00547fc ("net: sched: RCU
+cls_route"), when a new filter was not allocated when there was an old one.
+The old filter was reused and the reinserting would only be necessary if an
+old filter was replaced. That was still wrong for the same case where the
+old handle was 0.
 
-Also make __data struct member a proper flexible array to avoid future
-problems.
+Remove the old filter from the list independently from its handle value.
 
-Link: https://lkml.kernel.org/r/20220125220037.2738923-1-keescook@chromium.org
+This fixes CVE-2022-2588, also reported as ZDI-CAN-17440.
 
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Fixes: 55de2c0b5610c ("tracing: Add '__rel_loc' using trace event macros")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reported-by: Zhenpeng Lin <zplin@u.northwestern.edu>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Reviewed-by: Kamal Mostafa <kamal@canonical.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Link: https://lore.kernel.org/r/20220809170518.164662-1-cascardo@canonical.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/perf.h         |    5 +++--
- include/trace/trace_events.h |    2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ net/sched/cls_route.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/trace/perf.h
-+++ b/include/trace/perf.h
-@@ -23,8 +23,9 @@
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -526,7 +526,7 @@ static int route4_change(struct net *net
+ 	rcu_assign_pointer(f->next, f1);
+ 	rcu_assign_pointer(*fp, f);
  
- #undef __get_rel_dynamic_array
- #define __get_rel_dynamic_array(field)	\
--		((void *)(&__entry->__rel_loc_##field) +	\
--		 sizeof(__entry->__rel_loc_##field) +		\
-+		((void *)__entry +					\
-+		 offsetof(typeof(*__entry), __rel_loc_##field) +	\
-+		 sizeof(__entry->__rel_loc_##field) +			\
- 		 (__entry->__rel_loc_##field & 0xffff))
- 
- #undef __get_rel_dynamic_array_len
---- a/include/trace/trace_events.h
-+++ b/include/trace/trace_events.h
-@@ -128,7 +128,7 @@ TRACE_MAKE_SYSTEM_STR();
- 	struct trace_event_raw_##name {					\
- 		struct trace_entry	ent;				\
- 		tstruct							\
--		char			__data[0];			\
-+		char			__data[];			\
- 	};								\
- 									\
- 	static struct trace_event_class event_class_##name;
+-	if (fold && fold->handle && f->handle != fold->handle) {
++	if (fold) {
+ 		th = to_hash(fold->handle);
+ 		h = from_hash(fold->handle >> 16);
+ 		b = rtnl_dereference(head->table[th]);
 
 
