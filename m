@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5082C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A51DAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351232AbiHOWhu (ORCPT
+        id S1348628AbiHOWiM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        Mon, 15 Aug 2022 18:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349871AbiHOWbL (ORCPT
+        with ESMTP id S1350774AbiHOWcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:31:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05C8D7D3A;
-        Mon, 15 Aug 2022 12:48:23 -0700 (PDT)
+        Mon, 15 Aug 2022 18:32:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D314812D2A3;
+        Mon, 15 Aug 2022 12:48:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E099F6122B;
-        Mon, 15 Aug 2022 19:48:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2121C433C1;
-        Mon, 15 Aug 2022 19:48:21 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C4387CE12E0;
+        Mon, 15 Aug 2022 19:48:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08F5C433D6;
+        Mon, 15 Aug 2022 19:48:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592902;
-        bh=FWuztDuDnYDB/0ONcpObgbBbLxQ/7jXDQ4Ok+EGihWE=;
+        s=korg; t=1660592918;
+        bh=EYeWNRRdqeLTH60vOeNeougrx1JxpB34+HdpnISTfl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o/CWQNXXolhOo/XCKgP6l1XViNmQB/StG0kONyERhkHxJLYDWcT0Rl7q3pN+614Ah
-         4RBuWseC/xM2Yv7CIFxocN/J3Kw5YtDLXE9YwCaidDC2y5sgFGoM9S609xtJrOIK6s
-         tlXMI8WqmIZWosXHzVyZMGtC/Grzq9iZNDF3I+cI=
+        b=GfUilLVkh1zbakPGNJ0AhJeUTHh34KmGVTauTL5Xy7/A/aqW+FV+9D8rMb7AlS1w7
+         Kh9YIEzAUA3dm3QrXZMtla/gg5MJ+zmirD28r5Xpq5qqclNBa8IClxT3ddfZGaTeo0
+         yaEt8YueszpN33anwGKXA+nViduhndiNQz0as14w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0184/1157] arm64: dts: qcom: ipq8074: fix NAND node name
-Date:   Mon, 15 Aug 2022 19:52:20 +0200
-Message-Id: <20220815180447.112190933@linuxfoundation.org>
+Subject: [PATCH 5.18 0866/1095] remoteproc: qcom: wcnss: Fix handling of IRQs
+Date:   Mon, 15 Aug 2022 20:04:25 +0200
+Message-Id: <20220815180505.199454822@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
+[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
 
-Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
-Fix it to match nand-controller.yaml requirements.
+The wcnss_get_irq function is expected to return a value > 0 in the
+event that an IRQ is succssfully obtained, but it instead returns 0.
+This causes the stop and ready IRQs to never actually be used despite
+being defined in the device-tree. This patch fixes that.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
+Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index 4c38b15c6fd4..697f46e17903 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -534,7 +534,7 @@ qpic_bam: dma-controller@7984000 {
- 			status = "disabled";
- 		};
+diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
+index 9a223d394087..68f37296b151 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -467,6 +467,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 			     irq_handler_t thread_fn)
+ {
+ 	int ret;
++	int irq_number;
  
--		qpic_nand: nand@79b0000 {
-+		qpic_nand: nand-controller@79b0000 {
- 			compatible = "qcom,ipq8074-nand";
- 			reg = <0x079b0000 0x10000>;
- 			#address-cells = <1>;
+ 	ret = platform_get_irq_byname(pdev, name);
+ 	if (ret < 0 && optional) {
+@@ -477,14 +478,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 		return ret;
+ 	}
+ 
++	irq_number = ret;
++
+ 	ret = devm_request_threaded_irq(&pdev->dev, ret,
+ 					NULL, thread_fn,
+ 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+ 					"wcnss", wcnss);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
++		return ret;
++	}
+ 
+-	return ret;
++	/* Return the IRQ number if the IRQ was successfully acquired */
++	return irq_number;
+ }
+ 
+ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
 -- 
 2.35.1
 
