@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF51C52D7A
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC3DC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243960AbiHPAIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:08:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
+        id S1346282AbiHPAIV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351740AbiHPAAZ (ORCPT
+        with ESMTP id S1351272AbiHPAAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F3233407;
-        Mon, 15 Aug 2022 13:21:37 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358E515DFB6;
+        Mon, 15 Aug 2022 13:21:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C233F61058;
-        Mon, 15 Aug 2022 20:21:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD4DAC433C1;
-        Mon, 15 Aug 2022 20:21:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCE58B80EB1;
+        Mon, 15 Aug 2022 20:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FFBC433C1;
+        Mon, 15 Aug 2022 20:21:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594896;
-        bh=dKGeSzlcGwjg9tzsVcq5EvTIrGoJIeRYHb0rFcWwg9c=;
+        s=korg; t=1660594877;
+        bh=w9DKv41Q3nZHDkkXaYYUdVGq5szEXNwsqk7DaJ1L83s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qxNeUjdZ6giBid6LvZfuIgT18m7zbFsz+pp0T2PWzVyOkIfpTpCVuN4TZYl2EnmH1
-         juDXO3hSJpHM48qFmjNzLEIQwpZJFzZ87jJWfy0gN2mDZb+EP4Orh3BQHhZrbgYy3+
-         eJhhXpH17dUiGqMZDtUH/bBZrclv8YxvAyPE44B4=
+        b=FEhfs3tdz6wdMh5x4qYYzG0U9zGpOr1jDbotdAhIw7rJfYPUbdOScGGP/Iws/+iVL
+         dlUuzuyuMUsu6MZl70/eA+DFMj/rGdNaOnDc1C4zns4fItBkuz4k1uqCVXnO9t0Ig2
+         v4c72GwKeYtfh8rJ6yTS+mINCBi6ekQscTzAx+k0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0594/1157] PCI: microchip: Fix refcount leak in mc_pcie_init_irq_domains()
-Date:   Mon, 15 Aug 2022 19:59:10 +0200
-Message-Id: <20220815180503.417993662@linuxfoundation.org>
+        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Muhammad Sammar <muhammads@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0554/1157] net/mlx5: DR, Fix SMFS steering info dump format
+Date:   Mon, 15 Aug 2022 19:58:30 +0200
+Message-Id: <20220815180501.790573837@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,47 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-[ Upstream commit f030304fdeb87ec8f1b518c73703214aec6cc24a ]
+[ Upstream commit 62d2664351ef37da34f6f3a3fd8ab34257d6fe30 ]
 
-of_get_next_child() returns a node pointer with refcount incremented, so we
-should use of_node_put() on it when we don't need it anymore.
+Fix several issues in SMFS steering info dump:
+ - Fix outdated macro value for matcher mask in the SMFS debug dump format.
+   The existing value denotes the old format of the matcher mask, as it was
+   used during the early stages of development, and it results in wrong
+   parsing by the steering dump parser - wrong fields are shown in the
+   parsed output.
+ - Add the missing destination table to the dumped action.
+   The missing dest table handle breaks the ability to associate between
+   the "go to table" action and the actual table in the steering info.
 
-mc_pcie_init_irq_domains() only calls of_node_put() in the normal path,
-missing it in some error paths.  Add missing of_node_put() to avoid
-refcount leak.
-
-Fixes: 6f15a9c9f941 ("PCI: microchip: Add Microchip PolarFire PCIe controller driver")
-Link: https://lore.kernel.org/r/20220605055123.59127-1-linmq006@gmail.com
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Fixes: 9222f0b27da2 ("net/mlx5: DR, Add support for dumping steering info")
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Signed-off-by: Muhammad Sammar <muhammads@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-microchip-host.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c   | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-microchip-host.c b/drivers/pci/controller/pcie-microchip-host.c
-index dd5dba419047..7263d175b5ad 100644
---- a/drivers/pci/controller/pcie-microchip-host.c
-+++ b/drivers/pci/controller/pcie-microchip-host.c
-@@ -904,6 +904,7 @@ static int mc_pcie_init_irq_domains(struct mc_pcie *port)
- 						   &event_domain_ops, port);
- 	if (!port->event_domain) {
- 		dev_err(dev, "failed to get event domain\n");
-+		of_node_put(pcie_intc_node);
- 		return -ENOMEM;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
+index d5998ef59be4..7adcf0eec13b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
+@@ -21,10 +21,11 @@ enum dr_dump_rec_type {
+ 	DR_DUMP_REC_TYPE_TABLE_TX = 3102,
  
-@@ -913,6 +914,7 @@ static int mc_pcie_init_irq_domains(struct mc_pcie *port)
- 						  &intx_domain_ops, port);
- 	if (!port->intx_domain) {
- 		dev_err(dev, "failed to get an INTx IRQ domain\n");
-+		of_node_put(pcie_intc_node);
- 		return -ENOMEM;
- 	}
+ 	DR_DUMP_REC_TYPE_MATCHER = 3200,
+-	DR_DUMP_REC_TYPE_MATCHER_MASK = 3201,
++	DR_DUMP_REC_TYPE_MATCHER_MASK_DEPRECATED = 3201,
+ 	DR_DUMP_REC_TYPE_MATCHER_RX = 3202,
+ 	DR_DUMP_REC_TYPE_MATCHER_TX = 3203,
+ 	DR_DUMP_REC_TYPE_MATCHER_BUILDER = 3204,
++	DR_DUMP_REC_TYPE_MATCHER_MASK = 3205,
  
+ 	DR_DUMP_REC_TYPE_RULE = 3300,
+ 	DR_DUMP_REC_TYPE_RULE_RX_ENTRY_V0 = 3301,
+@@ -114,13 +115,15 @@ dr_dump_rule_action_mem(struct seq_file *file, const u64 rule_id,
+ 		break;
+ 	case DR_ACTION_TYP_FT:
+ 		if (action->dest_tbl->is_fw_tbl)
+-			seq_printf(file, "%d,0x%llx,0x%llx,0x%x\n",
++			seq_printf(file, "%d,0x%llx,0x%llx,0x%x,0x%x\n",
+ 				   DR_DUMP_REC_TYPE_ACTION_FT, action_id,
+-				   rule_id, action->dest_tbl->fw_tbl.id);
++				   rule_id, action->dest_tbl->fw_tbl.id,
++				   -1);
+ 		else
+-			seq_printf(file, "%d,0x%llx,0x%llx,0x%x\n",
++			seq_printf(file, "%d,0x%llx,0x%llx,0x%x,0x%llx\n",
+ 				   DR_DUMP_REC_TYPE_ACTION_FT, action_id,
+-				   rule_id, action->dest_tbl->tbl->table_id);
++				   rule_id, action->dest_tbl->tbl->table_id,
++				   DR_DBG_PTR_TO_ID(action->dest_tbl->tbl));
+ 
+ 		break;
+ 	case DR_ACTION_TYP_CTR:
 -- 
 2.35.1
 
