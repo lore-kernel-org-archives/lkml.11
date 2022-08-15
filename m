@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1034C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B034DC28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354037AbiHOXk5 (ORCPT
+        id S1354052AbiHOXlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
+        Mon, 15 Aug 2022 19:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353671AbiHOXhw (ORCPT
+        with ESMTP id S1353846AbiHOXiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:37:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DA2BD1EB;
-        Mon, 15 Aug 2022 13:10:01 -0700 (PDT)
+        Mon, 15 Aug 2022 19:38:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA52ABD1FC;
+        Mon, 15 Aug 2022 13:10:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9A74DCE12EB;
-        Mon, 15 Aug 2022 20:09:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E27C433C1;
-        Mon, 15 Aug 2022 20:09:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 168A6B81142;
+        Mon, 15 Aug 2022 20:10:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74960C433C1;
+        Mon, 15 Aug 2022 20:10:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594197;
-        bh=3a/0iYeb7AK1RwoIK1dPVzlUnp+fNBDwrmN1efzJZA4=;
+        s=korg; t=1660594200;
+        bh=XwU2KySf+JC57WNAe8FlkvldQht3KiaNezMWifSjFNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xU69hgcJWroZeeyZxQyZT+ForhNRHOOfCi2gzdTBrLBDo2GwevELn/L4axdLoHWKi
-         JYDidCxCeht6apuRb5XgxAlWIZCgbV4IjzCkxehSWVe4VcCFngyGR891Phr3TS4Z3n
-         oegvNiPaAzXdifE/zFheRRWqk6Z7z80WT3WMhv2s=
+        b=w3ODtJqPRLbyK4aDLVR+7Zkcn2mSEc1v5XoV+5kLYH0Tu/kyfI8TEppy4SY/sesm6
+         DrO4MgebiOzfDDs9CgNGtc37Tip9oHAgnTtElRdaKxRdTrGVQIg/cWsy2tVyME5qJR
+         71s54zheObr4hYrouTW0UDFTUUx0OrliRZavCShk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0393/1157] crypto: ccp - During shutdown, check SEV data pointer before using
-Date:   Mon, 15 Aug 2022 19:55:49 +0200
-Message-Id: <20220815180455.411363444@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>,
+        Maximilian Heyne <mheyne@amazon.de>,
+        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.18 1071/1095] xen-blkback: Apply feature_persistent parameter when connect
+Date:   Mon, 15 Aug 2022 20:07:50 +0200
+Message-Id: <20220815180513.354466286@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Lendacky <thomas.lendacky@amd.com>
+From: Maximilian Heyne <mheyne@amazon.de>
 
-[ Upstream commit 1b05ece0c931536c0a38a9385e243a7962e933f6 ]
+commit e94c6101e151b019b8babc518ac2a6ada644a5a1 upstream.
 
-On shutdown, each CCP device instance performs shutdown processing.
-However, __sev_platform_shutdown_locked() uses the controlling psp
-structure to obtain the pointer to the sev_device structure. However,
-during driver initialization, it is possible that an error can be received
-from the firmware that results in the sev_data pointer being cleared from
-the controlling psp structure. The __sev_platform_shutdown_locked()
-function does not check for this situation and will segfault.
+In some use cases[1], the backend is created while the frontend doesn't
+support the persistent grants feature, but later the frontend can be
+changed to support the feature and reconnect.  In the past, 'blkback'
+enabled the persistent grants feature since it unconditionally checked
+if frontend supports the persistent grants feature for every connect
+('connect_ring()') and decided whether it should use persistent grans or
+not.
 
-While not common, this scenario should be accounted for. Add a check for a
-NULL sev_device structure before attempting to use it.
+However, commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has mistakenly changed the behavior.
+It made the frontend feature support check to not be repeated once it
+shown the 'feature_persistent' as 'false', or the frontend doesn't
+support persistent grants.
 
-Fixes: 5441a07a127f ("crypto: ccp - shutdown SEV firmware on kexec")
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This commit changes the behavior of the parameter to make effect for
+every connect, so that the previous workflow can work again as expected.
+
+[1] https://lore.kernel.org/xen-devel/CAJwUmVB6H3iTs-C+U=v-pwJB7-_ZRHPxHzKRJZ22xEPW7z8a=g@mail.gmail.com/
+
+Reported-by: Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220715225108.193398-3-sj@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/ccp/sev-dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-driver-xen-blkback |    2 +-
+ drivers/block/xen-blkback/xenbus.c                 |    9 +++------
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-index 0c92d940ac4e..9f588c9728f8 100644
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -503,7 +503,7 @@ static int __sev_platform_shutdown_locked(int *error)
- 	struct sev_device *sev = psp_master->sev_data;
- 	int ret;
+--- a/Documentation/ABI/testing/sysfs-driver-xen-blkback
++++ b/Documentation/ABI/testing/sysfs-driver-xen-blkback
+@@ -42,5 +42,5 @@ KernelVersion:  5.10
+ Contact:        SeongJae Park <sj@kernel.org>
+ Description:
+                 Whether to enable the persistent grants feature or not.  Note
+-                that this option only takes effect on newly created backends.
++                that this option only takes effect on newly connected backends.
+                 The default is Y (enable).
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -186,8 +186,6 @@ static struct xen_blkif *xen_blkif_alloc
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
  
--	if (sev->state == SEV_STATE_UNINIT)
-+	if (!sev || sev->state == SEV_STATE_UNINIT)
- 		return 0;
+-	blkif->vbd.feature_gnt_persistent = feature_persistent;
+-
+ 	return blkif;
+ }
  
- 	ret = __sev_do_cmd_locked(SEV_CMD_SHUTDOWN, NULL, error);
--- 
-2.35.1
-
+@@ -1090,10 +1088,9 @@ static int connect_ring(struct backend_i
+ 		xenbus_dev_fatal(dev, err, "unknown fe protocol %s", protocol);
+ 		return -ENOSYS;
+ 	}
+-	if (blkif->vbd.feature_gnt_persistent)
+-		blkif->vbd.feature_gnt_persistent =
+-			xenbus_read_unsigned(dev->otherend,
+-					"feature-persistent", 0);
++
++	blkif->vbd.feature_gnt_persistent = feature_persistent &&
++		xenbus_read_unsigned(dev->otherend, "feature-persistent", 0);
+ 
+ 	blkif->vbd.overflow_max_grants = 0;
+ 
 
 
