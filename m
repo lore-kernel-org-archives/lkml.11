@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BD1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A990C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbiHOXSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        id S242674AbiHOXSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245760AbiHOXO1 (ORCPT
+        with ESMTP id S1345907AbiHOXPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0267B780;
-        Mon, 15 Aug 2022 13:01:36 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CEC7C76B;
+        Mon, 15 Aug 2022 13:02:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43EB1612D1;
-        Mon, 15 Aug 2022 20:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C75BC433D6;
-        Mon, 15 Aug 2022 20:01:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D9AFB80EB1;
+        Mon, 15 Aug 2022 20:02:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBCD8C433D6;
+        Mon, 15 Aug 2022 20:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593695;
-        bh=JhNnQOE20HwpMMsPZPM6nzXHWRTIUJpndBIUOobfnog=;
+        s=korg; t=1660593740;
+        bh=paxBoEnAGh+TJJxSDISYgtGqLIvQ5WKLbYQHLktb9E0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmU2Yz8W+Me6c2tZg5vGzW7bvNVaNm7AP6EFw+PpPjCfUjMnuf+bAAwibbA8TMP93
-         +v3wmoRqq/weV/bxHE88m2Wab0Gy6uCdz4uNJqfzlBdfJOdsk50jwePwJgrCL+0eeI
-         Un4PHoQiBgd3gvnUKpLZgJQ+Z7xL0lJII6DgL6k8=
+        b=nJRTNLYeg8U5XGGuRWSm0FA7OMC5kCRiKWXy6ak8b0F3YZK14aamrNBhxHMZjVpPd
+         d/IYRtSZuiDlHvBDqkowKQ9EZ3T7yrolCo8FEk9LORPkGboRoj9Dep9zIhr7D+Gl0/
+         bmjZYWdTJFONf/rcNakIwysS35ciH+raDVFaeUW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sungjong Seo <sj1557.seo@samsung.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0954/1095] f2fs: allow compression for mmap files in compress_mode=user
-Date:   Mon, 15 Aug 2022 20:05:53 +0200
-Message-Id: <20220815180508.570829193@linuxfoundation.org>
+Subject: [PATCH 5.19 0318/1157] drm/edid: reset display info in drm_add_edid_modes() for NULL edid
+Date:   Mon, 15 Aug 2022 19:54:34 +0200
+Message-Id: <20220815180452.368173158@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,54 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sungjong Seo <sj1557.seo@samsung.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit 66d34fcbbe63ebd8584b792e0d741f6648100894 ]
+[ Upstream commit d10f7117aa43b0b0d1c4b878afafb6d151da441d ]
 
-Since commit e3c548323d32 ("f2fs: let's allow compression for mmap files"),
-it has been allowed to compress mmap files. However, in compress_mode=user,
-it is not allowed yet. To keep the same concept in both compress_modes,
-f2fs_ioc_(de)compress_file() should also allow it.
+If a NULL edid gets passed to drm_add_edid_modes(), we should probably
+also reset the display info.
 
-Let's remove checking mmap files in f2fs_ioc_(de)compress_file() so that
-the compression for mmap files is also allowed in compress_mode=user.
-
-Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/2ac1c55f94a08d5e72c0b518d956a11002ec85c1.1651569697.git.jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/gpu/drm/drm_edid.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 863518695ea6..9a676ea080e4 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -3914,11 +3914,6 @@ static int f2fs_ioc_decompress_file(struct file *filp, unsigned long arg)
- 		goto out;
- 	}
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index bc43e1b32092..1dea0e2f0cab 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5697,6 +5697,7 @@ static int drm_edid_connector_update(struct drm_connector *connector,
+ 	u32 quirks;
  
--	if (f2fs_is_mmap_file(inode)) {
--		ret = -EBUSY;
--		goto out;
--	}
--
- 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
- 	if (ret)
- 		goto out;
-@@ -3986,11 +3981,6 @@ static int f2fs_ioc_compress_file(struct file *filp, unsigned long arg)
- 		goto out;
+ 	if (edid == NULL) {
++		drm_reset_display_info(connector);
+ 		clear_eld(connector);
+ 		return 0;
  	}
- 
--	if (f2fs_is_mmap_file(inode)) {
--		ret = -EBUSY;
--		goto out;
--	}
--
- 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
- 	if (ret)
- 		goto out;
 -- 
 2.35.1
 
