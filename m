@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF32C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344A6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242638AbiHOS37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
+        id S242216AbiHOSaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242533AbiHOS2y (ORCPT
+        with ESMTP id S242010AbiHOS3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:28:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6B2241;
-        Mon, 15 Aug 2022 11:20:15 -0700 (PDT)
+        Mon, 15 Aug 2022 14:29:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7289155B9;
+        Mon, 15 Aug 2022 11:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DA2AB8105B;
-        Mon, 15 Aug 2022 18:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAEBC433C1;
-        Mon, 15 Aug 2022 18:19:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DBC06069E;
+        Mon, 15 Aug 2022 18:19:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72A6FC433D6;
+        Mon, 15 Aug 2022 18:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587573;
-        bh=qW6yXE9ud1P1tuP49WumpWs1UmmGtf+87D75l29Nzf0=;
+        s=korg; t=1660587579;
+        bh=HopU/MPTRkH9+3zqqnsjOGCkMfvViXYpGAFABHbxMj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=waKhJ+qEh5naNgq17V6IxWgbYNIx20gtKk1spk9fbtaIlrK3Ty/Pi+Tfa4RsS11xK
-         pMW/OhqyywsSkLOsGX+v2HBCKHhVAUBFJm2Phz+27rzlvFFNs+veHYw2RIGICaviXm
-         8gt5SgjyZ3vhnsEpCCZUd41ubct8CPWJcphtyrEk=
+        b=JYjyXr0uvvb8GjSO/b+ehJSDO4TvLfFrxU3IZuKHIHA1i3DEpd/6Y9T2AcyAp/vJb
+         vpkPyBoJb+WcuUVHjVRDeCtcawTuFgbb4Kttd5aq24w1Kby3fpX1kBKUzBT3XMxKbG
+         OIbQP9lNQDebUzVMALrtP1+PVrvPLJktY1L9YOVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>, Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.15 086/779] fuse: ioctl: translate ENOSYS
-Date:   Mon, 15 Aug 2022 19:55:30 +0200
-Message-Id: <20220815180340.960636094@linuxfoundation.org>
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 129/779] ARM: dts: imx6ul: fix qspi node compatible
+Date:   Mon, 15 Aug 2022 19:56:13 +0200
+Message-Id: <20220815180342.794570561@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,81 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-commit 02c0cab8e7345b06f1c0838df444e2902e4138d3 upstream.
+[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
 
-Overlayfs may fail to complete updates when a filesystem lacks
-fileattr/xattr syscall support and responds with an ENOSYS error code,
-resulting in an unexpected "Function not implemented" error.
+imx6ul is not compatible to imx6sx, both have different erratas.
+Fixes the dt_binding_check warning:
+spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
+Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
+'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
+'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
+'fsl,ls1021a-qspi' was expected
+'fsl,imx7d-qspi' was expected
 
-This bug may occur with FUSE filesystems, such as davfs2.
-
-Steps to reproduce:
-
-  # install davfs2, e.g., apk add davfs2
-  mkdir /test mkdir /test/lower /test/upper /test/work /test/mnt
-  yes '' | mount -t davfs -o ro http://some-web-dav-server/path \
-    /test/lower
-  mount -t overlay -o upperdir=/test/upper,lowerdir=/test/lower \
-    -o workdir=/test/work overlay /test/mnt
-
-  # when "some-file" exists in the lowerdir, this fails with "Function
-  # not implemented", with dmesg showing "overlayfs: failed to retrieve
-  # lower fileattr (/some-file, err=-38)"
-  touch /test/mnt/some-file
-
-The underlying cause of this regresion is actually in FUSE, which fails to
-translate the ENOSYS error code returned by userspace filesystem (which
-means that the ioctl operation is not supported) to ENOTTY.
-
-Reported-by: Christian Kohlschütter <christian@kohlschutter.com>
-Fixes: 72db82115d2b ("ovl: copy up sync/noatime fileattr flags")
-Fixes: 59efec7b9039 ("fuse: implement ioctl support")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/ioctl.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/fuse/ioctl.c
-+++ b/fs/fuse/ioctl.c
-@@ -9,6 +9,17 @@
- #include <linux/compat.h>
- #include <linux/fileattr.h>
- 
-+static ssize_t fuse_send_ioctl(struct fuse_mount *fm, struct fuse_args *args)
-+{
-+	ssize_t ret = fuse_simple_request(fm, args);
-+
-+	/* Translate ENOSYS, which shouldn't be returned from fs */
-+	if (ret == -ENOSYS)
-+		ret = -ENOTTY;
-+
-+	return ret;
-+}
-+
- /*
-  * CUSE servers compiled on 32bit broke on 64bit kernels because the
-  * ABI was defined to be 'struct iovec' which is different on 32bit
-@@ -259,7 +270,7 @@ long fuse_do_ioctl(struct file *file, un
- 	ap.args.out_pages = true;
- 	ap.args.out_argvar = true;
- 
--	transferred = fuse_simple_request(fm, &ap.args);
-+	transferred = fuse_send_ioctl(fm, &ap.args);
- 	err = transferred;
- 	if (transferred < 0)
- 		goto out;
-@@ -393,7 +404,7 @@ static int fuse_priv_ioctl(struct inode
- 	args.out_args[1].size = inarg.out_size;
- 	args.out_args[1].value = ptr;
- 
--	err = fuse_simple_request(fm, &args);
-+	err = fuse_send_ioctl(fm, &args);
- 	if (!err) {
- 		if (outarg.result < 0)
- 			err = outarg.result;
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index bc6548058d8c..eca8bf89ab88 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -1029,7 +1029,7 @@ pxp: pxp@21cc000 {
+ 			qspi: spi@21e0000 {
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
++				compatible = "fsl,imx6ul-qspi";
+ 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
+ 				reg-names = "QuadSPI", "QuadSPI-memory";
+ 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+-- 
+2.35.1
+
 
 
