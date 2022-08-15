@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BE2C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D04CCC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244558AbiHOS6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        id S244598AbiHOS61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244650AbiHOSzg (ORCPT
+        with ESMTP id S244715AbiHOSzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:55:36 -0400
+        Mon, 15 Aug 2022 14:55:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC41048CB9;
-        Mon, 15 Aug 2022 11:30:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51175128;
+        Mon, 15 Aug 2022 11:30:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 015A060EEB;
-        Mon, 15 Aug 2022 18:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 087FDC433D7;
-        Mon, 15 Aug 2022 18:30:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 657A460F9F;
+        Mon, 15 Aug 2022 18:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AFFC433C1;
+        Mon, 15 Aug 2022 18:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588210;
-        bh=eQjlNsFUeo7Ol1B/gW2YN5f5GReWLkx2orpeVdoEiDQ=;
+        s=korg; t=1660588213;
+        bh=2VervNbxgxeZXfNV44+wbwlA2Se2WoQVV5BHYKxRI50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=chgWhflh6GnDQXhwER+cbG3zsc+FgbhwFwK+Cek3E7ag8Gu9AfMe2vAg7vAj9cClp
-         brtGCCTiyQicrzJK7Q5j0bkI3j4KGI1dl6xKXzXVxiZ2AiEO0qYyAlO1whdUKeQC8b
-         O9Zs2UE6MivllzedHM8EWA9cpr7dMXGcX+TNMDZE=
+        b=rw3SgLBYYD/cI2VllJBa4bXww5D7cClzDgxyQ4+3dt4Y1lDgO/moo7A4nFtAnNTc8
+         tPBFvFv5xixsD5IKqkc4fprF8uOqr+VAd/oI25BjB0C8qO4wGRYz76Ix5ugpwe27uO
+         4FPTWTEevvo+8cjsapUnA/qHDBvFmqIvj1cV8k8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 298/779] drm/vc4: Use of_device_get_match_data()
-Date:   Mon, 15 Aug 2022 19:59:02 +0200
-Message-Id: <20220815180350.024639631@linuxfoundation.org>
+Subject: [PATCH 5.15 289/779] drm/mcde: Fix refcount leak in mcde_dsi_bind
+Date:   Mon, 15 Aug 2022 19:58:53 +0200
+Message-Id: <20220815180349.642523280@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,42 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 9cbe89ede58294d23af06ec12c20f2ce6acc1892 ]
+[ Upstream commit 3a149169e4a2f9127022fec6ef5d71b4e804b3b9 ]
 
-Use of_device_get_match_data() to simplify the code.
+Every iteration of for_each_available_child_of_node() decrements
+the reference counter of the previous node. There is no decrement
+when break out from the loop and results in refcount leak.
+Add missing of_node_put() to fix this.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220214020530.1714631-1-chi.minghao@zte.com.cn
+Fixes: 5fc537bfd000 ("drm/mcde: Add new driver for ST-Ericsson MCDE")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220525115411.65455-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/gpu/drm/mcde/mcde_dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 64dfefeb03f5..98308a17e4ed 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1493,15 +1493,10 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 	struct drm_device *drm = dev_get_drvdata(master);
- 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
- 	struct vc4_dsi_encoder *vc4_dsi_encoder;
--	const struct of_device_id *match;
- 	dma_cap_mask_t dma_mask;
- 	int ret;
- 
--	match = of_match_device(vc4_dsi_dt_match, dev);
--	if (!match)
--		return -ENODEV;
--
--	dsi->variant = match->data;
-+	dsi->variant = of_device_get_match_data(dev);
- 
- 	vc4_dsi_encoder = devm_kzalloc(dev, sizeof(*vc4_dsi_encoder),
- 				       GFP_KERNEL);
+diff --git a/drivers/gpu/drm/mcde/mcde_dsi.c b/drivers/gpu/drm/mcde/mcde_dsi.c
+index 180ebbccbeda..0b58d7f4ba78 100644
+--- a/drivers/gpu/drm/mcde/mcde_dsi.c
++++ b/drivers/gpu/drm/mcde/mcde_dsi.c
+@@ -1111,6 +1111,7 @@ static int mcde_dsi_bind(struct device *dev, struct device *master,
+ 			bridge = of_drm_find_bridge(child);
+ 			if (!bridge) {
+ 				dev_err(dev, "failed to find bridge\n");
++				of_node_put(child);
+ 				return -EINVAL;
+ 			}
+ 		}
 -- 
 2.35.1
 
