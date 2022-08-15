@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C06C32765
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E684BC32768
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350936AbiHOWhV (ORCPT
+        id S1351051AbiHOWhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51472 "EHLO
+        Mon, 15 Aug 2022 18:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348022AbiHOW3q (ORCPT
+        with ESMTP id S1349654AbiHOWbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:29:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E4AD742C;
-        Mon, 15 Aug 2022 12:48:09 -0700 (PDT)
+        Mon, 15 Aug 2022 18:31:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F073B12AD24;
+        Mon, 15 Aug 2022 12:48:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64376B80EAB;
-        Mon, 15 Aug 2022 19:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A542DC433D7;
-        Mon, 15 Aug 2022 19:48:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD278B80EAD;
+        Mon, 15 Aug 2022 19:48:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20267C433C1;
+        Mon, 15 Aug 2022 19:48:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592886;
-        bh=JJDjh3JMS1RvAWBuSHwFADZIku6Wki4QrQ2EVkZcrlg=;
+        s=korg; t=1660592892;
+        bh=TyFNt0yGMX+HCgNReElfeOZCISJv3dIiyMGCwZjmTq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WCB0r2T/19zAZwY2+N/0xnwfgk6qaeeVyOGhwiWtPzR9iXmoa6Iy1HWA+G35lXY2S
-         k5OxaZLEEaVx3+XVOTtYm822UnXiy+YLuV2typGV6P/foMNPDbXxHDRYG6FXFlpuJa
-         CnKULKOw3HYEFJ6rZfm57prjV+2/tdsd0kxSFCiM=
+        b=v67NsUBBvRVZkArEPzYrsobbJKwOTLt2y2VOOuvkaIMpLLGKjgb89wZBLshbk21st
+         57GQvrmwSLeFt27Ty0bkge2YdN6h0W8uWG+npOz4O+3TCzGSOh9DB0Z+7iNQzFY5uN
+         FAMRK6okZs58eTi8EOsnT5KFZhJSeLcUXxk+xOTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0830/1095] ASoC: mediatek: mt8173: Fix refcount leak in mt8173_rt5650_rt5676_dev_probe
-Date:   Mon, 15 Aug 2022 20:03:49 +0200
-Message-Id: <20220815180503.654840844@linuxfoundation.org>
+Subject: [PATCH 5.18 0825/1095] usb: cdns3: Dont use priv_dev uninitialized in cdns3_gadget_ep_enable()
+Date:   Mon, 15 Aug 2022 20:03:44 +0200
+Message-Id: <20220815180503.436147661@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,63 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit ae4f11c1ed2d67192fdf3d89db719ee439827c11 ]
+[ Upstream commit 78acd4ca433425e6dd4032cfc2156c60e34931f2 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Fix missing of_node_put() in error paths.
+Clang warns:
 
-Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220602034144.60159-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  drivers/usb/cdns3/cdns3-gadget.c:2290:11: error: variable 'priv_dev' is uninitialized when used here [-Werror,-Wuninitialized]
+                  dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
+                          ^~~~~~~~
+  include/linux/dev_printk.h:155:18: note: expanded from macro 'dev_dbg'
+          dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+                          ^~~
+  include/linux/dynamic_debug.h:167:7: note: expanded from macro 'dynamic_dev_dbg'
+                          dev, fmt, ##__VA_ARGS__)
+                          ^~~
+  include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+          __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                              ^~~~~~~~~~~
+  include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+                  func(&id, ##__VA_ARGS__);               \
+                              ^~~~~~~~~~~
+  drivers/usb/cdns3/cdns3-gadget.c:2278:31: note: initialize the variable 'priv_dev' to silence this warning
+          struct cdns3_device *priv_dev;
+                                      ^
+                                      = NULL
+  1 error generated.
+
+The priv_dev assignment was moved below the if statement to avoid
+potentially dereferencing ep before it was checked but priv_dev is used
+in the dev_dbg() call.
+
+To fix this, move the priv_dev and comp_desc assignments back to their
+original spot and hoist the ep check above those assignments with a call
+to pr_debug() instead of dev_dbg().
+
+Fixes: c3ffc9c4ca44 ("usb: cdns3: change place of 'priv_ep' assignment in cdns3_gadget_ep_dequeue(), cdns3_gadget_ep_enable()")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1680
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/usb/cdns3/cdns3-gadget.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-index 5716d9299066..c1e8633a74a7 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-@@ -256,14 +256,16 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
- 	}
- 	mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
- 		of_parse_phandle(pdev->dev.of_node, "mediatek,audio-codec", 1);
- 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
- 	}
- 	mt8173_rt5650_rt5676_codec_conf[0].dlc.of_node =
- 		mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node;
-@@ -276,13 +278,15 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
+diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
+index e0cf62e65075..ae049eb28b93 100644
+--- a/drivers/usb/cdns3/cdns3-gadget.c
++++ b/drivers/usb/cdns3/cdns3-gadget.c
+@@ -2280,16 +2280,20 @@ static int cdns3_gadget_ep_enable(struct usb_ep *ep,
+ 	int ret = 0;
+ 	int val;
+ 
++	if (!ep) {
++		pr_debug("usbss: ep not configured?\n");
++		return -EINVAL;
++	}
++
+ 	priv_ep = ep_to_cdns3_ep(ep);
++	priv_dev = priv_ep->cdns3_dev;
++	comp_desc = priv_ep->endpoint.comp_desc;
+ 
+-	if (!ep || !desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
++	if (!desc || desc->bDescriptorType != USB_DT_ENDPOINT) {
+ 		dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
+ 		return -EINVAL;
  	}
  
- 	card->dev = &pdev->dev;
- 
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 
-+put_node:
- 	of_node_put(platform_node);
- 	return ret;
- }
+-	comp_desc = priv_ep->endpoint.comp_desc;
+-	priv_dev = priv_ep->cdns3_dev;
+-
+ 	if (!desc->wMaxPacketSize) {
+ 		dev_err(priv_dev->dev, "usbss: missing wMaxPacketSize\n");
+ 		return -EINVAL;
 -- 
 2.35.1
 
