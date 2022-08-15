@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B07C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D7BC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343931AbiHPAP2 (ORCPT
+        id S1352760AbiHPAPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
+        Mon, 15 Aug 2022 20:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352132AbiHPAEj (ORCPT
+        with ESMTP id S1354632AbiHPAGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:04:39 -0400
+        Mon, 15 Aug 2022 20:06:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE63510E9;
-        Mon, 15 Aug 2022 13:28:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607881705F9;
+        Mon, 15 Aug 2022 13:28:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D20461072;
-        Mon, 15 Aug 2022 20:28:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B125C433D6;
-        Mon, 15 Aug 2022 20:28:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CE3C61089;
+        Mon, 15 Aug 2022 20:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 755D0C433C1;
+        Mon, 15 Aug 2022 20:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595311;
-        bh=u82g5EIiAdUs2skjVX9fRCfEolgD6xBbOEqQyDFsDLM=;
+        s=korg; t=1660595304;
+        bh=1zVo5EEaQatHXI3wYiQzTgBe1L4ws1B/mp02biI9KXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nuViVL517+J8IZcNeka2L9PeVyrKWqfl4DrZD6T1vtnBvjBI7ZThSOECnq3eion+z
-         CNpBsgRvcBjDMLbCgAIOmu1m2+iSo25It1b5chYSNIc9+jEn1GQxX22jotfz001+Sn
-         hMBLSF7KPwaJER/Ec+sRJxRoGyebZJB5nEhDlv6w=
+        b=xM7dg68dgMHMa9w06L6WAUOhlejlqcEc2z+eKk/R+SuVU21WVoyOBoiY6rPnXEnNb
+         eR1+0wsm10ifFFnE7/p3Z0CaJTY08VaOSymQKUM4XA9u8dxfN/Ohfx010BE3zeh+HX
+         noTPoyVrxqA2gB/AvhGOMmO3WPOYTx7bpx5k89sA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Jacky Bai <ping.bai@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        Abel Vesa <abel.vesa@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0691/1157] iio: dac: ti-dac5571: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:47 +0200
-Message-Id: <20220815180507.278590216@linuxfoundation.org>
+Subject: [PATCH 5.19 0721/1157] clk: imx93: use adc_root as the parent clock of adc1
+Date:   Mon, 15 Aug 2022 20:01:17 +0200
+Message-Id: <20220815180508.329065034@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,37 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit 58e22371539e01c742be5c30295f591a6a17e348 ]
+[ Upstream commit 18d6d8fe4f24938985844d52c481b86fcce9d102 ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+When debug, find after system boot up, all adc register operation
+will trigger system hang, this is because the internal adc ipg
+clock is gate off. In dts, only reference the IMX93_CLK_ADC1_GATE,
+which is adc1, no one touch the adc_root, so adc_root will be gate
+off automatically after system boot up.
 
-Fixes: df38a4a72a3b ("iio: dac: add TI DAC5571 family support")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-63-jic23@kernel.org
+Fixes: 24defbe194b6 ("clk: imx: add i.MX93 clk")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Abel Vesa <abel.vesa@linaro.org>
+Link: https://lore.kernel.org/r/20220609132902.3504651-2-peng.fan@oss.nxp.com
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ti-dac5571.c | 2 +-
+ drivers/clk/imx/clk-imx93.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
-index 4b6b04038e94..c8fbacb27515 100644
---- a/drivers/iio/dac/ti-dac5571.c
-+++ b/drivers/iio/dac/ti-dac5571.c
-@@ -52,7 +52,7 @@ struct dac5571_data {
- 	struct dac5571_spec const *spec;
- 	int (*dac5571_cmd)(struct dac5571_data *data, int channel, u16 val);
- 	int (*dac5571_pwrdwn)(struct dac5571_data *data, int channel, u8 pwrdwn);
--	u8 buf[3] ____cacheline_aligned;
-+	u8 buf[3] __aligned(IIO_DMA_MINALIGN);
- };
- 
- #define DAC5571_POWERDOWN(mode)		((mode) + 1)
+diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
+index edcc87661d1f..172cd56c9610 100644
+--- a/drivers/clk/imx/clk-imx93.c
++++ b/drivers/clk/imx/clk-imx93.c
+@@ -150,7 +150,7 @@ static const struct imx93_clk_ccgr {
+ 	{ IMX93_CLK_A55_GATE,		"a55",		"a55_root",		0x8000, },
+ 	/* M33 critical clk for system run */
+ 	{ IMX93_CLK_CM33_GATE,		"cm33",		"m33_root",		0x8040, CLK_IS_CRITICAL },
+-	{ IMX93_CLK_ADC1_GATE,		"adc1",		"osc_24m",		0x82c0, },
++	{ IMX93_CLK_ADC1_GATE,		"adc1",		"adc_root",		0x82c0, },
+ 	{ IMX93_CLK_WDOG1_GATE,		"wdog1",	"osc_24m",		0x8300, },
+ 	{ IMX93_CLK_WDOG2_GATE,		"wdog2",	"osc_24m",		0x8340, },
+ 	{ IMX93_CLK_WDOG3_GATE,		"wdog3",	"osc_24m",		0x8380, },
 -- 
 2.35.1
 
