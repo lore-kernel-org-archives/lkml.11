@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D54C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8FFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354188AbiHOXot (ORCPT
+        id S1354373AbiHOXoz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
+        Mon, 15 Aug 2022 19:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354194AbiHOXlh (ORCPT
+        with ESMTP id S1354228AbiHOXll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:37 -0400
+        Mon, 15 Aug 2022 19:41:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5950783F3A;
-        Mon, 15 Aug 2022 13:11:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CD960D1;
+        Mon, 15 Aug 2022 13:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D466B80EAD;
-        Mon, 15 Aug 2022 20:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7027CC433D7;
-        Mon, 15 Aug 2022 20:11:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 374BDB81135;
+        Mon, 15 Aug 2022 20:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0A1C433D6;
+        Mon, 15 Aug 2022 20:11:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594265;
-        bh=a4msX/u+y+7Zrc3gwU7scUBR6sDo4jLQHCMw3wNXdzc=;
+        s=korg; t=1660594274;
+        bh=CNC3RHZtr4Vx0ECyRUs2YPM5WBx6e2DmCYMF7MiujFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cnOsOVUziZU3EJMzVey8ADgxFYK2EVylhehW86LevX1xf49Q7cKYUS26u+m3efZii
-         r11gS1SHX3R8yUQoTrwwDup+enoIbW4blkyjyvLc3BT/72NFcw5ltdG7oS8wuXW/hB
-         coHpcLsyPRcY2USfLtfWo6mEBngCObZi9qy0/0YQ=
+        b=qXIN2ilr6pfr6eJHmLDcvYd+JnWm1YLklqEBP8eTbdAndzYgM4TQUSg06tMe5spiL
+         0utEjqNaf3aGLZ/RTmX+/I095pvj3rDcdPB/9dvXnedBsul3s0dTgL3N8nj0Q5wa/5
+         zFFAaaMXcv+bVzCe0ycvCyJBjaafy+qFCEGMSKTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Jian Zhang <zhangjian210@huawei.com>,
+        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0403/1157] media: driver/nxp/imx-jpeg: fix a unexpected return value problem
-Date:   Mon, 15 Aug 2022 19:55:59 +0200
-Message-Id: <20220815180455.790165113@linuxfoundation.org>
+Subject: [PATCH 5.19 0376/1157] media: imx-jpeg: Correct some definition according specification
+Date:   Mon, 15 Aug 2022 19:55:32 +0200
+Message-Id: <20220815180454.765446069@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,42 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Zhang <zhangjian210@huawei.com>
+From: Ming Qian <ming.qian@nxp.com>
 
-[ Upstream commit 5b304046a81eda221b5d06a9c62f7b5e45530fa5 ]
+[ Upstream commit 5a601f89e846c1b6005ab274d039e5036fc22015 ]
 
-In function mxc_jpeg_probe(), when devm_clk_get() fail, the return value
-will be unexpected, and it should be the devm_clk_get's error code.
+the register CAST_NOMFRSIZE_LO should be equal to CAST_STATUS16
+the register CAST_NOMFRSIZE_HI should be equal to CAST_STATUS17
+the register CAST_OFBSIZE_LO should be equal to CAST_STATUS18
+the register CAST_OFBSIZE_HI should be equal to CAST_STATUS19
 
-Fixes: 4c2e5156d9fa6 ("media: imx-jpeg: Add pm-runtime support for imx-jpeg")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Jian Zhang <zhangjian210@huawei.com>
+Fixes: 2db16c6ed72ce ("media: imx-jpeg: Add V4L2 driver for i.MX8 JPEG Encoder/Decoder")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-index 35a7cb936653..b2ea57b45028 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-@@ -2145,12 +2145,14 @@ static int mxc_jpeg_probe(struct platform_device *pdev)
- 	jpeg->clk_ipg = devm_clk_get(dev, "ipg");
- 	if (IS_ERR(jpeg->clk_ipg)) {
- 		dev_err(dev, "failed to get clock: ipg\n");
-+		ret = PTR_ERR(jpeg->clk_ipg);
- 		goto err_clk;
- 	}
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+index d838e875616c..5f64cbbe0fa9 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+@@ -53,10 +53,10 @@
+ #define CAST_REC_REGS_SEL		CAST_STATUS4
+ #define CAST_LUMTH			CAST_STATUS5
+ #define CAST_CHRTH			CAST_STATUS6
+-#define CAST_NOMFRSIZE_LO		CAST_STATUS7
+-#define CAST_NOMFRSIZE_HI		CAST_STATUS8
+-#define CAST_OFBSIZE_LO			CAST_STATUS9
+-#define CAST_OFBSIZE_HI			CAST_STATUS10
++#define CAST_NOMFRSIZE_LO		CAST_STATUS16
++#define CAST_NOMFRSIZE_HI		CAST_STATUS17
++#define CAST_OFBSIZE_LO			CAST_STATUS18
++#define CAST_OFBSIZE_HI			CAST_STATUS19
  
- 	jpeg->clk_per = devm_clk_get(dev, "per");
- 	if (IS_ERR(jpeg->clk_per)) {
- 		dev_err(dev, "failed to get clock: per\n");
-+		ret = PTR_ERR(jpeg->clk_per);
- 		goto err_clk;
- 	}
- 
+ #define MXC_MAX_SLOTS	1 /* TODO use all 4 slots*/
+ /* JPEG-Decoder Wrapper Slot Registers 0..3 */
 -- 
 2.35.1
 
