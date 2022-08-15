@@ -2,123 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F715C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4901C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbiHOIRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 04:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43584 "EHLO
+        id S231163AbiHOISm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 04:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241754AbiHOIQG (ORCPT
+        with ESMTP id S230165AbiHOISk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 04:16:06 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628E8BC9F
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 01:16:04 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso3568993wmb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 01:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=2EXJc+W0WiUMq6IfoG1+NtWZXhyvP3kHwdxs6Qb3+pI=;
-        b=lesTjrSSeDPkH8yf41Y3AxvP2AQWHSlFR2nZLz0HLlk0Iy/HCk1CAwtRsXGnaysNLb
-         tAPLT55tzSp6Q00NGkh8fjsx3iauwjBUM8O3v0CAlAT+6AldoCZ/EbIXAkMg+QM0X3Gp
-         vIpw0FhvUXYktjK+CfSyatCMeNnGJfZlQUqKFVLrfaDV+zvmcYJRE1R4wylzSrDMmy93
-         8pDQD3zsL0CVnv00HRDyQz/AYIazyi2KrBYDq5LPJJOZS4eGqjMO2ATAGtrdSCEXhFVW
-         610Xz9+r+sXk+hpO/EICxAbe/080Sdr6GvdrOFlhu/aJCAxusPgrTy20zVQQCuiegM24
-         eV8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=2EXJc+W0WiUMq6IfoG1+NtWZXhyvP3kHwdxs6Qb3+pI=;
-        b=m4ckBqeRpkRasViTNj5Ron9XPVzPvcS17cYUtjQ9zZRbUVADh+oyiac/3Uiz+dOgKY
-         biAkC5+/oH7L6m8HyQo6se3N35/G8SJFzHFsXe13CF33ufbC3nezh+b80rZJ6Z44DGJ3
-         8uAaWnhjGljksjB84306E98GO4Lz4KJqM44Ak5yR5TlfUrnAnH/Cq3i+QvgiQQjgLFZ5
-         1C1TNKo8DWvzYuju3Al7L+m7UkGh8Gh6A6ALiD5MtQAjzkWvHQ9eVnT+h/zL1JL04zpd
-         SYTUuYL2t6ASiF59Ir1F0RmsE55PZnhd44GHvRrF+7QjzrHrsQBaMkLyP64KRu+6YUo8
-         TGyw==
-X-Gm-Message-State: ACgBeo2NQlOWk3vZIZSi4ksOh05onaQuMFhZMc5T8cZOpxavIhzfeQSr
-        YWN7VWJNhlRFllvQBCV+ORi5Ug==
-X-Google-Smtp-Source: AA6agR7lE2pSrkUcP1I5mNHTVfwLSlcuX0/RK/cHwHELEIlPhh1ah5PsBhdugYuvVyleRs9OniBZng==
-X-Received: by 2002:a05:600c:3492:b0:3a5:e1a0:24c9 with SMTP id a18-20020a05600c349200b003a5e1a024c9mr5265215wmq.177.1660551362921;
-        Mon, 15 Aug 2022 01:16:02 -0700 (PDT)
-Received: from linaro.org ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id i5-20020adff305000000b0021ef34124ebsm6602680wro.11.2022.08.15.01.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 01:16:02 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 11:16:00 +0300
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, abelvesa@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH V2 2/8] clk: imx93: guard imx93_clk_of_match with
- CONFIG_OF
-Message-ID: <YvoAwL9qhmE03kgi@linaro.org>
-References: <20220815013039.474970-1-peng.fan@oss.nxp.com>
- <20220815013039.474970-3-peng.fan@oss.nxp.com>
+        Mon, 15 Aug 2022 04:18:40 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866111EEFB;
+        Mon, 15 Aug 2022 01:18:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660551519; x=1692087519;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0F0ny3POo01TN8PrWXSpbHLH0QJ4GeZOsaTCgDcIiKw=;
+  b=DlyKSGRe4ZEkXDi/iEl2imdy/EmSb2sPnoUfSDZdGqIsCa+TSY3/Vuwa
+   yJUWuqgILy5qu98koz/jYBmlghhcPeotbH4NJHW8aUTtwAhMNpaSsH66P
+   GVYipqxnmcnekDxTvFRRrbGw4G0VehMNu6+R+v25OeqF176j9OvM60YsC
+   6XN0RlWifS6uPJ/7SXQyhPNdvgvaFkggcnf+hyGcJroJCaLRdkTJeD5E6
+   vW+Z138Br92IuErkfsSFI9Cl/L0ppw0z/CwmHlv3dKraQ+t8yY6A8lIHP
+   iz91/TwcBEtXaXQQkO5IgzjmHzVg5qzgrYDfZzEqqP04Ly/d2rjcJr/uL
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="274971002"
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="274971002"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 01:18:38 -0700
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="674766312"
+Received: from szujuchn-mobl1.gar.corp.intel.com (HELO [10.252.50.152]) ([10.252.50.152])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 01:18:34 -0700
+Message-ID: <741edbf0-5835-eb89-bb6a-69d7e0d00e36@linux.intel.com>
+Date:   Mon, 15 Aug 2022 10:16:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815013039.474970-3-peng.fan@oss.nxp.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [RFC PATCH] Soundwire: Initialize multi_link with fwnode props
+Content-Language: en-US
+To:     Khalid Masum <khalid.masum.92@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+References: <20220814080416.7531-1-khalid.masum.92@gmail.com>
+ <CAHp75Ve4UaLsUknGKm14_-f5=qsq1s_Ws+j6h0kAY5_XMkSmQw@mail.gmail.com>
+ <54dd86bd-416b-3048-9bd0-368afa3aaf2f@gmail.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <54dd86bd-416b-3048-9bd0-368afa3aaf2f@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-08-15 09:30:33, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> There is build warning when CONFIG_OF is not selected.
-> >> drivers/clk/imx/clk-imx93.c:324:34: warning: 'imx93_clk_of_match'
-> >> defined but not used [-Wunused-const-variable=]
->      324 | static const struct of_device_id imx93_clk_of_match[] = {
->          |                                  ^~~~~~~~~~~~~~~~~~
-> 
-> Use CONFIG_OF to guard imx93_clk_of_match to avoid build warning.
-> 
-> Fixes: 24defbe194b6 ("clk: imx: add i.MX93 clk")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/clk/imx/clk-imx93.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
-> index f5c9fa40491c..5099048b7916 100644
-> --- a/drivers/clk/imx/clk-imx93.c
-> +++ b/drivers/clk/imx/clk-imx93.c
-> @@ -321,11 +321,13 @@ static int imx93_clocks_probe(struct platform_device *pdev)
->  	return ret;
->  }
->  
-> +#ifdef CONFIG_OF
 
-Hmm, I'm not sure if we should do this or rather should we make this driver
-depend somehow on CONFIG_OF in Kconfig.
 
-Looking at the other i.MX clock drivers, it would seem we need this for
-all them too.
-
-I fairly OK with this, but maybe Stephen suggests something different.
-
-Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
-
->  static const struct of_device_id imx93_clk_of_match[] = {
->  	{ .compatible = "fsl,imx93-ccm" },
->  	{ /* Sentinel */ },
->  };
->  MODULE_DEVICE_TABLE(of, imx93_clk_of_match);
-> +#endif
->  
->  static struct platform_driver imx93_clk_driver = {
->  	.probe = imx93_clocks_probe,
-> -- 
-> 2.37.1
+On 8/15/22 06:28, Khalid Masum wrote:
+> On 8/15/22 00:46, Andy Shevchenko wrote:
+>> On Sun, Aug 14, 2022 at 11:31 AM Khalid Masum
+>> <khalid.masum.92@gmail.com> wrote:
+>>>
+>>> According to the TODO, In sw_bus_master_add, bus->multi_link is to be
+>>> populated with properties from FW node props. Make this happen by
+>>> creating a new fwnode_handle flag FWNODE_FLAG_MULTI_LINKED and use
+>>> the flag to store the multi_link value from intel_link_startup. Use
+>>> this flag to initialize bus->multi_link.
+>>
+>> ...
+>>
+>>>          /*
+>>>           * Initialize multi_link flag
+>>> -        * TODO: populate this flag by reading property from FW node
+>>>           */
+>>> -       bus->multi_link = false;
+>>> +       bus->multi_link = (fwnode->flags & FWNODE_FLAG_MULTI_LINKED)
+>>> +               == FWNODE_FLAG_MULTI_LINKED;
+>>
+>> NAK (as far as I understood the context of the comment and the change
+>> itself).
+>>
+>> These flags are for devlink, we do not mix FW properties with those
+>> internal flags anyhow. The comment suggests that this should be az
+>> property. Also commit message doesn't explain the relation to devlink.
+>>
+> That is a good information to know. Thanks.
 > 
+> I shall try to find out if I can somehow get multi_link's value from
+> fwnode in any other way and look into devlink in the process.
+> 
+> If you have any suggestions regarding this TODO, please let me know.
+
+The suggestion is to remove the TODO and leave the code as is: the
+capabilities enabled for multi-link are required as part of the
+programming sequences, even when a stream uses a single link we still
+use the syncArm/syncGo sequences.
+
+Please don't change this.
