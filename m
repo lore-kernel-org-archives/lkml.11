@@ -2,109 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4B6C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C69C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344327AbiHPBJa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
+        id S230020AbiHPBM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349862AbiHPBGl (ORCPT
+        with ESMTP id S1349674AbiHPBLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:06:41 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D841A7C39
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:53:41 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id x64so6784755iof.1
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:53:41 -0700 (PDT)
+        Mon, 15 Aug 2022 21:11:38 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524E532AA4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:55:15 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id k2so8312646vsk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:55:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=uc9DV/Vm8k3ggZyBJiM4DPc4itKMLkWtsIueLCMUQls=;
-        b=bIzLQ1mCS/G20XnsaN4dTFCvt9i+9+LgfE1kqI80Xn2j8xy9S68G+j7zgUI9n+e9V0
-         iF7lz37EqbKz/yHauroPHA4IE9esnp+eSGtXZPje2+P/Nh67Xs6Jt3JA+kJ0paGNnVvF
-         d0uwcC2SiIxnEiE2t3Pf+nzvl8Av3XrytT21Q=
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=C7Vx33bd0N+8GUr7dvj2damtX2ID6NTkhuCLa181UbA=;
+        b=B2EK5vW3vq2+wr1XR0JVGBM093SVuB1XmaRpdEEZ+7QECvZvEUvc+a0DAweBI4wORh
+         aDqgkqWzWMXclRvgJEnMl7qfYoMsClLlg1zFeyDG2p8GQjMaErPVT7Wix+2+inlxM7ss
+         yMYMz2XcPbOMbevRUck0EBqBHQpecWGh0+iZPqP5Yvw2ThPvkZMtmhpmFHrtZ0wvAf4O
+         7iOCnpQ13fJl6Lv4rJ7FANMBTircXwMTsRTE7EMPDmyQqzeZSnRJ25mNZW84sRDIPtY3
+         5w0b+XiicL3pAPePTTPk8F1gP3mQnsdF9egYVtItNZGDNdyq/EoYEVAiHcK+3XyMdBLx
+         c9fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=uc9DV/Vm8k3ggZyBJiM4DPc4itKMLkWtsIueLCMUQls=;
-        b=RNAURY4D12eXP/3eTzYGtBLBJcvj/5V54hE2WPeZl8E3P9nJq/DUmmN/MYilyW9cep
-         ue6/cKZ52nOe7qoNVrJCbjOPTxgJ1LDh8n0XgMXjkVm5od/QHJcUWC9OEyxEZGQE7HlN
-         qnh5RUQyDblXcXLuwBQnDP0AIFc5HuQkzrj/ldc7PA5nsUmEuJoe8CYhnEMH7mdIKOu3
-         pFvZPla3+lgvM6/AVg3p7GSDi9u/5tHJwR4pB1wgFuKj1k49YXQ7hky4M6mMBtI52Knx
-         uMlVvWYHDiRQCcU8FpCNe+SMLRp4J2tIi9MVsx+6u2os33+dDncPVQgzzDohIGhFmBBs
-         DSUQ==
-X-Gm-Message-State: ACgBeo3WRlTKM4CO8isGjyNLpT2TEtUnPw+FjhAigGWDh2a09YTvzDwR
-        A8RgiVgO3qeyvEP+Y3ZtK7gwJw==
-X-Google-Smtp-Source: AA6agR7ifnwUc81UjL6LH46tcLGYwLeVFtSQbHh/vtVpAp80K3Z9Mi4n+8FSzJE+HKr4UpM61ae/PQ==
-X-Received: by 2002:a05:6638:16d3:b0:346:a4c6:fcc6 with SMTP id g19-20020a05663816d300b00346a4c6fcc6mr612791jat.147.1660596820565;
-        Mon, 15 Aug 2022 13:53:40 -0700 (PDT)
-Received: from chromium.org ([100.107.108.157])
-        by smtp.gmail.com with ESMTPSA id d70-20020a0285cc000000b003415b95c097sm3804296jai.42.2022.08.15.13.53.39
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=C7Vx33bd0N+8GUr7dvj2damtX2ID6NTkhuCLa181UbA=;
+        b=eENrwugQ6vfFszIZyvioSRUL/z+aWvkyetwhSEBXY+INVI6tEXjHzeEEgZ6Y1vJaad
+         WlYBpwqKdTFsUdcymUW7A1qQWe5IefQj4wtQzyDsr1g9d7ywebtkQSfBHkiHIsdlUXQw
+         689q0KbboQR9dEGjy6z3PprRK7+rzaiNYIs3eG4U1Gptpb/p18bngeVnuXUmAz6unwcl
+         hU/bfj04ZpPkkyMA3JphcYzCie+R+ExKRRfYY2smAeMi0AnrSX7zfIuqXwhrqi9AiB0y
+         nVUy2aSk1yh0IghhFe4EHku5SxYDw4ci1dYeuku2fbBCx9HZu3teqPPO0O0d5r4vttqb
+         pvEg==
+X-Gm-Message-State: ACgBeo3NLIJ66zZscy+ODnIHqhMLTDLoiWXqBjG+bf5OqKnUsBTy3OHR
+        wu+QAFcOrf5SfzhGYAwkmYQ1ryKFsbg=
+X-Google-Smtp-Source: AA6agR413W9TsI5RTHdAnpIinxfNI5tIiBp/xkZYCINVvGap8dV0dgJcFRocvAzce5WarAnEGxVyPg==
+X-Received: by 2002:a17:903:190:b0:16f:642:1a72 with SMTP id z16-20020a170903019000b0016f06421a72mr19469603plg.113.1660596903005;
+        Mon, 15 Aug 2022 13:55:03 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:3a69])
+        by smtp.gmail.com with ESMTPSA id t9-20020a17090340c900b0016d3935eff0sm7392380pld.176.2022.08.15.13.55.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 13:53:40 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 14:53:07 -0600
-From:   Jack Rosenthal <jrosenth@chromium.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Julius Werner <jwerner@chromium.org>
-Subject: Re: [PATCH v8] firmware: google: Implement cbmem in sysfs driver
-Message-ID: <YvqyM3n48Q/0i9XZ@chromium.org>
-References: <20220806204857.3276448-1-jrosenth@chromium.org>
- <CAE-0n53gc=1vwZbhGUaF2EyXotMPjqoQixUMJDidcs7vLmNORQ@mail.gmail.com>
+        Mon, 15 Aug 2022 13:55:02 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 15 Aug 2022 10:55:00 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Hao Jia <jiahao.os@bytedance.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, mingo@kernel.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] sched/psi: psi bug fixes and cleanups
+Message-ID: <YvqypKIcOk4mSaQp@slm.duckdns.org>
+References: <20220806120510.96131-1-jiahao.os@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAE-0n53gc=1vwZbhGUaF2EyXotMPjqoQixUMJDidcs7vLmNORQ@mail.gmail.com>
+In-Reply-To: <20220806120510.96131-1-jiahao.os@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for the detailed review!
+On Sat, Aug 06, 2022 at 08:05:07PM +0800, Hao Jia wrote:
+> These three patches are about PSI.
+> patch 1: Fixed PSI statistics error caused by unzeroed memory
+> in struct psi_group.
+> patch 2 and patch 3 are to clean up some unused functions
+> and parameters.
 
-On 2022-08-09 at 20:49 -0500, Stephen Boyd wrote:
-> /sys/firmware/coreboot/cbmem?
+Applied 1-3 to cgroup/for-6.0-fixes.
 
-Fixed in v9.
+Thanks.
 
-> > +#include <linux/ctype.h>
-> 
-> What is used from this header?
-
-Not used, fixed in v9.
-
-> Are all entries supposed to be writeable? Are there entries that are
-> read-only?
-
-The idea here was that we could use crossystem to update the cbmem entry
-when it makes changes, however, I do see this as an odd usage of the
-ABI, and in v9, I removed writing entirely and all entries are now
-read-only.
-
-If tools like crossystem need to maintain changes to this buffer, they
-should either maintain that copy themselves in /run or something, or
-daemonize and keep it in their process' memory.
-
-> > +       return cbmem_entry_setup(entry);
-> 
-> Is there a reason this isn't inlined here?
-
-cbmem_entry_setup was already a little long, so I just did this for
-reading clarity.  If you think it would be clearer just inlined here, I
-can change it (let me know).
-
-> Need to set .owner = THIS_MODULE unless you use
-> module_coreboot_driver().
-
-Done.
-
-> > +       if (!coreboot_kobj)
-> 
-> cbmem_kobj?
-
-Done.
+-- 
+tejun
