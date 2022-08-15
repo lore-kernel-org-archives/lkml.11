@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5BAC2BB45
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB93C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348033AbiHOW21 (ORCPT
+        id S1348396AbiHOW2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        Mon, 15 Aug 2022 18:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349798AbiHOWVg (ORCPT
+        with ESMTP id S1349954AbiHOWVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:21:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F49B5A4E;
-        Mon, 15 Aug 2022 12:43:47 -0700 (PDT)
+        Mon, 15 Aug 2022 18:21:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694C8124F47;
+        Mon, 15 Aug 2022 12:43:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CA5F610A5;
-        Mon, 15 Aug 2022 19:43:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F7DC433B5;
-        Mon, 15 Aug 2022 19:43:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B91F0B80EA9;
+        Mon, 15 Aug 2022 19:43:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AC4C4314A;
+        Mon, 15 Aug 2022 19:43:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592626;
-        bh=ptbstcd6stve8vBtBfyzgL8zEE8ay3I+XdRF4HhLEpc=;
+        s=korg; t=1660592629;
+        bh=GCy6sU5OdNa/ZBPCY8OyIwcHn4s6OCqwZVqGYBE9r3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bzK1m2eEGEIJkZm8D058Lm7D0lpKzS08u8akVJlJSul2FgL9xsFTlFXWUI7RTG3H+
-         ZJ8IOhIo95BbF7YtiNOQ431X+DwQKkvI2t6oxYziH1jAjQ4kkAOJ1q8eyrnG7Q2YDx
-         zXcItG7ihoCbR9UEU6mLUd/4OHtx7EtSiyFxLpa4=
+        b=dsuOX6wsRsDUtXyTD2kOAfN9PTJBtHYQYaBypot4d3jvSeg3WIIL8XqCtztIQri0V
+         ffd7HiZ2AbETroSLZ/tj+cs7kS/0xe82F58xVE/vKdICI3rlzk0lSoAM7R2/MszZrd
+         Ppgk4+s8GMT8VrvQj3XPinDUX18BXhChw926Ko4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Guo <yi.guo@cavium.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Narendra Hadke <nhadke@marvell.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 5.19 0117/1157] serial: mvebu-uart: uart2 error bits clearing
-Date:   Mon, 15 Aug 2022 19:51:13 +0200
-Message-Id: <20220815180444.294323311@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Bowler <nbowler@draconx.ca>,
+        Guixin Liu <kanie@linux.alibaba.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0818/1095] nvme: define compat_ioctl again to unbreak 32-bit userspace.
+Date:   Mon, 15 Aug 2022 20:03:37 +0200
+Message-Id: <20220815180503.121600294@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,55 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Narendra Hadke <nhadke@marvell.com>
+From: Nick Bowler <nbowler@draconx.ca>
 
-commit a7209541239e5dd44d981289e5f9059222d40fd1 upstream.
+[ Upstream commit a25d4261582cf00dad884c194d21084836663d3d ]
 
-For mvebu uart2, error bits are not cleared on buffer read.
-This causes interrupt loop and system hang.
+Commit 89b3d6e60550 ("nvme: simplify the compat ioctl handling") removed
+the initialization of compat_ioctl from the nvme block_device_operations
+structures.
 
-Cc: stable@vger.kernel.org
-Reviewed-by: Yi Guo <yi.guo@cavium.com>
-Reviewed-by: Nadav Haklai <nadavh@marvell.com>
-Signed-off-by: Narendra Hadke <nhadke@marvell.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220726091221.12358-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Presumably the expectation was that 32-bit ioctls would be directed
+through the regular handler but this is not the case: failing to assign
+.compat_ioctl actually means that the compat case is disabled entirely,
+and any attempt to submit nvme ioctls from 32-bit userspace fails
+outright with -ENOTTY.
+
+For example:
+
+  % smartctl -x /dev/nvme0n1
+  [...]
+  Read NVMe Identify Controller failed: NVME_IOCTL_ADMIN_CMD: Inappropriate ioctl for device
+
+The blkdev_compat_ptr_ioctl helper can be used to direct compat calls
+through the main ioctl handler and makes things work again.
+
+Fixes: 89b3d6e60550 ("nvme: simplify the compat ioctl handling")
+Signed-off-by: Nick Bowler <nbowler@draconx.ca>
+Reviewed-by: Guixin Liu <kanie@linux.alibaba.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/mvebu-uart.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/nvme/host/core.c      | 1 +
+ drivers/nvme/host/multipath.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 0429c2a54290..ff61a8d00014 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -265,6 +265,7 @@ static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
- 	struct tty_port *tport = &port->state->port;
- 	unsigned char ch = 0;
- 	char flag = 0;
-+	int ret;
- 
- 	do {
- 		if (status & STAT_RX_RDY(port)) {
-@@ -277,6 +278,16 @@ static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
- 				port->icount.parity++;
- 		}
- 
-+		/*
-+		 * For UART2, error bits are not cleared on buffer read.
-+		 * This causes interrupt loop and system hang.
-+		 */
-+		if (IS_EXTENDED(port) && (status & STAT_BRK_ERR)) {
-+			ret = readl(port->membase + UART_STAT);
-+			ret |= STAT_BRK_ERR;
-+			writel(ret, port->membase + UART_STAT);
-+		}
-+
- 		if (status & STAT_BRK_DET) {
- 			port->icount.brk++;
- 			status &= ~(STAT_FRM_ERR | STAT_PAR_ERR);
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index c9831daafbc6..cf7be9b4f5d3 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -2093,6 +2093,7 @@ static int nvme_report_zones(struct gendisk *disk, sector_t sector,
+ static const struct block_device_operations nvme_bdev_ops = {
+ 	.owner		= THIS_MODULE,
+ 	.ioctl		= nvme_ioctl,
++	.compat_ioctl	= blkdev_compat_ptr_ioctl,
+ 	.open		= nvme_open,
+ 	.release	= nvme_release,
+ 	.getgeo		= nvme_getgeo,
+diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
+index d464fdf978fb..b0fe23439c4a 100644
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -408,6 +408,7 @@ const struct block_device_operations nvme_ns_head_ops = {
+ 	.open		= nvme_ns_head_open,
+ 	.release	= nvme_ns_head_release,
+ 	.ioctl		= nvme_ns_head_ioctl,
++	.compat_ioctl	= blkdev_compat_ptr_ioctl,
+ 	.getgeo		= nvme_getgeo,
+ 	.report_zones	= nvme_ns_head_report_zones,
+ 	.pr_ops		= &nvme_pr_ops,
 -- 
-2.37.1
+2.35.1
 
 
 
