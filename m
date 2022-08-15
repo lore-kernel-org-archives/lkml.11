@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C397C2BBC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCBBC32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347273AbiHOVSV (ORCPT
+        id S1347642AbiHOVSi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        Mon, 15 Aug 2022 17:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243713AbiHOVJB (ORCPT
+        with ESMTP id S243585AbiHOVKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:09:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D3054C9F;
-        Mon, 15 Aug 2022 12:18:52 -0700 (PDT)
+        Mon, 15 Aug 2022 17:10:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27315509F;
+        Mon, 15 Aug 2022 12:18:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6328460FB8;
-        Mon, 15 Aug 2022 19:18:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D638C433C1;
-        Mon, 15 Aug 2022 19:18:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 126E1B81120;
+        Mon, 15 Aug 2022 19:18:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 625B7C433C1;
+        Mon, 15 Aug 2022 19:18:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591130;
-        bh=Ggx5eMXhfYasjXBC9zesMgQQm7DndAkFwc/nvYHdF3c=;
+        s=korg; t=1660591136;
+        bh=zo472JXDZC4ztxKvqyyytsSeGVG+XJDGa+4eATKg5Ug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eq1Gw+aFoQ+C4P3N9SGis5Tk/SY4bS7TCV2QgPyOvNk0FMOsLj9NpJWZ/yO0hBOG6
-         3HSXz1TxoifXA/DMv+oGJqJgFOa54qg910ZMheQUeg2i1/vQJ4H/Nf/R5ie2g32U7y
-         7DNfQmPrVB1qE+XYxaDAeV7IiODpL8vPRzN19U9Y=
+        b=rclxg+/wJferl0senWSDyT4tmR0r4yXs8eVFPi44i7UZ/7hh43HRcMioXKGOTPTEl
+         WSIfyHnMeh0wEuB7FfM+Ad8qRkVnN1FlYvsRIBdH/euniQvmkrySOCnlplefux8PNL
+         f9sA52ltqI2Wky60QXfNdVsH7XD6VkNqg5F0jx+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0464/1095] media: cedrus: h265: Fix flag name
-Date:   Mon, 15 Aug 2022 19:57:43 +0200
-Message-Id: <20220815180448.790853756@linuxfoundation.org>
+Subject: [PATCH 5.18 0483/1095] selftests/bpf: fix a test for snprintf() overflow
+Date:   Mon, 15 Aug 2022 19:58:02 +0200
+Message-Id: <20220815180449.544839968@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,68 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 104a70e1d0bcef28db13c4192b8729086089651c ]
+[ Upstream commit c5d22f4cfe8dfb93f1db0a1e7e2e7ebc41395d98 ]
 
-Bit 21 in register 0x24 (slice header info 1) actually represents
-negated version of low delay flag. This can be seen in vendor Cedar
-library source code. While this flag is not part of the standard, it can
-be found in reference HEVC implementation.
+The snprintf() function returns the number of bytes which *would*
+have been copied if there were space.  In other words, it can be
+> sizeof(pin_path).
 
-Fix macro name and change it to flag.
-
-Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: c0fa1b6c3efc ("bpf: btf: Add BTF tests")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/r/YtZ+aD/tZMkgOUw+@kili
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 4 +++-
- drivers/staging/media/sunxi/cedrus/cedrus_regs.h | 3 +--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/btf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index 44f385be9f6c..2febdf7a97fe 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -559,7 +559,6 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+index ec823561b912..a294176f8a9d 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+@@ -5226,7 +5226,7 @@ static void do_test_pprint(int test_num)
+ 	ret = snprintf(pin_path, sizeof(pin_path), "%s/%s",
+ 		       "/sys/fs/bpf", test->map_name);
  
- 	reg = VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_TC_OFFSET_DIV2(slice_params->slice_tc_offset_div2) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_BETA_OFFSET_DIV2(slice_params->slice_beta_offset_div2) |
--	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_POC_BIGEST_IN_RPS_ST(decode_params->num_poc_st_curr_after == 0) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CR_QP_OFFSET(slice_params->slice_cr_qp_offset) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CB_QP_OFFSET(slice_params->slice_cb_qp_offset) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_QP_DELTA(slice_params->slice_qp_delta);
-@@ -572,6 +571,9 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 				V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED,
- 				slice_params->flags);
- 
-+	if (decode_params->num_poc_st_curr_after == 0)
-+		reg |= VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_NOT_LOW_DELAY;
-+
- 	cedrus_write(dev, VE_DEC_H265_DEC_SLICE_HDR_INFO1, reg);
- 
- 	chroma_log2_weight_denom = pred_weight_table->luma_log2_weight_denom +
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_regs.h b/drivers/staging/media/sunxi/cedrus/cedrus_regs.h
-index bdb062ad8682..d81f7513ade0 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_regs.h
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_regs.h
-@@ -377,13 +377,12 @@
- 
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_DEBLOCKING_FILTER_DISABLED BIT(23)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED BIT(22)
-+#define VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_NOT_LOW_DELAY BIT(21)
- 
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_TC_OFFSET_DIV2(v) \
- 	SHIFT_AND_MASK_BITS(v, 31, 28)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_BETA_OFFSET_DIV2(v) \
- 	SHIFT_AND_MASK_BITS(v, 27, 24)
--#define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_POC_BIGEST_IN_RPS_ST(v) \
--	((v) ? BIT(21) : 0)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CR_QP_OFFSET(v) \
- 	SHIFT_AND_MASK_BITS(v, 20, 16)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CB_QP_OFFSET(v) \
+-	if (CHECK(ret == sizeof(pin_path), "pin_path %s/%s is too long",
++	if (CHECK(ret >= sizeof(pin_path), "pin_path %s/%s is too long",
+ 		  "/sys/fs/bpf", test->map_name)) {
+ 		err = -1;
+ 		goto done;
 -- 
 2.35.1
 
