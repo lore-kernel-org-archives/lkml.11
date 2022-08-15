@@ -2,112 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC02C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 808FFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348591AbiHOVn6 (ORCPT
+        id S1349487AbiHOVoL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        Mon, 15 Aug 2022 17:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349129AbiHOVkb (ORCPT
+        with ESMTP id S1349233AbiHOVkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:40:31 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4F33FA04
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:28:42 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id t11so6264172qkt.6
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:28:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=NximbAMOoMV20R4H+Pt+opb8nW2ZuY7oXM4yWpuLhS8=;
-        b=h69ATRcL92gXuQ6VGM5MF1MRckXXYFUojd/X3wntMkRCO3chXdd6R0J13elRRuSG5M
-         /IKB9JK7j1cnkCX0NxuPxXBwQyGvl5SoM+Ec/Pv/V8Rb1ZnfyhBmJhJybowcYi4HU14/
-         m5c5hHMhJ+vmu0F4QWCHk8vdJc9L49juEqx+8bC7HJ4b2HDgtwr2japRfh3HAPVBPxYr
-         SpOBMe0XPQg/HA84zlYCdh852ON4z4Iw2kWeboRqhRtdgmUqMoMFOvRakUbdpQRHgPXX
-         Qi8jx3NcDR6pZfA919bR9dr0IgzSM3JU0lUt6p2z8VB5WNUbJ7ol1pSTCHgceNvru5Cz
-         jhOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=NximbAMOoMV20R4H+Pt+opb8nW2ZuY7oXM4yWpuLhS8=;
-        b=dNKyPVYTxj4X84XHPtj4RamWVoX5XMehO/8PXvrhLfaDumDiHtjh1cye64xCK18UHb
-         hz1WLcSm8V6IRZUsvwG+fX3YDmOjVM2iARcF9wWyH2E064+b0F5rQ8lsijC+etDNTwJu
-         CMemcxFXRSifwq9w5gCKECNuWPJ38Pqc2IaJ202rOaZ7UmOpulg7PwEFvfYrdTJsvtfC
-         c0R0fT8GzuTphQNvu0P4X8o3jqXO1EIjY9WJxexCh2jjpABiuVcf7W0/tjZryzLbf6LC
-         f7ncM/MyueT4eewCfHXcrpAATs2JE9coT4KQXvPafbvElOto9L/61q8uQ4N1x5fUvoEf
-         CUJw==
-X-Gm-Message-State: ACgBeo1lGYdWC5J3PM39Yq1S385bJFL300qjzwQfzrbyLQKG3vpPRKVy
-        KGdkmbbiXO0QvlUw/TCQKdVkgUqwwon1G+aAdEUQrNSYEmk=
-X-Google-Smtp-Source: AA6agR7RR9PHyXS+ooHk7q57vjZve0AGDs+KUrltHP2eBtC31D8TGtGTk8FRbvS5JJYiG5509m5H38LLW5fZmDHsWJM=
-X-Received: by 2002:a05:620a:2901:b0:6b5:dfe8:2ea3 with SMTP id
- m1-20020a05620a290100b006b5dfe82ea3mr12465178qkp.328.1660591721008; Mon, 15
- Aug 2022 12:28:41 -0700 (PDT)
+        Mon, 15 Aug 2022 17:40:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A12A3FA13;
+        Mon, 15 Aug 2022 12:28:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA943610AA;
+        Mon, 15 Aug 2022 19:28:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0017C433D6;
+        Mon, 15 Aug 2022 19:28:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660591723;
+        bh=hT5vbUheX3mLxmG3WZVUo2aViOACob6rZyBDGwrkk3M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zZhlpJAFArSL3VBJ5Ah0mVxhihsIbR4FLqBn7V2ayU+uQXv+WWlo7+GONBAoxUua8
+         PcXo8GCu8v9Rv8ATWBr4tjDZx8mfPV9+geIJaRN4ZQfmkarRtmMEeTBE6EsNhnjFXv
+         iifeajFzdcARMh2NVF2YuQKTvliZqZ/Nsof1B8PQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0672/1095] iio: temp: ltc2983: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:01:11 +0200
+Message-Id: <20220815180457.178230027@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220712144917.4497-1-ubizjak@gmail.com> <20220814184823.c6ca2c396db0d8817e518ef9@linux-foundation.org>
- <CAFULd4YuYhNmhx3tBwBeR=ascfy=BZfZKk4e7vMq6gy06zk41Q@mail.gmail.com>
-In-Reply-To: <CAFULd4YuYhNmhx3tBwBeR=ascfy=BZfZKk4e7vMq6gy06zk41Q@mail.gmail.com>
-From:   Uros Bizjak <ubizjak@gmail.com>
-Date:   Mon, 15 Aug 2022 21:28:29 +0200
-Message-ID: <CAFULd4Ydo2BR3-kvHPeabzyHExW2GM3pfLiWa2uStrLDW52buA@mail.gmail.com>
-Subject: Re: [PATCH] llist: Use try_cmpxchg in llist_add_batch and llist_del_first
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 9:20 PM Uros Bizjak <ubizjak@gmail.com> wrote:
->
-> On Mon, Aug 15, 2022 at 3:48 AM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Tue, 12 Jul 2022 16:49:17 +0200 Uros Bizjak <ubizjak@gmail.com> wrote:
-> >
-> > > Use try_cmpxchg instead of cmpxchg (*ptr, old, new) == old in
-> > > llist_add_batch and llist_del_first. x86 CMPXCHG instruction returns
-> > > success in ZF flag, so this change saves a compare after cmpxchg.
-> > >
-> > > Also, try_cmpxchg implicitly assigns old *ptr value to "old" when
-> > > cmpxchg fails, enabling further code simplifications.
-> > >
-> > > No functional change intended.
-> >
-> > Well this is strange.  Your innocuous little patch:
->
-> [...]
->
-> > Does this:
-> >
-> > x1:/usr/src/25> size lib/llist.o-before lib/llist.o-after
-> >    text    data     bss     dec     hex filename
-> >     541      24       0     565     235 lib/llist.o-before
-> >     940      24       0     964     3c4 lib/llist.o-after
-> >
-> > with x86_64 allmodconfig, gcc-11.1.0.
-> >
-> > No change with allnoconfig, some bloat with defconfig.
-> >
-> > I was too lazy to figure out why this happened, but it'd be great if
-> > someone could investigate.  Something has gone wrong somewhere.
->
-> Sanitizer is detecting a comparison with a constant and emits:
->
->  132:    f0 48 0f b1 2b           lock cmpxchg %rbp,(%rbx)
->  137:    41 0f 94 c6              sete   %r14b
->  13b:    31 ff                    xor    %edi,%edi
->  13d:    44 89 f6                 mov    %r14d,%esi
->  140:    e8 00 00 00 00           call   145 <llist_add_batch+0xc5>
->             141: R_X86_64_PLT32    __sanitizer_cov_trace_const_cmp1-0x4
->
-> Since a new call is inserted, the compiler has to save all
-> call-clobbered variables around the call, this triggers another call
-> to __kasan_check_write. Finally, stack checking is emitted for patched
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Actually, this second __kasan_check_write is for the write in case of
-cmpxchg failure.
+[ Upstream commit 732f2cb2fbb51bd5bc03a114bd102ab3b2f537fe ]
 
-Uros.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
+
+Fixes: f110f3188e56 ("iio: temperature: Add support for LTC2983")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-91-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iio/temperature/ltc2983.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index 301c3f13fb26..1b8252d86889 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -200,11 +200,11 @@ struct ltc2983_data {
+ 	u8 num_channels;
+ 	u8 iio_channels;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 * Holds the converted temperature
+ 	 */
+-	__be32 temp ____cacheline_aligned;
++	__be32 temp __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ struct ltc2983_sensor {
+-- 
+2.35.1
+
+
+
