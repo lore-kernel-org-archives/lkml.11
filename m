@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259DCC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 647D6C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346953AbiHOUXT (ORCPT
+        id S1347041AbiHOUXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
+        Mon, 15 Aug 2022 16:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346168AbiHOUNW (ORCPT
+        with ESMTP id S243590AbiHOUNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:13:22 -0400
+        Mon, 15 Aug 2022 16:13:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0C82CCB0;
-        Mon, 15 Aug 2022 11:59:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3969F8F976;
+        Mon, 15 Aug 2022 11:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D601B8105C;
-        Mon, 15 Aug 2022 18:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FEFCC433C1;
-        Mon, 15 Aug 2022 18:59:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76D7CB81109;
+        Mon, 15 Aug 2022 18:59:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A60B2C433D6;
+        Mon, 15 Aug 2022 18:59:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589953;
-        bh=FCZJ64ZHrBJjqGiO5HLV86I4585tFnOWrrqpvlSA5CU=;
+        s=korg; t=1660589956;
+        bh=qW6yXE9ud1P1tuP49WumpWs1UmmGtf+87D75l29Nzf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tnEGnSC2JecTIt5zubs8Q2CMJ9ansVSdFdHI90hbOszZhPvFECi+nm6RwN27E0+6o
-         HNj9uC3pKgGAOHsAUi58/1sXyYguDJT8t+7VFF6uRdzxakhyNwiWVUxnYC+eRYNNmr
-         ZgxFADbAx3GJm+HDnKScQui/mQB0g9T5x7uwTfsY=
+        b=bMdV/wBXGzqSYufty5QjmTBb42VIuvTRpzjbMhVLtzQtnzD2oPJhSjRCu/Ch7k6We
+         GQP9S7h9Iu+CWJkWYjLZCQs4FKvaPDGue6thLCanLypUegsJEQc0KhISXClCiUeNg0
+         1gj3qW6GBc6pBuCBY7YK0/4sF7hjgf+VzF/JOxPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Gilbert <dgilbert@interlog.com>,
-        Tony Battersby <tonyb@cybernetics.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.18 0095/1095] scsi: sg: Allow waiting for commands to complete on removed device
-Date:   Mon, 15 Aug 2022 19:51:34 +0200
-Message-Id: <20220815180433.481409028@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>, Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.18 0104/1095] fuse: ioctl: translate ENOSYS
+Date:   Mon, 15 Aug 2022 19:51:43 +0200
+Message-Id: <20220815180433.860641078@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,142 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Battersby <tonyb@cybernetics.com>
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-commit 3455607fd7be10b449f5135c00dc306b85dc0d21 upstream.
+commit 02c0cab8e7345b06f1c0838df444e2902e4138d3 upstream.
 
-When a SCSI device is removed while in active use, currently sg will
-immediately return -ENODEV on any attempt to wait for active commands that
-were sent before the removal.  This is problematic for commands that use
-SG_FLAG_DIRECT_IO since the data buffer may still be in use by the kernel
-when userspace frees or reuses it after getting ENODEV, leading to
-corrupted userspace memory (in the case of READ-type commands) or corrupted
-data being sent to the device (in the case of WRITE-type commands).  This
-has been seen in practice when logging out of a iscsi_tcp session, where
-the iSCSI driver may still be processing commands after the device has been
-marked for removal.
+Overlayfs may fail to complete updates when a filesystem lacks
+fileattr/xattr syscall support and responds with an ENOSYS error code,
+resulting in an unexpected "Function not implemented" error.
 
-Change the policy to allow userspace to wait for active sg commands even
-when the device is being removed.  Return -ENODEV only when there are no
-more responses to read.
+This bug may occur with FUSE filesystems, such as davfs2.
 
-Link: https://lore.kernel.org/r/5ebea46f-fe83-2d0b-233d-d0dcb362dd0a@cybernetics.com
+Steps to reproduce:
+
+  # install davfs2, e.g., apk add davfs2
+  mkdir /test mkdir /test/lower /test/upper /test/work /test/mnt
+  yes '' | mount -t davfs -o ro http://some-web-dav-server/path \
+    /test/lower
+  mount -t overlay -o upperdir=/test/upper,lowerdir=/test/lower \
+    -o workdir=/test/work overlay /test/mnt
+
+  # when "some-file" exists in the lowerdir, this fails with "Function
+  # not implemented", with dmesg showing "overlayfs: failed to retrieve
+  # lower fileattr (/some-file, err=-38)"
+  touch /test/mnt/some-file
+
+The underlying cause of this regresion is actually in FUSE, which fails to
+translate the ENOSYS error code returned by userspace filesystem (which
+means that the ioctl operation is not supported) to ENOTTY.
+
+Reported-by: Christian Kohlschütter <christian@kohlschutter.com>
+Fixes: 72db82115d2b ("ovl: copy up sync/noatime fileattr flags")
+Fixes: 59efec7b9039 ("fuse: implement ioctl support")
 Cc: <stable@vger.kernel.org>
-Acked-by: Douglas Gilbert <dgilbert@interlog.com>
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/sg.c |   53 +++++++++++++++++++++++++++++++++--------------------
- 1 file changed, 33 insertions(+), 20 deletions(-)
+ fs/fuse/ioctl.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/sg.c
-+++ b/drivers/scsi/sg.c
-@@ -195,7 +195,7 @@ static void sg_link_reserve(Sg_fd * sfp,
- static void sg_unlink_reserve(Sg_fd * sfp, Sg_request * srp);
- static Sg_fd *sg_add_sfp(Sg_device * sdp);
- static void sg_remove_sfp(struct kref *);
--static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id);
-+static Sg_request *sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy);
- static Sg_request *sg_add_request(Sg_fd * sfp);
- static int sg_remove_request(Sg_fd * sfp, Sg_request * srp);
- static Sg_device *sg_get_dev(int dev);
-@@ -444,6 +444,7 @@ sg_read(struct file *filp, char __user *
- 	Sg_fd *sfp;
- 	Sg_request *srp;
- 	int req_pack_id = -1;
-+	bool busy;
- 	sg_io_hdr_t *hp;
- 	struct sg_header *old_hdr;
- 	int retval;
-@@ -466,20 +467,16 @@ sg_read(struct file *filp, char __user *
- 	if (retval)
- 		return retval;
+--- a/fs/fuse/ioctl.c
++++ b/fs/fuse/ioctl.c
+@@ -9,6 +9,17 @@
+ #include <linux/compat.h>
+ #include <linux/fileattr.h>
  
--	srp = sg_get_rq_mark(sfp, req_pack_id);
-+	srp = sg_get_rq_mark(sfp, req_pack_id, &busy);
- 	if (!srp) {		/* now wait on packet to arrive */
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
- 		if (filp->f_flags & O_NONBLOCK)
- 			return -EAGAIN;
- 		retval = wait_event_interruptible(sfp->read_wait,
--			(atomic_read(&sdp->detaching) ||
--			(srp = sg_get_rq_mark(sfp, req_pack_id))));
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
--		if (retval)
--			/* -ERESTARTSYS as signal hit process */
--			return retval;
-+			((srp = sg_get_rq_mark(sfp, req_pack_id, &busy)) ||
-+			(!busy && atomic_read(&sdp->detaching))));
-+		if (!srp)
-+			/* signal or detaching */
-+			return retval ? retval : -ENODEV;
- 	}
- 	if (srp->header.interface_id != '\0')
- 		return sg_new_read(sfp, buf, count, srp);
-@@ -939,9 +936,7 @@ sg_ioctl_common(struct file *filp, Sg_de
- 		if (result < 0)
- 			return result;
- 		result = wait_event_interruptible(sfp->read_wait,
--			(srp_done(sfp, srp) || atomic_read(&sdp->detaching)));
--		if (atomic_read(&sdp->detaching))
--			return -ENODEV;
-+			srp_done(sfp, srp));
- 		write_lock_irq(&sfp->rq_list_lock);
- 		if (srp->done) {
- 			srp->done = 2;
-@@ -2078,19 +2073,28 @@ sg_unlink_reserve(Sg_fd * sfp, Sg_reques
- }
- 
- static Sg_request *
--sg_get_rq_mark(Sg_fd * sfp, int pack_id)
-+sg_get_rq_mark(Sg_fd * sfp, int pack_id, bool *busy)
- {
- 	Sg_request *resp;
- 	unsigned long iflags;
- 
-+	*busy = false;
- 	write_lock_irqsave(&sfp->rq_list_lock, iflags);
- 	list_for_each_entry(resp, &sfp->rq_list, entry) {
--		/* look for requests that are ready + not SG_IO owned */
--		if ((1 == resp->done) && (!resp->sg_io_owned) &&
-+		/* look for requests that are not SG_IO owned */
-+		if ((!resp->sg_io_owned) &&
- 		    ((-1 == pack_id) || (resp->header.pack_id == pack_id))) {
--			resp->done = 2;	/* guard against other readers */
--			write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
--			return resp;
-+			switch (resp->done) {
-+			case 0: /* request active */
-+				*busy = true;
-+				break;
-+			case 1: /* request done; response ready to return */
-+				resp->done = 2;	/* guard against other readers */
-+				write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-+				return resp;
-+			case 2: /* response already being returned */
-+				break;
-+			}
- 		}
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-@@ -2144,6 +2148,15 @@ sg_remove_request(Sg_fd * sfp, Sg_reques
- 		res = 1;
- 	}
- 	write_unlock_irqrestore(&sfp->rq_list_lock, iflags);
++static ssize_t fuse_send_ioctl(struct fuse_mount *fm, struct fuse_args *args)
++{
++	ssize_t ret = fuse_simple_request(fm, args);
 +
-+	/*
-+	 * If the device is detaching, wakeup any readers in case we just
-+	 * removed the last response, which would leave nothing for them to
-+	 * return other than -ENODEV.
-+	 */
-+	if (unlikely(atomic_read(&sfp->parentdp->detaching)))
-+		wake_up_interruptible_all(&sfp->read_wait);
++	/* Translate ENOSYS, which shouldn't be returned from fs */
++	if (ret == -ENOSYS)
++		ret = -ENOTTY;
 +
- 	return res;
- }
++	return ret;
++}
++
+ /*
+  * CUSE servers compiled on 32bit broke on 64bit kernels because the
+  * ABI was defined to be 'struct iovec' which is different on 32bit
+@@ -259,7 +270,7 @@ long fuse_do_ioctl(struct file *file, un
+ 	ap.args.out_pages = true;
+ 	ap.args.out_argvar = true;
  
+-	transferred = fuse_simple_request(fm, &ap.args);
++	transferred = fuse_send_ioctl(fm, &ap.args);
+ 	err = transferred;
+ 	if (transferred < 0)
+ 		goto out;
+@@ -393,7 +404,7 @@ static int fuse_priv_ioctl(struct inode
+ 	args.out_args[1].size = inarg.out_size;
+ 	args.out_args[1].value = ptr;
+ 
+-	err = fuse_simple_request(fm, &args);
++	err = fuse_send_ioctl(fm, &args);
+ 	if (!err) {
+ 		if (outarg.result < 0)
+ 			err = outarg.result;
 
 
