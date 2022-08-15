@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B0BC25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEA1C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231430AbiHPAob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
+        id S233260AbiHPAoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350173AbiHPAlm (ORCPT
+        with ESMTP id S1350398AbiHPAlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:41:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CAA1907E5;
-        Mon, 15 Aug 2022 13:39:55 -0700 (PDT)
+        Mon, 15 Aug 2022 20:41:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB541907C0;
+        Mon, 15 Aug 2022 13:39:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF9E5B81197;
-        Mon, 15 Aug 2022 20:39:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC42C433D6;
-        Mon, 15 Aug 2022 20:39:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFB8CB8113E;
+        Mon, 15 Aug 2022 20:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2AEDC433C1;
+        Mon, 15 Aug 2022 20:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595992;
-        bh=poDWCIjXQdZOYKDtK4fB+2LprMUP+thyEgOgjHZB9/Y=;
+        s=korg; t=1660595983;
+        bh=Ay0XAbYlO976TQxwn64944NrmDGhtHDV+JN61Q9XLYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g0sKesqrhzhhozYWzvuLH5k8O00mDQl2ZEdRPWMqfioAyj/5KflHPy++PDdi5uomU
-         df9RejyyTmhs4lPnVtL+vPYCc3Wt/his8vvdBK+jrpaI6HhnaiOmnOdHIWh3CzuTJK
-         qnC2ncsxpzon/Ya8tGTZcBlNJ0qObkIpH3SZ+oNs=
+        b=EpgeFDMjgWMqZnc657umcn3V1VxQ6zAk58jlANqYtMFr6hbV9L7fuTBEvnH58sffs
+         VujEG0wZy8Q/spO81WoNxijPoEA3AA7jAM5V67xX+kMkt7s0kqSF2xOiNRVAKoqQtS
+         1TeKJXHqMCOBr6hPsdV71vCklnd8Qew+dbrI/wHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0906/1157] ASoC: cs35l45: Add endianness flag in snd_soc_component_driver
-Date:   Mon, 15 Aug 2022 20:04:22 +0200
-Message-Id: <20220815180515.695385074@linuxfoundation.org>
+Subject: [PATCH 5.19 0903/1157] ASoC: SOF: make ctx_store and ctx_restore as optional
+Date:   Mon, 15 Aug 2022 20:04:19 +0200
+Message-Id: <20220815180515.594813939@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,37 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit d919630fe77904931277e663c902582ea6f4e4cf ]
+[ Upstream commit 03f69725749f453b9a4d454a92805f8eb5f095c2 ]
 
-The endianness flag is used on the CODEC side to specify an
-ambivalence to endian, typically because it is lost over the hardware
-link. This device receives audio over an I2S DAI and as such should
-have endianness applied.
+Commit 657774acd00f ("ASoC: SOF: Make sof_suspend/resume IPC agnostic")
+did not marked ctx_store and ctx_restore as Optional.
 
-Fixes: 0d463d016000 ("ASoC: cs35l45: Add driver for Cirrus Logic CS35L45 Smart Amp")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220614131022.778057-1-ckeepax@opensource.cirrus.com
+Fixes: 657774acd00f ("ASoC: SOF: Make sof_suspend/resume IPC agnostic")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220610083549.16773-2-peter.ujfalusi@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs35l45.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/sof/sof-priv.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l45.c b/sound/soc/codecs/cs35l45.c
-index 2367c1a4c10e..145051390471 100644
---- a/sound/soc/codecs/cs35l45.c
-+++ b/sound/soc/codecs/cs35l45.c
-@@ -500,6 +500,8 @@ static const struct snd_soc_component_driver cs35l45_component = {
- 	.num_controls = ARRAY_SIZE(cs35l45_controls),
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index f0f3d72c0da7..f11f575fd1da 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -378,8 +378,8 @@ struct sof_ipc_fw_tracing_ops {
  
- 	.name = "cs35l45",
-+
-+	.endianness = 1,
- };
- 
- static int __maybe_unused cs35l45_runtime_suspend(struct device *dev)
+ /**
+  * struct sof_ipc_pm_ops - IPC-specific PM ops
+- * @ctx_save:		Function pointer for context save
+- * @ctx_restore:	Function pointer for context restore
++ * @ctx_save:		Optional function pointer for context save
++ * @ctx_restore:	Optional function pointer for context restore
+  */
+ struct sof_ipc_pm_ops {
+ 	int (*ctx_save)(struct snd_sof_dev *sdev);
 -- 
 2.35.1
 
