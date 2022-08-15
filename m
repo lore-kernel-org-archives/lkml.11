@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF43C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E29ACC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352432AbiHPAJH (ORCPT
+        id S1352078AbiHPAJR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
+        Mon, 15 Aug 2022 20:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354940AbiHPAAk (ORCPT
+        with ESMTP id S1355529AbiHPAAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F66C743F;
-        Mon, 15 Aug 2022 13:20:39 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B244AD43;
+        Mon, 15 Aug 2022 13:20:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17BECB80EB1;
-        Mon, 15 Aug 2022 20:20:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6380EC433D7;
-        Mon, 15 Aug 2022 20:20:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84ADF60FB8;
+        Mon, 15 Aug 2022 20:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E49C433C1;
+        Mon, 15 Aug 2022 20:20:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594836;
-        bh=e9whEK17xKjaAzRvOp5nbn9YoNuJqN2Qv4Jjbm+eUP0=;
+        s=korg; t=1660594846;
+        bh=dUu8ueBkoD9WU0J+cgsPNoGbfDPcl41stYx5RPPV8tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDxTb2jMk4r9TcDOdg3/QHss2hok0StcurhdIL2FaAr/yleCJKWYB2LxB/C8gf6S6
-         72aafNuYzLn8FZbnvbL16fcc4gduKFAnJqBtMNpO7lt4KfYvG2EvgvubBBJB+RhbkF
-         vgo/+qRlXLtUqjIzF5tMSOv6fn9gYUOqJAHLMVkM=
+        b=F6QTTQn5pvFBFXOkmOboLnmw8hIOXXnyCijKwzHSyyFI1LGV/0vs5hr6ktLJmqh08
+         IRwz0ohON5lOmcR6/l0EMO3HR+JBJ/+Rjog/T3ii+uWJ1kP9IegHjQeIEXa4wyt5Oo
+         QvYP0532bmqw/f9JIMyMprikoXBMoTCHlgcZuzcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Chang <David.Chang@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0574/1157] HID: amd_sfh: Dont show client init failed as error when discovery fails
-Date:   Mon, 15 Aug 2022 19:58:50 +0200
-Message-Id: <20220815180502.599031993@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0576/1157] mtd: maps: Fix refcount leak in of_flash_probe_versatile
+Date:   Mon, 15 Aug 2022 19:58:52 +0200
+Message-Id: <20220815180502.680990578@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,41 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e51d8d3ea3d773334d2c047c8d1623dba66f592a ]
+[ Upstream commit 33ec82a6d2b119938f26e5c8040ed5d92378eb54 ]
 
-When sensor discovery fails, this means that the system doesn't have
-any sensors connected and a user should only be notified at most one time.
-A message is already displayed at WARN level of "failed to discover,
-sensors not enabled".  It's pointless to show that the client init failed
-at ERR level for the same condition.
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Check the return code and don't display this message in those conditions.
-
-Fixes: b5d7f43e97da ("HID: amd_sfh: Add support for sensor discovery")
-Reported-by: David Chang <David.Chang@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Acked-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220523140205.48625-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/mtd/maps/physmap-versatile.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-index dadc491bbf6b..1441787a154a 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
-@@ -327,7 +327,8 @@ static int amd_mp2_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
- 	rc = amd_sfh_hid_client_init(privdata);
- 	if (rc) {
- 		amd_sfh_clear_intr(privdata);
--		dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
-+		if (rc != -EOPNOTSUPP)
-+			dev_err(&pdev->dev, "amd_sfh_hid_client_init failed\n");
- 		return rc;
- 	}
+diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
+index ad7cd9cfaee0..297a50957356 100644
+--- a/drivers/mtd/maps/physmap-versatile.c
++++ b/drivers/mtd/maps/physmap-versatile.c
+@@ -207,6 +207,7 @@ int of_flash_probe_versatile(struct platform_device *pdev,
+ 
+ 		versatile_flashprot = (enum versatile_flashprot)devid->data;
+ 		rmap = syscon_node_to_regmap(sysnp);
++		of_node_put(sysnp);
+ 		if (IS_ERR(rmap))
+ 			return PTR_ERR(rmap);
  
 -- 
 2.35.1
