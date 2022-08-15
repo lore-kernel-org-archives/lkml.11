@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E053C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5C0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343529AbiHOTht (ORCPT
+        id S1343604AbiHOTh5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
+        Mon, 15 Aug 2022 15:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344827AbiHOTbs (ORCPT
+        with ESMTP id S1344821AbiHOTbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:31:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEE561134;
-        Mon, 15 Aug 2022 11:44:56 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AE061B0F;
+        Mon, 15 Aug 2022 11:44:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F4E9611DD;
-        Mon, 15 Aug 2022 18:44:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03E25C433C1;
-        Mon, 15 Aug 2022 18:44:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE2EB81081;
+        Mon, 15 Aug 2022 18:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24A5C433D6;
+        Mon, 15 Aug 2022 18:44:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589095;
-        bh=+qo1pC4Ttl+/9j8G+c7N7G61muT841xoBx/FamNTO98=;
+        s=korg; t=1660589092;
+        bh=ZlNZIoT0xcoVZ4uXOg7Rh64aSqYXluwZIxnpm37NvZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p62m7FXkV8e/HiThWm4nOEh5/gcP/aYRr6+rdBCC1zG/L/Q0rs4iDMDw8H2Mmu6pI
-         iDHPKNi5ctJoXg8nzrANcLE1l2lzDCTIiJS0Hh8GowPTMAiGi079qB1RsIpYU0Fkp4
-         P5r1hpwl/srCEg3Nzok/tZpH9EQR3mUZ+v7Dhc4k=
+        b=J63gjBUKkqOXjC+II/OPbpsbDuO/xwg1mxUhCugQ0DW/8+EG4aD2gK2O1HgygNREO
+         Qi/znYi6V79FQqy3hORtxRgSf1H5UmVHF8So1/5saSKS4WWMA2q9wMLRZV2qHQUvuH
+         Mv4olWadYy0tvOl9Q83h3NDRuGRTKKv2Q7r2OupE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 594/779] vfio/ccw: Do not change FSM state in subchannel event
-Date:   Mon, 15 Aug 2022 20:03:58 +0200
-Message-Id: <20220815180402.727715424@linuxfoundation.org>
+Subject: [PATCH 5.15 611/779] lib/smp_processor_id: fix imbalanced instrumentation_end() call
+Date:   Mon, 15 Aug 2022 20:04:15 +0200
+Message-Id: <20220815180403.490114359@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,59 +54,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Farman <farman@linux.ibm.com>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
+[ Upstream commit bd27acaac24e4b252ee28dddcabaee80456d0faf ]
 
-The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
-specifically machine checks, on behalf of vfio-ccw. It correctly calls
-cio_update_schib(), and if that fails (meaning the subchannel is gone)
-it makes an FSM event call to mark the subchannel Not Operational.
+Currently instrumentation_end() won't be called if printk_ratelimit()
+returned false.
 
-If that worked, however, then it decides that if the FSM state was already
-Not Operational (implying the subchannel just came back), then it should
-simply change the FSM to partially- or fully-open.
-
-Remove this trickery, since a subchannel returning will require more
-probing than simply "oh all is well again" to ensure it works correctly.
-
-Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
-Signed-off-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Link: https://lkml.kernel.org/r/a636d8e0-ad32-5888-acac-671f7f553bb3@I-love.SAKURA.ne.jp
+Fixes: 126f21f0e8d46e2c ("lib/smp_processor_id: Move it into noinstr section")
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Alexandre Chartre <alexandre.chartre@oracle.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ lib/smp_processor_id.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
-index 76099bcb765b..b9091e22ca57 100644
---- a/drivers/s390/cio/vfio_ccw_drv.c
-+++ b/drivers/s390/cio/vfio_ccw_drv.c
-@@ -287,19 +287,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
- 	if (work_pending(&sch->todo_work))
- 		goto out_unlock;
+diff --git a/lib/smp_processor_id.c b/lib/smp_processor_id.c
+index 046ac6297c78..a2bb7738c373 100644
+--- a/lib/smp_processor_id.c
++++ b/lib/smp_processor_id.c
+@@ -47,9 +47,9 @@ unsigned int check_preemption_disabled(const char *what1, const char *what2)
  
--	if (cio_update_schib(sch)) {
--		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
--		rc = 0;
--		goto out_unlock;
--	}
--
--	private = dev_get_drvdata(&sch->dev);
--	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
--		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
--				 VFIO_CCW_STATE_STANDBY;
--	}
- 	rc = 0;
+ 	printk("caller is %pS\n", __builtin_return_address(0));
+ 	dump_stack();
+-	instrumentation_end();
  
-+	if (cio_update_schib(sch))
-+		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
-+
- out_unlock:
- 	spin_unlock_irqrestore(sch->lock, flags);
- 
+ out_enable:
++	instrumentation_end();
+ 	preempt_enable_no_resched_notrace();
+ out:
+ 	return this_cpu;
 -- 
 2.35.1
 
