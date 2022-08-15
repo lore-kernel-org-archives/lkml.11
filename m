@@ -2,77 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665E6C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 16:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F64C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 16:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232829AbiHOQVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 12:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
+        id S232874AbiHOQVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 12:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232676AbiHOQUn (ORCPT
+        with ESMTP id S232715AbiHOQUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 12:20:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23CD0140FE
+        Mon, 15 Aug 2022 12:20:44 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2352E1DA41
         for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 09:20:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D95D1477;
-        Mon, 15 Aug 2022 09:20:40 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0B6E73F70D;
-        Mon, 15 Aug 2022 09:20:37 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org
-Cc:     will@kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
-        kevin.tian@intel.com, suravee.suthikulpanit@amd.com,
-        vasant.hegde@amd.com, mjrosato@linux.ibm.com,
-        schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 10/16] iommu/exynos: Clean up bus_set_iommu()
-Date:   Mon, 15 Aug 2022 17:20:11 +0100
-Message-Id: <d7477ef546479300217ca7bccb44da8b02715a07.1660572783.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
-In-Reply-To: <cover.1660572783.git.robin.murphy@arm.com>
-References: <cover.1660572783.git.robin.murphy@arm.com>
+Received: by mail-ot1-x330.google.com with SMTP id o15-20020a9d718f000000b00638c1348012so748821otj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 09:20:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=MJrznwOS4iDI2OpucHPY/z4vNYitgwRbWuSlr+3wOv0=;
+        b=x58yM22xkTNeiyCqG9ou9XMvzSvlhZ8QkCbKqqdIi6Y5OLHHn3dXB0vhofX7kY1wxk
+         /Aj/rFeOrOZuEA7qcwZW9Kk/unT4g2j/6pvMojj0ncqsuof+qm+EMz5425ppDkeoBpVN
+         MedvwhyTdPSPm50RlayssJ3m4WqnH/KJq6UUA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=MJrznwOS4iDI2OpucHPY/z4vNYitgwRbWuSlr+3wOv0=;
+        b=C0TgEPjVgNJkCzoInGZgWQkwdDbUiS68w/fhQYzlo7wNAUKK0f9uvH0azb9ql9IESj
+         6wfPq/ilpJlJ9CNJqttK5VSObUoUANtjctgacuj4+690zl/nD1QJ6GE5QWOb+YrhYN11
+         TL++yMAKzayYEnEuIQClwVDXlzNGyzEENVhHLDarUgvvsyVZkhHTl475UdS0AetHC6Vv
+         K95vel/Rchs3C0I9b6bTAs1u6MoSML2+h9qlaCbdCt+LN72jQRWIULw+fGRWatzLeI4i
+         juVH0b0jOiwZ3PlIeU19tUYi1NJSFrLt9a/icoV1IGZ94e/+6QyDrbfgVQcR+LHf9at6
+         x7+g==
+X-Gm-Message-State: ACgBeo2uPl6Xt8gj6/oE3dUmaPHBjOeT89ZNnJwue2kOJ7cfolgpC/RH
+        Gz90cGzgeuI7Wr6TRRJC/JsTiw==
+X-Google-Smtp-Source: AA6agR6g7xKSXJLfRY1lzp/6aAIs7KluhqFOW4lJXq/4FCo8B9qkAgTWY1rxcsZlrxFZ3LAM+8JUnA==
+X-Received: by 2002:a9d:6294:0:b0:638:b817:7c87 with SMTP id x20-20020a9d6294000000b00638b8177c87mr1168939otk.378.1660580438743;
+        Mon, 15 Aug 2022 09:20:38 -0700 (PDT)
+Received: from localhost.localdomain ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id x91-20020a9d37e4000000b00636ee04e7aesm2163371otb.67.2022.08.15.09.20.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 09:20:38 -0700 (PDT)
+From:   Frederick Lawler <fred@cloudflare.com>
+To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, tixxdz@gmail.com,
+        Frederick Lawler <fred@cloudflare.com>
+Subject: [PATCH v5 2/4] bpf-lsm: Make bpf_lsm_userns_create() sleepable
+Date:   Mon, 15 Aug 2022 11:20:26 -0500
+Message-Id: <20220815162028.926858-3-fred@cloudflare.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
+References: <20220815162028.926858-1-fred@cloudflare.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stop calling bus_set_iommu() since it's now unnecessary, and simplify
-the init failure path accordingly.
+Users may want to audit calls to security_create_user_ns() and access
+user space memory. Also create_user_ns() runs without
+pagefault_disabled(). Therefore, make bpf_lsm_userns_create() sleepable
+for mandatory access control policies.
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Acked-by: KP Singh <kpsingh@kernel.org>
+Signed-off-by: Frederick Lawler <fred@cloudflare.com>
+
 ---
+Changes since v4:
+- None
+Changes since v3:
+- None
+Changes since v2:
+- Rename create_user_ns hook to userns_create
+Changes since v1:
+- None
+---
+ kernel/bpf/bpf_lsm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-v4: No change
-
- drivers/iommu/exynos-iommu.c | 9 ---------
- 1 file changed, 9 deletions(-)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 8e18984a0c4f..45fd4850bacb 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1446,16 +1446,7 @@ static int __init exynos_iommu_init(void)
- 		goto err_zero_lv2;
- 	}
+diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+index fa71d58b7ded..761998fda762 100644
+--- a/kernel/bpf/bpf_lsm.c
++++ b/kernel/bpf/bpf_lsm.c
+@@ -335,6 +335,7 @@ BTF_ID(func, bpf_lsm_task_getsecid_obj)
+ BTF_ID(func, bpf_lsm_task_prctl)
+ BTF_ID(func, bpf_lsm_task_setscheduler)
+ BTF_ID(func, bpf_lsm_task_to_inode)
++BTF_ID(func, bpf_lsm_userns_create)
+ BTF_SET_END(sleepable_lsm_hooks)
  
--	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
--	if (ret) {
--		pr_err("%s: Failed to register exynos-iommu driver.\n",
--								__func__);
--		goto err_set_iommu;
--	}
--
- 	return 0;
--err_set_iommu:
--	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
- err_zero_lv2:
- 	platform_driver_unregister(&exynos_sysmmu_driver);
- err_reg_driver:
+ bool bpf_lsm_is_sleepable_hook(u32 btf_id)
 -- 
-2.36.1.dirty
+2.30.2
 
