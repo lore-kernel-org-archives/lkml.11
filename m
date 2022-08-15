@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBEFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC38C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348234AbiHOVa3 (ORCPT
+        id S1348250AbiHOVad (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        Mon, 15 Aug 2022 17:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348224AbiHOV1E (ORCPT
+        with ESMTP id S1348246AbiHOV1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:27:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAF9E97D0;
-        Mon, 15 Aug 2022 12:23:01 -0700 (PDT)
+        Mon, 15 Aug 2022 17:27:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3177BE9AB1;
+        Mon, 15 Aug 2022 12:23:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5E47BCE12C4;
-        Mon, 15 Aug 2022 19:22:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F708C433D7;
-        Mon, 15 Aug 2022 19:22:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8132B60BB7;
+        Mon, 15 Aug 2022 19:23:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85430C433D7;
+        Mon, 15 Aug 2022 19:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591377;
-        bh=Pb+Su699391mtr7066eQ49nAxJ3tqsKaKrMulCNhQ/0=;
+        s=korg; t=1660591383;
+        bh=aZcGBsdZmldfbvVLdPKlPrR+pTlUOeweKXXlUsFE84I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JELQf5TGpBbND2dUNmYbsDsJU+kmcWoMEF/yN5sWefxRCawBCBabnd4kNJysEbBB4
-         axo+sxKhXPfpEqbZ3fzOm+p3G1rbTuubsR4AmszO9NpKjTviAqKVdSy2FpaX5vrw+L
-         H91NxnpsVEjnaIqaKSTJWW+TRQJ50RYIxb756O7o=
+        b=JRSem1gtv+6H32Nq2jUiJNdglRzplsJkUWjDmJVNbCdp1c6oZrXfiUn8JDhcx+lDg
+         8uicvZGEURyp0wdDUgZqIGDFbbFj7988a0v1zOaWr/FU3Fnh+cWP5KSdnPJGVfcRt0
+         7K6SRpAhxVB8XXgC54YMeKUBWOy9VhV3twHHw+kA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0560/1095] PCI: microchip: Fix refcount leak in mc_pcie_init_irq_domains()
-Date:   Mon, 15 Aug 2022 19:59:19 +0200
-Message-Id: <20220815180452.738930098@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0562/1095] HID: cp2112: prevent a buffer overflow in cp2112_xfer()
+Date:   Mon, 15 Aug 2022 19:59:21 +0200
+Message-Id: <20220815180452.823221007@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,47 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit f030304fdeb87ec8f1b518c73703214aec6cc24a ]
+[ Upstream commit 381583845d19cb4bd21c8193449385f3fefa9caf ]
 
-of_get_next_child() returns a node pointer with refcount incremented, so we
-should use of_node_put() on it when we don't need it anymore.
+Smatch warnings:
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy()
+'data->block[1]' too small (33 vs 255)
+drivers/hid/hid-cp2112.c:793 cp2112_xfer() error: __memcpy() 'buf' too
+small (64 vs 255)
 
-mc_pcie_init_irq_domains() only calls of_node_put() in the normal path,
-missing it in some error paths.  Add missing of_node_put() to avoid
-refcount leak.
+The 'read_length' variable is provided by 'data->block[0]' which comes
+from user and it(read_length) can take a value between 0-255. Add an
+upper bound to 'read_length' variable to prevent a buffer overflow in
+memcpy().
 
-Fixes: 6f15a9c9f941 ("PCI: microchip: Add Microchip PolarFire PCIe controller driver")
-Link: https://lore.kernel.org/r/20220605055123.59127-1-linmq006@gmail.com
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Fixes: 542134c0375b ("HID: cp2112: Fix I2C_BLOCK_DATA transactions")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-microchip-host.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hid/hid-cp2112.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/pci/controller/pcie-microchip-host.c b/drivers/pci/controller/pcie-microchip-host.c
-index 2c52a8cef726..932b1c182149 100644
---- a/drivers/pci/controller/pcie-microchip-host.c
-+++ b/drivers/pci/controller/pcie-microchip-host.c
-@@ -904,6 +904,7 @@ static int mc_pcie_init_irq_domains(struct mc_pcie *port)
- 						   &event_domain_ops, port);
- 	if (!port->event_domain) {
- 		dev_err(dev, "failed to get event domain\n");
-+		of_node_put(pcie_intc_node);
- 		return -ENOMEM;
- 	}
- 
-@@ -913,6 +914,7 @@ static int mc_pcie_init_irq_domains(struct mc_pcie *port)
- 						  &intx_domain_ops, port);
- 	if (!port->intx_domain) {
- 		dev_err(dev, "failed to get an INTx IRQ domain\n");
-+		of_node_put(pcie_intc_node);
- 		return -ENOMEM;
- 	}
- 
+diff --git a/drivers/hid/hid-cp2112.c b/drivers/hid/hid-cp2112.c
+index ece147d1a278..1e16b0fa310d 100644
+--- a/drivers/hid/hid-cp2112.c
++++ b/drivers/hid/hid-cp2112.c
+@@ -790,6 +790,11 @@ static int cp2112_xfer(struct i2c_adapter *adap, u16 addr,
+ 		data->word = le16_to_cpup((__le16 *)buf);
+ 		break;
+ 	case I2C_SMBUS_I2C_BLOCK_DATA:
++		if (read_length > I2C_SMBUS_BLOCK_MAX) {
++			ret = -EINVAL;
++			goto power_normal;
++		}
++
+ 		memcpy(data->block + 1, buf, read_length);
+ 		break;
+ 	case I2C_SMBUS_BLOCK_DATA:
 -- 
 2.35.1
 
