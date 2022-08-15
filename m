@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22380C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D75C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbiHPEtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56128 "EHLO
+        id S232885AbiHPEtm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiHPEqO (ORCPT
+        with ESMTP id S232966AbiHPEqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:46:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E9F175E38;
-        Mon, 15 Aug 2022 13:43:51 -0700 (PDT)
+        Tue, 16 Aug 2022 00:46:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94BC135;
+        Mon, 15 Aug 2022 13:42:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6A46611FA;
-        Mon, 15 Aug 2022 20:43:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0586C433C1;
-        Mon, 15 Aug 2022 20:43:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86AB7B80EAD;
+        Mon, 15 Aug 2022 20:42:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7338C433C1;
+        Mon, 15 Aug 2022 20:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596230;
-        bh=maX3TgXXhCXyX3Q3+xZRI4I2dr3xeTuaR+ULG7EfbO8=;
+        s=korg; t=1660596165;
+        bh=hjKaXMlf/qIWQalHOBKYAOOd5KyNV3mEb9Uy2J+LTrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xoO0i/hUoZxQ3Oc+o0HN0qjES6tPW73++DaA2WwXQr5SztlhOfrmnh8csa9jZMV25
-         Qv5G4WvRqDHvf4WN6RCHVv1Ny8uoPW4ExZVFMcAZEDC+sFiaoMXHteku7qJxDQuyvZ
-         TZ74W0n/PpbW+2il6XCSAZ+om/owJo/0qKFmJj9I=
+        b=wmQonE/wEyBv0mi49IW8ecY0dxSteQ+DLIUx0CGAS1Jl5j4sKB8dtn2q1yUw0MPsP
+         YG61hhC97A55T/Tp1llyxbMzWPGN6t/3RSfP6Pjc6ZdQRqMD5RCW26IorlR3iMKAba
+         OMIuw7sVxryhCs2kEywy4gz8quP7pavGwJDkua2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0980/1157] ASoC: fsl_easrc: use snd_pcm_format_t type for sample_format
-Date:   Mon, 15 Aug 2022 20:05:36 +0200
-Message-Id: <20220815180518.949925420@linuxfoundation.org>
+Subject: [PATCH 5.19 0993/1157] powerpc/32: Call mmu_mark_initmem_nx() regardless of data block mapping.
+Date:   Mon, 15 Aug 2022 20:05:49 +0200
+Message-Id: <20220815180519.444327738@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,105 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit de27216cf2d645c2fd14e513707bdcd54e5b1de4 ]
+[ Upstream commit 980bbf7ca72012d317617fcdbfabe8708e4cef29 ]
 
-Fix sparse warning:
-sound/soc/fsl/fsl_easrc.c:562:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:563:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:565:38: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:566:39: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:608:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:609:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:615:40: sparse: warning: restricted snd_pcm_format_t degrades to integer
-sound/soc/fsl/fsl_easrc.c:616:41: sparse: warning: restricted snd_pcm_format_t degrades to integer
+mark_initmem_nx() calls either mmu_mark_initmem_nx() or
+set_memory_attr() based on return from v_block_mapped()
+of _sinittext.
 
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    got restricted snd_pcm_format_t [usertype] format
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    got restricted snd_pcm_format_t [usertype] format
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    expected unsigned int sample_format
-sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse: warning: incorrect type in argument 2 (different base types)
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    expected restricted snd_pcm_format_t [usertype] *in_raw_format
-sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    got unsigned int *
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    expected restricted snd_pcm_format_t [usertype] *out_raw_format
-sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    got unsigned int *
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    expected unsigned int [usertype] *out_value
-sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    got restricted snd_pcm_format_t *
-sound/soc/fsl/fsl_easrc.c:1943:49: sparse: warning: restricted snd_pcm_format_t degrades to integer
+But we can now handle text and data independently, so that
+text may be mapped by block even when data is mapped by pages.
 
-Fixes: 955ac624058f ("ASoC: fsl_easrc: Add EASRC ASoC CPU DAI drivers")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1658399393-28777-5-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+On the 8xx for instance, at startup 32Mbytes of memory are
+pinned in TLB. So the pinned entries need to go away for sinittext.
+
+In next patch a BAT will be set to also covers sinittext on book3s/32.
+So it will also be needed to call mmu_mark_initmem_nx() even when
+data above sinittext is not mapped with BATs.
+
+As this is highly dependent on the platform, call mmu_mark_initmem_nx()
+regardless of data block mapping. Then the platform will know what to
+do.
+
+Modify 8xx mmu_mark_initmem_nx() so that inittext mapping is modified
+only when pagealloc debug and kfence are not active, otherwise inittext
+is mapped with standard pages. And don't do anything on kernel text
+which is already mapped with PAGE_KERNEL_TEXT.
+
+Fixes: da1adea07576 ("powerpc/8xx: Allow STRICT_KERNEL_RwX with pinned TLB")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/db3fc14f3bfa6215b0786ef58a6e2bc1e1f964d7.1655202804.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_easrc.c | 9 ++++++---
- sound/soc/fsl/fsl_easrc.h | 2 +-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ arch/powerpc/mm/nohash/8xx.c | 4 ++--
+ arch/powerpc/mm/pgtable_32.c | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_easrc.c b/sound/soc/fsl/fsl_easrc.c
-index be14f84796cb..cf0e10d17dbe 100644
---- a/sound/soc/fsl/fsl_easrc.c
-+++ b/sound/soc/fsl/fsl_easrc.c
-@@ -476,7 +476,8 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
- 	struct fsl_asrc_pair *ctx;
- 	struct device *dev;
- 	u32 inrate, outrate, offset = 0;
--	u32 in_s_rate, out_s_rate, in_s_fmt, out_s_fmt;
-+	u32 in_s_rate, out_s_rate;
-+	snd_pcm_format_t in_s_fmt, out_s_fmt;
- 	int ret, i;
+diff --git a/arch/powerpc/mm/nohash/8xx.c b/arch/powerpc/mm/nohash/8xx.c
+index 27f9186ae374..1ee08c3efe5b 100644
+--- a/arch/powerpc/mm/nohash/8xx.c
++++ b/arch/powerpc/mm/nohash/8xx.c
+@@ -179,8 +179,8 @@ void mmu_mark_initmem_nx(void)
+ 	unsigned long boundary = strict_kernel_rwx_enabled() ? sinittext : etext8;
+ 	unsigned long einittext8 = ALIGN(__pa(_einittext), SZ_8M);
  
- 	if (!easrc)
-@@ -1873,6 +1874,7 @@ static int fsl_easrc_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	struct device_node *np;
- 	void __iomem *regs;
-+	u32 asrc_fmt = 0;
- 	int ret, irq;
+-	mmu_mapin_ram_chunk(0, boundary, PAGE_KERNEL_TEXT, false);
+-	mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
++	if (!debug_pagealloc_enabled_or_kfence())
++		mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
  
- 	easrc = devm_kzalloc(dev, sizeof(*easrc), GFP_KERNEL);
-@@ -1933,13 +1935,14 @@ static int fsl_easrc_probe(struct platform_device *pdev)
- 		return ret;
+ 	mmu_pin_tlb(block_mapped_ram, false);
+ }
+diff --git a/arch/powerpc/mm/pgtable_32.c b/arch/powerpc/mm/pgtable_32.c
+index a56ade39dc68..3ac73f9fb5d5 100644
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -135,9 +135,9 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
+ 
+-	if (v_block_mapped((unsigned long)_sinittext)) {
+-		mmu_mark_initmem_nx();
+-	} else {
++	mmu_mark_initmem_nx();
++
++	if (!v_block_mapped((unsigned long)_sinittext)) {
+ 		set_memory_nx((unsigned long)_sinittext, numpages);
+ 		set_memory_rw((unsigned long)_sinittext, numpages);
  	}
- 
--	ret = of_property_read_u32(np, "fsl,asrc-format", &easrc->asrc_format);
-+	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc_fmt);
-+	easrc->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
- 	if (ret) {
- 		dev_err(dev, "failed to asrc format\n");
- 		return ret;
- 	}
- 
--	if (!(FSL_EASRC_FORMATS & (1ULL << easrc->asrc_format))) {
-+	if (!(FSL_EASRC_FORMATS & (pcm_format_to_bits(easrc->asrc_format)))) {
- 		dev_warn(dev, "unsupported format, switching to S24_LE\n");
- 		easrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
- 	}
-diff --git a/sound/soc/fsl/fsl_easrc.h b/sound/soc/fsl/fsl_easrc.h
-index 86d5c360d4f5..7c70dac52713 100644
---- a/sound/soc/fsl/fsl_easrc.h
-+++ b/sound/soc/fsl/fsl_easrc.h
-@@ -569,7 +569,7 @@ struct fsl_easrc_io_params {
- 	unsigned int access_len;
- 	unsigned int fifo_wtmk;
- 	unsigned int sample_rate;
--	unsigned int sample_format;
-+	snd_pcm_format_t sample_format;
- 	unsigned int norm_rate;
- };
- 
 -- 
 2.35.1
 
