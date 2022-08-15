@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0AFC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F187EC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243966AbiHPAo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57490 "EHLO
+        id S242984AbiHPApB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350895AbiHPAmE (ORCPT
+        with ESMTP id S1350945AbiHPAmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:42:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CE9ACA3B;
-        Mon, 15 Aug 2022 13:40:04 -0700 (PDT)
+        Mon, 15 Aug 2022 20:42:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE271907D8;
+        Mon, 15 Aug 2022 13:39:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1DF6B80EA9;
-        Mon, 15 Aug 2022 20:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34EF5C433C1;
-        Mon, 15 Aug 2022 20:40:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4C24B80EA8;
+        Mon, 15 Aug 2022 20:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18480C433C1;
+        Mon, 15 Aug 2022 20:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596001;
-        bh=tUPLCUTkgqwBFKrjziJpQTyka/orLefq/dUbfZbUVHc=;
+        s=korg; t=1660595989;
+        bh=KpSNh/dqVBQh0z5ouk4urpIba6i7ncUAsCBAtiCQDtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGWRQX33HZ5fA9lg+oKP/Nax9YgrJbfvgWtF2FzGRdI3WDwysIclTxOhXpRKvesoq
-         8MvfCIp+r4P69GBcLqI2x8bAqdjp2EOolTof6CK+aDye7kczLicML9WMVZMXhITcO6
-         x/o5swsq4txo/hQyY1mCNu5hshO/dgyU+oHvnzNs=
+        b=wWuI8WVhoTFUl2ALgPYKT+9XMAtfnEGabpJHPiy8ey+3qd4+ZFNXFGiUP+CAPXPBJ
+         /qtH1c9KIe2RTKluan7iBkpCohhIPH3ALQUNzU/BH0LTo7tDOMKiyvnK89qGk73f8I
+         i4ZlOa3GJjChaI5cNqSd4AC+SNURZAVcxnP3fjGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0943/1157] tty: n_gsm: fix wrong T1 retry count handling
-Date:   Mon, 15 Aug 2022 20:04:59 +0200
-Message-Id: <20220815180517.257465629@linuxfoundation.org>
+Subject: [PATCH 5.19 0905/1157] ASoC: codecs: wcd9335: move gains from SX_TLV to S8_TLV
+Date:   Mon, 15 Aug 2022 20:04:21 +0200
+Message-Id: <20220815180515.662578441@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,53 +50,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit f30e10caa80aa1f35508bc17fc302dbbde9a833c ]
+[ Upstream commit 2fbe0953732e06b471cdedbf6f615b84235580d8 ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
-maximum number of retransmissions (N2) is from 0 to 255 (both including).
-gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
-retransmission attempts. Setting N2 to zero results in more than 255
-retransmission attempts.
-Fix gsm_dlci_t1() to comply with 3GPP 27.010.
+move all the digital gains form using SX_TLV to S8_TLV, these gains are
+actually 8 bit gains with 7th signed bit and ranges from -84dB to +40dB
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220707113223.3685-1-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+rest of the Qualcomm wcd codecs uses these properly.
+
+Fixes: 8c4f021d806a ("ASoC: wcd9335: add basic controls")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220609111901.318047-3-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wcd9335.c | 81 +++++++++++++++++---------------------
+ 1 file changed, 36 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index ba399a660573..1a70e7ae90cc 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1805,8 +1805,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
+index 3cb7a3eab8c7..541ef1cd3b74 100644
+--- a/sound/soc/codecs/wcd9335.c
++++ b/sound/soc/codecs/wcd9335.c
+@@ -2264,51 +2264,42 @@ static int wcd9335_rx_hph_mode_put(struct snd_kcontrol *kc,
  
- 	switch (dlci->state) {
- 	case DLCI_OPENING:
--		dlci->retries--;
- 		if (dlci->retries) {
-+			dlci->retries--;
- 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
-@@ -1821,8 +1821,8 @@ static void gsm_dlci_t1(struct timer_list *t)
- 
- 		break;
- 	case DLCI_CLOSING:
--		dlci->retries--;
- 		if (dlci->retries) {
-+			dlci->retries--;
- 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else
+ static const struct snd_kcontrol_new wcd9335_snd_controls[] = {
+ 	/* -84dB min - 40dB max */
+-	SOC_SINGLE_SX_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX2 Digital Volume", WCD9335_CDC_RX2_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX3 Digital Volume", WCD9335_CDC_RX3_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX4 Digital Volume", WCD9335_CDC_RX4_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX5 Digital Volume", WCD9335_CDC_RX5_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX6 Digital Volume", WCD9335_CDC_RX6_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX7 Digital Volume", WCD9335_CDC_RX7_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX8 Digital Volume", WCD9335_CDC_RX8_RX_VOL_CTL,
+-		0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX0 Mix Digital Volume",
+-			  WCD9335_CDC_RX0_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX1 Mix Digital Volume",
+-			  WCD9335_CDC_RX1_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX2 Mix Digital Volume",
+-			  WCD9335_CDC_RX2_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX3 Mix Digital Volume",
+-			  WCD9335_CDC_RX3_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX4 Mix Digital Volume",
+-			  WCD9335_CDC_RX4_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX5 Mix Digital Volume",
+-			  WCD9335_CDC_RX5_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX6 Mix Digital Volume",
+-			  WCD9335_CDC_RX6_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX7 Mix Digital Volume",
+-			  WCD9335_CDC_RX7_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
+-	SOC_SINGLE_SX_TLV("RX8 Mix Digital Volume",
+-			  WCD9335_CDC_RX8_RX_VOL_MIX_CTL,
+-			  0, -84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX2 Digital Volume", WCD9335_CDC_RX2_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX3 Digital Volume", WCD9335_CDC_RX3_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX4 Digital Volume", WCD9335_CDC_RX4_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX5 Digital Volume", WCD9335_CDC_RX5_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX6 Digital Volume", WCD9335_CDC_RX6_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX7 Digital Volume", WCD9335_CDC_RX7_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX8 Digital Volume", WCD9335_CDC_RX8_RX_VOL_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX0 Mix Digital Volume", WCD9335_CDC_RX0_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX1 Mix Digital Volume", WCD9335_CDC_RX1_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX2 Mix Digital Volume", WCD9335_CDC_RX2_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX3 Mix Digital Volume", WCD9335_CDC_RX3_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX4 Mix Digital Volume", WCD9335_CDC_RX4_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX5 Mix Digital Volume", WCD9335_CDC_RX5_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX6 Mix Digital Volume", WCD9335_CDC_RX6_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX7 Mix Digital Volume", WCD9335_CDC_RX7_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
++	SOC_SINGLE_S8_TLV("RX8 Mix Digital Volume", WCD9335_CDC_RX8_RX_VOL_MIX_CTL,
++			-84, 40, digital_gain),
+ 	SOC_ENUM("RX INT0_1 HPF cut off", cf_int0_1_enum),
+ 	SOC_ENUM("RX INT0_2 HPF cut off", cf_int0_2_enum),
+ 	SOC_ENUM("RX INT1_1 HPF cut off", cf_int1_1_enum),
 -- 
 2.35.1
 
