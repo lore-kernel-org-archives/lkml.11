@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5871C32764
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF840C32767
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355178AbiHOXrM (ORCPT
+        id S1355271AbiHOXrW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
+        Mon, 15 Aug 2022 19:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354335AbiHOXly (ORCPT
+        with ESMTP id S1354354AbiHOXl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152692C67C;
-        Mon, 15 Aug 2022 13:12:58 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDA3326CD;
+        Mon, 15 Aug 2022 13:13:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE905B80EA9;
-        Mon, 15 Aug 2022 20:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 250DDC433C1;
-        Mon, 15 Aug 2022 20:12:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75949B80EA8;
+        Mon, 15 Aug 2022 20:13:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FC26C433D6;
+        Mon, 15 Aug 2022 20:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594375;
-        bh=jV18IuuG2M1GWbVk7mRpWwZoaWpLoaIhVm8KhE8WCg0=;
+        s=korg; t=1660594391;
+        bh=gvF9vfJBn1E/u+Vk2cnTqk824szUc7KavKwz//HsATE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VhrYoZr5kVBjAXY9smnkQngOQJQioMBrb74EIaKljm6o6NLIpKUHatLHu9uuKCF6e
-         hfM+M8IArSqrD3mGKx0k6qQ8luOkqM9NXt4cIvANm6vznLIMKdv/f9wgu1poCTRIiP
-         L2RK0eCPFlrESbylUIl2bhYyfpYw8T2C1bLR8d5Y=
+        b=RMUgFb9jogQUfpWJzZ/5SMEdPzk4BHA2fiY8knFPGYMr/n56Bg4MiqRVdTS1CYPC+
+         FVrMt2Fe4wcLcz8gVFkfJOEaJv4Ibhh03D1im8S8duQrz1Az+jaqbBr7hj4IxiEtqX
+         hCEMLpUF1OmingnXL3x/iF9M5jnpJ3A2TyY6fJJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0426/1157] crypto: arm64/gcm - Select AEAD for GHASH_ARM64_CE
-Date:   Mon, 15 Aug 2022 19:56:22 +0200
-Message-Id: <20220815180456.701948790@linuxfoundation.org>
+Subject: [PATCH 5.19 0406/1157] drm/vc4: kms: Use maximum FIFO load for the HVS clock rate
+Date:   Mon, 15 Aug 2022 19:56:02 +0200
+Message-Id: <20220815180455.904644417@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,37 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qian Cai <quic_qiancai@quicinc.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit fac76f2260893dde5aa05bb693b4c13e8ed0454b ]
+[ Upstream commit 1701a23a4ef0993964ccc2f2d5d13f83a5ff4c70 ]
 
-Otherwise, we could fail to compile.
+The core clock computation takes into account both the load due to the
+input (ie, planes) and its output (ie, encoders).
 
-ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_exit':
-ghash-ce-glue.c:(.exit.text+0x24): undefined reference to 'crypto_unregister_aead'
-ld: arch/arm64/crypto/ghash-ce-glue.o: in function 'ghash_ce_mod_init':
-ghash-ce-glue.c:(.init.text+0x34): undefined reference to 'crypto_register_aead'
+However, while the input load needs to consider all the planes, and thus
+sum all of their associated loads, the output happens mostly in
+parallel.
 
-Fixes: 537c1445ab0b ("crypto: arm64/gcm - implement native driver using v8 Crypto Extensions")
-Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Therefore, we need to consider only the maximum of all the output loads,
+and not the sum like we were doing. This resulted in a clock rate way
+too high which could be discarded for being too high by the clock
+framework.
+
+Since recent changes, the clock framework will even downright reject it,
+leading to a core clock being too low for its current needs.
+
+Fixes: 16e101051f32 ("drm/vc4: Increase the core clock based on HVS load")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-4-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/crypto/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vc4/vc4_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/crypto/Kconfig b/arch/arm64/crypto/Kconfig
-index ac85682c013c..e3aaa971d660 100644
---- a/arch/arm64/crypto/Kconfig
-+++ b/arch/arm64/crypto/Kconfig
-@@ -71,6 +71,7 @@ config CRYPTO_GHASH_ARM64_CE
- 	select CRYPTO_HASH
- 	select CRYPTO_GF128MUL
- 	select CRYPTO_LIB_AES
-+	select CRYPTO_AEAD
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index 893d831b24aa..b7353d4c0811 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -950,7 +950,9 @@ vc4_core_clock_atomic_check(struct drm_atomic_state *state)
+ 			continue;
  
- config CRYPTO_CRCT10DIF_ARM64_CE
- 	tristate "CRCT10DIF digest algorithm using PMULL instructions"
+ 		num_outputs++;
+-		cob_rate += hvs_new_state->fifo_state[i].fifo_load;
++		cob_rate = max_t(unsigned long,
++				 hvs_new_state->fifo_state[i].fifo_load,
++				 cob_rate);
+ 	}
+ 
+ 	pixel_rate = load_state->hvs_load;
 -- 
 2.35.1
 
