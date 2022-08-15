@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D2FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC66C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346956AbiHOWNU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
+        id S243833AbiHOWN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348759AbiHOWLS (ORCPT
+        with ESMTP id S1348766AbiHOWLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:11:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0C611B4D4;
-        Mon, 15 Aug 2022 12:38:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B343135B;
+        Mon, 15 Aug 2022 12:38:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A3B8B80EAB;
-        Mon, 15 Aug 2022 19:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8375BC433D6;
-        Mon, 15 Aug 2022 19:38:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CB3B611FB;
+        Mon, 15 Aug 2022 19:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7EDC433C1;
+        Mon, 15 Aug 2022 19:38:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592313;
-        bh=y5dOMvY/vtWmTZ442l2tNq7mMPfl2pLTBxrmgWBug+g=;
+        s=korg; t=1660592325;
+        bh=7ZSlsoMSU+gfHOXsr7fwBnWNyarphMMkVXwP75Du8lw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E9Su9uB3/zDmDi+/xcjnPkEQiNxbwoZsjTpSPGU2X6pfxlwojXLxZuiWzpHt+VFed
-         oFGmsgkLY/E8vQYmrHM7Mb5Eh9mGCLX6pX9Mku3O9lGkoO0lXozMvQLosVr7xaxjp6
-         XJPYMLfiDbFgjqIoVRXb2lNI+RiVZOt/YBJydgFY=
+        b=sCewpKnsWHCWlWoZUvgdfeReCs6Amdz3INuY61OeM3dWqMGPBJ7trTJBXJ9uvpSgL
+         fWVGgn/pxrcnoNHgbQagBGm0Os5Gsc9eKCzsPcuHZjhJQ7rSq8mfIidn7o5b4hSfwT
+         7lkJNxWLhss1I0bY0v2g4HFSR6eg5qr+tOdz3er0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH 5.19 0092/1157] drm/nouveau/kms: Fix failure path for creating DP connectors
-Date:   Mon, 15 Aug 2022 19:50:48 +0200
-Message-Id: <20220815180443.265484705@linuxfoundation.org>
+        stable@vger.kernel.org, Haoyue Xu <xuhaoyue1@hisilicon.com>,
+        Wenpeng Liang <liangwenpeng@huawei.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0770/1095] RDMA/hns: Fix incorrect clearing of interrupt status register
+Date:   Mon, 15 Aug 2022 20:02:49 +0200
+Message-Id: <20220815180501.105273519@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,46 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Haoyue Xu <xuhaoyue1@hisilicon.com>
 
-commit ca0367ca5d9216644b41f86348d6661f8d9e32d8 upstream.
+[ Upstream commit ecb4db5c3590aa956b4b2c352081a5b632d1f9f9 ]
 
-It looks like that when we moved nouveau over to using drm_dp_aux_init()
-and registering it's aux bus during late connector registration, we totally
-forgot to fix the failure codepath in nouveau_connector_create() - as it
-still seems to assume that drm_dp_aux_init() can fail (it can't).
+The driver will clear all the interrupts in the same area
+when the driver handles the interrupt of type AEQ overflow.
+It should only set the interrupt status bit of type AEQ overflow.
 
-So, let's fix that and also add a missing check to ensure that we've
-properly allocated nv_connector->aux.name while we're at it.
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: fd43ad9d47e7 ("drm/nouveau/kms/nv50-: Move AUX adapter reg to connector late register/early unregister")
-Cc: <stable@vger.kernel.org> # v5.14+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220526204313.656473-1-lyude@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a5073d6054f7 ("RDMA/hns: Add eq support of hip08")
+Link: https://lore.kernel.org/r/20220714134353.16700-4-liangwenpeng@huawei.com
+Signed-off-by: Haoyue Xu <xuhaoyue1@hisilicon.com>
+Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_connector.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_connector.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
-@@ -1361,13 +1361,11 @@ nouveau_connector_create(struct drm_devi
- 		snprintf(aux_name, sizeof(aux_name), "sor-%04x-%04x",
- 			 dcbe->hasht, dcbe->hashm);
- 		nv_connector->aux.name = kstrdup(aux_name, GFP_KERNEL);
--		drm_dp_aux_init(&nv_connector->aux);
--		if (ret) {
--			NV_ERROR(drm, "Failed to init AUX adapter for sor-%04x-%04x: %d\n",
--				 dcbe->hasht, dcbe->hashm, ret);
-+		if (!nv_connector->aux.name) {
- 			kfree(nv_connector);
--			return ERR_PTR(ret);
-+			return ERR_PTR(-ENOMEM);
- 		}
-+		drm_dp_aux_init(&nv_connector->aux);
- 		fallthrough;
- 	default:
- 		funcs = &nouveau_connector_funcs;
+diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+index 86f6a4aae1e5..6e7dadc3386c 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
++++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+@@ -6125,8 +6125,8 @@ static irqreturn_t hns_roce_v2_msix_interrupt_abn(int irq, void *dev_id)
+ 
+ 		dev_err(dev, "AEQ overflow!\n");
+ 
+-		int_st |= 1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S;
+-		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG, int_st);
++		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG,
++			   1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S);
+ 
+ 		/* Set reset level for reset_event() */
+ 		if (ops->set_default_reset_request)
+-- 
+2.35.1
+
 
 
