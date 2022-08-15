@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 891AEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120CDC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344102AbiHOTPi (ORCPT
+        id S1344122AbiHOTPt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
+        Mon, 15 Aug 2022 15:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343801AbiHOTNB (ORCPT
+        with ESMTP id S1343790AbiHOTNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:13:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486A95073C;
-        Mon, 15 Aug 2022 11:37:25 -0700 (PDT)
+        Mon, 15 Aug 2022 15:13:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9E651429;
+        Mon, 15 Aug 2022 11:37:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 320A0610A4;
-        Mon, 15 Aug 2022 18:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 388B6C433C1;
-        Mon, 15 Aug 2022 18:37:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C54F6113D;
+        Mon, 15 Aug 2022 18:37:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4224DC433D7;
+        Mon, 15 Aug 2022 18:37:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588644;
-        bh=8UyRwPRI9GXPc89UbffERA3S7rsrfc9rjDhGIYxXX4k=;
+        s=korg; t=1660588650;
+        bh=Vi5nOn57Hq/yjy93n2CxGZ9yBwsNUVNFG9Sh/CociKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HtpJOKshq3UzQwEAIJZ3iqX2HGjcz/lxOPHrgWrz72lOAUsyabGZjUZBAbM/vaZBn
-         aRwcKS8qb30lg8VF11/7bL0fhU91VQpl1lv77vB5qpMXKBtdRkesw8eYVQjQMBC84e
-         T8dLyxpyqyw28zyjaZIZTbYLbJ9fEp3ByDpgw0AQ=
+        b=EuNWWr5BoPdv9NymjfIOHdAs+hnZ4rZwQoF8Lh1bfBKOxw98gJYqKVA/zjAJTO0ul
+         tD0XQd/2SAFhC0NnmipAjL0joFrzfqclxU/oyJWAaJYs30gxe84rRI1TN2zVjbOYbu
+         6MqG/wCC6AShyXlPSyK8TQzNH+6otCOzAuHdJ6I0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 470/779] scsi: qla2xxx: Check correct variable in qla24xx_async_gffid()
-Date:   Mon, 15 Aug 2022 20:01:54 +0200
-Message-Id: <20220815180357.386650944@linuxfoundation.org>
+Subject: [PATCH 5.15 472/779] intel_th: msu-sink: Potential dereference of null pointer
+Date:   Mon, 15 Aug 2022 20:01:56 +0200
+Message-Id: <20220815180357.464305629@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,38 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 7c33e477bd883f79cccec418980cb8f7f2d50347 ]
+[ Upstream commit 82f76a4a720791d889de775b5f7541d601efc8bd ]
 
-There is a copy and paste bug here.  It should check ".rsp" instead of
-".req".  The error message is copy and pasted as well so update that too.
+The return value of dma_alloc_coherent() needs to be checked.
+To avoid use of null pointer in sg_set_buf() in case of the failure of
+alloc.
 
-Link: https://lore.kernel.org/r/YrK1A/t3L6HKnswO@kili
-Fixes: 9c40c36e75ff ("scsi: qla2xxx: edif: Reduce Initiator-Initiator thrashing")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: f220df66f676 ("intel_th: msu-sink: An example msu buffer "sink"")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-3-alexander.shishkin@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_gs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hwtracing/intel_th/msu-sink.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/qla2xxx/qla_gs.c b/drivers/scsi/qla2xxx/qla_gs.c
-index f89911beaade..2c49f12078ac 100644
---- a/drivers/scsi/qla2xxx/qla_gs.c
-+++ b/drivers/scsi/qla2xxx/qla_gs.c
-@@ -3385,9 +3385,9 @@ int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport, bool wait)
- 				sp->u.iocb_cmd.u.ctarg.rsp_allocated_size,
- 				&sp->u.iocb_cmd.u.ctarg.rsp_dma,
- 	    GFP_KERNEL);
--	if (!sp->u.iocb_cmd.u.ctarg.req) {
-+	if (!sp->u.iocb_cmd.u.ctarg.rsp) {
- 		ql_log(ql_log_warn, vha, 0xd041,
--		       "%s: Failed to allocate ct_sns request.\n",
-+		       "%s: Failed to allocate ct_sns response.\n",
- 		       __func__);
- 		goto done_free_sp;
+diff --git a/drivers/hwtracing/intel_th/msu-sink.c b/drivers/hwtracing/intel_th/msu-sink.c
+index 2c7f5116be12..891b28ea25fe 100644
+--- a/drivers/hwtracing/intel_th/msu-sink.c
++++ b/drivers/hwtracing/intel_th/msu-sink.c
+@@ -71,6 +71,9 @@ static int msu_sink_alloc_window(void *data, struct sg_table **sgt, size_t size)
+ 		block = dma_alloc_coherent(priv->dev->parent->parent,
+ 					   PAGE_SIZE, &sg_dma_address(sg_ptr),
+ 					   GFP_KERNEL);
++		if (!block)
++			return -ENOMEM;
++
+ 		sg_set_buf(sg_ptr, block, PAGE_SIZE);
  	}
+ 
 -- 
 2.35.1
 
