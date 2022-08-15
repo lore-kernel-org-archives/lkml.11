@@ -2,98 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E15C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34144C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353631AbiHOXcI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        id S241570AbiHOXai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343956AbiHOX0K (ORCPT
+        with ESMTP id S244651AbiHOXYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:26:10 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8521747B9B;
-        Mon, 15 Aug 2022 13:06:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UeErxgbLsIOnl1kKr0gd1MbfngQnOPyfN93GP4+152g=; b=KwI+w1Wmmgs2RIYXYUmn/oWg3t
-        HZubBothMQce3fFWX8GXOWkWDc7Vc6TNeF2nZPtru/dO1woNE1bvTZ/mViIZ5PRbpuGvu3FQdRsOv
-        y5/3PvKxKUrOGiCTFPJPz17iDysP5xjxIdBnh9MpOyVYGWhe1vLxH2BYaeDLuZIohrSvqUpHtwKMV
-        V+DLtqiLsKQZJquaiKbQVPDOy+R8Xygz5EKfDS7FQiG4MM4dTUldAe5o7QG2RUBg2a9ptovyvzov/
-        JTxIrcqbNiLAAiQZlG9FFLt+oi234Ibx1AU4Xh1YFLCSGwrHTfwIbj7c/lTZu55Clddn0Dm7hkw6k
-        /0WcpsTQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oNgLt-006383-RC; Mon, 15 Aug 2022 20:06:21 +0000
-Date:   Mon, 15 Aug 2022 21:06:21 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kees Cook <keescook@chromium.org>,
+        Mon, 15 Aug 2022 19:24:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A5E83BC2;
+        Mon, 15 Aug 2022 13:05:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 295F1B80EAB;
+        Mon, 15 Aug 2022 20:05:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B50C433D6;
+        Mon, 15 Aug 2022 20:05:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660593937;
+        bh=WrzGLFApLoZLo4blFQINQGoARKbOWdrNQe3OZezCUik=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bFUgOM2TV8oXsaWxBuWIrxqGN0SecwgTgzHYx9p4YPLrRU3OyFSq/fb7UK8IPh5vB
+         cK7J2SrsMHNAxZqoZfDSHEo1e1gMvu2EONz9QeidT/Yho5KBu7UWjyWh5XMwQjbvNl
+         77Je67IYyy4yLrywJYmWDCDhhGMzkmSV4iFgGXfI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Antonio Borneo <antonio.borneo@foss.st.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.19 0246/1157] usercopy: use unsigned long instead of
- uintptr_t
-Message-ID: <YvqnPRmBDgUwKpzg@casper.infradead.org>
+Subject: [PATCH 5.19 0351/1157] drm: adv7511: override i2c address of cec before accessing it
+Date:   Mon, 15 Aug 2022 19:55:07 +0200
+Message-Id: <20220815180453.758035376@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
- <20220815180449.423777119@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815180449.423777119@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 07:53:22PM +0200, Greg Kroah-Hartman wrote:
-> From: Jason A. Donenfeld <Jason@zx2c4.com>
-> 
-> [ Upstream commit 170b2c350cfcb6f74074e44dd9f916787546db0d ]
-> 
-> A recent commit factored out a series of annoying (unsigned long) casts
-> into a single variable declaration, but made the pointer type a
-> `uintptr_t` rather than the usual `unsigned long`. This patch changes it
-> to be the integer type more typically used by the kernel to represent
-> addresses.
-> 
-> Fixes: 35fb9ae4aa2e ("usercopy: Cast pointer to an integer once")
+From: Antonio Borneo <antonio.borneo@foss.st.com>
 
-Not sure why this needs to be backported?
+[ Upstream commit 9cc4853e4781bf0dd0f35355dc92d97c9da02f5d ]
 
-> Cc: Matthew Wilcox <willy@infradead.org>
-> Cc: Uladzislau Rezki <urezki@gmail.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Joe Perches <joe@perches.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> Link: https://lore.kernel.org/r/20220616143617.449094-1-Jason@zx2c4.com
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  mm/usercopy.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/usercopy.c b/mm/usercopy.c
-> index 4e1da708699b..c1ee15a98633 100644
-> --- a/mm/usercopy.c
-> +++ b/mm/usercopy.c
-> @@ -161,7 +161,7 @@ static inline void check_bogus_address(const unsigned long ptr, unsigned long n,
->  static inline void check_heap_object(const void *ptr, unsigned long n,
->  				     bool to_user)
->  {
-> -	uintptr_t addr = (uintptr_t)ptr;
-> +	unsigned long addr = (unsigned long)ptr;
->  	unsigned long offset;
->  	struct folio *folio;
->  
-> -- 
-> 2.35.1
-> 
-> 
-> 
+Commit 680532c50bca ("drm: adv7511: Add support for
+i2c_new_secondary_device") allows a device tree node to override
+the default addresses of the secondary i2c devices. This is useful
+for solving address conflicts on the i2c bus.
+
+In adv7511_init_cec_regmap() the new i2c address of cec device is
+read from device tree and immediately accessed, well before it is
+written in the proper register to override the default address.
+This can cause an i2c error during probe and a consequent probe
+failure.
+
+Once the new i2c address is read from the device tree, override
+the default address before any attempt to access the cec.
+
+Tested with adv7533 and stm32mp157f.
+
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+Fixes: 680532c50bca ("drm: adv7511: Add support for i2c_new_secondary_device")
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220607213144.427177-1-antonio.borneo@foss.st.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index 5bb9300040dd..074c2e650cae 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1065,6 +1065,10 @@ static int adv7511_init_cec_regmap(struct adv7511 *adv)
+ 						ADV7511_CEC_I2C_ADDR_DEFAULT);
+ 	if (IS_ERR(adv->i2c_cec))
+ 		return PTR_ERR(adv->i2c_cec);
++
++	regmap_write(adv->regmap, ADV7511_REG_CEC_I2C_ADDR,
++		     adv->i2c_cec->addr << 1);
++
+ 	i2c_set_clientdata(adv->i2c_cec, adv);
+ 
+ 	adv->regmap_cec = devm_regmap_init_i2c(adv->i2c_cec,
+@@ -1271,9 +1275,6 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
+ 	if (ret)
+ 		goto err_i2c_unregister_packet;
+ 
+-	regmap_write(adv7511->regmap, ADV7511_REG_CEC_I2C_ADDR,
+-		     adv7511->i2c_cec->addr << 1);
+-
+ 	INIT_WORK(&adv7511->hpd_work, adv7511_hpd_work);
+ 
+ 	if (i2c->irq) {
+-- 
+2.35.1
+
+
+
