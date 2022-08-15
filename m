@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84254C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3A3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244980AbiHOUU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        id S1346533AbiHOUUg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346804AbiHOUMU (ORCPT
+        with ESMTP id S1344832AbiHOUJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F315C86889;
-        Mon, 15 Aug 2022 11:58:22 -0700 (PDT)
+        Mon, 15 Aug 2022 16:09:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FA72705;
+        Mon, 15 Aug 2022 11:56:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33950B81082;
-        Mon, 15 Aug 2022 18:58:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80488C433D7;
-        Mon, 15 Aug 2022 18:58:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20E876125B;
+        Mon, 15 Aug 2022 18:56:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12D3DC433C1;
+        Mon, 15 Aug 2022 18:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589899;
-        bh=lVE6si0vEtraGgGv0n6yqWBROaRF84v5MFZZ0BLmqaA=;
+        s=korg; t=1660589772;
+        bh=vojduCioZU72AP6BPNWFv/LPak1ZFP+99zslQ2g/d1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yVPUzozC9ET22ebSsaF++vGN8bAGiVA0lkjwhpHshWeq5ZlK7UainGlNQEg8aKaLc
-         1xBD/PVnIg6C2FIWXMWK7BGcuDqvIY+k+tfUpnGqahPBwF1oineuwk1ZRAf5MynjPw
-         fRXXN7JnYOXEtwRHjbVwPwllklDsN4ZBYKkVyUlA=
+        b=cz4b/OhWC1sH5Xsa9C13Si3QrSe47usrNhbWqX6Z53ulJ7/1R00e/VLJssV+NxfKo
+         oYSPR6JkfOxfw00asrI+DYoOqgU1CUvusILFbBYrYK+iRxHr8E9C5dLC9II808VE7w
+         befD0/6wPCNf4lRvuNjlqYgzSPpmCkAXYqjAkXRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.18 0084/1095] drm/tegra: Fix vmapping of prime buffers
-Date:   Mon, 15 Aug 2022 19:51:23 +0200
-Message-Id: <20220815180433.003947828@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 0044/1095] ALSA: hda/realtek: Add quirk for another Asus K42JZ model
+Date:   Mon, 15 Aug 2022 19:50:43 +0200
+Message-Id: <20220815180431.275083033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,51 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-commit c7860cbee9989882d2908682526a5ef617523cfe upstream.
+commit f882c4bef9cb914d9f7be171afb10ed26536bfa7 upstream.
 
-The code assumes that Tegra GEM is permanently vmapped, which is not
-true for the scattered buffers. After converting Tegra video decoder
-driver to V4L API, we're now getting a BUG_ON from dma-buf core on playing
-video using libvdpau-tegra on T30+ because tegra_gem_prime_vmap() sets
-vaddr to NULL. Older pre-V4L video decoder driver wasn't vmapping dma-bufs.
-Fix it by actually vmapping the exported GEMs.
+There is another Asus K42JZ model with the PCI SSID 1043:1313
+that requires the quirk ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE.
+Add the corresponding entry to the quirk table.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220805074534.20003-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/tegra/gem.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/gpu/drm/tegra/gem.c
-+++ b/drivers/gpu/drm/tegra/gem.c
-@@ -704,14 +704,23 @@ static int tegra_gem_prime_vmap(struct d
- {
- 	struct drm_gem_object *gem = buf->priv;
- 	struct tegra_bo *bo = to_tegra_bo(gem);
-+	void *vaddr;
- 
--	iosys_map_set_vaddr(map, bo->vaddr);
-+	vaddr = tegra_bo_mmap(&bo->base);
-+	if (IS_ERR(vaddr))
-+		return PTR_ERR(vaddr);
-+
-+	iosys_map_set_vaddr(map, vaddr);
- 
- 	return 0;
- }
- 
- static void tegra_gem_prime_vunmap(struct dma_buf *buf, struct iosys_map *map)
- {
-+	struct drm_gem_object *gem = buf->priv;
-+	struct tegra_bo *bo = to_tegra_bo(gem);
-+
-+	tegra_bo_munmap(&bo->base, map->vaddr);
- }
- 
- static const struct dma_buf_ops tegra_gem_prime_dmabuf_ops = {
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6931,6 +6931,7 @@ enum {
+ 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST,
+ 	ALC269VB_FIXUP_ASUS_ZENBOOK,
+ 	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
++	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
+ 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
+ 	ALC269VB_FIXUP_ORDISSIMO_EVE2,
+ 	ALC283_FIXUP_CHROME_BOOK,
+@@ -7518,6 +7519,15 @@ static const struct hda_fixup alc269_fix
+ 		.chained = true,
+ 		.chain_id = ALC269VB_FIXUP_ASUS_ZENBOOK,
+ 	},
++	[ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, 0x01a110f0 },  /* use as headset mic */
++			{ }
++		},
++		.chained = true,
++		.chain_id = ALC269_FIXUP_HEADSET_MIC
++	},
+ 	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc269_fixup_limit_int_mic_boost,
+@@ -9289,6 +9299,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
+ 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
 
 
