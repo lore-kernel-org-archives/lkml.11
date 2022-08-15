@@ -2,110 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B675AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9A6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348504AbiHOWkN (ORCPT
+        id S1350688AbiHOWkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54682 "EHLO
+        Mon, 15 Aug 2022 18:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349525AbiHOWeM (ORCPT
+        with ESMTP id S1349951AbiHOWek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:34:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91F712E27B;
-        Mon, 15 Aug 2022 12:49:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B713F61226;
-        Mon, 15 Aug 2022 19:48:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC39C433C1;
-        Mon, 15 Aug 2022 19:48:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592933;
-        bh=DLJUHjw7dNV0aVabRJZ7xLg7ayVN5gRvxA5ZVDd6Pmg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wuZNS7tj07HjVqLceG2oSWL6+OnVZde+hoEC4/r56mKkhYezE2TKNhcoVoiQ/laDl
-         EklbFk/KPyF8DVzaZ0wmqhjSzuNkaUkhLS4/dw7wKT6Ulk2nCWqiQntKc89QXVHbC+
-         inPIyGhauAyNrptm1v/P537qudIq8gtqE8Huwsq4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0868/1095] vfio/ccw: Do not change FSM state in subchannel event
-Date:   Mon, 15 Aug 2022 20:04:27 +0200
-Message-Id: <20220815180505.273234596@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:34:40 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B7272B4D
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:49:38 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id tl27so15276419ejc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 12:49:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=m67EJff98GODNT9Ex0/hz32xjPCkaX4RTb2W/H22b6A=;
+        b=vZ3KSlgu2w4W+/oYxGdQqXPiH0C9jBErZhMcjLi3pYC6RObHOgwGPcH8C5rXhea5um
+         84FUWrgGpfHAyKuOe3nLaTV+qpTY1Nlf1dPHwwMJE2JrGO5fyHqTUbUHqS+OdOSIbFOZ
+         T+QhOu2Rj0jYqwo2Mbbj0P3dhwRWETQPJFftMThrpLpAcadF96T2VJFNevi1MpjkZYtl
+         acKXd5wT89G49ASaXEzs33kqxSkURPyGT0wUi48M8vcERJqlOb5hoJ9eoJWMsSmMTxnE
+         9M0Vrq688IdVfZs0gsn/6VBgK+gH9PgqPT5cliJQw2bRZcZhFeclSV3oBdjOaM0zICoS
+         vkYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=m67EJff98GODNT9Ex0/hz32xjPCkaX4RTb2W/H22b6A=;
+        b=2zxWWgHrUJIHr8drt3+JaKwg1kol/hDONczvNeFPHNdGhV6vVJmRPBShOjMLLSZOGe
+         aLesYv8tEDuRZJKd3tdqSdEWJzzDe14/qzlfyEBsZkKsXPfaEu7L6K8ukBJqvQtlFiO+
+         toD5zRdIh9nN8EmDzZ49pN8h3DKAZ72ggYrbZkNXBKFKm4+bCBgL/9razKeS5mfFAuPy
+         K5vsj7qUPngVNgzxCN/n3oc0TQst9glRXvkKZCiMEarhaxBJSnPm8q5t/ZSG1KjdkBvE
+         AgToOuIoPnaUshoXyc4NK8sse4rkMslJOjTiXMnhs+57N7v/Wmk691ZOj/gWSrnkH7iC
+         CLBw==
+X-Gm-Message-State: ACgBeo0JeNYUF9evIG2KOZG7p3lq4HY3m0kImrZAbx76EJ1LXBptgY6s
+        e7vZZvKToquFQ3OWhMHlpmKsTEPRO5SOaP7bxiLEiA==
+X-Google-Smtp-Source: AA6agR6q5mjwo1Y+kcRShH4sdgxadLS7IVIeRxqgxtvrwGWYPB0p9HIKRFxe3O4/pRVTR8kR2RLCstZitIhQR8D+UYA=
+X-Received: by 2002:a17:906:5d0b:b0:731:3310:4188 with SMTP id
+ g11-20020a1709065d0b00b0073133104188mr11564211ejt.208.1660592965944; Mon, 15
+ Aug 2022 12:49:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220810111037.280959-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220810111037.280959-1-krzysztof.kozlowski@linaro.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 15 Aug 2022 21:49:14 +0200
+Message-ID: <CACRpkda9_BSV+ZR0nnfv=6hFOacrE5UAtM-V-g_2Y5bWDTSvSQ@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dts: ste: ux500: align SPI node name with dtschema
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Farman <farman@linux.ibm.com>
+On Wed, Aug 10, 2022 at 1:10 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 
-[ Upstream commit cffcc109fd682075dee79bade3d60a07152a8fd1 ]
+> The node names should be generic and DT schema expects certain pattern.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-The routine vfio_ccw_sch_event() is tasked with handling subchannel events,
-specifically machine checks, on behalf of vfio-ccw. It correctly calls
-cio_update_schib(), and if that fails (meaning the subchannel is gone)
-it makes an FSM event call to mark the subchannel Not Operational.
+Patch applied!
 
-If that worked, however, then it decides that if the FSM state was already
-Not Operational (implying the subchannel just came back), then it should
-simply change the FSM to partially- or fully-open.
-
-Remove this trickery, since a subchannel returning will require more
-probing than simply "oh all is well again" to ensure it works correctly.
-
-Fixes: bbe37e4cb8970 ("vfio: ccw: introduce a finite state machine")
-Signed-off-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220707135737.720765-4-farman@linux.ibm.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/s390/cio/vfio_ccw_drv.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
-index 789175221e9a..e76a4a3cf1ce 100644
---- a/drivers/s390/cio/vfio_ccw_drv.c
-+++ b/drivers/s390/cio/vfio_ccw_drv.c
-@@ -302,19 +302,11 @@ static int vfio_ccw_sch_event(struct subchannel *sch, int process)
- 	if (work_pending(&sch->todo_work))
- 		goto out_unlock;
- 
--	if (cio_update_schib(sch)) {
--		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
--		rc = 0;
--		goto out_unlock;
--	}
--
--	private = dev_get_drvdata(&sch->dev);
--	if (private->state == VFIO_CCW_STATE_NOT_OPER) {
--		private->state = private->mdev ? VFIO_CCW_STATE_IDLE :
--				 VFIO_CCW_STATE_STANDBY;
--	}
- 	rc = 0;
- 
-+	if (cio_update_schib(sch))
-+		vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_NOT_OPER);
-+
- out_unlock:
- 	spin_unlock_irqrestore(sch->lock, flags);
- 
--- 
-2.35.1
-
-
-
+Yours,
+Linus Walleij
