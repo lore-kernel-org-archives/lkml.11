@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F3EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C95C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348186AbiHOWFo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
+        id S244606AbiHOWGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350269AbiHOWB7 (ORCPT
+        with ESMTP id S1350354AbiHOWCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22A91136BC;
-        Mon, 15 Aug 2022 12:36:18 -0700 (PDT)
+        Mon, 15 Aug 2022 18:02:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A51E8E;
+        Mon, 15 Aug 2022 12:36:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 396AA6115A;
-        Mon, 15 Aug 2022 19:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 375E3C433D6;
-        Mon, 15 Aug 2022 19:36:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9D42B80EA9;
+        Mon, 15 Aug 2022 19:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42DB3C433D6;
+        Mon, 15 Aug 2022 19:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592177;
-        bh=OJljRTS4HyrlDm+ltcUSILqSsYkZQZT6YDGYiSn4cUA=;
+        s=korg; t=1660592180;
+        bh=4Qx3TpTzRNC8GP0eSyB6JcW988m841SDnRGg73iCp10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1FNI1ge4IWLz9uGkV8bifkVVRu2bzX8aHV+wyB1PHyk+AHwYb307MG0DOSJ3r3u6N
-         bOqG+CzmkRgCUdOffyfJqZ2dEjzL5GwO3G3FPdJAAqySQftudGxOT4zzr6NDeZET3E
-         2RrXJST60k/EdWDh4wkwickWa1GN5i31pKhy5uIc=
+        b=kiU9NHuQksr8P+RI1nVwhwWdnU1WPcW0p5uc4rbaITaMaz1FEW+Lq0q9MfPBVHrzo
+         sk1irWzpVUFcgWRbAzh25nCkqXkErZ77gVicmG2kqiG7kQcJ0OuxsPr+Tn7fxMHbbW
+         kGjHgCHez94YcVttJxtKggsNtCNY5iCZX+mHKf/A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Kettenis <kettenis@openbsd.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0070/1157] riscv: dts: starfive: correct number of external interrupts
-Date:   Mon, 15 Aug 2022 19:50:26 +0200
-Message-Id: <20220815180442.302330716@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.18 0746/1095] of: device: Fix missing of_node_put() in of_dma_set_restricted_buffer
+Date:   Mon, 15 Aug 2022 20:02:25 +0200
+Message-Id: <20220815180500.216731535@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,39 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Kettenis <kettenis@openbsd.org>
+From: Liang He <windhl@126.com>
 
-commit a208acf0eac857dc8cdaddd63a4e18ed03f91786 upstream.
+[ Upstream commit d17e37c41b7ed38459957a5d2968ba61516fd5c2 ]
 
-The PLIC integrated on the Vic_U7_Core integrated on the StarFive
-JH7100 SoC actually supports 133 external interrupts.  127 of these
-are exposed to the outside world; the remainder are used by other
-devices that are part of the core-complex such as the L2 cache
-controller.  But all 133 interrupts are external interrupts as far
-as the PLIC is concerned.  Fix the property so that the driver can
-manage these additional interrupts, which is important since the
-interrupts for the L2 cache controller are enabled by default.
+We should use of_node_put() for the reference 'node' returned by
+of_parse_phandle() which will increase the refcount.
 
-Fixes: ec85362fb121 ("RISC-V: Add initial StarFive JH7100 device tree")
-Signed-off-by: Mark Kettenis <kettenis@openbsd.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220707185529.19509-1-kettenis@openbsd.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fec9b625095f ("of: Add plumbing for restricted DMA pool")
+Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220702014449.263772-1-windhl@126.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/boot/dts/starfive/jh7100.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/of/device.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
-+++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
-@@ -118,7 +118,7 @@
- 			interrupt-controller;
- 			#address-cells = <0>;
- 			#interrupt-cells = <1>;
--			riscv,ndev = <127>;
-+			riscv,ndev = <133>;
- 		};
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 874f031442dc..75b6cbffa755 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -81,8 +81,11 @@ of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
+ 		 * restricted-dma-pool region is allowed.
+ 		 */
+ 		if (of_device_is_compatible(node, "restricted-dma-pool") &&
+-		    of_device_is_available(node))
++		    of_device_is_available(node)) {
++			of_node_put(node);
+ 			break;
++		}
++		of_node_put(node);
+ 	}
  
- 		clkgen: clock-controller@11800000 {
+ 	/*
+-- 
+2.35.1
+
 
 
