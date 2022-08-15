@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89456C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31111C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343875AbiHOTOr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
+        id S242737AbiHOTOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344084AbiHOTLl (ORCPT
+        with ESMTP id S1344143AbiHOTLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:11:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82AE5004C;
-        Mon, 15 Aug 2022 11:37:10 -0700 (PDT)
+        Mon, 15 Aug 2022 15:11:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA1150188;
+        Mon, 15 Aug 2022 11:37:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE821610A4;
-        Mon, 15 Aug 2022 18:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD37EC433C1;
-        Mon, 15 Aug 2022 18:37:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6D866113C;
+        Mon, 15 Aug 2022 18:37:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDF8CC4314B;
+        Mon, 15 Aug 2022 18:37:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588629;
-        bh=yg6v+E6w4tYGmjS7g1TgMXBUqPL+Zz2rnmZLUdugTHs=;
+        s=korg; t=1660588635;
+        bh=XaMbj9V8F6cyjECBekjmkj0GXiceZTtqfdngt5Y36Lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nXgjMYpJscj2GnOr8+zjsjOpu31nCSQyVF4q/jFNbxbxiQJPFW9WnDHIt+pWUCTkS
-         C+X1woBd5nQtHohzPeS9Dfb4l2BCkd8BWIFp3/kyCd3hcXvrKK9cQSD5Sy8DQc6XBY
-         2pfJTN/Em5JyM4auErsgGMUwWiESmuY4iVDEoiUA=
+        b=eZV4FbM4ENjF7vSQCfyutLbQAf6JlnATwPA1XE6KisXZuIecQ/EIFrjhPj0PvVq2y
+         ijtreCzYRjoMm6AVvYI6qaQQb1e7iPBpfezj701wefV9OIzT09Xmjkxkh3EVDMEWQe
+         TlfUwMZs2zCJOJEGM5HWnpStSkyhOLa2cxMNwzro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 465/779] soundwire: bus_type: fix remove and shutdown support
-Date:   Mon, 15 Aug 2022 20:01:49 +0200
-Message-Id: <20220815180357.179148072@linuxfoundation.org>
+        stable@vger.kernel.org, Quentin Perret <qperret@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 467/779] KVM: arm64: Dont return from void function
+Date:   Mon, 15 Aug 2022 20:01:51 +0200
+Message-Id: <20220815180357.260035085@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,51 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Quentin Perret <qperret@google.com>
 
-[ Upstream commit df6407782964dc7e35ad84230abb38f46314b245 ]
+[ Upstream commit 1c3ace2b8b3995d3213c5e2d2aca01a0577a3b0f ]
 
-The bus sdw_drv_remove() and sdw_drv_shutdown() helpers are used
-conditionally, if the driver provides these routines.
+Although harmless, the return statement in kvm_unexpected_el2_exception
+is rather confusing as the function itself has a void return type. The
+C standard is also pretty clear that "A return statement with an
+expression shall not appear in a function whose return type is void".
+Given that this return statement does not seem to add any actual value,
+let's not pointlessly violate the standard.
 
-These helpers already test if the driver provides a .remove or
-.shutdown callback, so there's no harm in invoking the
-sdw_drv_remove() and sdw_drv_shutdown() unconditionally.
+Build-tested with GCC 10 and CLANG 13 for good measure, the disassembled
+code is identical with or without the return statement.
 
-In addition, the current code is imbalanced with
-dev_pm_domain_attach() called from sdw_drv_probe(), but
-dev_pm_domain_detach() called from sdw_drv_remove() only if the driver
-provides a .remove callback.
-
-Fixes: 9251345dca24b ("soundwire: Add SoundWire bus type")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220610015105.25987-1-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: e9ee186bb735 ("KVM: arm64: Add kvm_extable for vaxorcism code")
+Signed-off-by: Quentin Perret <qperret@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220705142310.3847918-1-qperret@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/bus_type.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ arch/arm64/kvm/hyp/nvhe/switch.c | 2 +-
+ arch/arm64/kvm/hyp/vhe/switch.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soundwire/bus_type.c b/drivers/soundwire/bus_type.c
-index 893296f3fe39..b81e04dd3a9f 100644
---- a/drivers/soundwire/bus_type.c
-+++ b/drivers/soundwire/bus_type.c
-@@ -193,12 +193,8 @@ int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
+diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
+index a34b01cc8ab9..4db5409f40c4 100644
+--- a/arch/arm64/kvm/hyp/nvhe/switch.c
++++ b/arch/arm64/kvm/hyp/nvhe/switch.c
+@@ -279,5 +279,5 @@ void __noreturn hyp_panic(void)
  
- 	drv->driver.owner = owner;
- 	drv->driver.probe = sdw_drv_probe;
--
--	if (drv->remove)
--		drv->driver.remove = sdw_drv_remove;
--
--	if (drv->shutdown)
--		drv->driver.shutdown = sdw_drv_shutdown;
-+	drv->driver.remove = sdw_drv_remove;
-+	drv->driver.shutdown = sdw_drv_shutdown;
+ asmlinkage void kvm_unexpected_el2_exception(void)
+ {
+-	return __kvm_unexpected_el2_exception();
++	__kvm_unexpected_el2_exception();
+ }
+diff --git a/arch/arm64/kvm/hyp/vhe/switch.c b/arch/arm64/kvm/hyp/vhe/switch.c
+index d88d3c143a73..813e6e2178c1 100644
+--- a/arch/arm64/kvm/hyp/vhe/switch.c
++++ b/arch/arm64/kvm/hyp/vhe/switch.c
+@@ -220,5 +220,5 @@ void __noreturn hyp_panic(void)
  
- 	return driver_register(&drv->driver);
+ asmlinkage void kvm_unexpected_el2_exception(void)
+ {
+-	return __kvm_unexpected_el2_exception();
++	__kvm_unexpected_el2_exception();
  }
 -- 
 2.35.1
