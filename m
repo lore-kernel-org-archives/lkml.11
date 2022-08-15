@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C37BC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 292F9C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347322AbiHOWDR (ORCPT
+        id S1347194AbiHOWDY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
+        Mon, 15 Aug 2022 18:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348126AbiHOWBI (ORCPT
+        with ESMTP id S1348239AbiHOWBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726962F3AC;
-        Mon, 15 Aug 2022 12:35:38 -0700 (PDT)
+        Mon, 15 Aug 2022 18:01:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53994E61D;
+        Mon, 15 Aug 2022 12:35:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D90FB81141;
-        Mon, 15 Aug 2022 19:35:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC26C433D6;
-        Mon, 15 Aug 2022 19:35:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D4316111E;
+        Mon, 15 Aug 2022 19:35:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A24EC433C1;
+        Mon, 15 Aug 2022 19:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592128;
-        bh=5oMPweN0I2W52x3A3m4uwENFuyrekiGkA1YmNBlQqVw=;
+        s=korg; t=1660592141;
+        bh=SY2E2wXYD56yvEtvgGm7t9vW1KbZ8dTo7tvk4SOguHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UKVCybwllNcIMfuQmNum8Io2r8MnJO1+l9MQOat5ubvfJ9SRgVT9YJm8z9yFsKkks
-         +SQVsGuEuj03rX122SrSHkIrLu0S5I5dTDHwUsu7egVFod+dW1JHPtnNkR0hs57AjZ
-         tT8zBiZAkQIH68ueU8+gWriTCtJ2Y/kzAZEODNL8=
+        b=ovMfJUecB1geD2fFrUq1r9iNGL0Y7tyz+rZ/JGjI2KfOmwZHAuQnOjes5jCJk+XYC
+         4ShuTTm0+ZyM11OL1yufx2ME+2hNQHKqmFZgClRgSoiNX9wsuO3CZfY4Na2PnWF+hU
+         MABX8I4nL5QYjOriGWEOeqWOq38funG8D1cpVorU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0738/1095] staging: rtl8192u: Fix sleep in atomic context bug in dm_fsync_timer_callback
-Date:   Mon, 15 Aug 2022 20:02:17 +0200
-Message-Id: <20220815180459.914144058@linuxfoundation.org>
+Subject: [PATCH 5.18 0740/1095] mmc: sdhci-of-esdhc: Fix refcount leak in esdhc_signal_voltage_switch
+Date:   Mon, 15 Aug 2022 20:02:19 +0200
+Message-Id: <20220815180459.996945325@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,147 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6a0c054930d554ad8f8044ef1fc856d9da391c81 ]
+[ Upstream commit b5899a3e2f783a27b268e38d37f9b24c71bddf45 ]
 
-There are sleep in atomic context bugs when dm_fsync_timer_callback is
-executing. The root cause is that the memory allocation functions with
-GFP_KERNEL or GFP_NOIO parameters are called in dm_fsync_timer_callback
-which is a timer handler. The call paths that could trigger bugs are
-shown below:
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() checks null pointer.
 
-    (interrupt context)
-dm_fsync_timer_callback
-  write_nic_byte
-    kzalloc(sizeof(data), GFP_KERNEL); //may sleep
-    usb_control_msg
-      kmalloc(.., GFP_NOIO); //may sleep
-  write_nic_dword
-    kzalloc(sizeof(data), GFP_KERNEL); //may sleep
-    usb_control_msg
-      kmalloc(.., GFP_NOIO); //may sleep
-
-This patch uses delayed work to replace timer and moves the operations
-that may sleep into the delayed work in order to mitigate bugs.
-
-Fixes: 8fc8598e61f6 ("Staging: Added Realtek rtl8192u driver to staging")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220710103002.63283-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ea35645a3c66 ("mmc: sdhci-of-esdhc: add support for signal voltage switch")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220523144255.10310-1-linmq006@gmail.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/r8192U.h    |  2 +-
- drivers/staging/rtl8192u/r8192U_dm.c | 38 +++++++++++++---------------
- drivers/staging/rtl8192u/r8192U_dm.h |  2 +-
- 3 files changed, 20 insertions(+), 22 deletions(-)
+ drivers/mmc/host/sdhci-of-esdhc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/rtl8192u/r8192U.h b/drivers/staging/rtl8192u/r8192U.h
-index 14ca00a2789b..1942cb849374 100644
---- a/drivers/staging/rtl8192u/r8192U.h
-+++ b/drivers/staging/rtl8192u/r8192U.h
-@@ -1013,7 +1013,7 @@ typedef struct r8192_priv {
- 	bool		bis_any_nonbepkts;
- 	bool		bcurrent_turbo_EDCA;
- 	bool		bis_cur_rdlstate;
--	struct timer_list fsync_timer;
-+	struct delayed_work fsync_work;
- 	bool bfsync_processing;	/* 500ms Fsync timer is active or not */
- 	u32	rate_record;
- 	u32	rateCountDiffRecord;
-diff --git a/drivers/staging/rtl8192u/r8192U_dm.c b/drivers/staging/rtl8192u/r8192U_dm.c
-index 725bf5ca9e34..0fcfcaa6500b 100644
---- a/drivers/staging/rtl8192u/r8192U_dm.c
-+++ b/drivers/staging/rtl8192u/r8192U_dm.c
-@@ -2578,19 +2578,20 @@ static void dm_init_fsync(struct net_device *dev)
- 	priv->ieee80211->fsync_seconddiff_ratethreshold = 200;
- 	priv->ieee80211->fsync_state = Default_Fsync;
- 	priv->framesyncMonitor = 1;	/* current default 0xc38 monitor on */
--	timer_setup(&priv->fsync_timer, dm_fsync_timer_callback, 0);
-+	INIT_DELAYED_WORK(&priv->fsync_work, dm_fsync_work_callback);
- }
- 
- static void dm_deInit_fsync(struct net_device *dev)
- {
- 	struct r8192_priv *priv = ieee80211_priv(dev);
- 
--	del_timer_sync(&priv->fsync_timer);
-+	cancel_delayed_work_sync(&priv->fsync_work);
- }
- 
--void dm_fsync_timer_callback(struct timer_list *t)
-+void dm_fsync_work_callback(struct work_struct *work)
- {
--	struct r8192_priv *priv = from_timer(priv, t, fsync_timer);
-+	struct r8192_priv *priv =
-+	    container_of(work, struct r8192_priv, fsync_work.work);
- 	struct net_device *dev = priv->ieee80211->dev;
- 	u32 rate_index, rate_count = 0, rate_count_diff = 0;
- 	bool		bSwitchFromCountDiff = false;
-@@ -2657,17 +2658,16 @@ void dm_fsync_timer_callback(struct timer_list *t)
- 			}
- 		}
- 		if (bDoubleTimeInterval) {
--			if (timer_pending(&priv->fsync_timer))
--				del_timer_sync(&priv->fsync_timer);
--			priv->fsync_timer.expires = jiffies +
--				msecs_to_jiffies(priv->ieee80211->fsync_time_interval*priv->ieee80211->fsync_multiple_timeinterval);
--			add_timer(&priv->fsync_timer);
-+			cancel_delayed_work_sync(&priv->fsync_work);
-+			schedule_delayed_work(&priv->fsync_work,
-+					      msecs_to_jiffies(priv
-+					      ->ieee80211->fsync_time_interval *
-+					      priv->ieee80211->fsync_multiple_timeinterval));
- 		} else {
--			if (timer_pending(&priv->fsync_timer))
--				del_timer_sync(&priv->fsync_timer);
--			priv->fsync_timer.expires = jiffies +
--				msecs_to_jiffies(priv->ieee80211->fsync_time_interval);
--			add_timer(&priv->fsync_timer);
-+			cancel_delayed_work_sync(&priv->fsync_work);
-+			schedule_delayed_work(&priv->fsync_work,
-+					      msecs_to_jiffies(priv
-+					      ->ieee80211->fsync_time_interval));
- 		}
- 	} else {
- 		/* Let Register return to default value; */
-@@ -2695,7 +2695,7 @@ static void dm_EndSWFsync(struct net_device *dev)
- 	struct r8192_priv *priv = ieee80211_priv(dev);
- 
- 	RT_TRACE(COMP_HALDM, "%s\n", __func__);
--	del_timer_sync(&(priv->fsync_timer));
-+	cancel_delayed_work_sync(&priv->fsync_work);
- 
- 	/* Let Register return to default value; */
- 	if (priv->bswitch_fsync) {
-@@ -2736,11 +2736,9 @@ static void dm_StartSWFsync(struct net_device *dev)
- 		if (priv->ieee80211->fsync_rate_bitmap &  rateBitmap)
- 			priv->rate_record += priv->stats.received_rate_histogram[1][rateIndex];
- 	}
--	if (timer_pending(&priv->fsync_timer))
--		del_timer_sync(&priv->fsync_timer);
--	priv->fsync_timer.expires = jiffies +
--			msecs_to_jiffies(priv->ieee80211->fsync_time_interval);
--	add_timer(&priv->fsync_timer);
-+	cancel_delayed_work_sync(&priv->fsync_work);
-+	schedule_delayed_work(&priv->fsync_work,
-+			      msecs_to_jiffies(priv->ieee80211->fsync_time_interval));
- 
- 	write_nic_dword(dev, rOFDM0_RxDetector2, 0x465c12cd);
- }
-diff --git a/drivers/staging/rtl8192u/r8192U_dm.h b/drivers/staging/rtl8192u/r8192U_dm.h
-index 0b2a1c688597..2159018b4e38 100644
---- a/drivers/staging/rtl8192u/r8192U_dm.h
-+++ b/drivers/staging/rtl8192u/r8192U_dm.h
-@@ -166,7 +166,7 @@ void dm_force_tx_fw_info(struct net_device *dev,
- void dm_init_edca_turbo(struct net_device *dev);
- void dm_rf_operation_test_callback(unsigned long data);
- void dm_rf_pathcheck_workitemcallback(struct work_struct *work);
--void dm_fsync_timer_callback(struct timer_list *t);
-+void dm_fsync_work_callback(struct work_struct *work);
- void dm_cck_txpower_adjust(struct net_device *dev, bool  binch14);
- void dm_shadow_init(struct net_device *dev);
- void dm_initialize_txpower_tracking(struct net_device *dev);
+diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
+index d9dc41143bb3..8b3d8119f388 100644
+--- a/drivers/mmc/host/sdhci-of-esdhc.c
++++ b/drivers/mmc/host/sdhci-of-esdhc.c
+@@ -904,6 +904,7 @@ static int esdhc_signal_voltage_switch(struct mmc_host *mmc,
+ 		scfg_node = of_find_matching_node(NULL, scfg_device_ids);
+ 		if (scfg_node)
+ 			scfg_base = of_iomap(scfg_node, 0);
++		of_node_put(scfg_node);
+ 		if (scfg_base) {
+ 			sdhciovselcr = SDHCIOVSELCR_TGLEN |
+ 				       SDHCIOVSELCR_VSELVAL;
 -- 
 2.35.1
 
