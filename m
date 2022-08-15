@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7453CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB83C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354111AbiHOXp1 (ORCPT
+        id S1354427AbiHOXpd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
+        Mon, 15 Aug 2022 19:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354272AbiHOXlq (ORCPT
+        with ESMTP id S1354293AbiHOXls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:46 -0400
+        Mon, 15 Aug 2022 19:41:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFACCAE77;
-        Mon, 15 Aug 2022 13:11:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73152873A;
+        Mon, 15 Aug 2022 13:11:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C81860B9B;
-        Mon, 15 Aug 2022 20:11:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8985AC433C1;
-        Mon, 15 Aug 2022 20:11:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54B5B60DEB;
+        Mon, 15 Aug 2022 20:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574D8C433D6;
+        Mon, 15 Aug 2022 20:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594290;
-        bh=glN6sxhxG13vQizBKcYdIeAELf9tcp4qdEOf3tEnxBA=;
+        s=korg; t=1660594302;
+        bh=QaRXUr3r4AsmHygVeKEdOsmgYRPBs1WjnhmGFYW8NS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VlqfFczx5bN+1Kqpl1ZsN+xKM7HL8LN2MW/aJsovfmMoWsenlGRI9xBdvuLlk823m
-         blU4UyeuPihnC7JnN/Fpbu6WuG68Im63Koe+zXO0p+Sv8gt9ZJIeZwL83WeA35Pk+8
-         mrUZS+9FkZyAeGYuUwKyV1TodaCpAmtQV1JnYJSs=
+        b=OZK2R9Ku46qiSafV1RMVbrO/vtsIznVi16QIGMXUpbzHXPeovvFykCQO9kk9vP8Co
+         co71s3J2S100kQWopYH8IvsfqfiSIlR0xpNI7UPD00gIkXomKzY2cVGTVptbm0GPpG
+         Kjvqe0yniJ4urwR0Upq/HBL44VZKXJsTSZcRa3n0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0409/1157] drm/vc4: dsi: Release workaround buffer and DMA
-Date:   Mon, 15 Aug 2022 19:56:05 +0200
-Message-Id: <20220815180456.017347408@linuxfoundation.org>
+Subject: [PATCH 5.19 0411/1157] drm/vc4: dsi: Correct pixel order for DSI0
+Date:   Mon, 15 Aug 2022 19:56:07 +0200
+Message-Id: <20220815180456.087530143@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,92 +53,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit 89c4bbe2a01ea401c2b0fabc104720809084b77f ]
+[ Upstream commit edfe84ae0df16be1251b5a8e840d95f1f3827500 ]
 
-On Pi0-3 the driver allocates a buffer and requests a DMA channel
-because the ARM can't write to DSI1's registers directly.
+For slightly unknown reasons, dsi0 takes a different pixel format
+to dsi1, and that has to be set in the pixel valve.
 
-However, we never release that buffer or channel. Let's add a
-device-managed action to release each.
+Amend the setup accordingly.
 
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Fixes: a86773d120d7 ("drm/vc4: Add support for feeding DSI encoders from the pixel valve.")
 Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220613144800.326124-12-maxime@cerno.tech
+Link: https://lore.kernel.org/r/20220613144800.326124-14-maxime@cerno.tech
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 29 ++++++++++++++++++++++++++++-
- 1 file changed, 28 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 98308a17e4ed..e82ee94cafc7 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1487,13 +1487,29 @@ vc4_dsi_init_phy_clocks(struct vc4_dsi *dsi)
- 				      dsi->clk_onecell);
- }
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 9355213dc883..12a5944ee980 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -319,7 +319,8 @@ static void vc4_crtc_config_pv(struct drm_crtc *crtc, struct drm_encoder *encode
+ 	u32 pixel_rep = (mode->flags & DRM_MODE_FLAG_DBLCLK) ? 2 : 1;
+ 	bool is_dsi = (vc4_encoder->type == VC4_ENCODER_TYPE_DSI0 ||
+ 		       vc4_encoder->type == VC4_ENCODER_TYPE_DSI1);
+-	u32 format = is_dsi ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_24;
++	bool is_dsi1 = vc4_encoder->type == VC4_ENCODER_TYPE_DSI1;
++	u32 format = is_dsi1 ? PV_CONTROL_FORMAT_DSIV_24 : PV_CONTROL_FORMAT_24;
+ 	u8 ppc = pv_data->pixels_per_clock;
+ 	bool debug_dump_regs = false;
  
-+static void vc4_dsi_dma_mem_release(void *ptr)
-+{
-+	struct vc4_dsi *dsi = ptr;
-+	struct device *dev = &dsi->pdev->dev;
-+
-+	dma_free_coherent(dev, 4, dsi->reg_dma_mem, dsi->reg_dma_paddr);
-+	dsi->reg_dma_mem = NULL;
-+}
-+
-+static void vc4_dsi_dma_chan_release(void *ptr)
-+{
-+	struct vc4_dsi *dsi = ptr;
-+
-+	dma_release_channel(dsi->reg_dma_chan);
-+	dsi->reg_dma_chan = NULL;
-+}
-+
- static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct drm_device *drm = dev_get_drvdata(master);
- 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
- 	struct vc4_dsi_encoder *vc4_dsi_encoder;
--	dma_cap_mask_t dma_mask;
- 	int ret;
- 
- 	dsi->variant = of_device_get_match_data(dev);
-@@ -1527,6 +1543,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 	 * so set up a channel for talking to it.
- 	 */
- 	if (dsi->variant->broken_axi_workaround) {
-+		dma_cap_mask_t dma_mask;
-+
- 		dsi->reg_dma_mem = dma_alloc_coherent(dev, 4,
- 						      &dsi->reg_dma_paddr,
- 						      GFP_KERNEL);
-@@ -1535,8 +1553,13 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 			return -ENOMEM;
- 		}
- 
-+		ret = devm_add_action_or_reset(dev, vc4_dsi_dma_mem_release, dsi);
-+		if (ret)
-+			return ret;
-+
- 		dma_cap_zero(dma_mask);
- 		dma_cap_set(DMA_MEMCPY, dma_mask);
-+
- 		dsi->reg_dma_chan = dma_request_chan_by_mask(&dma_mask);
- 		if (IS_ERR(dsi->reg_dma_chan)) {
- 			ret = PTR_ERR(dsi->reg_dma_chan);
-@@ -1546,6 +1569,10 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 			return ret;
- 		}
- 
-+		ret = devm_add_action_or_reset(dev, vc4_dsi_dma_chan_release, dsi);
-+		if (ret)
-+			return ret;
-+
- 		/* Get the physical address of the device's registers.  The
- 		 * struct resource for the regs gives us the bus address
- 		 * instead.
 -- 
 2.35.1
 
