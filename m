@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA6AC2BB47
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BB8C32762
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347793AbiHOUbl (ORCPT
+        id S1348093AbiHOUcE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
+        Mon, 15 Aug 2022 16:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347386AbiHOUYv (ORCPT
+        with ESMTP id S1347612AbiHOU0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:24:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9329AFA7;
-        Mon, 15 Aug 2022 12:03:07 -0700 (PDT)
+        Mon, 15 Aug 2022 16:26:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E059C4D4D1;
+        Mon, 15 Aug 2022 12:03:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6CB6612B3;
-        Mon, 15 Aug 2022 19:02:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C31E7C433C1;
-        Mon, 15 Aug 2022 19:02:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8683EB81062;
+        Mon, 15 Aug 2022 19:03:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E32C433C1;
+        Mon, 15 Aug 2022 19:03:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590177;
-        bh=zHXXtMvGg4b4maDB7wqIZ15PbGofr2RdcvBPSMXAyHU=;
+        s=korg; t=1660590204;
+        bh=KKtD5woFp4mx26d04LR6BTuiJ3NABKRQBnDLRu+qUrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H8MtgRRpJYksabGYujPWBWg6Dmg2V84azuzYRbTT4vOXyj8yTiKxbxjjf8Q9D1ZQS
-         l/v+OlzBoeyp7chMqMfTLwywK/FmL4wGVJlbFfvMPDl0HTZhWTMkoEunx4Ke4he2P9
-         9ZSdNfokWf8hg2V9Riy7kenTvifCkvYC2LzxFtRM=
+        b=z4aa3w5HdUCxnUsekevECizDERInYmaA4V83RnWlMnUgd35dIvp4U/O8KIFnYS22o
+         uWnkCUDOM2tDFruNek8CCMlmWz+QHBiqrmJkml4yg4uTi0QxpANCP3BqLTLImVyioT
+         Lm1avYeimIXCpps5a0YfcPl+BFjI0VpgDKHBSl1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0177/1095] PM: hibernate: defer device probing when resuming from hibernation
-Date:   Mon, 15 Aug 2022 19:52:56 +0200
-Message-Id: <20220815180436.960044770@linuxfoundation.org>
+Subject: [PATCH 5.18 0185/1095] netfilter: nf_tables: add rescheduling points during loop detection walks
+Date:   Mon, 15 Aug 2022 19:53:04 +0200
+Message-Id: <20220815180437.286523400@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,104 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 8386c414e27caba8501119948e9551e52b527f59 ]
+[ Upstream commit 81ea010667417ef3f218dfd99b69769fe66c2b67 ]
 
-syzbot is reporting hung task at misc_open() [1], for there is a race
-window of AB-BA deadlock which involves probe_count variable. Currently
-wait_for_device_probe() from snapshot_open() from misc_open() can sleep
-forever with misc_mtx held if probe_count cannot become 0.
+Add explicit rescheduling points during ruleset walk.
 
-When a device is probed by hub_event() work function, probe_count is
-incremented before the probe function starts, and probe_count is
-decremented after the probe function completed.
+Switching to a faster algorithm is possible but this is a much
+smaller change, suitable for nf tree.
 
-There are three cases that can prevent probe_count from dropping to 0.
-
-  (a) A device being probed stopped responding (i.e. broken/malicious
-      hardware).
-
-  (b) A process emulating a USB device using /dev/raw-gadget interface
-      stopped responding for some reason.
-
-  (c) New device probe requests keeps coming in before existing device
-      probe requests complete.
-
-The phenomenon syzbot is reporting is (b). A process which is holding
-system_transition_mutex and misc_mtx is waiting for probe_count to become
-0 inside wait_for_device_probe(), but the probe function which is called
- from hub_event() work function is waiting for the processes which are
-blocked at mutex_lock(&misc_mtx) to respond via /dev/raw-gadget interface.
-
-This patch mitigates (b) by deferring wait_for_device_probe() from
-snapshot_open() to snapshot_write() and snapshot_ioctl(). Please note that
-the possibility of (b) remains as long as any thread which is emulating a
-USB device via /dev/raw-gadget interface can be blocked by uninterruptible
-blocking operations (e.g. mutex_lock()).
-
-Please also note that (a) and (c) are not addressed. Regarding (c), we
-should change the code to wait for only one device which contains the
-image for resuming from hibernation. I don't know how to address (a), for
-use of timeout for wait_for_device_probe() might result in loss of user
-data in the image. Maybe we should require the userland to wait for the
-image device before opening /dev/snapshot interface.
-
-Link: https://syzkaller.appspot.com/bug?extid=358c9ab4c93da7b7238c [1]
-Reported-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Tested-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://bugzilla.netfilter.org/show_bug.cgi?id=1460
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/power/user.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/kernel/power/user.c b/kernel/power/user.c
-index ad241b4ff64c..d43c2aa583b2 100644
---- a/kernel/power/user.c
-+++ b/kernel/power/user.c
-@@ -26,6 +26,7 @@
- 
- #include "power.h"
- 
-+static bool need_wait;
- 
- static struct snapshot_data {
- 	struct snapshot_handle handle;
-@@ -78,7 +79,7 @@ static int snapshot_open(struct inode *inode, struct file *filp)
- 		 * Resuming.  We may need to wait for the image device to
- 		 * appear.
- 		 */
--		wait_for_device_probe();
-+		need_wait = true;
- 
- 		data->swap = -1;
- 		data->mode = O_WRONLY;
-@@ -168,6 +169,11 @@ static ssize_t snapshot_write(struct file *filp, const char __user *buf,
- 	ssize_t res;
- 	loff_t pg_offp = *offp & ~PAGE_MASK;
- 
-+	if (need_wait) {
-+		wait_for_device_probe();
-+		need_wait = false;
-+	}
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 2b60923cf87b..7eac496961a7 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -3343,6 +3343,8 @@ int nft_chain_validate(const struct nft_ctx *ctx, const struct nft_chain *chain)
+ 			if (err < 0)
+ 				return err;
+ 		}
 +
- 	lock_system_sleep();
++		cond_resched();
+ 	}
  
- 	data = filp->private_data;
-@@ -244,6 +250,11 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
- 	loff_t size;
- 	sector_t offset;
- 
-+	if (need_wait) {
-+		wait_for_device_probe();
-+		need_wait = false;
-+	}
+ 	return 0;
+@@ -9371,9 +9373,13 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
+ 				break;
+ 			}
+ 		}
 +
- 	if (_IOC_TYPE(cmd) != SNAPSHOT_IOC_MAGIC)
- 		return -ENOTTY;
- 	if (_IOC_NR(cmd) > SNAPSHOT_IOC_MAXNR)
++		cond_resched();
+ 	}
+ 
+ 	list_for_each_entry(set, &ctx->table->sets, list) {
++		cond_resched();
++
+ 		if (!nft_is_active_next(ctx->net, set))
+ 			continue;
+ 		if (!(set->flags & NFT_SET_MAP) ||
 -- 
 2.35.1
 
