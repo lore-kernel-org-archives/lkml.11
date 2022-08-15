@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9876DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11854C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbiHOS73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
+        id S244879AbiHOS7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244935AbiHOS4U (ORCPT
+        with ESMTP id S244952AbiHOS4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABC72C100;
-        Mon, 15 Aug 2022 11:30:46 -0700 (PDT)
+        Mon, 15 Aug 2022 14:56:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5171AE4D;
+        Mon, 15 Aug 2022 11:30:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9E59B81074;
-        Mon, 15 Aug 2022 18:30:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34EBDC433D7;
-        Mon, 15 Aug 2022 18:30:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78857B81062;
+        Mon, 15 Aug 2022 18:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69E8C433D6;
+        Mon, 15 Aug 2022 18:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588243;
-        bh=KPIT0rX4vehbcxwhw9hn4GDvpctrofJn58SXiBI/FTM=;
+        s=korg; t=1660588252;
+        bh=b+UBN1FBQ7qTYL/22sOwtFW1DR36fOVK9mF/Wjsb7gI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWOVqqxxNkpa3VNm8qTIzlldeCellNfWov39s8vRuoSEbBGJ83ZRiQBbTethCuv2r
-         PIRz+suQsTf0LSF3BPkKKY45uFgJY8REL5DSZapjVJQ9cWa57iOBost8oE1MK1M6Xs
-         oBqxpTm/dBxirFeusHUhR48mMfPDs8Hg1jyBdU7c=
+        b=sBdqQ+gQtBQT3HybY5xrbcPTUclTR6KbwruzxkhMfl7giOmzMZYoJwTp+PYHfU90w
+         E6b++PLtZiW72hX2mdM9WltTBZx+Yylxkfx+3/kNmR7RiLXXwEEPCdDcTKrnhazNKL
+         Hz0IA8wwRB0y1EX+0Wb02ofIuwngA7/zQje5Gxeo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Ezequiel Garcia <ezequiel@collabora.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 341/779] media: cedrus: h265: Fix flag name
-Date:   Mon, 15 Aug 2022 19:59:45 +0200
-Message-Id: <20220815180351.852340263@linuxfoundation.org>
+Subject: [PATCH 5.15 343/779] media: hantro: Simplify postprocessor
+Date:   Mon, 15 Aug 2022 19:59:47 +0200
+Message-Id: <20220815180351.922425700@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,68 +51,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Ezequiel Garcia <ezequiel@collabora.com>
 
-[ Upstream commit 104a70e1d0bcef28db13c4192b8729086089651c ]
+[ Upstream commit 53a3e71095c572333ceea30762565dbedec951ca ]
 
-Bit 21 in register 0x24 (slice header info 1) actually represents
-negated version of low delay flag. This can be seen in vendor Cedar
-library source code. While this flag is not part of the standard, it can
-be found in reference HEVC implementation.
+Add a 'postprocessed' boolean property to struct hantro_fmt
+to signal that a format is produced by the post-processor.
+This will allow to introduce the G2 post-processor in a simple way.
 
-Fix macro name and change it to flag.
-
-Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 4 +++-
- drivers/staging/media/sunxi/cedrus/cedrus_regs.h | 3 +--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/staging/media/hantro/hantro.h          | 2 ++
+ drivers/staging/media/hantro/hantro_postproc.c | 8 +-------
+ drivers/staging/media/hantro/imx8m_vpu_hw.c    | 1 +
+ drivers/staging/media/hantro/rockchip_vpu_hw.c | 1 +
+ drivers/staging/media/hantro/sama5d4_vdec_hw.c | 1 +
+ 5 files changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index 754942ecf064..f2cec43fd1f0 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -495,7 +495,6 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
+diff --git a/drivers/staging/media/hantro/hantro.h b/drivers/staging/media/hantro/hantro.h
+index c2e2dca38628..88792c863edc 100644
+--- a/drivers/staging/media/hantro/hantro.h
++++ b/drivers/staging/media/hantro/hantro.h
+@@ -262,6 +262,7 @@ struct hantro_ctx {
+  * @max_depth:	Maximum depth, for bitstream formats
+  * @enc_fmt:	Format identifier for encoder registers.
+  * @frmsize:	Supported range of frame sizes (only for bitstream formats).
++ * @postprocessed: Indicates if this format needs the post-processor.
+  */
+ struct hantro_fmt {
+ 	char *name;
+@@ -271,6 +272,7 @@ struct hantro_fmt {
+ 	int max_depth;
+ 	enum hantro_enc_fmt enc_fmt;
+ 	struct v4l2_frmsize_stepwise frmsize;
++	bool postprocessed;
+ };
  
- 	reg = VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_TC_OFFSET_DIV2(slice_params->slice_tc_offset_div2) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_BETA_OFFSET_DIV2(slice_params->slice_beta_offset_div2) |
--	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_POC_BIGEST_IN_RPS_ST(decode_params->num_poc_st_curr_after == 0) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CR_QP_OFFSET(slice_params->slice_cr_qp_offset) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CB_QP_OFFSET(slice_params->slice_cb_qp_offset) |
- 	      VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_QP_DELTA(slice_params->slice_qp_delta);
-@@ -508,6 +507,9 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 				V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED,
- 				slice_params->flags);
+ struct hantro_reg {
+diff --git a/drivers/staging/media/hantro/hantro_postproc.c b/drivers/staging/media/hantro/hantro_postproc.c
+index 07842152003f..46434c97317b 100644
+--- a/drivers/staging/media/hantro/hantro_postproc.c
++++ b/drivers/staging/media/hantro/hantro_postproc.c
+@@ -53,15 +53,9 @@ const struct hantro_postproc_regs hantro_g1_postproc_regs = {
+ bool hantro_needs_postproc(const struct hantro_ctx *ctx,
+ 			   const struct hantro_fmt *fmt)
+ {
+-	struct hantro_dev *vpu = ctx->dev;
+-
+ 	if (ctx->is_encoder)
+ 		return false;
+-
+-	if (!vpu->variant->postproc_fmts)
+-		return false;
+-
+-	return fmt->fourcc != V4L2_PIX_FMT_NV12;
++	return fmt->postprocessed;
+ }
  
-+	if (decode_params->num_poc_st_curr_after == 0)
-+		reg |= VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_NOT_LOW_DELAY;
-+
- 	cedrus_write(dev, VE_DEC_H265_DEC_SLICE_HDR_INFO1, reg);
+ void hantro_postproc_enable(struct hantro_ctx *ctx)
+diff --git a/drivers/staging/media/hantro/imx8m_vpu_hw.c b/drivers/staging/media/hantro/imx8m_vpu_hw.c
+index ea919bfb9891..b692b74b0914 100644
+--- a/drivers/staging/media/hantro/imx8m_vpu_hw.c
++++ b/drivers/staging/media/hantro/imx8m_vpu_hw.c
+@@ -82,6 +82,7 @@ static const struct hantro_fmt imx8m_vpu_postproc_fmts[] = {
+ 	{
+ 		.fourcc = V4L2_PIX_FMT_YUYV,
+ 		.codec_mode = HANTRO_MODE_NONE,
++		.postprocessed = true,
+ 	},
+ };
  
- 	chroma_log2_weight_denom = pred_weight_table->luma_log2_weight_denom +
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_regs.h b/drivers/staging/media/sunxi/cedrus/cedrus_regs.h
-index 92ace87c1c7d..5f34e3670289 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_regs.h
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_regs.h
-@@ -377,13 +377,12 @@
+diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+index 0c22039162a0..543dc4a5486c 100644
+--- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
++++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+@@ -62,6 +62,7 @@ static const struct hantro_fmt rockchip_vpu1_postproc_fmts[] = {
+ 	{
+ 		.fourcc = V4L2_PIX_FMT_YUYV,
+ 		.codec_mode = HANTRO_MODE_NONE,
++		.postprocessed = true,
+ 	},
+ };
  
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_DEBLOCKING_FILTER_DISABLED BIT(23)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED BIT(22)
-+#define VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_NOT_LOW_DELAY BIT(21)
+diff --git a/drivers/staging/media/hantro/sama5d4_vdec_hw.c b/drivers/staging/media/hantro/sama5d4_vdec_hw.c
+index 9c3b8cd0b239..99432008b241 100644
+--- a/drivers/staging/media/hantro/sama5d4_vdec_hw.c
++++ b/drivers/staging/media/hantro/sama5d4_vdec_hw.c
+@@ -15,6 +15,7 @@ static const struct hantro_fmt sama5d4_vdec_postproc_fmts[] = {
+ 	{
+ 		.fourcc = V4L2_PIX_FMT_YUYV,
+ 		.codec_mode = HANTRO_MODE_NONE,
++		.postprocessed = true,
+ 	},
+ };
  
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_TC_OFFSET_DIV2(v) \
- 	SHIFT_AND_MASK_BITS(v, 31, 28)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_BETA_OFFSET_DIV2(v) \
- 	SHIFT_AND_MASK_BITS(v, 27, 24)
--#define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_POC_BIGEST_IN_RPS_ST(v) \
--	((v) ? BIT(21) : 0)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CR_QP_OFFSET(v) \
- 	SHIFT_AND_MASK_BITS(v, 20, 16)
- #define VE_DEC_H265_DEC_SLICE_HDR_INFO1_SLICE_CB_QP_OFFSET(v) \
 -- 
 2.35.1
 
