@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416ACC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAD0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353709AbiHOXiR (ORCPT
+        id S1353741AbiHOXi0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        Mon, 15 Aug 2022 19:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346796AbiHOXd4 (ORCPT
+        with ESMTP id S1347644AbiHOXd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:33:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE4B26AD6;
-        Mon, 15 Aug 2022 13:08:47 -0700 (PDT)
+        Mon, 15 Aug 2022 19:33:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B9612D1E;
+        Mon, 15 Aug 2022 13:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDD32B80EAB;
-        Mon, 15 Aug 2022 20:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9E9AC433C1;
-        Mon, 15 Aug 2022 20:08:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43ADFB80EAB;
+        Mon, 15 Aug 2022 20:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80DF3C433C1;
+        Mon, 15 Aug 2022 20:08:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594124;
-        bh=waPJhJ6SojFPzfGmvO2QfFFRmbu4h7chPRsAD9faz1o=;
+        s=korg; t=1660594121;
+        bh=HDljj8CcBWlocdOKTe6crOSfnVL33XDHdc/F8wmSatE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5I6sW4rDEyzTfitf8D07ysV2yp7o93Aa0Avec8jok8j3kQyt5pLIWym4WV/OYFwi
-         /t8rXdHdYWCAvgXkjamn+aiZwcUHX4WtqJr7cPEA4isRYHLt3+AcqqvvAFsEooaUll
-         /gd0tVyp+aTknLWr9zqqa5yUoSvpsL/y1sbLkR+g=
+        b=Wa9eJCpPQYGRQlp2ZkJgnBoadILOxj4NJWdUBr3epv6zy3sI32NBu0GsIgx3tPjl2
+         lCQjVSzweahfN2dQSeUK/6e/g8TRoBH9x2pDKg+p/CMGYkCWTxu1/A7hLXNkWP0qAR
+         VF1gSnKtXzc1ZIQ/RnEjJHBmCxysLIzd4sccq/J8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0373/1157] media: tw686x: Register the irq at the end of probe
-Date:   Mon, 15 Aug 2022 19:55:29 +0200
-Message-Id: <20220815180454.635998657@linuxfoundation.org>
+Subject: [PATCH 5.19 0382/1157] wifi: mac80211: set STA deflink addresses
+Date:   Mon, 15 Aug 2022 19:55:38 +0200
+Message-Id: <20220815180455.016801284@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,80 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit fb730334e0f759d00f72168fbc555e5a95e35210 ]
+[ Upstream commit 630c7e4621763220d23789fbb036e0cf227e0b22 ]
 
-We got the following warning when booting the kernel:
+We should set the STA deflink addresses in case no
+link is really added.
 
-[    3.243674] INFO: trying to register non-static key.
-[    3.243922] The code is fine but needs lockdep annotation, or maybe
-[    3.244230] you didn't initialize this object before use?
-[    3.245642] Call Trace:
-[    3.247836]  lock_acquire+0xff/0x2d0
-[    3.248727]  tw686x_audio_irq+0x1a5/0xcc0 [tw686x]
-[    3.249211]  tw686x_irq+0x1f9/0x480 [tw686x]
-
-The lock 'vc->qlock' will be initialized in tw686x_video_init(), but the
-driver registers the irq before calling the tw686x_video_init(), and we
-got the warning.
-
-Fix this by registering the irq at the end of probe
-
-Fixes: 704a84ccdbf1 ("[media] media: Support Intersil/Techwell TW686x-based video capture cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 046d2e7c50e3 ("mac80211: prepare sta handling for MLO support")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/tw686x/tw686x-core.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ net/mac80211/sta_info.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/media/pci/tw686x/tw686x-core.c b/drivers/media/pci/tw686x/tw686x-core.c
-index 6676e069b515..384d38754a4b 100644
---- a/drivers/media/pci/tw686x/tw686x-core.c
-+++ b/drivers/media/pci/tw686x/tw686x-core.c
-@@ -315,13 +315,6 @@ static int tw686x_probe(struct pci_dev *pci_dev,
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index e04a0905e941..8b192cf7d446 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -373,6 +373,8 @@ struct sta_info *sta_info_alloc(struct ieee80211_sub_if_data *sdata,
  
- 	spin_lock_init(&dev->lock);
+ 	memcpy(sta->addr, addr, ETH_ALEN);
+ 	memcpy(sta->sta.addr, addr, ETH_ALEN);
++	memcpy(sta->deflink.addr, addr, ETH_ALEN);
++	memcpy(sta->sta.deflink.addr, addr, ETH_ALEN);
+ 	sta->sta.max_rx_aggregation_subframes =
+ 		local->hw.max_rx_aggregation_subframes;
  
--	err = request_irq(pci_dev->irq, tw686x_irq, IRQF_SHARED,
--			  dev->name, dev);
--	if (err < 0) {
--		dev_err(&pci_dev->dev, "unable to request interrupt\n");
--		goto iounmap;
--	}
--
- 	timer_setup(&dev->dma_delay_timer, tw686x_dma_delay, 0);
- 
- 	/*
-@@ -333,18 +326,23 @@ static int tw686x_probe(struct pci_dev *pci_dev,
- 	err = tw686x_video_init(dev);
- 	if (err) {
- 		dev_err(&pci_dev->dev, "can't register video\n");
--		goto free_irq;
-+		goto iounmap;
- 	}
- 
- 	err = tw686x_audio_init(dev);
- 	if (err)
- 		dev_warn(&pci_dev->dev, "can't register audio\n");
- 
-+	err = request_irq(pci_dev->irq, tw686x_irq, IRQF_SHARED,
-+			  dev->name, dev);
-+	if (err < 0) {
-+		dev_err(&pci_dev->dev, "unable to request interrupt\n");
-+		goto iounmap;
-+	}
-+
- 	pci_set_drvdata(pci_dev, dev);
- 	return 0;
- 
--free_irq:
--	free_irq(pci_dev->irq, dev);
- iounmap:
- 	pci_iounmap(pci_dev, dev->mmio);
- free_region:
 -- 
 2.35.1
 
