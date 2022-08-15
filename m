@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D826FC28B2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEBCC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344755AbiHOUnZ (ORCPT
+        id S1345077AbiHOUn2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
+        Mon, 15 Aug 2022 16:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345874AbiHOUhw (ORCPT
+        with ESMTP id S233790AbiHOUiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:37:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C5FAE20B;
-        Mon, 15 Aug 2022 12:07:11 -0700 (PDT)
+        Mon, 15 Aug 2022 16:38:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364DFADCD2;
+        Mon, 15 Aug 2022 12:07:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AE54FCE1087;
-        Mon, 15 Aug 2022 19:07:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DEBCC433C1;
-        Mon, 15 Aug 2022 19:07:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82940B8107A;
+        Mon, 15 Aug 2022 19:07:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC54BC433C1;
+        Mon, 15 Aug 2022 19:07:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590428;
-        bh=O3JKpxMBdBMlzcnXK+pT01181eyK9/vtz6/V4r6tbU4=;
+        s=korg; t=1660590424;
+        bh=UZHIizdr5sPbVxj0LzXonL82Cx1mUWDggRzlm6WmWnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uj+/OKeWj9JvscvpFcqswh6JmkEWLV0ZJbSaw5mzBOout4d9oScOcX5HNDCMYIU7G
-         Vmm/qIr8P83tBzyfmwybzh18rfe/yJ6LjLDjumSlYhnruwfRLyBKizqf7lYGsGNi5n
-         3Ra7xzkOnB3znDrpv+7MKUduNDxG1WstFHdmfruk=
+        b=X6eKU8KKluitpny5kHUmavvvWOFIYhS0agsXC9uUUni41BRg/f4KIGLfYDSUkLVA5
+         cURRMqrKboNLvB+8eEAwrXMI0P7Dqq55Wu1t8HUQmwFkeGORRQ+jeydhVHMSKU2ZaB
+         FnzES02kwLk1RGzwesFoWEOroOKsCBebaR3I2T1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Marijn Suijten <marijn.suijten@somainline.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0256/1095] arm64: dts: qcom: sm6125: Append -state suffix to pinctrl nodes
-Date:   Mon, 15 Aug 2022 19:54:15 +0200
-Message-Id: <20220815180440.335917253@linuxfoundation.org>
+Subject: [PATCH 5.18 0255/1095] arm64: dts: qcom: sm6125: Move sdc2 pinctrl from seine-pdx201 to sm6125
+Date:   Mon, 15 Aug 2022 19:54:14 +0200
+Message-Id: <20220815180440.305485923@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,82 +53,135 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit cbfb5668aece448877fa7826cde81c9d06f4a4ac ]
+[ Upstream commit 6990640a93ba4e76dd62ca3ea1082a7354db09d7 ]
 
-According to qcom,sm6125-pinctrl.yaml all nodes inside the tlmm must be
-suffixed by -state:
+Both the sdc2-on and sdc2-off pinctrl nodes are used by the
+sdhci@4784000 node in sm6125.dtsi.  Surprisingly sdc2-off is defined in
+sm6125, yet its sdc2-on counterpart is only defined in board-specific DT
+for the Sony Seine PDX201 board/device resulting in an "undefined label
+&sdc2_state_on" error if sm6125.dtsi were included elsewhere.
+This sm6125 base dtsi should not rely on externally defined labels; the
+properties referencing it should then also be written externally.
+Since the sdc2-on pin configuration is board-independent just like
+sdc2-off, move it from seine-pdx201.dts into sm6125.dtsi.
 
-    qcom/sm6125-sony-xperia-seine-pdx201.dtb: pinctrl@500000: 'sdc2-off', 'sdc2-on' do not match any of the regexes: '-state$', 'pinctrl-[0-9]+'
+The SDCard-detect pin (gpio98) is however board-specific, and remains as
+an overwrite in seine-pdx201.dts for both the on and off state.
 
-The label names have been updated to match, going from sdc2_state_X to
-sdc2_X_state.
+As a drive-by cleanup, reorder bias- and drive-strength properties.
 
 Fixes: cff4bbaf2a2d ("arm64: dts: qcom: Add support for SM6125")
 Fixes: 82e1783890b7 ("arm64: dts: qcom: sm6125: Add support for Sony Xperia 10II")
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220508100336.127176-2-marijn.suijten@somainline.org
+Link: https://lore.kernel.org/r/20220508100336.127176-1-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts     | 4 ++--
- arch/arm64/boot/dts/qcom/sm6125.dtsi                      | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ .../qcom/sm6125-sony-xperia-seine-pdx201.dts  | 34 +++++--------------
+ arch/arm64/boot/dts/qcom/sm6125.dtsi          | 24 +++++++++++--
+ 2 files changed, 30 insertions(+), 28 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
-index 4916e6c8b625..038970c0b68e 100644
+index 871ccbba445b..4916e6c8b625 100644
 --- a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
 +++ b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
-@@ -88,7 +88,7 @@ &hsusb_phy1 {
- 	status = "okay";
- };
- 
--&sdc2_state_off {
-+&sdc2_off_state {
+@@ -91,8 +91,16 @@ &hsusb_phy1 {
+ &sdc2_state_off {
  	sd-cd {
  		pins = "gpio98";
++		drive-strength = <2>;
+ 		bias-disable;
++	};
++};
++
++&sdc2_state_on {
++	sd-cd {
++		pins = "gpio98";
  		drive-strength = <2>;
-@@ -96,7 +96,7 @@ sd-cd {
++		bias-pull-up;
  	};
  };
  
--&sdc2_state_on {
-+&sdc2_on_state {
- 	sd-cd {
- 		pins = "gpio98";
- 		drive-strength = <2>;
+@@ -102,32 +110,6 @@ &sdhc_1 {
+ 
+ &tlmm {
+ 	gpio-reserved-ranges = <22 2>, <28 6>;
+-
+-	sdc2_state_on: sdc2-on {
+-		clk {
+-			pins = "sdc2_clk";
+-			bias-disable;
+-			drive-strength = <16>;
+-		};
+-
+-		cmd {
+-			pins = "sdc2_cmd";
+-			bias-pull-up;
+-			drive-strength = <10>;
+-		};
+-
+-		data {
+-			pins = "sdc2_data";
+-			bias-pull-up;
+-			drive-strength = <10>;
+-		};
+-
+-		sd-cd {
+-			pins = "gpio98";
+-			bias-pull-up;
+-			drive-strength = <2>;
+-		};
+-	};
+ };
+ 
+ &usb3 {
 diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-index 3fadf5196c4d..e601b9bfdc04 100644
+index e81b2a7794fb..3fadf5196c4d 100644
 --- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-@@ -386,7 +386,7 @@ tlmm: pinctrl@500000 {
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 
--			sdc2_state_off: sdc2-off {
-+			sdc2_off_state: sdc2-off-state {
+@@ -389,20 +389,40 @@ tlmm: pinctrl@500000 {
+ 			sdc2_state_off: sdc2-off {
  				clk {
  					pins = "sdc2_clk";
+-					bias-disable;
  					drive-strength = <2>;
-@@ -406,7 +406,7 @@ data {
++					bias-disable;
+ 				};
+ 
+ 				cmd {
+ 					pins = "sdc2_cmd";
++					drive-strength = <2>;
+ 					bias-pull-up;
++				};
++
++				data {
++					pins = "sdc2_data";
+ 					drive-strength = <2>;
++					bias-pull-up;
++				};
++			};
++
++			sdc2_state_on: sdc2-on {
++				clk {
++					pins = "sdc2_clk";
++					drive-strength = <16>;
++					bias-disable;
++				};
++
++				cmd {
++					pins = "sdc2_cmd";
++					drive-strength = <10>;
++					bias-pull-up;
+ 				};
+ 
+ 				data {
+ 					pins = "sdc2_data";
++					drive-strength = <10>;
+ 					bias-pull-up;
+-					drive-strength = <2>;
  				};
  			};
- 
--			sdc2_state_on: sdc2-on {
-+			sdc2_on_state: sdc2-on-state {
- 				clk {
- 					pins = "sdc2_clk";
- 					drive-strength = <16>;
-@@ -490,8 +490,8 @@ sdhc_2: sdhci@4784000 {
- 				 <&xo_board>;
- 			clock-names = "iface", "core", "xo";
- 
--			pinctrl-0 = <&sdc2_state_on>;
--			pinctrl-1 = <&sdc2_state_off>;
-+			pinctrl-0 = <&sdc2_on_state>;
-+			pinctrl-1 = <&sdc2_off_state>;
- 			pinctrl-names = "default", "sleep";
- 
- 			power-domains = <&rpmpd SM6125_VDDCX>;
+ 		};
 -- 
 2.35.1
 
