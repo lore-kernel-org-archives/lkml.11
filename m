@@ -2,78 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02770C2BB45
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C65C2BB43
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353099AbiHOXVz (ORCPT
+        id S1352974AbiHOXVt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
+        Mon, 15 Aug 2022 19:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344206AbiHOXO3 (ORCPT
+        with ESMTP id S245147AbiHOXOf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:29 -0400
-Received: from omta002.cacentral1.a.cloudfilter.net (omta002.cacentral1.a.cloudfilter.net [3.97.99.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823D3C36
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:01:49 -0700 (PDT)
-Received: from shw-obgw-4001a.ext.cloudfilter.net ([10.228.9.142])
-        by cmsmtp with ESMTP
-        id NafDohA5SSp39NgHUoo5D8; Mon, 15 Aug 2022 20:01:48 +0000
-Received: from fanir.tuyoix.net ([68.150.218.192])
-        by cmsmtp with ESMTP
-        id NgHTohIc5uJwwNgHTo2TQk; Mon, 15 Aug 2022 20:01:48 +0000
-X-Authority-Analysis: v=2.4 cv=F+BEy4tN c=1 sm=1 tr=0 ts=62faa62c
- a=LfNn7serMq+1bQZBlMsSfQ==:117 a=LfNn7serMq+1bQZBlMsSfQ==:17
- a=biHskzXt2R4A:10 a=M51BFTxLslgA:10 a=nlC_4_pT8q9DhB4Ho9EA:9 a=cm27Pg_UAAAA:8
- a=rTkU1oqxSLEUetzfa08A:9 a=QEXdDO2ut3YA:10 a=xmb-EsYY8bH0VWELuYED:22
-Received: from CLUIJ (cluij.tuyoix.net [192.168.144.15])
-        (authenticated bits=0)
-        by fanir.tuyoix.net (8.17.1/8.17.1) with ESMTPSA id 27FK1jhk021792
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NO);
-        Mon, 15 Aug 2022 14:01:45 -0600
-Date:   Mon, 15 Aug 2022 14:01:35 -0600 (Mountain Daylight Time)
-From:   =?UTF-8?Q?Marc_Aur=C3=A8le_La_France?= <tsi@tuyoix.net>
-To:     John Ogness <john.ogness@linutronix.de>
-cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH] printk: Export log_buf_len to userland
-In-Reply-To: <87wnb9pk8k.fsf@jogness.linutronix.de>
-Message-ID: <alpine.WNT.2.20.2208151359540.1956@CLUIJ>
-References: <a41b5ad3-d052-49b8-e038-b020c1dc6788@tuyoix.net> <YvmsNEYPtdOUsaxy@google.com> <87wnb9pk8k.fsf@jogness.linutronix.de>
-User-Agent: Alpine 2.20 (WNT 67 2015-01-07)
+        Mon, 15 Aug 2022 19:14:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C397B78B;
+        Mon, 15 Aug 2022 13:01:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C490861299;
+        Mon, 15 Aug 2022 20:01:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FBDC433D6;
+        Mon, 15 Aug 2022 20:01:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660593713;
+        bh=HP39KPqdqksGKJfeQWjmY9CTR5tnvz9szc3sM6Ae8eE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zeBOSdbp9iogl9cD7QA4o0cXm7JRvIDmRkBLZZG2NsNItKW1CeE34ZFO8mvmPzHi0
+         UrvXGnWe/FcCPUUvpp4cFH7SwyA8ySpD6n0ePy/kBK66hqEgD16jB8Cz5upPOahxu6
+         LIGgsEkCunWqKjQRhgyreDqoDMqfa/zy9NX4LLaU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Marek Vasut <marex@denx.de>, Jonas Karlman <jonas@kwiboo.se>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0314/1157] drm/bridge: tc358767: Make sure Refclk clock are enabled
+Date:   Mon, 15 Aug 2022 19:54:30 +0200
+Message-Id: <20220815180452.214114121@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="115511-10179-1660593697=:1956"
-X-CMAE-Envelope: MS4xfK4qv7+gra4/No48+I6OHOAAcujcXRS/PfnQikgxcDSrrZP8L+TerLeHy145s/KAceVypRDil5xRxeB1/vzUSby/f7rIDkgSck1YqkCDCzkaIarhqx9/
- K83x6mgacZAZD6UJ1bRwJrj81dGWHJUI0IkmTVOcDAWJaAdwa4IovLzKJ8pIkAKC+CcRdXZhJBSqQ/pR5IENNVwCjTpvCD7WHgtTG7GXVpBjMk6vO0XSBbZm
- HajaaQ/TvJX2ofptE1UlCCyI/givaCNAV38SrV12FEYyq1557j6shxIus4dIuXaCCpPjVDVE/AheK9Dmk0GT5zDEYEFyLvppEAweRIE04oo=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Marek Vasut <marex@denx.de>
 
---115511-10179-1660593697=:1956
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8BIT
+[ Upstream commit 0b4c48f3e315d172e4cc06e10f2c8ba180788baf ]
 
-On Mon, 15 Aug 2022, John Ogness wrote:
-> On 2022-08-15, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
->> On (22/08/10 14:25), Marc Aurèle La France wrote:
+The Refclk may be supplied by SoC clock output instead of crystal
+oscillator, make sure the clock are enabled before any other action
+is performed with the bridge chip, otherwise it may either fail to
+operate at all, or miss reset GPIO toggle.
 
->>> Make the kernel log's buffer size available to userland so it can be
->>> used with `dmesg -s`.
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Fixes: 7caff0fc4296e ("drm/bridge: tc358767: Add DPI to eDP bridge driver")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220520121543.11550-1-marex@denx.de
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/bridge/tc358767.c | 32 ++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
-> This information is already available via:
+diff --git a/drivers/gpu/drm/bridge/tc358767.c b/drivers/gpu/drm/bridge/tc358767.c
+index 466b8fc9836a..16affb42086a 100644
+--- a/drivers/gpu/drm/bridge/tc358767.c
++++ b/drivers/gpu/drm/bridge/tc358767.c
+@@ -2004,6 +2004,13 @@ static int tc_probe_bridge_endpoint(struct tc_data *tc)
+ 	return -EINVAL;
+ }
+ 
++static void tc_clk_disable(void *data)
++{
++	struct clk *refclk = data;
++
++	clk_disable_unprepare(refclk);
++}
++
+ static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ {
+ 	struct device *dev = &client->dev;
+@@ -2020,6 +2027,24 @@ static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 	if (ret)
+ 		return ret;
+ 
++	tc->refclk = devm_clk_get(dev, "ref");
++	if (IS_ERR(tc->refclk)) {
++		ret = PTR_ERR(tc->refclk);
++		dev_err(dev, "Failed to get refclk: %d\n", ret);
++		return ret;
++	}
++
++	ret = clk_prepare_enable(tc->refclk);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, tc_clk_disable, tc->refclk);
++	if (ret)
++		return ret;
++
++	/* tRSTW = 100 cycles , at 13 MHz that is ~7.69 us */
++	usleep_range(10, 15);
++
+ 	/* Shut down GPIO is optional */
+ 	tc->sd_gpio = devm_gpiod_get_optional(dev, "shutdown", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(tc->sd_gpio))
+@@ -2040,13 +2065,6 @@ static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 		usleep_range(5000, 10000);
+ 	}
+ 
+-	tc->refclk = devm_clk_get(dev, "ref");
+-	if (IS_ERR(tc->refclk)) {
+-		ret = PTR_ERR(tc->refclk);
+-		dev_err(dev, "Failed to get refclk: %d\n", ret);
+-		return ret;
+-	}
+-
+ 	tc->regmap = devm_regmap_init_i2c(client, &tc_regmap_config);
+ 	if (IS_ERR(tc->regmap)) {
+ 		ret = PTR_ERR(tc->regmap);
+-- 
+2.35.1
 
->    klogctl(SYSLOG_ACTION_SIZE_BUFFER, NULL, 0)
 
-> And dmesg already uses this with "dmesg -S".
 
-Thanks for the much more helpful reply.
-
-Have a great day.
-
-Marc.
---115511-10179-1660593697=:1956--
