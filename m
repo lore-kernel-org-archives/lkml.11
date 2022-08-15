@@ -2,121 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FFDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33D3C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344148AbiHOTTr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
+        id S245567AbiHOTTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344530AbiHOTQx (ORCPT
+        with ESMTP id S1344528AbiHOTQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:16:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FE45464E;
-        Mon, 15 Aug 2022 11:38:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F748B81081;
-        Mon, 15 Aug 2022 18:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D98C433D6;
-        Mon, 15 Aug 2022 18:38:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588703;
-        bh=wYG8/+iJBFUffvlOg0M3StmDyPYkTXDDtClCklYvrSA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BaespXlP8u2tyq0djkr03KBRVj7aVljXmCXim+X0GDmlkHFADY9mhvdvF1Oj6NsCI
-         JopBLBFK1m7QNsO6s402TY65LPKJLAAq+XczZTtUyfDChs6wKnd7eyrGZF39hFlwo3
-         74X7x/v+Hb9AYRy47bk8REzXwpKyf9PDjUt9PO7U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
-        Scott Teel <scott.teel@microchip.com>,
-        Mike McGowen <mike.mcgowen@microchip.com>,
-        Kevin Barnett <kevin.barnett@microchip.com>,
-        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
-        Don Brace <don.brace@microchip.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 487/779] scsi: smartpqi: Fix DMA direction for RAID requests
-Date:   Mon, 15 Aug 2022 20:02:11 +0200
-Message-Id: <20220815180358.080884043@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B912753D1A
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:38:14 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id s11so10617754edd.13
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:38:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=KlWxbeNY88H7/04YoN4IUdjUlk7sZYn5STlHYYrpuXg=;
+        b=KKZH+BQv+dCW91HDyt6CSYiqA3Q/eJRjQue5eXCTjkrWZ0nPFTUbmLnkmiW9/xGron
+         rntinkzfp2SP7n/QcWMdzjEIYOGq0gcrCSDkUoxc438MS18pCyXM9GuKjEqfM4fklI8/
+         l2G938q7hoRCDCvFNbig34GpCc7cY2xPS1UZA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=KlWxbeNY88H7/04YoN4IUdjUlk7sZYn5STlHYYrpuXg=;
+        b=PGqfzxH5mPvHdEogkHHtu+ERKCXxdrZPOXqZ6z7T01pEe65kQ7LxtRrsiaXRndt6j1
+         dWgdJQxCsfrlZZU1kh1ybFHVQdWgRYfRfgYYTNMRQDZ0vjVsaw/l+5He1q6dSp2/gQUy
+         T5suKrsbZLueG3pzvqwWXha9fGnjYsXyMKsKqCQTv53kgi5OkTP981+kaQIXAtWH8c8M
+         Tsp1Y0XYWT9g3TyR6qPis5NQNHEtJkR8rwurpw2NXL/wPidFgvHARTYOMHb4IO0MUfUi
+         /cQ66FdrLqiWI5zmiGK3QuJFyOeWSzsdvd4n0gUPCd59Wr939C85XUUR69RnkmQUyEZR
+         w1Ng==
+X-Gm-Message-State: ACgBeo0RXlqI6jCKFSEYIMc+wh8CxTdGtVMLM+VN5hN3W5sh8VApVdue
+        XNk1liGFYxXrqvav6ULoIrP3TBWKhsZpOUko
+X-Google-Smtp-Source: AA6agR4TEmYyvUgS0eUc4R5/DzPWq89GUa+iApKyOLpD3lXOyKLYCED1ii0CTdcALF1retnNXxl1HQ==
+X-Received: by 2002:a05:6402:1777:b0:43d:85da:2fac with SMTP id da23-20020a056402177700b0043d85da2facmr15826326edb.32.1660588692205;
+        Mon, 15 Aug 2022 11:38:12 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id z13-20020a170906714d00b0073180489522sm4290252ejj.118.2022.08.15.11.38.11
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 11:38:11 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id b4so6904563wrn.4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:38:11 -0700 (PDT)
+X-Received: by 2002:a5d:56cf:0:b0:21e:ce64:afe7 with SMTP id
+ m15-20020a5d56cf000000b0021ece64afe7mr9360551wrw.281.1660588691209; Mon, 15
+ Aug 2022 11:38:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220814212610.GA3690074@roeck-us.net> <20220815054117-mutt-send-email-mst@kernel.org>
+ <20220815154920.GA4027315@roeck-us.net> <20220815120007-mutt-send-email-mst@kernel.org>
+ <20220815182254.GA3241114@roeck-us.net>
+In-Reply-To: <20220815182254.GA3241114@roeck-us.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 15 Aug 2022 11:37:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjWN6Wh1t5g48=ue4Ti6ig2P7u5nXBcQjLf=oiAZibk6w@mail.gmail.com>
+Message-ID: <CAHk-=wjWN6Wh1t5g48=ue4Ti6ig2P7u5nXBcQjLf=oiAZibk6w@mail.gmail.com>
+Subject: Re: upstream kernel crashes
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+On Mon, Aug 15, 2022 at 11:22 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> I ended up publishing several of the syzkaller reports because I could
+> not figure out how to test the proposed patch otherwise. Sorry for the
+> noise on the mailing lists, but I just could not figure out how to
+> trigger test runs without making the reports public. Various test runs
+> are now queued. Hopefully we should get results soon.
 
-[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
+I actually think that the best "test" is to just test the revert and
+see if the problems go away.
 
-Correct a SOP READ and WRITE DMA flags for some requests.
+You may not have found a way to reliably trigger one particular
+problem, but apparently you can easily enough trigger some random
+issue with enough tests.
 
-This update corrects DMA direction issues with SCSI commands removed from
-the controller's internal lookup table.
+If it's some random memory corruption, there may simply not ba a great
+reproducer, with the oopses just depending on random layout and
+timing.
 
-Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
-lookup table and exposed a DMA direction flag issue.
-
-SCSI READ BLOCK LIMITS was recently removed from our controller lookup
-table so the controller uses the respective IU flag field to set the DMA
-data direction. Since the DMA direction is incorrect the FW never completes
-the request causing a hang.
-
-Some SCSI commands which use SCSI READ BLOCK LIMITS
-
-      * sg_map
-      * mt -f /dev/stX status
-
-After updating controller firmware, users may notice their tape units
-failing. This patch resolves the issue.
-
-Also, the AIO path DMA direction is correct.
-
-The DMA direction flag is a day-one bug with no reported BZ.
-
-Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
-Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
-Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
-Reviewed-by: Scott Teel <scott.teel@microchip.com>
-Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
-Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
-Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
-Signed-off-by: Don Brace <don.brace@microchip.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 2e690d8a3444..e3d8de1159b5 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -5310,10 +5310,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
- 	}
- 
- 	switch (scmd->sc_data_direction) {
--	case DMA_TO_DEVICE:
-+	case DMA_FROM_DEVICE:
- 		request->data_direction = SOP_READ_FLAG;
- 		break;
--	case DMA_FROM_DEVICE:
-+	case DMA_TO_DEVICE:
- 		request->data_direction = SOP_WRITE_FLAG;
- 		break;
- 	case DMA_NONE:
--- 
-2.35.1
-
-
-
+              Linus
