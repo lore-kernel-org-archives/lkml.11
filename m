@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C3DC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6EDC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230448AbiHPEfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
+        id S230472AbiHPEfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbiHPEe2 (ORCPT
+        with ESMTP id S230377AbiHPEeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:34:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E459FA86;
-        Mon, 15 Aug 2022 13:28:01 -0700 (PDT)
+        Tue, 16 Aug 2022 00:34:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140184D178;
+        Mon, 15 Aug 2022 13:25:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C20BE61135;
-        Mon, 15 Aug 2022 20:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFDAC433D7;
-        Mon, 15 Aug 2022 20:27:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAA63B8119C;
+        Mon, 15 Aug 2022 20:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09088C433C1;
+        Mon, 15 Aug 2022 20:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595280;
-        bh=GTIZkC3zKQWu+Bct/VE1yaL9YF7rpRhed2b2ZCRgiOQ=;
+        s=korg; t=1660595149;
+        bh=t5Fl6FiYGtpOMcKTyXWqYCTOGKEhu1BZ+YkYDM0Xj+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zHKEaECCmG6nenCjcBHLLZHkE9Q89baBxjArUQ8bNcvz2nu9+lC8RPTJhrQLetEbT
-         OkLj3df01Mh7JbjkiS3C/mnUzeJtN8PZXlWNmDYa5dS/0vg1+gNgww+B3PRgEVXFaK
-         xsCydfhtvWor39/AhjMBphGFTfRPi8X6EMANyAZw=
+        b=ixb8mrN3UmT16RedDI5cwqgpjCRjNeaxvvg9b1qlXxaW130bSvTahx6cdYSv+Id2O
+         dH2Oc9NUEKp5jqUpZOBXrnIjNQolMWmuujt1uyx9rskJpqVmrKnyS/DoLJ7dcOSGi3
+         ckP6ctKySPWim/bNsCGWRyt4m5qydWUTY8Xgx/CQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Matt Ranostay <mranostay@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0714/1157] iio: proximity: as3935: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:01:10 +0200
-Message-Id: <20220815180508.089123176@linuxfoundation.org>
+Subject: [PATCH 5.19 0672/1157] iio: dac: ad5064: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:28 +0200
+Message-Id: <20220815180506.566976854@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,35 +53,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 2386c0f8c5b740873a4b9126c3706601b127fe22 ]
+[ Upstream commit 8779b88c214fa0f8fdfb9c54a124f468884d356a ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 24ddb0e4bba4 ("iio: Add AS3935 lightning sensor support")
+Update the comment to include 'may'.
+
+Fixes: 6a17a0768f77 ("iio:dac:ad5064: Add support for the ad5629r and ad5669r")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Matt Ranostay <mranostay@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-87-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-44-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/proximity/as3935.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5064.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-index 67891ce2bd09..ebc95cf8f5f4 100644
---- a/drivers/iio/proximity/as3935.c
-+++ b/drivers/iio/proximity/as3935.c
-@@ -65,7 +65,7 @@ struct as3935_state {
- 		u8 chan;
- 		s64 timestamp __aligned(8);
- 	} scan;
--	u8 buf[2] ____cacheline_aligned;
-+	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+index d87cf14daabe..4447b8811827 100644
+--- a/drivers/iio/dac/ad5064.c
++++ b/drivers/iio/dac/ad5064.c
+@@ -115,13 +115,13 @@ struct ad5064_state {
+ 	struct mutex lock;
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+ 	union {
+ 		u8 i2c[3];
+ 		__be32 spi;
+-	} data ____cacheline_aligned;
++	} data __aligned(IIO_DMA_MINALIGN);
  };
  
- static const struct iio_chan_spec as3935_channels[] = {
+ enum ad5064_type {
 -- 
 2.35.1
 
