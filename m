@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F098C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1AEC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349879AbiHOWbM (ORCPT
+        id S1349749AbiHOWbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        Mon, 15 Aug 2022 18:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349755AbiHOW0I (ORCPT
+        with ESMTP id S1349656AbiHOW0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:26:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC1D127BDF;
-        Mon, 15 Aug 2022 12:44:52 -0700 (PDT)
+        Mon, 15 Aug 2022 18:26:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659F4127BD0;
+        Mon, 15 Aug 2022 12:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8B43B81145;
-        Mon, 15 Aug 2022 19:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA3AEC433D6;
-        Mon, 15 Aug 2022 19:44:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E96076120F;
+        Mon, 15 Aug 2022 19:44:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D855AC433D6;
+        Mon, 15 Aug 2022 19:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592689;
-        bh=CQV3gtFCOEyCWtZCTkXMTvy003w/H2jNvTviBBARrVw=;
+        s=korg; t=1660592686;
+        bh=CUjDrPTV27jSN1ucbZYKPwsC8fO7x4ZEi5LF9MQZtMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qk9xudA/hx57GE0mKnPUuCo3wje5LXqCQgLtmX1BmRNMq7DdAJcH9iHM0jCtzfsDe
-         rSgP4HE0X9VypquIgqj+cVuZ5RfYakZSkfqO+x1SEKjX7zok1XCdJ+VBykjbB4wmGw
-         TG/qzLBuCHtwnW2GjFbFkazMNztR08EKabG8t8W4=
+        b=iSBhOUASLJMzHBlOawaoIeI+YyGsl3wsvfXrX2vW/DrMDd+IW052Rij1tAaezuBAj
+         TFAUGkHtE40KSUHMvUY4hltWyFwOcbb+0kl3Rfaipif2u4grFdQbGtNXfd5EJmWAEN
+         MrU7EugjD1zMTGOoxV/oQV/8Ufemrw3UF3nVF5gE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tang Bin <tangbin@cmss.chinamobile.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0826/1095] opp: Fix error check in dev_pm_opp_attach_genpd()
-Date:   Mon, 15 Aug 2022 20:03:45 +0200
-Message-Id: <20220815180503.476260372@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0792/1095] HID: amd_sfh: Handle condition of "no sensors"
+Date:   Mon, 15 Aug 2022 20:03:11 +0200
+Message-Id: <20220815180502.004422365@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,37 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tang Bin <tangbin@cmss.chinamobile.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit 4ea9496cbc959eb5c78f3e379199aca9ef4e386b ]
+[ Upstream commit 5d4d0f15657535f6a122ab26d47230b5c2b944af ]
 
-dev_pm_domain_attach_by_name() may return NULL in some cases,
-so IS_ERR() doesn't meet the requirements. Thus fix it.
+Add a check for num_hid_devices to handle special case the situation
+of "no sensors".
 
-Fixes: 6319aee10e53 ("opp: Attach genpds to devices from within OPP core")
-Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
-[ Viresh: Replace ENODATA with ENODEV ]
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/opp/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_client.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 740407252298..e154b18ec4b1 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -2413,8 +2413,8 @@ struct opp_table *dev_pm_opp_attach_genpd(struct device *dev,
- 		}
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_client.c b/drivers/hid/amd-sfh-hid/amd_sfh_client.c
+index 444acd9e2cd6..8be33cf3b6c2 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_client.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_client.c
+@@ -155,6 +155,8 @@ int amd_sfh_hid_client_init(struct amd_mp2_dev *privdata)
+ 	dev = &privdata->pdev->dev;
  
- 		virt_dev = dev_pm_domain_attach_by_name(dev, *name);
--		if (IS_ERR(virt_dev)) {
--			ret = PTR_ERR(virt_dev);
-+		if (IS_ERR_OR_NULL(virt_dev)) {
-+			ret = PTR_ERR(virt_dev) ? : -ENODEV;
- 			dev_err(dev, "Couldn't attach to pm_domain: %d\n", ret);
- 			goto err;
- 		}
+ 	cl_data->num_hid_devices = amd_mp2_get_sensor_num(privdata, &cl_data->sensor_idx[0]);
++	if (cl_data->num_hid_devices == 0)
++		return -ENODEV;
+ 
+ 	INIT_DELAYED_WORK(&cl_data->work, amd_sfh_work);
+ 	INIT_DELAYED_WORK(&cl_data->work_buffer, amd_sfh_work_buffer);
 -- 
 2.35.1
 
