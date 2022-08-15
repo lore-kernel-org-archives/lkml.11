@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFB6C32763
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9C1C49EC2
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356656AbiHPAHt (ORCPT
+        id S1356378AbiHPAH0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
+        Mon, 15 Aug 2022 20:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352126AbiHPAAN (ORCPT
+        with ESMTP id S1344218AbiHOX7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378D1165715;
-        Mon, 15 Aug 2022 13:21:17 -0700 (PDT)
+        Mon, 15 Aug 2022 19:59:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35AEC7421;
+        Mon, 15 Aug 2022 13:20:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6E3EB80EA8;
-        Mon, 15 Aug 2022 20:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BC8C433C1;
-        Mon, 15 Aug 2022 20:21:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C8E660F71;
+        Mon, 15 Aug 2022 20:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66C09C4347C;
+        Mon, 15 Aug 2022 20:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594874;
-        bh=2Wgq8qY/SEwnYEC3euAXi6f1iOUx8n9AbuUp4mRrAVY=;
+        s=korg; t=1660594830;
+        bh=hG2YwfD3GERqvp7dAQn4lJn8v53PgZPVyBYg36/I2NI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IOx4uJtKmSo9JoMHphns2wEkrMkPfOx46fZDaud10PmqcJuJgR3DRHzOqlq4LkNUU
-         SNVOEDWGY0zuR55RjW0+pRtYS6mCx7Mc70950FwjxeE4q6n3rnIRCdLMjkhjKKC8Bg
-         sLGXyvwRnshyIX50ph25XuB4rnTi+ttZC3uHKasU=
+        b=V0abZbikW/JnPzJRvHURL3fmtQRWyLKFtbbaR7ICbjfAwCTmyigvWzqVx8DAQRv9Y
+         iZYlAT38QeMo1Ctjlvqydv2Yrms6moKG14vbVgxQ0nsf/bqZMr6iN4kkjzW0nF7TJ1
+         LpMgGcTkcIhsaARK1/8UHRRSILR1moOm7U1dBcRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maher Sanalla <msanalla@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0553/1157] net/mlx5: Adjust log_max_qp to be 18 at most
-Date:   Mon, 15 Aug 2022 19:58:29 +0200
-Message-Id: <20220815180501.759624810@linuxfoundation.org>
+Subject: [PATCH 5.19 0572/1157] wireguard: ratelimiter: use hrtimer in selftest
+Date:   Mon, 15 Aug 2022 19:58:48 +0200
+Message-Id: <20220815180502.502581075@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,39 +51,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maher Sanalla <msanalla@nvidia.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit a6e9085d791f8306084fd5bc44dd3fdd4e1ac27b ]
+[ Upstream commit 151c8e499f4705010780189377f85b57400ccbf5 ]
 
-The cited commit limited log_max_qp to be 17 due to FW capabilities.
-Recently, it turned out that there are old FW versions that supported
-more than 17, so the cited commit caused a degradation.
+Using msleep() is problematic because it's compared against
+ratelimiter.c's ktime_get_coarse_boottime_ns(), which means on systems
+with slow jiffies (such as UML's forced HZ=100), the result is
+inaccurate. So switch to using schedule_hrtimeout().
 
-Thus, set the maximum log_max_qp back to 18 as it was before the
-cited commit.
+However, hrtimer gives us access only to the traditional posix timers,
+and none of the _COARSE variants. So now, rather than being too
+imprecise like jiffies, it's too precise.
 
-Fixes: 7f839965b2d7 ("net/mlx5: Update log_max_qp value to be 17 at most")
-Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+One solution would be to give it a large "range" value, but this will
+still fire early on a loaded system. A better solution is to align the
+timeout to the actual coarse timer, and then round up to the nearest
+tick, plus change.
+
+So add the timeout to the current coarse time, and then
+schedule_hrtimer() until the absolute computed time.
+
+This should hopefully reduce flakes in CI as well. Note that we keep the
+retry loop in case the entire function is running behind, because the
+test could still be scheduled out, by either the kernel or by the
+hypervisor's kernel, in which case restarting the test and hoping to not
+be scheduled out still helps.
+
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireguard/selftest/ratelimiter.c | 25 +++++++++++---------
+ kernel/time/hrtimer.c                        |  1 +
+ 2 files changed, 15 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index c9b4e50a593e..95f26624b57c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -524,7 +524,7 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+diff --git a/drivers/net/wireguard/selftest/ratelimiter.c b/drivers/net/wireguard/selftest/ratelimiter.c
+index 007cd4457c5f..ba87d294604f 100644
+--- a/drivers/net/wireguard/selftest/ratelimiter.c
++++ b/drivers/net/wireguard/selftest/ratelimiter.c
+@@ -6,28 +6,29 @@
+ #ifdef DEBUG
  
- 	/* Check log_max_qp from HCA caps to set in current profile */
- 	if (prof->log_max_qp == LOG_MAX_SUPPORTED_QPS) {
--		prof->log_max_qp = min_t(u8, 17, MLX5_CAP_GEN_MAX(dev, log_max_qp));
-+		prof->log_max_qp = min_t(u8, 18, MLX5_CAP_GEN_MAX(dev, log_max_qp));
- 	} else if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
- 		mlx5_core_warn(dev, "log_max_qp value in current profile is %d, changing it to HCA capability limit (%d)\n",
- 			       prof->log_max_qp,
+ #include <linux/jiffies.h>
++#include <linux/hrtimer.h>
+ 
+ static const struct {
+ 	bool result;
+-	unsigned int msec_to_sleep_before;
++	u64 nsec_to_sleep_before;
+ } expected_results[] __initconst = {
+ 	[0 ... PACKETS_BURSTABLE - 1] = { true, 0 },
+ 	[PACKETS_BURSTABLE] = { false, 0 },
+-	[PACKETS_BURSTABLE + 1] = { true, MSEC_PER_SEC / PACKETS_PER_SECOND },
++	[PACKETS_BURSTABLE + 1] = { true, NSEC_PER_SEC / PACKETS_PER_SECOND },
+ 	[PACKETS_BURSTABLE + 2] = { false, 0 },
+-	[PACKETS_BURSTABLE + 3] = { true, (MSEC_PER_SEC / PACKETS_PER_SECOND) * 2 },
++	[PACKETS_BURSTABLE + 3] = { true, (NSEC_PER_SEC / PACKETS_PER_SECOND) * 2 },
+ 	[PACKETS_BURSTABLE + 4] = { true, 0 },
+ 	[PACKETS_BURSTABLE + 5] = { false, 0 }
+ };
+ 
+ static __init unsigned int maximum_jiffies_at_index(int index)
+ {
+-	unsigned int total_msecs = 2 * MSEC_PER_SEC / PACKETS_PER_SECOND / 3;
++	u64 total_nsecs = 2 * NSEC_PER_SEC / PACKETS_PER_SECOND / 3;
+ 	int i;
+ 
+ 	for (i = 0; i <= index; ++i)
+-		total_msecs += expected_results[i].msec_to_sleep_before;
+-	return msecs_to_jiffies(total_msecs);
++		total_nsecs += expected_results[i].nsec_to_sleep_before;
++	return nsecs_to_jiffies(total_nsecs);
+ }
+ 
+ static __init int timings_test(struct sk_buff *skb4, struct iphdr *hdr4,
+@@ -42,8 +43,12 @@ static __init int timings_test(struct sk_buff *skb4, struct iphdr *hdr4,
+ 	loop_start_time = jiffies;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(expected_results); ++i) {
+-		if (expected_results[i].msec_to_sleep_before)
+-			msleep(expected_results[i].msec_to_sleep_before);
++		if (expected_results[i].nsec_to_sleep_before) {
++			ktime_t timeout = ktime_add(ktime_add_ns(ktime_get_coarse_boottime(), TICK_NSEC * 4 / 3),
++						    ns_to_ktime(expected_results[i].nsec_to_sleep_before));
++			set_current_state(TASK_UNINTERRUPTIBLE);
++			schedule_hrtimeout_range_clock(&timeout, 0, HRTIMER_MODE_ABS, CLOCK_BOOTTIME);
++		}
+ 
+ 		if (time_is_before_jiffies(loop_start_time +
+ 					   maximum_jiffies_at_index(i)))
+@@ -127,7 +132,7 @@ bool __init wg_ratelimiter_selftest(void)
+ 	if (IS_ENABLED(CONFIG_KASAN) || IS_ENABLED(CONFIG_UBSAN))
+ 		return true;
+ 
+-	BUILD_BUG_ON(MSEC_PER_SEC % PACKETS_PER_SECOND != 0);
++	BUILD_BUG_ON(NSEC_PER_SEC % PACKETS_PER_SECOND != 0);
+ 
+ 	if (wg_ratelimiter_init())
+ 		goto out;
+@@ -176,7 +181,6 @@ bool __init wg_ratelimiter_selftest(void)
+ 				test += test_count;
+ 				goto err;
+ 			}
+-			msleep(500);
+ 			continue;
+ 		} else if (ret < 0) {
+ 			test += test_count;
+@@ -195,7 +199,6 @@ bool __init wg_ratelimiter_selftest(void)
+ 				test += test_count;
+ 				goto err;
+ 			}
+-			msleep(50);
+ 			continue;
+ 		}
+ 		test += test_count;
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index 0ea8702eb516..23af5eca11b1 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -2311,6 +2311,7 @@ schedule_hrtimeout_range_clock(ktime_t *expires, u64 delta,
+ 
+ 	return !t.task ? 0 : -EINTR;
+ }
++EXPORT_SYMBOL_GPL(schedule_hrtimeout_range_clock);
+ 
+ /**
+  * schedule_hrtimeout_range - sleep until timeout
 -- 
 2.35.1
 
