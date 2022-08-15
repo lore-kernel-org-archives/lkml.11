@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98AA6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BBCC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231817AbiHOTEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S245348AbiHOTEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244631AbiHOTAG (ORCPT
+        with ESMTP id S244785AbiHOTA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:00:06 -0400
+        Mon, 15 Aug 2022 15:00:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6DF4AD78;
-        Mon, 15 Aug 2022 11:32:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03394AD5A;
+        Mon, 15 Aug 2022 11:32:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CEFCB8105D;
-        Mon, 15 Aug 2022 18:32:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E83C433C1;
-        Mon, 15 Aug 2022 18:32:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D522B81084;
+        Mon, 15 Aug 2022 18:32:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB019C433D7;
+        Mon, 15 Aug 2022 18:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588359;
-        bh=2rlkvR+VSCNZxJ9MpCjFN9T0LkYJDu75Wd2nel5TUv8=;
+        s=korg; t=1660588365;
+        bh=1yz48aHCBQ6Peoc8tzW71zpZ3bWP6L5QX77XZpRmnqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8fd+EWz5Aw7OUn1moW7nQ1R8S+ldrIwjPMtmmqQjca6JbpKWp0dWqgTs80jBaWsN
-         hAaF15dLJpFUOLNopEXyJNkWS+Y7aDk3siccVZqaufpH6196CxK2KuxpkbrD27s9Hl
-         ouCHDnlhE++TSK4xCz1z5Lz/rBENsZAEhdHEWTBE=
+        b=ptaqPuD2WImufJGl16MvuxqiU1VqqZmGBqXV9xFHIsGN1dR2Fz2yas9E73t+T61BK
+         PpZtjAshmADHGn7SdJiFQDqJrNBKHNUDU1or+6a95VmX2RKdkWHedYSegTSRRFH0Gf
+         NM6I8595uM01MnSEu2dy8+ziaiHuAk8+9f4lK7ds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Jun Zhang <xuejun.zhang@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 377/779] netdevsim: fib: Fix reference count leak on route deletion failure
-Date:   Mon, 15 Aug 2022 20:00:21 +0200
-Message-Id: <20220815180353.384201774@linuxfoundation.org>
+Subject: [PATCH 5.15 379/779] iavf: Fix max_rate limiting
+Date:   Mon, 15 Aug 2022 20:00:23 +0200
+Message-Id: <20220815180353.483165470@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,115 +52,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-[ Upstream commit 180a6a3ee60a7cb69ed1232388460644f6a21f00 ]
+[ Upstream commit ec60d54cb9a3d43a02c5612a03093c18233e6601 ]
 
-As part of FIB offload simulation, netdevsim stores IPv4 and IPv6 routes
-and holds a reference on FIB info structures that in turn hold a
-reference on the associated nexthop device(s).
+Fix max_rate option in TC, check for proper quanta boundaries.
+Check for minimum value provided and if it fits expected 50Mbps
+quanta.
 
-In the unlikely case where we are unable to allocate memory to process a
-route deletion request, netdevsim will not release the reference from
-the associated FIB info structure, thereby preventing the associated
-nexthop device(s) from ever being removed [1].
+Without this patch, iavf could send settings for max_rate limiting
+that would be accepted from by PF even the max_rate option is less
+than expected 50Mbps quanta. It results in no rate limiting
+on traffic as rate limiting will be floored to 0.
 
-Fix this by scheduling a work item that will flush netdevsim's FIB table
-upon route deletion failure. This will cause netdevsim to release its
-reference from all the FIB info structures in its table.
+Example:
+tc qdisc add dev $vf root mqprio num_tc 3 map 0 2 1 queues \
+2@0 2@2 2@4 hw 1 mode channel shaper bw_rlimit \
+max_rate 50Mbps 500Mbps 500Mbps
 
-Reported by Lucas Leong of Trend Micro Zero Day Initiative.
+Should limit TC0 to circa 50 Mbps
 
-Fixes: 0ae3eb7b4611 ("netdevsim: fib: Perform the route programming in a non-atomic context")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+tc qdisc add dev $vf root mqprio num_tc 3 map 0 2 1 queues \
+2@0 2@2 2@4 hw 1 mode channel shaper bw_rlimit \
+max_rate 0Mbps 100Kbit 500Mbps
+
+Should return error
+
+Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Jun Zhang <xuejun.zhang@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/netdevsim/fib.c | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/iavf/iavf.h      |  1 +
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 25 +++++++++++++++++++--
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index 378ee779061c..14787d17f703 100644
---- a/drivers/net/netdevsim/fib.c
-+++ b/drivers/net/netdevsim/fib.c
-@@ -53,6 +53,7 @@ struct nsim_fib_data {
- 	struct rhashtable nexthop_ht;
- 	struct devlink *devlink;
- 	struct work_struct fib_event_work;
-+	struct work_struct fib_flush_work;
- 	struct list_head fib_event_queue;
- 	spinlock_t fib_event_queue_lock; /* Protects fib event queue list */
- 	struct mutex nh_lock; /* Protects NH HT */
-@@ -977,7 +978,7 @@ static int nsim_fib_event_schedule_work(struct nsim_fib_data *data,
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 9a122aea6979..ab84fc83352f 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -89,6 +89,7 @@ struct iavf_vsi {
+ #define IAVF_HKEY_ARRAY_SIZE ((IAVF_VFQF_HKEY_MAX_INDEX + 1) * 4)
+ #define IAVF_HLUT_ARRAY_SIZE ((IAVF_VFQF_HLUT_MAX_INDEX + 1) * 4)
+ #define IAVF_MBPS_DIVISOR	125000 /* divisor to convert to Mbps */
++#define IAVF_MBPS_QUANTA	50
  
- 	fib_event = kzalloc(sizeof(*fib_event), GFP_ATOMIC);
- 	if (!fib_event)
--		return NOTIFY_BAD;
-+		goto err_fib_event_alloc;
- 
- 	fib_event->data = data;
- 	fib_event->event = event;
-@@ -1005,6 +1006,9 @@ static int nsim_fib_event_schedule_work(struct nsim_fib_data *data,
- 
- err_fib_prepare_event:
- 	kfree(fib_event);
-+err_fib_event_alloc:
-+	if (event == FIB_EVENT_ENTRY_DEL)
-+		schedule_work(&data->fib_flush_work);
- 	return NOTIFY_BAD;
- }
- 
-@@ -1482,6 +1486,24 @@ static void nsim_fib_event_work(struct work_struct *work)
- 	mutex_unlock(&data->fib_lock);
- }
- 
-+static void nsim_fib_flush_work(struct work_struct *work)
-+{
-+	struct nsim_fib_data *data = container_of(work, struct nsim_fib_data,
-+						  fib_flush_work);
-+	struct nsim_fib_rt *fib_rt, *fib_rt_tmp;
-+
-+	/* Process pending work. */
-+	flush_work(&data->fib_event_work);
-+
-+	mutex_lock(&data->fib_lock);
-+	list_for_each_entry_safe(fib_rt, fib_rt_tmp, &data->fib_rt_list, list) {
-+		rhashtable_remove_fast(&data->fib_rt_ht, &fib_rt->ht_node,
-+				       nsim_fib_rt_ht_params);
-+		nsim_fib_rt_free(fib_rt, data);
-+	}
-+	mutex_unlock(&data->fib_lock);
-+}
-+
- static int
- nsim_fib_debugfs_init(struct nsim_fib_data *data, struct nsim_dev *nsim_dev)
+ #define IAVF_VIRTCHNL_VF_RESOURCE_SIZE (sizeof(struct virtchnl_vf_resource) + \
+ 					(IAVF_MAX_VF_VSI * \
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index ca74824d40b8..067f0b265e7d 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2732,6 +2732,7 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
+ 				   struct tc_mqprio_qopt_offload *mqprio_qopt)
  {
-@@ -1540,6 +1562,7 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 		goto err_rhashtable_nexthop_destroy;
- 
- 	INIT_WORK(&data->fib_event_work, nsim_fib_event_work);
-+	INIT_WORK(&data->fib_flush_work, nsim_fib_flush_work);
- 	INIT_LIST_HEAD(&data->fib_event_queue);
- 	spin_lock_init(&data->fib_event_queue_lock);
- 
-@@ -1586,6 +1609,7 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- err_nexthop_nb_unregister:
- 	unregister_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb);
- err_rhashtable_fib_destroy:
-+	cancel_work_sync(&data->fib_flush_work);
- 	flush_work(&data->fib_event_work);
- 	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
- 				    data);
-@@ -1615,6 +1639,7 @@ void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
- 					    NSIM_RESOURCE_IPV4_FIB);
- 	unregister_fib_notifier(devlink_net(devlink), &data->fib_nb);
- 	unregister_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb);
-+	cancel_work_sync(&data->fib_flush_work);
- 	flush_work(&data->fib_event_work);
- 	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
- 				    data);
+ 	u64 total_max_rate = 0;
++	u32 tx_rate_rem = 0;
+ 	int i, num_qps = 0;
+ 	u64 tx_rate = 0;
+ 	int ret = 0;
+@@ -2746,12 +2747,32 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
+ 			return -EINVAL;
+ 		if (mqprio_qopt->min_rate[i]) {
+ 			dev_err(&adapter->pdev->dev,
+-				"Invalid min tx rate (greater than 0) specified\n");
++				"Invalid min tx rate (greater than 0) specified for TC%d\n",
++				i);
+ 			return -EINVAL;
+ 		}
+-		/*convert to Mbps */
++
++		/* convert to Mbps */
+ 		tx_rate = div_u64(mqprio_qopt->max_rate[i],
+ 				  IAVF_MBPS_DIVISOR);
++
++		if (mqprio_qopt->max_rate[i] &&
++		    tx_rate < IAVF_MBPS_QUANTA) {
++			dev_err(&adapter->pdev->dev,
++				"Invalid max tx rate for TC%d, minimum %dMbps\n",
++				i, IAVF_MBPS_QUANTA);
++			return -EINVAL;
++		}
++
++		(void)div_u64_rem(tx_rate, IAVF_MBPS_QUANTA, &tx_rate_rem);
++
++		if (tx_rate_rem != 0) {
++			dev_err(&adapter->pdev->dev,
++				"Invalid max tx rate for TC%d, not divisible by %d\n",
++				i, IAVF_MBPS_QUANTA);
++			return -EINVAL;
++		}
++
+ 		total_max_rate += tx_rate;
+ 		num_qps += mqprio_qopt->qopt.count[i];
+ 	}
 -- 
 2.35.1
 
