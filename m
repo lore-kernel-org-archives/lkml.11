@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7B2C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3968EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbiHPAuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
+        id S239861AbiHPAuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347445AbiHPAp4 (ORCPT
+        with ESMTP id S1347452AbiHPAp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A7F193549;
-        Mon, 15 Aug 2022 13:41:10 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6417A193579;
+        Mon, 15 Aug 2022 13:41:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B8C361233;
-        Mon, 15 Aug 2022 20:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79282C433C1;
-        Mon, 15 Aug 2022 20:41:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1668BB80EA9;
+        Mon, 15 Aug 2022 20:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 521B5C433C1;
+        Mon, 15 Aug 2022 20:41:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596069;
-        bh=hoC3688rHs7GdImLyycObxElTTb+PGyVRE6FR7k3NtM=;
+        s=korg; t=1660596104;
+        bh=UMR9Q6e1EIqM0Fs6+TNQ242WxfelHSW1T1pAVmYgAec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G73DuTdL4r1IJMaQdbN2vq1IsgnLIIKri42BT+VYG5/FbY84QBDXnClw5JgHFfqLu
-         +/sW3Y3dV6yT1CjL9+nh4c7xO37IGWHEcklvnuYt9fGgda702S35TXKpxx3K10QTiM
-         ynmuzL6VJXTsYcP/suO+IgqCgIz4xZagDYWaYn54=
+        b=behzgG/z5SfODjVcI6gD5bCO2XxwqVu2/9ZqesPqJZfBbA+n2KYnMkC6Jtr3BUvSN
+         X/baHSYGQGDMVJweHYrKNKEvMezLraAp+I5cZ+Xpl8ezmeWirvWDFdI2rFVRj5yBiY
+         lEvG4je7GN9ZyMwfy8o9Pnx/+y0mNlWKQMmvp22c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Eric Farman <farman@linux.ibm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0936/1157] ASoC: imx-card: Fix DSD/PDM mclk frequency
-Date:   Mon, 15 Aug 2022 20:04:52 +0200
-Message-Id: <20220815180516.950369785@linuxfoundation.org>
+Subject: [PATCH 5.19 0939/1157] vfio/ccw: Fix FSM state if mdev probe fails
+Date:   Mon, 15 Aug 2022 20:04:55 +0200
+Message-Id: <20220815180517.076977276@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,57 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Eric Farman <farman@linux.ibm.com>
 
-[ Upstream commit c0fabd12a8570cb932f13d9388f3d887ad44369b ]
+[ Upstream commit f6c876d67e956de8d69349b0ee43bc7277c09e5c ]
 
-The DSD/PDM rate not only DSD64/128/256/512, which are the
-multiple rate of 44.1kHz,  but also support the multiple
-rate of 8kHz, so can't force all mclk frequency to be
-22579200Hz, need to assign the frequency according to
-rate.
+The FSM is in STANDBY state when arriving in vfio_ccw_mdev_probe(),
+and this routine converts it to IDLE as part of its processing.
+The error exit sets it to IDLE (again) but clears the private->mdev
+pointer.
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1657100575-8261-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The FSM should of course be managing the state itself, but the
+correct thing for vfio_ccw_mdev_probe() to do would be to put
+the state back the way it found it.
+
+The corresponding check of private->mdev in vfio_ccw_sch_io_todo()
+can be removed, since the distinction is unnecessary at this point.
+
+Fixes: 3bf1311f351ef ("vfio/ccw: Convert to use vfio_register_emulated_iommu_dev()")
+Signed-off-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220707135737.720765-3-farman@linux.ibm.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-card.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/s390/cio/vfio_ccw_drv.c | 5 +++--
+ drivers/s390/cio/vfio_ccw_ops.c | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index 6f8efd838fcc..c0eb218a254b 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -17,6 +17,9 @@
+diff --git a/drivers/s390/cio/vfio_ccw_drv.c b/drivers/s390/cio/vfio_ccw_drv.c
+index 35055eb94115..179eb614fa5b 100644
+--- a/drivers/s390/cio/vfio_ccw_drv.c
++++ b/drivers/s390/cio/vfio_ccw_drv.c
+@@ -106,9 +106,10 @@ static void vfio_ccw_sch_io_todo(struct work_struct *work)
+ 	/*
+ 	 * Reset to IDLE only if processing of a channel program
+ 	 * has finished. Do not overwrite a possible processing
+-	 * state if the final interrupt was for HSCH or CSCH.
++	 * state if the interrupt was unsolicited, or if the final
++	 * interrupt was for HSCH or CSCH.
+ 	 */
+-	if (private->mdev && cp_is_finished)
++	if (cp_is_finished)
+ 		private->state = VFIO_CCW_STATE_IDLE;
  
- #include "fsl_sai.h"
+ 	if (private->io_trigger)
+diff --git a/drivers/s390/cio/vfio_ccw_ops.c b/drivers/s390/cio/vfio_ccw_ops.c
+index 0e05bff78b8e..9a05dadcbb75 100644
+--- a/drivers/s390/cio/vfio_ccw_ops.c
++++ b/drivers/s390/cio/vfio_ccw_ops.c
+@@ -146,7 +146,7 @@ static int vfio_ccw_mdev_probe(struct mdev_device *mdev)
+ 	vfio_uninit_group_dev(&private->vdev);
+ 	atomic_inc(&private->avail);
+ 	private->mdev = NULL;
+-	private->state = VFIO_CCW_STATE_IDLE;
++	private->state = VFIO_CCW_STATE_STANDBY;
+ 	return ret;
+ }
  
-+#define IMX_CARD_MCLK_22P5792MHZ  22579200
-+#define IMX_CARD_MCLK_24P576MHZ   24576000
-+
- enum codec_type {
- 	CODEC_DUMMY = 0,
- 	CODEC_AK5558 = 1,
-@@ -353,9 +356,14 @@ static int imx_aif_hw_params(struct snd_pcm_substream *substream,
- 		mclk_freq = akcodec_get_mclk_rate(substream, params, slots, slot_width);
- 	else
- 		mclk_freq = params_rate(params) * slots * slot_width;
--	/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
--	if (format_is_dsd(params))
--		mclk_freq = 22579200;
-+
-+	if (format_is_dsd(params)) {
-+		/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
-+		if (!(params_rate(params) % 11025))
-+			mclk_freq = IMX_CARD_MCLK_22P5792MHZ;
-+		else
-+			mclk_freq = IMX_CARD_MCLK_24P576MHZ;
-+	}
- 
- 	ret = snd_soc_dai_set_sysclk(cpu_dai, link_data->cpu_sysclk_id, mclk_freq,
- 				     SND_SOC_CLOCK_OUT);
 -- 
 2.35.1
 
