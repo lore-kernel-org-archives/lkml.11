@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012B3C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0392AC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347308AbiHOWTZ (ORCPT
+        id S1350602AbiHOWTH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
+        Mon, 15 Aug 2022 18:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347010AbiHOWPg (ORCPT
+        with ESMTP id S1345040AbiHOWOw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:15:36 -0400
+        Mon, 15 Aug 2022 18:14:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BA111F771;
-        Mon, 15 Aug 2022 12:39:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0656745B;
+        Mon, 15 Aug 2022 12:39:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3174CB81141;
-        Mon, 15 Aug 2022 19:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FD1EC433B5;
-        Mon, 15 Aug 2022 19:39:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FB7AB81141;
+        Mon, 15 Aug 2022 19:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9C6DC433D6;
+        Mon, 15 Aug 2022 19:39:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592384;
-        bh=AcJrX1xUykEM0PUZFgTpse9dGF07x7CuOQftmr59ePw=;
+        s=korg; t=1660592372;
+        bh=I0yTF2qYaIgcXNTD92Ug0VZKou04HKuY/Q+ASm9ai+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8gwfAPk6Utxl/Bu7Fxsa2Fw6lS555OoeJT7NRpJxBW2e0ajUpfCs5XPyNTuBqDt9
-         6EZetjyLv2zMiBQQub+YXIPxrAWjz8VjTyxuJBB1m+/48mHjI0vz1setPUmTvhhnjQ
-         cAlyYtlmQieYeIKLrP38plKBpfHLAz/7228TI9/0=
+        b=oAoKuxrEFncwjGoLC0SB6MCda2sGQQ0suDsXkCdr7IutmHbIWikWatwGDMs7kP6Ud
+         KujJKHGR2EPKIldOBo6eQlQUfY9jcOHIycpBaB4k+9+A784a3vnsXmAOWBCBkzB9I9
+         85hRSVKv2bDujP4EQrWA6GKRZ+XAhnZkgJfVkks0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0779/1095] HID: mcp2221: prevent a buffer overflow in mcp_smbus_write()
-Date:   Mon, 15 Aug 2022 20:02:58 +0200
-Message-Id: <20220815180501.492424937@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0777/1095] gpio: gpiolib-of: Fix refcount bugs in of_mm_gpiochip_add_data()
+Date:   Mon, 15 Aug 2022 20:02:56 +0200
+Message-Id: <20220815180501.410976577@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,42 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 62ac2473553a00229e67bdf3cb023b62cf7f5a9a ]
+[ Upstream commit 5d07a692f9562f9c06e62cce369e9dd108173a0f ]
 
-Smatch Warning:
-drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy()
-'&mcp->txbuf[5]' too small (59 vs 255)
-drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy() 'buf'
-too small (34 vs 255)
+We should use of_node_get() when a new reference of device_node
+is created. It is noted that the old reference stored in
+'mm_gc->gc.of_node' should also be decreased.
 
-The 'len' variable can take a value between 0-255 as it can come from
-data->block[0] and it is user data. So add an bound check to prevent a
-buffer overflow in memcpy().
+This patch is based on the fact that there is a call site in function
+'qe_add_gpiochips()' of src file 'drivers\soc\fsl\qe\gpio.c'. In this
+function, of_mm_gpiochip_add_data() is contained in an iteration of
+for_each_compatible_node() which will automatically increase and
+decrease the refcount. So we need additional of_node_get() for the
+reference escape in of_mm_gpiochip_add_data().
 
-Fixes: 67a95c21463d ("HID: mcp2221: add usb to i2c-smbus host bridge")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: a19e3da5bc5f ("of/gpio: Kill of_gpio_chip and add members directly to gpio_chip")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-mcp2221.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpio/gpiolib-of.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
-index 4211b9839209..de52e9f7bb8c 100644
---- a/drivers/hid/hid-mcp2221.c
-+++ b/drivers/hid/hid-mcp2221.c
-@@ -385,6 +385,9 @@ static int mcp_smbus_write(struct mcp2221 *mcp, u16 addr,
- 		data_len = 7;
- 		break;
- 	default:
-+		if (len > I2C_SMBUS_BLOCK_MAX)
-+			return -EINVAL;
-+
- 		memcpy(&mcp->txbuf[5], buf, len);
- 		data_len = len + 5;
- 	}
+diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
+index 6dec81b1f24b..5cabb9a9c272 100644
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -861,7 +861,8 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 	if (mm_gc->save_regs)
+ 		mm_gc->save_regs(mm_gc);
+ 
+-	mm_gc->gc.of_node = np;
++	of_node_put(mm_gc->gc.of_node);
++	mm_gc->gc.of_node = of_node_get(np);
+ 
+ 	ret = gpiochip_add_data(gc, data);
+ 	if (ret)
+@@ -869,6 +870,7 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 
+ 	return 0;
+ err2:
++	of_node_put(np);
+ 	iounmap(mm_gc->regs);
+ err1:
+ 	kfree(gc->label);
 -- 
 2.35.1
 
