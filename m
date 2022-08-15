@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D884EC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D38CCC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343690AbiHOXIF (ORCPT
+        id S1344496AbiHOXIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:08:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        Mon, 15 Aug 2022 19:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345355AbiHOXEh (ORCPT
+        with ESMTP id S240571AbiHOXEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:04:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE03C1403B7;
-        Mon, 15 Aug 2022 12:58:36 -0700 (PDT)
+        Mon, 15 Aug 2022 19:04:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566BF140C83;
+        Mon, 15 Aug 2022 12:58:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F6FAB8114A;
-        Mon, 15 Aug 2022 19:58:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B62DFC433D6;
-        Mon, 15 Aug 2022 19:58:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DFB760FB5;
+        Mon, 15 Aug 2022 19:58:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E15BC433D6;
+        Mon, 15 Aug 2022 19:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593514;
-        bh=UVGljkG5EKmxr9mq0ibBIU6gvDealofYMdBg/P96AB8=;
+        s=korg; t=1660593516;
+        bh=H4/hsVFJqPIVHOEuLSJ+W+AOG4ouYb+3A7WRi0QKwP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q4kTmEtf0PB1L1hNuv5Y7LZoATXRXjWE/Jxorr+1zlIJjbT8tZejj7wtWN27upV2s
-         Q+gJbPNmu4qggkONroSpBEZc3ipO7E9aOvH/HzyXvndIJm7NgutaBC6BlBA0ZqFFDc
-         DaBankDTuG0p6chkaDtRdWT+AJiJX/ocnOFa37T4=
+        b=Xmhlj9szUeru1QfeDntycxOXscEuabPgzeJ2hFZOE4WgdFuGi0ha/dyB0bgndwhQP
+         mRTY88VB9Z4s3HMmZfBEV5IfN1S0fpRAkC2LuC+K6orx980BtSihUPsHBrHPtzyMT+
+         eWumq8Q1cg9RTIdznWz3bybnuw/Vf1i5QJsO9Ldo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0281/1157] soc: qcom: Make QCOM_RPMPD depend on PM
-Date:   Mon, 15 Aug 2022 19:53:57 +0200
-Message-Id: <20220815180450.841615185@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 0961/1095] scsi: qla2xxx: Fix imbalance vha->vref_count
+Date:   Mon, 15 Aug 2022 20:06:00 +0200
+Message-Id: <20220815180508.839080213@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit a6232f2aa99ce470799992e99e0012945bb5308f ]
+commit 63fa7f2644b4b48e1913af33092c044bf48e9321 upstream.
 
-QCOM_RPMPD requires PM_GENERIC_DOMAINS/_OF, which in turns requires
-CONFIG_PM. I forgot about the latter in my earlier patch (it's still
-in -next as of the time of committing, hence no Fixes: tag). Fix it.
+vref_count took an extra decrement in the task management path.  Add an
+extra ref count to compensate the imbalance.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220707212158.32684-1-konrad.dybcio@somainline.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220713052045.10683-7-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/qcom/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_init.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
-index e718b8735444..4472fb22ba04 100644
---- a/drivers/soc/qcom/Kconfig
-+++ b/drivers/soc/qcom/Kconfig
-@@ -129,6 +129,7 @@ config QCOM_RPMHPD
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -161,6 +161,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_s
+ 	struct srb_iocb *abt_iocb;
+ 	srb_t *sp;
+ 	int rval = QLA_FUNCTION_FAILED;
++	uint8_t bail;
  
- config QCOM_RPMPD
- 	tristate "Qualcomm RPM Power domain driver"
-+	depends on PM
- 	depends on QCOM_SMD_RPM
- 	help
- 	  QCOM RPM Power domain driver to support power-domains with
--- 
-2.35.1
-
+ 	/* ref: INIT for ABTS command */
+ 	sp = qla2xxx_get_qpair_sp(cmd_sp->vha, cmd_sp->qpair, cmd_sp->fcport,
+@@ -168,6 +169,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_s
+ 	if (!sp)
+ 		return QLA_MEMORY_ALLOC_FAILED;
+ 
++	QLA_VHA_MARK_BUSY(vha, bail);
+ 	abt_iocb = &sp->u.iocb_cmd;
+ 	sp->type = SRB_ABT_CMD;
+ 	sp->name = "abort";
+@@ -2007,12 +2009,14 @@ qla2x00_async_tm_cmd(fc_port_t *fcport,
+ 	struct srb_iocb *tm_iocb;
+ 	srb_t *sp;
+ 	int rval = QLA_FUNCTION_FAILED;
++	uint8_t bail;
+ 
+ 	/* ref: INIT */
+ 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
+ 	if (!sp)
+ 		goto done;
+ 
++	QLA_VHA_MARK_BUSY(vha, bail);
+ 	sp->type = SRB_TM_CMD;
+ 	sp->name = "tmf";
+ 	qla2x00_init_async_sp(sp, qla2x00_get_async_timeout(vha),
 
 
