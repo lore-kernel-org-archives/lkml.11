@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BEDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEC3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245544AbiHOTJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        id S1343619AbiHOTJT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245724AbiHOTGJ (ORCPT
+        with ESMTP id S245730AbiHOTGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:06:09 -0400
+        Mon, 15 Aug 2022 15:06:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ABD39B84;
-        Mon, 15 Aug 2022 11:34:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122942CDD7;
+        Mon, 15 Aug 2022 11:34:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A138610A4;
-        Mon, 15 Aug 2022 18:34:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E12C433C1;
-        Mon, 15 Aug 2022 18:34:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3D7D6105C;
+        Mon, 15 Aug 2022 18:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D8CAC433C1;
+        Mon, 15 Aug 2022 18:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588485;
-        bh=nm4OJZwJEZv1pIUYaeMBoUGeJreDgEESneK9E8E3b3k=;
+        s=korg; t=1660588489;
+        bh=JDV9LBwF5joWK8HGi4wBwjEykNxNVY96ePmNBMJjcug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKdlEJhNFvP323RDwTZqZ+JXSA/zlg7Tkp+Pa0UkM9A1/q12QwxdFxSitlkOtBn6i
-         blDIByiCiDINRiHzkqDNloh8yB2XT049BteJosQXkVvFb8GZ2DEoYjEoay9ozXzTVB
-         dYh8fUMbUvhwNxcurrFAxxPaSkFLzFqQ8ccxD7Jk=
+        b=PanmB8eaXtt/yJVlCZRVxWagEdwhHo+HOVYMzbb4QbIf5FUC1xe+grFWQku3bF1VG
+         M3Gy1JXvg+Ucfrb9MN0vimUiAOzQg6VR+79L8DTPmlnTyl9cEgpPbK9C+Xh+YTV5kn
+         Qvd9V4bD311QgunN+OiL7JP8f1TgRWS5RFLxiWHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manoj Basapathi <manojbm@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Liang Yang <liang.yang@amlogic.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 418/779] netfilter: xtables: Bring SPDX identifier back
-Date:   Mon, 15 Aug 2022 20:01:02 +0200
-Message-Id: <20220815180355.133254650@linuxfoundation.org>
+Subject: [PATCH 5.15 392/779] mtd: rawnand: meson: Fix a potential double free issue
+Date:   Mon, 15 Aug 2022 20:00:36 +0200
+Message-Id: <20220815180354.051787381@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,65 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 20646f5b1e798bcc20044ae90ac3702f177bf254 ]
+[ Upstream commit ec0da06337751b18f6dee06b6526e0f0d6e80369 ]
 
-Commit e2be04c7f995 ("License cleanup: add SPDX license identifier to
-uapi header files with a license") added the correct SPDX identifier to
-include/uapi/linux/netfilter/xt_IDLETIMER.h.
+When meson_nfc_nand_chip_cleanup() is called, it will call:
+	meson_nfc_free_buffer(&meson_chip->nand);
+	nand_cleanup(&meson_chip->nand);
 
-A subsequent commit removed it for no reason and reintroduced the UAPI
-license incorrectness as the file is now missing the UAPI exception
-again.
+nand_cleanup() in turn will call nand_detach() which calls the
+.detach_chip() which is here meson_nand_detach_chip().
 
-Add it back and remove the GPLv2 boilerplate while at it.
+meson_nand_detach_chip() already calls meson_nfc_free_buffer(), so we
+could double free some memory.
 
-Fixes: 68983a354a65 ("netfilter: xtables: Add snapshot of hardidletimer target")
-Cc: Manoj Basapathi <manojbm@codeaurora.org>
-Cc: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Cc: netfilter-devel@vger.kernel.org
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by removing the unneeded explicit call to meson_nfc_free_buffer().
+
+Fixes: 8fae856c5350 ("mtd: rawnand: meson: add support for Amlogic NAND flash controller")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Liang Yang <liang.yang@amlogic.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/ec15c358b8063f7c50ff4cd628cf0d2e14e43f49.1653064877.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/netfilter/xt_IDLETIMER.h | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+ drivers/mtd/nand/raw/meson_nand.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/include/uapi/linux/netfilter/xt_IDLETIMER.h b/include/uapi/linux/netfilter/xt_IDLETIMER.h
-index 49ddcdc61c09..7bfb31a66fc9 100644
---- a/include/uapi/linux/netfilter/xt_IDLETIMER.h
-+++ b/include/uapi/linux/netfilter/xt_IDLETIMER.h
-@@ -1,6 +1,5 @@
-+/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
- /*
-- * linux/include/linux/netfilter/xt_IDLETIMER.h
-- *
-  * Header file for Xtables timer target module.
-  *
-  * Copyright (C) 2004, 2010 Nokia Corporation
-@@ -10,20 +9,6 @@
-  * by Luciano Coelho <luciano.coelho@nokia.com>
-  *
-  * Contact: Luciano Coelho <luciano.coelho@nokia.com>
-- *
-- * This program is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU General Public License
-- * version 2 as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-- * 02110-1301 USA
-  */
+diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
+index ac3be92872d0..032180183339 100644
+--- a/drivers/mtd/nand/raw/meson_nand.c
++++ b/drivers/mtd/nand/raw/meson_nand.c
+@@ -1307,7 +1307,6 @@ static int meson_nfc_nand_chip_cleanup(struct meson_nfc *nfc)
+ 		if (ret)
+ 			return ret;
  
- #ifndef _XT_IDLETIMER_H
+-		meson_nfc_free_buffer(&meson_chip->nand);
+ 		nand_cleanup(&meson_chip->nand);
+ 		list_del(&meson_chip->node);
+ 	}
 -- 
 2.35.1
 
