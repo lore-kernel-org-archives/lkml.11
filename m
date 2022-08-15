@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761FFC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15610C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351710AbiHOWwR (ORCPT
+        id S1351875AbiHOWwV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60448 "EHLO
+        Mon, 15 Aug 2022 18:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351867AbiHOWtd (ORCPT
+        with ESMTP id S1351925AbiHOWtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:49:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2EA136779;
-        Mon, 15 Aug 2022 12:53:47 -0700 (PDT)
+        Mon, 15 Aug 2022 18:49:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA67574DC9;
+        Mon, 15 Aug 2022 12:53:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E00F5B8114A;
-        Mon, 15 Aug 2022 19:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34A4DC433D6;
-        Mon, 15 Aug 2022 19:53:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AD246122B;
+        Mon, 15 Aug 2022 19:53:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4549EC433D6;
+        Mon, 15 Aug 2022 19:53:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593224;
-        bh=PsZshobPurGVYu4Uh9WAkoFpIzsC+Nh4RYI6CN0A+XU=;
+        s=korg; t=1660593227;
+        bh=wvNzw7DQdnhF+QKs3givu5smwTEe8WsQIiupZFUE5UM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h4eAIkb48VaHhkKA3e981eykRqCWlMqDWRAfifIxln7X0/i9y9npB8zYggIILDh6f
-         avup/LZlMd07/lmgOY5DmPt4syxvohdMzEH9KiZ5VLGsyan+FRTcnmy8ITjJ7c8igv
-         oUcgwes7GuETjtq4+A7GmOfOmnovVxy4f6pAVPWs=
+        b=GbM6BxxLK+/cgTR1pzb60Cv6vASzkdQQ57hYU164QVhQcgygoDxLrLhLEAynE4qDg
+         Q9cCJlxIJHjm1vZELOBh+lD+H9RRhM4bcl7Ud+YcDhi7LtbKkPQWf53UWY1zL83Yxm
+         vaBDgKxf9w1SRiYOZwBwaP5hnlOOo47hmvnXLWO8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0914/1095] ASoC: mchp-spdifrx: disable end of block interrupt on failures
-Date:   Mon, 15 Aug 2022 20:05:13 +0200
-Message-Id: <20220815180507.099580115@linuxfoundation.org>
+Subject: [PATCH 5.19 0233/1157] arm64: dts: qcom: sdm636-sony-xperia-ganges-mermaid: correct sdc2 pinconf
+Date:   Mon, 15 Aug 2022 19:53:09 +0200
+Message-Id: <20220815180448.896654290@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,57 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 768ac4f12ca0fda935f58eb8c5120e9d795bc6e3 ]
+[ Upstream commit 3a04cec9cba393abfe70fc62e523f381c9baec2e ]
 
-Disable end of block interrupt in case of wait for completion timeout
-or errors to undo previously enable operation (done in
-mchp_spdifrx_isr_blockend_en()). Otherwise we can end up with an
-unbalanced reference counter for this interrupt.
+Fix the device tree node in the &sdc2_state_on override. The sdm630 uses
+'clk' rather than 'pinconf-clk'.
 
-Fixes: ef265c55c1ac ("ASoC: mchp-spdifrx: add driver for SPDIF RX")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220727090814.2446111-2-claudiu.beznea@microchip.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 4c1d849ec047 ("arm64: dts: qcom: sdm630-xperia: Retire sdm630-sony-xperia-ganges.dtsi")
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220521202708.1509308-9-dmitry.baryshkov@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/mchp-spdifrx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/atmel/mchp-spdifrx.c b/sound/soc/atmel/mchp-spdifrx.c
-index 5fc968483f2c..a7baa0385ec5 100644
---- a/sound/soc/atmel/mchp-spdifrx.c
-+++ b/sound/soc/atmel/mchp-spdifrx.c
-@@ -288,15 +288,17 @@ static void mchp_spdifrx_isr_blockend_en(struct mchp_spdifrx_dev *dev)
- 	spin_unlock_irqrestore(&dev->blockend_lock, flags);
- }
+diff --git a/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts b/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts
+index b96da53f2f1e..58f687fc49e0 100644
+--- a/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts
++++ b/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts
+@@ -19,7 +19,7 @@ / {
+ };
  
--/* called from atomic context only */
-+/* called from atomic/non-atomic context */
- static void mchp_spdifrx_isr_blockend_dis(struct mchp_spdifrx_dev *dev)
- {
--	spin_lock(&dev->blockend_lock);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dev->blockend_lock, flags);
- 	dev->blockend_refcount--;
- 	/* don't enable BLOCKEND interrupt if it's already enabled */
- 	if (dev->blockend_refcount == 0)
- 		regmap_write(dev->regmap, SPDIFRX_IDR, SPDIFRX_IR_BLOCKEND);
--	spin_unlock(&dev->blockend_lock);
-+	spin_unlock_irqrestore(&dev->blockend_lock, flags);
- }
- 
- static irqreturn_t mchp_spdif_interrupt(int irq, void *dev_id)
-@@ -575,6 +577,7 @@ static int mchp_spdifrx_subcode_ch_get(struct mchp_spdifrx_dev *dev,
- 	if (ret <= 0) {
- 		dev_dbg(dev->dev, "user data for channel %d timeout\n",
- 			channel);
-+		mchp_spdifrx_isr_blockend_dis(dev);
- 		return ret;
- 	}
- 
+ &sdc2_state_on {
+-	pinconf-clk {
++	clk {
+ 		drive-strength = <14>;
+ 	};
+ };
 -- 
 2.35.1
 
