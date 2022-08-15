@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FBDC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E97FCC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243321AbiHPAza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36110 "EHLO
+        id S244722AbiHPAzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244676AbiHPAs6 (ORCPT
+        with ESMTP id S245640AbiHPAtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:48:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEADFB5E5A;
-        Mon, 15 Aug 2022 13:46:10 -0700 (PDT)
+        Mon, 15 Aug 2022 20:49:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7AFB602F;
+        Mon, 15 Aug 2022 13:45:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B8366122E;
-        Mon, 15 Aug 2022 20:46:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5346CC433C1;
-        Mon, 15 Aug 2022 20:46:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FED46125F;
+        Mon, 15 Aug 2022 20:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73C7C433D6;
+        Mon, 15 Aug 2022 20:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596369;
-        bh=PYKDtfJN7xItE80ybdVMebvz/REKeuxmoiaYOjlu43Q=;
+        s=korg; t=1660596354;
+        bh=SmZYZEpOelWUIJG7oTgTHs2s9xh0YRCxcCr5ctiy6do=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TyB3uVo2EkvEAmz7DUvbLoDtfetPlM2TmIaPbv4bQJMkbBMzoPW89ypA1Hny0+cpQ
-         aQ/rLrcjl/NRwQRde3Wcr0Zb4rm13YJNnRfvRPxr99xeUV+ekqHU89MVB6Fq8Vveo9
-         ahu4HKGopZrMPI4Spep6QBMeC7xdaJJ3JOwNbnLA=
+        b=SLRmUwYRp1vsoUdmbGA/lUUxvnNdo0GqJ1vuPZiSaOiKq7xllfuudLdCEuxC0dcTX
+         xIoUl53h70s+tevOMsasaUq2jAYLcTTNW2Wi68wFEMQoOmckpj6ta/PQbqdZlDxlbh
+         yNup14Vcs657w+hA2TJvkSIvpaiOX1lkX/UzvWso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huhai <huhai@kylinos.cn>,
-        Jackie Liu <liuyun01@kylinos.cn>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1059/1157] firmware: arm_scpi: Ensure scpi_info is not assigned if the probe fails
-Date:   Mon, 15 Aug 2022 20:06:55 +0200
-Message-Id: <20220815180522.436839068@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        David Collins <quic_collinsd@quicinc.com>
+Subject: [PATCH 5.19 1054/1157] spmi: trace: fix stack-out-of-bound access in SPMI tracing functions
+Date:   Mon, 15 Aug 2022 20:06:50 +0200
+Message-Id: <20220815180522.220477068@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,155 +49,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: David Collins <quic_collinsd@quicinc.com>
 
-[ Upstream commit 689640efc0a2c4e07e6f88affe6d42cd40cc3f85 ]
+commit 2af28b241eea816e6f7668d1954f15894b45d7e3 upstream.
 
-When scpi probe fails, at any point, we need to ensure that the scpi_info
-is not set and will remain NULL until the probe succeeds. If it is not
-taken care, then it could result use-after-free as the value is exported
-via get_scpi_ops() and could refer to a memory allocated via devm_kzalloc()
-but freed when the probe fails.
+trace_spmi_write_begin() and trace_spmi_read_end() both call
+memcpy() with a length of "len + 1".  This leads to one extra
+byte being read beyond the end of the specified buffer.  Fix
+this out-of-bound memory access by using a length of "len"
+instead.
 
-Link: https://lore.kernel.org/r/20220701160310.148344-1-sudeep.holla@arm.com
-Cc: stable@vger.kernel.org # 4.19+
-Reported-by: huhai <huhai@kylinos.cn>
-Reviewed-by: Jackie Liu <liuyun01@kylinos.cn>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Here is a KASAN log showing the issue:
+
+BUG: KASAN: stack-out-of-bounds in trace_event_raw_event_spmi_read_end+0x1d0/0x234
+Read of size 2 at addr ffffffc0265b7540 by task thermal@2.0-ser/1314
+...
+Call trace:
+ dump_backtrace+0x0/0x3e8
+ show_stack+0x2c/0x3c
+ dump_stack_lvl+0xdc/0x11c
+ print_address_description+0x74/0x384
+ kasan_report+0x188/0x268
+ kasan_check_range+0x270/0x2b0
+ memcpy+0x90/0xe8
+ trace_event_raw_event_spmi_read_end+0x1d0/0x234
+ spmi_read_cmd+0x294/0x3ac
+ spmi_ext_register_readl+0x84/0x9c
+ regmap_spmi_ext_read+0x144/0x1b0 [regmap_spmi]
+ _regmap_raw_read+0x40c/0x754
+ regmap_raw_read+0x3a0/0x514
+ regmap_bulk_read+0x418/0x494
+ adc5_gen3_poll_wait_hs+0xe8/0x1e0 [qcom_spmi_adc5_gen3]
+ ...
+ __arm64_sys_read+0x4c/0x60
+ invoke_syscall+0x80/0x218
+ el0_svc_common+0xec/0x1c8
+ ...
+
+addr ffffffc0265b7540 is located in stack of task thermal@2.0-ser/1314 at offset 32 in frame:
+ adc5_gen3_poll_wait_hs+0x0/0x1e0 [qcom_spmi_adc5_gen3]
+
+this frame has 1 object:
+ [32, 33) 'status'
+
+Memory state around the buggy address:
+ ffffffc0265b7400: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+ ffffffc0265b7480: 04 f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+>ffffffc0265b7500: 00 00 00 00 f1 f1 f1 f1 01 f3 f3 f3 00 00 00 00
+                                           ^
+ ffffffc0265b7580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffffc0265b7600: f1 f1 f1 f1 01 f2 07 f2 f2 f2 01 f3 00 00 00 00
+==================================================================
+
+Fixes: a9fce374815d ("spmi: add command tracepoints for SPMI")
+Cc: stable@vger.kernel.org
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
+Link: https://lore.kernel.org/r/20220627235512.2272783-1-quic_collinsd@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/arm_scpi.c | 61 +++++++++++++++++++++----------------
- 1 file changed, 35 insertions(+), 26 deletions(-)
+ include/trace/events/spmi.h |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/firmware/arm_scpi.c b/drivers/firmware/arm_scpi.c
-index ddf0b9ff9e15..435d0e2658a4 100644
---- a/drivers/firmware/arm_scpi.c
-+++ b/drivers/firmware/arm_scpi.c
-@@ -815,7 +815,7 @@ static int scpi_init_versions(struct scpi_drvinfo *info)
- 		info->firmware_version = le32_to_cpu(caps.platform_version);
- 	}
- 	/* Ignore error if not implemented */
--	if (scpi_info->is_legacy && ret == -EOPNOTSUPP)
-+	if (info->is_legacy && ret == -EOPNOTSUPP)
- 		return 0;
+--- a/include/trace/events/spmi.h
++++ b/include/trace/events/spmi.h
+@@ -21,15 +21,15 @@ TRACE_EVENT(spmi_write_begin,
+ 		__field		( u8,         sid       )
+ 		__field		( u16,        addr      )
+ 		__field		( u8,         len       )
+-		__dynamic_array	( u8,   buf,  len + 1   )
++		__dynamic_array	( u8,   buf,  len       )
+ 	),
  
- 	return ret;
-@@ -913,13 +913,14 @@ static int scpi_probe(struct platform_device *pdev)
- 	struct resource res;
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
-+	struct scpi_drvinfo *scpi_drvinfo;
+ 	TP_fast_assign(
+ 		__entry->opcode = opcode;
+ 		__entry->sid    = sid;
+ 		__entry->addr   = addr;
+-		__entry->len    = len + 1;
+-		memcpy(__get_dynamic_array(buf), buf, len + 1);
++		__entry->len    = len;
++		memcpy(__get_dynamic_array(buf), buf, len);
+ 	),
  
--	scpi_info = devm_kzalloc(dev, sizeof(*scpi_info), GFP_KERNEL);
--	if (!scpi_info)
-+	scpi_drvinfo = devm_kzalloc(dev, sizeof(*scpi_drvinfo), GFP_KERNEL);
-+	if (!scpi_drvinfo)
- 		return -ENOMEM;
+ 	TP_printk("opc=%d sid=%02d addr=0x%04x len=%d buf=0x[%*phD]",
+@@ -92,7 +92,7 @@ TRACE_EVENT(spmi_read_end,
+ 		__field		( u16,        addr      )
+ 		__field		( int,        ret       )
+ 		__field		( u8,         len       )
+-		__dynamic_array	( u8,   buf,  len + 1   )
++		__dynamic_array	( u8,   buf,  len       )
+ 	),
  
- 	if (of_match_device(legacy_scpi_of_match, &pdev->dev))
--		scpi_info->is_legacy = true;
-+		scpi_drvinfo->is_legacy = true;
+ 	TP_fast_assign(
+@@ -100,8 +100,8 @@ TRACE_EVENT(spmi_read_end,
+ 		__entry->sid    = sid;
+ 		__entry->addr   = addr;
+ 		__entry->ret    = ret;
+-		__entry->len    = len + 1;
+-		memcpy(__get_dynamic_array(buf), buf, len + 1);
++		__entry->len    = len;
++		memcpy(__get_dynamic_array(buf), buf, len);
+ 	),
  
- 	count = of_count_phandle_with_args(np, "mboxes", "#mbox-cells");
- 	if (count < 0) {
-@@ -927,19 +928,19 @@ static int scpi_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	scpi_info->channels = devm_kcalloc(dev, count, sizeof(struct scpi_chan),
--					   GFP_KERNEL);
--	if (!scpi_info->channels)
-+	scpi_drvinfo->channels =
-+		devm_kcalloc(dev, count, sizeof(struct scpi_chan), GFP_KERNEL);
-+	if (!scpi_drvinfo->channels)
- 		return -ENOMEM;
- 
--	ret = devm_add_action(dev, scpi_free_channels, scpi_info);
-+	ret = devm_add_action(dev, scpi_free_channels, scpi_drvinfo);
- 	if (ret)
- 		return ret;
- 
--	for (; scpi_info->num_chans < count; scpi_info->num_chans++) {
-+	for (; scpi_drvinfo->num_chans < count; scpi_drvinfo->num_chans++) {
- 		resource_size_t size;
--		int idx = scpi_info->num_chans;
--		struct scpi_chan *pchan = scpi_info->channels + idx;
-+		int idx = scpi_drvinfo->num_chans;
-+		struct scpi_chan *pchan = scpi_drvinfo->channels + idx;
- 		struct mbox_client *cl = &pchan->cl;
- 		struct device_node *shmem = of_parse_phandle(np, "shmem", idx);
- 
-@@ -986,45 +987,53 @@ static int scpi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	scpi_info->commands = scpi_std_commands;
-+	scpi_drvinfo->commands = scpi_std_commands;
- 
--	platform_set_drvdata(pdev, scpi_info);
-+	platform_set_drvdata(pdev, scpi_drvinfo);
- 
--	if (scpi_info->is_legacy) {
-+	if (scpi_drvinfo->is_legacy) {
- 		/* Replace with legacy variants */
- 		scpi_ops.clk_set_val = legacy_scpi_clk_set_val;
--		scpi_info->commands = scpi_legacy_commands;
-+		scpi_drvinfo->commands = scpi_legacy_commands;
- 
- 		/* Fill priority bitmap */
- 		for (idx = 0; idx < ARRAY_SIZE(legacy_hpriority_cmds); idx++)
- 			set_bit(legacy_hpriority_cmds[idx],
--				scpi_info->cmd_priority);
-+				scpi_drvinfo->cmd_priority);
- 	}
- 
--	ret = scpi_init_versions(scpi_info);
-+	scpi_info = scpi_drvinfo;
-+
-+	ret = scpi_init_versions(scpi_drvinfo);
- 	if (ret) {
- 		dev_err(dev, "incorrect or no SCP firmware found\n");
-+		scpi_info = NULL;
- 		return ret;
- 	}
- 
--	if (scpi_info->is_legacy && !scpi_info->protocol_version &&
--	    !scpi_info->firmware_version)
-+	if (scpi_drvinfo->is_legacy && !scpi_drvinfo->protocol_version &&
-+	    !scpi_drvinfo->firmware_version)
- 		dev_info(dev, "SCP Protocol legacy pre-1.0 firmware\n");
- 	else
- 		dev_info(dev, "SCP Protocol %lu.%lu Firmware %lu.%lu.%lu version\n",
- 			 FIELD_GET(PROTO_REV_MAJOR_MASK,
--				   scpi_info->protocol_version),
-+				   scpi_drvinfo->protocol_version),
- 			 FIELD_GET(PROTO_REV_MINOR_MASK,
--				   scpi_info->protocol_version),
-+				   scpi_drvinfo->protocol_version),
- 			 FIELD_GET(FW_REV_MAJOR_MASK,
--				   scpi_info->firmware_version),
-+				   scpi_drvinfo->firmware_version),
- 			 FIELD_GET(FW_REV_MINOR_MASK,
--				   scpi_info->firmware_version),
-+				   scpi_drvinfo->firmware_version),
- 			 FIELD_GET(FW_REV_PATCH_MASK,
--				   scpi_info->firmware_version));
--	scpi_info->scpi_ops = &scpi_ops;
-+				   scpi_drvinfo->firmware_version));
-+
-+	scpi_drvinfo->scpi_ops = &scpi_ops;
- 
--	return devm_of_platform_populate(dev);
-+	ret = devm_of_platform_populate(dev);
-+	if (ret)
-+		scpi_info = NULL;
-+
-+	return ret;
- }
- 
- static const struct of_device_id scpi_of_match[] = {
--- 
-2.35.1
-
+ 	TP_printk("opc=%d sid=%02d addr=0x%04x ret=%d len=%02d buf=0x[%*phD]",
 
 
