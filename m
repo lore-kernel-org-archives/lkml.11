@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFBAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317A6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348005AbiHOWXV (ORCPT
+        id S1348236AbiHOWXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        Mon, 15 Aug 2022 18:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350726AbiHOWSP (ORCPT
+        with ESMTP id S1350763AbiHOWS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508D2124203;
-        Mon, 15 Aug 2022 12:41:22 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A0E12421D;
+        Mon, 15 Aug 2022 12:41:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73A92B80EA9;
-        Mon, 15 Aug 2022 19:41:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC9DC433C1;
-        Mon, 15 Aug 2022 19:41:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80D49B80EA8;
+        Mon, 15 Aug 2022 19:41:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5BEEC433C1;
+        Mon, 15 Aug 2022 19:41:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592479;
-        bh=VZdlmM1yI6DDiCaE7reYOZ8qKqKYhTpxSZQNW8mwYrA=;
+        s=korg; t=1660592482;
+        bh=kSUwktPd62XEnkvaJwjmf6uWtQLy1ghU5YPPCWn76H0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x+Y5fbziQhKsn//QXaDcGNghp+kyOY5yRCSRH/8HoerahCmtbBCSgtEARoD9ZdK2b
-         ch3risgZj+SJmQ8z1+pEuIboDYtDYJQIqgsMseruJRn37xCG5hupBo58K4JTna378l
-         szBWfvhF179ACqDCKT0RF0K6hZ3+ilXZOeBboz7Q=
+        b=si6EhaPtt6GEtb7MLpDFSysLS62DiF/LwK1nn3Y+8spqj6kjNRmM2/ltalxN6JLtv
+         sU8b6PKKUkEA01NJI+IjJnB6AYA+M80uxuSUha3RrUdnBK9H6PuWtPB/UQVPvq61mH
+         TMK2Fdx1HB13QHWqZZ1xqe5h7EP0sw2+ddjvisLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Deepak Rawat <drawat.floss@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        linux-hyperv@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>
-Subject: [PATCH 5.19 0087/1157] drm/hyperv-drm: Include framebuffer and EDID headers
-Date:   Mon, 15 Aug 2022 19:50:43 +0200
-Message-Id: <20220815180443.041121873@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bartosz Sobczak <bartosz.sobczak@intel.com>,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0764/1095] RDMA/irdma: Fix a window for use-after-free
+Date:   Mon, 15 Aug 2022 20:02:43 +0200
+Message-Id: <20220815180500.874753119@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,59 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-commit 009a3a52791f31c57d755a73f6bc66fbdd8bd76c upstream.
+[ Upstream commit 8ecef7890b3aea78c8bbb501a4b5b8134367b821 ]
 
-Fix a number of compile errors by including the correct header
-files. Examples are shown below.
+During a destroy CQ an interrupt may cause processing of a CQE after CQ
+resources are freed by irdma_cq_free_rsrc(). Fix this by moving the call
+to irdma_cq_free_rsrc() after the irdma_sc_cleanup_ceqes(), which is
+called under the cq_lock.
 
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c: In function 'hyperv_blit_to_vram_rect':
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:25:48: error: invalid use of undefined type 'struct drm_framebuffer'
-   25 |         struct hyperv_drm_device *hv = to_hv(fb->dev);
-      |                                                ^~
-
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c: In function 'hyperv_connector_get_modes':
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:59:17: error: implicit declaration of function 'drm_add_modes_noedid' [-Werror=implicit-function-declaration]
-   59 |         count = drm_add_modes_noedid(connector,
-      |                 ^~~~~~~~~~~~~~~~~~~~
-
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:62:9: error: implicit declaration of function 'drm_set_preferred_mode'; did you mean 'drm_mm_reserve_node'? [-Werror=implicit-function-declaration]
-   62 |         drm_set_preferred_mode(connector, hv->preferred_width,
-      |         ^~~~~~~~~~~~~~~~~~~~~~
-
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 76c56a5affeb ("drm/hyperv: Add DRM driver for hyperv synthetic video device")
-Fixes: 720cf96d8fec ("drm: Drop drm_framebuffer.h from drm_crtc.h")
-Fixes: 255490f9150d ("drm: Drop drm_edid.h from drm_crtc.h")
-Cc: Deepak Rawat <drawat.floss@gmail.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: linux-hyperv@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: <stable@vger.kernel.org> # v5.14+
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220622083413.12573-1-tzimmermann@suse.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b48c24c2d710 ("RDMA/irdma: Implement device supported verb APIs")
+Link: https://lore.kernel.org/r/20220705230815.265-6-shiraz.saleem@intel.com
+Signed-off-by: Bartosz Sobczak <bartosz.sobczak@intel.com>
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/hyperv/hyperv_drm_modeset.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/infiniband/hw/irdma/verbs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
-+++ b/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
-@@ -7,9 +7,11 @@
+diff --git a/drivers/infiniband/hw/irdma/verbs.c b/drivers/infiniband/hw/irdma/verbs.c
+index 6daa149dcbda..b29631f6659a 100644
+--- a/drivers/infiniband/hw/irdma/verbs.c
++++ b/drivers/infiniband/hw/irdma/verbs.c
+@@ -1760,11 +1760,11 @@ static int irdma_destroy_cq(struct ib_cq *ib_cq, struct ib_udata *udata)
+ 	spin_unlock_irqrestore(&iwcq->lock, flags);
  
- #include <drm/drm_damage_helper.h>
- #include <drm/drm_drv.h>
-+#include <drm/drm_edid.h>
- #include <drm/drm_fb_helper.h>
- #include <drm/drm_format_helper.h>
- #include <drm/drm_fourcc.h>
-+#include <drm/drm_framebuffer.h>
- #include <drm/drm_gem_atomic_helper.h>
- #include <drm/drm_gem_framebuffer_helper.h>
- #include <drm/drm_gem_shmem_helper.h>
+ 	irdma_cq_wq_destroy(iwdev->rf, cq);
+-	irdma_cq_free_rsrc(iwdev->rf, iwcq);
+ 
+ 	spin_lock_irqsave(&iwceq->ce_lock, flags);
+ 	irdma_sc_cleanup_ceqes(cq, ceq);
+ 	spin_unlock_irqrestore(&iwceq->ce_lock, flags);
++	irdma_cq_free_rsrc(iwdev->rf, iwcq);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
