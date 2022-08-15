@@ -2,718 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0933C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8C3C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345584AbiHOUoR (ORCPT
+        id S1345626AbiHOUoX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        Mon, 15 Aug 2022 16:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346701AbiHOUly (ORCPT
+        with ESMTP id S1346775AbiHOUmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:41:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DAF37FAB;
-        Mon, 15 Aug 2022 12:07:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3621E61019;
-        Mon, 15 Aug 2022 19:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC3FAC433C1;
-        Mon, 15 Aug 2022 19:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590446;
-        bh=xcqoyNeCZGUKnAm0ZNoqzjIJy8FHk8pmDFlWwIkilg8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AwkhyNfr9p91sLnXIZzDhEXMWAHRrystBBwu2EB+0hv+VeyEORDGa3wUpAWSo68mP
-         8+TsiPXaV9tF0G8O5BscPFdCy2YP+muDAc9zeCpyI7qPk0sdMzorsYHayqMdqGJwgJ
-         IaCsmYiMKMcVQligy/KOyreaUPk7Ry5cjGx5sjXc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0232/1095] ARM: dts: qcom-apq8074-dragonboard: Use &labels
-Date:   Mon, 15 Aug 2022 19:53:51 +0200
-Message-Id: <20220815180439.347551436@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 16:42:02 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF23AFAE6;
+        Mon, 15 Aug 2022 12:07:33 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id l5so6171945qtv.4;
+        Mon, 15 Aug 2022 12:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=hL/YxJ/IFnb2Rr2eHTccmTXhM5o8jIQ8tJcvbV9r0+w=;
+        b=DK3nNKcN+CtoEBzlgdLdBN2TUQD+X5Y/YRF3pn24jlTxsfiUIhkMwQpx0EWKqw/YE/
+         8FR8sUcyQ3sSRcv4ujH3K7Y6kz9h/HUS+3PyrbnU3wUA50pGx9J3EaWsRg4+hxxhhJZA
+         K0o/lMlVtBOqTxQrj723c87EoJ67m7TtncuZV3yA8pCL6aGqdqOPRuzs7xaKTkOWkGWa
+         6LE2SL8OzPGBr8IhDjgnv+JjOyW22g/UfPfwsez1+AKtGMb1/6yaHpp3JP8pe9OA5lUq
+         9NbWGTqPyAyoibnY8yCEQLuqh2m/GAoqVb6u6OV0UxZWHKqHAdOfwZxZm6zLtILXD/KT
+         Oqkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=hL/YxJ/IFnb2Rr2eHTccmTXhM5o8jIQ8tJcvbV9r0+w=;
+        b=l7HW+qutbnMkTE0p6STwDsjp/R2ixtc01Miee7cVz9mgpPdMFDb2iM02r5j7Q1gWba
+         MwPZ/JLfd4iqYu5IRdysTOq0fVjx2uAet0LlJLgbEdCJhHUMIOcDXn7V4H6kkPHL7lW7
+         va0JyeoqyaBi68fCy2TJiVExn5WXRA9XZejjoCgIGrHE+DHwRQs98iL+2UYWqzCo+/Gn
+         Ft05H3sKetrlIQJQdb29MlWvqIFkmxYX8CA/hJeM4xbquZgyJ2j6fINaiIirvQw48ozH
+         h2ZL3zmGQEMK3Gvo2xn0Nbppm9u9R2XVLGIqAP14BlrRfBT3uDpaEWq/Mg4TMBbHQ0qu
+         bKEg==
+X-Gm-Message-State: ACgBeo0gM+jpBycVN8Kk1tyysftjAt4GG+15Koz3a5IEd3MfvcJswBCb
+        MpouUir1Vh1f8wOBUBtCpb4=
+X-Google-Smtp-Source: AA6agR6n2NpzccTQTJOldUQ6j77kq3l0o/9m4P1loc2vEY7MUBD26j0MxtrwU5vEGi+YfSiqRxzUpg==
+X-Received: by 2002:a05:622a:13c6:b0:342:f6c7:5305 with SMTP id p6-20020a05622a13c600b00342f6c75305mr15504215qtk.348.1660590452277;
+        Mon, 15 Aug 2022 12:07:32 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id i17-20020a05620a405100b006b9c6d590fasm10336208qko.61.2022.08.15.12.07.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 12:07:31 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernelorg
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev@vger.kernel.org (open list:BROADCOM ETHERNET PHY DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v2] net: phy: broadcom: Implement suspend/resume for AC131 and BCM5241
+Date:   Mon, 15 Aug 2022 12:07:25 -0700
+Message-Id: <20220815190725.2749403-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+Implement the suspend/resume procedure for the Broadcom AC131 and BCM5241 type
+of PHYs (10/100 only) by entering the standard power down followed by the
+proprietary standby mode in the auxiliary mode 4 shadow register. On resume,
+the PHY software reset is enough to make it come out of standby mode so we can
+utilize brcm_fet_config_init() as the resume hook.
 
-[ Upstream commit 9f440d17e2309c7d14eba0898c775be6d6e6d6b7 ]
-
-Use &labels to align with the style used in new DTS and apply tiny
-style fixes.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-[bjorn: Rebased ontop of Krzysztof's underscore fixes]
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220415115633.575010-9-konrad.dybcio@somainline.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../arm/boot/dts/qcom-apq8074-dragonboard.dts | 605 +++++++++---------
- arch/arm/boot/dts/qcom-msm8974.dtsi           |   2 +-
- 2 files changed, 296 insertions(+), 311 deletions(-)
+Changes in v2:
 
-diff --git a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
-index 9076a24408c6..f114debe4d95 100644
---- a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
-+++ b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
-@@ -16,331 +16,316 @@ aliases {
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
-+};
-+
-+&blsp1_uart2 {
-+	status = "okay";
-+};
-+
-+&blsp2_i2c5 {
-+	status = "okay";
-+	clock-frequency = <200000>;
-+
-+	pinctrl-0 = <&i2c11_pins>;
-+	pinctrl-names = "default";
-+
-+	eeprom: eeprom@52 {
-+		compatible = "atmel,24c128";
-+		reg = <0x52>;
-+		pagesize = <32>;
-+		read-only;
-+	};
-+};
-+
-+&otg {
-+	status = "okay";
+- utilize phy_modify() to write to MII_BRCM_FET_SHDW_AUXMODE4 (Russell)
+
+ drivers/net/phy/broadcom.c | 39 ++++++++++++++++++++++++++++++++++++++
+ include/linux/brcmphy.h    |  1 +
+ 2 files changed, 40 insertions(+)
+
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 31fbcdddc9ad..ad71c88c87e7 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -766,6 +766,41 @@ static irqreturn_t brcm_fet_handle_interrupt(struct phy_device *phydev)
+ 	return IRQ_HANDLED;
+ }
  
--	soc {
--		serial@f991e000 {
-+	phys = <&usb_hs2_phy>;
-+	phy-select = <&tcsr 0xb000 1>;
-+	extcon = <&smbb>, <&usb_id>;
-+	vbus-supply = <&chg_otg>;
-+	hnp-disable;
-+	srp-disable;
-+	adp-disable;
++static int brcm_fet_suspend(struct phy_device *phydev)
++{
++	int reg, err, err2, brcmtest;
 +
-+	ulpi {
-+		phy@b {
- 			status = "okay";
-+			v3p3-supply = <&pm8941_l24>;
-+			v1p8-supply = <&pm8941_l6>;
-+			extcon = <&smbb>;
-+			qcom,init-seq = /bits/ 8 <0x1 0x63>;
-+		};
-+	};
-+};
++	/* We cannot use a read/modify/write here otherwise the PHY continues
++	 * to drive LEDs which defeats the purpose of low power mode.
++	 */
++	err = phy_write(phydev, MII_BMCR, BMCR_PDOWN);
++	if (err < 0)
++		return err;
 +
-+&rpm_requests {
-+	pm8841-regulators {
-+		pm8841_s1: s1 {
-+			regulator-min-microvolt = <675000>;
-+			regulator-max-microvolt = <1050000>;
- 		};
++	/* Enable shadow register access */
++	brcmtest = phy_read(phydev, MII_BRCM_FET_BRCMTEST);
++	if (brcmtest < 0)
++		return brcmtest;
++
++	reg = brcmtest | MII_BRCM_FET_BT_SRE;
++
++	err = phy_write(phydev, MII_BRCM_FET_BRCMTEST, reg);
++	if (err < 0)
++		return err;
++
++	/* Set standby mode */
++	err = phy_modify(phydev, MII_BRCM_FET_SHDW_AUXMODE4,
++			 MII_BRCM_FET_SHDW_AM4_STANDBY,
++			 MII_BRCM_FET_SHDW_AM4_STANDBY);
++
++	/* Disable shadow register access */
++	err2 = phy_write(phydev, MII_BRCM_FET_BRCMTEST, brcmtest);
++	if (!err)
++		err = err2;
++
++	return err;
++}
++
+ static int bcm54xx_phy_probe(struct phy_device *phydev)
+ {
+ 	struct bcm54xx_phy_priv *priv;
+@@ -1033,6 +1068,8 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_init	= brcm_fet_config_init,
+ 	.config_intr	= brcm_fet_config_intr,
+ 	.handle_interrupt = brcm_fet_handle_interrupt,
++	.suspend	= brcm_fet_suspend,
++	.resume		= brcm_fet_config_init,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5241,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1041,6 +1078,8 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_init	= brcm_fet_config_init,
+ 	.config_intr	= brcm_fet_config_intr,
+ 	.handle_interrupt = brcm_fet_handle_interrupt,
++	.suspend	= brcm_fet_suspend,
++	.resume		= brcm_fet_config_init,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5395,
+ 	.phy_id_mask	= 0xfffffff0,
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index 6ff567ece34a..9e77165f3ef6 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -293,6 +293,7 @@
+ #define MII_BRCM_FET_SHDW_MC_FAME	0x4000	/* Force Auto MDIX enable */
  
--		sdhci@f9824900 {
--			bus-width = <8>;
--			non-removable;
--			status = "okay";
-+		pm8841_s2: s2 {
-+			regulator-min-microvolt = <500000>;
-+			regulator-max-microvolt = <1050000>;
-+		};
-+
-+		pm8841_s3: s3 {
-+			regulator-min-microvolt = <500000>;
-+			regulator-max-microvolt = <1050000>;
-+		};
- 
--			vmmc-supply = <&pm8941_l20>;
--			vqmmc-supply = <&pm8941_s3>;
-+		pm8841_s4: s4 {
-+			regulator-min-microvolt = <500000>;
-+			regulator-max-microvolt = <1050000>;
-+		};
-+	};
- 
--			pinctrl-names = "default";
--			pinctrl-0 = <&sdhc1_pin_a>;
-+	pm8941-regulators {
-+		vdd_l1_l3-supply = <&pm8941_s1>;
-+		vdd_l2_lvs1_2_3-supply = <&pm8941_s3>;
-+		vdd_l4_l11-supply = <&pm8941_s1>;
-+		vdd_l5_l7-supply = <&pm8941_s2>;
-+		vdd_l6_l12_l14_l15-supply = <&pm8941_s2>;
-+		vin_5vs-supply = <&pm8941_5v>;
-+
-+		pm8941_s1: s1 {
-+			regulator-min-microvolt = <1300000>;
-+			regulator-max-microvolt = <1300000>;
-+			regulator-always-on;
-+			regulator-boot-on;
- 		};
- 
--		sdhci@f98a4900 {
--			cd-gpios = <&tlmm 62 0x1>;
--			pinctrl-names = "default";
--			pinctrl-0 = <&sdhc2_pin_a>, <&sdhc2_cd_pin_a>;
--			bus-width = <4>;
--			status = "okay";
-+		pm8941_s2: s2 {
-+			regulator-min-microvolt = <2150000>;
-+			regulator-max-microvolt = <2150000>;
-+			regulator-boot-on;
-+		};
- 
--			vmmc-supply = <&pm8941_l21>;
--			vqmmc-supply = <&pm8941_l13>;
-+		pm8941_s3: s3 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-always-on;
-+			regulator-boot-on;
- 		};
- 
--		usb@f9a55000 {
--			status = "okay";
--			phys = <&usb_hs2_phy>;
--			phy-select = <&tcsr 0xb000 1>;
--			extcon = <&smbb>, <&usb_id>;
--			vbus-supply = <&chg_otg>;
--			hnp-disable;
--			srp-disable;
--			adp-disable;
--			ulpi {
--				phy@b {
--					status = "okay";
--					v3p3-supply = <&pm8941_l24>;
--					v1p8-supply = <&pm8941_l6>;
--					extcon = <&smbb>;
--					qcom,init-seq = /bits/ 8 <0x1 0x63>;
--				};
--			};
--		};
--
--
--		pinctrl@fd510000 {
--			i2c11_pins: i2c11 {
--				mux {
--					pins = "gpio83", "gpio84";
--					function = "blsp_i2c11";
--				};
--			};
--
--			spi8_default: spi8_default {
--				mosi {
--					pins = "gpio45";
--					function = "blsp_spi8";
--				};
--				miso {
--					pins = "gpio46";
--					function = "blsp_spi8";
--				};
--				cs {
--					pins = "gpio47";
--					function = "blsp_spi8";
--				};
--				clk {
--					pins = "gpio48";
--					function = "blsp_spi8";
--				};
--			};
--
--			sdhc1_pin_a: sdhc1-pin-active {
--				clk {
--					pins = "sdc1_clk";
--					drive-strength = <16>;
--					bias-disable;
--				};
--
--				cmd-data {
--					pins = "sdc1_cmd", "sdc1_data";
--					drive-strength = <10>;
--					bias-pull-up;
--				};
--			};
--
--			sdhc2_cd_pin_a: sdhc2-cd-pin-active {
--				pins = "gpio62";
--				function = "gpio";
--
--				drive-strength = <2>;
--				bias-disable;
--			};
--
--			sdhc2_pin_a: sdhc2-pin-active {
--				clk {
--					pins = "sdc2_clk";
--					drive-strength = <10>;
--					bias-disable;
--				};
--
--				cmd-data {
--					pins = "sdc2_cmd", "sdc2_data";
--					drive-strength = <6>;
--					bias-pull-up;
--				};
--			};
--		};
--
--		i2c@f9967000 {
--			status = "okay";
--			clock-frequency = <200000>;
--			pinctrl-0 = <&i2c11_pins>;
--			pinctrl-names = "default";
-+		pm8941_l1: l1 {
-+			regulator-min-microvolt = <1225000>;
-+			regulator-max-microvolt = <1225000>;
-+			regulator-always-on;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l2: l2 {
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+		};
-+
-+		pm8941_l3: l3 {
-+			regulator-min-microvolt = <1225000>;
-+			regulator-max-microvolt = <1225000>;
-+		};
-+
-+		pm8941_l4: l4 {
-+			regulator-min-microvolt = <1225000>;
-+			regulator-max-microvolt = <1225000>;
-+		};
-+
-+		pm8941_l5: l5 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8941_l6: l6 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l7: l7 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l8: l8 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8941_l9: l9 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <2950000>;
-+		};
-+
-+		pm8941_l10: l10 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-always-on;
-+		};
-+
-+		pm8941_l11: l11 {
-+			regulator-min-microvolt = <1300000>;
-+			regulator-max-microvolt = <1300000>;
-+		};
-+
-+		pm8941_l12: l12 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-always-on;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l13: l13 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <2950000>;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l14: l14 {
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+		};
-+
-+		pm8941_l15: l15 {
-+			regulator-min-microvolt = <2050000>;
-+			regulator-max-microvolt = <2050000>;
-+		};
-+
-+		pm8941_l16: l16 {
-+			regulator-min-microvolt = <2700000>;
-+			regulator-max-microvolt = <2700000>;
-+		};
-+
-+		pm8941_l17: l17 {
-+			regulator-min-microvolt = <2700000>;
-+			regulator-max-microvolt = <2700000>;
-+		};
-+
-+		pm8941_l18: l18 {
-+			regulator-min-microvolt = <2850000>;
-+			regulator-max-microvolt = <2850000>;
-+		};
-+
-+		pm8941_l19: l19 {
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3300000>;
-+			regulator-always-on;
-+		};
-+
-+		pm8941_l20: l20 {
-+			regulator-min-microvolt = <2950000>;
-+			regulator-max-microvolt = <2950000>;
-+			regulator-system-load = <200000>;
-+			regulator-allow-set-load;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l21: l21 {
-+			regulator-min-microvolt = <2950000>;
-+			regulator-max-microvolt = <2950000>;
-+			regulator-boot-on;
-+		};
-+
-+		pm8941_l22: l22 {
-+			regulator-min-microvolt = <3000000>;
-+			regulator-max-microvolt = <3000000>;
-+		};
-+
-+		pm8941_l23: l23 {
-+			regulator-min-microvolt = <3000000>;
-+			regulator-max-microvolt = <3000000>;
-+		};
-+
-+		pm8941_l24: l24 {
-+			regulator-min-microvolt = <3075000>;
-+			regulator-max-microvolt = <3075000>;
-+			regulator-boot-on;
-+		};
-+	};
-+};
-+
-+&sdhc_1 {
-+	status = "okay";
-+
-+	vmmc-supply = <&pm8941_l20>;
-+	vqmmc-supply = <&pm8941_s3>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sdhc1_pin_a>;
-+};
-+
-+&sdhc_2 {
-+	status = "okay";
-+	cd-gpios = <&tlmm 62 0x1>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sdhc2_pin_a>, <&sdhc2_cd_pin_a>;
-+
-+	vmmc-supply = <&pm8941_l21>;
-+	vqmmc-supply = <&pm8941_l13>;
-+};
-+
-+&tlmm {
-+	i2c11_pins: i2c11 {
-+		mux {
-+			pins = "gpio83", "gpio84";
-+			function = "blsp_i2c11";
-+		};
-+	};
-+
-+	spi8_default: spi8_default {
-+		mosi {
-+			pins = "gpio45";
-+			function = "blsp_spi8";
-+		};
-+		miso {
-+			pins = "gpio46";
-+			function = "blsp_spi8";
-+		};
-+		cs {
-+			pins = "gpio47";
-+			function = "blsp_spi8";
-+		};
-+		clk {
-+			pins = "gpio48";
-+			function = "blsp_spi8";
-+		};
-+	};
-+
-+	sdhc1_pin_a: sdhc1-pin-active {
-+		clk {
-+			pins = "sdc1_clk";
-+			drive-strength = <16>;
-+			bias-disable;
-+		};
- 
--			eeprom: eeprom@52 {
--				compatible = "atmel,24c128";
--				reg = <0x52>;
--				pagesize = <32>;
--				read-only;
--			};
-+		cmd-data {
-+			pins = "sdc1_cmd", "sdc1_data";
-+			drive-strength = <10>;
-+			bias-pull-up;
- 		};
- 	};
- 
--	smd {
--		rpm {
--			rpm-requests {
--				pm8841-regulators {
--					s1 {
--						regulator-min-microvolt = <675000>;
--						regulator-max-microvolt = <1050000>;
--					};
--
--					s2 {
--						regulator-min-microvolt = <500000>;
--						regulator-max-microvolt = <1050000>;
--					};
--
--					s3 {
--						regulator-min-microvolt = <500000>;
--						regulator-max-microvolt = <1050000>;
--					};
--
--					s4 {
--						regulator-min-microvolt = <500000>;
--						regulator-max-microvolt = <1050000>;
--					};
--				};
--
--				pm8941-regulators {
--					vdd_l1_l3-supply = <&pm8941_s1>;
--					vdd_l2_lvs1_2_3-supply = <&pm8941_s3>;
--					vdd_l4_l11-supply = <&pm8941_s1>;
--					vdd_l5_l7-supply = <&pm8941_s2>;
--					vdd_l6_l12_l14_l15-supply = <&pm8941_s2>;
--					vin_5vs-supply = <&pm8941_5v>;
--
--					s1 {
--						regulator-min-microvolt = <1300000>;
--						regulator-max-microvolt = <1300000>;
--						regulator-always-on;
--						regulator-boot-on;
--					};
--
--					s2 {
--						regulator-min-microvolt = <2150000>;
--						regulator-max-microvolt = <2150000>;
--						regulator-boot-on;
--					};
--
--					s3 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--						regulator-always-on;
--						regulator-boot-on;
--					};
--
--					l1 {
--						regulator-min-microvolt = <1225000>;
--						regulator-max-microvolt = <1225000>;
--
--						regulator-always-on;
--						regulator-boot-on;
--					};
--
--					l2 {
--						regulator-min-microvolt = <1200000>;
--						regulator-max-microvolt = <1200000>;
--					};
--
--					l3 {
--						regulator-min-microvolt = <1225000>;
--						regulator-max-microvolt = <1225000>;
--					};
--
--					l4 {
--						regulator-min-microvolt = <1225000>;
--						regulator-max-microvolt = <1225000>;
--					};
--
--					l5 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--					};
--
--					l6 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--
--						regulator-boot-on;
--					};
--
--					l7 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--
--						regulator-boot-on;
--					};
--
--					l8 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--					};
--
--					l9 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <2950000>;
--					};
--
--					l10 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--						regulator-always-on;
--					};
--
--					l11 {
--						regulator-min-microvolt = <1300000>;
--						regulator-max-microvolt = <1300000>;
--					};
--
--					l12 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--
--						regulator-always-on;
--						regulator-boot-on;
--					};
--
--					l13 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <2950000>;
--
--						regulator-boot-on;
--					};
--
--					l14 {
--						regulator-min-microvolt = <1800000>;
--						regulator-max-microvolt = <1800000>;
--					};
--
--					l15 {
--						regulator-min-microvolt = <2050000>;
--						regulator-max-microvolt = <2050000>;
--					};
--
--					l16 {
--						regulator-min-microvolt = <2700000>;
--						regulator-max-microvolt = <2700000>;
--					};
--
--					l17 {
--						regulator-min-microvolt = <2700000>;
--						regulator-max-microvolt = <2700000>;
--					};
--
--					l18 {
--						regulator-min-microvolt = <2850000>;
--						regulator-max-microvolt = <2850000>;
--					};
--
--					l19 {
--						regulator-min-microvolt = <3300000>;
--						regulator-max-microvolt = <3300000>;
--						regulator-always-on;
--					};
--
--					l20 {
--						regulator-min-microvolt = <2950000>;
--						regulator-max-microvolt = <2950000>;
--
--						regulator-allow-set-load;
--						regulator-boot-on;
--						regulator-system-load = <200000>;
--					};
--
--					l21 {
--						regulator-min-microvolt = <2950000>;
--						regulator-max-microvolt = <2950000>;
--
--						regulator-boot-on;
--					};
--
--					l22 {
--						regulator-min-microvolt = <3000000>;
--						regulator-max-microvolt = <3000000>;
--					};
--
--					l23 {
--						regulator-min-microvolt = <3000000>;
--						regulator-max-microvolt = <3000000>;
--					};
--
--					l24 {
--						regulator-min-microvolt = <3075000>;
--						regulator-max-microvolt = <3075000>;
--
--						regulator-boot-on;
--					};
--				};
--			};
-+	sdhc2_cd_pin_a: sdhc2-cd-pin-active {
-+		pins = "gpio62";
-+		function = "gpio";
-+
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	sdhc2_pin_a: sdhc2-pin-active {
-+		clk {
-+			pins = "sdc2_clk";
-+			drive-strength = <10>;
-+			bias-disable;
-+		};
-+
-+		cmd-data {
-+			pins = "sdc2_cmd", "sdc2_data";
-+			drive-strength = <6>;
-+			bias-pull-up;
- 		};
- 	};
- };
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 2182d2755926..ad05f0665035 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -1612,7 +1612,7 @@ rpm {
- 			qcom,ipc = <&apcs 8 0>;
- 			qcom,smd-edge = <15>;
- 
--			rpm-requests {
-+			rpm_requests: rpm-requests {
- 				compatible = "qcom,rpm-msm8974";
- 				qcom,smd-channels = "rpm_requests";
+ #define MII_BRCM_FET_SHDW_AUXMODE4	0x1a	/* Auxiliary mode 4 */
++#define MII_BRCM_FET_SHDW_AM4_STANDBY	0x0008	/* Standby enable */
+ #define MII_BRCM_FET_SHDW_AM4_LED_MASK	0x0003
+ #define MII_BRCM_FET_SHDW_AM4_LED_MODE1 0x0001
  
 -- 
-2.35.1
-
-
+2.25.1
 
