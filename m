@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7461C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9E4C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345695AbiHOUhk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
+        id S244331AbiHOUhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348271AbiHOUcZ (ORCPT
+        with ESMTP id S1347101AbiHOU2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:32:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E5D3C177;
-        Mon, 15 Aug 2022 12:05:33 -0700 (PDT)
+        Mon, 15 Aug 2022 16:28:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF19402ED;
+        Mon, 15 Aug 2022 12:04:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC98E612A0;
-        Mon, 15 Aug 2022 19:05:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD08DC433D6;
-        Mon, 15 Aug 2022 19:05:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45091612C5;
+        Mon, 15 Aug 2022 19:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48950C433D6;
+        Mon, 15 Aug 2022 19:04:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590332;
-        bh=8vSjHVpVmaE8n11iZ1ypcPCHI5yaSqylemBc/YbUFbU=;
+        s=korg; t=1660590259;
+        bh=wo4l3src4p2Y6TKnCr9r6/z8QAnWWL3kywTWwoncKeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gsB5Ok1o9mAPDRy+ovbLb0S4NgCM21trbBgwieVkOXkNqogn2TJJNFp8qK9jwEQso
-         xejfHRN8sDsNHY37M6LSQCiognftN8Qj3y0N09H4d79GDzPj6wXx8Wfep3DF0J+t50
-         aeoQiVxDSG43lV1sr3EhIJlqk/dJgx4jKvIWerSM=
+        b=WplpO9Hf0zFcjneJxtOTZaQiaXKI470hR8o1fyAYhskIr8aHiYX2VA903Z/IUA9vJ
+         J2dCdO+rU4NU9EHQRdyRhI5KkveLDVaUW8SLz9kaNpWckwui7+l5W4aKlu4qUe1xdo
+         /wHjmJdNa3/qTWTPwM2eoQniBjzScQOH7VPBPn+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0225/1095] ARM: dts: qcom: msm8974-samsung-klte: move gpio-keys out of soc
-Date:   Mon, 15 Aug 2022 19:53:44 +0200
-Message-Id: <20220815180439.011443504@linuxfoundation.org>
+Subject: [PATCH 5.18 0196/1095] arm64: dts: renesas: Fix thermal-sensors on single-zone sensors
+Date:   Mon, 15 Aug 2022 19:53:15 +0200
+Message-Id: <20220815180437.734907497@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,103 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit c19865df6b142276ec4371ad534a1eb6fef5782d ]
+[ Upstream commit 62e8a53431145e06e503b71625a34eaa87b72b2c ]
 
-The GPIO keys are not part of SoC and they should be defined inside of
-the root node.
+"make dtbs_check":
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220401201035.189106-6-krzysztof.kozlowski@linaro.org
+    arch/arm64/boot/dts/renesas/r8a774c0-cat874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[74], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a774c0-ek874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[79], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a774c0-ek874-idk-2121wr.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[82], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a774c0-ek874-mipi-2.1.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[87], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a77990-ebisu.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[105], [0]] is too long
+	    From schema: Documentation/devicetree/bindings/thermal/thermal-zones.yaml
+
+Indeed, the thermal sensors on R-Car E3 and RZ/G2E support only a single
+zone, hence #thermal-sensor-cells = <0>.
+
+Fix this by dropping the bogus zero cell from the thermal sensor
+specifiers.
+
+Fixes: 8fa7d18f9ee2dc20 ("arm64: dts: renesas: r8a77990: Create thermal zone to support IPA")
+Fixes: 8438bfda9d768157 ("arm64: dts: renesas: r8a774c0: Create thermal zone to support IPA")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Link: https://lore.kernel.org/r/28b812fdd1fc3698311fac984ab8b91d3d655c1c.1655301684.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../boot/dts/qcom-msm8974-samsung-klte.dts    | 64 +++++++++----------
- 1 file changed, 32 insertions(+), 32 deletions(-)
+ arch/arm64/boot/dts/renesas/r8a774c0.dtsi | 2 +-
+ arch/arm64/boot/dts/renesas/r8a77990.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
-index 96e1c978b878..6e036a440532 100644
---- a/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-samsung-klte.dts
-@@ -20,6 +20,38 @@ chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
+diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
+index e123c8d1bab9..337efbeda5a9 100644
+--- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
+@@ -1956,7 +1956,7 @@ thermal-zones {
+ 		cpu-thermal {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <0>;
+-			thermal-sensors = <&thermal 0>;
++			thermal-sensors = <&thermal>;
+ 			sustainable-power = <717>;
  
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&gpio_keys_pin_a>;
-+
-+		volume-down {
-+			label = "volume_down";
-+			gpios = <&pma8084_gpios 2 GPIO_ACTIVE_LOW>;
-+			linux,input-type = <1>;
-+			linux,code = <KEY_VOLUMEDOWN>;
-+			debounce-interval = <15>;
-+		};
-+
-+		home-key {
-+			label = "home_key";
-+			gpios = <&pma8084_gpios 3 GPIO_ACTIVE_LOW>;
-+			linux,input-type = <1>;
-+			linux,code = <KEY_HOMEPAGE>;
-+			wakeup-source;
-+			debounce-interval = <15>;
-+		};
-+
-+		volume-up {
-+			label = "volume_up";
-+			gpios = <&pma8084_gpios 5 GPIO_ACTIVE_LOW>;
-+			linux,input-type = <1>;
-+			linux,code = <KEY_VOLUMEUP>;
-+			debounce-interval = <15>;
-+		};
-+	};
-+
- 	smd {
- 		rpm {
- 			rpm_requests {
-@@ -347,38 +379,6 @@ bluetooth {
- 		};
- 	};
+ 			cooling-maps {
+diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
+index 7e0f1aab2135..155589f67e1b 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
+@@ -2117,7 +2117,7 @@ thermal-zones {
+ 		cpu-thermal {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <0>;
+-			thermal-sensors = <&thermal 0>;
++			thermal-sensors = <&thermal>;
+ 			sustainable-power = <717>;
  
--	gpio-keys {
--		compatible = "gpio-keys";
--
--		pinctrl-names = "default";
--		pinctrl-0 = <&gpio_keys_pin_a>;
--
--		volume-down {
--			label = "volume_down";
--			gpios = <&pma8084_gpios 2 GPIO_ACTIVE_LOW>;
--			linux,input-type = <1>;
--			linux,code = <KEY_VOLUMEDOWN>;
--			debounce-interval = <15>;
--		};
--
--		home-key {
--			label = "home_key";
--			gpios = <&pma8084_gpios 3 GPIO_ACTIVE_LOW>;
--			linux,input-type = <1>;
--			linux,code = <KEY_HOMEPAGE>;
--			wakeup-source;
--			debounce-interval = <15>;
--		};
--
--		volume-up {
--			label = "volume_up";
--			gpios = <&pma8084_gpios 5 GPIO_ACTIVE_LOW>;
--			linux,input-type = <1>;
--			linux,code = <KEY_VOLUMEUP>;
--			debounce-interval = <15>;
--		};
--	};
--
- 	pinctrl@fd510000 {
- 		blsp2_uart8_pins_active: blsp2-uart8-pins-active {
- 			pins = "gpio45", "gpio46", "gpio47", "gpio48";
+ 			cooling-maps {
 -- 
 2.35.1
 
