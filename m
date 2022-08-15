@@ -2,391 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC8FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3938CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbiHOR5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 13:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
+        id S232656AbiHOR7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 13:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiHOR4l (ORCPT
+        with ESMTP id S232779AbiHOR7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 13:56:41 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516B828E08;
-        Mon, 15 Aug 2022 10:56:40 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso15126485pjo.1;
-        Mon, 15 Aug 2022 10:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=rVI5h2tUxFKga9bWIxpsjMtcdkELghEx/lzZDjCDCmU=;
-        b=V4F7cz54xaVtkFf5KjsMX450mONLbBSGIGnPPdzAX6CT3d158cu5vAM7Sq2/nvm36R
-         bIYXzA5GDboYEb4478gIImcxhn9zSWVrTUToJSe0DARvbFfZH+c7kgKQBIpt2n9kybyx
-         zhgYAn1Ondcul6/+3PkckdDkfuD6PBtAnL4DSEPMq14ZKt/syWxPR7q++c5decLSWQpy
-         UuxNk6reKtuy+wDIy/OnkmUpCb5HUidH9QdWcYBW2zXLlm3vdTEO6CqZIE+1KpdpBJ4p
-         E+0kVVi562iHFKS+3nH4xBiARREJC4g2y0GDQ9nTzapZzZM7lTuycV2gfyBO+MuPXlAM
-         DmVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc;
-        bh=rVI5h2tUxFKga9bWIxpsjMtcdkELghEx/lzZDjCDCmU=;
-        b=dxYRiFd07P833MJ3DxzzC9MUmfATnSQWgkC87XZ8mM3YkvdKl/ErL0hPudqWk9UBRU
-         k8mOdhrF198LlQuxAsGfSolEjTMZLWqGXeV7yjh1He2ZIdDl3iDhbt6M9rvw8RXAXiK+
-         NEHfEfiRr/qQDWxfRC1Nj384/RKBcvnrKUmi0E4QO1ZvvKSiDC9IpIV5zzDnZTprjUAh
-         fx2VjfVaJSHAC2e75ypdw825TPh97M4eip8zhIlqF6z2sbHm2f6juyBoJl2pCXiutFwb
-         f7192R0TkBxlaSgAn2ml3nGobFYePBAy4rwfp2MSeyX3TLnoUGqEtYA9FyZ5XMkUCqPt
-         w6Pg==
-X-Gm-Message-State: ACgBeo1QknPlYfjH1TlgJkjXDsaLyDaMDvuMw5WFEESAepsqqtQcMbve
-        NRLHcE0B5H+ao1CDE+brjCA=
-X-Google-Smtp-Source: AA6agR6T6mzP/XLtL1oDvHxh62Ou3wCY7er5chHJonhWxdViF7Fel44ln+U7O5ZtVeBJ/GFKl0Kc5g==
-X-Received: by 2002:a17:902:b186:b0:172:728a:3636 with SMTP id s6-20020a170902b18600b00172728a3636mr4257264plr.14.1660586199388;
-        Mon, 15 Aug 2022 10:56:39 -0700 (PDT)
-Received: from C02G8BMUMD6R.bytedance.net (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id o5-20020a170902d4c500b0016d6963cb12sm7299935plg.304.2022.08.15.10.56.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Aug 2022 10:56:38 -0700 (PDT)
-Sender: Bobby Eshleman <bobbyeshleman@gmail.com>
-From:   Bobby Eshleman <bobby.eshleman@gmail.com>
-X-Google-Original-From: Bobby Eshleman <bobby.eshleman@bytedance.com>
-Cc:     Bobby Eshleman <bobbyeshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
-Date:   Mon, 15 Aug 2022 10:56:06 -0700
-Message-Id: <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
+        Mon, 15 Aug 2022 13:59:10 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BCB29824;
+        Mon, 15 Aug 2022 10:58:23 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: hector@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 2204B447DB;
+        Mon, 15 Aug 2022 17:58:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1660586299; bh=ua/yZD37LRjVhAmoFQjxcYx+kjIfLUaOX5iBGAQfvEw=;
+        h=From:To:Cc:Subject:Date;
+        b=E20W8zf0oQ7MmRzAkhNOt1OTJq/0vnenLMc88d/4bu4fEXUiCzyoD2EpMvyWfSc0F
+         4TlBXP7FetuHCxn+jjvWqLmdIm16rxXPsGBHHwMkX0JaJh4Crh3qjytcgV87CRQ+yX
+         ItUh3fLQYngSALUTESzquJiHZsCjAlsHU6l4uFENtjWKjZwf1Hr81HXZpIk/Ao1bT0
+         uXPazqNgf1iBk3pVRVU7vpU4srbpZ690pw5TTuusca5sWclyQnV0hEl798ZtdcxulW
+         PEgfdsHXPdj8W3ey7b0HWjXoW3a3u7uLB+GGOdPpyBt1qE783TD4RXuceHn8Yy4b+y
+         8lVCr50XyE4SA==
+From:   Hector Martin <marcan@marcan.st>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, jirislaby@kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        Roman Pen <roman.penyaev@profitbricks.com>,
+        Asahi Linux <asahi@lists.linux.dev>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        stable@vger.kernel.org
+Subject: [PATCH] workqueue: Fix memory ordering race in queue_work*()
+Date:   Tue, 16 Aug 2022 02:58:10 +0900
+Message-Id: <20220815175810.17780-1-marcan@marcan.st>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1660362668.git.bobby.eshleman@bytedance.com>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to support usage of qdisc on vsock traffic, this commit
-introduces a struct net_device to vhost and virtio vsock.
+The work queueing operation relies on the atomic test-and-set operation
+to set the PENDING bit behaving as a full barrier, even if it fails.
+Otherwise, the PENDING state may be observed before memory writes
+pertaining to the work complete, as they are allowed to be reordered.
+That can lead to work being processed before all prior writes are
+observable, and no new work being queued to ensure they are observed at
+some point.
 
-Two new devices are created, vhost-vsock for vhost and virtio-vsock
-for virtio. The devices are attached to the respective transports.
+This has been broken since the dawn of time, and it was incompletely
+fixed by 346c09f80459, which added the necessary barriers in the work
+execution path but failed to account for the missing barrier in the
+test_and_set_bit() failure case. Fix it by switching to
+atomic_long_fetch_or(), which does have unconditional barrier semantics
+regardless of whether the bit was already set or not (this is actually
+just test_and_set_bit() minus the early exit path).
 
-To bypass the usage of the device, the user may "down" the associated
-network interface using common tools. For example, "ip link set dev
-virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
-simply using the FIFO logic of the prior implementation.
+Discovered [1] on Apple M1 platforms, which are ridiculously
+out-of-order and managed to trigger this in the TTY core, of all places.
+Easily reproducible by running this m1n1 client script on one M1 machine
+connected to another one running the m1n1 bootloader in proxy mode:
 
-For both hosts and guests, there is one device for all G2H vsock sockets
-and one device for all H2G vsock sockets. This makes sense for guests
-because the driver only supports a single vsock channel (one pair of
-TX/RX virtqueues), so one device and qdisc fits. For hosts, this may not
-seem ideal for some workloads. However, it is possible to use a
-multi-queue qdisc, where a given queue is responsible for a range of
-sockets. This seems to be a better solution than having one device per
-socket, which may yield a very large number of devices and qdiscs, all
-of which are dynamically being created and destroyed. Because of this
-dynamism, it would also require a complex policy management daemon, as
-devices would constantly be spun up and down as sockets were created and
-destroyed. To avoid this, one device and qdisc also applies to all H2G
-sockets.
+=============
+from m1n1.setup import *
 
-Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+i = 0
+while True:
+    a = iface.readmem(u.base, 1170)
+    print(i)
+    i += 1
+=============
+
+The script will hang when the TTY layer fails to push a buffer of data
+into the ldisc in a timely manner in tty_flip_buffer_push(), which
+writes a buffer pointer and then queue_work()s the ldisc push.
+
+(Note: reproducibility depends on .config options)
+
+Additionally, properly document that queue_work() has guarantees even
+when work is already queued (it doesn't make any sense for it not to,
+the comment in set_work_pool_and_clear_pending() already implies it
+does, and the TTY core and probably quite a few other places rely on
+this).
+
+[1] https://lore.kernel.org/lkml/6c089268-4f2c-9fdf-7bcb-107b611fbc21@marcan.st/#t
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 346c09f80459 ("workqueue: fix ghost PENDING flag while doing MQ IO")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/vhost/vsock.c                   |  19 +++-
- include/linux/virtio_vsock.h            |  10 +++
- net/vmw_vsock/virtio_transport.c        |  19 +++-
- net/vmw_vsock/virtio_transport_common.c | 112 +++++++++++++++++++++++-
- 4 files changed, 152 insertions(+), 8 deletions(-)
+ include/linux/workqueue.h | 15 ++++++++++-----
+ kernel/workqueue.c        | 39 +++++++++++++++++++++++++++++++--------
+ 2 files changed, 41 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index f8601d93d94d..b20ddec2664b 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -927,13 +927,30 @@ static int __init vhost_vsock_init(void)
- 				  VSOCK_TRANSPORT_F_H2G);
- 	if (ret < 0)
- 		return ret;
--	return misc_register(&vhost_vsock_misc);
-+
-+	ret = virtio_transport_init(&vhost_transport, "vhost-vsock");
-+	if (ret < 0)
-+		goto out_unregister;
-+
-+	ret = misc_register(&vhost_vsock_misc);
-+	if (ret < 0)
-+		goto out_transport_exit;
-+	return ret;
-+
-+out_transport_exit:
-+	virtio_transport_exit(&vhost_transport);
-+
-+out_unregister:
-+	vsock_core_unregister(&vhost_transport.transport);
-+	return ret;
-+
- };
- 
- static void __exit vhost_vsock_exit(void)
- {
- 	misc_deregister(&vhost_vsock_misc);
- 	vsock_core_unregister(&vhost_transport.transport);
-+	virtio_transport_exit(&vhost_transport);
- };
- 
- module_init(vhost_vsock_init);
-diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-index 9a37eddbb87a..5d7e7fbd75f8 100644
---- a/include/linux/virtio_vsock.h
-+++ b/include/linux/virtio_vsock.h
-@@ -91,10 +91,20 @@ struct virtio_transport {
- 	/* This must be the first field */
- 	struct vsock_transport transport;
- 
-+	/* Used almost exclusively for qdisc */
-+	struct net_device *dev;
-+
- 	/* Takes ownership of the packet */
- 	int (*send_pkt)(struct sk_buff *skb);
- };
- 
-+int
-+virtio_transport_init(struct virtio_transport *t,
-+		      const char *name);
-+
-+void
-+virtio_transport_exit(struct virtio_transport *t);
-+
- ssize_t
- virtio_transport_stream_dequeue(struct vsock_sock *vsk,
- 				struct msghdr *msg,
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 3bb293fd8607..c6212eb38d3c 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -131,7 +131,9 @@ virtio_transport_send_pkt_work(struct work_struct *work)
- 		 * the vq
- 		 */
- 		if (ret < 0) {
--			skb_queue_head(&vsock->send_pkt_queue, skb);
-+			spin_lock_bh(&vsock->send_pkt_queue.lock);
-+			__skb_queue_head(&vsock->send_pkt_queue, skb);
-+			spin_unlock_bh(&vsock->send_pkt_queue.lock);
- 			break;
- 		}
- 
-@@ -676,7 +678,9 @@ static void virtio_vsock_vqs_del(struct virtio_vsock *vsock)
- 		kfree_skb(skb);
- 	mutex_unlock(&vsock->tx_lock);
- 
--	skb_queue_purge(&vsock->send_pkt_queue);
-+	spin_lock_bh(&vsock->send_pkt_queue.lock);
-+	__skb_queue_purge(&vsock->send_pkt_queue);
-+	spin_unlock_bh(&vsock->send_pkt_queue.lock);
- 
- 	/* Delete virtqueues and flush outstanding callbacks if any */
- 	vdev->config->del_vqs(vdev);
-@@ -760,6 +764,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	flush_work(&vsock->event_work);
- 	flush_work(&vsock->send_pkt_work);
- 
-+	virtio_transport_exit(&virtio_transport);
-+
- 	mutex_unlock(&the_virtio_vsock_mutex);
- 
- 	kfree(vsock);
-@@ -844,12 +850,18 @@ static int __init virtio_vsock_init(void)
- 	if (ret)
- 		goto out_wq;
- 
--	ret = register_virtio_driver(&virtio_vsock_driver);
-+	ret = virtio_transport_init(&virtio_transport, "virtio-vsock");
- 	if (ret)
- 		goto out_vci;
- 
-+	ret = register_virtio_driver(&virtio_vsock_driver);
-+	if (ret)
-+		goto out_transport;
-+
- 	return 0;
- 
-+out_transport:
-+	virtio_transport_exit(&virtio_transport);
- out_vci:
- 	vsock_core_unregister(&virtio_transport.transport);
- out_wq:
-@@ -861,6 +873,7 @@ static void __exit virtio_vsock_exit(void)
- {
- 	unregister_virtio_driver(&virtio_vsock_driver);
- 	vsock_core_unregister(&virtio_transport.transport);
-+	virtio_transport_exit(&virtio_transport);
- 	destroy_workqueue(virtio_vsock_workqueue);
- }
- 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index d5780599fe93..bdf16fff054f 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -16,6 +16,7 @@
- 
- #include <net/sock.h>
- #include <net/af_vsock.h>
-+#include <net/pkt_sched.h>
- 
- #define CREATE_TRACE_POINTS
- #include <trace/events/vsock_virtio_transport_common.h>
-@@ -23,6 +24,93 @@
- /* How long to wait for graceful shutdown of a connection */
- #define VSOCK_CLOSE_TIMEOUT (8 * HZ)
- 
-+struct virtio_transport_priv {
-+	struct virtio_transport *trans;
-+};
-+
-+static netdev_tx_t virtio_transport_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct virtio_transport *t =
-+		((struct virtio_transport_priv *)netdev_priv(dev))->trans;
-+	int ret;
-+
-+	ret = t->send_pkt(skb);
-+	if (unlikely(ret == -ENODEV))
-+		return NETDEV_TX_BUSY;
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+const struct net_device_ops virtio_transport_netdev_ops = {
-+	.ndo_start_xmit = virtio_transport_start_xmit,
-+};
-+
-+static void virtio_transport_setup(struct net_device *dev)
-+{
-+	dev->netdev_ops = &virtio_transport_netdev_ops;
-+	dev->needs_free_netdev = true;
-+	dev->flags = IFF_NOARP;
-+	dev->mtu = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
-+	dev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
-+}
-+
-+static int ifup(struct net_device *dev)
-+{
-+	int ret;
-+
-+	rtnl_lock();
-+	ret = dev_open(dev, NULL) ? -ENOMEM : 0;
-+	rtnl_unlock();
-+
-+	return ret;
-+}
-+
-+/* virtio_transport_init - initialize a virtio vsock transport layer
-+ *
-+ * @t: ptr to the virtio transport struct to initialize
-+ * @name: the name of the net_device to be created.
-+ *
-+ * Return 0 on success, otherwise negative errno.
-+ */
-+int virtio_transport_init(struct virtio_transport *t, const char *name)
-+{
-+	struct virtio_transport_priv *priv;
-+	int ret;
-+
-+	t->dev = alloc_netdev(sizeof(*priv), name, NET_NAME_UNKNOWN, virtio_transport_setup);
-+	if (!t->dev)
-+		return -ENOMEM;
-+
-+	priv = netdev_priv(t->dev);
-+	priv->trans = t;
-+
-+	ret = register_netdev(t->dev);
-+	if (ret < 0)
-+		goto out_free_netdev;
-+
-+	ret = ifup(t->dev);
-+	if (ret < 0)
-+		goto out_unregister_netdev;
-+
-+	return 0;
-+
-+out_unregister_netdev:
-+	unregister_netdev(t->dev);
-+
-+out_free_netdev:
-+	free_netdev(t->dev);
-+
-+	return ret;
-+}
-+
-+void virtio_transport_exit(struct virtio_transport *t)
-+{
-+	if (t->dev) {
-+		unregister_netdev(t->dev);
-+		free_netdev(t->dev);
-+	}
-+}
-+
- static const struct virtio_transport *
- virtio_transport_get_ops(struct vsock_sock *vsk)
- {
-@@ -147,6 +235,24 @@ static u16 virtio_transport_get_type(struct sock *sk)
- 		return VIRTIO_VSOCK_TYPE_SEQPACKET;
- }
- 
-+/* Return pkt->len on success, otherwise negative errno */
-+static int virtio_transport_send_pkt(const struct virtio_transport *t, struct sk_buff *skb)
-+{
-+	int ret;
-+	int len = skb->len;
-+
-+	if (unlikely(!t->dev || !(t->dev->flags & IFF_UP)))
-+		return t->send_pkt(skb);
-+
-+	skb->dev = t->dev;
-+	ret = dev_queue_xmit(skb);
-+
-+	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN))
-+		return len;
-+
-+	return -ENOMEM;
-+}
-+
- /* This function can only be used on connecting/connected sockets,
-  * since a socket assigned to a transport is required.
+diff --git a/include/linux/workqueue.h b/include/linux/workqueue.h
+index a0143dd24430..d9ea73813a3c 100644
+--- a/include/linux/workqueue.h
++++ b/include/linux/workqueue.h
+@@ -484,18 +484,23 @@ extern void wq_worker_comm(char *buf, size_t size, struct task_struct *task);
+  * We queue the work to the CPU on which it was submitted, but if the CPU dies
+  * it can be processed by another CPU.
   *
-@@ -202,9 +308,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 
- 	virtio_transport_inc_tx_pkt(vvs, skb);
- 
--	err = t_ops->send_pkt(skb);
--
--	return err < 0 ? -ENOMEM : err;
-+	return virtio_transport_send_pkt(t_ops, skb);
+- * Memory-ordering properties:  If it returns %true, guarantees that all stores
+- * preceding the call to queue_work() in the program order will be visible from
+- * the CPU which will execute @work by the time such work executes, e.g.,
++ * Memory-ordering properties:  Guarantees that all stores preceding the call to
++ * queue_work() in the program order will be visible from the CPU which will
++ * execute @work by the time such work executes, e.g.,
+  *
+  * { x is initially 0 }
+  *
+  *   CPU0				CPU1
+  *
+  *   WRITE_ONCE(x, 1);			[ @work is being executed ]
+- *   r0 = queue_work(wq, work);		  r1 = READ_ONCE(x);
++ *   queue_work(wq, work);		r0 = READ_ONCE(x);
+  *
+- * Forbids: r0 == true && r1 == 0
++ * Forbids: r0 == 0 for the currently pending execution of @work after
++ * queue_work() completes.
++ *
++ * If @work was already pending (ret == false), that execution is guaranteed
++ * to observe x == 1. If @work was newly queued (ret == true), the newly
++ * queued execution is guaranteed to observe x == 1.
+  */
+ static inline bool queue_work(struct workqueue_struct *wq,
+ 			      struct work_struct *work)
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index aeea9731ef80..01bc03eed649 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -655,7 +655,7 @@ static void set_work_pool_and_clear_pending(struct work_struct *work,
+ {
+ 	/*
+ 	 * The following wmb is paired with the implied mb in
+-	 * test_and_set_bit(PENDING) and ensures all updates to @work made
++	 * atomic_long_fetch_or(PENDING) and ensures all updates to @work made
+ 	 * here are visible to and precede any updates by the next PENDING
+ 	 * owner.
+ 	 */
+@@ -673,7 +673,7 @@ static void set_work_pool_and_clear_pending(struct work_struct *work,
+ 	 *
+ 	 * 1  STORE event_indicated
+ 	 * 2  queue_work_on() {
+-	 * 3    test_and_set_bit(PENDING)
++	 * 3    atomic_long_fetch_or(PENDING)
+ 	 * 4 }                             set_..._and_clear_pending() {
+ 	 * 5                                 set_work_data() # clear bit
+ 	 * 6                                 smp_mb()
+@@ -688,6 +688,15 @@ static void set_work_pool_and_clear_pending(struct work_struct *work,
+ 	 * finish the queued @work.  Meanwhile CPU#1 does not see
+ 	 * event_indicated is set, because speculative LOAD was executed
+ 	 * before actual STORE.
++	 *
++	 * Line 3 requires barrier semantics, even on failure. If it were
++	 * implemented with test_and_set_bit() (which does not have
++	 * barrier semantics on failure), that would allow the STORE to
++	 * be reordered after it, and it could be observed by CPU#1 after
++	 * it has executed all the way through to line 8 (and cleared the
++	 * PENDING bit in the process). At this point, CPU#0 would not have
++	 * queued new work (having observed PENDING set), and CPU#1 would not
++	 * have observed the event_indicated store in the last work execution.
+ 	 */
+ 	smp_mb();
  }
- 
- static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
-@@ -834,7 +938,7 @@ static int virtio_transport_reset_no_sock(const struct virtio_transport *t,
- 		return -ENOTCONN;
+@@ -1276,8 +1285,9 @@ static int try_to_grab_pending(struct work_struct *work, bool is_dwork,
+ 			return 1;
  	}
- 
--	return t->send_pkt(reply);
-+	return virtio_transport_send_pkt(t, reply);
- }
- 
- /* This function should be called with sk_lock held and SOCK_DONE set */
--- 
+
+-	/* try to claim PENDING the normal way */
+-	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work)))
++	/* try to claim PENDING the normal way, see queue_work_on() */
++	if (!(atomic_long_fetch_or(WORK_STRUCT_PENDING, &work->data)
++			& WORK_STRUCT_PENDING))
+ 		return 0;
+
+ 	rcu_read_lock();
+@@ -1541,7 +1551,14 @@ bool queue_work_on(int cpu, struct workqueue_struct *wq,
+
+ 	local_irq_save(flags);
+
+-	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
++	/*
++	 * We need unconditional barrier semantics, even on failure,
++	 * to avoid racing set_work_pool_and_clear_pending(). Hence,
++	 * this has to be atomic_long_fetch_or(), not test_and_set_bit()
++	 * which elides the barrier on failure.
++	 */
++	if (!(atomic_long_fetch_or(WORK_STRUCT_PENDING, &work->data)
++			& WORK_STRUCT_PENDING)) {
+ 		__queue_work(cpu, wq, work);
+ 		ret = true;
+ 	}
+@@ -1623,7 +1640,9 @@ bool queue_work_node(int node, struct workqueue_struct *wq,
+
+ 	local_irq_save(flags);
+
+-	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
++	/* see queue_work_on() */
++	if (!(atomic_long_fetch_or(WORK_STRUCT_PENDING, &work->data)
++			& WORK_STRUCT_PENDING)) {
+ 		int cpu = workqueue_select_cpu_near(node);
+
+ 		__queue_work(cpu, wq, work);
+@@ -1697,7 +1716,9 @@ bool queue_delayed_work_on(int cpu, struct workqueue_struct *wq,
+ 	/* read the comment in __queue_work() */
+ 	local_irq_save(flags);
+
+-	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
++	/* see queue_work_on() */
++	if (!(atomic_long_fetch_or(WORK_STRUCT_PENDING, &work->data)
++			& WORK_STRUCT_PENDING)) {
+ 		__queue_delayed_work(cpu, wq, dwork, delay);
+ 		ret = true;
+ 	}
+@@ -1769,7 +1790,9 @@ bool queue_rcu_work(struct workqueue_struct *wq, struct rcu_work *rwork)
+ {
+ 	struct work_struct *work = &rwork->work;
+
+-	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
++	/* see queue_work_on() */
++	if (!(atomic_long_fetch_or(WORK_STRUCT_PENDING, &work->data)
++			& WORK_STRUCT_PENDING)) {
+ 		rwork->wq = wq;
+ 		call_rcu(&rwork->rcu, rcu_work_rcufn);
+ 		return true;
+--
 2.35.1
 
