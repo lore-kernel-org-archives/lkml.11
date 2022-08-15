@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6ECC25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7C8C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346996AbiHPBBt (ORCPT
+        id S1346821AbiHPBBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54576 "EHLO
+        Mon, 15 Aug 2022 21:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245528AbiHPA4C (ORCPT
+        with ESMTP id S245169AbiHPAz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:56:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D619719DAA1;
-        Mon, 15 Aug 2022 13:48:08 -0700 (PDT)
+        Mon, 15 Aug 2022 20:55:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA09719D0F5;
+        Mon, 15 Aug 2022 13:47:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13B5761255;
-        Mon, 15 Aug 2022 20:48:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15417C433D6;
-        Mon, 15 Aug 2022 20:48:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CE92B811A0;
+        Mon, 15 Aug 2022 20:47:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F846C433C1;
+        Mon, 15 Aug 2022 20:47:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596487;
-        bh=YWq48jiqHPOFwg9n/lD9ndH4dNZqvChrfb3NlpZVGXU=;
+        s=korg; t=1660596475;
+        bh=VjOLk6pk422TPUk70SO6FX4Gg4xsXe8RV2YsAvq5hqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jQP8uVRnS5b1rVLIRswzp7vaFRxMK4uDfO+W3rzpjN/bUSsSmms7OXI6PKGuRENfn
-         C+yn8omuhLWHIm6OFMU5tPBG2R9Sbw2ip6MVmbi7zBgb7Xk0LVbtWP+amQ+IrXs5GF
-         UCHzPdTbZexfhsVAdx818BsgV3YZKT+enMhs+EjE=
+        b=AL9JZRNCZDqA2dElemyuOZcRfdx+LZ0ibM25tmTeiq92cICEv6Omu7kuJLu2dAR7S
+         6OcJeVXoraK27G84H8vL0enr16c0fuyhK0kdn3rRZztCB1QNVAZlknSapLct9v2P3q
+         1kLZwXmKXDrPVe1p2Q4DB/z6Sr6y+vPJdmjdLj4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
         David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1096/1157] btrfs: zoned: wait until zone is finished when allocation didnt progress
-Date:   Mon, 15 Aug 2022 20:07:32 +0200
-Message-Id: <20220815180524.083026615@linuxfoundation.org>
+Subject: [PATCH 5.19 1092/1157] btrfs: zoned: introduce space_info->active_total_bytes
+Date:   Mon, 15 Aug 2022 20:07:28 +0200
+Message-Id: <20220815180523.879388374@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,106 +52,250 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit 2ce543f478433a0eec0f72090d7e814f1d53d456 ]
+[ Upstream commit 6a921de589926a350634e6e279f43fa5b9dbf5ba ]
 
-When the allocated position doesn't progress, we cannot submit IOs to
-finish a block group, but there should be ongoing IOs that will finish a
-block group. So, in that case, we wait for a zone to be finished and retry
-the allocation after that.
+The active_total_bytes, like the total_bytes, accounts for the total bytes
+of active block groups in the space_info.
 
-Introduce a new flag BTRFS_FS_NEED_ZONE_FINISH for fs_info->flags to
-indicate we need a zone finish to have proceeded. The flag is set when the
-allocator detected it cannot activate a new block group. And, it is cleared
-once a zone is finished.
+With an introduction of active_total_bytes, we can check if the reserved
+bytes can be written to the block groups without activating a new block
+group. The check is necessary for metadata allocation on zoned
+filesystem. We cannot finish a block group, which may require waiting
+for the current transaction, from the metadata allocation context.
+Instead, we need to ensure the ongoing allocation (reserved bytes) fits
+in active block groups.
 
-CC: stable@vger.kernel.org # 5.16+
-Fixes: afba2bc036b0 ("btrfs: zoned: implement active zone tracking")
 Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ctree.h   | 5 +++++
- fs/btrfs/disk-io.c | 1 +
- fs/btrfs/inode.c   | 9 +++++++--
- fs/btrfs/zoned.c   | 6 ++++++
- 4 files changed, 19 insertions(+), 2 deletions(-)
+ fs/btrfs/block-group.c | 12 +++++++++---
+ fs/btrfs/space-info.c  | 41 ++++++++++++++++++++++++++++++++---------
+ fs/btrfs/space-info.h  |  4 +++-
+ fs/btrfs/zoned.c       |  6 ++++++
+ 4 files changed, 50 insertions(+), 13 deletions(-)
 
-diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-index d306db5dbdc2..3a51d0c13a95 100644
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -627,6 +627,9 @@ enum {
- 	/* Indicate we have half completed snapshot deletions pending. */
- 	BTRFS_FS_UNFINISHED_DROPS,
+diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
+index 13358fbc1629..20c78ae7d150 100644
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -1051,8 +1051,13 @@ int btrfs_remove_block_group(struct btrfs_trans_handle *trans,
+ 			< block_group->zone_unusable);
+ 		WARN_ON(block_group->space_info->disk_total
+ 			< block_group->length * factor);
++		WARN_ON(block_group->zone_is_active &&
++			block_group->space_info->active_total_bytes
++			< block_group->length);
+ 	}
+ 	block_group->space_info->total_bytes -= block_group->length;
++	if (block_group->zone_is_active)
++		block_group->space_info->active_total_bytes -= block_group->length;
+ 	block_group->space_info->bytes_readonly -=
+ 		(block_group->length - block_group->zone_unusable);
+ 	block_group->space_info->bytes_zone_unusable -=
+@@ -2108,7 +2113,8 @@ static int read_one_block_group(struct btrfs_fs_info *info,
+ 	trace_btrfs_add_block_group(info, cache, 0);
+ 	btrfs_update_space_info(info, cache->flags, cache->length,
+ 				cache->used, cache->bytes_super,
+-				cache->zone_unusable, &space_info);
++				cache->zone_unusable, cache->zone_is_active,
++				&space_info);
  
-+	/* Indicate we have to finish a zone to do next allocation. */
-+	BTRFS_FS_NEED_ZONE_FINISH,
-+
- #if BITS_PER_LONG == 32
- 	/* Indicate if we have error/warn message printed on 32bit systems */
- 	BTRFS_FS_32BIT_ERROR,
-@@ -1063,6 +1066,8 @@ struct btrfs_fs_info {
+ 	cache->space_info = space_info;
  
- 	spinlock_t zone_active_bgs_lock;
- 	struct list_head zone_active_bgs;
-+	/* Waiters when BTRFS_FS_NEED_ZONE_FINISH is set */
-+	wait_queue_head_t zone_finish_wait;
+@@ -2178,7 +2184,7 @@ static int fill_dummy_bgs(struct btrfs_fs_info *fs_info)
+ 		}
  
- #ifdef CONFIG_BTRFS_FS_REF_VERIFY
- 	spinlock_t ref_verify_lock;
-diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
-index 804dcc69787d..bc3030661583 100644
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -3255,6 +3255,7 @@ void btrfs_init_fs_info(struct btrfs_fs_info *fs_info)
- 	init_waitqueue_head(&fs_info->transaction_blocked_wait);
- 	init_waitqueue_head(&fs_info->async_submit_wait);
- 	init_waitqueue_head(&fs_info->delayed_iputs_wait);
-+	init_waitqueue_head(&fs_info->zone_finish_wait);
+ 		btrfs_update_space_info(fs_info, bg->flags, em->len, em->len,
+-					0, 0, &space_info);
++					0, 0, false, &space_info);
+ 		bg->space_info = space_info;
+ 		link_block_group(bg);
  
- 	/* Usable values until the real ones are cached from the superblock */
- 	fs_info->nodesize = 4096;
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 4f5249f5cb34..61496ecb1e20 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -1642,8 +1642,13 @@ static noinline int run_delalloc_zoned(struct btrfs_inode *inode,
- 		if (ret == 0)
- 			done_offset = end;
+@@ -2559,7 +2565,7 @@ struct btrfs_block_group *btrfs_make_block_group(struct btrfs_trans_handle *tran
+ 	trace_btrfs_add_block_group(fs_info, cache, 1);
+ 	btrfs_update_space_info(fs_info, cache->flags, size, bytes_used,
+ 				cache->bytes_super, cache->zone_unusable,
+-				&cache->space_info);
++				cache->zone_is_active, &cache->space_info);
+ 	btrfs_update_global_block_rsv(fs_info);
  
--		if (done_offset == start)
--			return -ENOSPC;
-+		if (done_offset == start) {
-+			struct btrfs_fs_info *info = inode->root->fs_info;
-+
-+			wait_var_event(&info->zone_finish_wait,
-+				       !test_bit(BTRFS_FS_NEED_ZONE_FINISH, &info->flags));
-+			continue;
-+		}
- 
- 		if (!locked_page_done) {
- 			__set_page_dirty_nobuffers(locked_page);
-diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
-index 4df5b36dc574..31cb11daa8e8 100644
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -2007,6 +2007,9 @@ static int do_zone_finish(struct btrfs_block_group *block_group, bool fully_writ
- 	/* For active_bg_list */
- 	btrfs_put_block_group(block_group);
- 
-+	clear_bit(BTRFS_FS_NEED_ZONE_FINISH, &fs_info->flags);
-+	wake_up_all(&fs_info->zone_finish_wait);
-+
- 	return 0;
+ 	link_block_group(cache);
+diff --git a/fs/btrfs/space-info.c b/fs/btrfs/space-info.c
+index 51fbfd716623..ad13b9d207b1 100644
+--- a/fs/btrfs/space-info.c
++++ b/fs/btrfs/space-info.c
+@@ -295,7 +295,7 @@ int btrfs_init_space_info(struct btrfs_fs_info *fs_info)
+ void btrfs_update_space_info(struct btrfs_fs_info *info, u64 flags,
+ 			     u64 total_bytes, u64 bytes_used,
+ 			     u64 bytes_readonly, u64 bytes_zone_unusable,
+-			     struct btrfs_space_info **space_info)
++			     bool active, struct btrfs_space_info **space_info)
+ {
+ 	struct btrfs_space_info *found;
+ 	int factor;
+@@ -306,6 +306,8 @@ void btrfs_update_space_info(struct btrfs_fs_info *info, u64 flags,
+ 	ASSERT(found);
+ 	spin_lock(&found->lock);
+ 	found->total_bytes += total_bytes;
++	if (active)
++		found->active_total_bytes += total_bytes;
+ 	found->disk_total += total_bytes * factor;
+ 	found->bytes_used += bytes_used;
+ 	found->disk_used += bytes_used * factor;
+@@ -369,6 +371,22 @@ static u64 calc_available_free_space(struct btrfs_fs_info *fs_info,
+ 	return avail;
  }
  
-@@ -2043,6 +2046,9 @@ bool btrfs_can_activate_zone(struct btrfs_fs_devices *fs_devices, u64 flags)
- 	}
- 	mutex_unlock(&fs_info->chunk_mutex);
- 
-+	if (!ret)
-+		set_bit(BTRFS_FS_NEED_ZONE_FINISH, &fs_info->flags);
++static inline u64 writable_total_bytes(struct btrfs_fs_info *fs_info,
++				       struct btrfs_space_info *space_info)
++{
++	/*
++	 * On regular filesystem, all total_bytes are always writable. On zoned
++	 * filesystem, there may be a limitation imposed by max_active_zones.
++	 * For metadata allocation, we cannot finish an existing active block
++	 * group to avoid a deadlock. Thus, we need to consider only the active
++	 * groups to be writable for metadata space.
++	 */
++	if (!btrfs_is_zoned(fs_info) || (space_info->flags & BTRFS_BLOCK_GROUP_DATA))
++		return space_info->total_bytes;
 +
++	return space_info->active_total_bytes;
++}
++
+ int btrfs_can_overcommit(struct btrfs_fs_info *fs_info,
+ 			 struct btrfs_space_info *space_info, u64 bytes,
+ 			 enum btrfs_reserve_flush_enum flush)
+@@ -386,7 +404,7 @@ int btrfs_can_overcommit(struct btrfs_fs_info *fs_info,
+ 	else
+ 		avail = calc_available_free_space(fs_info, space_info, flush);
+ 
+-	if (used + bytes < space_info->total_bytes + avail)
++	if (used + bytes < writable_total_bytes(fs_info, space_info) + avail)
+ 		return 1;
+ 	return 0;
+ }
+@@ -422,7 +440,7 @@ void btrfs_try_granting_tickets(struct btrfs_fs_info *fs_info,
+ 		ticket = list_first_entry(head, struct reserve_ticket, list);
+ 
+ 		/* Check and see if our ticket can be satisfied now. */
+-		if ((used + ticket->bytes <= space_info->total_bytes) ||
++		if ((used + ticket->bytes <= writable_total_bytes(fs_info, space_info)) ||
+ 		    btrfs_can_overcommit(fs_info, space_info, ticket->bytes,
+ 					 flush)) {
+ 			btrfs_space_info_update_bytes_may_use(fs_info,
+@@ -753,6 +771,7 @@ btrfs_calc_reclaim_metadata_size(struct btrfs_fs_info *fs_info,
+ {
+ 	u64 used;
+ 	u64 avail;
++	u64 total;
+ 	u64 to_reclaim = space_info->reclaim_size;
+ 
+ 	lockdep_assert_held(&space_info->lock);
+@@ -767,8 +786,9 @@ btrfs_calc_reclaim_metadata_size(struct btrfs_fs_info *fs_info,
+ 	 * space.  If that's the case add in our overage so we make sure to put
+ 	 * appropriate pressure on the flushing state machine.
+ 	 */
+-	if (space_info->total_bytes + avail < used)
+-		to_reclaim += used - (space_info->total_bytes + avail);
++	total = writable_total_bytes(fs_info, space_info);
++	if (total + avail < used)
++		to_reclaim += used - (total + avail);
+ 
+ 	return to_reclaim;
+ }
+@@ -778,9 +798,12 @@ static bool need_preemptive_reclaim(struct btrfs_fs_info *fs_info,
+ {
+ 	u64 global_rsv_size = fs_info->global_block_rsv.reserved;
+ 	u64 ordered, delalloc;
+-	u64 thresh = div_factor_fine(space_info->total_bytes, 90);
++	u64 total = writable_total_bytes(fs_info, space_info);
++	u64 thresh;
+ 	u64 used;
+ 
++	thresh = div_factor_fine(total, 90);
++
+ 	lockdep_assert_held(&space_info->lock);
+ 
+ 	/* If we're just plain full then async reclaim just slows us down. */
+@@ -842,8 +865,8 @@ static bool need_preemptive_reclaim(struct btrfs_fs_info *fs_info,
+ 					   BTRFS_RESERVE_FLUSH_ALL);
+ 	used = space_info->bytes_used + space_info->bytes_reserved +
+ 	       space_info->bytes_readonly + global_rsv_size;
+-	if (used < space_info->total_bytes)
+-		thresh += space_info->total_bytes - used;
++	if (used < total)
++		thresh += total - used;
+ 	thresh >>= space_info->clamp;
+ 
+ 	used = space_info->bytes_pinned;
+@@ -1560,7 +1583,7 @@ static int __reserve_bytes(struct btrfs_fs_info *fs_info,
+ 	 * can_overcommit() to ensure we can overcommit to continue.
+ 	 */
+ 	if (!pending_tickets &&
+-	    ((used + orig_bytes <= space_info->total_bytes) ||
++	    ((used + orig_bytes <= writable_total_bytes(fs_info, space_info)) ||
+ 	     btrfs_can_overcommit(fs_info, space_info, orig_bytes, flush))) {
+ 		btrfs_space_info_update_bytes_may_use(fs_info, space_info,
+ 						      orig_bytes);
+diff --git a/fs/btrfs/space-info.h b/fs/btrfs/space-info.h
+index e7de24a529cf..12fd6147f92d 100644
+--- a/fs/btrfs/space-info.h
++++ b/fs/btrfs/space-info.h
+@@ -19,6 +19,8 @@ struct btrfs_space_info {
+ 	u64 bytes_may_use;	/* number of bytes that may be used for
+ 				   delalloc/allocations */
+ 	u64 bytes_readonly;	/* total bytes that are read only */
++	/* Total bytes in the space, but only accounts active block groups. */
++	u64 active_total_bytes;
+ 	u64 bytes_zone_unusable;	/* total bytes that are unusable until
+ 					   resetting the device zone */
+ 
+@@ -124,7 +126,7 @@ int btrfs_init_space_info(struct btrfs_fs_info *fs_info);
+ void btrfs_update_space_info(struct btrfs_fs_info *info, u64 flags,
+ 			     u64 total_bytes, u64 bytes_used,
+ 			     u64 bytes_readonly, u64 bytes_zone_unusable,
+-			     struct btrfs_space_info **space_info);
++			     bool active, struct btrfs_space_info **space_info);
+ void btrfs_update_space_info_chunk_size(struct btrfs_space_info *space_info,
+ 					u64 chunk_size);
+ struct btrfs_space_info *btrfs_find_space_info(struct btrfs_fs_info *info,
+diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
+index eb9eb9e72187..16ed426a58c9 100644
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1849,6 +1849,7 @@ struct btrfs_device *btrfs_zoned_get_device(struct btrfs_fs_info *fs_info,
+ bool btrfs_zone_activate(struct btrfs_block_group *block_group)
+ {
+ 	struct btrfs_fs_info *fs_info = block_group->fs_info;
++	struct btrfs_space_info *space_info = block_group->space_info;
+ 	struct map_lookup *map;
+ 	struct btrfs_device *device;
+ 	u64 physical;
+@@ -1860,6 +1861,7 @@ bool btrfs_zone_activate(struct btrfs_block_group *block_group)
+ 
+ 	map = block_group->physical_map;
+ 
++	spin_lock(&space_info->lock);
+ 	spin_lock(&block_group->lock);
+ 	if (block_group->zone_is_active) {
+ 		ret = true;
+@@ -1888,7 +1890,10 @@ bool btrfs_zone_activate(struct btrfs_block_group *block_group)
+ 
+ 	/* Successfully activated all the zones */
+ 	block_group->zone_is_active = 1;
++	space_info->active_total_bytes += block_group->length;
+ 	spin_unlock(&block_group->lock);
++	btrfs_try_granting_tickets(fs_info, space_info);
++	spin_unlock(&space_info->lock);
+ 
+ 	/* For the active block group list */
+ 	btrfs_get_block_group(block_group);
+@@ -1901,6 +1906,7 @@ bool btrfs_zone_activate(struct btrfs_block_group *block_group)
+ 
+ out_unlock:
+ 	spin_unlock(&block_group->lock);
++	spin_unlock(&space_info->lock);
  	return ret;
  }
  
