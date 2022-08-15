@@ -2,85 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3788EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771D2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 07:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241416AbiHOHiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 03:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        id S230305AbiHOHk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232631AbiHOHiR (ORCPT
+        with ESMTP id S240918AbiHOHkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 03:38:17 -0400
-Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6725DDF7B
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 00:38:15 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id NUfsoyReCtUbyNUfsoBx0o; Mon, 15 Aug 2022 09:38:13 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 15 Aug 2022 09:38:13 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <271c00a5-fb5d-ff9e-3c4d-ec2732b991ba@wanadoo.fr>
-Date:   Mon, 15 Aug 2022 09:38:11 +0200
+        Mon, 15 Aug 2022 03:40:42 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1005E5F72;
+        Mon, 15 Aug 2022 00:40:41 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 1100348F;
+        Mon, 15 Aug 2022 09:40:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1660549239;
+        bh=re86Dl7l8xNna/q8VWonpSa51oBqjSbd45pb7M9d+nE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KfwIFaB9bQBr8WqZKH8yhx2WJOkjnZJ9Rl7bccom6jlIb5oJrY09fysur4L5sAIvH
+         siQrw6Qi1c4UThTbcjZTuB/EUwf+RWGrdu/9PgR44yOLKkOIxs5Q7bSjqIXHmsmQRV
+         GRDBKSc6Z2TUbs7IC0uSXmXCmJdycuC4SvxXfQ14=
+Date:   Mon, 15 Aug 2022 10:40:26 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Wang Yating <yating.wang@intel.com>,
+        Christoph Jechlitschek <christoph.jechlitschek@intel.com>,
+        Hao Yao <hao.yao@intel.com>, Andy Yeh <andy.yeh@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Bingbu Cao <bingbu.cao@intel.com>,
+        Tianshu Qiu <tian.shu.qiu@intel.com>,
+        linux-media@vger.kernel.org, Mark Pearson <markpearson@lenovo.com>,
+        Dell.Client.Kernel@dell.com, linux-kernel@vger.kernel.org,
+        Guenter Roeck <groeck@google.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Christian Schaller <cschalle@redhat.com>,
+        Wouter Bolsterlee <wouter@bolsterl.ee>,
+        Miguel Palhas <mpalhas@gmail.com>, it+linux-media@molgen.mpg.de
+Subject: Re: Missing MIPI IPU6 camera driver for Intel Alder Lake laptops
+Message-ID: <Yvn4aiVLzFMneZCc@pendragon.ideasonboard.com>
+References: <YvUaEDMbZD70x+hD@kroah.com>
+ <YvUbhx4HSxAAwIvv@pendragon.ideasonboard.com>
+ <YvUghWZbXIUofg5A@kroah.com>
+ <YvmqL6Wz7o77ukF5@google.com>
+ <YvnpVmnROTsWWw0o@kroah.com>
+ <YvnrJBI8599+E43T@google.com>
+ <YvnvnL9pBAgWMgTk@kroah.com>
+ <YvnwtN1SwQjilJ97@google.com>
+ <YvnybHVFmpUJs4qi@kroah.com>
+ <Yvn0o96K8j5gRaWM@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 1/1] gpio: mpfs: add polarfire soc gpio support
-Content-Language: fr
-To:     lewis.hanly@microchip.com, linux-gpio@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linus.walleij@linaro.org,
-        brgl@bgdev.pl, linux-kernel@vger.kernel.org, palmer@dabbelt.com,
-        maz@kernel.org
-Cc:     conor.dooley@microchip.com, daire.mcnamara@microchip.com
-References: <20220815070606.1298421-1-lewis.hanly@microchip.com>
- <20220815070606.1298421-2-lewis.hanly@microchip.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220815070606.1298421-2-lewis.hanly@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yvn0o96K8j5gRaWM@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 15/08/2022 à 09:06, lewis.hanly@microchip.com a écrit :
-> From: Lewis Hanly <lewis.hanly@microchip.com>
+On Mon, Aug 15, 2022 at 04:24:19PM +0900, Sergey Senozhatsky wrote:
+> On (22/08/15 09:14), Greg KH wrote:
+> > > Definitely not today. Someday, for sure :)
+> > > 
+> > > I don't want to promise any timelines. But we are certainly not
+> > > talking "weeks", we are talking "months". Several months is a
+> > > realistic timeline.
+> > 
+> > Ok, so getting this merged is a good year out at the best, realisticly 2
+> > years given that once you submit the first version for review, the real
+> > work will start happening.
 > 
-> Add a driver to support the Polarfire SoC gpio controller
+> Well, nothing is really set in stone here. We may revisit our strategy,
+> say turn it upside down, and hit upstream mailing list as soon as possible
+> instead.
 > 
-> Signed-off-by: Lewis Hanly <lewis.hanly@microchip.com>
-> ---
->   drivers/gpio/Kconfig     |   7 +
->   drivers/gpio/Makefile    |   1 +
->   drivers/gpio/gpio-mpfs.c | 318 +++++++++++++++++++++++++++++++++++++++
->   3 files changed, 326 insertions(+)
->   create mode 100644 drivers/gpio/gpio-mpfs.c
-> 
+> > So I'll stick with my original statement, don't buy this hardware
+>   ... if you plan on running vanilla kernel. Otherwise do buy :)
 
-> +static int mpfs_gpio_probe(struct platform_device *pdev)
-> +{
-> +	struct clk *clk;
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *node = pdev->dev.of_node;
-> +	struct mpfs_gpio_chip *mpfs_gpio;
-> +	struct gpio_irq_chip *girq;
-> +	int i, ret, ngpios, nirqs;
-> +
-> +	mpfs_gpio = devm_kzalloc(dev, sizeof(*mpfs_gpio), GFP_KERNEL);
-> +	if (!mpfs_gpio)
-> +		return -ENOMEM;
-> +
-> +	mpfs_gpio->base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(mpfs_gpio->base))
-> +		return dev_err_probe(dev, PTR_ERR(mpfs_gpio->clk), "input clock not found.\n");
+If you want to run a proprietary OS.
 
-PTR_ERR(mpfs_gpio->base)?
-"input clock not found" also looks odd after a 
-devm_platform_ioremap_resource() call.
+-- 
+Regards,
 
-> +
-> +	clk = devm_clk_get(dev, NULL);
-> +	if (IS_ERR(clk))
-> +		return dev_err_probe(dev, PTR_ERR(clk), "devm_clk_get failed\n");
-> +
+Laurent Pinchart
