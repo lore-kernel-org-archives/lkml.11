@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8123CC32766
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C06C32765
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350900AbiHOWhS (ORCPT
+        id S1350936AbiHOWhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
+        Mon, 15 Aug 2022 18:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348476AbiHOW2o (ORCPT
+        with ESMTP id S1348022AbiHOW3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:28:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B0FB6D7B;
-        Mon, 15 Aug 2022 12:48:04 -0700 (PDT)
+        Mon, 15 Aug 2022 18:29:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E4AD742C;
+        Mon, 15 Aug 2022 12:48:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F1016125E;
-        Mon, 15 Aug 2022 19:48:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93BFBC433D6;
-        Mon, 15 Aug 2022 19:48:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64376B80EAB;
+        Mon, 15 Aug 2022 19:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A542DC433D7;
+        Mon, 15 Aug 2022 19:48:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592883;
-        bh=GUDAZS/+eUIcCGBBfhfW4KeWzTJXZXRYQZKOZTAGzHc=;
+        s=korg; t=1660592886;
+        bh=JJDjh3JMS1RvAWBuSHwFADZIku6Wki4QrQ2EVkZcrlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzwU+BRXx7QH1UgkiltZMMinqINSt7AOXR+MpfJpGnmn47o12kB1BjNr+x0pepWmX
-         aWpydLN9iA2wGeMrlo/3EMRdTkg5+MPm5DA8vM65kim1sOlxIwQoHy465a5B+FRsLa
-         FuLkCV1GmO3yKhHtB+gYSYQktDYNMQD5hezkgURI=
+        b=WCB0r2T/19zAZwY2+N/0xnwfgk6qaeeVyOGhwiWtPzR9iXmoa6Iy1HWA+G35lXY2S
+         k5OxaZLEEaVx3+XVOTtYm822UnXiy+YLuV2typGV6P/foMNPDbXxHDRYG6FXFlpuJa
+         CnKULKOw3HYEFJ6rZfm57prjV+2/tdsd0kxSFCiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0149/1157] arm64: kasan: do not instrument stacktrace.c
-Date:   Mon, 15 Aug 2022 19:51:45 +0200
-Message-Id: <20220815180445.630849382@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0830/1095] ASoC: mediatek: mt8173: Fix refcount leak in mt8173_rt5650_rt5676_dev_probe
+Date:   Mon, 15 Aug 2022 20:03:49 +0200
+Message-Id: <20220815180503.654840844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,63 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 802b91118d11227b527153849ea761b280691373 ]
+[ Upstream commit ae4f11c1ed2d67192fdf3d89db719ee439827c11 ]
 
-Disable KASAN instrumentation of arch/arm64/kernel/stacktrace.c.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Fix missing of_node_put() in error paths.
 
-This speeds up Generic KASAN by 5-20%.
-
-As a side-effect, KASAN is now unable to detect bugs in the stack trace
-collection code. This is taken as an acceptable downside.
-
-Also replace READ_ONCE_NOCHECK() with READ_ONCE() in stacktrace.c.
-As the file is now not instrumented, there is no need to use the
-NOCHECK version of READ_ONCE().
-
-Suggested-by: Mark Rutland <mark.rutland@arm.com>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Link: https://lore.kernel.org/r/c4c944a2a905e949760fbeb29258185087171708.1653317461.git.andreyknvl@google.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220602034144.60159-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/Makefile     | 5 +++++
- arch/arm64/kernel/stacktrace.c | 4 ++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index fa7981d0d917..7075a9c6a4a6 100644
---- a/arch/arm64/kernel/Makefile
-+++ b/arch/arm64/kernel/Makefile
-@@ -14,6 +14,11 @@ CFLAGS_REMOVE_return_address.o = $(CC_FLAGS_FTRACE)
- CFLAGS_REMOVE_syscall.o	 = -fstack-protector -fstack-protector-strong
- CFLAGS_syscall.o	+= -fno-stack-protector
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 5716d9299066..c1e8633a74a7 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -256,14 +256,16 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_node;
+ 	}
+ 	mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
+ 		of_parse_phandle(pdev->dev.of_node, "mediatek,audio-codec", 1);
+ 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_node;
+ 	}
+ 	mt8173_rt5650_rt5676_codec_conf[0].dlc.of_node =
+ 		mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node;
+@@ -276,13 +278,15 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_node;
+ 	}
  
-+# When KASAN is enabled, a stack trace is recorded for every alloc/free, which
-+# can significantly impact performance. Avoid instrumenting the stack trace
-+# collection code to minimize this impact.
-+KASAN_SANITIZE_stacktrace.o := n
-+
- # It's not safe to invoke KCOV when portions of the kernel environment aren't
- # available or are out-of-sync with HW state. Since `noinstr` doesn't always
- # inhibit KCOV instrumentation, disable it for the entire compilation unit.
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 0467cb79f080..c246e8d9f95b 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -124,8 +124,8 @@ static int notrace unwind_next(struct task_struct *tsk,
- 	 * Record this frame record's values and location. The prev_fp and
- 	 * prev_type are only meaningful to the next unwind_next() invocation.
- 	 */
--	state->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
--	state->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
-+	state->fp = READ_ONCE(*(unsigned long *)(fp));
-+	state->pc = READ_ONCE(*(unsigned long *)(fp + 8));
- 	state->prev_fp = fp;
- 	state->prev_type = info.type;
+ 	card->dev = &pdev->dev;
  
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 
++put_node:
+ 	of_node_put(platform_node);
+ 	return ret;
+ }
 -- 
 2.35.1
 
