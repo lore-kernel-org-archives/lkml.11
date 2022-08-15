@@ -2,125 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C90C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D86C7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230303AbiHODnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+        id S239890AbiHODng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232605AbiHODm7 (ORCPT
+        with ESMTP id S230081AbiHODnd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:42:59 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E43A11451;
-        Sun, 14 Aug 2022 20:42:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660534978; x=1692070978;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UMqmxjssfvr9MGTku5Xh+2RDGy3WR7MtBK+2rqnJ73o=;
-  b=Glbz5xAh/JdvKqiotz1iYhZD9Lw75CPU+C2700g48PvVKpKWmaNlFEyq
-   MF2iIBwuXU2r3tlcMrAoM6iWQY6s0zXVC5E4aNmgW+lrFizfS9b1byoC4
-   Hcuw3JqQBs7/adWbpp1ILHD+BXEYjdMmOoI0VyW730b/c9W6fXlinQ3mL
-   HJ6ogsitMOzab5XD5C+k5WrPlqVqDaSxMq3HSX3urxLxVWqleERFjJmK4
-   Cv7+Mh8MrGqImAZyu9BOnOL8UXmWpXmgaCOWEGkMTXADASB9vLlf7Yzq+
-   KxtR89+B+isgJdoTvkvXOvoNXEg6vagQtbD6Dn7KKXeWIPU4aJkUFWGVL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="272276443"
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="272276443"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 20:42:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="709633356"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga002.fm.intel.com with ESMTP; 14 Aug 2022 20:42:55 -0700
-Date:   Mon, 15 Aug 2022 11:33:52 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        Tom Rix <trix@redhat.com>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: fpga: microchip,mpf-spi-fpga-mgr: use
- spi-peripheral-props.yaml
-Message-ID: <Yvm+oPCzNnTDcrFd@yilunxu-OptiPlex-7050>
-References: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
+        Sun, 14 Aug 2022 23:43:33 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B3F13F21
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:43:28 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id f22so8132685edc.7
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=8GGB/49mCW+ASejosbIfzxpTGaMVR2I7jGs9zaiNEuA=;
+        b=NzuKLoOEIbmS2zWZ6FLQc9Z0EReusgl0yz0sb1p0uTvAtt0HMvEgCWcsUvAgYVt+Ll
+         Gcskv3uZLFw6E+Jf86vRQIq8cjy9hVjAf51w7UEf69hytsRgwj8vCSSMvPGClnkKmEsy
+         LyElPxKcSnmJSaZ1SbJF3Xrh6G+qeSTZgw2SM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=8GGB/49mCW+ASejosbIfzxpTGaMVR2I7jGs9zaiNEuA=;
+        b=nHnscXV7OhhCdfTZl0IDL+mnLwHnW7ZfZAKr7EkDwWY8YLV4t2fgvGFsDeGPEkfNVN
+         s0ksdc0mbix7O9z2fBfSbiW5KYmDVEHWJO+ySTiFR3NTJbCWQBt86mDDWFYhQ2wxqv+o
+         xYs9tWpCMnECzLy58W2oTRiGmMTNdfm3ebFN2LRF7QQq2kZuB4KF/K+0YBxX5U92fSlL
+         xGTjICp3jWy4jERRZFKbfgFU2LqBcCSM0MT9Py7o0hCRw/X8DPG7C0yj3GJ7jX5oivqG
+         gtQnjM8puA9rYw3HVTDRuBOUMqciAfT1eEAut8bZf1QOGzDWyVQr4VjVcdkKfDIAoz0q
+         kWeQ==
+X-Gm-Message-State: ACgBeo1BW3wvshHgJPtHeAIq6wgxeofGsU9Me5N8Usc74BdihePkyD6Y
+        Qa5ZzOvQGoSFLakWTaAKYZztVSaUN0ioETpb
+X-Google-Smtp-Source: AA6agR7fKyeEHB8pEJ52+L6YEaTXp6uAkKkQ+FjsJMOzFC3QZfib58lsRJIJc4xc4onhojxDzwPE0g==
+X-Received: by 2002:aa7:dc17:0:b0:441:e5fc:7f91 with SMTP id b23-20020aa7dc17000000b00441e5fc7f91mr12763998edu.301.1660535006560;
+        Sun, 14 Aug 2022 20:43:26 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
+        by smtp.gmail.com with ESMTPSA id jl15-20020a17090775cf00b00730df07629fsm3622239ejc.174.2022.08.14.20.43.25
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Aug 2022 20:43:25 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id h1so3339104wmd.3
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:43:25 -0700 (PDT)
+X-Received: by 2002:a05:600c:657:b0:3a5:e4e6:ee24 with SMTP id
+ p23-20020a05600c065700b003a5e4e6ee24mr3981246wmm.68.1660535005014; Sun, 14
+ Aug 2022 20:43:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
+References: <CAHk-=wh1xHi-WeytuAK1-iSsR0wi=6e4-WgFq6ZPt8Z1mvqoNA@mail.gmail.com>
+ <20220814225415.n546anzvud6sumux@box.shutemov.name> <CAHk-=wiOqbuzy7xzsLrN8LXKGGUUMH109wcKOXx_PV9PkHa=Zw@mail.gmail.com>
+In-Reply-To: <CAHk-=wiOqbuzy7xzsLrN8LXKGGUUMH109wcKOXx_PV9PkHa=Zw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 14 Aug 2022 20:43:09 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whSGBmH7zKvD-=qJLkWPSGZo1cM7GyLH=8cuide7+ri_Q@mail.gmail.com>
+Message-ID: <CAHk-=whSGBmH7zKvD-=qJLkWPSGZo1cM7GyLH=8cuide7+ri_Q@mail.gmail.com>
+Subject: Re: Simplify load_unaligned_zeropad() (was Re: [GIT PULL] Ceph
+ updates for 5.20-rc1)
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Mike Rapoport <rppt@kernel.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-27 at 18:43:47 +0200, Krzysztof Kozlowski wrote:
-> Instead of listing directly properties typical for SPI peripherals,
-> reference the spi-peripheral-props.yaml schema.  This allows using all
-> properties typical for SPI-connected devices, even these which device
-> bindings author did not tried yet.
-> 
-> Remove the spi-* properties which now come via spi-peripheral-props.yaml
-> schema, except for the cases when device schema adds some constraints
-> like maximum frequency.
-> 
-> While changing additionalProperties->unevaluatedProperties, put it in
-> typical place, just before example DTS.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Sun, Aug 14, 2022 at 3:59 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> If TDX has problems with it, then TDX needs to be fixed. And it's
+> simple enough - just make sure you have a guard page between any
+> kernel RAM mapping and whatever odd crazy page.
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+.. thinking about this more, I thought we had already done that in the
+memory initialization code - ie make sure that we always leave a gap
+between any page we mark and any IO memory after it.
 
-Applied to for-next.
+But it's possible that I'm confused with the IO window allocation
+code, which does the reverse (ie actively try to avoid starting
+allocations close to the end-of-RAM because there is often
+undocumented stolen memory there)
 
-Thanks,
-Yilun
+I'd much rather lose one page from the page allocator at the end of a
+RAM region than lose the ability to do string word operations.
 
-> 
-> ---
-> 
-> Technically, this depends on [1] merged to SPI tree, if we want to
-> preserve existing behavior of not allowing SPI CPHA and CPOL in each of
-> schemas in this patch.
-> 
-> If this patch comes independently via different tree, the SPI CPHA and
-> CPOL will be allowed for brief period of time, before [1] is merged.
-> This will not have negative impact, just DT schema checks will be
-> loosened for that period.
-> 
-> [1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
-> ---
->  .../bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml          | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> index aee45cb15592..527532f039ce 100644
-> --- a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> +++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> @@ -22,13 +22,14 @@ properties:
->      description: SPI chip select
->      maxItems: 1
->  
-> -  spi-max-frequency: true
-> -
->  required:
->    - compatible
->    - reg
->  
-> -additionalProperties: false
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
->  
->  examples:
->    - |
-> -- 
-> 2.34.1
-> 
+Of course, it's also entirely possible that even if my memory about us
+already trying to do that is right (which it might not be), we might
+also have lost that whole thing over time, since we've had a lot of
+updates to the bootmem/memblock setup.
+
+Bringing in Mike Rapoport in case he can point to the code (or lack there-of).
+
+Mike?
+
+               Linus
