@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F077CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5256C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347231AbiHOVy2 (ORCPT
+        id S1347044AbiHOVya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
+        Mon, 15 Aug 2022 17:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350093AbiHOVuL (ORCPT
+        with ESMTP id S1350368AbiHOVvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:50:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16155BD154;
-        Mon, 15 Aug 2022 12:32:15 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39BF104B27;
+        Mon, 15 Aug 2022 12:32:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37E96B80FD3;
-        Mon, 15 Aug 2022 19:32:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677C1C433C1;
-        Mon, 15 Aug 2022 19:32:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED6286101B;
+        Mon, 15 Aug 2022 19:32:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F06C433C1;
+        Mon, 15 Aug 2022 19:32:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591932;
-        bh=EIFqnLnUM23Nz1J6+mXn0fbS1tnry5gPG/oOFxiGxUU=;
+        s=korg; t=1660591948;
+        bh=payAf0HvEewLL/gsAXZ7WoDbcj/dgmnR+M9F73oqHIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rS3cUN29VnD9w2I/vSymQavVLN192Y0PKWX5ur5JLgHBZ0WH0W1JVx05K/H41cQM+
-         KkpOEX+Xre4zmz/mepUeCmY1te7zfFNeH7U1i0sT0CK2KFePZfyO8mpmSNanhFw1nm
-         HyxNaMfSOhN89AXkiVvJn/8JEhX8JRIbnZTNaSYk=
+        b=UfLZ3wTtFLXGGQZVcM++zojLPJ/0g/+NoczxkNPhvrsFWqLcfrkDHv0f4n+0GiTro
+         ge+5KhSK2l7SsztYF2BY53dTl/LzGcNrQ2DgktYp3brpYKFJqTFTDhn8WowS5W5EkY
+         t3u3RcIFy7SUKTIPqp7RexVXX0o25isQcAOxA5w4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0706/1095] clk: qcom: ipq8074: fix NSS core PLL-s
-Date:   Mon, 15 Aug 2022 20:01:45 +0200
-Message-Id: <20220815180458.594771040@linuxfoundation.org>
+Subject: [PATCH 5.18 0695/1095] driver core: fix potential deadlock in __driver_attach
+Date:   Mon, 15 Aug 2022 20:01:34 +0200
+Message-Id: <20220815180458.124830979@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,87 +49,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Zhang Wensheng <zhangwensheng5@huawei.com>
 
-[ Upstream commit ca41ec1b30434636c56c5600b24a8d964d359d9c ]
+[ Upstream commit 70fe758352cafdee72a7b13bf9db065f9613ced8 ]
 
-Like in IPQ6018 the NSS related Alpha PLL-s require initial configuration
-to work.
+In __driver_attach function, There are also AA deadlock problem,
+like the commit b232b02bf3c2 ("driver core: fix deadlock in
+__device_attach").
 
-So, obtain the regmap that is required for the Alpha PLL configuration
-and thus utilize the qcom_cc_really_probe() as we already have the regmap.
-Then utilize the Alpha PLL configs from the downstream QCA 5.4 based
-kernel to configure them.
+stack like commit b232b02bf3c2 ("driver core: fix deadlock in
+__device_attach").
+list below:
+    In __driver_attach function, The lock holding logic is as follows:
+    ...
+    __driver_attach
+    if (driver_allows_async_probing(drv))
+      device_lock(dev)      // get lock dev
+        async_schedule_dev(__driver_attach_async_helper, dev); // func
+          async_schedule_node
+            async_schedule_node_domain(func)
+              entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
+              /* when fail or work limit, sync to execute func, but
+                 __driver_attach_async_helper will get lock dev as
+                 will, which will lead to A-A deadlock.  */
+              if (!entry || atomic_read(&entry_count) > MAX_WORK) {
+                func;
+              else
+                queue_work_node(node, system_unbound_wq, &entry->work)
+      device_unlock(dev)
 
-This fixes the UBI32 and NSS crypto PLL-s failing to get enabled by the
-kernel.
+    As above show, when it is allowed to do async probes, because of
+    out of memory or work limit, async work is not be allowed, to do
+    sync execute instead. it will lead to A-A deadlock because of
+    __driver_attach_async_helper getting lock dev.
 
-Fixes: b8e7e519625f ("clk: qcom: ipq8074: add remaining PLL’s")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220515210048.483898-1-robimarko@gmail.com
+Reproduce:
+and it can be reproduce by make the condition
+(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like
+below:
+
+[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
+this message.
+[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 ppid:
+0 flags:0x00004000
+[  370.788865] Call Trace:
+[  370.789374]  <TASK>
+[  370.789841]  __schedule+0x482/0x1050
+[  370.790613]  schedule+0x92/0x1a0
+[  370.791290]  schedule_preempt_disabled+0x2c/0x50
+[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
+[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
+[  370.794079]  mutex_lock+0x50/0x60
+[  370.794795]  __device_driver_lock+0x2f/0x70
+[  370.795677]  ? driver_probe_device+0xd0/0xd0
+[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
+[  370.797318]  ? driver_probe_device+0xd0/0xd0
+[  370.797957]  async_schedule_node_domain+0xa5/0xc0
+[  370.798652]  async_schedule_node+0x19/0x30
+[  370.799243]  __driver_attach+0x246/0x290
+[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
+[  370.800548]  bus_for_each_dev+0x9d/0x130
+[  370.801132]  driver_attach+0x22/0x30
+[  370.801666]  bus_add_driver+0x290/0x340
+[  370.802246]  driver_register+0x88/0x140
+[  370.802817]  ? virtio_scsi_init+0x116/0x116
+[  370.803425]  scsi_register_driver+0x1a/0x30
+[  370.804057]  init_sd+0x184/0x226
+[  370.804533]  do_one_initcall+0x71/0x3a0
+[  370.805107]  kernel_init_freeable+0x39a/0x43a
+[  370.805759]  ? rest_init+0x150/0x150
+[  370.806283]  kernel_init+0x26/0x230
+[  370.806799]  ret_from_fork+0x1f/0x30
+
+To fix the deadlock, move the async_schedule_dev outside device_lock,
+as we can see, in async_schedule_node_domain, the parameter of
+queue_work_node is system_unbound_wq, so it can accept concurrent
+operations. which will also not change the code logic, and will
+not lead to deadlock.
+
+Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+Link: https://lore.kernel.org/r/20220622074327.497102-1-zhangwensheng5@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-ipq8074.c | 39 +++++++++++++++++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ drivers/base/dd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 541016db3c4b..1a5141da7e23 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -4371,6 +4371,33 @@ static struct clk_branch gcc_pcie0_axi_s_bridge_clk = {
- 	},
- };
- 
-+static const struct alpha_pll_config ubi32_pll_config = {
-+	.l = 0x4e,
-+	.config_ctl_val = 0x200d4aa8,
-+	.config_ctl_hi_val = 0x3c2,
-+	.main_output_mask = BIT(0),
-+	.aux_output_mask = BIT(1),
-+	.pre_div_val = 0x0,
-+	.pre_div_mask = BIT(12),
-+	.post_div_val = 0x0,
-+	.post_div_mask = GENMASK(9, 8),
-+};
-+
-+static const struct alpha_pll_config nss_crypto_pll_config = {
-+	.l = 0x3e,
-+	.alpha = 0x0,
-+	.alpha_hi = 0x80,
-+	.config_ctl_val = 0x4001055b,
-+	.main_output_mask = BIT(0),
-+	.pre_div_val = 0x0,
-+	.pre_div_mask = GENMASK(14, 12),
-+	.post_div_val = 0x1 << 8,
-+	.post_div_mask = GENMASK(11, 8),
-+	.vco_mask = GENMASK(21, 20),
-+	.vco_val = 0x0,
-+	.alpha_en_mask = BIT(24),
-+};
-+
- static struct clk_hw *gcc_ipq8074_hws[] = {
- 	&gpll0_out_main_div2.hw,
- 	&gpll6_out_main_div2.hw,
-@@ -4772,7 +4799,17 @@ static const struct qcom_cc_desc gcc_ipq8074_desc = {
- 
- static int gcc_ipq8074_probe(struct platform_device *pdev)
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index d6980f33afc4..822dfa6561c2 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -1091,6 +1091,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
+ static int __driver_attach(struct device *dev, void *data)
  {
--	return qcom_cc_probe(pdev, &gcc_ipq8074_desc);
-+	struct regmap *regmap;
-+
-+	regmap = qcom_cc_map(pdev, &gcc_ipq8074_desc);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
-+	clk_alpha_pll_configure(&nss_crypto_pll_main, regmap,
-+				&nss_crypto_pll_config);
-+
-+	return qcom_cc_really_probe(pdev, &gcc_ipq8074_desc, regmap);
- }
+ 	struct device_driver *drv = data;
++	bool async = false;
+ 	int ret;
  
- static struct platform_driver gcc_ipq8074_driver = {
+ 	/*
+@@ -1129,9 +1130,11 @@ static int __driver_attach(struct device *dev, void *data)
+ 		if (!dev->driver) {
+ 			get_device(dev);
+ 			dev->p->async_driver = drv;
+-			async_schedule_dev(__driver_attach_async_helper, dev);
++			async = true;
+ 		}
+ 		device_unlock(dev);
++		if (async)
++			async_schedule_dev(__driver_attach_async_helper, dev);
+ 		return 0;
+ 	}
+ 
 -- 
 2.35.1
 
