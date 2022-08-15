@@ -2,118 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C8DC28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7611C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbiHOSBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S230363AbiHOSBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232700AbiHOSAb (ORCPT
+        with ESMTP id S233033AbiHOSAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:00:31 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5016E5F5E
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:00:30 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id i20-20020a056e020d9400b002e377b02d4cso5442778ilj.7
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:00:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=snFhIh1XuImBPLpzgsrjx1ELv6/VHIRbucT3VBO0hl0=;
-        b=Den71joezXxKbxlcMXJ1ghr/B4Sx1FOZ2RIrDgIlc8FNzV8zb0Ms90jfT07IqAS8U/
-         FcRDnz5QCgDcgVDQJb55h5nDFzR+tDJmEOQJQdSs8+GkymWpb8p4DYckMrOv5CHoL4ck
-         ZwUC5ldqJe9qy7Xulq43bjRnrpywVrbo4ytqagpKMxnAqBFxFDc5yhtAG6/IBlOV/6JS
-         +voxCQbpf244h8RhLRmPh9aUljv8N/aEa36mBDVkSCvYvdINi5qBfJrccRhZ9XQV4fCx
-         mUMKCr1Gl/mAHLzXwB/uZh7YeqWcH9JWu9Ljp7TAVzdy7k048SkXREgdMhRqNm1EEHQy
-         TyMQ==
-X-Gm-Message-State: ACgBeo34Q4s8D9QvI6h06wXh88dG3zUmvs/0yUP2EvKw3zoNrLp0iQAY
-        Lwluu9eRXMfU/sgqZZtwRFvp5Uoho3IYDE9XCfOBcg50BBNk
-X-Google-Smtp-Source: AA6agR4R2JwIm/NL34OWa9aoDYy0/p2AwKRBUSytfOgTko3mJzzMHUZyhcNtFYWoQwE1jpH5VehLpoGy7rTxYfcg4GUsXU+bQubK
+        Mon, 15 Aug 2022 14:00:52 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964C3BC18;
+        Mon, 15 Aug 2022 11:00:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/1Bx4HDcIyS39X1ZLODVkDqCVJcvom8FSa7thBn5AsE=; b=mENEtynCU/ALxF5w4Q0Ehssk5Q
+        O5IupNEBxUgN7s73l+WpbLWR7KJDJaAjc/w01JiKOQUfUUGGi8AapQHL0Sf76sM3jAz7nm6amNxmK
+        TAo5EfGIS0GpbTQpicxWprZ+iNJX4vFkTUfGuCjdBtjGYmyNcAMe61WRzJD8wPC9Sm1oZ0FgD+MEA
+        H9gA5RUix9i25JSNE8mDv4y+iR/pEkC5Io094XmSiz61hdyh+XOizyPeQdU4fES4cprdAx114605i
+        tXSIBiSoKYTRADPVzdrlPQosCEccXopfGXUDuik+l8aY4QKpq0sC5VBWz1rramrs1l1sioy08lUKn
+        MAgr9C4w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33802)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oNeOL-0003TT-Hg; Mon, 15 Aug 2022 19:00:45 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oNeOI-00041h-LD; Mon, 15 Aug 2022 19:00:42 +0100
+Date:   Mon, 15 Aug 2022 19:00:42 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: phy: broadcom: Implement suspend/resume
+ for AC131 and BCM5241
+Message-ID: <YvqJyg3eUusc8jkC@shell.armlinux.org.uk>
+References: <20220815174356.2681127-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:25d7:b0:67c:9c30:49e0 with SMTP id
- d23-20020a05660225d700b0067c9c3049e0mr6641692iop.25.1660586429603; Mon, 15
- Aug 2022 11:00:29 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 11:00:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000041678b05e64b68c6@google.com>
-Subject: [syzbot] upstream boot error: BUG: corrupted list in new_inode
-From:   syzbot <syzbot+24df94a8d05d5a3e68f0@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815174356.2681127-1-f.fainelli@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, Aug 15, 2022 at 10:43:56AM -0700, Florian Fainelli wrote:
+> +	/* We cannot use a read/modify/write here otherwise the PHY continues
+> +	 * to drive LEDs which defeats the purpose of low power mode.
+> +	 */
+...
+> +	/* Set standby mode */
+> +	reg = phy_read(phydev, MII_BRCM_FET_SHDW_AUXMODE4);
+> +	if (reg < 0) {
+> +		err = reg;
+> +		goto done;
+> +	}
+> +
+> +	reg |= MII_BRCM_FET_SHDW_AM4_STANDBY;
+> +
+> +	err = phy_write(phydev, MII_BRCM_FET_SHDW_AUXMODE4, reg);
 
-syzbot found the following issue on:
+Does the read-modify-write problem extend to this register? Why would
+the PHY behave differently whether you used phy_modify() here or not?
+On the mdio bus, it should be exactly the same - the only difference
+is that we're guaranteed to hold the lock over the sequence whereas
+this drops and re-acquires the lock.
 
-HEAD commit:    5d6a0f4da927 Merge tag 'for-linus-6.0-rc1b-tag' of git://g..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1399b2f3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f6bcb425ba129b87
-dashboard link: https://syzkaller.appspot.com/bug?extid=24df94a8d05d5a3e68f0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+If it's sensitive to the timing of the read and the write, it suggests
+the above code is fragile - maybe there needs to be a minimum delay
+inserted between the read and the write?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+24df94a8d05d5a3e68f0@syzkaller.appspotmail.com
-
-list_add corruption. next->prev should be prev (ffff8881401c0a00), but was ffff000000000000. (next=ffff88801fb50308).
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:27!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 24 Comm: kdevtmpfs Not tainted 5.19.0-syzkaller-14374-g5d6a0f4da927 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:__list_add_valid.cold+0xf/0x58 lib/list_debug.c:27
-Code: 48 c7 c6 00 ec 48 8a 48 89 ef 49 c7 c7 ea ff ff ff e8 5b 63 05 00 e9 c2 7d b6 fa 4c 89 e1 48 c7 c7 a0 f2 48 8a e8 95 f2 f0 ff <0f> 0b 48 c7 c7 40 f2 48 8a e8 87 f2 f0 ff 0f 0b 48 c7 c7 a0 f1 48
-RSP: 0018:ffffc900001efc10 EFLAGS: 00010286
-RAX: 0000000000000075 RBX: ffff8881401c0000 RCX: 0000000000000000
-RDX: ffff888012620000 RSI: ffffffff8161f148 RDI: fffff5200003df74
-RBP: ffff88801db8b588 R08: 0000000000000075 R09: 0000000000000000
-R10: 0000000080000001 R11: 0000000000000000 R12: ffff88801fb50308
-R13: ffff88801fb50308 R14: ffff8881401c0000 R15: ffff88801db8b588
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 0000000000350ef0
-Call Trace:
- <TASK>
- __list_add include/linux/list.h:69 [inline]
- list_add include/linux/list.h:88 [inline]
- inode_sb_list_add fs/inode.c:495 [inline]
- new_inode+0x114/0x270 fs/inode.c:1049
- shmem_get_inode+0x19b/0xe00 mm/shmem.c:2306
- shmem_mknod+0x5a/0x1f0 mm/shmem.c:2873
- vfs_mknod+0x4d2/0x7e0 fs/namei.c:3892
- handle_create+0x340/0x4b3 drivers/base/devtmpfs.c:226
- handle drivers/base/devtmpfs.c:391 [inline]
- devtmpfs_work_loop drivers/base/devtmpfs.c:406 [inline]
- devtmpfsd+0x1a4/0x2a3 drivers/base/devtmpfs.c:448
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__list_add_valid.cold+0xf/0x58 lib/list_debug.c:27
-Code: 48 c7 c6 00 ec 48 8a 48 89 ef 49 c7 c7 ea ff ff ff e8 5b 63 05 00 e9 c2 7d b6 fa 4c 89 e1 48 c7 c7 a0 f2 48 8a e8 95 f2 f0 ff <0f> 0b 48 c7 c7 40 f2 48 8a e8 87 f2 f0 ff 0f 0b 48 c7 c7 a0 f1 48
-RSP: 0018:ffffc900001efc10 EFLAGS: 00010286
-RAX: 0000000000000075 RBX: ffff8881401c0000 RCX: 0000000000000000
-RDX: ffff888012620000 RSI: ffffffff8161f148 RDI: fffff5200003df74
-RBP: ffff88801db8b588 R08: 0000000000000075 R09: 0000000000000000
-R10: 0000000080000001 R11: 0000000000000000 R12: ffff88801fb50308
-R13: ffff88801fb50308 R14: ffff8881401c0000 R15: ffff88801db8b588
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 0000000000350ef0
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
