@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BCDC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D4FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245629AbiHPAWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
+        id S1348870AbiHPAXA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353110AbiHPAQC (ORCPT
+        with ESMTP id S1353204AbiHPAQC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:16:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6651178C18;
-        Mon, 15 Aug 2022 13:30:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27C5179E2E;
+        Mon, 15 Aug 2022 13:30:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9634261057;
-        Mon, 15 Aug 2022 20:30:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8468BC433C1;
-        Mon, 15 Aug 2022 20:30:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E398961135;
+        Mon, 15 Aug 2022 20:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0886C433D6;
+        Mon, 15 Aug 2022 20:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595427;
-        bh=BbXz+ox2h5kTAn0erYbR5JWQLTX37Bno+Z1CFv8e5lc=;
+        s=korg; t=1660595457;
+        bh=0wrrhUS/yrhbpDRp/29eoecL0CIsdPgCiNB8JkyesjA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v1sQlsaMnqG8ZsaL7hFK7pZGqQ/YXc+os0l8QSTtBwEheOwrZyzbj4UIPbUUmYrRD
-         N9CrUzL0zuqYFXOYzBH3wkvgdAjV6a+8nJWnodBPGykfh/EI65ASdp/dgELajq4Pux
-         pSVi4U0khSYmE37FycnBmywhNI+TRrJYRclQnX0U=
+        b=VLHnqfi8IiSSjCf4Had9w/aXPeS5wmwiGdtO3LvzmnAN2dgKSmNJS92QIYxZaNZvY
+         b12FAuh2LvHnwLM3rcNJkwo7h9uoSCXAHcy7S8LeafYol2Vu13DrsnZ56YM3eahuVd
+         YYkfRdM3KWecFEVI+3YysvYB7t2iQb1IoLoE5zb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0728/1157] mm/memremap: fix memunmap_pages() race with get_dev_pagemap()
-Date:   Mon, 15 Aug 2022 20:01:24 +0200
-Message-Id: <20220815180508.590799365@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0771/1157] PCI: dwc: Stop link on host_init errors and de-initialization
+Date:   Mon, 15 Aug 2022 20:02:07 +0200
+Message-Id: <20220815180510.339570389@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,59 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 1e57ffb6e3fd9583268c6462c4e3853575b21701 ]
+[ Upstream commit 113fa857b74c947137d845e7e635afcf6a59c43a ]
 
-Think about the below scene:
+It's logically correct to undo everything that was done when an error is
+discovered or in the corresponding cleanup counterpart. Otherwise the host
+controller will be left in an undetermined state. Since the link is set up
+in the host_init method, deactivate it there in the cleanup-on-error block
+and stop the link in the antagonistic routine - dw_pcie_host_deinit(). Link
+deactivation is platform-specific and should be implemented in
+dw_pcie_ops.stop_link().
 
- CPU1			CPU2
- memunmap_pages
-   percpu_ref_exit
-     __percpu_ref_exit
-       free_percpu(percpu_count);
-         /* percpu_count is freed here! */
-			 get_dev_pagemap
-			   xa_load(&pgmap_array, PHYS_PFN(phys))
-			     /* pgmap still in the pgmap_array */
-			   percpu_ref_tryget_live(&pgmap->ref)
-			     if __ref_is_percpu
-			       /* __PERCPU_REF_ATOMIC_DEAD not set yet */
-			       this_cpu_inc(*percpu_count)
-			         /* access freed percpu_count here! */
-      ref->percpu_count_ptr = __PERCPU_REF_ATOMIC_DEAD;
-        /* too late... */
-   pageunmap_range
-
-To fix the issue, do percpu_ref_exit() after pgmap_array is emptied. So
-we won't do percpu_ref_tryget_live() against a being freed percpu_ref.
-
-Link: https://lkml.kernel.org/r/20220609121305.2508-1-linmiaohe@huawei.com
-Fixes: b7b3c01b1915 ("mm/memremap_pages: support multiple ranges per invocation")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
+Link: https://lore.kernel.org/r/20220624143428.8334-2-Sergey.Semin@baikalelectronics.ru
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memremap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../pci/controller/dwc/pcie-designware-host.c    | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/mm/memremap.c b/mm/memremap.c
-index 745eea0f99c3..2bdb66854832 100644
---- a/mm/memremap.c
-+++ b/mm/memremap.c
-@@ -141,10 +141,10 @@ void memunmap_pages(struct dev_pagemap *pgmap)
- 	for (i = 0; i < pgmap->nr_range; i++)
- 		percpu_ref_put_many(&pgmap->ref, pfn_len(pgmap, i));
- 	wait_for_completion(&pgmap->done);
--	percpu_ref_exit(&pgmap->ref);
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index 9979302532b7..bc9a7df130ef 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -421,8 +421,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 	bridge->sysdata = pp;
  
- 	for (i = 0; i < pgmap->nr_range; i++)
- 		pageunmap_range(pgmap, i);
-+	percpu_ref_exit(&pgmap->ref);
+ 	ret = pci_host_probe(bridge);
+-	if (!ret)
+-		return 0;
++	if (ret)
++		goto err_stop_link;
++
++	return 0;
++
++err_stop_link:
++	if (pci->ops && pci->ops->stop_link)
++		pci->ops->stop_link(pci);
  
- 	WARN_ONCE(pgmap->altmap.alloc, "failed to free all reserved pages\n");
- 	devmap_managed_enable_put(pgmap);
+ err_free_msi:
+ 	if (pp->has_msi_ctrl)
+@@ -433,8 +439,14 @@ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
+ 
+ void dw_pcie_host_deinit(struct pcie_port *pp)
+ {
++	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
++
+ 	pci_stop_root_bus(pp->bridge->bus);
+ 	pci_remove_root_bus(pp->bridge->bus);
++
++	if (pci->ops && pci->ops->stop_link)
++		pci->ops->stop_link(pci);
++
+ 	if (pp->has_msi_ctrl)
+ 		dw_pcie_free_msi(pp);
+ }
 -- 
 2.35.1
 
