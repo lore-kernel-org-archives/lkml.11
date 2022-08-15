@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B48EC28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C490AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239899AbiHOTv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58444 "EHLO
+        id S233526AbiHOTwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345339AbiHOTt6 (ORCPT
+        with ESMTP id S231167AbiHOTuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:49:58 -0400
+        Mon, 15 Aug 2022 15:50:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B946472EFB;
-        Mon, 15 Aug 2022 11:49:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED2373312;
+        Mon, 15 Aug 2022 11:49:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03D8AB81057;
-        Mon, 15 Aug 2022 18:49:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47DF2C433D6;
-        Mon, 15 Aug 2022 18:49:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2668DB810A1;
+        Mon, 15 Aug 2022 18:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 589CCC433C1;
+        Mon, 15 Aug 2022 18:49:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589393;
-        bh=ideHvfhDE9wq+JxMMdoFAQuD3viIDQ424rCtYQY44JA=;
+        s=korg; t=1660589396;
+        bh=3bSndzRHGwDoEIiOezBILBR3x1ANK+Rt3C1uwr4VLqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJKHqfgUnDztxh4lJIhPIHmiJ0p2KRlkkMQKkDuzemuC0+zykc8OS3apibl67UEM3
-         F2BZlUF4x2pXORwCIia86EE8+B4xkYuPHNe4t6IxLdUM77ruQUVHDS7xx7NZHkmreD
-         g1OBQvYgSvBim/FsxWo6vXDpMQH7nnQ/JtD00eF4=
+        b=Wuqn8AmPXAKrgf+c+KJofTDs0ezRNHfZU+wIoezd1PeY82hbgF5Snlz4oOnqa2j18
+         8sHXVt+EXX+qZEE3NDNLwOYV/eMkcPJ8/8QoTQVdf99/JkwKuTqyM9wkVZSM9/go8a
+         IWw8qA/r6sM7jjJVuzvHl5Kf2uf/pnI2s22huEnU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable <stable@kernel.org>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 705/779] intel_th: pci: Add Meteor Lake-P support
-Date:   Mon, 15 Aug 2022 20:05:49 +0200
-Message-Id: <20220815180407.540418544@linuxfoundation.org>
+Subject: [PATCH 5.15 706/779] intel_th: pci: Add Raptor Lake-S PCH support
+Date:   Mon, 15 Aug 2022 20:05:50 +0200
+Message-Id: <20220815180407.591751767@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,14 +53,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-[ Upstream commit 802a9a0b1d91274ef10d9fe429b4cc1e8c200aef ]
+[ Upstream commit 23e2de5826e2fc4dd43e08bab3a2ea1a5338b063 ]
 
-Add support for the Trace Hub in Meteor Lake-P.
+Add support for the Trace Hub in Raptor Lake-S PCH.
 
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: stable <stable@kernel.org>
 Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-5-alexander.shishkin@linux.intel.com
+Link: https://lore.kernel.org/r/20220705082637.59979-6-alexander.shishkin@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
@@ -68,16 +68,16 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
-index fcd0aca75007..41a31c7f505f 100644
+index 41a31c7f505f..5b6da26f1b63 100644
 --- a/drivers/hwtracing/intel_th/pci.c
 +++ b/drivers/hwtracing/intel_th/pci.c
-@@ -284,6 +284,11 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
- 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x54a6),
+@@ -289,6 +289,11 @@ static const struct pci_device_id intel_th_pci_id_table[] = {
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7e24),
  		.driver_data = (kernel_ulong_t)&intel_th_2x,
  	},
 +	{
-+		/* Meteor Lake-P */
-+		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7e24),
++		/* Raptor Lake-S */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
 +		.driver_data = (kernel_ulong_t)&intel_th_2x,
 +	},
  	{
