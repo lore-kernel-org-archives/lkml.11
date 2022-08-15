@@ -2,106 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E60C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B33C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348962AbiHOViS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
+        id S239817AbiHOViW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348979AbiHOVgQ (ORCPT
+        with ESMTP id S1348981AbiHOVgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:36:16 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07035DD759;
+        Mon, 15 Aug 2022 17:36:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DB6DD758;
         Mon, 15 Aug 2022 12:25:38 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 19:25:36 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660591537;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=clUiGzR8GvCtQEzAy+OAVvp4S6yCdwI7DHULOBY0mTA=;
-        b=ZZhvTcbpI6rACMFccV0ixKxcr0908+lm8avBaJZLeAMoFwaowC7SFIUGxdA+O8HSgBowWJ
-        0+I7RaZjLQDGxh+YuJbutmOViNQefyOhzqscIPmJ6GSRdCb6KK39EA7wn19rcr/qstL8zG
-        SJM+dgn/alybFWK+ygRH276vARlxWKQcre8och/Cp5a5hvdLw+4yUHpIncMJoLrIkUMRMh
-        r0Pg6cogOpub+3IJVBK7nkbp6RKZcCX/HpSjIsmKYPIBjTKBvUYsCvEtZ6qRDdoJ5hxkwf
-        iRcmZkzr2allEyWPzYML2lHSUYdYy5krwYAn3RhbAREt4LS1NbCw+2Y6AFk4/A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660591537;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=clUiGzR8GvCtQEzAy+OAVvp4S6yCdwI7DHULOBY0mTA=;
-        b=kFuvy+ZKSiw2dLLzj3ike2bSCLsGam1MOEG/PUhWSx7uxmAEKZ/iK8YOObbuIMK+xbDUqA
-        TaX2cM+a+R4PpUCw==
-From:   "tip-bot2 for Li kunyu" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cleanups] x86/boot: Remove superfluous type casting from
- arch/x86/boot/bitops.h
-Cc:     Li kunyu <kunyu@nfschina.com>, Ingo Molnar <mingo@kernel.org>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220725042358.3377-1-kunyu@nfschina.com>
-References: <20220725042358.3377-1-kunyu@nfschina.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A200BB81125;
+        Mon, 15 Aug 2022 19:25:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07409C433C1;
+        Mon, 15 Aug 2022 19:25:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660591536;
+        bh=fkS7l4Mv2LRZIz6RMO+Qh8fV/b9u3krpLRZn04lzIRY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gZ6nuqlwws6y/45uLVJkEfVcQ1smW6bnrqUSbQlJlt2KV0Fb4TX2U4M3f3mbAdqUd
+         V4gybGg8hPHU/45jtsxqBHeogoP/iMXTO9O8zt+TK5Oulg14sYLn1By1oXinKhNfXM
+         MGFjC6wT3yUuEpO/ZA9assezAH+5Ps2pTdMpZTYA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0610/1095] iio: adc: max1241: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:09 +0200
+Message-Id: <20220815180454.743090611@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Message-ID: <166059153613.401.18360871834009022723.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cleanups branch of tip:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Commit-ID:     039f0e054a29d06970892240d70143150d2aaec2
-Gitweb:        https://git.kernel.org/tip/039f0e054a29d06970892240d70143150d2aaec2
-Author:        Li kunyu <kunyu@nfschina.com>
-AuthorDate:    Mon, 25 Jul 2022 12:23:58 +08:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 15 Aug 2022 19:17:43 +02:00
+[ Upstream commit 9d7019e43ee67a48cef63f8f23f002233064d390 ]
 
-x86/boot: Remove superfluous type casting from arch/x86/boot/bitops.h
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-'const void *' will auto-type-convert to just about any other const
-pointer type, no need to force it.
-
-  [ mingo: Rewrote the changelog. ]
-
-Signed-off-by: Li kunyu <kunyu@nfschina.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220725042358.3377-1-kunyu@nfschina.com
+Fixes: 8a80a71d9020 ("iio: adc: Add MAX1241 driver")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Alexandru Lazar <alazar@startmail.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-27-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/boot/bitops.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/max1241.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/boot/bitops.h b/arch/x86/boot/bitops.h
-index 02e1dea..8518ae2 100644
---- a/arch/x86/boot/bitops.h
-+++ b/arch/x86/boot/bitops.h
-@@ -19,13 +19,13 @@
+diff --git a/drivers/iio/adc/max1241.c b/drivers/iio/adc/max1241.c
+index a5afd84af58b..a815ad1f6913 100644
+--- a/drivers/iio/adc/max1241.c
++++ b/drivers/iio/adc/max1241.c
+@@ -26,7 +26,7 @@ struct max1241 {
+ 	struct regulator *vref;
+ 	struct gpio_desc *shutdown;
  
- static inline bool constant_test_bit(int nr, const void *addr)
- {
--	const u32 *p = (const u32 *)addr;
-+	const u32 *p = addr;
- 	return ((1UL << (nr & 31)) & (p[nr >> 5])) != 0;
- }
- static inline bool variable_test_bit(int nr, const void *addr)
- {
- 	bool v;
--	const u32 *p = (const u32 *)addr;
-+	const u32 *p = addr;
+-	__be16 data ____cacheline_aligned;
++	__be16 data __aligned(IIO_DMA_MINALIGN);
+ };
  
- 	asm("btl %2,%1" CC_SET(c) : CC_OUT(c) (v) : "m" (*p), "Ir" (nr));
- 	return v;
+ static const struct iio_chan_spec max1241_channels[] = {
+-- 
+2.35.1
+
+
+
