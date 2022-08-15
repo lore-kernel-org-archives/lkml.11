@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0A2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BFEC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348670AbiHOW3Q (ORCPT
+        id S1348765AbiHOW3Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        Mon, 15 Aug 2022 18:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347762AbiHOWWg (ORCPT
+        with ESMTP id S1348309AbiHOWWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:22:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD927124F7A;
-        Mon, 15 Aug 2022 12:44:01 -0700 (PDT)
+        Mon, 15 Aug 2022 18:22:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766EE1256D2;
+        Mon, 15 Aug 2022 12:44:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B48AB80EB2;
-        Mon, 15 Aug 2022 19:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758B7C43470;
-        Mon, 15 Aug 2022 19:43:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AF95DCE12E0;
+        Mon, 15 Aug 2022 19:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87042C433C1;
+        Mon, 15 Aug 2022 19:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592638;
-        bh=q3vg4sFHpr8OQHoNrI0kfchaXIRIA0O/tgiOkVCgces=;
+        s=korg; t=1660592642;
+        bh=APJwCdPbVBqTFnOCs9r4X7Wk+aabbWm8dDLg8pvApDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PD8eMpU4iRHIvoGFzDuZVYcWLowJXOjhlFiF0TstqbSKpmDJypYDi7T4BIq6B2qBg
-         /6E4LE5m6eKaZxio8HGW+G5F6TboCWp5YVZuR0DNB31UJmV4lpH4elgH3VtOqKHbX9
-         v6q+DlX7ma2n2aX02uYWDRiKneWTJOxlD2xEoAjY=
+        b=MjlS0CSIBt5eWuK7lIxm2m5MWUvYMk9lQsDH28wwC+CDHY5+hd0U5rz8VjV5HiMFF
+         5lWA0viWMX366kXs1w58ih0pz6x3OMDMpNjpq8Y87w8Fmx/bsMUweOhvImZsdc9rzd
+         ALYHOIQnA+RJwspaxcsB4tmdD2VGJn8ioxw6J/nk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.19 0141/1157] netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
-Date:   Mon, 15 Aug 2022 19:51:37 +0200
-Message-Id: <20220815180445.270777201@linuxfoundation.org>
+        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0820/1095] block/bio: remove duplicate append pages code
+Date:   Mon, 15 Aug 2022 20:03:39 +0200
+Message-Id: <20220815180503.212349816@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,66 +51,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Keith Busch <kbusch@kernel.org>
 
-commit 95f466d22364a33d183509629d0879885b4f547e upstream.
+[ Upstream commit c58c0074c54c2e2bb3bb0d5a4d8896bb660cc8bc ]
 
-When doing lookups for chains on the same batch by using its ID, a chain
-from a different table can be used. If a rule is added to a table but
-refers to a chain in a different table, it will be linked to the chain in
-table2, but would have expressions referring to objects in table1.
+The getting pages setup for zone append and normal IO are identical. Use
+common code for each.
 
-Then, when table1 is removed, the rule will not be removed as its linked to
-a chain in table2. When expressions in the rule are processed or removed,
-that will lead to a use-after-free.
-
-When looking for chains by ID, use the table that was used for the lookup
-by name, and only return chains belonging to that same table.
-
-Fixes: 837830a4b439 ("netfilter: nf_tables: add NFTA_RULE_CHAIN_ID attribute")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220610195830.3574005-3-kbusch@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ block/bio.c | 102 ++++++++++++++++++++++------------------------------
+ 1 file changed, 42 insertions(+), 60 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2472,6 +2472,7 @@ err:
+diff --git a/block/bio.c b/block/bio.c
+index fd73ee03d57e..6f6e6e23889c 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1129,6 +1129,37 @@ static void bio_put_pages(struct page **pages, size_t size, size_t off)
+ 		put_page(pages[i]);
  }
  
- static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
-+					       const struct nft_table *table,
- 					       const struct nlattr *nla)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -2482,6 +2483,7 @@ static struct nft_chain *nft_chain_looku
- 		struct nft_chain *chain = trans->ctx.chain;
++static int bio_iov_add_page(struct bio *bio, struct page *page,
++		unsigned int len, unsigned int offset)
++{
++	bool same_page = false;
++
++	if (!__bio_try_merge_page(bio, page, len, offset, &same_page)) {
++		if (WARN_ON_ONCE(bio_full(bio, len)))
++			return -EINVAL;
++		__bio_add_page(bio, page, len, offset);
++		return 0;
++	}
++
++	if (same_page)
++		put_page(page);
++	return 0;
++}
++
++static int bio_iov_add_zone_append_page(struct bio *bio, struct page *page,
++		unsigned int len, unsigned int offset)
++{
++	struct request_queue *q = bdev_get_queue(bio->bi_bdev);
++	bool same_page = false;
++
++	if (bio_add_hw_page(q, bio, page, len, offset,
++			queue_max_zone_append_sectors(q), &same_page) != len)
++		return -EINVAL;
++	if (same_page)
++		put_page(page);
++	return 0;
++}
++
+ #define PAGE_PTRS_PER_BVEC     (sizeof(struct bio_vec) / sizeof(struct page *))
  
- 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
-+		    chain->table == table &&
- 		    id == nft_trans_chain_id(trans))
- 			return chain;
+ /**
+@@ -1147,7 +1178,6 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	unsigned short entries_left = bio->bi_max_vecs - bio->bi_vcnt;
+ 	struct bio_vec *bv = bio->bi_io_vec + bio->bi_vcnt;
+ 	struct page **pages = (struct page **)bv;
+-	bool same_page = false;
+ 	ssize_t size, left;
+ 	unsigned len, i;
+ 	size_t offset;
+@@ -1156,7 +1186,7 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	 * Move page array up in the allocated memory for the bio vecs as far as
+ 	 * possible so that we can start filling biovecs from the beginning
+ 	 * without overwriting the temporary page array.
+-	*/
++	 */
+ 	BUILD_BUG_ON(PAGE_PTRS_PER_BVEC < 2);
+ 	pages += entries_left * (PAGE_PTRS_PER_BVEC - 1);
+ 
+@@ -1166,18 +1196,18 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 
+ 	for (left = size, i = 0; left > 0; left -= len, i++) {
+ 		struct page *page = pages[i];
++		int ret;
+ 
+ 		len = min_t(size_t, PAGE_SIZE - offset, left);
++		if (bio_op(bio) == REQ_OP_ZONE_APPEND)
++			ret = bio_iov_add_zone_append_page(bio, page, len,
++					offset);
++		else
++			ret = bio_iov_add_page(bio, page, len, offset);
+ 
+-		if (__bio_try_merge_page(bio, page, len, offset, &same_page)) {
+-			if (same_page)
+-				put_page(page);
+-		} else {
+-			if (WARN_ON_ONCE(bio_full(bio, len))) {
+-				bio_put_pages(pages + i, left, offset);
+-				return -EINVAL;
+-			}
+-			__bio_add_page(bio, page, len, offset);
++		if (ret) {
++			bio_put_pages(pages + i, left, offset);
++			return ret;
+ 		}
+ 		offset = 0;
  	}
-@@ -3417,7 +3419,7 @@ static int nf_tables_newrule(struct sk_b
- 			return -EOPNOTSUPP;
+@@ -1186,51 +1216,6 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	return 0;
+ }
  
- 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
--		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
-+		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
- 		if (IS_ERR(chain)) {
- 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
- 			return PTR_ERR(chain);
-@@ -9607,7 +9609,7 @@ static int nft_verdict_init(const struct
- 						 tb[NFTA_VERDICT_CHAIN],
- 						 genmask);
- 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
--			chain = nft_chain_lookup_byid(ctx->net,
-+			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
- 						      tb[NFTA_VERDICT_CHAIN_ID]);
- 			if (IS_ERR(chain))
- 				return PTR_ERR(chain);
+-static int __bio_iov_append_get_pages(struct bio *bio, struct iov_iter *iter)
+-{
+-	unsigned short nr_pages = bio->bi_max_vecs - bio->bi_vcnt;
+-	unsigned short entries_left = bio->bi_max_vecs - bio->bi_vcnt;
+-	struct request_queue *q = bdev_get_queue(bio->bi_bdev);
+-	unsigned int max_append_sectors = queue_max_zone_append_sectors(q);
+-	struct bio_vec *bv = bio->bi_io_vec + bio->bi_vcnt;
+-	struct page **pages = (struct page **)bv;
+-	ssize_t size, left;
+-	unsigned len, i;
+-	size_t offset;
+-	int ret = 0;
+-
+-	/*
+-	 * Move page array up in the allocated memory for the bio vecs as far as
+-	 * possible so that we can start filling biovecs from the beginning
+-	 * without overwriting the temporary page array.
+-	 */
+-	BUILD_BUG_ON(PAGE_PTRS_PER_BVEC < 2);
+-	pages += entries_left * (PAGE_PTRS_PER_BVEC - 1);
+-
+-	size = iov_iter_get_pages(iter, pages, LONG_MAX, nr_pages, &offset);
+-	if (unlikely(size <= 0))
+-		return size ? size : -EFAULT;
+-
+-	for (left = size, i = 0; left > 0; left -= len, i++) {
+-		struct page *page = pages[i];
+-		bool same_page = false;
+-
+-		len = min_t(size_t, PAGE_SIZE - offset, left);
+-		if (bio_add_hw_page(q, bio, page, len, offset,
+-				max_append_sectors, &same_page) != len) {
+-			bio_put_pages(pages + i, left, offset);
+-			ret = -EINVAL;
+-			break;
+-		}
+-		if (same_page)
+-			put_page(page);
+-		offset = 0;
+-	}
+-
+-	iov_iter_advance(iter, size - left);
+-	return ret;
+-}
+-
+ /**
+  * bio_iov_iter_get_pages - add user or kernel pages to a bio
+  * @bio: bio to add pages to
+@@ -1265,10 +1250,7 @@ int bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	}
+ 
+ 	do {
+-		if (bio_op(bio) == REQ_OP_ZONE_APPEND)
+-			ret = __bio_iov_append_get_pages(bio, iter);
+-		else
+-			ret = __bio_iov_iter_get_pages(bio, iter);
++		ret = __bio_iov_iter_get_pages(bio, iter);
+ 	} while (!ret && iov_iter_count(iter) && !bio_full(bio, 0));
+ 
+ 	/* don't account direct I/O as memory stall */
+-- 
+2.35.1
+
 
 
