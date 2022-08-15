@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7CDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A18FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242070AbiHOS2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54582 "EHLO
+        id S242110AbiHOS2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242797AbiHOS02 (ORCPT
+        with ESMTP id S243063AbiHOS0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:26:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC00B30F57;
-        Mon, 15 Aug 2022 11:19:28 -0700 (PDT)
+        Mon, 15 Aug 2022 14:26:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121433122A;
+        Mon, 15 Aug 2022 11:19:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8FA360EF7;
-        Mon, 15 Aug 2022 18:19:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0082C433C1;
-        Mon, 15 Aug 2022 18:19:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D76CCB81071;
+        Mon, 15 Aug 2022 18:19:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A2CAC433C1;
+        Mon, 15 Aug 2022 18:19:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587566;
-        bh=kydCZxS2HyPc3cC1Mr1++qUBFTk6gJM/dRcmOx+uCNg=;
+        s=korg; t=1660587576;
+        bh=D8GDK5X2petZO9FBuzzcie9LQ7EsKqqF49b3DRKH8HM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQCsCTjdeo6ItrHUTme42awnbkLjXSlrPQsDwx+Q1WqG+catzsOkKw7fc38RB362a
-         +siTZ19mUgkxOI0CGdDgyfLT0Lwih242GlI7XMqzLY0X/4YHSWZOov7xqLgvMkpXYT
-         NeNU5q5LxmMfIl4kvzXr2lgcW0Dkb5DZNBc9SlRM=
+        b=TJeWaYLAIAQ6SX5SgUbbZ7/HSTsPiYPziY/vXr9/oWOIzkC4whnRj2zlK48od8GRd
+         vIaIVwIS21CboXMXcQntRyQNJubLKLyr3ajQ0XJdOLcJut0CwHelmBYrLTZdM6BNtn
+         KxlyK/03A61pOtHceaZrFIJO0a8lpFO7j9hv5wcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 094/779] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
-Date:   Mon, 15 Aug 2022 19:55:38 +0200
-Message-Id: <20220815180341.312144139@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 120/779] genirq: GENERIC_IRQ_IPI depends on SMP
+Date:   Mon, 15 Aug 2022 19:56:04 +0200
+Message-Id: <20220815180342.442547927@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,83 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 0c551abfa004ce154d487d91777bf221c808a64f upstream.
+[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
 
-By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
-Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
-board which has this pre-3.0 controller:
+The generic IPI code depends on the IRQ affinity mask being allocated
+and initialized. This will not be the case if SMP is disabled. Fix up
+the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
 
-  $ lspci -bvnn
-  00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
-          !!! Invalid class 0b20 for header type 01
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
-
-Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
-Port to the Freescale specific PCIe register 0x474.
-
-With this change lspci -b output is:
-
-  $ lspci -bvnn
-  00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
-          Capabilities: [4c] Express Root Port (Slot-), MSI 00
-
-Without any "Invalid class" error. So class code was properly reflected
-into standard (read-only) PCI register 0x08.
-
-Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
-http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
-
-Fix activated by U-Boot stay active also after booting Linux kernel.
-But boards which use older U-Boot version without that fix are affected and
-still require this fix.
-
-So implement this class code fix also in kernel fsl_pci.c driver.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220706101043.4867-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/fsl_pci.c |    8 ++++++++
- arch/powerpc/sysdev/fsl_pci.h |    1 +
- 2 files changed, 9 insertions(+)
+ drivers/irqchip/Kconfig | 2 +-
+ kernel/irq/Kconfig      | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/sysdev/fsl_pci.c
-+++ b/arch/powerpc/sysdev/fsl_pci.c
-@@ -520,6 +520,7 @@ int fsl_add_bridge(struct platform_devic
- 	struct resource rsrc;
- 	const int *bus_range;
- 	u8 hdr_type, progif;
-+	u32 class_code;
- 	struct device_node *dev;
- 	struct ccsr_pci __iomem *pci;
- 	u16 temp;
-@@ -593,6 +594,13 @@ int fsl_add_bridge(struct platform_devic
- 			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
- 		if (fsl_pcie_check_link(hose))
- 			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
-+		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
-+		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
-+			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
-+			class_code &= 0xff;
-+			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
-+			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
-+		}
- 	} else {
- 		/*
- 		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
---- a/arch/powerpc/sysdev/fsl_pci.h
-+++ b/arch/powerpc/sysdev/fsl_pci.h
-@@ -18,6 +18,7 @@ struct platform_device;
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 8f9c52873338..ae1b9f59abc5 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -171,7 +171,7 @@ config MADERA_IRQ
+ config IRQ_MIPS_CPU
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+-	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
++	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
+ 	select IRQ_DOMAIN
+ 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
  
- #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
- #define PCIE_LTSSM_L0	0x16		/* L0 state */
-+#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
- #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
- #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
- #define PIWAR_EN		0x80000000	/* Enable */
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index fbc54c2a7f23..00d58588ea95 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -82,6 +82,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
+ # Generic IRQ IPI support
+ config GENERIC_IRQ_IPI
+ 	bool
++	depends on SMP
+ 	select IRQ_DOMAIN_HIERARCHY
+ 
+ # Generic MSI interrupt support
+-- 
+2.35.1
+
 
 
