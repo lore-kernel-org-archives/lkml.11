@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC3DC25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0ACC3276E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346282AbiHPAIV (ORCPT
+        id S1351123AbiHPAIQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
+        Mon, 15 Aug 2022 20:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351272AbiHPAAV (ORCPT
+        with ESMTP id S1352446AbiHPAAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:00:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358E515DFB6;
-        Mon, 15 Aug 2022 13:21:20 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79BBC7433;
+        Mon, 15 Aug 2022 13:20:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCE58B80EB1;
-        Mon, 15 Aug 2022 20:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FFBC433C1;
-        Mon, 15 Aug 2022 20:21:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 752BE6104A;
+        Mon, 15 Aug 2022 20:20:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDF7C433D7;
+        Mon, 15 Aug 2022 20:20:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594877;
-        bh=w9DKv41Q3nZHDkkXaYYUdVGq5szEXNwsqk7DaJ1L83s=;
+        s=korg; t=1660594833;
+        bh=u0HsNN8rMYruFAvZHEvP0r2fe53rUhzO3lCv1NuR+A8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FEhfs3tdz6wdMh5x4qYYzG0U9zGpOr1jDbotdAhIw7rJfYPUbdOScGGP/Iws/+iVL
-         dlUuzuyuMUsu6MZl70/eA+DFMj/rGdNaOnDc1C4zns4fItBkuz4k1uqCVXnO9t0Ig2
-         v4c72GwKeYtfh8rJ6yTS+mINCBi6ekQscTzAx+k0=
+        b=CbhYs7zQwps/77L4XPLC+E30k1lm6iwGSP4U7qVBgd5JQLQCnTvapm980Sz1KYmiE
+         m72geeB1v3G9qgx9STls//aD+lv9xqLDSlebHL1lhcvnRjycBNtqr8ykaufC7ADJZ1
+         jd7Mv99YBe12XG6Ay0dQOpp5ymuEG6rz/Kk/TtFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Muhammad Sammar <muhammads@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0554/1157] net/mlx5: DR, Fix SMFS steering info dump format
-Date:   Mon, 15 Aug 2022 19:58:30 +0200
-Message-Id: <20220815180501.790573837@linuxfoundation.org>
+Subject: [PATCH 5.19 0573/1157] wireguard: allowedips: dont corrupt stack when detecting overflow
+Date:   Mon, 15 Aug 2022 19:58:49 +0200
+Message-Id: <20220815180502.556642003@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,67 +52,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 62d2664351ef37da34f6f3a3fd8ab34257d6fe30 ]
+[ Upstream commit c31b14d86dfe7174361e8c6e5df6c2c3a4d5918c ]
 
-Fix several issues in SMFS steering info dump:
- - Fix outdated macro value for matcher mask in the SMFS debug dump format.
-   The existing value denotes the old format of the matcher mask, as it was
-   used during the early stages of development, and it results in wrong
-   parsing by the steering dump parser - wrong fields are shown in the
-   parsed output.
- - Add the missing destination table to the dumped action.
-   The missing dest table handle breaks the ability to associate between
-   the "go to table" action and the actual table in the steering info.
+In case push_rcu() and related functions are buggy, there's a
+WARN_ON(len >= 128), which the selftest tries to hit by being tricky. In
+case it is hit, we shouldn't corrupt the kernel's stack, though;
+otherwise it may be hard to even receive the report that it's buggy. So
+conditionalize the stack write based on that WARN_ON()'s return value.
 
-Fixes: 9222f0b27da2 ("net/mlx5: DR, Add support for dumping steering info")
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Muhammad Sammar <muhammads@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Note that this never *actually* happens anyway. The WARN_ON() in the
+first place is bounded by IS_ENABLED(DEBUG), and isn't expected to ever
+actually hit. This is just a debugging sanity check.
+
+Additionally, hoist the constant 128 into a named enum,
+MAX_ALLOWEDIPS_BITS, so that it's clear why this value is chosen.
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/all/CAHk-=wjJZGA6w_DxA+k7Ejbqsq+uGK==koPai3sqdsfJqemvag@mail.gmail.com/
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c   | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/net/wireguard/allowedips.c          | 9 ++++++---
+ drivers/net/wireguard/selftest/allowedips.c | 6 +++---
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
-index d5998ef59be4..7adcf0eec13b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
-@@ -21,10 +21,11 @@ enum dr_dump_rec_type {
- 	DR_DUMP_REC_TYPE_TABLE_TX = 3102,
+diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
+index 9a4c8ff32d9d..5bf7822c53f1 100644
+--- a/drivers/net/wireguard/allowedips.c
++++ b/drivers/net/wireguard/allowedips.c
+@@ -6,6 +6,8 @@
+ #include "allowedips.h"
+ #include "peer.h"
  
- 	DR_DUMP_REC_TYPE_MATCHER = 3200,
--	DR_DUMP_REC_TYPE_MATCHER_MASK = 3201,
-+	DR_DUMP_REC_TYPE_MATCHER_MASK_DEPRECATED = 3201,
- 	DR_DUMP_REC_TYPE_MATCHER_RX = 3202,
- 	DR_DUMP_REC_TYPE_MATCHER_TX = 3203,
- 	DR_DUMP_REC_TYPE_MATCHER_BUILDER = 3204,
-+	DR_DUMP_REC_TYPE_MATCHER_MASK = 3205,
++enum { MAX_ALLOWEDIPS_BITS = 128 };
++
+ static struct kmem_cache *node_cache;
  
- 	DR_DUMP_REC_TYPE_RULE = 3300,
- 	DR_DUMP_REC_TYPE_RULE_RX_ENTRY_V0 = 3301,
-@@ -114,13 +115,15 @@ dr_dump_rule_action_mem(struct seq_file *file, const u64 rule_id,
- 		break;
- 	case DR_ACTION_TYP_FT:
- 		if (action->dest_tbl->is_fw_tbl)
--			seq_printf(file, "%d,0x%llx,0x%llx,0x%x\n",
-+			seq_printf(file, "%d,0x%llx,0x%llx,0x%x,0x%x\n",
- 				   DR_DUMP_REC_TYPE_ACTION_FT, action_id,
--				   rule_id, action->dest_tbl->fw_tbl.id);
-+				   rule_id, action->dest_tbl->fw_tbl.id,
-+				   -1);
- 		else
--			seq_printf(file, "%d,0x%llx,0x%llx,0x%x\n",
-+			seq_printf(file, "%d,0x%llx,0x%llx,0x%x,0x%llx\n",
- 				   DR_DUMP_REC_TYPE_ACTION_FT, action_id,
--				   rule_id, action->dest_tbl->tbl->table_id);
-+				   rule_id, action->dest_tbl->tbl->table_id,
-+				   DR_DBG_PTR_TO_ID(action->dest_tbl->tbl));
+ static void swap_endian(u8 *dst, const u8 *src, u8 bits)
+@@ -40,7 +42,8 @@ static void push_rcu(struct allowedips_node **stack,
+ 		     struct allowedips_node __rcu *p, unsigned int *len)
+ {
+ 	if (rcu_access_pointer(p)) {
+-		WARN_ON(IS_ENABLED(DEBUG) && *len >= 128);
++		if (WARN_ON(IS_ENABLED(DEBUG) && *len >= MAX_ALLOWEDIPS_BITS))
++			return;
+ 		stack[(*len)++] = rcu_dereference_raw(p);
+ 	}
+ }
+@@ -52,7 +55,7 @@ static void node_free_rcu(struct rcu_head *rcu)
  
- 		break;
- 	case DR_ACTION_TYP_CTR:
+ static void root_free_rcu(struct rcu_head *rcu)
+ {
+-	struct allowedips_node *node, *stack[128] = {
++	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = {
+ 		container_of(rcu, struct allowedips_node, rcu) };
+ 	unsigned int len = 1;
+ 
+@@ -65,7 +68,7 @@ static void root_free_rcu(struct rcu_head *rcu)
+ 
+ static void root_remove_peer_lists(struct allowedips_node *root)
+ {
+-	struct allowedips_node *node, *stack[128] = { root };
++	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = { root };
+ 	unsigned int len = 1;
+ 
+ 	while (len > 0 && (node = stack[--len])) {
+diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
+index e173204ae7d7..41db10f9be49 100644
+--- a/drivers/net/wireguard/selftest/allowedips.c
++++ b/drivers/net/wireguard/selftest/allowedips.c
+@@ -593,10 +593,10 @@ bool __init wg_allowedips_selftest(void)
+ 	wg_allowedips_remove_by_peer(&t, a, &mutex);
+ 	test_negative(4, a, 192, 168, 0, 1);
+ 
+-	/* These will hit the WARN_ON(len >= 128) in free_node if something
+-	 * goes wrong.
++	/* These will hit the WARN_ON(len >= MAX_ALLOWEDIPS_BITS) in free_node
++	 * if something goes wrong.
+ 	 */
+-	for (i = 0; i < 128; ++i) {
++	for (i = 0; i < MAX_ALLOWEDIPS_BITS; ++i) {
+ 		part = cpu_to_be64(~(1LLU << (i % 64)));
+ 		memset(&ip, 0xff, 16);
+ 		memcpy((u8 *)&ip + (i < 64) * 8, &part, 8);
 -- 
 2.35.1
 
