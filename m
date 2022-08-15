@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BAE0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24395C2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244678AbiHOVQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
+        id S245206AbiHOVQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348042AbiHOVIA (ORCPT
+        with ESMTP id S1348044AbiHOVIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:08:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165D43C8D8;
-        Mon, 15 Aug 2022 12:18:03 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C403C8DA;
+        Mon, 15 Aug 2022 12:18:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD9A9B810C6;
-        Mon, 15 Aug 2022 19:18:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D4FC433C1;
-        Mon, 15 Aug 2022 19:17:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5860E60EF0;
+        Mon, 15 Aug 2022 19:18:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4500EC433D6;
+        Mon, 15 Aug 2022 19:18:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591080;
-        bh=mhEgBORyV3PVFKJt5jhDc4jGPUxc6GqM6YMT/Qmh7G4=;
+        s=korg; t=1660591086;
+        bh=++0gQvoVEsES9czLKXdr0jf/8o4LNf21BoHpAo3XYVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cwr1SnVsUckarkzKQAFCfHNbSMDzqrnyN34f9Y4MUpFv6JUcGxGY3ubG//gjpwgZ1
-         SFwqx/8gokSjXHatTaFuBSuyvMkXgWhxdVeW9MnIIfkHRKwuyUkacbwbMvnjskHOCT
-         T8yfa4DrV2KOiDwaAsiZuwBQDXhK5VT6oOey9YAY=
+        b=kwhRjt9OFz/VE8wTuDz6w2tSUcwZIUkRSZ4midVI2BFIgs1BwyrG2TJpYT/q67aj7
+         nSMc/SNL6ZjSbmY6Ns9qIEroFf9eIHJD6zlaCbBjnxNtVuOfe65TAVj/DW4/NQGgvC
+         XQH7aJQ+1pPU++Ex6l7TJfTUe5+WQthJOxKwola8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
         Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0435/1095] media: hantro: HEVC: Fix reference frames management
-Date:   Mon, 15 Aug 2022 19:57:14 +0200
-Message-Id: <20220815180447.674145076@linuxfoundation.org>
+Subject: [PATCH 5.18 0437/1095] media: hantro: Fix RK3399 H.264 format advertising
+Date:   Mon, 15 Aug 2022 19:57:16 +0200
+Message-Id: <20220815180447.734658112@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,125 +52,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 
-[ Upstream commit 387d1176956883635c63a7d1c91b1f45e19c1777 ]
+[ Upstream commit 177d841fa19542eb35aa5ec9579c4abb989c9255 ]
 
-PoC shall be int the range of -2^31 to 2^31 -1
-(HEVC spec section 8.3.1 Decoding process for picture order count).
-The current way to know if an entry in reference picture array is free
-is to test if PoC = UNUSED_REF. Since UNUSED_REF is defined as '-1' that
-could lead to decode issue if one PoC also equal '-1'.
-PoC with value = '-1' exists in conformance test SLIST_B_Sony_9.
+Commit 1f82f2df523cb ("media: hantro: Enable H.264 on Rockchip VDPU2")
+enabled H.264 on some SoCs with VDPU2 cores. This had the side-effect
+of exposing H.264 coded format as supported on RK3399.
 
-Change the way unused entries are managed in reference pictures array to
-avoid using PoC to detect then.
+Fix this and clarify how the codec is explicitly disabled on RK3399 on
+this driver.
 
-This patch doesn't change fluster HEVC score.
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Fixes: 1f82f2df523cb ("media: hantro: Enable H.264 on Rockchip VDPU2")
+Signed-off-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Tested-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/hantro/hantro_g2_hevc_dec.c |  4 +--
- drivers/staging/media/hantro/hantro_hevc.c    | 27 +++----------------
- drivers/staging/media/hantro/hantro_hw.h      |  2 +-
- 3 files changed, 5 insertions(+), 28 deletions(-)
+ .../staging/media/hantro/rockchip_vpu_hw.c    | 60 ++++++++++++++++---
+ 1 file changed, 53 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index 7c046d456038..5df6f08e26f5 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -415,7 +415,7 @@ static int set_ref(struct hantro_ctx *ctx)
- 	set_ref_pic_list(ctx);
+diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+index 098486b9ec27..26e16b5a6a70 100644
+--- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
++++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+@@ -182,7 +182,7 @@ static const struct hantro_fmt rk3288_vpu_dec_fmts[] = {
+ 	},
+ };
  
- 	/* We will only keep the reference pictures that are still used */
--	ctx->hevc_dec.ref_bufs_used = 0;
-+	hantro_hevc_ref_init(ctx);
+-static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
++static const struct hantro_fmt rockchip_vdpu2_dec_fmts[] = {
+ 	{
+ 		.fourcc = V4L2_PIX_FMT_NV12,
+ 		.codec_mode = HANTRO_MODE_NONE,
+@@ -236,6 +236,47 @@ static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
+ 	},
+ };
  
- 	/* Set up addresses of DPB buffers */
- 	dpb_longterm_e = 0;
-@@ -456,8 +456,6 @@ static int set_ref(struct hantro_ctx *ctx)
- 	hantro_write_addr(vpu, G2_OUT_CHROMA_ADDR, chroma_addr);
- 	hantro_write_addr(vpu, G2_OUT_MV_ADDR, mv_addr);
- 
--	hantro_hevc_ref_remove_unused(ctx);
--
- 	for (; i < V4L2_HEVC_DPB_ENTRIES_NUM_MAX; i++) {
- 		hantro_write_addr(vpu, G2_REF_LUMA_ADDR(i), 0);
- 		hantro_write_addr(vpu, G2_REF_CHROMA_ADDR(i), 0);
-diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
-index b3a057beaf19..f86c98e19177 100644
---- a/drivers/staging/media/hantro/hantro_hevc.c
-+++ b/drivers/staging/media/hantro/hantro_hevc.c
-@@ -25,15 +25,11 @@
- #define MAX_TILE_COLS 20
- #define MAX_TILE_ROWS 22
- 
--#define UNUSED_REF	-1
--
--static void hantro_hevc_ref_init(struct hantro_ctx *ctx)
-+void hantro_hevc_ref_init(struct hantro_ctx *ctx)
++static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
++	{
++		.fourcc = V4L2_PIX_FMT_NV12,
++		.codec_mode = HANTRO_MODE_NONE,
++		.frmsize = {
++			.min_width = FMT_MIN_WIDTH,
++			.max_width = FMT_FHD_WIDTH,
++			.step_width = MB_DIM,
++			.min_height = FMT_MIN_HEIGHT,
++			.max_height = FMT_FHD_HEIGHT,
++			.step_height = MB_DIM,
++		},
++	},
++	{
++		.fourcc = V4L2_PIX_FMT_MPEG2_SLICE,
++		.codec_mode = HANTRO_MODE_MPEG2_DEC,
++		.max_depth = 2,
++		.frmsize = {
++			.min_width = FMT_MIN_WIDTH,
++			.max_width = FMT_FHD_WIDTH,
++			.step_width = MB_DIM,
++			.min_height = FMT_MIN_HEIGHT,
++			.max_height = FMT_FHD_HEIGHT,
++			.step_height = MB_DIM,
++		},
++	},
++	{
++		.fourcc = V4L2_PIX_FMT_VP8_FRAME,
++		.codec_mode = HANTRO_MODE_VP8_DEC,
++		.max_depth = 2,
++		.frmsize = {
++			.min_width = FMT_MIN_WIDTH,
++			.max_width = FMT_UHD_WIDTH,
++			.step_width = MB_DIM,
++			.min_height = FMT_MIN_HEIGHT,
++			.max_height = FMT_UHD_HEIGHT,
++			.step_height = MB_DIM,
++		},
++	},
++};
++
+ static irqreturn_t rockchip_vpu1_vepu_irq(int irq, void *dev_id)
  {
- 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
--	int i;
+ 	struct hantro_dev *vpu = dev_id;
+@@ -548,8 +589,8 @@ const struct hantro_variant rk3288_vpu_variant = {
  
--	for (i = 0;  i < NUM_REF_PICTURES; i++)
--		hevc_dec->ref_bufs_poc[i] = UNUSED_REF;
-+	hevc_dec->ref_bufs_used = 0;
- }
+ const struct hantro_variant rk3328_vpu_variant = {
+ 	.dec_offset = 0x400,
+-	.dec_fmts = rk3399_vpu_dec_fmts,
+-	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
++	.dec_fmts = rockchip_vdpu2_dec_fmts,
++	.num_dec_fmts = ARRAY_SIZE(rockchip_vdpu2_dec_fmts),
+ 	.codec = HANTRO_MPEG2_DECODER | HANTRO_VP8_DECODER |
+ 		 HANTRO_H264_DECODER,
+ 	.codec_ops = rk3399_vpu_codec_ops,
+@@ -560,6 +601,11 @@ const struct hantro_variant rk3328_vpu_variant = {
+ 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names),
+ };
  
- dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
-@@ -60,7 +56,7 @@ int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr)
++/*
++ * H.264 decoding explicitly disabled in RK3399.
++ * This ensures userspace applications use the Rockchip VDEC core,
++ * which has better performance.
++ */
+ const struct hantro_variant rk3399_vpu_variant = {
+ 	.enc_offset = 0x0,
+ 	.enc_fmts = rockchip_vpu_enc_fmts,
+@@ -579,8 +625,8 @@ const struct hantro_variant rk3399_vpu_variant = {
  
- 	/* Add a new reference buffer */
- 	for (i = 0; i < NUM_REF_PICTURES; i++) {
--		if (hevc_dec->ref_bufs_poc[i] == UNUSED_REF) {
-+		if (!(hevc_dec->ref_bufs_used & 1 << i)) {
- 			hevc_dec->ref_bufs_used |= 1 << i;
- 			hevc_dec->ref_bufs_poc[i] = poc;
- 			hevc_dec->ref_bufs[i].dma = addr;
-@@ -71,23 +67,6 @@ int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr)
- 	return -EINVAL;
- }
- 
--void hantro_hevc_ref_remove_unused(struct hantro_ctx *ctx)
--{
--	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
--	int i;
--
--	/* Just tag buffer as unused, do not free them */
--	for (i = 0;  i < NUM_REF_PICTURES; i++) {
--		if (hevc_dec->ref_bufs_poc[i] == UNUSED_REF)
--			continue;
--
--		if (hevc_dec->ref_bufs_used & (1 << i))
--			continue;
--
--		hevc_dec->ref_bufs_poc[i] = UNUSED_REF;
--	}
--}
--
- static int tile_buffer_reallocate(struct hantro_ctx *ctx)
- {
- 	struct hantro_dev *vpu = ctx->dev;
-diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
-index df142f31e31b..699c1efc0215 100644
---- a/drivers/staging/media/hantro/hantro_hw.h
-+++ b/drivers/staging/media/hantro/hantro_hw.h
-@@ -338,9 +338,9 @@ int hantro_hevc_dec_init(struct hantro_ctx *ctx);
- void hantro_hevc_dec_exit(struct hantro_ctx *ctx);
- int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx);
- int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
-+void hantro_hevc_ref_init(struct hantro_ctx *ctx);
- dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, int poc);
- int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr);
--void hantro_hevc_ref_remove_unused(struct hantro_ctx *ctx);
- 
- static inline unsigned short hantro_vp9_num_sbs(unsigned short dimension)
- {
+ const struct hantro_variant rk3568_vpu_variant = {
+ 	.dec_offset = 0x400,
+-	.dec_fmts = rk3399_vpu_dec_fmts,
+-	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
++	.dec_fmts = rockchip_vdpu2_dec_fmts,
++	.num_dec_fmts = ARRAY_SIZE(rockchip_vdpu2_dec_fmts),
+ 	.codec = HANTRO_MPEG2_DECODER |
+ 		 HANTRO_VP8_DECODER | HANTRO_H264_DECODER,
+ 	.codec_ops = rk3399_vpu_codec_ops,
+@@ -596,8 +642,8 @@ const struct hantro_variant px30_vpu_variant = {
+ 	.enc_fmts = rockchip_vpu_enc_fmts,
+ 	.num_enc_fmts = ARRAY_SIZE(rockchip_vpu_enc_fmts),
+ 	.dec_offset = 0x400,
+-	.dec_fmts = rk3399_vpu_dec_fmts,
+-	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
++	.dec_fmts = rockchip_vdpu2_dec_fmts,
++	.num_dec_fmts = ARRAY_SIZE(rockchip_vdpu2_dec_fmts),
+ 	.codec = HANTRO_JPEG_ENCODER | HANTRO_MPEG2_DECODER |
+ 		 HANTRO_VP8_DECODER | HANTRO_H264_DECODER,
+ 	.codec_ops = rk3399_vpu_codec_ops,
 -- 
 2.35.1
 
