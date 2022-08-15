@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 354ACC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDAEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239052AbiHOSS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
+        id S239969AbiHOSSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233440AbiHOSRz (ORCPT
+        with ESMTP id S233476AbiHOSR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:17:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA8963D2;
-        Mon, 15 Aug 2022 11:15:22 -0700 (PDT)
+        Mon, 15 Aug 2022 14:17:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B3612767;
+        Mon, 15 Aug 2022 11:15:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A45B36126D;
-        Mon, 15 Aug 2022 18:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC0BCC43470;
-        Mon, 15 Aug 2022 18:15:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8424C61272;
+        Mon, 15 Aug 2022 18:15:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B7EDC433C1;
+        Mon, 15 Aug 2022 18:15:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587321;
-        bh=C79IPGE5RKdYaI2Cy2l1oWgppbgDJepX/3dxzUK2F18=;
+        s=korg; t=1660587323;
+        bh=buQXgdihAZQFIjgmqnCjRRerLiW5pM93FNA+Se/f4xY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duwiUXdg8yhSgHjWfaE4eX+hyvR9saVBbin0G+J0ghvdA81upKRDlWguS43wwvGwC
-         XvFCkpzs9tPIeymwAdWnOtiR0GMo9SkoriCkwL8+YUQdDgHPpde/3CiAqggMd7nOdU
-         qwfpy9WwRpe+5ozrCbzYtE7YW2I0QE/E56TE5Fr8=
+        b=MeI8fg0HLGNxtHGPrcXZMqYGFglAodFxT000QbAVDWBBE+FR/GpNHh73oiYY2fGSA
+         SAAMUGeq4J/U55aOVTBlnbdZ+EXcorfas7eTzWQ/UAo3TaLBrKbvejNzsVYAxeIW1o
+         rNCAoIVrHVlHWNfWO1B+uDbgLn7P1/ldTVtIR91k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lei Wang <lei4.wang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 020/779] KVM: nVMX: Snapshot pre-VM-Enter BNDCFGS for !nested_run_pending case
-Date:   Mon, 15 Aug 2022 19:54:24 +0200
-Message-Id: <20220815180338.063381104@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 047/779] crypto: ccp - Use kzalloc for sev ioctl interfaces to prevent kernel memory leak
+Date:   Mon, 15 Aug 2022 19:54:51 +0200
+Message-Id: <20220815180339.263122505@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,53 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: John Allen <john.allen@amd.com>
 
-commit fa578398a0ba2c079fa1170da21fa5baae0cedb2 upstream.
+commit 13dc15a3f5fd7f884e4bfa8c011a0ae868df12ae upstream.
 
-If a nested run isn't pending, snapshot vmcs01.GUEST_BNDCFGS irrespective
-of whether or not VM_ENTRY_LOAD_BNDCFGS is set in vmcs12.  When restoring
-nested state, e.g. after migration, without a nested run pending,
-prepare_vmcs02() will propagate nested.vmcs01_guest_bndcfgs to vmcs02,
-i.e. will load garbage/zeros into vmcs02.GUEST_BNDCFGS.
+For some sev ioctl interfaces, input may be passed that is less than or
+equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data that PSP
+firmware returns. In this case, kmalloc will allocate memory that is the
+size of the input rather than the size of the data. Since PSP firmware
+doesn't fully overwrite the buffer, the sev ioctl interfaces with the
+issue may return uninitialized slab memory.
 
-If userspace restores nested state before MSRs, then loading garbage is a
-non-issue as loading BNDCFGS will also update vmcs02.  But if usersepace
-restores MSRs first, then KVM is responsible for propagating L2's value,
-which is actually thrown into vmcs01, into vmcs02.
+Currently, all of the ioctl interfaces in the ccp driver are safe, but
+to prevent future problems, change all ioctl interfaces that allocate
+memory with kmalloc to use kzalloc and memset the data buffer to zero
+in sev_ioctl_do_platform_status.
 
-Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
-is all kinds of bizarre and ideally would not be supported.  Sadly, some
-VMMs do exactly that and rely on KVM to make things work.
-
-Note, there's still a lurking SMM bug, as propagating vmcs01.GUEST_BNDFGS
-to vmcs02 across RSM may corrupt L2's BNDCFGS.  But KVM's entire VMX+SMM
-emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
-"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
-
-Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
-Fixes: 62cf9bd8118c ("KVM: nVMX: Fix emulation of VM_ENTRY_LOAD_BNDCFGS")
+Fixes: 38103671aad3 ("crypto: ccp: Use the stack and common buffer for status commands")
+Fixes: e799035609e15 ("crypto: ccp: Implement SEV_PEK_CSR ioctl command")
+Fixes: 76a2b524a4b1d ("crypto: ccp: Implement SEV_PDH_CERT_EXPORT ioctl command")
+Fixes: d6112ea0cb344 ("crypto: ccp - introduce SEV_GET_ID2 command")
 Cc: stable@vger.kernel.org
-Cc: Lei Wang <lei4.wang@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220614215831.3762138-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: Andy Nguyen <theflow@google.com>
+Suggested-by: David Rientjes <rientjes@google.com>
+Suggested-by: Peter Gonda <pgonda@google.com>
+Signed-off-by: John Allen <john.allen@amd.com>
+Reviewed-by: Peter Gonda <pgonda@google.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/crypto/ccp/sev-dev.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3367,7 +3367,8 @@ enum nvmx_vmentry_status nested_vmx_ente
- 	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
- 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
- 	if (kvm_mpx_supported() &&
--		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
-+	    (!vmx->nested.nested_run_pending ||
-+	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS)))
- 		vmx->nested.vmcs01_guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -388,6 +388,8 @@ static int sev_ioctl_do_platform_status(
+ 	struct sev_user_data_status data;
+ 	int ret;
  
- 	/*
++	memset(&data, 0, sizeof(data));
++
+ 	ret = __sev_do_cmd_locked(SEV_CMD_PLATFORM_STATUS, &data, &argp->error);
+ 	if (ret)
+ 		return ret;
+@@ -441,7 +443,7 @@ static int sev_ioctl_do_pek_csr(struct s
+ 	if (input.length > SEV_FW_BLOB_MAX_SIZE)
+ 		return -EFAULT;
+ 
+-	blob = kmalloc(input.length, GFP_KERNEL);
++	blob = kzalloc(input.length, GFP_KERNEL);
+ 	if (!blob)
+ 		return -ENOMEM;
+ 
+@@ -665,7 +667,7 @@ static int sev_ioctl_do_get_id2(struct s
+ 	input_address = (void __user *)input.address;
+ 
+ 	if (input.address && input.length) {
+-		id_blob = kmalloc(input.length, GFP_KERNEL);
++		id_blob = kzalloc(input.length, GFP_KERNEL);
+ 		if (!id_blob)
+ 			return -ENOMEM;
+ 
+@@ -784,14 +786,14 @@ static int sev_ioctl_do_pdh_export(struc
+ 	if (input.cert_chain_len > SEV_FW_BLOB_MAX_SIZE)
+ 		return -EFAULT;
+ 
+-	pdh_blob = kmalloc(input.pdh_cert_len, GFP_KERNEL);
++	pdh_blob = kzalloc(input.pdh_cert_len, GFP_KERNEL);
+ 	if (!pdh_blob)
+ 		return -ENOMEM;
+ 
+ 	data.pdh_cert_address = __psp_pa(pdh_blob);
+ 	data.pdh_cert_len = input.pdh_cert_len;
+ 
+-	cert_blob = kmalloc(input.cert_chain_len, GFP_KERNEL);
++	cert_blob = kzalloc(input.cert_chain_len, GFP_KERNEL);
+ 	if (!cert_blob) {
+ 		ret = -ENOMEM;
+ 		goto e_free_pdh;
 
 
