@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA1BC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C71C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233152AbiHPExX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
+        id S233191AbiHPEx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232947AbiHPEuA (ORCPT
+        with ESMTP id S233110AbiHPEuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:50:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8D0199B00;
-        Mon, 15 Aug 2022 13:46:36 -0700 (PDT)
+        Tue, 16 Aug 2022 00:50:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334D819AB82;
+        Mon, 15 Aug 2022 13:47:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B12466122E;
-        Mon, 15 Aug 2022 20:46:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E999C433D6;
-        Mon, 15 Aug 2022 20:46:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9541CB811A0;
+        Mon, 15 Aug 2022 20:47:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C9E4C433C1;
+        Mon, 15 Aug 2022 20:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596395;
-        bh=ztuiYlmLkVZncfWoJY2ReqlKwgNsbOSNGQvAWdyy7tc=;
+        s=korg; t=1660596424;
+        bh=o2amVQnMjpMZVwW10U/wPBMwSxjuorkuewoLVWlfbSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hRI0+mbLndZAT1BxGjuaPMBj2RpM3MWPzzm4yS1f2wLbJ5Lz5tr4tANR2bM2oAHGF
-         YmMct2s5U7x0RjlZal45NVpV0rbDJbPX7cKMaxbHQyEbsixu4ynWAATLAOxzr9zMJl
-         Pwy5cL8ibo7hNJUvQKsI0quDbayAHr9LXpFb976g=
+        b=hoesMLbFmzES9LyVEuUZB40tWA+SJbxm9lclLFH5J1pm1uA13V6Zwgeh1vGNJy29Y
+         OSCd1mAi5WD2Mfv4XbABvmoooDXek3SsCV+QoZc43TMfpv+LNv9F4l11mxI7Cq4LDP
+         TrTovzNUUj+nwq9WZynN6Uq/sCKG/Qut9Lk+mSHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meeta Saggi <msaggi@purestorage.com>,
-        Mohamed Khalfella <mkhalfella@purestorage.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Eric Badger <ebadger@purestorage.com>,
+        stable@vger.kernel.org, Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1066/1157] PCI/AER: Iterate over error counters instead of error strings
-Date:   Mon, 15 Aug 2022 20:07:02 +0200
-Message-Id: <20220815180522.727862498@linuxfoundation.org>
+Subject: [PATCH 5.19 1074/1157] net/9p: Initialize the iounit field during fid creation
+Date:   Mon, 15 Aug 2022 20:07:10 +0200
+Message-Id: <20220815180523.080296854@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,61 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohamed Khalfella <mkhalfella@purestorage.com>
+From: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-[ Upstream commit 5e6ae050955b566484f3cc6a66e3925eae87a0ed ]
+[ Upstream commit aa7aeee169480e98cf41d83c01290a37e569be6d ]
 
-Previously we iterated over AER stat *names*, e.g.,
-aer_correctable_error_string[32], but the actual stat *counters* may not be
-that large, e.g., pdev->aer_stats->dev_cor_errs[16], which means that we
-printed junk in the sysfs stats files.
+Ensure that the fid's iounit field is set to zero when a new fid is
+created. Certain 9P operations, such as OPEN and CREATE, allow the
+server to reply with an iounit size which the client code assigns to the
+p9_fid struct shortly after the fid is created by p9_fid_create(). On
+the other hand, an XATTRWALK operation doesn't allow for the server to
+specify an iounit value. The iounit field of the newly allocated p9_fid
+struct remained uninitialized in that case. Depending on allocation
+patterns, the iounit value could have been something reasonable that was
+carried over from previously freed fids or, in the worst case, could
+have been arbitrary values from non-fid related usages of the memory
+location.
 
-Iterate over the stat counter arrays instead of the names to avoid this
-junk.
+The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
+after the uninitialized iounit field resulted in the typical sequence of
+two getxattr(2) syscalls, one to get the size of an xattr and another
+after allocating a sufficiently sized buffer to fit the xattr value, to
+hit an unexpected ERANGE error in the second call to getxattr(2). An
+uninitialized iounit field would sometimes force rsize to be smaller
+than the xattr value size in p9_client_read_once() and the 9P server in
+WSL refused to chunk up the READ on the attr_fid and, instead, returned
+ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
+the READ and this problem goes undetected there.
 
-Also, added a build time check to make sure all
-counters have entries in strings array.
-
-Fixes: 0678e3109a3c ("PCI/AER: Simplify __aer_print_error()")
-Link: https://lore.kernel.org/r/20220509181441.31884-1-mkhalfella@purestorage.com
-Reported-by: Meeta Saggi <msaggi@purestorage.com>
-Signed-off-by: Mohamed Khalfella <mkhalfella@purestorage.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Meeta Saggi <msaggi@purestorage.com>
-Reviewed-by: Eric Badger <ebadger@purestorage.com>
+Link: https://lkml.kernel.org/r/20220710141402.803295-1-tyhicks@linux.microsoft.com
+Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
 Cc: stable@vger.kernel.org
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/aer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/9p/client.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index 7952e5efd6cf..a1e38ca93cd9 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -538,7 +538,7 @@ static const char *aer_agent_string[] = {
- 	u64 *stats = pdev->aer_stats->stats_array;			\
- 	size_t len = 0;							\
- 									\
--	for (i = 0; i < ARRAY_SIZE(strings_array); i++) {		\
-+	for (i = 0; i < ARRAY_SIZE(pdev->aer_stats->stats_array); i++) {\
- 		if (strings_array[i])					\
- 			len += sysfs_emit_at(buf, len, "%s %llu\n",	\
- 					     strings_array[i],		\
-@@ -1347,6 +1347,11 @@ static int aer_probe(struct pcie_device *dev)
- 	struct device *device = &dev->device;
- 	struct pci_dev *port = dev->port;
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -886,16 +886,13 @@ static struct p9_fid *p9_fid_create(stru
+ 	struct p9_fid *fid;
  
-+	BUILD_BUG_ON(ARRAY_SIZE(aer_correctable_error_string) <
-+		     AER_MAX_TYPEOF_COR_ERRS);
-+	BUILD_BUG_ON(ARRAY_SIZE(aer_uncorrectable_error_string) <
-+		     AER_MAX_TYPEOF_UNCOR_ERRS);
-+
- 	/* Limit to Root Ports or Root Complex Event Collectors */
- 	if ((pci_pcie_type(port) != PCI_EXP_TYPE_RC_EC) &&
- 	    (pci_pcie_type(port) != PCI_EXP_TYPE_ROOT_PORT))
--- 
-2.35.1
-
+ 	p9_debug(P9_DEBUG_FID, "clnt %p\n", clnt);
+-	fid = kmalloc(sizeof(*fid), GFP_KERNEL);
++	fid = kzalloc(sizeof(*fid), GFP_KERNEL);
+ 	if (!fid)
+ 		return NULL;
+ 
+-	memset(&fid->qid, 0, sizeof(fid->qid));
+ 	fid->mode = -1;
+ 	fid->uid = current_fsuid();
+ 	fid->clnt = clnt;
+-	fid->rdir = NULL;
+-	fid->fid = 0;
+ 	refcount_set(&fid->count, 1);
+ 
+ 	idr_preload(GFP_KERNEL);
 
 
