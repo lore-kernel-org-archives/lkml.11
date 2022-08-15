@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C749DC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B361C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346628AbiHOUUs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33736 "EHLO
+        id S240534AbiHOUW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347062AbiHOUMv (ORCPT
+        with ESMTP id S1347119AbiHOUNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9BD8B997;
-        Mon, 15 Aug 2022 11:58:56 -0700 (PDT)
+        Mon, 15 Aug 2022 16:13:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C2E8C037;
+        Mon, 15 Aug 2022 11:59:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE3986126A;
-        Mon, 15 Aug 2022 18:58:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6630CC4347C;
-        Mon, 15 Aug 2022 18:58:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90D31B8109E;
+        Mon, 15 Aug 2022 18:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF6CC433D7;
+        Mon, 15 Aug 2022 18:59:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589935;
-        bh=O4b+wZIdNDyRYvQfOFHRVJytBEWmlO6Mx0dPFE9bktY=;
+        s=korg; t=1660589941;
+        bh=CGaPG4NbzAJR1W5yUiOR1a8R5WwVoE9UDU1lzpnZMCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J8C9bwCB4IXG2bKQLuENpUTwmCWWXJCJgEJ5cMluXgFlNhXJ6ruX21mR4ArqEJ8ZL
-         +yj8kDlyYgtUn6gGUxLmzkcUMwnd7wURYPHMZkfPe55kByfVJjlAlcafvJMrbpHaXA
-         ShmaqUhkabB3Q2jVdFdrRCaXQ7rKFVw8B9PbspG4=
+        b=qQP0x2NJjAjdMUhg99JiE6QCSV9muF4c5KJvZFsgwHcqPmPtTL3vywqCZxo1HHTBo
+         u/nWWocMQpxFul3xmNWhbiquheX6H8kMGtbbWJm9I7e74Lo27IVFh+1EBHj53r5LBp
+         fifWkzfWpMAsDRExRm69Uc8qTslZusbipIbvzBJY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Atish Patra <atishp@rivosinc.com>,
+        stable@vger.kernel.org,
         Xianting Tian <xianting.tian@linux.alibaba.com>,
         Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 0066/1095] RISC-V: kexec: Fixup use of smp_processor_id() in preemptible context
-Date:   Mon, 15 Aug 2022 19:51:05 +0200
-Message-Id: <20220815180432.236381906@linuxfoundation.org>
+Subject: [PATCH 5.18 0068/1095] RISC-V: Fixup schedule out issue in machine_crash_shutdown()
+Date:   Mon, 15 Aug 2022 19:51:07 +0200
+Message-Id: <20220815180432.329986550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,78 +51,112 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-commit 357628e68f5c08ad578a718dc62a0031e06dbe91 upstream.
+commit ad943893d5f1d0aeea892bf7b781cf8062b36d58 upstream.
 
-Use __smp_processor_id() to avoid check the preemption context when
-CONFIG_DEBUG_PREEMPT enabled, as we will enter crash kernel and no
-return.
+Current task of executing crash kexec will be schedule out when panic is
+triggered by RCU Stall, as it needs to wait rcu completion. It lead to
+inability to enter the crash system.
 
-Without the patch,
-[  103.781044] sysrq: Trigger a crash
-[  103.784625] Kernel panic - not syncing: sysrq triggered crash
-[  103.837634] CPU1: off
-[  103.889668] CPU2: off
-[  103.933479] CPU3: off
-[  103.939424] Starting crashdump kernel...
-[  103.943442] BUG: using smp_processor_id() in preemptible [00000000] code: sh/346
-[  103.950884] caller is debug_smp_processor_id+0x1c/0x26
-[  103.956051] CPU: 0 PID: 346 Comm: sh Kdump: loaded Not tainted 5.10.113-00002-gce03f03bf4ec-dirty #149
-[  103.965355] Call Trace:
-[  103.967805] [<ffffffe00020372a>] walk_stackframe+0x0/0xa2
-[  103.973206] [<ffffffe000bcf1f4>] show_stack+0x32/0x3e
-[  103.978258] [<ffffffe000bd382a>] dump_stack_lvl+0x72/0x8e
-[  103.983655] [<ffffffe000bd385a>] dump_stack+0x14/0x1c
-[  103.988705] [<ffffffe000bdc8fe>] check_preemption_disabled+0x9e/0xaa
-[  103.995057] [<ffffffe000bdc926>] debug_smp_processor_id+0x1c/0x26
-[  104.001150] [<ffffffe000206c64>] machine_kexec+0x22/0xd0
-[  104.006463] [<ffffffe000291a7e>] __crash_kexec+0x6a/0xa4
-[  104.011774] [<ffffffe000bcf3fa>] panic+0xfc/0x2b0
-[  104.016480] [<ffffffe000656ca4>] sysrq_reset_seq_param_set+0x0/0x70
-[  104.022745] [<ffffffe000657310>] __handle_sysrq+0x8c/0x154
-[  104.028229] [<ffffffe0006577e8>] write_sysrq_trigger+0x5a/0x6a
-[  104.034061] [<ffffffe0003d90e0>] proc_reg_write+0x58/0xd4
-[  104.039459] [<ffffffe00036cff4>] vfs_write+0x7e/0x254
-[  104.044509] [<ffffffe00036d2f6>] ksys_write+0x58/0xbe
-[  104.049558] [<ffffffe00036d36a>] sys_write+0xe/0x16
-[  104.054434] [<ffffffe000201b9a>] ret_from_syscall+0x0/0x2
-[  104.067863] Will call new kernel at ecc00000 from hart id 0
-[  104.074939] FDT image at fc5ee000
-[  104.079523] Bye...
+The implementation of machine_crash_shutdown() is non-standard for RISC-V
+according to other Arch's implementation(eg, x86, arm64), we need to send
+IPI to stop secondary harts.
 
-With the patch we can got clear output,
-[   67.740553] sysrq: Trigger a crash
-[   67.744166] Kernel panic - not syncing: sysrq triggered crash
-[   67.809123] CPU1: off
-[   67.865210] CPU2: off
-[   67.909075] CPU3: off
-[   67.919123] Starting crashdump kernel...
-[   67.924900] Will call new kernel at ecc00000 from hart id 0
-[   67.932045] FDT image at fc5ee000
-[   67.935560] Bye...
+[224521.877268] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+[224521.883471] rcu: 	0-...0: (3 GPs behind) idle=cfa/0/0x1 softirq=3968793/3968793 fqs=2495
+[224521.891742] 	(detected by 2, t=5255 jiffies, g=60855593, q=328)
+[224521.897754] Task dump for CPU 0:
+[224521.901074] task:swapper/0     state:R  running task   stack:  0 pid:  0 ppid:   0 flags:0x00000008
+[224521.911090] Call Trace:
+[224521.913638] [<ffffffe000c432de>] __schedule+0x208/0x5ea
+[224521.918957] Kernel panic - not syncing: RCU Stall
+[224521.923773] bad: scheduling from the idle thread!
+[224521.928571] CPU: 2 PID: 0 Comm: swapper/2 Kdump: loaded Tainted: G   O  5.10.113-yocto-standard #1
+[224521.938658] Call Trace:
+[224521.941200] [<ffffffe00020395c>] walk_stackframe+0x0/0xaa
+[224521.946689] [<ffffffe000c34f8e>] show_stack+0x32/0x3e
+[224521.951830] [<ffffffe000c39020>] dump_stack_lvl+0x7e/0xa2
+[224521.957317] [<ffffffe000c39058>] dump_stack+0x14/0x1c
+[224521.962459] [<ffffffe000243884>] dequeue_task_idle+0x2c/0x40
+[224521.968207] [<ffffffe000c434f4>] __schedule+0x41e/0x5ea
+[224521.973520] [<ffffffe000c43826>] schedule+0x34/0xe4
+[224521.978487] [<ffffffe000c46cae>] schedule_timeout+0xc6/0x170
+[224521.984234] [<ffffffe000c4491e>] wait_for_completion+0x98/0xf2
+[224521.990157] [<ffffffe00026d9e2>] __wait_rcu_gp+0x148/0x14a
+[224521.995733] [<ffffffe0002761c4>] synchronize_rcu+0x5c/0x66
+[224522.001307] [<ffffffe00026f1a6>] rcu_sync_enter+0x54/0xe6
+[224522.006795] [<ffffffe00025a436>] percpu_down_write+0x32/0x11c
+[224522.012629] [<ffffffe000c4266a>] _cpu_down+0x92/0x21a
+[224522.017771] [<ffffffe000219a0a>] smp_shutdown_nonboot_cpus+0x90/0x118
+[224522.024299] [<ffffffe00020701e>] machine_crash_shutdown+0x30/0x4a
+[224522.030483] [<ffffffe00029a3f8>] __crash_kexec+0x62/0xa6
+[224522.035884] [<ffffffe000c3515e>] panic+0xfa/0x2b6
+[224522.040678] [<ffffffe0002772be>] rcu_sched_clock_irq+0xc26/0xcb8
+[224522.046774] [<ffffffe00027fc7a>] update_process_times+0x62/0x8a
+[224522.052785] [<ffffffe00028d522>] tick_sched_timer+0x9e/0x102
+[224522.058533] [<ffffffe000280c3a>] __hrtimer_run_queues+0x16a/0x318
+[224522.064716] [<ffffffe0002812ec>] hrtimer_interrupt+0xd4/0x228
+[224522.070551] [<ffffffe0009a69b6>] riscv_timer_interrupt+0x3c/0x48
+[224522.076646] [<ffffffe000268f8c>] handle_percpu_devid_irq+0xb0/0x24c
+[224522.083004] [<ffffffe00026428e>] __handle_domain_irq+0xa8/0x122
+[224522.089014] [<ffffffe00062f954>] riscv_intc_irq+0x38/0x60
+[224522.094501] [<ffffffe000201bd4>] ret_from_exception+0x0/0xc
+[224522.100161] [<ffffffe000c42146>] rcu_eqs_enter.constprop.0+0x8c/0xb8
 
-Fixes: 0e105f1d0037 ("riscv: use hart id instead of cpu id on machine_kexec")
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
+With the patch, it can enter crash system when RCU Stall occur.
+
+Fixes: e53d28180d4d ("RISC-V: Add kdump support")
 Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220811074150.3020189-2-xianting.tian@linux.alibaba.com
+Link: https://lore.kernel.org/r/20220811074150.3020189-4-xianting.tian@linux.alibaba.com
 Cc: stable@vger.kernel.org
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/machine_kexec.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/kernel/machine_kexec.c |   26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
 --- a/arch/riscv/kernel/machine_kexec.c
 +++ b/arch/riscv/kernel/machine_kexec.c
-@@ -171,7 +171,7 @@ machine_kexec(struct kimage *image)
- 	struct kimage_arch *internal = &image->arch;
- 	unsigned long jump_addr = (unsigned long) image->start;
- 	unsigned long first_ind_entry = (unsigned long) &image->head;
--	unsigned long this_cpu_id = smp_processor_id();
-+	unsigned long this_cpu_id = __smp_processor_id();
- 	unsigned long this_hart_id = cpuid_to_hartid_map(this_cpu_id);
- 	unsigned long fdt_addr = internal->fdt_addr;
- 	void *control_code_buffer = page_address(image->control_code_page);
+@@ -138,19 +138,37 @@ void machine_shutdown(void)
+ #endif
+ }
+ 
++/* Override the weak function in kernel/panic.c */
++void crash_smp_send_stop(void)
++{
++	static int cpus_stopped;
++
++	/*
++	 * This function can be called twice in panic path, but obviously
++	 * we execute this only once.
++	 */
++	if (cpus_stopped)
++		return;
++
++	smp_send_stop();
++	cpus_stopped = 1;
++}
++
+ /*
+  * machine_crash_shutdown - Prepare to kexec after a kernel crash
+  *
+  * This function is called by crash_kexec just before machine_kexec
+- * below and its goal is similar to machine_shutdown, but in case of
+- * a kernel crash. Since we don't handle such cases yet, this function
+- * is empty.
++ * and its goal is to shutdown non-crashing cpus and save registers.
+  */
+ void
+ machine_crash_shutdown(struct pt_regs *regs)
+ {
++	local_irq_disable();
++
++	/* shutdown non-crashing cpus */
++	crash_smp_send_stop();
++
+ 	crash_save_cpu(regs, smp_processor_id());
+-	machine_shutdown();
+ 	pr_info("Starting crashdump kernel...\n");
+ }
+ 
 
 
