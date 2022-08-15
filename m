@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4FAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E2AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346854AbiHOWIt (ORCPT
+        id S1345550AbiHOWIy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35164 "EHLO
+        Mon, 15 Aug 2022 18:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343655AbiHOWFe (ORCPT
+        with ESMTP id S1348309AbiHOWFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:05:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 093AA115B7D;
-        Mon, 15 Aug 2022 12:37:27 -0700 (PDT)
+        Mon, 15 Aug 2022 18:05:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886AC11609A;
+        Mon, 15 Aug 2022 12:37:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 422126114B;
-        Mon, 15 Aug 2022 19:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C254C43470;
-        Mon, 15 Aug 2022 19:37:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6905A611E7;
+        Mon, 15 Aug 2022 19:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 562F1C433C1;
+        Mon, 15 Aug 2022 19:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592246;
-        bh=l0t7eNncgRAPZynlvUSG53rLZJLTg+ipE9Z/Sl0djqU=;
+        s=korg; t=1660592249;
+        bh=Xq3v93P9JTZdi2AV2EUYbUde+wbxdFFKx2QgvcEJt9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDrJLfejrjsQOb+JDYosyoxRcikZcds8A3Br3JpEe3CrjAcbLmn0nF2ulQ8Oy4iGs
-         pCzeLOEfTRAN/Qyirzo1oMmvZ8e6ysSZI7z0GO0MbMEp71ngK3qsnn/bKhZy7Vm1yO
-         F8MwEI74zohKrfwnM6gr5ISNl4e3qG0/l62pROC4=
+        b=jeof42bTN5mZDVAuPuNVLXsSmELPXMmuU3Kq7svhgkp0zf3Iy/yzpK8qsPFmxmGLn
+         AtbiNEfrqIsHfJkWpb6u5dDYrZM60D1E9Eg9fyDAIiz6lHVqvgwkrlHR7oz1idrJdM
+         mExfYsBPYq5HCT3grqGExJrcOyfKiD4Y2mUFeBDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0080/1157] wireguard: selftests: set CONFIG_NONPORTABLE on riscv32
-Date:   Mon, 15 Aug 2022 19:50:36 +0200
-Message-Id: <20220815180442.735511197@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0756/1095] usb: dwc3: core: Deprecate GCTL.CORESOFTRESET
+Date:   Mon, 15 Aug 2022 20:02:35 +0200
+Message-Id: <20220815180500.580769281@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,32 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 9019b4f6d9bd88524ecd95420cf9cd4aaed7a125 upstream.
+[ Upstream commit afbd04e66e5d16ca3c7ea2e3c56eca25558eacf3 ]
 
-When the CONFIG_PORTABLE/CONFIG_NONPORTABLE switches were added, various
-configs were updated, but the wireguard config was forgotten about. This
-leads to unbootable test kernels, causing CI fails. Add
-CONFIG_NONPORTABLE=y to the wireguard test suite configuration for
-riscv32.
+Synopsys IP DWC_usb32 and DWC_usb31 version 1.90a and above deprecated
+GCTL.CORESOFTRESET. The DRD mode switching flow is updated to remove the
+GCTL soft reset. Add version checks to prevent using deprecated setting
+in mode switching flow.
 
-Fixes: 44c1e84a38a0 ("RISC-V: Add CONFIG_{NON,}PORTABLE")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220809145757.83673-1-Jason@zx2c4.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/9df529fde6e55f5508321b6bc26e92848044ef2b.1655338967.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/wireguard/qemu/arch/riscv32.config |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc3/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/wireguard/qemu/arch/riscv32.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/riscv32.config
-@@ -1,3 +1,4 @@
-+CONFIG_NONPORTABLE=y
- CONFIG_ARCH_RV32I=y
- CONFIG_MMU=y
- CONFIG_FPU=y
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index d28cd1a6709b..46a3b8941e40 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -158,7 +158,8 @@ static void __dwc3_set_mode(struct work_struct *work)
+ 	}
+ 
+ 	/* For DRD host or device mode only */
+-	if (dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG) {
++	if ((DWC3_IP_IS(DWC3) || DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
++	    dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG) {
+ 		reg = dwc3_readl(dwc->regs, DWC3_GCTL);
+ 		reg |= DWC3_GCTL_CORESOFTRESET;
+ 		dwc3_writel(dwc->regs, DWC3_GCTL, reg);
+-- 
+2.35.1
+
 
 
