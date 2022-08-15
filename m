@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62618C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 519E9C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241697AbiHOSZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
+        id S240523AbiHOS1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240476AbiHOSY7 (ORCPT
+        with ESMTP id S243199AbiHOS0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:24:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12E02F01C;
-        Mon, 15 Aug 2022 11:18:28 -0700 (PDT)
+        Mon, 15 Aug 2022 14:26:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C2C31219;
+        Mon, 15 Aug 2022 11:19:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4832F6068D;
-        Mon, 15 Aug 2022 18:18:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39D16C433D6;
-        Mon, 15 Aug 2022 18:18:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5229FB81071;
+        Mon, 15 Aug 2022 18:19:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B37EC433C1;
+        Mon, 15 Aug 2022 18:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587501;
-        bh=x2i5Ts8YzBr9qGHwch9dGyICGNpTc4V6+o6yggRv1oQ=;
+        s=korg; t=1660587587;
+        bh=WLBCrM/2MNW4QA9FhDNcKjSDCznDM6dNFAbB2HXEapw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JoMka8wAHRkl0euyu6QuH9U2F/uNGOlJ0r6FRcleSRXOMtY8lrkjsMXfb2vlLXb0J
-         oh8Fq+2R2ke3WFuA+aLgvQpEEo0sSjQ8mn0ve84tkCNrSnXvJ4pnP4d/KeOg5U0qmp
-         4p/ZVSMLiyHsQRIacUu6fxjTfG8sQ4I42lubiJJc=
+        b=rsBAsY8sQQlSXG+GEPlwiJWr/iYYCIb8sgE5PwbR+B1K00A3XG3w1dM4sEAK8N8PM
+         jqkZ/Cxj0aIEeAJJZ+BX52CHhwYIh/AEj3QBoi/dgJYzOIl0NHJpUEAfRW0+WUXIM+
+         IZm8a2Qh7lsdneLRc+EafmXu35ZSmqgorwegZnJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH 5.15 105/779] usb: dwc3: gadget: fix high speed multiplier setting
-Date:   Mon, 15 Aug 2022 19:55:49 +0200
-Message-Id: <20220815180341.812914884@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 131/779] ARM: dts: ux500: Fix Codina accelerometer mounting matrix
+Date:   Mon, 15 Aug 2022 19:56:15 +0200
+Message-Id: <20220815180342.880530678@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,38 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Grzeschik <m.grzeschik@pengutronix.de>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 8affe37c525d800a2628c4ecfaed13b77dc5634a upstream.
+[ Upstream commit 0b2152e428ab91533a02888ff24e52e788dc4637 ]
 
-For High-Speed Transfers the prepare_one_trb function is calculating the
-multiplier setting for the trb based on the length parameter of the trb
-currently prepared. This assumption is wrong. For trbs with a sg list,
-the length of the actual request has to be taken instead.
+This was fixed wrong so fix it again. Now verified by using
+iio-sensor-proxy monitor-sensor test program.
 
-Fixes: 40d829fb2ec6 ("usb: dwc3: gadget: Correct ISOC DATA PIDs for short packets")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-Link: https://lore.kernel.org/r/20220704141812.1532306-3-m.grzeschik@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220611204249.472250-1-linus.walleij@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/gadget.c |    4 ++--
+ arch/arm/boot/dts/ste-ux500-samsung-codina.dts | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -1251,10 +1251,10 @@ static void dwc3_prepare_one_trb(struct
- 				unsigned int mult = 2;
- 				unsigned int maxp = usb_endpoint_maxp(ep->desc);
- 
--				if (trb_length <= (2 * maxp))
-+				if (req->request.length <= (2 * maxp))
- 					mult--;
- 
--				if (trb_length <= maxp)
-+				if (req->request.length <= maxp)
- 					mult--;
- 
- 				trb->size |= DWC3_TRB_SIZE_PCM1(mult);
+diff --git a/arch/arm/boot/dts/ste-ux500-samsung-codina.dts b/arch/arm/boot/dts/ste-ux500-samsung-codina.dts
+index 952606e607ed..ce62ba877da1 100644
+--- a/arch/arm/boot/dts/ste-ux500-samsung-codina.dts
++++ b/arch/arm/boot/dts/ste-ux500-samsung-codina.dts
+@@ -544,8 +544,8 @@ lisd3dh@19 {
+ 				reg = <0x19>;
+ 				vdd-supply = <&ab8500_ldo_aux1_reg>; // 3V
+ 				vddio-supply = <&ab8500_ldo_aux2_reg>; // 1.8V
+-				mount-matrix = "0", "-1", "0",
+-					       "1", "0", "0",
++				mount-matrix = "0", "1", "0",
++					       "-1", "0", "0",
+ 					       "0", "0", "1";
+ 			};
+ 		};
+-- 
+2.35.1
+
 
 
