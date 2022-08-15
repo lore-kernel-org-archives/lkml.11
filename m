@@ -2,125 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DAAEC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE4CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 12:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242221AbiHOMlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
+        id S242358AbiHOMoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 08:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241893AbiHOMli (ORCPT
+        with ESMTP id S242291AbiHOMom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:41:38 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7105D127
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:41:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660567296; x=1692103296;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SplSxesvyZvRRgtnISH+hq5JWR2pxgb/KkEgyQmKz54=;
-  b=nZ7lzjsN/2DxNu/lp8wWzPLhgUIh3gkdiBwebxrmfMkxrvsB7wfh55LO
-   ZkhA1y10OH60fQQ8t+pK9JeKxWgTCjTUKVE5DkalBU5Z1L36bGGYV97jU
-   JCggGzF0ZMLmI5PAcqpK8BKQS7UGsAY8QtrVXghcIwp9w0udL+QXnvoMN
-   LBIVQtdG5HS5K/NbXsX9sTfaFV5QjwObZpvJG2YJpGj9hcKnzjLrkXwWw
-   kKp96yZSETvRGUr7WRTX3z08HUquKEX6oIPYJTOrdGg2u1gCrDJ04Y07w
-   YNVbvFBlrJ9vfbpBdIPsLxY9iLxomixtp+36PsBFnnIIbYUpHz6T89hXV
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="272341553"
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="272341553"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 05:41:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="674820064"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 15 Aug 2022 05:41:34 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNZPR-00010O-1F;
-        Mon, 15 Aug 2022 12:41:33 +0000
-Date:   Mon, 15 Aug 2022 20:40:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kassey Li <quic_yingangl@quicinc.com>, akpm@linux-foundation.org,
-        vbabka@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Kassey Li <quic_yingangl@quicinc.com>, minchan@kernel.org,
-        vbabka@suse.cz, iamjoonsoo.kim@lge.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v7] mm/page_owner.c: add llseek for page_owner
-Message-ID: <202208152007.a6QeCOGK-lkp@intel.com>
-References: <20220815063010.22462-1-quic_yingangl@quicinc.com>
+        Mon, 15 Aug 2022 08:44:42 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C35DEE1
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 05:44:40 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id NZSQoHlfpPMmaNZSQoRFYh; Mon, 15 Aug 2022 14:44:39 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 15 Aug 2022 14:44:39 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        linux-pm@vger.kernel.org
+Subject: [PATCH] OPP: Fix an un-initialized variable usage
+Date:   Mon, 15 Aug 2022 14:44:37 +0200
+Message-Id: <a21fb09a4f2fcdb08eeb43cf4fb525621b16d086.1660567465.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815063010.22462-1-quic_yingangl@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kassey,
+smatch complains that 'ret' may be returned un-initialized.
 
-Thank you for the patch! Perhaps something to improve:
+Explicitly return 0 if we reach the end of the function (should
+'opp_table->clk_count' be 0).
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.0-rc1 next-20220815]
-[cannot apply to akpm-mm/mm-everything]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Fixes: 8174a3a613af ("OPP: Provide a simple implementation to configure multiple clocks")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/opp/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Kassey-Li/mm-page_owner-c-add-llseek-for-page_owner/20220815-143155
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-config: hexagon-randconfig-r041-20220814 (https://download.01.org/0day-ci/archive/20220815/202208152007.a6QeCOGK-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 6afcc4a459ead8809a0d6d9b4bf7b64bcc13582b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f9ef28f8ab55cdd176ab5ce7ad606ca45b4dbcc0
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kassey-Li/mm-page_owner-c-add-llseek-for-page_owner/20220815-143155
-        git checkout f9ef28f8ab55cdd176ab5ce7ad606ca45b4dbcc0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> mm/page_owner.c:575:8: warning: no previous prototype for function 'lseek_page_owner' [-Wmissing-prototypes]
-   loff_t lseek_page_owner(struct file *file, loff_t offset, int orig)
-          ^
-   mm/page_owner.c:575:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   loff_t lseek_page_owner(struct file *file, loff_t offset, int orig)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/lseek_page_owner +575 mm/page_owner.c
-
-   574	
- > 575	loff_t lseek_page_owner(struct file *file, loff_t offset, int orig)
-   576	{
-   577		switch (orig) {
-   578		case SEEK_SET:
-   579			file->f_pos = offset;
-   580			break;
-   581		case SEEK_CUR:
-   582			file->f_pos += offset;
-   583			break;
-   584		default:
-   585			return -EINVAL;
-   586		}
-   587		return file->f_pos;
-   588	}
-   589	
-
+diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+index 77d1ba3a4154..e87567dbe99f 100644
+--- a/drivers/opp/core.c
++++ b/drivers/opp/core.c
+@@ -873,7 +873,7 @@ int dev_pm_opp_config_clks_simple(struct device *dev,
+ 		}
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(dev_pm_opp_config_clks_simple);
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
