@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A65C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51066C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350322AbiHOVwr (ORCPT
+        id S1350343AbiHOVwv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60184 "EHLO
+        Mon, 15 Aug 2022 17:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350293AbiHOVrh (ORCPT
+        with ESMTP id S1350306AbiHOVri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1405D2A275;
-        Mon, 15 Aug 2022 12:31:50 -0700 (PDT)
+        Mon, 15 Aug 2022 17:47:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979D76050F;
+        Mon, 15 Aug 2022 12:31:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCD18B8107A;
-        Mon, 15 Aug 2022 19:31:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F14DC433D6;
-        Mon, 15 Aug 2022 19:31:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0978EB8107A;
+        Mon, 15 Aug 2022 19:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A6C9C433C1;
+        Mon, 15 Aug 2022 19:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591907;
-        bh=qQyraYE4LbhTbwMvV6lt7Z7x61Pv/yXQ96/5OMaQNNo=;
+        s=korg; t=1660591910;
+        bh=z2ppMhTPiC/F2H1GoH0DGMhpTjqq0uo0VJ7PpbIH8zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gbkfqy/bMsIX4FgTrjGVaFn6CWbpG9FX9Be9JNNmXw64sd+oFvV2xBukx8qy31krY
-         o0ZL4zXmkdtgz34LUO8zWKXBL0aMKqm1p7d/omn74g77o6ggURbA8mobPo0pRA8x6Q
-         t9L7X70ZSqP6v2670wfhQtSKX0kTBNxZ4ozXewTk=
+        b=W9oe+aTf7yjoposCPbzNekzFYYb1goza5bmqWIUrVZXWRr4bzyQV8nXJ6aUIajrwg
+         J0UauQW8RzO1HM5+GFdl3ICAtV7yH1TaDbe6LB032WoP/dAcTHua3TWMU6pokmXPle
+         KZ83C4+wvsJPTPTPFtW5ewIOOEN/yKwWnwPjM1x0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0029/1157] KVM: Fully serialize gfn=>pfn cache refresh via mutex
-Date:   Mon, 15 Aug 2022 19:49:45 +0200
-Message-Id: <20220815180440.596564836@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0703/1095] clk: qcom: gcc-msm8939: Point MM peripherals to system_mm_noc clock
+Date:   Mon, 15 Aug 2022 20:01:42 +0200
+Message-Id: <20220815180458.445954519@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,105 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit 93984f19e7bce4c18084a6ef3dacafb155b806ed upstream.
+[ Upstream commit 05eed0990927aa9634682fec58660e30f7b7ae30 ]
 
-Protect gfn=>pfn cache refresh with a mutex to fully serialize refreshes.
-The refresh logic doesn't protect against
+Qcom docs indciate the following peripherals operating from System NOC
+MM not from System NOC clocks.
 
-- concurrent unmaps, or refreshes with different GPAs (which may or may not
-  happen in practice, for example if a cache is only used under vcpu->mutex;
-  but it's allowed in the code)
+- MDP
+- VFE
+- JPEGe
+- Venus
 
-- a false negative on the memslot generation.  If the first refresh sees
-  a stale memslot generation, it will refresh the hva and generation before
-  moving on to the hva=>pfn translation.  If it then drops gpc->lock, a
-  different user of the cache can come along, acquire gpc->lock, see that
-  the memslot generation is fresh, and skip the hva=>pfn update due to the
-  userspace address also matching (because it too was updated).
+Switch over the relevant parent pointers.
 
-The refresh path can already sleep during hva=>pfn resolution, so wrap
-the refresh with a mutex to ensure that any given refresh runs to
-completion before other callers can start their refresh.
-
-Cc: stable@vger.kernel.org
-Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220429210025.3293691-7-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220504163835.40130-5-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kvm_types.h |    2 ++
- virt/kvm/pfncache.c       |   12 ++++++++++++
- 2 files changed, 14 insertions(+)
+ drivers/clk/qcom/gcc-msm8939.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
---- a/include/linux/kvm_types.h
-+++ b/include/linux/kvm_types.h
-@@ -19,6 +19,7 @@ struct kvm_memslots;
- enum kvm_mr_change;
- 
- #include <linux/bits.h>
-+#include <linux/mutex.h>
- #include <linux/types.h>
- #include <linux/spinlock_types.h>
- 
-@@ -69,6 +70,7 @@ struct gfn_to_pfn_cache {
- 	struct kvm_vcpu *vcpu;
- 	struct list_head list;
- 	rwlock_t lock;
-+	struct mutex refresh_lock;
- 	void *khva;
- 	kvm_pfn_t pfn;
- 	enum pfn_cache_usage usage;
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -157,6 +157,13 @@ int kvm_gfn_to_pfn_cache_refresh(struct
- 	if (page_offset + len > PAGE_SIZE)
- 		return -EINVAL;
- 
-+	/*
-+	 * If another task is refreshing the cache, wait for it to complete.
-+	 * There is no guarantee that concurrent refreshes will see the same
-+	 * gpa, memslots generation, etc..., so they must be fully serialized.
-+	 */
-+	mutex_lock(&gpc->refresh_lock);
-+
- 	write_lock_irq(&gpc->lock);
- 
- 	old_pfn = gpc->pfn;
-@@ -250,6 +257,8 @@ int kvm_gfn_to_pfn_cache_refresh(struct
-  out:
- 	write_unlock_irq(&gpc->lock);
- 
-+	mutex_unlock(&gpc->refresh_lock);
-+
- 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
- 
- 	return ret;
-@@ -261,6 +270,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
- 	void *old_khva;
- 	kvm_pfn_t old_pfn;
- 
-+	mutex_lock(&gpc->refresh_lock);
- 	write_lock_irq(&gpc->lock);
- 
- 	gpc->valid = false;
-@@ -276,6 +286,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
- 	gpc->pfn = KVM_PFN_ERR_FAULT;
- 
- 	write_unlock_irq(&gpc->lock);
-+	mutex_unlock(&gpc->refresh_lock);
- 
- 	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
- }
-@@ -290,6 +301,7 @@ int kvm_gfn_to_pfn_cache_init(struct kvm
- 
- 	if (!gpc->active) {
- 		rwlock_init(&gpc->lock);
-+		mutex_init(&gpc->refresh_lock);
- 
- 		gpc->khva = NULL;
- 		gpc->pfn = KVM_PFN_ERR_FAULT;
+diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
+index 12bab9067ea8..c7377ec0f423 100644
+--- a/drivers/clk/qcom/gcc-msm8939.c
++++ b/drivers/clk/qcom/gcc-msm8939.c
+@@ -2453,7 +2453,7 @@ static struct clk_branch gcc_camss_jpeg_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_camss_jpeg_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -2657,7 +2657,7 @@ static struct clk_branch gcc_camss_vfe_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_camss_vfe_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -2813,7 +2813,7 @@ static struct clk_branch gcc_mdss_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_mdss_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3205,7 +3205,7 @@ static struct clk_branch gcc_mdp_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_mdp_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3223,7 +3223,7 @@ static struct clk_branch gcc_venus_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_venus_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3241,7 +3241,7 @@ static struct clk_branch gcc_vfe_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_vfe_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3259,7 +3259,7 @@ static struct clk_branch gcc_jpeg_tbu_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_jpeg_tbu_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+@@ -3496,7 +3496,7 @@ static struct clk_branch gcc_venus0_axi_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_venus0_axi_clk",
+ 			.parent_data = &(const struct clk_parent_data){
+-				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
++				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
+ 			},
+ 			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT,
+-- 
+2.35.1
+
 
 
