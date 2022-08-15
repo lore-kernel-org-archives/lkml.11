@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FDEDC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B6CC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351000AbiHPAXJ (ORCPT
+        id S1351220AbiHPAXR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        Mon, 15 Aug 2022 20:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356568AbiHPARD (ORCPT
+        with ESMTP id S1356573AbiHPARD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBE1A0337;
-        Mon, 15 Aug 2022 13:30:52 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C248A263D;
+        Mon, 15 Aug 2022 13:31:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D910E60EE9;
-        Mon, 15 Aug 2022 20:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1ED5C433D6;
-        Mon, 15 Aug 2022 20:30:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEA5B61135;
+        Mon, 15 Aug 2022 20:31:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75CCFC433D6;
+        Mon, 15 Aug 2022 20:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595451;
-        bh=Gi5fhKEQRLorlItAaeCoWCufFbIzNt8b6vIbaqCylvQ=;
+        s=korg; t=1660595467;
+        bh=5pNFoN4WOMyki5qA2Bm4cNzOEWj8zNu3HxHNC6RFfe8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xPpqDS8D9OSBTsq16uWgPl49qbH34PQX0s58Xw3qhPYBQRzjqlNgEu8EDVvh1TmvX
-         kvcvK+wPwW37/IbXNQJS1ly1Rrhkl4QCGdZlPiSGUMn9a4Zjj2pCbRRjUc3T/YLNOK
-         KHVYhXLoXCwXIWTGU5634tDk1MmhvHY5ZSTJrjmo=
+        b=rImMHcCHKkrITecWreLBVzGvexSkWABdXqSAMYDbDOxwzQYAbxBKnCwQfL+JlVQHH
+         PypfCH0BnKuY07Fjp9RTTtQ/jFjOBDhxLLQ5Nu4Xct6R3FiWiorPv047Ox7vygh+8F
+         K/BWYQw8sECntKEPtag6PdNv1B+VhdmDQatoYQBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ferry Toth <fntoth@gmail.com>, Vinod Koul <vkoul@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0769/1157] phy: ti: tusb1210: Dont check for write errors when powering on
-Date:   Mon, 15 Aug 2022 20:02:05 +0200
-Message-Id: <20220815180510.251133002@linuxfoundation.org>
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0774/1157] PCI: dwc: Set INCREASE_REGION_SIZE flag based on limit address
+Date:   Mon, 15 Aug 2022 20:02:10 +0200
+Message-Id: <20220815180510.449594581@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,48 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit d4a0a189b72a7c98e4256292b18b67c69fbc9343 ]
+[ Upstream commit 777e7c3ab73036105e6fc4a67ed950179dbffbab ]
 
-On some platforms, like Intel Merrifield, the writing values during power on
-may timeout:
+We program the 64-bit ATU limit address (in PCIE_ATU_LIMIT/
+PCIE_ATU_UPPER_LIMIT or PCIE_ATU_UNR_LOWER_LIMIT/PCIE_ATU_UNR_UPPER_LIMIT),
+but in addition, the PCIE_ATU_INCREASE_REGION_SIZE bit must be set if the
+upper 32 bits of the limit address differ from the upper 32 bits of the
+base address (see [1,2]).
 
-   tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
-   phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
-   dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
-   dwc3: probe of dwc3.0.auto failed with error -110
+5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU") set
+PCIE_ATU_INCREASE_REGION_SIZE, but only when the *size* was greater than
+4GB.  It did not set it when a smaller region crossed a 4GB boundary, e.g.,
+[mem 0x0_f0000000-0x1_0fffffff].
 
-which effectively fails the probe of the USB controller.
-Drop the check as it was before the culprit commit (see Fixes tag).
+Set PCIE_ATU_INCREASE_REGION_SIZE whenever PCIE_ATU_UPPER_LIMIT is
+greater than PCIE_ATU_UPPER_BASE.
 
-Fixes: 09a3512681b3 ("phy: ti: tusb1210: Improve ulpi_read()/_write() error checking")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Tested-by: Ferry Toth <fntoth@gmail.com>
-Link: https://lore.kernel.org/r/20220613160848.82746-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
+    v5.40a, March 2019, fig.3-36, p.175
+[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
+    v5.40a, March 2019, fig.3-37, p.176
+
+[bhelgaas: commit log]
+Fixes: 5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU")
+Link: https://lore.kernel.org/r/20220624143428.8334-5-Sergey.Semin@baikalelectronics.ru
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/ti/phy-tusb1210.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/phy/ti/phy-tusb1210.c b/drivers/phy/ti/phy-tusb1210.c
-index c3ab4b69ea68..669c13d6e402 100644
---- a/drivers/phy/ti/phy-tusb1210.c
-+++ b/drivers/phy/ti/phy-tusb1210.c
-@@ -105,8 +105,9 @@ static int tusb1210_power_on(struct phy *phy)
- 	msleep(TUSB1210_RESET_TIME_MS);
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index 84fef21efdbc..347251bf87d0 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -287,8 +287,8 @@ static void dw_pcie_prog_outbound_atu_unroll(struct dw_pcie *pci, u8 func_no,
+ 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_UPPER_TARGET,
+ 				 upper_32_bits(pci_addr));
+ 	val = type | PCIE_ATU_FUNC_NUM(func_no);
+-	val = upper_32_bits(size - 1) ?
+-		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
++	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr))
++		val |= PCIE_ATU_INCREASE_REGION_SIZE;
+ 	if (pci->version == 0x490A)
+ 		val = dw_pcie_enable_ecrc(val);
+ 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL1, val);
+@@ -315,6 +315,7 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 					u64 pci_addr, u64 size)
+ {
+ 	u32 retries, val;
++	u64 limit_addr;
  
- 	/* Restore the optional eye diagram optimization value */
--	return tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2,
--				   tusb->vendor_specific2);
-+	tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2, tusb->vendor_specific2);
+ 	if (pci->ops && pci->ops->cpu_addr_fixup)
+ 		cpu_addr = pci->ops->cpu_addr_fixup(pci, cpu_addr);
+@@ -325,6 +326,8 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 		return;
+ 	}
+ 
++	limit_addr = cpu_addr + size - 1;
 +
-+	return 0;
- }
- 
- static int tusb1210_power_off(struct phy *phy)
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT,
+ 			   PCIE_ATU_REGION_OUTBOUND | index);
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_BASE,
+@@ -332,17 +335,18 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_BASE,
+ 			   upper_32_bits(cpu_addr));
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_LIMIT,
+-			   lower_32_bits(cpu_addr + size - 1));
++			   lower_32_bits(limit_addr));
+ 	if (pci->version >= 0x460A)
+ 		dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_LIMIT,
+-				   upper_32_bits(cpu_addr + size - 1));
++				   upper_32_bits(limit_addr));
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_TARGET,
+ 			   lower_32_bits(pci_addr));
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_TARGET,
+ 			   upper_32_bits(pci_addr));
+ 	val = type | PCIE_ATU_FUNC_NUM(func_no);
+-	val = ((upper_32_bits(size - 1)) && (pci->version >= 0x460A)) ?
+-		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
++	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr) &&
++	    pci->version >= 0x460A)
++		val |= PCIE_ATU_INCREASE_REGION_SIZE;
+ 	if (pci->version == 0x490A)
+ 		val = dw_pcie_enable_ecrc(val);
+ 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR1, val);
 -- 
 2.35.1
 
