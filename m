@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD53C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98359C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351685AbiHOWqN (ORCPT
+        id S1350971AbiHOWsJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        Mon, 15 Aug 2022 18:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350971AbiHOWnS (ORCPT
+        with ESMTP id S1350518AbiHOWoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:43:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199571F2D8;
-        Mon, 15 Aug 2022 12:52:29 -0700 (PDT)
+        Mon, 15 Aug 2022 18:44:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033B1133A62;
+        Mon, 15 Aug 2022 12:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47DA961226;
-        Mon, 15 Aug 2022 19:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A425C433C1;
-        Mon, 15 Aug 2022 19:52:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D38461206;
+        Mon, 15 Aug 2022 19:52:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AFF6C433D6;
+        Mon, 15 Aug 2022 19:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593147;
-        bh=PsE69xMvmGk2e7/ex3krG6uJwOrvOxYgpOS9K1/wK1s=;
+        s=korg; t=1660593156;
+        bh=ELguIUk4SGcF73osMAg65DOO9y8WrYs9XvjG4oFTOso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXztzpPQCZfOBfQP5rsghidWfWqVsewFOr51vb0+y/qooVf7Ixsfi8JpaJBNQq1Ru
-         z5nL5PgBWA3MaP+ltGlYMof3NSBI0TIwscAz0soz3VUIlqLDt/DQ/xVrXpTjNYS5Vj
-         ovH/hcYzLO+ZaEQ2+cSS8uiREkIoauuVZXAF00pY=
+        b=Hop7YbLBhmkzSKN6N8WRGefhwpgZZXKSrLtD6HxYzYpNKMlUvSH13gF2XlBeGQLH4
+         /bGlMH+SoVYgRgSqe8LBea8vfAPSB4/xi3Oi3eKsqGani5u5adwj/QVmNNaexDqj0g
+         qBzX4aGXFdXK1t6y3O3wf6EDbSiIHB0DTU4XTsPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0221/1157] locking/lockdep: Fix lockdep_init_map_*() confusion
-Date:   Mon, 15 Aug 2022 19:52:57 +0200
-Message-Id: <20220815180448.426798069@linuxfoundation.org>
+Subject: [PATCH 5.18 0904/1095] ASoC: qcom: q6dsp: Fix an off-by-one in q6adm_alloc_copp()
+Date:   Mon, 15 Aug 2022 20:05:03 +0200
+Message-Id: <20220815180506.699055084@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,99 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit eae6d58d67d9739be5f7ae2dbead1d0ef6528243 ]
+[ Upstream commit 673f58f62ca6fc98979d1cf3fe89c3ff33f29b2e ]
 
-Commit dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t") added yet
-another lockdep_init_map_*() variant, but forgot to update all the
-existing users of the most complicated version.
+find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
+So 'idx' should be tested with ">=" or the test can't match.
 
-This could lead to a loss of lock_type and hence an incorrect report.
-Given the relative rarity of both local_lock and these annotations,
-this is unlikely to happen in practise, still, best fix things.
-
-Fixes: dfd5e3f5fe27 ("locking/lockdep: Mark local_lock_t")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/YqyEDtoan20K0CVD@worktop.programming.kicks-ass.net
+Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/lockdep.h  | 30 +++++++++++++++++-------------
- kernel/locking/lockdep.c |  7 ++++---
- 2 files changed, 21 insertions(+), 16 deletions(-)
+ sound/soc/qcom/qdsp6/q6adm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index b6829b970093..1f1099dac3f0 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -188,7 +188,7 @@ static inline void
- lockdep_init_map_waits(struct lockdep_map *lock, const char *name,
- 		       struct lock_class_key *key, int subclass, u8 inner, u8 outer)
- {
--	lockdep_init_map_type(lock, name, key, subclass, inner, LD_WAIT_INV, LD_LOCK_NORMAL);
-+	lockdep_init_map_type(lock, name, key, subclass, inner, outer, LD_LOCK_NORMAL);
- }
+diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
+index 72c5719f1d25..a0678e8cf20a 100644
+--- a/sound/soc/qcom/qdsp6/q6adm.c
++++ b/sound/soc/qcom/qdsp6/q6adm.c
+@@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
+ 	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
+ 				  MAX_COPPS_PER_PORT);
  
- static inline void
-@@ -211,24 +211,28 @@ static inline void lockdep_init_map(struct lockdep_map *lock, const char *name,
-  * or they are too narrow (they suffer from a false class-split):
-  */
- #define lockdep_set_class(lock, key)				\
--	lockdep_init_map_waits(&(lock)->dep_map, #key, key, 0,	\
--			       (lock)->dep_map.wait_type_inner,	\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, #key, key, 0,	\
-+			      (lock)->dep_map.wait_type_inner,	\
-+			      (lock)->dep_map.wait_type_outer,	\
-+			      (lock)->dep_map.lock_type)
+-	if (idx > MAX_COPPS_PER_PORT)
++	if (idx >= MAX_COPPS_PER_PORT)
+ 		return ERR_PTR(-EBUSY);
  
- #define lockdep_set_class_and_name(lock, key, name)		\
--	lockdep_init_map_waits(&(lock)->dep_map, name, key, 0,	\
--			       (lock)->dep_map.wait_type_inner,	\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, name, key, 0,	\
-+			      (lock)->dep_map.wait_type_inner,	\
-+			      (lock)->dep_map.wait_type_outer,	\
-+			      (lock)->dep_map.lock_type)
- 
- #define lockdep_set_class_and_subclass(lock, key, sub)		\
--	lockdep_init_map_waits(&(lock)->dep_map, #key, key, sub,\
--			       (lock)->dep_map.wait_type_inner,	\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, #key, key, sub,	\
-+			      (lock)->dep_map.wait_type_inner,	\
-+			      (lock)->dep_map.wait_type_outer,	\
-+			      (lock)->dep_map.lock_type)
- 
- #define lockdep_set_subclass(lock, sub)					\
--	lockdep_init_map_waits(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
--			       (lock)->dep_map.wait_type_inner,		\
--			       (lock)->dep_map.wait_type_outer)
-+	lockdep_init_map_type(&(lock)->dep_map, #lock, (lock)->dep_map.key, sub,\
-+			      (lock)->dep_map.wait_type_inner,		\
-+			      (lock)->dep_map.wait_type_outer,		\
-+			      (lock)->dep_map.lock_type)
- 
- #define lockdep_set_novalidate_class(lock) \
- 	lockdep_set_class_and_name(lock, &__lockdep_no_validate__, #lock)
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index f06b91ca6482..e2f179491b08 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -5238,9 +5238,10 @@ __lock_set_class(struct lockdep_map *lock, const char *name,
- 		return 0;
- 	}
- 
--	lockdep_init_map_waits(lock, name, key, 0,
--			       lock->wait_type_inner,
--			       lock->wait_type_outer);
-+	lockdep_init_map_type(lock, name, key, 0,
-+			      lock->wait_type_inner,
-+			      lock->wait_type_outer,
-+			      lock->lock_type);
- 	class = register_lock_class(lock, subclass, 0);
- 	hlock->class_idx = class - lock_classes;
- 
+ 	c = kzalloc(sizeof(*c), GFP_ATOMIC);
 -- 
 2.35.1
 
