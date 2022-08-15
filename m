@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83C4C32768
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B8FC32772
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350904AbiHOW1R (ORCPT
+        id S1350807AbiHOW1N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
+        Mon, 15 Aug 2022 18:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348175AbiHOWUq (ORCPT
+        with ESMTP id S1347549AbiHOWUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:20:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFD3124239;
-        Mon, 15 Aug 2022 12:43:26 -0700 (PDT)
+        Mon, 15 Aug 2022 18:20:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60646B153;
+        Mon, 15 Aug 2022 12:43:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6873F6068D;
-        Mon, 15 Aug 2022 19:43:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFDEC433D6;
-        Mon, 15 Aug 2022 19:43:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05ADBB81141;
+        Mon, 15 Aug 2022 19:43:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F94C433C1;
+        Mon, 15 Aug 2022 19:43:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592604;
-        bh=rkWXU3TEa6CIXUl/UnvFRmLkzh9CC0lIVI2ALWVyQsY=;
+        s=korg; t=1660592598;
+        bh=/nlk2RNgiWALLZkduIiOCkuWAgi6PpoVPN4WKKCrp3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIyAkJqGuiDs4BU04HYZLROp8yLAtVxxKs7TNCM4M/bRNUK5orrQC9BNI/NqIg8Nl
-         It2FSZsiqRCEYt5IUeHa9VbsJxRbSavCjOiFyuTuDQ/UNNNaK81l+6JqPM4NaVXbJn
-         u1Ry4cM9tmPBZz2NpY6W2ur9SxQHI2vF3nF/fAAg=
+        b=o8y5s+Xm5vsnoQ4y2S0CAUNGuT0XokdQDE1H5YvH7ceCAJlP1NXdSkg5LZ5YB//3p
+         E/CrCGVQmB+/fIg/oytkdMrPwHCA8cwlLfy72LNmbQ6RCVZ1AuOTrh0aZvSizozdNy
+         dz4sKFMdoTnAev7r7+Qb8aC9bI/dGzWZS/LZBGa8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
         Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
         Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.19 0136/1157] arm64: dts: uniphier: Fix USB interrupts for PXs3 SoC
-Date:   Mon, 15 Aug 2022 19:51:32 +0200
-Message-Id: <20220815180445.063435526@linuxfoundation.org>
+Subject: [PATCH 5.19 0135/1157] ARM: dts: uniphier: Fix USB interrupts for PXs2 SoC
+Date:   Mon, 15 Aug 2022 19:51:31 +0200
+Message-Id: <20220815180445.031158433@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,24 +53,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit fe17b91a7777df140d0f1433991da67ba658796c upstream.
+commit 9b0dc7abb5cc43a2dbf90690c3c6011dcadc574d upstream.
 
 An interrupt for USB device are shared with USB host. Set interrupt-names
 property to common "dwc_usb3" instead of "host" and "peripheral".
 
 Cc: stable@vger.kernel.org
-Fixes: d7b9beb830d7 ("arm64: dts: uniphier: Add USB3 controller nodes")
+Fixes: 45be1573ad19 ("ARM: dts: uniphier: Add USB3 controller nodes")
 Reported-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
 Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi |    8 ++++----
+ arch/arm/boot/dts/uniphier-pxs2.dtsi |    8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-@@ -599,8 +599,8 @@
+--- a/arch/arm/boot/dts/uniphier-pxs2.dtsi
++++ b/arch/arm/boot/dts/uniphier-pxs2.dtsi
+@@ -597,8 +597,8 @@
  			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
  			status = "disabled";
  			reg = <0x65a00000 0xcd00>;
@@ -81,7 +81,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  			pinctrl-names = "default";
  			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
  			clock-names = "ref", "bus_early", "suspend";
-@@ -701,8 +701,8 @@
+@@ -693,8 +693,8 @@
  			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
  			status = "disabled";
  			reg = <0x65c00000 0xcd00>;
