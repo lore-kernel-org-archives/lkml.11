@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E41C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2C7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241453AbiHOS3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
+        id S242611AbiHOS3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243242AbiHOS05 (ORCPT
+        with ESMTP id S243264AbiHOS07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:26:57 -0400
+        Mon, 15 Aug 2022 14:26:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F35531367;
-        Mon, 15 Aug 2022 11:19:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC7F31355;
+        Mon, 15 Aug 2022 11:19:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DAF96077B;
-        Mon, 15 Aug 2022 18:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB0BC433D6;
-        Mon, 15 Aug 2022 18:19:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 294D16068D;
+        Mon, 15 Aug 2022 18:19:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18258C43145;
+        Mon, 15 Aug 2022 18:19:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587563;
-        bh=TV0z72+3mSdWZU9PHTH7EIN3XB5gMzathmY268PHYYk=;
+        s=korg; t=1660587556;
+        bh=nunt+JU2j4MkkLoTkzivF571n8HJ9HbPahxcqNDdBjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fgEDjYCRFVp6mvX+OmBpYtFaLqKmW0iRpekGhD2SvM2Z5ezeMk6waAVJfy/UEp85W
-         N+9Ft+0bgW6M1F/VIIP2/zr/NqLDREHJ6as2t0NYKXMXnCtffKcOobvfjJVKmlAR45
-         XyQ4Df5Nv26d/Ox2mBGVoWHntQG9T4Y6UJu+bi54=
+        b=RySrJIFL+iHaRyL7Gws9lSNFHo4AisaYKIV3ck0FeJpE8IrQdmM4iGD3D2WK9d+i+
+         jf+F7MKWVb3MvzQ2nA7vRbec1LQSOLbbGDYnf0qEiyNyejfF5hPtVU52UthIwwjkPn
+         Cv6SzqMTkEMnzL3WgdRm7b5PhqyoGIllGZN/dB+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 5.15 093/779] ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
-Date:   Mon, 15 Aug 2022 19:55:37 +0200
-Message-Id: <20220815180341.260791822@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.15 091/779] mbcache: add functions to delete entry if unused
+Date:   Mon, 15 Aug 2022 19:55:35 +0200
+Message-Id: <20220815180341.176964164@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,44 +48,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Jan Kara <jack@suse.cz>
 
-commit e5a16a5c4602c119262f350274021f90465f479d upstream.
+commit 3dc96bba65f53daa217f0a8f43edad145286a8f5 upstream.
 
-test_bit(), as any other bitmap op, takes `unsigned long *` as a
-second argument (pointer to the actual bitmap), as any bitmap
-itself is an array of unsigned longs. However, the ia64_get_irr()
-code passes a ref to `u64` as a second argument.
-This works with the ia64 bitops implementation due to that they
-have `void *` as the second argument and then cast it later on.
-This works with the bitmap API itself due to that `unsigned long`
-has the same size on ia64 as `u64` (`unsigned long long`), but
-from the compiler PoV those two are different.
-Define @irr as `unsigned long` to fix that. That implies no
-functional changes. Has been hidden for 16 years!
+Add function mb_cache_entry_delete_or_get() to delete mbcache entry if
+it is unused and also add a function to wait for entry to become unused
+- mb_cache_entry_wait_unused(). We do not share code between the two
+deleting function as one of them will go away soon.
 
-Fixes: a58786917ce2 ("[IA64] avoid broken SAL_CACHE_FLUSH implementations")
-Cc: stable@vger.kernel.org # 2.6.16+
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+CC: stable@vger.kernel.org
+Fixes: 82939d7999df ("ext4: convert to mbcache2")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220712105436.32204-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/ia64/include/asm/processor.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/mbcache.c            |   66 ++++++++++++++++++++++++++++++++++++++++++++++--
+ include/linux/mbcache.h |   10 ++++++-
+ 2 files changed, 73 insertions(+), 3 deletions(-)
 
---- a/arch/ia64/include/asm/processor.h
-+++ b/arch/ia64/include/asm/processor.h
-@@ -542,7 +542,7 @@ ia64_get_irr(unsigned int vector)
- {
- 	unsigned int reg = vector / 64;
- 	unsigned int bit = vector % 64;
--	u64 irr;
-+	unsigned long irr;
+--- a/fs/mbcache.c
++++ b/fs/mbcache.c
+@@ -11,7 +11,7 @@
+ /*
+  * Mbcache is a simple key-value store. Keys need not be unique, however
+  * key-value pairs are expected to be unique (we use this fact in
+- * mb_cache_entry_delete()).
++ * mb_cache_entry_delete_or_get()).
+  *
+  * Ext2 and ext4 use this cache for deduplication of extended attribute blocks.
+  * Ext4 also uses it for deduplication of xattr values stored in inodes.
+@@ -125,6 +125,19 @@ void __mb_cache_entry_free(struct mb_cac
+ }
+ EXPORT_SYMBOL(__mb_cache_entry_free);
  
- 	switch (reg) {
- 	case 0: irr = ia64_getreg(_IA64_REG_CR_IRR0); break;
++/*
++ * mb_cache_entry_wait_unused - wait to be the last user of the entry
++ *
++ * @entry - entry to work on
++ *
++ * Wait to be the last user of the entry.
++ */
++void mb_cache_entry_wait_unused(struct mb_cache_entry *entry)
++{
++	wait_var_event(&entry->e_refcnt, atomic_read(&entry->e_refcnt) <= 3);
++}
++EXPORT_SYMBOL(mb_cache_entry_wait_unused);
++
+ static struct mb_cache_entry *__entry_find(struct mb_cache *cache,
+ 					   struct mb_cache_entry *entry,
+ 					   u32 key)
+@@ -217,7 +230,7 @@ out:
+ }
+ EXPORT_SYMBOL(mb_cache_entry_get);
+ 
+-/* mb_cache_entry_delete - remove a cache entry
++/* mb_cache_entry_delete - try to remove a cache entry
+  * @cache - cache we work with
+  * @key - key
+  * @value - value
+@@ -254,6 +267,55 @@ void mb_cache_entry_delete(struct mb_cac
+ }
+ EXPORT_SYMBOL(mb_cache_entry_delete);
+ 
++/* mb_cache_entry_delete_or_get - remove a cache entry if it has no users
++ * @cache - cache we work with
++ * @key - key
++ * @value - value
++ *
++ * Remove entry from cache @cache with key @key and value @value. The removal
++ * happens only if the entry is unused. The function returns NULL in case the
++ * entry was successfully removed or there's no entry in cache. Otherwise the
++ * function grabs reference of the entry that we failed to delete because it
++ * still has users and return it.
++ */
++struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
++						    u32 key, u64 value)
++{
++	struct hlist_bl_node *node;
++	struct hlist_bl_head *head;
++	struct mb_cache_entry *entry;
++
++	head = mb_cache_entry_head(cache, key);
++	hlist_bl_lock(head);
++	hlist_bl_for_each_entry(entry, node, head, e_hash_list) {
++		if (entry->e_key == key && entry->e_value == value) {
++			if (atomic_read(&entry->e_refcnt) > 2) {
++				atomic_inc(&entry->e_refcnt);
++				hlist_bl_unlock(head);
++				return entry;
++			}
++			/* We keep hash list reference to keep entry alive */
++			hlist_bl_del_init(&entry->e_hash_list);
++			hlist_bl_unlock(head);
++			spin_lock(&cache->c_list_lock);
++			if (!list_empty(&entry->e_list)) {
++				list_del_init(&entry->e_list);
++				if (!WARN_ONCE(cache->c_entry_count == 0,
++		"mbcache: attempt to decrement c_entry_count past zero"))
++					cache->c_entry_count--;
++				atomic_dec(&entry->e_refcnt);
++			}
++			spin_unlock(&cache->c_list_lock);
++			mb_cache_entry_put(cache, entry);
++			return NULL;
++		}
++	}
++	hlist_bl_unlock(head);
++
++	return NULL;
++}
++EXPORT_SYMBOL(mb_cache_entry_delete_or_get);
++
+ /* mb_cache_entry_touch - cache entry got used
+  * @cache - cache the entry belongs to
+  * @entry - entry that got used
+--- a/include/linux/mbcache.h
++++ b/include/linux/mbcache.h
+@@ -30,15 +30,23 @@ void mb_cache_destroy(struct mb_cache *c
+ int mb_cache_entry_create(struct mb_cache *cache, gfp_t mask, u32 key,
+ 			  u64 value, bool reusable);
+ void __mb_cache_entry_free(struct mb_cache_entry *entry);
++void mb_cache_entry_wait_unused(struct mb_cache_entry *entry);
+ static inline int mb_cache_entry_put(struct mb_cache *cache,
+ 				     struct mb_cache_entry *entry)
+ {
+-	if (!atomic_dec_and_test(&entry->e_refcnt))
++	unsigned int cnt = atomic_dec_return(&entry->e_refcnt);
++
++	if (cnt > 0) {
++		if (cnt <= 3)
++			wake_up_var(&entry->e_refcnt);
+ 		return 0;
++	}
+ 	__mb_cache_entry_free(entry);
+ 	return 1;
+ }
+ 
++struct mb_cache_entry *mb_cache_entry_delete_or_get(struct mb_cache *cache,
++						    u32 key, u64 value);
+ void mb_cache_entry_delete(struct mb_cache *cache, u32 key, u64 value);
+ struct mb_cache_entry *mb_cache_entry_get(struct mb_cache *cache, u32 key,
+ 					  u64 value);
 
 
