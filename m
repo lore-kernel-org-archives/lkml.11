@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E625C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C99ECC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244385AbiHOVQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S243870AbiHOVQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348016AbiHOVH4 (ORCPT
+        with ESMTP id S1348003AbiHOVHz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D123E3C8C6;
-        Mon, 15 Aug 2022 12:17:44 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B378A3C167;
+        Mon, 15 Aug 2022 12:17:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EB0CB810A3;
-        Mon, 15 Aug 2022 19:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6816C433C1;
-        Mon, 15 Aug 2022 19:17:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FD4260F68;
+        Mon, 15 Aug 2022 19:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECCCC433C1;
+        Mon, 15 Aug 2022 19:17:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591062;
-        bh=Mx87WYwyT1wEKTM8f5AUem/0iBZPW2/lVxXm8BygN5g=;
+        s=korg; t=1660591055;
+        bh=Oc76SXNrcZOr5dQFk+mWwofFizMrLxKgl+KdoZ72n10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oVZyy4w/4vVj+o2W3LJN+uXJ7dWogqNsQH7C/zpAhVjyUdZYrotlGH1AA7ZF/HOpw
-         U3vo6dZmINL2o5n4XmRX1JllEQANCMSoAEPBGVirBLZ1IFF8SnYafZnzlxRaS09vOT
-         VLLLTGRpjsA5oTrWu9bfVwpDzaUTfUfBqAEONA0s=
+        b=E4SlKUwMm5cWZaT5S4L+Trugsk3h3KfzffIwiHcbronnvgejMuYfDCvPck2+VlVnW
+         mV71yCb+VtN2ZAfDUpBu85Ed81Au4kpE8t+ajjFTxVxWILvZhMoQhCh64sRuAvfnEJ
+         hcH10ZLgcxUssf1yv3X6clXgvpY8/gyj8O8Gs1Tw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Piotr Oniszczuk <piotr.oniszczuk@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Yonglong Li <liyonglong@chinatelecom.cn>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0432/1095] media: hantro: Add support for Hantro G1 on RK356x
-Date:   Mon, 15 Aug 2022 19:57:11 +0200
-Message-Id: <20220815180447.563742677@linuxfoundation.org>
+Subject: [PATCH 5.18 0457/1095] tcp: make retransmitted SKB fit into the send window
+Date:   Mon, 15 Aug 2022 19:57:36 +0200
+Message-Id: <20220815180448.512718191@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,83 +50,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
+From: Yonglong Li <liyonglong@chinatelecom.cn>
 
-[ Upstream commit 5f6bfab6da6531238e899fdf29efd6d0185adc3e ]
+[ Upstream commit 536a6c8e05f95e3d1118c40ae8b3022ee2d05d52 ]
 
-RK356x has Hantro G1 video decoder capable to decode MPEG2/H.264/VP8
-video formats.
+current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
+in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
+If receiver has shrunk his window, and skb is out of new window,  it
+should retransmit a smaller portion of the payload.
 
-This patch adds support for RK356x family in existing Hantro
-video decoder kernel driver.
+test packetdrill script:
+    0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
+   +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
 
-Tested on [1] with FFmpeg v4l2_request code taken from [2]
-with MPEG2, H.642 and VP8 samples with results [3].
+   +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
+   +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
+ +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
+   +0 > . 1:1(0) ack 1
 
-[1] https://github.com/warpme/minimyth2
-[2] https://github.com/LibreELEC/LibreELEC.tv/blob/master/packages/multimedia/ffmpeg/patches/v4l2-request/ffmpeg-001-v4l2-request.patch
-[3] https://github.com/warpme/minimyth2/blob/master/video-test-summary.txt
+   +0 write(3, ..., 10000) = 10000
 
-Signed-off-by: Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+   +0 > . 1:2001(2000) ack 1 win 65535
+   +0 > . 2001:4001(2000) ack 1 win 65535
+   +0 > . 4001:6001(2000) ack 1 win 65535
+
+ +.05 < . 1:1(0) ack 4001 win 1001
+
+and tcpdump show:
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
+192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
+192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
+192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
+
+when cient retract window to 1001, send window is [4001,5002],
+but TLP send 5001-6001 packet which is out of send window.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/1657532838-20200-1-git-send-email-liyonglong@chinatelecom.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_drv.c      |  1 +
- drivers/staging/media/hantro/hantro_hw.h       |  1 +
- drivers/staging/media/hantro/rockchip_vpu_hw.c | 14 ++++++++++++++
- 3 files changed, 16 insertions(+)
+ net/ipv4/tcp_output.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index bd7d11032c94..ac232b5f7825 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -638,6 +638,7 @@ static const struct of_device_id of_hantro_match[] = {
- 	{ .compatible = "rockchip,rk3288-vpu", .data = &rk3288_vpu_variant, },
- 	{ .compatible = "rockchip,rk3328-vpu", .data = &rk3328_vpu_variant, },
- 	{ .compatible = "rockchip,rk3399-vpu", .data = &rk3399_vpu_variant, },
-+	{ .compatible = "rockchip,rk3568-vpu", .data = &rk3568_vpu_variant, },
- #endif
- #ifdef CONFIG_VIDEO_HANTRO_IMX8M
- 	{ .compatible = "nxp,imx8mm-vpu-g1", .data = &imx8mm_vpu_g1_variant, },
-diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
-index ed018e293ba0..c5dc77125fb7 100644
---- a/drivers/staging/media/hantro/hantro_hw.h
-+++ b/drivers/staging/media/hantro/hantro_hw.h
-@@ -300,6 +300,7 @@ extern const struct hantro_variant rk3066_vpu_variant;
- extern const struct hantro_variant rk3288_vpu_variant;
- extern const struct hantro_variant rk3328_vpu_variant;
- extern const struct hantro_variant rk3399_vpu_variant;
-+extern const struct hantro_variant rk3568_vpu_variant;
- extern const struct hantro_variant sama5d4_vdec_variant;
- extern const struct hantro_variant sunxi_vpu_variant;
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index a7f0a1f0c2a3..e90b99fa79bf 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3140,7 +3140,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	unsigned int cur_mss;
+ 	int diff, len, err;
+-
++	int avail_wnd;
  
-diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-index 163cf92eafca..fc96501f3bc8 100644
---- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
-+++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-@@ -545,6 +545,20 @@ const struct hantro_variant rk3399_vpu_variant = {
- 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names)
- };
+ 	/* Inconclusive MTU probe */
+ 	if (icsk->icsk_mtup.probe_size)
+@@ -3162,17 +3162,25 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 		return -EHOSTUNREACH; /* Routing failure or similar. */
  
-+const struct hantro_variant rk3568_vpu_variant = {
-+	.dec_offset = 0x400,
-+	.dec_fmts = rk3399_vpu_dec_fmts,
-+	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
-+	.codec = HANTRO_MPEG2_DECODER |
-+		 HANTRO_VP8_DECODER | HANTRO_H264_DECODER,
-+	.codec_ops = rk3399_vpu_codec_ops,
-+	.irqs = rockchip_vdpu2_irqs,
-+	.num_irqs = ARRAY_SIZE(rockchip_vdpu2_irqs),
-+	.init = rockchip_vpu_hw_init,
-+	.clk_names = rockchip_vpu_clk_names,
-+	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names)
-+};
-+
- const struct hantro_variant px30_vpu_variant = {
- 	.enc_offset = 0x0,
- 	.enc_fmts = rockchip_vpu_enc_fmts,
+ 	cur_mss = tcp_current_mss(sk);
++	avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
+ 
+ 	/* If receiver has shrunk his window, and skb is out of
+ 	 * new window, do not retransmit it. The exception is the
+ 	 * case, when window is shrunk to zero. In this case
+-	 * our retransmit serves as a zero window probe.
++	 * our retransmit of one segment serves as a zero window probe.
+ 	 */
+-	if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
+-	    TCP_SKB_CB(skb)->seq != tp->snd_una)
+-		return -EAGAIN;
++	if (avail_wnd <= 0) {
++		if (TCP_SKB_CB(skb)->seq != tp->snd_una)
++			return -EAGAIN;
++		avail_wnd = cur_mss;
++	}
+ 
+ 	len = cur_mss * segs;
++	if (len > avail_wnd) {
++		len = rounddown(avail_wnd, cur_mss);
++		if (!len)
++			len = avail_wnd;
++	}
+ 	if (skb->len > len) {
+ 		if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
+ 				 cur_mss, GFP_ATOMIC))
+@@ -3186,8 +3194,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+ 		diff -= tcp_skb_pcount(skb);
+ 		if (diff)
+ 			tcp_adjust_pcount(sk, skb, diff);
+-		if (skb->len < cur_mss)
+-			tcp_retrans_try_collapse(sk, skb, cur_mss);
++		avail_wnd = min_t(int, avail_wnd, cur_mss);
++		if (skb->len < avail_wnd)
++			tcp_retrans_try_collapse(sk, skb, avail_wnd);
+ 	}
+ 
+ 	/* RFC3168, section 6.1.1.1. ECN fallback */
 -- 
 2.35.1
 
