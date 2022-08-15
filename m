@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36955C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B29AEC25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233389AbiHOUpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
+        id S1346530AbiHOUrh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347788AbiHOUnM (ORCPT
+        with ESMTP id S1346739AbiHOUqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:43:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D14BB5E53;
-        Mon, 15 Aug 2022 12:08:11 -0700 (PDT)
+        Mon, 15 Aug 2022 16:46:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499E3B6D35;
+        Mon, 15 Aug 2022 12:08:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2276CCE10E7;
-        Mon, 15 Aug 2022 19:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E905AC433D6;
-        Mon, 15 Aug 2022 19:08:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D86C2606A1;
+        Mon, 15 Aug 2022 19:08:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C21E9C433D6;
+        Mon, 15 Aug 2022 19:08:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590488;
-        bh=KdT6OdPtJ0WC0bsnZs/Ssa740D193ke143bebXcN3r4=;
+        s=korg; t=1660590516;
+        bh=S479fwfCAHX9xtmUdxRoDRXhSxE0n2j7OXnPombf3gM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UHzSWUXhn3QvA/HoPmseQO0N0ZZxuM4iQNR955aIBjBly9eanxg8Qr49MzqDr2mGu
-         phBaEumIfnzO3+GWvMs6c2VqVIDQbMYJtyiHXTh3zfnBXPJoLej9m7IvG9CFyjX4Jt
-         0hofN3+Rfo9ru8z3WK5XxeXVqcpLnoCuLv7jZ2sY=
+        b=npAJCvbAWoh1pN1V1kQVkqF3Mz6jM0k524g52OeLW2mTT+hH4WRLsmhAocuQK7RfC
+         8TR/OXHDkQaZ4nxipQy1oPFv33K9zrCO/P9rFNaw7jVLjFqr3wFh7fcJFl/J2qi9/U
+         VCTAOJAWddRqnNnHs12tdWv0TAfO7i9/ga24WH0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai1@huaweicloud.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0276/1095] dm writecache: count number of blocks read, not number of read bios
-Date:   Mon, 15 Aug 2022 19:54:35 +0200
-Message-Id: <20220815180441.187748615@linuxfoundation.org>
+Subject: [PATCH 5.18 0284/1095] ARM: dts: qcom: msm8974-FP2: Add supplies for remoteprocs
+Date:   Mon, 15 Aug 2022 19:54:43 +0200
+Message-Id: <20220815180441.533759595@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,52 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Luca Weiss <luca@z3ntu.xyz>
 
-[ Upstream commit 2c6e755b49d273243431f5f1184654e71221fc78 ]
+[ Upstream commit fb5e339fb1bc9eb7f34b341d995e4ab39c03588e ]
 
-Change dm-writecache, so that it counts the number of blocks read
-instead of the number of read bios. Bios can be split and requeued
-using the dm_accept_partial_bio function, so counting bios caused
-inaccurate results.
+Those were removed from msm8974.dtsi as part of a recent cleanup commit,
+so add them back for FP2.
 
-Fixes: e3a35d03407c ("dm writecache: add event counters")
-Reported-by: Yu Kuai <yukuai1@huaweicloud.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220421214243.352469-3-luca@z3ntu.xyz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/device-mapper/writecache.rst | 4 ++--
- drivers/md/dm-writecache.c                             | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
-index 10429779a91a..7bead3b52690 100644
---- a/Documentation/admin-guide/device-mapper/writecache.rst
-+++ b/Documentation/admin-guide/device-mapper/writecache.rst
-@@ -78,8 +78,8 @@ Status:
- 2. the number of blocks
- 3. the number of free blocks
- 4. the number of blocks under writeback
--5. the number of read requests
--6. the number of read requests that hit the cache
-+5. the number of read blocks
-+6. the number of read blocks that hit the cache
- 7. the number of write requests
- 8. the number of write requests that hit uncommitted block
- 9. the number of write requests that hit committed block
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index 688b6b3bcd7b..3bec493cccb2 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -1364,6 +1364,7 @@ static enum wc_map_op writecache_map_read(struct dm_writecache *wc, struct bio *
- 		}
- 	} else {
- 		writecache_map_remap_origin(wc, bio, e);
-+		wc->stats.reads += (bio->bi_iter.bi_size - wc->block_size) >> wc->block_size_bits;
- 		map_op = WC_MAP_REMAP_ORIGIN;
- 	}
+diff --git a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+index d6799a1b820b..32975f56f896 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+@@ -131,6 +131,17 @@ wcnss {
+ 	};
+ };
  
++&remoteproc_adsp {
++	cx-supply = <&pm8841_s2>;
++};
++
++&remoteproc_mss {
++	cx-supply = <&pm8841_s2>;
++	mss-supply = <&pm8841_s3>;
++	mx-supply = <&pm8841_s1>;
++	pll-supply = <&pm8941_l12>;
++};
++
+ &rpm_requests {
+ 	pm8841-regulators {
+ 		compatible = "qcom,rpm-pm8841-regulators";
 -- 
 2.35.1
 
