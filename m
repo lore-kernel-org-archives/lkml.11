@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9876CC2BBC5
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FCFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243520AbiHOVE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S233342AbiHOVEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346677AbiHOUzb (ORCPT
+        with ESMTP id S1346899AbiHOU4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:55:31 -0400
+        Mon, 15 Aug 2022 16:56:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858483B94C;
-        Mon, 15 Aug 2022 12:11:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1120042AF7;
+        Mon, 15 Aug 2022 12:11:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D73460BB5;
-        Mon, 15 Aug 2022 19:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1868FC433C1;
-        Mon, 15 Aug 2022 19:11:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC8496069E;
+        Mon, 15 Aug 2022 19:11:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B82CC433D7;
+        Mon, 15 Aug 2022 19:11:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590669;
-        bh=hP/9KZye9mvWkD+qnzNh7Mn9ujOi/BfJgmHbNS6xy7k=;
+        s=korg; t=1660590688;
+        bh=gCasWjXfyVMddZoYuo5MwQA3iAWTIDwFsCXYGZBFCo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ntO2nN81cF3GIceOa6Qc/Bs2VhqrJ+37ThCcVIOl6Md60UfAqth2Rj9YbLDI4MU/4
-         wMJ/dUyH0kxyI3NFnT7OYsazHM+VQ00X9mA1VsIoBS3RK3p92ftvKEEzUPq1z/H+UQ
-         jxP+XOFJ/ezfAvbbVRsSs0txfIfiZee1iDuUcm1w=
+        b=tXBigGMnYSr8eHb0xvt2C8V6c/8ezIcc668vLHfypVomXulpSei7TK469IOq6J18s
+         Qbdb1BORGKDEHxax5HEpQ26VDDrm1rEryYsbRjZU8oTngbHY+0z9TYBppO126Cuh11
+         h4N2Y3ZC3mAXfJDyQRydWjkt0j6Rt63jWyzGmPHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0302/1095] drm/meson: Fix refcount leak in meson_encoder_hdmi_init
-Date:   Mon, 15 Aug 2022 19:55:01 +0200
-Message-Id: <20220815180442.263636035@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0340/1095] i2c: Fix a potential use after free
+Date:   Mon, 15 Aug 2022 19:55:39 +0200
+Message-Id: <20220815180443.862632134@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,42 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xu Wang <vulab@iscas.ac.cn>
 
-[ Upstream commit 7381076809586528e2a812a709e2758916318a99 ]
+[ Upstream commit e4c72c06c367758a14f227c847f9d623f1994ecf ]
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it when not need anymore.
-Add missing put_device() in error path to avoid refcount
-leak.
+Free the adap structure only after we are done using it.
+This patch just moves the put_device() down a bit to avoid the
+use after free.
 
-Fixes: 0af5e0b41110 ("drm/meson: encoder_hdmi: switch to bridge DRM_BRIDGE_ATTACH_NO_CONNECTOR")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220511054052.51981-1-linmq006@gmail.com
+Fixes: 611e12ea0f12 ("i2c: core: manage i2c bus device refcount in i2c_[get|put]_adapter")
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+[wsa: added comment to the code, added Fixes tag]
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_encoder_hdmi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/i2c/i2c-core-base.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-index 5e306de6f485..de87f02cd388 100644
---- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-+++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-@@ -435,8 +435,10 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 		cec_fill_conn_info_from_drm(&conn_info, meson_encoder_hdmi->connector);
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index d43db2c3876e..19a317fdcf5b 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -2467,8 +2467,9 @@ void i2c_put_adapter(struct i2c_adapter *adap)
+ 	if (!adap)
+ 		return;
  
- 		notifier = cec_notifier_conn_register(&pdev->dev, NULL, &conn_info);
--		if (!notifier)
-+		if (!notifier) {
-+			put_device(&pdev->dev);
- 			return -ENOMEM;
-+		}
+-	put_device(&adap->dev);
+ 	module_put(adap->owner);
++	/* Should be last, otherwise we risk use-after-free with 'adap' */
++	put_device(&adap->dev);
+ }
+ EXPORT_SYMBOL(i2c_put_adapter);
  
- 		meson_encoder_hdmi->cec_notifier = notifier;
- 	}
 -- 
 2.35.1
 
