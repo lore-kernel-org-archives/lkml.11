@@ -2,85 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0442C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C1EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347428AbiHOUZi (ORCPT
+        id S1347435AbiHOUZm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        Mon, 15 Aug 2022 16:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242296AbiHOURX (ORCPT
+        with ESMTP id S242729AbiHOURf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:17:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24950F46;
-        Mon, 15 Aug 2022 12:00:17 -0700 (PDT)
+        Mon, 15 Aug 2022 16:17:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A3B6420;
+        Mon, 15 Aug 2022 12:00:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6833FB81113;
-        Mon, 15 Aug 2022 19:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 11F38C4347C;
-        Mon, 15 Aug 2022 19:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660590014;
-        bh=igEtDFyDX86Zzd6H6ZqMLRuFCiTeU4CezPBsoU96YE4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=c2rm9cGD0iojsVby0QXR3dyizi/DpuQu4QRgtk7T/5+c64xKH/1UTgBzKJOwJTce7
-         ycO2cIRkHEJ1YFpO4iCsDifaTUhMV8Lu46ddd63PL9IwAtXGOHWTbfavSyOLRahHS/
-         Iq7jEBItDlMTbe1b69EMnV0v3BR0ZSFhG5c6Wyf0G1VrRife6W8jXw1eRMTCiFwMIi
-         lO0HswApYjh7bdf8sh6XjCYbQqsNyTLwZ6RTZp13UQdgRNvSiR1PDKVIpettx3iHzT
-         NnbOJfggTIdVmqkulPfaleaZx8/SbdB6gD22nnmQE+5giIX05+2ipMtfdHSyxT0ESr
-         ZvyAQVT001Gww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EB6DCE2A051;
-        Mon, 15 Aug 2022 19:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 061F361280;
+        Mon, 15 Aug 2022 19:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08AB9C433B5;
+        Mon, 15 Aug 2022 19:00:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660590022;
+        bh=AQoc+YaavwcFgbgCemNJ/K77IuFwFrWjNBQeM9fthTU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cE6/5FdKmE+QedIGd9kBVfGbvzzEcNgksqAgOGBFnCqE+uwIBm2fk7GRbx0rz9CHv
+         TxBDmrhw/gLFk8/OezN1K7AVGmfCRYGlwR7sRb890o+W1icfecH+mP5J4mOqIHcTHt
+         /iU26nw0Y+9EbJy6mwH35iCaD4Up2fwGzsAkEWNE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
+        Jose Alonso <joalonsof@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 0124/1095] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
+Date:   Mon, 15 Aug 2022 19:52:03 +0200
+Message-Id: <20220815180434.716312912@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v4 0/3] Add more bpf_*_ct_lookup() selftests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166059001395.9081.18240847737000160882.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Aug 2022 19:00:13 +0000
-References: <cover.1660254747.git.dxu@dxuuu.xyz>
-In-Reply-To: <cover.1660254747.git.dxu@dxuuu.xyz>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Jose Alonso <joalonsof@gmail.com>
 
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
 
-On Thu, 11 Aug 2022 15:55:24 -0600 you wrote:
-> This patchset adds more bpf_*_ct_lookup() selftests. The goal is to test
-> interaction with netfilter subsystem as well as reading from `struct
-> nf_conn`. The first is important when migrating legacy systems towards
-> bpf. The latter is important in general to take full advantage of
-> connection tracking.
-> 
-> I'll follow this patchset up with support for writing to `struct nf_conn`.
-> 
-> [...]
+This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
 
-Here is the summary with links:
-  - [bpf-next,v4,1/3] selftests/bpf: Add existing connection bpf_*_ct_lookup() test
-    https://git.kernel.org/bpf/bpf-next/c/e81fbd4c1ba7
-  - [bpf-next,v4,2/3] selftests/bpf: Add connmark read test
-    https://git.kernel.org/bpf/bpf-next/c/99799de2cba2
-  - [bpf-next,v4,3/3] selftests/bpf: Update CI kconfig
-    https://git.kernel.org/bpf/bpf-next/c/8308bf207ce6
+The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
+versions that have no issues.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The FLAG_SEND_ZLP is not safe to use in this context.
+See:
+https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
+The original problem needs another way to solve.
+
+Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
+Cc: stable@vger.kernel.org
+Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
+Link: https://bugs.archlinux.org/task/75491
+Signed-off-by: Jose Alonso <joalonsof@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/usb/ax88179_178a.c |   26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1801,7 +1801,7 @@ static const struct driver_info ax88179_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1814,7 +1814,7 @@ static const struct driver_info ax88178a
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1827,7 +1827,7 @@ static const struct driver_info cypress_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1840,7 +1840,7 @@ static const struct driver_info dlink_du
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1853,7 +1853,7 @@ static const struct driver_info sitecom_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1866,7 +1866,7 @@ static const struct driver_info samsung_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1879,7 +1879,7 @@ static const struct driver_info lenovo_i
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1892,7 +1892,7 @@ static const struct driver_info belkin_i
+ 	.link_reset = ax88179_link_reset,
+ 	.reset	= ax88179_reset,
+ 	.stop	= ax88179_stop,
+-	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1905,7 +1905,7 @@ static const struct driver_info toshiba_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset	= ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1918,7 +1918,7 @@ static const struct driver_info mct_info
+ 	.link_reset = ax88179_link_reset,
+ 	.reset	= ax88179_reset,
+ 	.stop	= ax88179_stop,
+-	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1931,7 +1931,7 @@ static const struct driver_info at_umc20
+ 	.link_reset = ax88179_link_reset,
+ 	.reset  = ax88179_reset,
+ 	.stop   = ax88179_stop,
+-	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1944,7 +1944,7 @@ static const struct driver_info at_umc20
+ 	.link_reset = ax88179_link_reset,
+ 	.reset  = ax88179_reset,
+ 	.stop   = ax88179_stop,
+-	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1957,7 +1957,7 @@ static const struct driver_info at_umc20
+ 	.link_reset = ax88179_link_reset,
+ 	.reset  = ax88179_reset,
+ 	.stop   = ax88179_stop,
+-	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
++	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
 
 
