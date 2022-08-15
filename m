@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8F5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BA7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344060AbiHOWOC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S244526AbiHOWOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349764AbiHOWLm (ORCPT
+        with ESMTP id S1349882AbiHOWLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:11:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049C611CF36;
-        Mon, 15 Aug 2022 12:38:59 -0700 (PDT)
+        Mon, 15 Aug 2022 18:11:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762C511BB27;
+        Mon, 15 Aug 2022 12:38:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60675B80EAD;
-        Mon, 15 Aug 2022 19:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D07C433D6;
-        Mon, 15 Aug 2022 19:38:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB08EB80EA8;
+        Mon, 15 Aug 2022 19:38:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 324E1C433C1;
+        Mon, 15 Aug 2022 19:38:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592319;
-        bh=gv7Mbo3OMSEasmic/edVRxjNlyIQWK0+lDd+YsMwBz8=;
+        s=korg; t=1660592328;
+        bh=z5P5iOpHw9o5eHJmvlNNQbVx8HFSYja93QJ6343QSNw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U4ZcMeccfghZNYMqoFObAvDYcP2f9IKTJdYBRxJFEAhEKZvYosl6FMMdeRoWtBZsL
-         M5fP82px8MhoPMS8AoCxtgNxWhOF1YtWWLQBXQNwq2HR9uP1MFzqtgN9nK5p+qz45k
-         TJGAwkaz2FmFDAI/Pbt9ekx9+sw5DNOy+b8TSeho=
+        b=q/GPsx9dMtMOZ0Nfqv1Fe6wLN6j6Vd4zldiPJ0LC6XJkCELWb66YoIE1WqulnReIi
+         jnN/SdCJh9qWW9aQSaEh+uXbuB90od8JKS/zl+ie0LlV1VHb76l+C64kU4sIFip5sj
+         5C/QvwaguwkkyARzNE74Us2AnzyFpFdCSJDCbvug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.19 0084/1157] drm/vc4: hdmi: Disable audio if dmas property is present but empty
-Date:   Mon, 15 Aug 2022 19:50:40 +0200
-Message-Id: <20220815180442.899448403@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Subject: [PATCH 5.19 0094/1157] drm/amdgpu: Check BOs requested pinning domains against its preferred_domains
+Date:   Mon, 15 Aug 2022 19:50:50 +0200
+Message-Id: <20220815180443.367402744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,46 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.org>
+From: Leo Li <sunpeng.li@amd.com>
 
-commit db2b927f8668adf3ac765e0921cd2720f5c04172 upstream.
+commit f5ba14043621f4afdf3ad5f92ee2d8dbebbe4340 upstream.
 
-The dmas property is used to hold the dmaengine channel used for audio
-output.
+When pinning a buffer, we should check to see if there are any
+additional restrictions imposed by bo->preferred_domains. This will
+prevent the BO from being moved to an invalid domain when pinning.
 
-Older device trees were missing that property, so if it's not there we
-disable the audio output entirely.
+For example, this can happen if the user requests to create a BO in GTT
+domain for display scanout. amdgpu_dm will allow pinning to either VRAM
+or GTT domains, since DCN can scanout from either or. However, in
+amdgpu_bo_pin_restricted(), pinning to VRAM is preferred if there is
+adequate carveout. This can lead to pinning to VRAM despite the user
+requesting GTT placement for the BO.
 
-However, some overlays have set an empty value to that property, mostly
-to workaround the fact that overlays cannot remove a property. Let's add
-a test for that case and if it's empty, let's disable it as well.
+v2: Allow the kernel to override the domain, which can happen when
+    exporting a BO to a V4L camera (for example).
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Phil Elwell <phil@raspberrypi.org>
-Link: https://lore.kernel.org/r/20220613144800.326124-18-maxime@cerno.tech
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Leo Li <sunpeng.li@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2035,12 +2035,12 @@ static int vc4_hdmi_audio_init(struct vc
- 	struct device *dev = &vc4_hdmi->pdev->dev;
- 	struct platform_device *codec_pdev;
- 	const __be32 *addr;
--	int index;
-+	int index, len;
- 	int ret;
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -882,6 +882,10 @@ int amdgpu_bo_pin_restricted(struct amdg
+ 	if (WARN_ON_ONCE(min_offset > max_offset))
+ 		return -EINVAL;
  
--	if (!of_find_property(dev->of_node, "dmas", NULL)) {
-+	if (!of_find_property(dev->of_node, "dmas", &len) || !len) {
- 		dev_warn(dev,
--			 "'dmas' DT property is missing, no HDMI audio\n");
-+			 "'dmas' DT property is missing or empty, no HDMI audio\n");
- 		return 0;
- 	}
- 
++	/* Check domain to be pinned to against preferred domains */
++	if (bo->preferred_domains & domain)
++		domain = bo->preferred_domains & domain;
++
+ 	/* A shared bo cannot be migrated to VRAM */
+ 	if (bo->tbo.base.import_attach) {
+ 		if (domain & AMDGPU_GEM_DOMAIN_GTT)
 
 
