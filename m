@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E42C6C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F80C00140
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355953AbiHPALv (ORCPT
+        id S1355799AbiHPALn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        Mon, 15 Aug 2022 20:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356477AbiHPAC1 (ORCPT
+        with ESMTP id S1356481AbiHPAC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:02:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E35D169456;
-        Mon, 15 Aug 2022 13:23:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D73161017;
+        Mon, 15 Aug 2022 13:23:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D8D860EE9;
-        Mon, 15 Aug 2022 20:23:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC76C433C1;
-        Mon, 15 Aug 2022 20:23:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5960560F71;
+        Mon, 15 Aug 2022 20:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4921AC433C1;
+        Mon, 15 Aug 2022 20:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595029;
-        bh=1ZM8t4XUhuzWdK3a2YEu+0EkEQ6u6byYIrpokLIX+HA=;
+        s=korg; t=1660595019;
+        bh=pDQAiluEMFznMnl6qm26vpua8zn+CoKeaErTyh8RvIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IddozKMcffejg3/Ujrbx/Wk4P2r4YPj7CKNbNYCd1mIyyMfg6p7bjIZJZ9bTXdrmr
-         U/KorXTkMWSK4i8aP+T/ivpEsTdTDphqVmZwU93ro22o5rfVnCLG6bq0qmTqnRcHw7
-         TxjTqOHAu2/4vtP180DsrdP94kJBPQCRqrXjgZVQ=
+        b=Coybwr/Nm55If6dNXLBT2KF8M0N9zgzR9X6+yU6NlrLOiuNhjhQXKyxHfxDNZFF7n
+         2hUec21780P7Ui5KKLjwWRxj9upZL6auXRHvSPCpoSyFm6sGpp2Er8zPhazk9zZjgg
+         +lkTxwTwP+AdyD0wWlskj7MoE5VUNuLPXtPjkl5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0635/1157] iio: accel: bma220: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 19:59:51 +0200
-Message-Id: <20220815180505.095176557@linuxfoundation.org>
+Subject: [PATCH 5.19 0632/1157] iio: accel: adxl313: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 19:59:48 +0200
+Message-Id: <20220815180504.971801232@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,33 +53,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 38e71240e2ff97184cdcdaf877cf62d3f16678e2 ]
+[ Upstream commit f68a0445ee86e48dafbfdea50163ad6fc6dba268 ]
 
 ____cacheline_aligned is insufficient guarantee for non-coherent DMA.
 Switch to the updated IIO_DMA_MINALIGN definition.
 
-Fixes: bf2a5600a3ebc ("iio: accel: Add support for Bosch BMA220")
+Fixes: 636d44633039 ("iio: accel: Add driver support for ADXL313")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-6-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-3-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/bma220_spi.c | 2 +-
+ drivers/iio/accel/adxl313_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
-index 74024d7ce5ac..b6d9ab8e2054 100644
---- a/drivers/iio/accel/bma220_spi.c
-+++ b/drivers/iio/accel/bma220_spi.c
-@@ -67,7 +67,7 @@ struct bma220_data {
- 		/* Ensure timestamp is naturally aligned. */
- 		s64 timestamp __aligned(8);
- 	} scan;
--	u8 tx_buf[2] ____cacheline_aligned;
-+	u8 tx_buf[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+index 9e4193e64765..afeef779e1d0 100644
+--- a/drivers/iio/accel/adxl313_core.c
++++ b/drivers/iio/accel/adxl313_core.c
+@@ -46,7 +46,7 @@ EXPORT_SYMBOL_NS_GPL(adxl313_writable_regs_table, IIO_ADXL313);
+ struct adxl313_data {
+ 	struct regmap	*regmap;
+ 	struct mutex	lock; /* lock to protect transf_buf */
+-	__le16		transf_buf ____cacheline_aligned;
++	__le16		transf_buf __aligned(IIO_DMA_MINALIGN);
  };
  
- static const struct iio_chan_spec bma220_channels[] = {
+ static const int adxl313_odr_freqs[][2] = {
 -- 
 2.35.1
 
