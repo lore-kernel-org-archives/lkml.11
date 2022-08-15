@@ -2,268 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 870E0C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 03:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0655DC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 03:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiHPDJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 23:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
+        id S232878AbiHPDKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 23:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232419AbiHPDIX (ORCPT
+        with ESMTP id S231707AbiHPDJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 23:08:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF172E8CA1;
-        Mon, 15 Aug 2022 16:39:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A581D61215;
-        Mon, 15 Aug 2022 23:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2149C433C1;
-        Mon, 15 Aug 2022 23:39:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660606749;
-        bh=8A/Gm1tkLVNOD5P37NTEDu0GP8gm1yqnjqDf3fx1uOs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khIQpOip+hdJ7WJl//IqtKW58xVx9koobs9j2wem9uceX9dwBS26rKe8LCm/906Ek
-         +Lcgg99nud2krf/Y/lMHmdAToeuZ/aWexbf2qySY3Ny2MBzb6ZMq7cpHQEr2+zSxRJ
-         EEC8P0jukho0S7GMHW7jq+sPJDG3X9nTAhW7CE6CdF3TLtHtnFBXV2fPVaEpnVEx4w
-         1L4NsiTwCyxf+rOsnpBRvvgLyH9K1GHNnIXrNO8RnSc5LoBlY87iL1Lx5wwZBEbE33
-         etqvnXM2lT5qgqHrUjI6v5ZfS2wfndCBye+F4yrQyCfqQRgAnCG+WGFat+NY6DeaFD
-         WdFa6tAt3JiZA==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-sgx@vger.kernel.org
-Cc:     Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/2] selftests/sgx: Add SGX selftest augment_via_eaccept_long
-Date:   Tue, 16 Aug 2022 02:39:00 +0300
-Message-Id: <20220815233900.11225-2-jarkko@kernel.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220815233900.11225-1-jarkko@kernel.org>
-References: <20220815233900.11225-1-jarkko@kernel.org>
+        Mon, 15 Aug 2022 23:09:27 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4528E2EB18D;
+        Mon, 15 Aug 2022 16:39:56 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e27so5990765wra.11;
+        Mon, 15 Aug 2022 16:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=fNZ/gu4y7lfnFdkzN59SrFsjLrasJHIFSJmdJSlw+Vg=;
+        b=Wi7h8LTYLPTSh3B5af4Y32gM2Hz99rqlKJV3ZCftNwtNAT/ECYv/kQSWZnzEnYojwK
+         b9QMuGsS0E5OV1NBLuVFVozNAMa6693lC13WRCl60Aa8hTRa+O5FYwQM1xLue5stgWcN
+         sCJxTOW6D2x3VGTn5eI5Lo4yYP0QvCsBHfqkD0YCgREqFP/n5xMi184wwxmqnvfuCNL/
+         InQs/7Srm8qpchb+sH0H8193B78OKT64MDSGcdazcGE/qXg4JSNl+jQfx3WrmsLHWTBV
+         YBJgtTYb7TCl+aE2u0xPECWZjCisRsnWKTdliM7/pObogqKBwVcouaUHWsKDlqdvv0az
+         r3Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=fNZ/gu4y7lfnFdkzN59SrFsjLrasJHIFSJmdJSlw+Vg=;
+        b=R30pL2oXlzrVwV2u1yPBpBdYPqs3D3sIWY+5fdrlJCmpMwfBhHPH4oYWsrtBaXbeLo
+         /y/pykEkttlUIHR0EecxQ1/RfQfzLTp1kTIdfaMb55eJjSkY9DN7fTGush9FB7NPANRx
+         8akB9keY7S+H7E41awjGAeNsR2xugDeYaxEheVjjattH058pgxYOLMIXO87UcR5DwkEq
+         PgkQDbchJZfCK6sjj/9s6Ztq/4QFS/VEMD8W3901rx2/jT0zA6O5IDmnF2PdiVaWQn25
+         QXVZXFc/OMwgzolfB1i8tMjw2ZMYNqNklBzNlEOno2zXc8/LJc93AjV1katK13+X1gAq
+         feow==
+X-Gm-Message-State: ACgBeo1sM8nL0OSd8bin+8pBItLrtn9voHhqgDOuZdR3qGDdL1lwe6H8
+        A+PzGpTOXmROY919dLQ8d8MHfF+2qFo=
+X-Google-Smtp-Source: AA6agR6mCwlJu7tApOQkto2S84JFh2mY8NPl3dwKAYlBSYbO7MwVT8vcMJU/LKsS4wdnmwNp+0X8mA==
+X-Received: by 2002:adf:d1c4:0:b0:220:7a85:ad7c with SMTP id b4-20020adfd1c4000000b002207a85ad7cmr9426609wrd.128.1660606793976;
+        Mon, 15 Aug 2022 16:39:53 -0700 (PDT)
+Received: from localhost.localdomain (188.red-83-35-57.dynamicip.rima-tde.net. [83.35.57.188])
+        by smtp.gmail.com with ESMTPSA id bh13-20020a05600c3d0d00b003a550be861bsm11197144wmb.27.2022.08.15.16.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 16:39:53 -0700 (PDT)
+From:   Angel Iglesias <ang.iglesiasg@gmail.com>
+To:     linux-iio <linux-iio@vger.kernel.org>
+Cc:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: pressure: bmp280: fix datasheet links
+Date:   Tue, 16 Aug 2022 01:38:54 +0200
+Message-Id: <6e908cc827c70b95dae683717592aff0b003e7c9.1660606478.git.ang.iglesiasg@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijay Dhanraj <vijay.dhanraj@intel.com>
+Updated links for BMP280 and BME280 datasheets on Bosch website.
+Datasheet of BMP180 is no longer available on the manufacturer's website,
+changed the link to a copy hosted by a third party.
 
-Add a new test case which is same as augment_via_eaccept but adds a
-larger number of EPC pages to stress test EAUG via EACCEPT.
-
-Signed-off-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
 ---
-I removed Githubisms (hyphens), added missing subsystem tag, and
-cleaned up the commit message a bit.
- tools/testing/selftests/sgx/load.c      |   5 +-
- tools/testing/selftests/sgx/main.c      | 120 +++++++++++++++++++++++-
- tools/testing/selftests/sgx/main.h      |   3 +-
- tools/testing/selftests/sgx/sigstruct.c |   2 +-
- 4 files changed, 125 insertions(+), 5 deletions(-)
+ drivers/iio/pressure/bmp280-core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/sgx/load.c b/tools/testing/selftests/sgx/load.c
-index 94bdeac1cf04..7de1b15c90b1 100644
---- a/tools/testing/selftests/sgx/load.c
-+++ b/tools/testing/selftests/sgx/load.c
-@@ -171,7 +171,8 @@ uint64_t encl_get_entry(struct encl *encl, const char *symbol)
- 	return 0;
- }
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index fe7aa81e7cc9..e98b024d510b 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -9,9 +9,9 @@
+  * Driver for Bosch Sensortec BMP180 and BMP280 digital pressure sensor.
+  *
+  * Datasheet:
+- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP180-DS000-121.pdf
+- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001-12.pdf
+- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_DS001-11.pdf
++ * https://cdn-shop.adafruit.com/datasheets/BST-BMP180-DS000-09.pdf
++ * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf
++ * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf
+  */
  
--bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
-+bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
-+			   unsigned long edmm_size)
- {
- 	const char device_path[] = "/dev/sgx_enclave";
- 	struct encl_segment *seg;
-@@ -300,7 +301,7 @@ bool encl_load(const char *path, struct encl *encl, unsigned long heap_size)
- 
- 	encl->src_size = encl->segment_tbl[j].offset + encl->segment_tbl[j].size;
- 
--	for (encl->encl_size = 4096; encl->encl_size < encl->src_size; )
-+	for (encl->encl_size = 4096; encl->encl_size < encl->src_size + edmm_size;)
- 		encl->encl_size <<= 1;
- 
- 	return true;
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index 9820b3809c69..65e79682f75e 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -25,6 +25,8 @@ static const uint64_t MAGIC = 0x1122334455667788ULL;
- static const uint64_t MAGIC2 = 0x8877665544332211ULL;
- vdso_sgx_enter_enclave_t vdso_sgx_enter_enclave;
- 
-+static const unsigned long edmm_size = 8589934592; //8G
-+
- /*
-  * Security Information (SECINFO) data structure needed by a few SGX
-  * instructions (eg. ENCLU[EACCEPT] and ENCLU[EMODPE]) holds meta-data
-@@ -183,7 +185,7 @@ static bool setup_test_encl(unsigned long heap_size, struct encl *encl,
- 	unsigned int i;
- 	void *addr;
- 
--	if (!encl_load("test_encl.elf", encl, heap_size)) {
-+	if (!encl_load("test_encl.elf", encl, heap_size, edmm_size)) {
- 		encl_delete(encl);
- 		TH_LOG("Failed to load the test enclave.");
- 		return false;
-@@ -1210,6 +1212,122 @@ TEST_F(enclave, augment_via_eaccept)
- 	munmap(addr, PAGE_SIZE);
- }
- 
-+/*
-+ * Test for the addition of large number of pages to an initialized enclave via
-+ * a pre-emptive run of EACCEPT on page to be added.
-+ */
-+#define TIMEOUT_LONG 900 /* seconds */
-+TEST_F_TIMEOUT(enclave, augment_via_eaccept_long, TIMEOUT_LONG)
-+{
-+	struct encl_op_get_from_addr get_addr_op;
-+	struct encl_op_put_to_addr put_addr_op;
-+	struct encl_op_eaccept eaccept_op;
-+	size_t total_size = 0;
-+	void *addr;
-+	unsigned long i;
-+
-+	if (!sgx2_supported())
-+		SKIP(return, "SGX2 not supported");
-+
-+	ASSERT_TRUE(setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata));
-+
-+	memset(&self->run, 0, sizeof(self->run));
-+	self->run.tcs = self->encl.encl_base;
-+
-+	for (i = 0; i < self->encl.nr_segments; i++) {
-+		struct encl_segment *seg = &self->encl.segment_tbl[i];
-+
-+		total_size += seg->size;
-+		TH_LOG("test enclave: total_size = %ld, seg->size = %ld", total_size, seg->size);
-+	}
-+
-+	/*
-+	 * Actual enclave size is expected to be larger than the loaded
-+	 * test enclave since enclave size must be a power of 2 in bytes while
-+	 * test_encl does not consume it all.
-+	 */
-+	EXPECT_LT(total_size + edmm_size, self->encl.encl_size);
-+
-+	/*
-+	 * mmap() a page at end of existing enclave to be used for dynamic
-+	 * EPC page.
-+	 *
-+	 * Kernel will allow new mapping using any permissions if it
-+	 * falls into the enclave's address range but not backed
-+	 * by existing enclave pages.
-+	 */
-+	TH_LOG("mmaping pages at end of enclave...");
-+	addr = mmap((void *)self->encl.encl_base + total_size, edmm_size,
-+			PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_FIXED,
-+			self->encl.fd, 0);
-+	EXPECT_NE(addr, MAP_FAILED);
-+
-+	self->run.exception_vector = 0;
-+	self->run.exception_error_code = 0;
-+	self->run.exception_addr = 0;
-+
-+	/*
-+	 * Run EACCEPT on new page to trigger the #PF->EAUG->EACCEPT(again
-+	 * without a #PF). All should be transparent to userspace.
-+	 */
-+	TH_LOG("Entering enclave to run EACCEPT for each page of %zd bytes may take a while ...",
-+			edmm_size);
-+	eaccept_op.flags = SGX_SECINFO_R | SGX_SECINFO_W | SGX_SECINFO_REG | SGX_SECINFO_PENDING;
-+	eaccept_op.ret = 0;
-+	eaccept_op.header.type = ENCL_OP_EACCEPT;
-+
-+	for (i = 0; i < edmm_size; i += 4096) {
-+		eaccept_op.epc_addr = (uint64_t)(addr + i);
-+
-+		EXPECT_EQ(ENCL_CALL(&eaccept_op, &self->run, true), 0);
-+		if (self->run.exception_vector == 14 &&
-+			self->run.exception_error_code == 4 &&
-+			self->run.exception_addr == self->encl.encl_base) {
-+			munmap(addr, edmm_size);
-+			SKIP(return, "Kernel does not support adding pages to initialized enclave");
-+		}
-+
-+		EXPECT_EQ(self->run.exception_vector, 0);
-+		EXPECT_EQ(self->run.exception_error_code, 0);
-+		EXPECT_EQ(self->run.exception_addr, 0);
-+		ASSERT_EQ(eaccept_op.ret, 0);
-+		ASSERT_EQ(self->run.function, EEXIT);
-+	}
-+
-+	/*
-+	 * New page should be accessible from within enclave - attempt to
-+	 * write to it.
-+	 */
-+	put_addr_op.value = MAGIC;
-+	put_addr_op.addr = (unsigned long)addr;
-+	put_addr_op.header.type = ENCL_OP_PUT_TO_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&put_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	/*
-+	 * Read memory from newly added page that was just written to,
-+	 * confirming that data previously written (MAGIC) is present.
-+	 */
-+	get_addr_op.value = 0;
-+	get_addr_op.addr = (unsigned long)addr;
-+	get_addr_op.header.type = ENCL_OP_GET_FROM_ADDRESS;
-+
-+	EXPECT_EQ(ENCL_CALL(&get_addr_op, &self->run, true), 0);
-+
-+	EXPECT_EQ(get_addr_op.value, MAGIC);
-+	EXPECT_EEXIT(&self->run);
-+	EXPECT_EQ(self->run.exception_vector, 0);
-+	EXPECT_EQ(self->run.exception_error_code, 0);
-+	EXPECT_EQ(self->run.exception_addr, 0);
-+
-+	munmap(addr, edmm_size);
-+}
-+
- /*
-  * SGX2 page type modification test in two phases:
-  * Phase 1:
-diff --git a/tools/testing/selftests/sgx/main.h b/tools/testing/selftests/sgx/main.h
-index fc585be97e2f..fe5d39ac0e1e 100644
---- a/tools/testing/selftests/sgx/main.h
-+++ b/tools/testing/selftests/sgx/main.h
-@@ -35,7 +35,8 @@ extern unsigned char sign_key[];
- extern unsigned char sign_key_end[];
- 
- void encl_delete(struct encl *ctx);
--bool encl_load(const char *path, struct encl *encl, unsigned long heap_size);
-+bool encl_load(const char *path, struct encl *encl, unsigned long heap_size,
-+			   unsigned long edmm_size);
- bool encl_measure(struct encl *encl);
- bool encl_build(struct encl *encl);
- uint64_t encl_get_entry(struct encl *encl, const char *symbol);
-diff --git a/tools/testing/selftests/sgx/sigstruct.c b/tools/testing/selftests/sgx/sigstruct.c
-index 50c5ab1aa6fa..6000cf0e4975 100644
---- a/tools/testing/selftests/sgx/sigstruct.c
-+++ b/tools/testing/selftests/sgx/sigstruct.c
-@@ -343,7 +343,7 @@ bool encl_measure(struct encl *encl)
- 	if (!ctx)
- 		goto err;
- 
--	if (!mrenclave_ecreate(ctx, encl->src_size))
-+	if (!mrenclave_ecreate(ctx, encl->encl_size))
- 		goto err;
- 
- 	for (i = 0; i < encl->nr_segments; i++) {
+ #define pr_fmt(fmt) "bmp280: " fmt
+
+base-commit: b82217e73b5aa6db8453ad91b929ca2366e47184
 -- 
-2.37.1
+2.37.2
 
