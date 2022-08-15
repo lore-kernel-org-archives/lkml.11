@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACFBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF659C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352466AbiHOW6d (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
+        id S244887AbiHOW6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352677AbiHOW4f (ORCPT
+        with ESMTP id S1352688AbiHOW4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:56:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B1B12F733;
-        Mon, 15 Aug 2022 12:55:50 -0700 (PDT)
+        Mon, 15 Aug 2022 18:56:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACF145F57;
+        Mon, 15 Aug 2022 12:55:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 328A2CE12C3;
-        Mon, 15 Aug 2022 19:55:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB601C433C1;
-        Mon, 15 Aug 2022 19:55:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11F2DB8113E;
+        Mon, 15 Aug 2022 19:55:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 657F6C433D6;
+        Mon, 15 Aug 2022 19:55:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593347;
-        bh=So4KEy2R+io5ZynIl2AOA2Bc69IgEvmlEzIA5aE010w=;
+        s=korg; t=1660593350;
+        bh=orIIS7BYb3VLHuYePj/5e3TmpzqFAIGk++ZHHXrEeps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ot5VwNHTCOnB67Ak9aOSNo7GbrizxFyQLsqV998pBd9E7tCCVxw8BzEcUgx7qHNCZ
-         Juylxn4fknX2qVB+KJHWSg9ikS89JdFWeAmvn1t+HsfmeIWLrvJLCqgHJ7HPc+jGNa
-         CP38CgrJBPu3QY8QALJclccNm1nI4n9iqu1yseZc=
+        b=sC3YceNFatU5B/6zfKu1IYR8UWZQ7WNuUaTrhk9pbJTjFiKx+cPFqFGOZeyJlOhTA
+         fYPXHJRyvnANogN7MniJKi7qd8ZpP0FNCAvWny3uNQqcwOYz2qmfT0pG5yuHw3IVrH
+         nvQ2KPkk+MFVH5hA7lYmY7s/UltycpuySRJcjDMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Jin Liu <jinl@redhat.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0254/1157] ACPI: VIOT: Fix ACS setup
-Date:   Mon, 15 Aug 2022 19:53:30 +0200
-Message-Id: <20220815180449.759726806@linuxfoundation.org>
+Subject: [PATCH 5.18 0933/1095] f2fs: fix to check inline_data during compressed inode conversion
+Date:   Mon, 15 Aug 2022 20:05:32 +0200
+Message-Id: <20220815180507.819193313@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,110 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Auger <eric.auger@redhat.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 3dcb861dbc6ab101838a1548b1efddd00ca3c3ec ]
+[ Upstream commit 7165841d578e0592848e09dc9d131aa30be44e1b ]
 
-Currently acpi_viot_init() gets called after the pci
-device has been scanned and pci_enable_acs() has been called.
-So pci_request_acs() fails to be taken into account leading
-to wrong single iommu group topologies when dealing with
-multi-function root ports for instance.
+When converting inode to compressed one via ioctl, it needs to check
+inline_data, since inline_data flag and compressed flag are incompatible.
 
-We cannot simply move the acpi_viot_init() earlier, similarly
-as the IORT init because the VIOT parsing relies on the pci
-scan. However we can detect VIOT is present earlier and in
-such a case, request ACS. Introduce a new acpi_viot_early_init()
-routine that allows to call pci_request_acs() before the scan.
-
-While at it, guard the call to pci_request_acs() with #ifdef
-CONFIG_PCI.
-
-Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
-Reported-by: Jin Liu <jinl@redhat.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 4c8ff7095bef ("f2fs: support data compression")
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/bus.c        |  1 +
- drivers/acpi/viot.c       | 26 ++++++++++++++++++++------
- include/linux/acpi_viot.h |  2 ++
- 3 files changed, 23 insertions(+), 6 deletions(-)
+ fs/f2fs/f2fs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index e2db1bdd9dd2..1d36bb684f5c 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -1399,6 +1399,7 @@ static int __init acpi_init(void)
- 
- 	pci_mmcfg_late_init();
- 	acpi_iort_init();
-+	acpi_viot_early_init();
- 	acpi_hest_init();
- 	acpi_ghes_init();
- 	acpi_scan_init();
-diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-index d2256326c73a..647f11cf165d 100644
---- a/drivers/acpi/viot.c
-+++ b/drivers/acpi/viot.c
-@@ -248,6 +248,26 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
- 	return ret;
- }
- 
-+/**
-+ * acpi_viot_early_init - Test the presence of VIOT and enable ACS
-+ *
-+ * If the VIOT does exist, ACS must be enabled. This cannot be
-+ * done in acpi_viot_init() which is called after the bus scan
-+ */
-+void __init acpi_viot_early_init(void)
-+{
-+#ifdef CONFIG_PCI
-+	acpi_status status;
-+	struct acpi_table_header *hdr;
-+
-+	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
-+	if (ACPI_FAILURE(status))
-+		return;
-+	pci_request_acs();
-+	acpi_put_table(hdr);
-+#endif
-+}
-+
- /**
-  * acpi_viot_init - Parse the VIOT table
-  *
-@@ -319,12 +339,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
- 			epid = ((domain_nr - ep->segment_start) << 16) +
- 				dev_id - ep->bdf_start + ep->endpoint_id;
- 
--			/*
--			 * If we found a PCI range managed by the viommu, we're
--			 * the one that has to request ACS.
--			 */
--			pci_request_acs();
--
- 			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
- 						   epid);
- 		}
-diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
-index 1eb8ee5b0e5f..a5a122431563 100644
---- a/include/linux/acpi_viot.h
-+++ b/include/linux/acpi_viot.h
-@@ -6,9 +6,11 @@
- #include <linux/acpi.h>
- 
- #ifdef CONFIG_ACPI_VIOT
-+void __init acpi_viot_early_init(void);
- void __init acpi_viot_init(void);
- int viot_iommu_configure(struct device *dev);
- #else
-+static inline void acpi_viot_early_init(void) {}
- static inline void acpi_viot_init(void) {}
- static inline int viot_iommu_configure(struct device *dev)
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index ce8f496a7e5d..3f8a3d63a971 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4382,7 +4382,7 @@ static inline bool f2fs_lfs_mode(struct f2fs_sb_info *sbi)
+ static inline bool f2fs_may_compress(struct inode *inode)
  {
+ 	if (IS_SWAPFILE(inode) || f2fs_is_pinned_file(inode) ||
+-				f2fs_is_atomic_file(inode))
++		f2fs_is_atomic_file(inode) || f2fs_has_inline_data(inode))
+ 		return false;
+ 	return S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode);
+ }
 -- 
 2.35.1
 
