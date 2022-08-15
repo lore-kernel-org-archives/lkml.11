@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E65A0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCE9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245128AbiHOTDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
+        id S245142AbiHOTDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245022AbiHOS4d (ORCPT
+        with ESMTP id S245048AbiHOS4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:56:33 -0400
+        Mon, 15 Aug 2022 14:56:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593273123E;
-        Mon, 15 Aug 2022 11:31:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E0E2A723;
+        Mon, 15 Aug 2022 11:31:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1A9061029;
-        Mon, 15 Aug 2022 18:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD37CC433D6;
-        Mon, 15 Aug 2022 18:31:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 921C361045;
+        Mon, 15 Aug 2022 18:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1A0C433C1;
+        Mon, 15 Aug 2022 18:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588271;
-        bh=cTSrOZZlQgwy0HFIlp6AGXKL8rVxPWkxyDtUG4Olxmw=;
+        s=korg; t=1660588281;
+        bh=vHE7bzpXCHPPzuOeyNENQUQhtUMxApiv+WHVyCycKlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEXFY1xxHiKlKzM63U4MhLUoSnWchax/TlAZQ7mcX1Mi8hXZ9OVL5+xVxmDP0u14L
-         9KLSD3Yh2jiIdc+wIn5x2Tb6cA15eATFB1Z9Ugyp3/4urI7DEpjoqvUmuKlJIXEM2O
-         FdTVa17QNnUYsHQLSJVuAaPq5CtwgmI3b7lvB/ZE=
+        b=h15KyDnbNQZocGbcbVAeht684bbzvtZ6fExgKIKx4+YGEhbLx1ldqwjWo1+AilZ6v
+         DARBesa5PhL39FIFqlLtAaIlsCMFfM2jWE/3RHuWBvEoDbPyL257uX0suW2esfTYhg
+         8MyZh73MwzEzA3pAS/dCpb3Wl8URLeOqAbf0reVI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 349/779] selftests/bpf: fix a test for snprintf() overflow
-Date:   Mon, 15 Aug 2022 19:59:53 +0200
-Message-Id: <20220815180352.150562016@linuxfoundation.org>
+Subject: [PATCH 5.15 352/779] can: rcar_can: do not report txerr and rxerr during bus-off
+Date:   Mon, 15 Aug 2022 19:59:56 +0200
+Message-Id: <20220815180352.288125995@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,37 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit c5d22f4cfe8dfb93f1db0a1e7e2e7ebc41395d98 ]
+[ Upstream commit a37b7245e831a641df360ca41db6a71c023d3746 ]
 
-The snprintf() function returns the number of bytes which *would*
-have been copied if there were space.  In other words, it can be
-> sizeof(pin_path).
+During bus off, the error count is greater than 255 and can not fit in
+a u8.
 
-Fixes: c0fa1b6c3efc ("bpf: btf: Add BTF tests")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/r/YtZ+aD/tZMkgOUw+@kili
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
+Link: https://lore.kernel.org/all/20220719143550.3681-3-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/btf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/rcar/rcar_can.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
-index 649f87382c8d..50afa75bd45b 100644
---- a/tools/testing/selftests/bpf/prog_tests/btf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/btf.c
-@@ -4913,7 +4913,7 @@ static void do_test_pprint(int test_num)
- 	ret = snprintf(pin_path, sizeof(pin_path), "%s/%s",
- 		       "/sys/fs/bpf", test->map_name);
- 
--	if (CHECK(ret == sizeof(pin_path), "pin_path %s/%s is too long",
-+	if (CHECK(ret >= sizeof(pin_path), "pin_path %s/%s is too long",
- 		  "/sys/fs/bpf", test->map_name)) {
- 		err = -1;
- 		goto done;
+diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
+index 8999ec9455ec..945b319de841 100644
+--- a/drivers/net/can/rcar/rcar_can.c
++++ b/drivers/net/can/rcar/rcar_can.c
+@@ -235,11 +235,8 @@ static void rcar_can_error(struct net_device *ndev)
+ 	if (eifr & (RCAR_CAN_EIFR_EWIF | RCAR_CAN_EIFR_EPIF)) {
+ 		txerr = readb(&priv->regs->tecr);
+ 		rxerr = readb(&priv->regs->recr);
+-		if (skb) {
++		if (skb)
+ 			cf->can_id |= CAN_ERR_CRTL;
+-			cf->data[6] = txerr;
+-			cf->data[7] = rxerr;
+-		}
+ 	}
+ 	if (eifr & RCAR_CAN_EIFR_BEIF) {
+ 		int rx_errors = 0, tx_errors = 0;
+@@ -339,6 +336,9 @@ static void rcar_can_error(struct net_device *ndev)
+ 		can_bus_off(ndev);
+ 		if (skb)
+ 			cf->can_id |= CAN_ERR_BUSOFF;
++	} else if (skb) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
+ 	}
+ 	if (eifr & RCAR_CAN_EIFR_ORIF) {
+ 		netdev_dbg(priv->ndev, "Receive overrun error interrupt\n");
 -- 
 2.35.1
 
