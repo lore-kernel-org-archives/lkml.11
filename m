@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1DEC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0BEC25B08
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346834AbiHPA5B (ORCPT
+        id S1346606AbiHPA4z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
+        Mon, 15 Aug 2022 20:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345775AbiHPAvD (ORCPT
+        with ESMTP id S1345504AbiHPAu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:51:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED934B69F8;
-        Mon, 15 Aug 2022 13:46:43 -0700 (PDT)
+        Mon, 15 Aug 2022 20:50:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFAA199B2A;
+        Mon, 15 Aug 2022 13:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A88A3B81197;
-        Mon, 15 Aug 2022 20:46:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94D9C433C1;
-        Mon, 15 Aug 2022 20:46:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E62B9CE12C3;
+        Mon, 15 Aug 2022 20:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB81C433C1;
+        Mon, 15 Aug 2022 20:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596401;
-        bh=xVQQgNRQH83af2R6Yq9bjg1K5EtMy1gWKh5F6Uvmb9c=;
+        s=korg; t=1660596411;
+        bh=VHaLffJQoHaI+IOtGGNDfDZgg2sKNs5qPuw8gRU1Og8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zffe1L15BIa2qg6M8fyKhfgb+G+xe7mpeeoP7gbgTgMmvEXhm0mr2KPemUeZVslR9
-         n+9FdaljlWHidOuEdOEzOX5u6ibAwgX7iVEw1zlEtDlGRkNSTovW4YPzZ7CMxJHCjy
-         DQWmRyhZ19T+sOHlIxznetTN8dzxXEHL74MVvh08=
+        b=GtGLWgOW9FIRgUgUPm1+jviG+EZDWvBIho5/fW/fMws1nL+zPHWP3OPdL+PfS80V3
+         yrQPXEvpAT0p+3XOabZcE7kgCRfk5E/9VaXIDCCnkVrOnKJ1Uq/6q8v/I3FIHQbJKr
+         9thRezn4ozh0N/29GqL5q7zA+afB0+a0KvI65EKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org, Philipp Rudo <prudo@linux.ibm.com>,
+        kexec@lists.infradead.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        "Lee, Chun-Yi" <jlee@suse.com>, Baoquan He <bhe@redhat.com>,
+        Coiby Xu <coxu@redhat.com>, Heiko Carstens <hca@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1068/1157] dm writecache: set a default MAX_WRITEBACK_JOBS
-Date:   Mon, 15 Aug 2022 20:07:04 +0200
-Message-Id: <20220815180522.830441037@linuxfoundation.org>
+Subject: [PATCH 5.19 1071/1157] kexec, KEYS, s390: Make use of built-in and secondary keyring for signature verification
+Date:   Mon, 15 Aug 2022 20:07:07 +0200
+Message-Id: <20220815180522.963428530@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,39 +55,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Michal Suchanek <msuchanek@suse.de>
 
-[ Upstream commit ca7dc242e358e46d963b32f9d9dd829785a9e957 ]
+[ Upstream commit 0828c4a39be57768b8788e8cbd0d84683ea757e5 ]
 
-dm-writecache has the capability to limit the number of writeback jobs
-in progress. However, this feature was off by default. As such there
-were some out-of-memory crashes observed when lowering the low
-watermark while the cache is full.
+commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
+adds support for KEXEC_SIG verification with keys from platform keyring
+but the built-in keys and secondary keyring are not used.
 
-This commit enables writeback limit by default. It is set to 256MiB or
-1/16 of total system memory, whichever is smaller.
+Add support for the built-in keys and secondary keyring as x86 does.
 
+Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
 Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Cc: Philipp Rudo <prudo@linux.ibm.com>
+Cc: kexec@lists.infradead.org
+Cc: keyrings@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
+Acked-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-writecache.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/kernel/machine_kexec_file.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
-index d74c5a7a0ab4..d572135cd43f 100644
---- a/drivers/md/dm-writecache.c
-+++ b/drivers/md/dm-writecache.c
-@@ -22,7 +22,7 @@
+diff --git a/arch/s390/kernel/machine_kexec_file.c b/arch/s390/kernel/machine_kexec_file.c
+index 8f43575a4dd3..fc6d5f58debe 100644
+--- a/arch/s390/kernel/machine_kexec_file.c
++++ b/arch/s390/kernel/machine_kexec_file.c
+@@ -31,6 +31,7 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
+ 	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
+ 	struct module_signature *ms;
+ 	unsigned long sig_len;
++	int ret;
  
- #define HIGH_WATERMARK			50
- #define LOW_WATERMARK			45
--#define MAX_WRITEBACK_JOBS		0
-+#define MAX_WRITEBACK_JOBS		min(0x10000000 / PAGE_SIZE, totalram_pages() / 16)
- #define ENDIO_LATENCY			16
- #define WRITEBACK_LATENCY		64
- #define AUTOCOMMIT_BLOCKS_SSD		65536
+ 	/* Skip signature verification when not secure IPLed. */
+ 	if (!ipl_secure_flag)
+@@ -65,11 +66,18 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
+ 		return -EBADMSG;
+ 	}
+ 
+-	return verify_pkcs7_signature(kernel, kernel_len,
+-				      kernel + kernel_len, sig_len,
+-				      VERIFY_USE_PLATFORM_KEYRING,
+-				      VERIFYING_MODULE_SIGNATURE,
+-				      NULL, NULL);
++	ret = verify_pkcs7_signature(kernel, kernel_len,
++				     kernel + kernel_len, sig_len,
++				     VERIFY_USE_SECONDARY_KEYRING,
++				     VERIFYING_MODULE_SIGNATURE,
++				     NULL, NULL);
++	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))
++		ret = verify_pkcs7_signature(kernel, kernel_len,
++					     kernel + kernel_len, sig_len,
++					     VERIFY_USE_PLATFORM_KEYRING,
++					     VERIFYING_MODULE_SIGNATURE,
++					     NULL, NULL);
++	return ret;
+ }
+ #endif /* CONFIG_KEXEC_SIG */
+ 
 -- 
 2.35.1
 
