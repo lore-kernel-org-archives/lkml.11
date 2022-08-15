@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E97FCC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6917FC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244722AbiHPAzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
+        id S244942AbiHPAzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:55:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245640AbiHPAtE (ORCPT
+        with ESMTP id S1344545AbiHPAtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:49:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7AFB602F;
-        Mon, 15 Aug 2022 13:45:55 -0700 (PDT)
+        Mon, 15 Aug 2022 20:49:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C8E169C75;
+        Mon, 15 Aug 2022 13:45:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FED46125F;
-        Mon, 15 Aug 2022 20:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73C7C433D6;
-        Mon, 15 Aug 2022 20:45:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E0478CE1187;
+        Mon, 15 Aug 2022 20:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B020AC433C1;
+        Mon, 15 Aug 2022 20:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596354;
-        bh=SmZYZEpOelWUIJG7oTgTHs2s9xh0YRCxcCr5ctiy6do=;
+        s=korg; t=1660596351;
+        bh=+qpLPaKGzazoYN5NC/HJnxora1lgK1xSLQ58YvKLZK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLRmUwYRp1vsoUdmbGA/lUUxvnNdo0GqJ1vuPZiSaOiKq7xllfuudLdCEuxC0dcTX
-         xIoUl53h70s+tevOMsasaUq2jAYLcTTNW2Wi68wFEMQoOmckpj6ta/PQbqdZlDxlbh
-         yNup14Vcs657w+hA2TJvkSIvpaiOX1lkX/UzvWso=
+        b=EPQR4Y5wpukCCaGP04UA0mwLGOaEV5i2c6FXhoXfT6cW/Q+ZJcf9s7ao2uSuXh3BN
+         76ZP6bXtgM8DQ+RQtwMWr+TUShok5CyQb4Y2EpUkHYAI0uftifFUY/OjvzWoRK1tLN
+         dxJc2mj98ld6LsHifpm53y8BhNYb5MKQof0gx9OY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        David Collins <quic_collinsd@quicinc.com>
-Subject: [PATCH 5.19 1054/1157] spmi: trace: fix stack-out-of-bound access in SPMI tracing functions
-Date:   Mon, 15 Aug 2022 20:06:50 +0200
-Message-Id: <20220815180522.220477068@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 5.19 1053/1157] __follow_mount_rcu(): verify that mount_lock remains unchanged
+Date:   Mon, 15 Aug 2022 20:06:49 +0200
+Message-Id: <20220815180522.175089622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,110 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Collins <quic_collinsd@quicinc.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 2af28b241eea816e6f7668d1954f15894b45d7e3 upstream.
+commit 20aac6c60981f5bfacd66661d090d907bf1482f0 upstream.
 
-trace_spmi_write_begin() and trace_spmi_read_end() both call
-memcpy() with a length of "len + 1".  This leads to one extra
-byte being read beyond the end of the specified buffer.  Fix
-this out-of-bound memory access by using a length of "len"
-instead.
+Validate mount_lock seqcount as soon as we cross into mount in RCU
+mode.  Sure, ->mnt_root is pinned and will remain so until we
+do rcu_read_unlock() anyway, and we will eventually fail to unlazy if
+the mount_lock had been touched, but we might run into a hard error
+(e.g. -ENOENT) before trying to unlazy.  And it's possible to end
+up with RCU pathwalk racing with rename() and umount() in a way
+that would fail with -ENOENT while non-RCU pathwalk would've
+succeeded with any timings.
 
-Here is a KASAN log showing the issue:
+Once upon a time we hadn't needed that, but analysis had been subtle,
+brittle and went out of window as soon as RENAME_EXCHANGE had been
+added.
 
-BUG: KASAN: stack-out-of-bounds in trace_event_raw_event_spmi_read_end+0x1d0/0x234
-Read of size 2 at addr ffffffc0265b7540 by task thermal@2.0-ser/1314
-...
-Call trace:
- dump_backtrace+0x0/0x3e8
- show_stack+0x2c/0x3c
- dump_stack_lvl+0xdc/0x11c
- print_address_description+0x74/0x384
- kasan_report+0x188/0x268
- kasan_check_range+0x270/0x2b0
- memcpy+0x90/0xe8
- trace_event_raw_event_spmi_read_end+0x1d0/0x234
- spmi_read_cmd+0x294/0x3ac
- spmi_ext_register_readl+0x84/0x9c
- regmap_spmi_ext_read+0x144/0x1b0 [regmap_spmi]
- _regmap_raw_read+0x40c/0x754
- regmap_raw_read+0x3a0/0x514
- regmap_bulk_read+0x418/0x494
- adc5_gen3_poll_wait_hs+0xe8/0x1e0 [qcom_spmi_adc5_gen3]
- ...
- __arm64_sys_read+0x4c/0x60
- invoke_syscall+0x80/0x218
- el0_svc_common+0xec/0x1c8
- ...
+It's narrow, hard to hit and won't get you anything other than
+stray -ENOENT that could be arranged in much easier way with the
+same priveleges, but it's a bug all the same.
 
-addr ffffffc0265b7540 is located in stack of task thermal@2.0-ser/1314 at offset 32 in frame:
- adc5_gen3_poll_wait_hs+0x0/0x1e0 [qcom_spmi_adc5_gen3]
-
-this frame has 1 object:
- [32, 33) 'status'
-
-Memory state around the buggy address:
- ffffffc0265b7400: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
- ffffffc0265b7480: 04 f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
->ffffffc0265b7500: 00 00 00 00 f1 f1 f1 f1 01 f3 f3 f3 00 00 00 00
-                                           ^
- ffffffc0265b7580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffffffc0265b7600: f1 f1 f1 f1 01 f2 07 f2 f2 f2 01 f3 00 00 00 00
-==================================================================
-
-Fixes: a9fce374815d ("spmi: add command tracepoints for SPMI")
-Cc: stable@vger.kernel.org
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: David Collins <quic_collinsd@quicinc.com>
-Link: https://lore.kernel.org/r/20220627235512.2272783-1-quic_collinsd@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@kernel.org
+X-sky-is-falling: unlikely
+Fixes: da1ce0670c14 "vfs: add cross-rename"
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/spmi.h |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ fs/namei.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/include/trace/events/spmi.h
-+++ b/include/trace/events/spmi.h
-@@ -21,15 +21,15 @@ TRACE_EVENT(spmi_write_begin,
- 		__field		( u8,         sid       )
- 		__field		( u16,        addr      )
- 		__field		( u8,         len       )
--		__dynamic_array	( u8,   buf,  len + 1   )
-+		__dynamic_array	( u8,   buf,  len       )
- 	),
- 
- 	TP_fast_assign(
- 		__entry->opcode = opcode;
- 		__entry->sid    = sid;
- 		__entry->addr   = addr;
--		__entry->len    = len + 1;
--		memcpy(__get_dynamic_array(buf), buf, len + 1);
-+		__entry->len    = len;
-+		memcpy(__get_dynamic_array(buf), buf, len);
- 	),
- 
- 	TP_printk("opc=%d sid=%02d addr=0x%04x len=%d buf=0x[%*phD]",
-@@ -92,7 +92,7 @@ TRACE_EVENT(spmi_read_end,
- 		__field		( u16,        addr      )
- 		__field		( int,        ret       )
- 		__field		( u8,         len       )
--		__dynamic_array	( u8,   buf,  len + 1   )
-+		__dynamic_array	( u8,   buf,  len       )
- 	),
- 
- 	TP_fast_assign(
-@@ -100,8 +100,8 @@ TRACE_EVENT(spmi_read_end,
- 		__entry->sid    = sid;
- 		__entry->addr   = addr;
- 		__entry->ret    = ret;
--		__entry->len    = len + 1;
--		memcpy(__get_dynamic_array(buf), buf, len + 1);
-+		__entry->len    = len;
-+		memcpy(__get_dynamic_array(buf), buf, len);
- 	),
- 
- 	TP_printk("opc=%d sid=%02d addr=0x%04x ret=%d len=%02d buf=0x[%*phD]",
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -1505,6 +1505,8 @@ static bool __follow_mount_rcu(struct na
+ 				 * becoming unpinned.
+ 				 */
+ 				flags = dentry->d_flags;
++				if (read_seqretry(&mount_lock, nd->m_seq))
++					return false;
+ 				continue;
+ 			}
+ 			if (read_seqretry(&mount_lock, nd->m_seq))
 
 
