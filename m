@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F738C2BBC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12ABC32763
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347085AbiHOUQr (ORCPT
+        id S1347150AbiHOUQu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        Mon, 15 Aug 2022 16:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346697AbiHOUMA (ORCPT
+        with ESMTP id S1345876AbiHOUJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB7285A8B;
-        Mon, 15 Aug 2022 11:58:12 -0700 (PDT)
+        Mon, 15 Aug 2022 16:09:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964C860D1;
+        Mon, 15 Aug 2022 11:56:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7434E61274;
-        Mon, 15 Aug 2022 18:58:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77768C433C1;
-        Mon, 15 Aug 2022 18:58:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33AFB6123D;
+        Mon, 15 Aug 2022 18:56:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22DA0C433D7;
+        Mon, 15 Aug 2022 18:56:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589890;
-        bh=V1Q9LMJoIqpGyydO3a1zid7QGNBisxqlZD0J0mhVsWY=;
+        s=korg; t=1660589775;
+        bh=2s6DLnBMZjpDPk2dGSvozIT9Ci6o/Qk7OdSE3YjsmmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2T+G2RiNpuX1vXQhg4Dz+fKIYzlyb1iFClXiXFYgpiqqrnj/ZNBUabeS8lUBXa+b
-         q2fy9C6tjZvwEO8FpTy3Ltoe5iwJSe74bwThAu/tOFr1kyT1BPMc/mSP9pazV2+n+s
-         PMFRE3+gA/blOsfMmi9G559pOHed9R2OAkjLYm3Q=
+        b=BJdO86NdPkkEcOcVxkUo9AOtbTu/00uhfPWBByrsyhB+10JOOn2hcA9To4YWpeJjh
+         z+ZUGIY8Bk+XoH8Lhev/5qDXgF7oQkksEEfOI3V+XRDp/0Aoxy88j7Rr8DSKLlFiKA
+         Rk3w1LDrKX3VV7oQxcFt+qHWsnwksklW4SJdjcOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.18 0081/1095] drm/nouveau: Dont pm_runtime_put_sync(), only pm_runtime_put_autosuspend()
-Date:   Mon, 15 Aug 2022 19:51:20 +0200
-Message-Id: <20220815180432.872099520@linuxfoundation.org>
+        stable@vger.kernel.org, Bedant Patnaik <bedant.patnaik@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 0045/1095] ALSA: hda/realtek: Add a quirk for HP OMEN 15 (8786) mute LED
+Date:   Mon, 15 Aug 2022 19:50:44 +0200
+Message-Id: <20220815180431.311522894@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,54 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Bedant Patnaik <bedant.patnaik@gmail.com>
 
-commit c96cfaf8fc02d4bb70727dfa7ce7841a3cff9be2 upstream.
+commit 30267718fe2d4dbea49015b022f6f1fe16ca31ab upstream.
 
-While trying to fix another issue, it occurred to me that I don't actually
-think there is any situation where we want pm_runtime_put() in nouveau to
-be synchronous. In fact, this kind of just seems like it would cause
-issues where we may unexpectedly block a thread we don't expect to be
-blocked.
+Board ID 8786 seems to be another variant of the Omen 15 that needs
+ALC285_FIXUP_HP_MUTE_LED for working mute LED.
 
-So, let's only use pm_runtime_put_autosuspend().
-
-Changes since v1:
-* Use pm_runtime_put_autosuspend(), not pm_runtime_put()
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: 3a6536c51d5d ("drm/nouveau: Intercept ACPI_VIDEO_NOTIFY_PROBE")
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: <stable@vger.kernel.org> # v4.10+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-3-lyude@redhat.com
+Signed-off-by: Bedant Patnaik <bedant.patnaik@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220809142455.6473-1-bedant.patnaik@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
- drivers/gpu/drm/nouveau/nouveau_fbcon.c   |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/gpu/drm/nouveau/nouveau_display.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_display.c
-@@ -515,7 +515,7 @@ nouveau_display_hpd_work(struct work_str
- 
- 	pm_runtime_mark_last_busy(drm->dev->dev);
- noop:
--	pm_runtime_put_sync(drm->dev->dev);
-+	pm_runtime_put_autosuspend(dev->dev);
- }
- 
- #ifdef CONFIG_ACPI
---- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-@@ -466,7 +466,7 @@ nouveau_fbcon_set_suspend_work(struct wo
- 	if (state == FBINFO_STATE_RUNNING) {
- 		nouveau_fbcon_hotplug_resume(drm->fbcon);
- 		pm_runtime_mark_last_busy(drm->dev->dev);
--		pm_runtime_put_sync(drm->dev->dev);
-+		pm_runtime_put_autosuspend(drm->dev->dev);
- 	}
- }
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9230,6 +9230,7 @@ static const struct snd_pci_quirk alc269
+ 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
+ 	SND_PCI_QUIRK(0x103c, 0x8783, "HP ZBook Fury 15 G7 Mobile Workstation",
+ 		      ALC285_FIXUP_HP_GPIO_AMP_INIT),
++	SND_PCI_QUIRK(0x103c, 0x8786, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8787, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8788, "HP OMEN 15", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x87c8, "HP", ALC287_FIXUP_HP_GPIO_LED),
 
 
