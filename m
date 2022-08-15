@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FCBEC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E884C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346350AbiHPBBR (ORCPT
+        id S1346670AbiHPBBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45754 "EHLO
+        Mon, 15 Aug 2022 21:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233193AbiHPAy0 (ORCPT
+        with ESMTP id S234091AbiHPAzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:54:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB4319D0DB;
-        Mon, 15 Aug 2022 13:47:53 -0700 (PDT)
+        Mon, 15 Aug 2022 20:55:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30627B6D34;
+        Mon, 15 Aug 2022 13:48:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EB476126B;
-        Mon, 15 Aug 2022 20:47:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8539AC433C1;
-        Mon, 15 Aug 2022 20:47:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BD8561275;
+        Mon, 15 Aug 2022 20:48:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2429CC433C1;
+        Mon, 15 Aug 2022 20:48:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596471;
-        bh=PgS+X4waG6qoAFVttaBkxVxkx/Dv9YS9LoA/5cdQop8=;
+        s=korg; t=1660596484;
+        bh=fsFL3STqQ0KHXUfZVj2nrX8o7+oXVGvcMWcTnpI8gB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UdZA1aHtHn1l5e0U5R5nP4iLT//LCr9N0Jf4Urdwxm9l3mEsi+pG45GdiVVObbJV1
-         F5lMHK6s93oIB5TxVQSTYNEMCJVLoEj7czBRPxYFzKWNoCyZHbK5REejSazCnaVCRV
-         mqxqPP0Eg5BmwUOLDo9+h4mU4HJX/dU9P0Zoe+gg=
+        b=fbo4X/DL8/NShB7BSkgAOELlUxITDKJpEyXb+4kXJPoVoG8LqfIcARdAV83eGDt1+
+         OBYSYAawNPgRZB9gyEoI1j5e9xPrdSKYaEEU5sHs3aZ3YwGzjZKkv57q0EHvbJPVdm
+         vtgyAQVxvmZ7HfekRCNz5AEmTm/67U3XfJFFPKiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Roesch <shr@fb.com>,
+        stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
         David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1091/1157] btrfs: store chunk size in space-info struct
-Date:   Mon, 15 Aug 2022 20:07:27 +0200
-Message-Id: <20220815180523.838271730@linuxfoundation.org>
+Subject: [PATCH 5.19 1095/1157] btrfs: zoned: write out partially allocated region
+Date:   Mon, 15 Aug 2022 20:07:31 +0200
+Message-Id: <20220815180524.033833947@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,139 +50,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Roesch <shr@fb.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit f6fca3917b4d99d8c13901738afec35f570a3c2f ]
+[ Upstream commit 898793d992c23dac6126a6a94ad893eae1a2c9df ]
 
-The chunk size is stored in the btrfs_space_info structure.  It is
-initialized at the start and is then used.
+cow_file_range() works in an all-or-nothing way: if it fails to allocate an
+extent for a part of the given region, it gives up all the region including
+the successfully allocated parts. On cow_file_range(), run_delalloc_zoned()
+writes data for the region only when it successfully allocate all the
+region.
 
-A new API is added to update the current chunk size.  This API is used
-to be able to expose the chunk_size as a sysfs setting.
+This all-or-nothing allocation and write-out are problematic when available
+space in all the block groups are get tight with the active zone
+restriction. btrfs_reserve_extent() try hard to utilize the left space in
+the active block groups and gives up finally and fails with
+-ENOSPC. However, if we send IOs for the successfully allocated region, we
+can finish a zone and can continue on the rest of the allocation on a newly
+allocated block group.
 
-Signed-off-by: Stefan Roesch <shr@fb.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-[ rename and merge helpers, switch atomic type to u64, style fixes ]
+This patch implements the partial write-out for run_delalloc_zoned(). With
+this patch applied, cow_file_range() returns -EAGAIN to tell the caller to
+do something to progress the further allocation, and tells the successfully
+allocated region with done_offset. Furthermore, the zoned extent allocator
+returns -EAGAIN to tell cow_file_range() going back to the caller side.
+
+Actually, we still need to wait for an IO to complete to continue the
+allocation. The next patch implements that part.
+
+CC: stable@vger.kernel.org # 5.16+
+Fixes: afba2bc036b0 ("btrfs: zoned: implement active zone tracking")
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/space-info.c | 32 ++++++++++++++++++++++++++++++++
- fs/btrfs/space-info.h |  4 ++++
- fs/btrfs/volumes.c    | 28 +++++++++-------------------
- 3 files changed, 45 insertions(+), 19 deletions(-)
+ fs/btrfs/extent-tree.c | 10 +++++++
+ fs/btrfs/inode.c       | 63 ++++++++++++++++++++++++++++++++----------
+ 2 files changed, 59 insertions(+), 14 deletions(-)
 
-diff --git a/fs/btrfs/space-info.c b/fs/btrfs/space-info.c
-index f301149c7597..51fbfd716623 100644
---- a/fs/btrfs/space-info.c
-+++ b/fs/btrfs/space-info.c
-@@ -187,6 +187,37 @@ void btrfs_clear_space_info_full(struct btrfs_fs_info *info)
-  */
- #define BTRFS_DEFAULT_ZONED_RECLAIM_THRESH			(75)
+diff --git a/fs/btrfs/extent-tree.c b/fs/btrfs/extent-tree.c
+index ad45083c6461..f2c79838ebe5 100644
+--- a/fs/btrfs/extent-tree.c
++++ b/fs/btrfs/extent-tree.c
+@@ -4012,6 +4012,16 @@ static int can_allocate_chunk_zoned(struct btrfs_fs_info *fs_info,
+ 	if (ffe_ctl->max_extent_size >= ffe_ctl->min_alloc_size)
+ 		return -ENOSPC;
  
-+/*
-+ * Calculate chunk size depending on volume type (regular or zoned).
-+ */
-+static u64 calc_chunk_size(const struct btrfs_fs_info *fs_info, u64 flags)
-+{
-+	if (btrfs_is_zoned(fs_info))
-+		return fs_info->zone_size;
++	/*
++	 * Even min_alloc_size is not left in any block groups. Since we cannot
++	 * activate a new block group, allocating it may not help. Let's tell a
++	 * caller to try again and hope it progress something by writing some
++	 * parts of the region. That is only possible for data block groups,
++	 * where a part of the region can be written.
++	 */
++	if (ffe_ctl->flags & BTRFS_BLOCK_GROUP_DATA)
++		return -EAGAIN;
 +
-+	ASSERT(flags & BTRFS_BLOCK_GROUP_TYPE_MASK);
-+
-+	if (flags & BTRFS_BLOCK_GROUP_DATA)
-+		return SZ_1G;
-+	else if (flags & BTRFS_BLOCK_GROUP_SYSTEM)
-+		return SZ_32M;
-+
-+	/* Handle BTRFS_BLOCK_GROUP_METADATA */
-+	if (fs_info->fs_devices->total_rw_bytes > 50ULL * SZ_1G)
-+		return SZ_1G;
-+
-+	return SZ_256M;
-+}
-+
-+/*
-+ * Update default chunk size.
-+ */
-+void btrfs_update_space_info_chunk_size(struct btrfs_space_info *space_info,
-+					u64 chunk_size)
-+{
-+	WRITE_ONCE(space_info->chunk_size, chunk_size);
-+}
-+
- static int create_space_info(struct btrfs_fs_info *info, u64 flags)
- {
- 
-@@ -208,6 +239,7 @@ static int create_space_info(struct btrfs_fs_info *info, u64 flags)
- 	INIT_LIST_HEAD(&space_info->tickets);
- 	INIT_LIST_HEAD(&space_info->priority_tickets);
- 	space_info->clamp = 1;
-+	btrfs_update_space_info_chunk_size(space_info, calc_chunk_size(info, flags));
- 
- 	if (btrfs_is_zoned(info))
- 		space_info->bg_reclaim_threshold = BTRFS_DEFAULT_ZONED_RECLAIM_THRESH;
-diff --git a/fs/btrfs/space-info.h b/fs/btrfs/space-info.h
-index c096695598c1..e7de24a529cf 100644
---- a/fs/btrfs/space-info.h
-+++ b/fs/btrfs/space-info.h
-@@ -25,6 +25,8 @@ struct btrfs_space_info {
- 	u64 max_extent_size;	/* This will hold the maximum extent size of
- 				   the space info if we had an ENOSPC in the
- 				   allocator. */
-+	/* Chunk size in bytes */
-+	u64 chunk_size;
- 
  	/*
- 	 * Once a block group drops below this threshold (percents) we'll
-@@ -123,6 +125,8 @@ void btrfs_update_space_info(struct btrfs_fs_info *info, u64 flags,
- 			     u64 total_bytes, u64 bytes_used,
- 			     u64 bytes_readonly, u64 bytes_zone_unusable,
- 			     struct btrfs_space_info **space_info);
-+void btrfs_update_space_info_chunk_size(struct btrfs_space_info *space_info,
-+					u64 chunk_size);
- struct btrfs_space_info *btrfs_find_space_info(struct btrfs_fs_info *info,
- 					       u64 flags);
- u64 __pure btrfs_space_info_used(struct btrfs_space_info *s_info,
-diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-index 9c20049d1fec..9cd9d06f5469 100644
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -5071,26 +5071,16 @@ static void init_alloc_chunk_ctl_policy_regular(
- 				struct btrfs_fs_devices *fs_devices,
- 				struct alloc_chunk_ctl *ctl)
+ 	 * We cannot activate a new block group and no enough space left in any
+ 	 * block groups. So, allocating a new block group may not help. But,
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 30e454197fb9..4f5249f5cb34 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -118,7 +118,8 @@ static int btrfs_finish_ordered_io(struct btrfs_ordered_extent *ordered_extent);
+ static noinline int cow_file_range(struct btrfs_inode *inode,
+ 				   struct page *locked_page,
+ 				   u64 start, u64 end, int *page_started,
+-				   unsigned long *nr_written, int unlock);
++				   unsigned long *nr_written, int unlock,
++				   u64 *done_offset);
+ static struct extent_map *create_io_em(struct btrfs_inode *inode, u64 start,
+ 				       u64 len, u64 orig_start, u64 block_start,
+ 				       u64 block_len, u64 orig_block_len,
+@@ -920,7 +921,7 @@ static int submit_uncompressed_range(struct btrfs_inode *inode,
+ 	 * can directly submit them without interruption.
+ 	 */
+ 	ret = cow_file_range(inode, locked_page, start, end, &page_started,
+-			     &nr_written, 0);
++			     &nr_written, 0, NULL);
+ 	/* Inline extent inserted, page gets unlocked and everything is done */
+ 	if (page_started) {
+ 		ret = 0;
+@@ -1169,7 +1170,8 @@ static u64 get_extent_allocation_hint(struct btrfs_inode *inode, u64 start,
+ static noinline int cow_file_range(struct btrfs_inode *inode,
+ 				   struct page *locked_page,
+ 				   u64 start, u64 end, int *page_started,
+-				   unsigned long *nr_written, int unlock)
++				   unsigned long *nr_written, int unlock,
++				   u64 *done_offset)
  {
--	u64 type = ctl->type;
-+	struct btrfs_space_info *space_info;
- 
--	if (type & BTRFS_BLOCK_GROUP_DATA) {
--		ctl->max_stripe_size = SZ_1G;
--		ctl->max_chunk_size = BTRFS_MAX_DATA_CHUNK_SIZE;
--	} else if (type & BTRFS_BLOCK_GROUP_METADATA) {
--		/* For larger filesystems, use larger metadata chunks */
--		if (fs_devices->total_rw_bytes > 50ULL * SZ_1G)
--			ctl->max_stripe_size = SZ_1G;
--		else
--			ctl->max_stripe_size = SZ_256M;
--		ctl->max_chunk_size = ctl->max_stripe_size;
--	} else if (type & BTRFS_BLOCK_GROUP_SYSTEM) {
--		ctl->max_stripe_size = SZ_32M;
--		ctl->max_chunk_size = 2 * ctl->max_stripe_size;
--		ctl->devs_max = min_t(int, ctl->devs_max,
--				      BTRFS_MAX_DEVS_SYS_CHUNK);
--	} else {
--		BUG();
--	}
-+	space_info = btrfs_find_space_info(fs_devices->fs_info, ctl->type);
-+	ASSERT(space_info);
+ 	struct btrfs_root *root = inode->root;
+ 	struct btrfs_fs_info *fs_info = root->fs_info;
+@@ -1362,6 +1364,21 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
+ 	btrfs_dec_block_group_reservations(fs_info, ins.objectid);
+ 	btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, 1);
+ out_unlock:
++	/*
++	 * If done_offset is non-NULL and ret == -EAGAIN, we expect the
++	 * caller to write out the successfully allocated region and retry.
++	 */
++	if (done_offset && ret == -EAGAIN) {
++		if (orig_start < start)
++			*done_offset = start - 1;
++		else
++			*done_offset = start;
++		return ret;
++	} else if (ret == -EAGAIN) {
++		/* Convert to -ENOSPC since the caller cannot retry. */
++		ret = -ENOSPC;
++	}
 +
-+	ctl->max_chunk_size = READ_ONCE(space_info->chunk_size);
-+	ctl->max_stripe_size = ctl->max_chunk_size;
-+
-+	if (ctl->type & BTRFS_BLOCK_GROUP_SYSTEM)
-+		ctl->devs_max = min_t(int, ctl->devs_max, BTRFS_MAX_DEVS_SYS_CHUNK);
+ 	/*
+ 	 * Now, we have three regions to clean up:
+ 	 *
+@@ -1607,19 +1624,37 @@ static noinline int run_delalloc_zoned(struct btrfs_inode *inode,
+ 				       u64 end, int *page_started,
+ 				       unsigned long *nr_written)
+ {
++	u64 done_offset = end;
+ 	int ret;
++	bool locked_page_done = false;
  
- 	/* We don't want a chunk larger than 10% of writable space */
- 	ctl->max_chunk_size = min(div_factor(fs_devices->total_rw_bytes, 1),
+-	ret = cow_file_range(inode, locked_page, start, end, page_started,
+-			     nr_written, 0);
+-	if (ret)
+-		return ret;
++	while (start <= end) {
++		ret = cow_file_range(inode, locked_page, start, end, page_started,
++				     nr_written, 0, &done_offset);
++		if (ret && ret != -EAGAIN)
++			return ret;
+ 
+-	if (*page_started)
+-		return 0;
++		if (*page_started) {
++			ASSERT(ret == 0);
++			return 0;
++		}
++
++		if (ret == 0)
++			done_offset = end;
++
++		if (done_offset == start)
++			return -ENOSPC;
++
++		if (!locked_page_done) {
++			__set_page_dirty_nobuffers(locked_page);
++			account_page_redirty(locked_page);
++		}
++		locked_page_done = true;
++		extent_write_locked_range(&inode->vfs_inode, start, done_offset);
++
++		start = done_offset + 1;
++	}
+ 
+-	__set_page_dirty_nobuffers(locked_page);
+-	account_page_redirty(locked_page);
+-	extent_write_locked_range(&inode->vfs_inode, start, end);
+ 	*page_started = 1;
+ 
+ 	return 0;
+@@ -1711,7 +1746,7 @@ static int fallback_to_cow(struct btrfs_inode *inode, struct page *locked_page,
+ 	}
+ 
+ 	return cow_file_range(inode, locked_page, start, end, page_started,
+-			      nr_written, 1);
++			      nr_written, 1, NULL);
+ }
+ 
+ struct can_nocow_file_extent_args {
+@@ -2184,7 +2219,7 @@ int btrfs_run_delalloc_range(struct btrfs_inode *inode, struct page *locked_page
+ 						 page_started, nr_written);
+ 		else
+ 			ret = cow_file_range(inode, locked_page, start, end,
+-					     page_started, nr_written, 1);
++					     page_started, nr_written, 1, NULL);
+ 	} else {
+ 		set_bit(BTRFS_INODE_HAS_ASYNC_EXTENT, &inode->runtime_flags);
+ 		ret = cow_file_range_async(inode, wbc, locked_page, start, end,
 -- 
 2.35.1
 
