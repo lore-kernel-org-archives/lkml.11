@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C18FDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAAFC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbiHOW7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S245226AbiHOW7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352340AbiHOW5e (ORCPT
+        with ESMTP id S244346AbiHOW6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:57:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901E9696C8;
-        Mon, 15 Aug 2022 12:56:17 -0700 (PDT)
+        Mon, 15 Aug 2022 18:58:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF73696EE;
+        Mon, 15 Aug 2022 12:56:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9951A6068D;
-        Mon, 15 Aug 2022 19:56:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F573C433D6;
-        Mon, 15 Aug 2022 19:56:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B4483CE12C3;
+        Mon, 15 Aug 2022 19:56:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3899C433D6;
+        Mon, 15 Aug 2022 19:56:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593376;
-        bh=mxljtDHMst5iwqEorc0AT/oDFsf1xLqdqqSlxIcDaPk=;
+        s=korg; t=1660593379;
+        bh=An8D4+n6Jwfwj91yuPxd1/4FqbUNxpmahaeImPslgKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/5iSo9YXpoCXa1teqGEcWT86pGty0cZcIC0L7Yfg10Uz7K8kfna55rqyRZTmAEUb
-         eVUuBxtN8/s0V6pbh4nJUOkatgRHP6PVdKR/sYVIuD2RVGrMY9Fz81I01OUe03Is6H
-         uYm+pDZqj6o9uj4ODoBXdtNTQHfuFWVmGHfakVuM=
+        b=VOMkSoXnxPkU16uJuio/Yx/9NzX/3HhNHtyIbErzeEcKNAeQ60b1DSiWri91atBoa
+         xfv42pgg9a7vFnmt6nyTN+i7+JoymJwiV/NhjHhRk4QZ999sGU4HLcXszDLbCSU8gO
+         qGfZtx5vCc1M5ofGYshtl2WAoX6wWfbKXzH5Vabg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0245/1157] bus: hisi_lpc: fix missing platform_device_put() in hisi_lpc_acpi_probe()
-Date:   Mon, 15 Aug 2022 19:53:21 +0200
-Message-Id: <20220815180449.371980832@linuxfoundation.org>
+Subject: [PATCH 5.18 0937/1095] powerpc/xive: Fix refcount leak in xive_get_max_prio
+Date:   Mon, 15 Aug 2022 20:05:36 +0200
+Message-Id: <20220815180507.977193732@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,72 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 54872fea6a5ac967ec2272aea525d1438ac6735a ]
+[ Upstream commit 255b650cbec6849443ce2e0cdd187fd5e61c218c ]
 
-In error case in hisi_lpc_acpi_probe() after calling platform_device_add(),
-hisi_lpc_acpi_remove() can't release the failed 'pdev', so it will be leak,
-call platform_device_put() to fix this problem.
-I'v constructed this error case and tested this patch on D05 board.
+of_find_node_by_path() returns a node pointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 99c0228d6ff1 ("HISI LPC: Re-Add ACPI child enumeration support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220605053225.56125-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/hisi_lpc.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/powerpc/sysdev/xive/spapr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 378f5d62a991..e7eaa8784fee 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -503,13 +503,13 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- {
- 	struct acpi_device *adev = ACPI_COMPANION(hostdev);
- 	struct acpi_device *child;
-+	struct platform_device *pdev;
- 	int ret;
- 
- 	/* Only consider the children of the host */
- 	list_for_each_entry(child, &adev->children, node) {
- 		const char *hid = acpi_device_hid(child);
- 		const struct hisi_lpc_acpi_cell *cell;
--		struct platform_device *pdev;
- 		const struct resource *res;
- 		bool found = false;
- 		int num_res;
-@@ -571,22 +571,24 @@ static int hisi_lpc_acpi_probe(struct device *hostdev)
- 
- 		ret = platform_device_add_resources(pdev, res, num_res);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add_data(pdev, cell->pdata,
- 					       cell->pdata_size);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		ret = platform_device_add(pdev);
- 		if (ret)
--			goto fail;
-+			goto fail_put_device;
- 
- 		acpi_device_set_enumerated(child);
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index b0d36e430dbc..013446f5cdbb 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -716,6 +716,7 @@ static bool __init xive_get_max_prio(u8 *max_prio)
  	}
  
- 	return 0;
- 
-+fail_put_device:
-+	platform_device_put(pdev);
- fail:
- 	hisi_lpc_acpi_remove(hostdev);
- 	return ret;
+ 	reg = of_get_property(rootdn, "ibm,plat-res-int-priorities", &len);
++	of_node_put(rootdn);
+ 	if (!reg) {
+ 		pr_err("Failed to read 'ibm,plat-res-int-priorities' property\n");
+ 		return false;
 -- 
 2.35.1
 
