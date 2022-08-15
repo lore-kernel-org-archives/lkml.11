@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA36C32766
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DCAC32762
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350719AbiHOW1I (ORCPT
+        id S1350373AbiHOW0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
+        Mon, 15 Aug 2022 18:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346934AbiHOWTU (ORCPT
+        with ESMTP id S1349919AbiHOWRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:19:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF3667CB8;
-        Mon, 15 Aug 2022 12:43:10 -0700 (PDT)
+        Mon, 15 Aug 2022 18:17:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BBC3F313;
+        Mon, 15 Aug 2022 12:40:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECD70610A5;
-        Mon, 15 Aug 2022 19:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF9B3C433C1;
-        Mon, 15 Aug 2022 19:43:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C01EC61217;
+        Mon, 15 Aug 2022 19:40:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D36C43470;
+        Mon, 15 Aug 2022 19:40:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592589;
-        bh=AQoc+YaavwcFgbgCemNJ/K77IuFwFrWjNBQeM9fthTU=;
+        s=korg; t=1660592423;
+        bh=YHnaOV5Y4krgMZM6veswHxagQoNsgvH0gQzfp0blJqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOvZNVAAISby7ey5WJaDFn3IHT2q8VwD8ha7oZNZy8uriqx8e/ASqPqa0ibiAGRoh
-         TTD5VL2+YFZXsFWD5KfqAznlSfw6E01VasKESAbe/nCPSWJN/OwOoBbZB0bPVFC8+U
-         EnQR5O12RgNnekVeChtRJm2M28stsLgH/g0RxfFg=
+        b=Xcd5ZAfeNvmAu0IIOlurHnNzaRbhtleCcmiRvztfdLL7ZK+fvpZQahqT4gSpNit6u
+         tgJiFg7cNxJXxhjj8NQvi7e0K9FzNpWhJhyPUYfc0zqh8+JfQs3/FPJTgXQ6jTmSSB
+         p25u947ROUD6EvyLo/comO1Y3VLNpa3hkuINYneU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
-        Jose Alonso <joalonsof@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 0134/1157] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-Date:   Mon, 15 Aug 2022 19:51:30 +0200
-Message-Id: <20220815180444.999331025@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Peng Fan <peng.fan@nxp.com>, Georgi Djakov <djakov@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0762/1095] interconnect: imx: fix max_node_id
+Date:   Mon, 15 Aug 2022 20:02:41 +0200
+Message-Id: <20220815180500.792253160@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,150 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Alonso <joalonsof@gmail.com>
+From: Peng Fan <peng.fan@nxp.com>
 
-commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
+[ Upstream commit bd734481e172b4827af09c9ab06c51d2ab7201e6 ]
 
-This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
+max_node_id not equal to the ARRAY_SIZE of node array, need increase 1,
+otherwise xlate will fail for the last entry. And rename max_node_id
+to num_nodes to reflect the reality.
 
-The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
-versions that have no issues.
-
-The FLAG_SEND_ZLP is not safe to use in this context.
-See:
-https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
-The original problem needs another way to solve.
-
-Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
-Cc: stable@vger.kernel.org
-Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
-Link: https://bugs.archlinux.org/task/75491
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f0d8048525d7d ("interconnect: Add imx core driver")
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Link: https://lore.kernel.org/r/20220703091132.1412063-5-peng.fan@oss.nxp.com
+Signed-off-by: Georgi Djakov <djakov@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/ax88179_178a.c |   26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/interconnect/imx/imx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1801,7 +1801,7 @@ static const struct driver_info ax88179_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1814,7 +1814,7 @@ static const struct driver_info ax88178a
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1827,7 +1827,7 @@ static const struct driver_info cypress_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1840,7 +1840,7 @@ static const struct driver_info dlink_du
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1853,7 +1853,7 @@ static const struct driver_info sitecom_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1866,7 +1866,7 @@ static const struct driver_info samsung_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1879,7 +1879,7 @@ static const struct driver_info lenovo_i
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1892,7 +1892,7 @@ static const struct driver_info belkin_i
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1905,7 +1905,7 @@ static const struct driver_info toshiba_
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1918,7 +1918,7 @@ static const struct driver_info mct_info
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1931,7 +1931,7 @@ static const struct driver_info at_umc20
- 	.link_reset = ax88179_link_reset,
- 	.reset  = ax88179_reset,
- 	.stop   = ax88179_stop,
--	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1944,7 +1944,7 @@ static const struct driver_info at_umc20
- 	.link_reset = ax88179_link_reset,
- 	.reset  = ax88179_reset,
- 	.stop   = ax88179_stop,
--	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1957,7 +1957,7 @@ static const struct driver_info at_umc20
- 	.link_reset = ax88179_link_reset,
- 	.reset  = ax88179_reset,
- 	.stop   = ax88179_stop,
--	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
+diff --git a/drivers/interconnect/imx/imx.c b/drivers/interconnect/imx/imx.c
+index 249ca25d1d55..4406ec45fa90 100644
+--- a/drivers/interconnect/imx/imx.c
++++ b/drivers/interconnect/imx/imx.c
+@@ -234,16 +234,16 @@ int imx_icc_register(struct platform_device *pdev,
+ 	struct device *dev = &pdev->dev;
+ 	struct icc_onecell_data *data;
+ 	struct icc_provider *provider;
+-	int max_node_id;
++	int num_nodes;
+ 	int ret;
+ 
+ 	/* icc_onecell_data is indexed by node_id, unlike nodes param */
+-	max_node_id = get_max_node_id(nodes, nodes_count);
+-	data = devm_kzalloc(dev, struct_size(data, nodes, max_node_id),
++	num_nodes = get_max_node_id(nodes, nodes_count) + 1;
++	data = devm_kzalloc(dev, struct_size(data, nodes, num_nodes),
+ 			    GFP_KERNEL);
+ 	if (!data)
+ 		return -ENOMEM;
+-	data->num_nodes = max_node_id;
++	data->num_nodes = num_nodes;
+ 
+ 	provider = devm_kzalloc(dev, sizeof(*provider), GFP_KERNEL);
+ 	if (!provider)
+-- 
+2.35.1
+
 
 
