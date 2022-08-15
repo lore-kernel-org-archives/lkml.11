@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2347C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C24C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346995AbiHOV25 (ORCPT
+        id S1347396AbiHOV3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
+        Mon, 15 Aug 2022 17:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245098AbiHOVUe (ORCPT
+        with ESMTP id S243729AbiHOVWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:20:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA513E588B;
-        Mon, 15 Aug 2022 12:22:15 -0700 (PDT)
+        Mon, 15 Aug 2022 17:22:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0292AE68D4;
+        Mon, 15 Aug 2022 12:22:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA0D60BB7;
-        Mon, 15 Aug 2022 19:22:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C49C433C1;
-        Mon, 15 Aug 2022 19:22:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 188B760BB7;
+        Mon, 15 Aug 2022 19:22:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0789FC433D6;
+        Mon, 15 Aug 2022 19:22:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591334;
-        bh=X8rFAxY+1PXy9Zrxo9sXm4SKMV2fUnYTBhpKiaevkaU=;
+        s=korg; t=1660591340;
+        bh=0SYm1VVHnhtjkTsyruKuYLbCCiFCcr39+3jSY7b7QZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d1aUcKivYOmCF/VS8Mbd+TMmRcIxv9owOUVr74mA3zDDGgzfjb5+p6f0naDLP3zeq
-         QbloJrmnlPlOlJ14WtP/9qmegVvBAAgU96e0lWcLVmT12HGIuNjz5EjElVDOZNb2lo
-         O6WG9x3jJB12vxjYsR955NKcZgbiPNm39bc5ohO8=
+        b=De0rs9zQ0SuETDgbIkSkjRKWZ/nG+NeTKwkBBrvPMd5R/mQvK5UCxOj/xp5d/EqSy
+         1zgjPN7ky9QMG3kOy2/Omo+RGjKkB/2hOMIHm+MQn00I+iAqun3jcmMKCJ637oXtQK
+         cPqmQy3y7JpiXrPQUqLVRYpuqh3fPlgnU9TdTcXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0547/1095] scsi: qla2xxx: edif: Reduce Initiator-Initiator thrashing
-Date:   Mon, 15 Aug 2022 19:59:06 +0200
-Message-Id: <20220815180452.181731637@linuxfoundation.org>
+Subject: [PATCH 5.18 0549/1095] scsi: qla2xxx: edif: Wait for app to ack on sess down
+Date:   Mon, 15 Aug 2022 19:59:08 +0200
+Message-Id: <20220815180452.266487763@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,321 +53,240 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 9c40c36e75ffd49952cd4ead0672defc4b4dbdf7 ]
+[ Upstream commit df648afa39da9c4d3af99c6c03dc3e9c7dfa99b0 ]
 
-This patch uses GFFID switch command to scan whether remote device is
-Target or Initiator mode.  Based on that info, driver will not pass up
-Initiator info to authentication application. This helps reduce unnecessary
-stress for authentication application to deal with unused connections.
+On session deletion, wait for app to acknowledge before moving on. This
+allows both app and driver to stay in sync. In addition, this gives a
+chance for authentication app to do any type of cleanup before moving on.
 
-Link: https://lore.kernel.org/r/20220607044627.19563-2-njavali@marvell.com
-Fixes: 7ebb336e45ef ("scsi: qla2xxx: edif: Add start + stop bsgs")
+Link: https://lore.kernel.org/r/20220607044627.19563-4-njavali@marvell.com
+Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
 Signed-off-by: Quinn Tran <qutran@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h  |   2 +
- drivers/scsi/qla2xxx/qla_edif.c |  32 ++++++++-
- drivers/scsi/qla2xxx/qla_gbl.h  |   3 +-
- drivers/scsi/qla2xxx/qla_gs.c   | 118 +++++++++++++++++++++++---------
- drivers/scsi/qla2xxx/qla_iocb.c |   2 +-
- 5 files changed, 120 insertions(+), 37 deletions(-)
+ drivers/scsi/qla2xxx/qla_def.h    |  2 +-
+ drivers/scsi/qla2xxx/qla_edif.c   | 66 +++++++++++++++++++++++++------
+ drivers/scsi/qla2xxx/qla_init.c   |  4 --
+ drivers/scsi/qla2xxx/qla_target.c | 35 ++++++++--------
+ 4 files changed, 74 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/scsi/qla2xxx/qla_def.h b/drivers/scsi/qla2xxx/qla_def.h
-index f25a131fb07e..5f22276927dd 100644
+index 5f22276927dd..c2b92a6fef90 100644
 --- a/drivers/scsi/qla2xxx/qla_def.h
 +++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -3204,6 +3204,8 @@ struct ct_sns_rsp {
- #define GFF_NVME_OFFSET		23 /* type = 28h */
- 		struct {
- 			uint8_t fc4_features[128];
-+#define FC4_FF_TARGET    BIT_0
-+#define FC4_FF_INITIATOR BIT_1
- 		} gff_id;
- 		struct {
- 			uint8_t reserved;
+@@ -2626,7 +2626,6 @@ typedef struct fc_port {
+ 	struct {
+ 		uint32_t	enable:1;	/* device is edif enabled/req'd */
+ 		uint32_t	app_stop:2;
+-		uint32_t	app_started:1;
+ 		uint32_t	aes_gmac:1;
+ 		uint32_t	app_sess_online:1;
+ 		uint32_t	tx_sa_set:1;
+@@ -2637,6 +2636,7 @@ typedef struct fc_port {
+ 		uint32_t	rx_rekey_cnt;
+ 		uint64_t	tx_bytes;
+ 		uint64_t	rx_bytes;
++		uint8_t		sess_down_acked;
+ 		uint8_t		auth_state;
+ 		uint16_t	authok:1;
+ 		uint16_t	rekey_cnt;
 diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
-index 0628633c7c7e..30ca56f8e4c8 100644
+index 0978551f85f5..034c43a8bb9b 100644
 --- a/drivers/scsi/qla2xxx/qla_edif.c
 +++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -517,16 +517,28 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 			if (atomic_read(&vha->loop_state) == LOOP_DOWN)
- 				break;
+@@ -257,14 +257,8 @@ qla2x00_find_fcport_by_pid(scsi_qla_host_t *vha, port_id_t *id)
  
--			fcport->edif.app_started = 1;
- 			fcport->login_retry = vha->hw->login_retry_count;
- 
--			/* no activity */
- 			fcport->edif.app_stop = 0;
-+			fcport->edif.app_sess_online = 0;
-+			fcport->edif.app_started = 1;
-+
-+			if (fcport->scan_state != QLA_FCPORT_FOUND)
-+				continue;
-+
-+			if (fcport->port_type == FCT_UNKNOWN &&
-+			    !fcport->fc4_features)
-+				rval = qla24xx_async_gffid(vha, fcport, true);
-+
-+			if (!rval && !(fcport->fc4_features & FC4_FF_TARGET ||
-+			    fcport->port_type & (FCT_TARGET|FCT_NVME_TARGET)))
-+				continue;
-+
-+			rval = 0;
- 
- 			ql_dbg(ql_dbg_edif, vha, 0x911e,
- 			       "%s wwpn %8phC calling qla_edif_reset_auth_wait\n",
- 			       __func__, fcport->port_name);
--			fcport->edif.app_sess_online = 0;
- 			qlt_schedule_sess_for_deletion(fcport);
- 			qla_edif_sa_ctl_init(vha, fcport);
- 		}
-@@ -884,6 +896,20 @@ qla_edif_app_getfcinfo(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
- 			app_reply->ports[pcnt].rekey_count =
- 				fcport->edif.rekey_cnt;
- 
-+			if (fcport->scan_state != QLA_FCPORT_FOUND)
-+				continue;
-+
-+			if (fcport->port_type == FCT_UNKNOWN && !fcport->fc4_features)
-+				rval = qla24xx_async_gffid(vha, fcport, true);
-+
-+			if (!rval &&
-+			    !(fcport->fc4_features & FC4_FF_TARGET ||
-+			      fcport->port_type &
-+			      (FCT_TARGET | FCT_NVME_TARGET)))
-+				continue;
-+
-+			rval = 0;
-+
- 			app_reply->ports[pcnt].remote_type =
- 				VND_CMD_RTYPE_UNKNOWN;
- 			if (fcport->port_type & (FCT_NVME_TARGET | FCT_TARGET))
-diff --git a/drivers/scsi/qla2xxx/qla_gbl.h b/drivers/scsi/qla2xxx/qla_gbl.h
-index dac27b5ff0ac..84b44454c231 100644
---- a/drivers/scsi/qla2xxx/qla_gbl.h
-+++ b/drivers/scsi/qla2xxx/qla_gbl.h
-@@ -335,6 +335,7 @@ extern int qla24xx_configure_prot_mode(srb_t *, uint16_t *);
- extern int qla24xx_issue_sa_replace_iocb(scsi_qla_host_t *vha,
- 	struct qla_work_evt *e);
- void qla2x00_sp_release(struct kref *kref);
-+void qla2x00_els_dcmd2_iocb_timeout(void *data);
- 
- /*
-  * Global Function Prototypes in qla_mbx.c source file.
-@@ -727,7 +728,7 @@ int qla24xx_async_gpsc(scsi_qla_host_t *, fc_port_t *);
- void qla24xx_handle_gpsc_event(scsi_qla_host_t *, struct event_arg *);
- int qla2x00_mgmt_svr_login(scsi_qla_host_t *);
- void qla24xx_handle_gffid_event(scsi_qla_host_t *vha, struct event_arg *ea);
--int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport);
-+int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport, bool);
- int qla24xx_async_gpnft(scsi_qla_host_t *, u8, srb_t *);
- void qla24xx_async_gpnft_done(scsi_qla_host_t *, srb_t *);
- void qla24xx_async_gnnft_done(scsi_qla_host_t *, srb_t *);
-diff --git a/drivers/scsi/qla2xxx/qla_gs.c b/drivers/scsi/qla2xxx/qla_gs.c
-index f8005ce65082..574251b2e0ef 100644
---- a/drivers/scsi/qla2xxx/qla_gs.c
-+++ b/drivers/scsi/qla2xxx/qla_gs.c
-@@ -3277,19 +3277,12 @@ int qla24xx_async_gpnid(scsi_qla_host_t *vha, port_id_t *id)
- 	return rval;
+ 	f = NULL;
+ 	list_for_each_entry_safe(f, tf, &vha->vp_fcports, list) {
+-		if ((f->flags & FCF_FCSP_DEVICE)) {
+-			ql_dbg(ql_dbg_edif + ql_dbg_verbose, vha, 0x2058,
+-			    "Found secure fcport - nn %8phN pn %8phN portid=0x%x, 0x%x.\n",
+-			    f->node_name, f->port_name,
+-			    f->d_id.b24, id->b24);
+-			if (f->d_id.b24 == id->b24)
+-				return f;
+-		}
++		if (f->d_id.b24 == id->b24)
++			return f;
+ 	}
+ 	return NULL;
  }
+@@ -526,7 +520,6 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
  
--void qla24xx_handle_gffid_event(scsi_qla_host_t *vha, struct event_arg *ea)
--{
--	fc_port_t *fcport = ea->fcport;
+ 			fcport->edif.app_stop = 0;
+ 			fcport->edif.app_sess_online = 0;
+-			fcport->edif.app_started = 1;
+ 
+ 			if (fcport->scan_state != QLA_FCPORT_FOUND)
+ 				continue;
+@@ -628,9 +621,6 @@ qla_edif_app_stop(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 
+ 			fcport->send_els_logo = 1;
+ 			qlt_schedule_sess_for_deletion(fcport);
 -
--	qla24xx_post_gnl_work(vha, fcport);
--}
- 
- void qla24xx_async_gffid_sp_done(srb_t *sp, int res)
- {
- 	struct scsi_qla_host *vha = sp->vha;
- 	fc_port_t *fcport = sp->fcport;
- 	struct ct_sns_rsp *ct_rsp;
--	struct event_arg ea;
- 	uint8_t fc4_scsi_feat;
- 	uint8_t fc4_nvme_feat;
- 
-@@ -3297,10 +3290,10 @@ void qla24xx_async_gffid_sp_done(srb_t *sp, int res)
- 	       "Async done-%s res %x ID %x. %8phC\n",
- 	       sp->name, res, fcport->d_id.b24, fcport->port_name);
- 
--	fcport->flags &= ~FCF_ASYNC_SENT;
--	ct_rsp = &fcport->ct_desc.ct_sns->p.rsp;
-+	ct_rsp = sp->u.iocb_cmd.u.ctarg.rsp;
- 	fc4_scsi_feat = ct_rsp->rsp.gff_id.fc4_features[GFF_FCP_SCSI_OFFSET];
- 	fc4_nvme_feat = ct_rsp->rsp.gff_id.fc4_features[GFF_NVME_OFFSET];
-+	sp->rc = res;
- 
- 	/*
- 	 * FC-GS-7, 5.2.3.12 FC-4 Features - format
-@@ -3321,24 +3314,42 @@ void qla24xx_async_gffid_sp_done(srb_t *sp, int res)
+-			/* qla_edif_flush_sa_ctl_lists(fcport); */
+-			fcport->edif.app_started = 0;
  		}
  	}
  
--	memset(&ea, 0, sizeof(ea));
--	ea.sp = sp;
--	ea.fcport = sp->fcport;
--	ea.rc = res;
-+	if (sp->flags & SRB_WAKEUP_ON_COMP) {
-+		complete(sp->comp);
-+	} else  {
-+		if (sp->u.iocb_cmd.u.ctarg.req) {
-+			dma_free_coherent(&vha->hw->pdev->dev,
-+				sp->u.iocb_cmd.u.ctarg.req_allocated_size,
-+				sp->u.iocb_cmd.u.ctarg.req,
-+				sp->u.iocb_cmd.u.ctarg.req_dma);
-+			sp->u.iocb_cmd.u.ctarg.req = NULL;
-+		}
- 
--	qla24xx_handle_gffid_event(vha, &ea);
--	/* ref: INIT */
--	kref_put(&sp->cmd_kref, qla2x00_sp_release);
-+		if (sp->u.iocb_cmd.u.ctarg.rsp) {
-+			dma_free_coherent(&vha->hw->pdev->dev,
-+				sp->u.iocb_cmd.u.ctarg.rsp_allocated_size,
-+				sp->u.iocb_cmd.u.ctarg.rsp,
-+				sp->u.iocb_cmd.u.ctarg.rsp_dma);
-+			sp->u.iocb_cmd.u.ctarg.rsp = NULL;
-+		}
-+
-+		/* ref: INIT */
-+		kref_put(&sp->cmd_kref, qla2x00_sp_release);
-+		/* we should not be here */
-+		dump_stack();
-+	}
- }
- 
- /* Get FC4 Feature with Nport ID. */
--int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport)
-+int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport, bool wait)
- {
- 	int rval = QLA_FUNCTION_FAILED;
- 	struct ct_sns_req       *ct_req;
- 	srb_t *sp;
-+	DECLARE_COMPLETION_ONSTACK(comp);
- 
--	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT))
-+	/* this routine does not have handling for no wait */
-+	if (!vha->flags.online || !wait)
- 		return rval;
- 
- 	/* ref: INIT */
-@@ -3346,43 +3357,86 @@ int qla24xx_async_gffid(scsi_qla_host_t *vha, fc_port_t *fcport)
- 	if (!sp)
- 		return rval;
- 
--	fcport->flags |= FCF_ASYNC_SENT;
- 	sp->type = SRB_CT_PTHRU_CMD;
- 	sp->name = "gffid";
- 	sp->gen1 = fcport->rscn_gen;
- 	sp->gen2 = fcport->login_gen;
- 	qla2x00_init_async_sp(sp, qla2x00_get_async_timeout(vha) + 2,
- 			      qla24xx_async_gffid_sp_done);
-+	sp->comp = &comp;
-+	sp->u.iocb_cmd.timeout = qla2x00_els_dcmd2_iocb_timeout;
-+
-+	if (wait)
-+		sp->flags = SRB_WAKEUP_ON_COMP;
-+
-+	sp->u.iocb_cmd.u.ctarg.req_allocated_size = sizeof(struct ct_sns_pkt);
-+	sp->u.iocb_cmd.u.ctarg.req = dma_alloc_coherent(&vha->hw->pdev->dev,
-+				sp->u.iocb_cmd.u.ctarg.req_allocated_size,
-+				&sp->u.iocb_cmd.u.ctarg.req_dma,
-+	    GFP_KERNEL);
-+	if (!sp->u.iocb_cmd.u.ctarg.req) {
-+		ql_log(ql_log_warn, vha, 0xd041,
-+		       "%s: Failed to allocate ct_sns request.\n",
-+		       __func__);
-+		goto done_free_sp;
-+	}
-+
-+	sp->u.iocb_cmd.u.ctarg.rsp_allocated_size = sizeof(struct ct_sns_pkt);
-+	sp->u.iocb_cmd.u.ctarg.rsp = dma_alloc_coherent(&vha->hw->pdev->dev,
-+				sp->u.iocb_cmd.u.ctarg.rsp_allocated_size,
-+				&sp->u.iocb_cmd.u.ctarg.rsp_dma,
-+	    GFP_KERNEL);
-+	if (!sp->u.iocb_cmd.u.ctarg.req) {
-+		ql_log(ql_log_warn, vha, 0xd041,
-+		       "%s: Failed to allocate ct_sns request.\n",
-+		       __func__);
-+		goto done_free_sp;
-+	}
- 
- 	/* CT_IU preamble  */
--	ct_req = qla2x00_prep_ct_req(fcport->ct_desc.ct_sns, GFF_ID_CMD,
--	    GFF_ID_RSP_SIZE);
-+	ct_req = qla2x00_prep_ct_req(sp->u.iocb_cmd.u.ctarg.req, GFF_ID_CMD, GFF_ID_RSP_SIZE);
- 
- 	ct_req->req.gff_id.port_id[0] = fcport->d_id.b.domain;
- 	ct_req->req.gff_id.port_id[1] = fcport->d_id.b.area;
- 	ct_req->req.gff_id.port_id[2] = fcport->d_id.b.al_pa;
- 
--	sp->u.iocb_cmd.u.ctarg.req = fcport->ct_desc.ct_sns;
--	sp->u.iocb_cmd.u.ctarg.req_dma = fcport->ct_desc.ct_sns_dma;
--	sp->u.iocb_cmd.u.ctarg.rsp = fcport->ct_desc.ct_sns;
--	sp->u.iocb_cmd.u.ctarg.rsp_dma = fcport->ct_desc.ct_sns_dma;
- 	sp->u.iocb_cmd.u.ctarg.req_size = GFF_ID_REQ_SIZE;
- 	sp->u.iocb_cmd.u.ctarg.rsp_size = GFF_ID_RSP_SIZE;
- 	sp->u.iocb_cmd.u.ctarg.nport_handle = NPH_SNS;
- 
--	ql_dbg(ql_dbg_disc, vha, 0x2132,
--	    "Async-%s hdl=%x  %8phC.\n", sp->name,
--	    sp->handle, fcport->port_name);
--
- 	rval = qla2x00_start_sp(sp);
--	if (rval != QLA_SUCCESS)
-+
-+	if (rval != QLA_SUCCESS) {
-+		rval = QLA_FUNCTION_FAILED;
- 		goto done_free_sp;
-+	} else {
-+		ql_dbg(ql_dbg_disc, vha, 0x3074,
-+		       "Async-%s hdl=%x portid %06x\n",
-+		       sp->name, sp->handle, fcport->d_id.b24);
-+	}
-+
-+	wait_for_completion(sp->comp);
-+	rval = sp->rc;
- 
--	return rval;
- done_free_sp:
-+	if (sp->u.iocb_cmd.u.ctarg.req) {
-+		dma_free_coherent(&vha->hw->pdev->dev,
-+				  sp->u.iocb_cmd.u.ctarg.req_allocated_size,
-+				  sp->u.iocb_cmd.u.ctarg.req,
-+				  sp->u.iocb_cmd.u.ctarg.req_dma);
-+		sp->u.iocb_cmd.u.ctarg.req = NULL;
-+	}
-+
-+	if (sp->u.iocb_cmd.u.ctarg.rsp) {
-+		dma_free_coherent(&vha->hw->pdev->dev,
-+				  sp->u.iocb_cmd.u.ctarg.rsp_allocated_size,
-+				  sp->u.iocb_cmd.u.ctarg.rsp,
-+				  sp->u.iocb_cmd.u.ctarg.rsp_dma);
-+		sp->u.iocb_cmd.u.ctarg.rsp = NULL;
-+	}
-+
- 	/* ref: INIT */
- 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
--	fcport->flags &= ~FCF_ASYNC_SENT;
+@@ -1048,6 +1038,40 @@ qla_edif_app_getstats(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
  	return rval;
  }
  
-diff --git a/drivers/scsi/qla2xxx/qla_iocb.c b/drivers/scsi/qla2xxx/qla_iocb.c
-index e0fe9ddb4bd2..46c879923da1 100644
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2819,7 +2819,7 @@ qla24xx_els_logo_iocb(srb_t *sp, struct els_entry_24xx *els_iocb)
- 	sp->vha->qla_stats.control_requests++;
++static int32_t
++qla_edif_ack(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
++{
++	struct fc_port *fcport;
++	struct aen_complete_cmd ack;
++	struct fc_bsg_reply     *bsg_reply = bsg_job->reply;
++
++	sg_copy_to_buffer(bsg_job->request_payload.sg_list,
++			  bsg_job->request_payload.sg_cnt, &ack, sizeof(ack));
++
++	ql_dbg(ql_dbg_edif, vha, 0x70cf,
++	       "%s: %06x event_code %x\n",
++	       __func__, ack.port_id.b24, ack.event_code);
++
++	fcport = qla2x00_find_fcport_by_pid(vha, &ack.port_id);
++	SET_DID_STATUS(bsg_reply->result, DID_OK);
++
++	if (!fcport) {
++		ql_dbg(ql_dbg_edif, vha, 0x70cf,
++		       "%s: unable to find fcport %06x \n",
++		       __func__, ack.port_id.b24);
++		return 0;
++	}
++
++	switch (ack.event_code) {
++	case VND_CMD_AUTH_STATE_SESSION_SHUTDOWN:
++		fcport->edif.sess_down_acked = 1;
++		break;
++	default:
++		break;
++	}
++	return 0;
++}
++
+ int32_t
+ qla_edif_app_mgmt(struct bsg_job *bsg_job)
+ {
+@@ -1110,6 +1134,9 @@ qla_edif_app_mgmt(struct bsg_job *bsg_job)
+ 	case QL_VND_SC_GET_STATS:
+ 		rval = qla_edif_app_getstats(vha, bsg_job);
+ 		break;
++	case QL_VND_SC_AEN_COMPLETE:
++		rval = qla_edif_ack(vha, bsg_job);
++		break;
+ 	default:
+ 		ql_dbg(ql_dbg_edif, vha, 0x911d, "%s unknown cmd=%x\n",
+ 		    __func__,
+@@ -3513,14 +3540,29 @@ int qla_edif_process_els(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 
+ void qla_edif_sess_down(struct scsi_qla_host *vha, struct fc_port *sess)
+ {
++	u16 cnt = 0;
++
+ 	if (sess->edif.app_sess_online && DBELL_ACTIVE(vha)) {
+ 		ql_dbg(ql_dbg_disc, vha, 0xf09c,
+ 			"%s: sess %8phN send port_offline event\n",
+ 			__func__, sess->port_name);
+ 		sess->edif.app_sess_online = 0;
++		sess->edif.sess_down_acked = 0;
+ 		qla_edb_eventcreate(vha, VND_CMD_AUTH_STATE_SESSION_SHUTDOWN,
+ 		    sess->d_id.b24, 0, sess);
+ 		qla2x00_post_aen_work(vha, FCH_EVT_PORT_OFFLINE, sess->d_id.b24);
++
++		while (!READ_ONCE(sess->edif.sess_down_acked) &&
++		       !test_bit(VPORT_DELETE, &vha->dpc_flags)) {
++			msleep(100);
++			cnt++;
++			if (cnt > 100)
++				break;
++		}
++		sess->edif.sess_down_acked = 0;
++		ql_dbg(ql_dbg_disc, vha, 0xf09c,
++		       "%s: sess %8phN port_offline event completed\n",
++		       __func__, sess->port_name);
+ 	}
  }
  
--static void
-+void
- qla2x00_els_dcmd2_iocb_timeout(void *data)
- {
- 	srb_t *sp = data;
+diff --git a/drivers/scsi/qla2xxx/qla_init.c b/drivers/scsi/qla2xxx/qla_init.c
+index 4c0f76021c47..5f077f9217e5 100644
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1480,7 +1480,6 @@ static int	qla_chk_secure_login(scsi_qla_host_t	*vha, fc_port_t *fcport,
+ 				ql_dbg(ql_dbg_disc, vha, 0x20ef,
+ 				    "%s %d %8phC EDIF: post DB_AUTH: AUTH needed\n",
+ 				    __func__, __LINE__, fcport->port_name);
+-				fcport->edif.app_started = 1;
+ 				fcport->edif.app_sess_online = 1;
+ 
+ 				qla_edb_eventcreate(vha, VND_CMD_AUTH_STATE_NEEDED,
+@@ -5275,9 +5274,6 @@ qla2x00_alloc_fcport(scsi_qla_host_t *vha, gfp_t flags)
+ 	INIT_LIST_HEAD(&fcport->edif.tx_sa_list);
+ 	INIT_LIST_HEAD(&fcport->edif.rx_sa_list);
+ 
+-	if (vha->e_dbell.db_flags == EDB_ACTIVE)
+-		fcport->edif.app_started = 1;
+-
+ 	spin_lock_init(&fcport->edif.indx_list_lock);
+ 	INIT_LIST_HEAD(&fcport->edif.edif_indx_list);
+ 
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index 6dfcfd8e7337..34b85c80233f 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -988,22 +988,6 @@ void qlt_free_session_done(struct work_struct *work)
+ 		sess->send_els_logo);
+ 
+ 	if (!IS_SW_RESV_ADDR(sess->d_id)) {
+-		if (ha->flags.edif_enabled &&
+-		    (!own || own->iocb.u.isp24.status_subcode == ELS_PLOGI)) {
+-			sess->edif.authok = 0;
+-			if (!ha->flags.host_shutting_down) {
+-				ql_dbg(ql_dbg_edif, vha, 0x911e,
+-					"%s wwpn %8phC calling qla2x00_release_all_sadb\n",
+-					__func__, sess->port_name);
+-				qla2x00_release_all_sadb(vha, sess);
+-			} else {
+-				ql_dbg(ql_dbg_edif, vha, 0x911e,
+-					"%s bypassing release_all_sadb\n",
+-					__func__);
+-			}
+-			qla_edif_clear_appdata(vha, sess);
+-			qla_edif_sess_down(vha, sess);
+-		}
+ 		qla2x00_mark_device_lost(vha, sess, 0);
+ 
+ 		if (sess->send_els_logo) {
+@@ -1049,6 +1033,25 @@ void qlt_free_session_done(struct work_struct *work)
+ 			sess->nvme_flag |= NVME_FLAG_DELETING;
+ 			qla_nvme_unregister_remote_port(sess);
+ 		}
++
++		if (ha->flags.edif_enabled &&
++		    (!own || (own &&
++			      own->iocb.u.isp24.status_subcode == ELS_PLOGI))) {
++			sess->edif.authok = 0;
++			if (!ha->flags.host_shutting_down) {
++				ql_dbg(ql_dbg_edif, vha, 0x911e,
++				       "%s wwpn %8phC calling qla2x00_release_all_sadb\n",
++				       __func__, sess->port_name);
++				qla2x00_release_all_sadb(vha, sess);
++			} else {
++				ql_dbg(ql_dbg_edif, vha, 0x911e,
++				       "%s bypassing release_all_sadb\n",
++				       __func__);
++			}
++
++			qla_edif_clear_appdata(vha, sess);
++			qla_edif_sess_down(vha, sess);
++		}
+ 	}
+ 
+ 	/*
 -- 
 2.35.1
 
