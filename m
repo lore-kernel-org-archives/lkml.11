@@ -2,135 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFA3C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C4AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbiHOGhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        id S231370AbiHOGig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbiHOGhw (ORCPT
+        with ESMTP id S231361AbiHOGif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 02:37:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3389019C2E;
-        Sun, 14 Aug 2022 23:37:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E228CB80C87;
-        Mon, 15 Aug 2022 06:37:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 743EAC433D7;
-        Mon, 15 Aug 2022 06:37:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660545468;
-        bh=i3Lhu29DAuR1+5toOtx6WUN5Q9/XjYipUqxecRURQhc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dOLsO0eWL1louTh1erlzYfiyxe3e1GCuC6rITTMB6BAFW0KYj4VI2sod/q921wwgf
-         qgeNPTQAt9VclhBL3OLkn0QO3EDriXGrjbiBwZf5gf4gjsOO8njLu3nhbLUBuuPqQE
-         mSU/BTQYvSJzrPgD6m1fVkeJrGXt3Yx+Tzq0GG6U=
-Date:   Mon, 15 Aug 2022 08:37:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Khalid Masum <khalid.masum.92@gmail.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [RFC PATCH] Soundwire: Initialize multi_link with fwnode props
-Message-ID: <YvnpuK8phVyF7053@kroah.com>
-References: <20220814080416.7531-1-khalid.masum.92@gmail.com>
- <YvjEIjXg7KxtTT/0@kroah.com>
- <cc6560c3-98c2-bdb5-cfc3-b39d3675382e@gmail.com>
+        Mon, 15 Aug 2022 02:38:35 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB551ADB7
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:38:34 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id o3so5654362ple.5
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:38:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=t0lzq9wXtDZalDc+MqW+q/Qr6dM8adTctzXUvTWqjXw=;
+        b=mJZ4VkOcUookg2qKkoDfdsGdAK5ungyXoH75mzIMbXSlD1e3Fb2fu6nmK757mhROgs
+         UNXG+dWaInBvgNqv+PAI8VUaledvrOzwjnAT1UxeYn1iOBTzM/2Htua1MwLDVf1QjVHu
+         CHcv6VV+jVlxAhUX7PsYB7f7OWJCEJiuszq1E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=t0lzq9wXtDZalDc+MqW+q/Qr6dM8adTctzXUvTWqjXw=;
+        b=DxmwXCybZwp6u4PEIDXzcqpOrB4PhU02TX4KKXoavXecP9thTf4DRTbGDiFnrXFrij
+         V836wQ3rqUUorbPbTj8mrk4y+r53iaWcGmrvkRhqF9XE4/yTUdJhi9wglh5yUNbjGJVx
+         uq7lEakoFnR/t1/eidJzR58FEWORXMrq3H5aeXUcSWClMB5+O+lnhT0eqvjHxdszxVXK
+         kO09LHdoBrAGJyJnECBB3oiDhNA0fNfXf9EiD8HxYSEX8ofDwBu5lW8tvi00P47CDqd+
+         Hlca0LX8y6s4EYj8GIppIUptkwwNl4FskZI6eSdkhc05uCY5XQviIT6pPZN/y0NgThdB
+         3VXw==
+X-Gm-Message-State: ACgBeo0slMJ2Q6UIv03cmNlkcWqrcn5pVMQ/5sVlmgqwXWPN3kIyXCbB
+        TfLyxCaw6NEDmMQZVdRpHwRh4sch2qPGUA==
+X-Google-Smtp-Source: AA6agR7lhgSd83SNVI3JVmj+q3jlu0eT7XHkY/HqQvsYT2lX6B8gSJ8NGEu++JfxXrv3C9yGkog63g==
+X-Received: by 2002:a17:90b:4a05:b0:1f5:62d5:4155 with SMTP id kk5-20020a17090b4a0500b001f562d54155mr17504326pjb.6.1660545513764;
+        Sun, 14 Aug 2022 23:38:33 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (137.22.168.34.bc.googleusercontent.com. [34.168.22.137])
+        by smtp.gmail.com with ESMTPSA id 200-20020a6214d1000000b0052db82ad8b2sm5988233pfu.123.2022.08.14.23.38.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 23:38:33 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
+Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH v5 1/7] platform/chrome: Add Type-C mux set command definitions
+Date:   Mon, 15 Aug 2022 06:34:17 +0000
+Message-Id: <20220815063555.1384505-2-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220815063555.1384505-1-pmalani@chromium.org>
+References: <20220815063555.1384505-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cc6560c3-98c2-bdb5-cfc3-b39d3675382e@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:08:07AM +0600, Khalid Masum wrote:
-> On 8/14/22 15:45, Greg KH wrote:
-> > On Sun, Aug 14, 2022 at 02:04:15PM +0600, Khalid Masum wrote:
-> > > According to the TODO, In sw_bus_master_add, bus->multi_link is to be
-> > > populated with properties from FW node props. Make this happen by
-> > > creating a new fwnode_handle flag FWNODE_FLAG_MULTI_LINKED and use
-> > > the flag to store the multi_link value from intel_link_startup. Use
-> > > this flag to initialize bus->multi_link.
-> > > 
-> > > Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
-> > > ---
-> > > I do not think adding a new flag for fwnode_handle is a good idea.
-> > > So, what would be the best way to initialize bus->multilink with
-> > > fwnode props?
-> > > 
-> > >    -- Khalid Masum
-> > > 
-> > >   drivers/soundwire/bus.c   | 4 ++--
-> > >   drivers/soundwire/intel.c | 1 +
-> > >   include/linux/fwnode.h    | 1 +
-> > >   3 files changed, 4 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
-> > > index a2bfb0434a67..80df1672c60b 100644
-> > > --- a/drivers/soundwire/bus.c
-> > > +++ b/drivers/soundwire/bus.c
-> > > @@ -74,9 +74,9 @@ int sdw_bus_master_add(struct sdw_bus *bus, struct device *parent,
-> > >   	/*
-> > >   	 * Initialize multi_link flag
-> > > -	 * TODO: populate this flag by reading property from FW node
-> > >   	 */
-> > > -	bus->multi_link = false;
-> > > +	bus->multi_link = (fwnode->flags & FWNODE_FLAG_MULTI_LINKED)
-> > > +		== FWNODE_FLAG_MULTI_LINKED;
+Copy EC header definitions for the USB Type-C Mux control command from
+the EC code base. Also pull in "TBT_UFP_REPLY" definitions, since that
+is the prior entry in the enum.
 
-I missed that this was an if statement here, please write this to be
-more obvious and readable.
+These headers are already present in the EC code base. [1]
 
-> > >   	if (bus->ops->read_prop) {
-> > >   		ret = bus->ops->read_prop(bus);
-> > >   		if (ret < 0) {
-> > > diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-> > > index 505c5ef061e3..034d1c523ddf 100644
-> > > --- a/drivers/soundwire/intel.c
-> > > +++ b/drivers/soundwire/intel.c
-> > > @@ -1347,6 +1347,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
-> > >   		 */
-> > >   		bus->multi_link = true;
-> > >   		bus->hw_sync_min_links = 1;
-> > > +		dev->fwnode->flags |= FWNODE_FLAG_MULTI_LINKED;
-> > >   	}
-> > >   	/* Initialize shim, controller */
-> > > diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-> > > index 9a81c4410b9f..446a52744953 100644
-> > > --- a/include/linux/fwnode.h
-> > > +++ b/include/linux/fwnode.h
-> > > @@ -32,6 +32,7 @@ struct device;
-> > >   #define FWNODE_FLAG_NOT_DEVICE			BIT(1)
-> > >   #define FWNODE_FLAG_INITIALIZED			BIT(2)
-> > >   #define FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD	BIT(3)
-> > > +#define FWNODE_FLAG_MULTI_LINKED		BIT(4)
-> > 
-> > What does this commit actually change?
-> 
-> The new flag will lets us save if the device has multilink in fwnode_handle
-> whenever needed.
-> Then for soundwire/intel, save the multi_link flag into fwnode during
-> startup.
-> Later at master_add, as written in todo, initialize the multilink flag with
-> fwnode's flag property.
+[1] https://chromium.googlesource.com/chromiumos/platform/ec/+/b80f85a94a423273c1638ef7b662c56931a138dd/include/ec_commands.h
 
-And what does that allow to happen?  What changes with all of this?
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
+Changes since v4:
+- No changes.
 
-thanks,
+Changes since v3:
+- No changes.
 
-greg k-h
+Changes since v2:
+- No changes.
+
+Changes since v1:
+- No changes.
+
+ include/linux/platform_data/cros_ec_commands.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index 8b1b795867a1..5744a2d746aa 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -5724,8 +5724,21 @@ enum typec_control_command {
+ 	TYPEC_CONTROL_COMMAND_EXIT_MODES,
+ 	TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
+ 	TYPEC_CONTROL_COMMAND_ENTER_MODE,
++	TYPEC_CONTROL_COMMAND_TBT_UFP_REPLY,
++	TYPEC_CONTROL_COMMAND_USB_MUX_SET,
+ };
+ 
++/* Replies the AP may specify to the TBT EnterMode command as a UFP */
++enum typec_tbt_ufp_reply {
++	TYPEC_TBT_UFP_REPLY_NAK,
++	TYPEC_TBT_UFP_REPLY_ACK,
++};
++
++struct typec_usb_mux_set {
++	uint8_t mux_index;	/* Index of the mux to set in the chain */
++	uint8_t mux_flags;	/* USB_PD_MUX_*-encoded USB mux state to set */
++} __ec_align1;
++
+ struct ec_params_typec_control {
+ 	uint8_t port;
+ 	uint8_t command;	/* enum typec_control_command */
+@@ -5739,6 +5752,8 @@ struct ec_params_typec_control {
+ 	union {
+ 		uint32_t clear_events_mask;
+ 		uint8_t mode_to_enter;      /* enum typec_mode */
++		uint8_t tbt_ufp_reply;      /* enum typec_tbt_ufp_reply */
++		struct typec_usb_mux_set mux_params;
+ 		uint8_t placeholder[128];
+ 	};
+ } __ec_align1;
+@@ -5817,6 +5832,9 @@ enum tcpc_cc_polarity {
+ #define PD_STATUS_EVENT_SOP_DISC_DONE		BIT(0)
+ #define PD_STATUS_EVENT_SOP_PRIME_DISC_DONE	BIT(1)
+ #define PD_STATUS_EVENT_HARD_RESET		BIT(2)
++#define PD_STATUS_EVENT_DISCONNECTED		BIT(3)
++#define PD_STATUS_EVENT_MUX_0_SET_DONE		BIT(4)
++#define PD_STATUS_EVENT_MUX_1_SET_DONE		BIT(5)
+ 
+ struct ec_params_typec_status {
+ 	uint8_t port;
+-- 
+2.37.1.595.g718a3a8f04-goog
+
