@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A0AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344A2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbiHOVAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:00:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S243502AbiHOVAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233257AbiHOU7Q (ORCPT
+        with ESMTP id S243880AbiHOU7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:59:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EFFC229D;
-        Mon, 15 Aug 2022 12:12:41 -0700 (PDT)
+        Mon, 15 Aug 2022 16:59:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EFBC2EAD;
+        Mon, 15 Aug 2022 12:12:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 736AAB810A3;
-        Mon, 15 Aug 2022 19:12:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0448C433C1;
-        Mon, 15 Aug 2022 19:12:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8ADF6009B;
+        Mon, 15 Aug 2022 19:12:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95999C433D6;
+        Mon, 15 Aug 2022 19:12:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590758;
-        bh=TBZTjxNObxMeSF9MVLIlhAHznmQOteS10aeexvE2FOw=;
+        s=korg; t=1660590768;
+        bh=KH+LbbLmVGf4w93XlXej3XCKb8SjTDmLrLAJpeWu4S8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YH5cH107sbsHcIrq0xqXtoii3OYlxyRmDfqWdNMwsn6dfYYbvYsJ59+IMsxtAqGV0
-         yh51MpwlCGlRUJIZZJeJWPSN1pbO4dd97D9u8DdhZdVmfuJ+GRnvVog7f7X09xQyND
-         +7OZFckrhw3WqEgT8qALwrPE6Imjy1Gutl8kILkc=
+        b=Vqn3L++T/WtGd+TbQItxjrIt+ZOJJ7rhMJAsLRkKxHD7ZLgRJ6nlwXx0T/kwokJdB
+         O3YE+hapKAWYUo20PayOPq2thrHSWVkRKMb5fnGcg/6qAnaq2lFDUfx0upKhSa/HG3
+         CR7w+FG7EtKiumvRO+aASI3RXS35WZq463jGFm/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0360/1095] media: rcar-vin: Fix channel routing for Ebisu
-Date:   Mon, 15 Aug 2022 19:55:59 +0200
-Message-Id: <20220815180444.624606406@linuxfoundation.org>
+Subject: [PATCH 5.18 0334/1095] crypto: sun8i-ss - fix error codes in allocate_flows()
+Date:   Mon, 15 Aug 2022 19:55:33 +0200
+Message-Id: <20220815180443.623676001@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,39 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 5b9b598453d3ae5fa66d7ab591008373a89b91a0 ]
+[ Upstream commit d2765e1b9ac4b2d5a5d5bf17f468c9b3566c3770 ]
 
-When converting to full Virtual Channel routing an error crept into the
-routing table for Ebisu (r8a77990). The routing information is used at
-probe time preventing rcar-vin from probing correctly on this SoC, solve
-by correcting the routing table.
+These failure paths should return -ENOMEM.  Currently they return
+success.
 
-Fixes: 3e52419ec04f9769 ("media: rcar-{csi2,vin}: Move to full Virtual Channel routing per CSI-2 IP")
-Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 359e893e8af4 ("crypto: sun8i-ss - rework handling of IV")
+Fixes: 8eec4563f152 ("crypto: sun8i-ss - do not allocate memory when handling hash requests")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/renesas/rcar-vin/rcar-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../crypto/allwinner/sun8i-ss/sun8i-ss-core.c    | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/platform/renesas/rcar-vin/rcar-core.c b/drivers/media/platform/renesas/rcar-vin/rcar-core.c
-index 64cb05b3907c..ed3ddf36f906 100644
---- a/drivers/media/platform/renesas/rcar-vin/rcar-core.c
-+++ b/drivers/media/platform/renesas/rcar-vin/rcar-core.c
-@@ -1264,7 +1264,7 @@ static const struct rvin_info rcar_info_r8a77980 = {
- };
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+index 786b6f5cf300..47b5828e35c3 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
+@@ -476,25 +476,33 @@ static int allocate_flows(struct sun8i_ss_dev *ss)
  
- static const struct rvin_group_route rcar_info_r8a77990_routes[] = {
--	{ .master = 0, .csi = RVIN_CSI40, .chsel = 0x03 },
-+	{ .master = 4, .csi = RVIN_CSI40, .chsel = 0x03 },
- 	{ /* Sentinel */ }
- };
+ 		ss->flows[i].biv = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].biv)
++		if (!ss->flows[i].biv) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
  
+ 		for (j = 0; j < MAX_SG; j++) {
+ 			ss->flows[i].iv[j] = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
+ 							  GFP_KERNEL | GFP_DMA);
+-			if (!ss->flows[i].iv[j])
++			if (!ss->flows[i].iv[j]) {
++				err = -ENOMEM;
+ 				goto error_engine;
++			}
+ 		}
+ 
+ 		/* the padding could be up to two block. */
+ 		ss->flows[i].pad = devm_kmalloc(ss->dev, SHA256_BLOCK_SIZE * 2,
+ 						GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].pad)
++		if (!ss->flows[i].pad) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 		ss->flows[i].result = devm_kmalloc(ss->dev, SHA256_DIGEST_SIZE,
+ 						   GFP_KERNEL | GFP_DMA);
+-		if (!ss->flows[i].result)
++		if (!ss->flows[i].result) {
++			err = -ENOMEM;
+ 			goto error_engine;
++		}
+ 
+ 		ss->flows[i].engine = crypto_engine_alloc_init(ss->dev, true);
+ 		if (!ss->flows[i].engine) {
 -- 
 2.35.1
 
