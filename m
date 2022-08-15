@@ -2,107 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAA6C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67812C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241813AbiHOSmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50874 "EHLO
+        id S232339AbiHOSmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240650AbiHOSjs (ORCPT
+        with ESMTP id S240535AbiHOSkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26262E693;
-        Mon, 15 Aug 2022 11:24:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F0C960F23;
-        Mon, 15 Aug 2022 18:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0540BC433C1;
-        Mon, 15 Aug 2022 18:24:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587846;
-        bh=fRAAddhRsAHDwptBTq1uHqpI89s3n65ppRpfsul8gAQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yBjuSUx/c9QI5hhGh43fWq503vQ5wRh5PydkZp6+WTnfHFCt2HWVFvfzv0bOhYEWH
-         7Memzk8QwfwPBAAtDaeSWrfcEI24fCOxeXn/NDqeMAMKgETv0VsYW5jSIfw80P+rYw
-         ETpek1tZIZAFL4ld8qjDziTj+dEn3MeJvRnb0Hz0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 213/779] PM: domains: Ensure genpd_debugfs_dir exists before remove
-Date:   Mon, 15 Aug 2022 19:57:37 +0200
-Message-Id: <20220815180346.383118585@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:40:13 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1AA2ED4D
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:24:12 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-32fd97c199fso68611047b3.6
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:24:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=BJt/vOP9OHL0y+jrzm5cg2sCaG+27wsaXcgILhgn7lo=;
+        b=p5i2uxjK2NzMF+6PIEOLJxbFor9NpM8loKbuBWNdYO5TWdrtkHdgD/du41IQW6+PjG
+         AbEW1vxV3zYLc1nK4Er6j8q1ZlcyqWbgeHKCT8HBFBhFplvn+iSTAsGzFfS3Qk1YpWdH
+         l70Fy/+CAa3SCs0eCx+hFGYG8vbueikjPrrZDuYi5VGHfeL/oDpaGwYwzF7U6d4mT3G4
+         ZX1BI5kKPewL+vCx6YML/AQ46tisemqNuM/TLnprheAuNFkjoidWQ3BHdwR1o/WT+a9q
+         AVF2DI5Nv3FWGggxRWvspruaWnDLJLPovT7bn/ehMNzJDYfIHV2wBuxYHNqtTxme5CQG
+         2EfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=BJt/vOP9OHL0y+jrzm5cg2sCaG+27wsaXcgILhgn7lo=;
+        b=5pd94WjMCUOG2OV/dn0nOTXomHziKD8zlJgioA2cUUzyR1X15X9o45C2pHRApGfAtI
+         R36NHcE/3YVQHelhysX7vS8Er+/3Vgjnz/jKf8EL/v078bpZ1MwfuIOWGtWv8oRXZXFk
+         tl/m3dqM+wLSzFd6Etd3ZILC1vT0JoVKm0k6MsmQjf8rg2d3IHto67P4YQDdOajqr2JG
+         s5ctr2fckz/mK08oFaxysXHexveK4evdM4DsafaAyIpT6KuQ9154k7tbIOjy11lRn46T
+         nFXxVsLiXVMAB9snyrTuQm6PRHK6MwKllbQ2mtu0ttOxvuqqaOR02ZVh2IY2sMMQ8qmm
+         NDbw==
+X-Gm-Message-State: ACgBeo3a+CdT1yTK+lQH0rtFFJtG01/Q9mGaVTkKbRzEyBxYPRYa3OsJ
+        ehNpJacTF20pGMAjToGSHrLXAEziTztpKRONjAqKUw==
+X-Google-Smtp-Source: AA6agR45xoYO6Hu5/U+BI3ADwqpB9ej+KA64Yt7nhN1oYI2fH7yVe/vv25x6B4XIjaCcCmIdDBDKwXtcWBGPauCLrBc=
+X-Received: by 2002:a81:998c:0:b0:326:5dab:df3f with SMTP id
+ q134-20020a81998c000000b003265dabdf3fmr14329271ywg.126.1660587851957; Mon, 15
+ Aug 2022 11:24:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220810060040.321697-1-saravanak@google.com> <YvonlAwXAoXTUTZe@linaro.org>
+In-Reply-To: <YvonlAwXAoXTUTZe@linaro.org>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Mon, 15 Aug 2022 11:23:36 -0700
+Message-ID: <CAGETcx8AApnpQOsKgGoC=WyLCWH4AzpQQ-qNpu41F+czxi=_pQ@mail.gmail.com>
+Subject: Re: [PATCH v1 0/9] fw_devlink improvements
+To:     Abel Vesa <abel.vesa@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        John Stultz <jstultz@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hsin-Yi Wang <hsinyi@chromium.org>
+On Mon, Aug 15, 2022 at 4:01 AM Abel Vesa <abel.vesa@linaro.org> wrote:
+>
+> On 22-08-09 23:00:29, Saravana Kannan wrote:
+> > This patch series improves fw_devlink in the following ways:
+> >
+> > 1. It no longer cares about a fwnode having a "compatible" property. It
+> >    figures this our more dynamically. The only expectation is that
+> >    fwnode that are converted to devices actually get probed by a driver
+> >    for the dependencies to be enforced correctly.
+> >
+> > 2. Finer grained dependency tracking. fw_devlink will now create device
+> >    links from the consumer to the actual resource's device (if it has one,
+> >    Eg: gpio_device) instead of the parent supplier device. This improves
+> >    things like async suspend/resume ordering, potentially remove the need
+> >    for frameworks to create device links, more parallelized async probing,
+> >    and better sync_state() tracking.
+> >
+> > 3. Handle hardware/software quirks where a child firmware node gets
+> >    populated as a device before its parent firmware node AND actually
+> >    supplies a non-optional resource to the parent firmware node's
+> >    device.
+> >
+> > 4. Way more robust at cycle handling (see patch for the insane cases).
+> >
+> > 5. Stops depending on OF_POPULATED to figure out some corner cases.
+> >
+> > 6. Simplifies the work that needs to be done by the firmware specific
+> >    code.
+> >
+> > This took way too long to get done due to typo bugs I had in my rewrite or
+> > corner cases I had to find and handle. But it's fairly well tested at this
+> > point and I expect this to work properly.
+> >
+> > Abel & Doug,
+> >
+> > This should fix your cyclic dependency issues with your display. Can you
+> > give it a shot please?
+>
+> Tested the specific case we discussed about here:
+> https://lore.kernel.org/all/CAGETcx8F0wP+RA0KpjOJeZfc=DVG-MbM_=SkRHD4UhD2ReL7Kw@mail.gmail.com/raw
+>
+> Thanks for fixing this.
+>
+> Tested-by: Abel Vesa <abel.vesa@linaro.org>
 
-[ Upstream commit 37101d3c719386040ded735a5ec06974f1d94d1f ]
+Thanks!
 
-Both genpd_debug_add() and genpd_debug_remove() may be called
-indirectly by other drivers while genpd_debugfs_dir is not yet
-set. For example, drivers can call pm_genpd_init() in probe or
-pm_genpd_init() in probe fail/cleanup path:
+-Saravana
 
-pm_genpd_init()
- --> genpd_debug_add()
-
-pm_genpd_remove()
- --> genpd_remove()
-   --> genpd_debug_remove()
-
-At this time, genpd_debug_init() may not yet be called.
-
-genpd_debug_add() checks that if genpd_debugfs_dir is NULL, it
-will return directly. Make sure this is also checked
-in pm_genpd_remove(), otherwise components under debugfs root
-which has the same name as other components under pm_genpd may
-be accidentally removed, since NULL represents debugfs root.
-
-Fixes: 718072ceb211 ("PM: domains: create debugfs nodes when adding power domains")
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/base/power/domain.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 0f2e42f36851..7f3d21e6fdfb 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -219,6 +219,9 @@ static void genpd_debug_remove(struct generic_pm_domain *genpd)
- {
- 	struct dentry *d;
- 
-+	if (!genpd_debugfs_dir)
-+		return;
-+
- 	d = debugfs_lookup(genpd->name, genpd_debugfs_dir);
- 	debugfs_remove(d);
- }
--- 
-2.35.1
-
-
-
+>
+> >
+> > Alexander,
+> >
+> > This should fix your issue where the power domain device not having a
+> > compatible property. Can you give it a shot please?
+> >
+> > Tony,
+> >
+> > This should handle the odd case of the child being the supplier of the
+> > parent. Can you please give this a shot? I want to make sure the cycle
+> > detection code handles this properly and treats it like it's NOT a cycle.
+> >
+> > Geert,
+> >
+> > Can you test the renesas stuff I changed please? They should continue
+> > working like before. Any other sanity test on other hardware would be
+> > great too.
+> >
+> > Sudeep,
+> >
+> > I don't think there are any unfixed issues you had reported in my other
+> > patches that this series might fix, but it'll be nice if you could give
+> > this a sanity test.
+> >
+> > Guenter,
+> >
+> > I don't think this will fix the issue you reported in the amba patch, but
+> > it's worth a shot because it improves a bunch of corner case handling. So
+> > it might be better at handling whatever corner cases you might have in the
+> > qemu platforms.
+> >
+> > Thanks,
+> > Saravana
+> >
+> > Cc: Abel Vesa <abel.vesa@linaro.org>
+> > Cc: Alexander Stein <alexander.stein@ew.tq-group.com>
+> > Cc: Tony Lindgren <tony@atomide.com>
+> > Cc: Sudeep Holla <sudeep.holla@arm.com>
+> > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> > Cc: John Stultz <jstultz@google.com>
+> > Cc: Doug Anderson <dianders@chromium.org>
+> > Cc: Guenter Roeck <linux@roeck-us.net>
+> >
+> > Saravana Kannan (9):
+> >   driver core: fw_devlink: Don't purge child fwnode's consumer links
+> >   driver core: fw_devlink: Improve check for fwnode with no
+> >     device/driver
+> >   soc: renesas: Move away from using OF_POPULATED for fw_devlink
+> >   gpiolib: Clear the gpio_device's fwnode initialized flag before adding
+> >   driver core: fw_devlink: Add DL_FLAG_CYCLE support to device links
+> >   driver core: fw_devlink: Allow marking a fwnode link as being part of
+> >     a cycle
+> >   driver core: fw_devlink: Consolidate device link flag computation
+> >   driver core: fw_devlink: Make cycle detection more robust
+> >   of: property: Simplify of_link_to_phandle()
+> >
+> >  drivers/base/core.c             | 437 +++++++++++++++++++++-----------
+> >  drivers/gpio/gpiolib.c          |   6 +
+> >  drivers/of/property.c           |  84 +-----
+> >  drivers/soc/renesas/rcar-sysc.c |   2 +-
+> >  include/linux/device.h          |   1 +
+> >  include/linux/fwnode.h          |  12 +-
+> >  6 files changed, 323 insertions(+), 219 deletions(-)
+> >
+> > --
+> > 2.37.1.559.g78731f0fdb-goog
+> >
