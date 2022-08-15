@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6336C2BB47
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6892C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344299AbiHOTg3 (ORCPT
+        id S1344443AbiHOTgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        Mon, 15 Aug 2022 15:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245626AbiHOTau (ORCPT
+        with ESMTP id S1344077AbiHOTbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:30:50 -0400
+        Mon, 15 Aug 2022 15:31:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EB25F128;
-        Mon, 15 Aug 2022 11:44:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DA260509;
+        Mon, 15 Aug 2022 11:44:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A315B8105D;
-        Mon, 15 Aug 2022 18:44:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7DAC433C1;
-        Mon, 15 Aug 2022 18:44:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD608B81084;
+        Mon, 15 Aug 2022 18:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2E9C433C1;
+        Mon, 15 Aug 2022 18:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589053;
-        bh=C8wLxk7wMPsaN29ahyc7gGPIyxKfCJhjmUtAVYyWJfU=;
+        s=korg; t=1660589063;
+        bh=w0zsOwPQN8FgIJ2NQvJHzp2BmCnZTYagGKj8W77EbmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZqCtDe331D5nQQ5DCUmFRtYxHWM6qIDvZJ8CLqlmXXWFCAy95a7PMOHgEdFEGin1l
-         7LVnwABJTPlRjhJF+wwTOas2mRh04eeb4cTd5ujESbp0+uL9o9QrMTEqFzfvmiNhw8
-         UFmSdJiOUYhUQ9Ylk3F4DJHcbmCfZuI4fAcWdJgs=
+        b=lofTsz3K5aoBaEr9EfUiDs8r0vluYmg8hbNnig4lqSjX7yNMNOx+adJlXBMGntw1U
+         62/auH5F5c3/zZUnr9TxnqM3s3Qpv+O6Gk2YMN4q6QpW02kDlCwMeMDxvoXqG1+RdJ
+         ohwi7aoVyLB28H6bWaQmpdkqmDXsw3xu1FCgkj8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 566/779] ASoC: codecs: da7210: add check for i2c_add_driver
-Date:   Mon, 15 Aug 2022 20:03:30 +0200
-Message-Id: <20220815180401.517388530@linuxfoundation.org>
+Subject: [PATCH 5.15 602/779] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
+Date:   Mon, 15 Aug 2022 20:04:06 +0200
+Message-Id: <20220815180403.094392907@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,39 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
+[ Upstream commit 3182efd036c1b955403d131258234896cbd9fbeb ]
 
-As i2c_add_driver could return error if fails, it should be
-better to check the return value.
-However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
-the return value of i2c_add_driver will be covered by
-spi_register_driver.
-Therefore, it is necessary to add check and return error if fails.
+Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
+from S2") prevented an early enabling of RTS during resume, but it did
+not actively restore the RTS state after resume.
 
-Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220714031316.404918-1-f.fainelli@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/da7210.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
-index 8af344b2fdbf..d75d15006f64 100644
---- a/sound/soc/codecs/da7210.c
-+++ b/sound/soc/codecs/da7210.c
-@@ -1336,6 +1336,8 @@ static int __init da7210_modinit(void)
- 	int ret = 0;
- #if IS_ENABLED(CONFIG_I2C)
- 	ret = i2c_add_driver(&da7210_i2c_driver);
-+	if (ret)
-+		return ret;
- #endif
- #if defined(CONFIG_SPI_MASTER)
- 	ret = spi_register_driver(&da7210_spi_driver);
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 0877cf24f7de..711cf30e835a 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1141,16 +1141,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
+-
+-	serial8250_suspend_port(priv->line);
+-	clk_disable_unprepare(priv->baud_mux_clk);
++	unsigned long flags;
+ 
+ 	/*
+ 	 * This will prevent resume from enabling RTS before the
+-	 *  baud rate has been resored.
++	 *  baud rate has been restored.
+ 	 */
++	spin_lock_irqsave(&port->lock, flags);
+ 	priv->saved_mctrl = port->mctrl;
+-	port->mctrl = 0;
++	port->mctrl &= ~TIOCM_RTS;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	serial8250_suspend_port(priv->line);
++	clk_disable_unprepare(priv->baud_mux_clk);
+ 
+ 	return 0;
+ }
+@@ -1160,6 +1163,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
++	unsigned long flags;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(priv->baud_mux_clk);
+@@ -1182,7 +1186,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 		start_rx_dma(serial8250_get_port(priv->line));
+ 	}
+ 	serial8250_resume_port(priv->line);
+-	port->mctrl = priv->saved_mctrl;
++
++	if (priv->saved_mctrl & TIOCM_RTS) {
++		/* Restore RTS */
++		spin_lock_irqsave(&port->lock, flags);
++		port->mctrl |= TIOCM_RTS;
++		port->ops->set_mctrl(port, port->mctrl);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
