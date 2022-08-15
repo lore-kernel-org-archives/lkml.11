@@ -2,185 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30448C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DE5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 06:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241059AbiHOGuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        id S241085AbiHOGuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241099AbiHOGuA (ORCPT
+        with ESMTP id S241092AbiHOGun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 02:50:00 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2048.outbound.protection.outlook.com [40.107.212.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56C41B7BD;
-        Sun, 14 Aug 2022 23:49:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lxl/3krrVhHYh1JnBr1S/vUlsejFjhPj8yFbTpPH2eUrcUjX3NRkPc4fcOEtSrxBCOXxl/azWHThINPVoguec35djGjQpuW/EsnsG/w29aNe7qLSxck2ZdVZdKpukupv85bv+vDzvWJz2HZktCvUpd9nYgVSMGtBfkwbl/Tbq01xSbT4fcdefKj4kSsWHF+2gSNgNGZBk2jvOe/SIMRsgdKHpArbWK+cwRzhlFYJQEQashFe12+DM8VKGrj3F7ev41GaY5njfHo38doEULpd5UvEbw1FNYwWdGac3n+WPtezV7rVXGrdTiNvM4prFV1QnVDTr9MQfp7ZFaNUV4TSMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qu9V2PVcgr6VoNj45Dp2op6eKm2O5IColPexFmhjSw4=;
- b=OOGALm4jxkQywR4KuRmw6ojBhq2bmoBL7dcWZTYjf37AuRc6/HpHbJkfz2uVwafOH0HRquIUxO2vTO3Zb95MES/su7mIL0D8V4AGcDzXTjip7RAIz3D6DlNYyFUW1e7lE85WW0jCcnSsi3YBTnjpDfG7vsqrmf/mszHTWdeGb3bXGuME3RY3zU3N/W6kKvuyRf/HS9YwPQcHcuetWu04yM1VRjHNOfgKgCcY8nVSitbp6Eis5p0C4M2YHbsKsvl0tF5R/mAPrVpM9ZIXM7BCvq6nL7frt+96RJkL8XsakCxC5PFjVlLsGYDAenmFBAsDIiSRX8WghTmXmDUc5bQ+0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=tw.synaptics.com; dmarc=pass action=none
- header.from=tw.synaptics.com; dkim=pass header.d=tw.synaptics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qu9V2PVcgr6VoNj45Dp2op6eKm2O5IColPexFmhjSw4=;
- b=JDNA6+QdeL7KF1HEJt+XM917WYfEqbvMH9p9GzZCiwYXsBTEw7g2pvs8tvuQRnW4oEoEdhskupOwjFb3gt91c1f6+3ExKWJE1wa8dp+bRwQa3gLzSR3bQUljBvl0R7y5Y9w/NmXoPMqtJ91BFk3ZoKZ2hqyujKwLc/6GMF/rnJ8=
-Received: from PH0PR03MB5848.namprd03.prod.outlook.com (2603:10b6:510:30::19)
- by CH0PR03MB6113.namprd03.prod.outlook.com (2603:10b6:610:b8::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Mon, 15 Aug
- 2022 06:49:55 +0000
-Received: from PH0PR03MB5848.namprd03.prod.outlook.com
- ([fe80::60b1:a766:c174:65ca]) by PH0PR03MB5848.namprd03.prod.outlook.com
- ([fe80::60b1:a766:c174:65ca%9]) with mapi id 15.20.5504.028; Mon, 15 Aug 2022
- 06:49:55 +0000
-From:   Marge Yang <Marge.Yang@tw.synaptics.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        margeyang <marge.yang@synaptics.corp-partner.google.com>,
-        Wayne Chang <wayne.chang@tw.synaptics.com>,
-        Marge Yang <Marge.Yang@tw.synaptics.com>
-CC:     "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "hdegoede@redhat.com" <hdegoede@redhat.com>,
-        "benjamin.tissoires@redhat.com" <benjamin.tissoires@redhat.com>,
-        Kevin Chu <kevin.chu@tw.synaptics.com>,
-        Derek Cheng <derek.cheng@tw.synaptics.com>,
-        Vincent Huang <Vincent.huang@tw.synaptics.com>,
-        Carl Yang <Carl.Yang@synaptics.com>,
-        Ian Lu <Ian.Lu@tw.synaptics.com>,
-        Darren Kang <Darren.Kang@tw.synaptics.com>
-Subject: RE: [PATCH V2] Input: synaptics-rmi4 - filter incomplete relative
- packet.
-Thread-Topic: [PATCH V2] Input: synaptics-rmi4 - filter incomplete relative
- packet.
-Thread-Index: AQHYriedESzFVEn50EycgAScWVrfYa2rpwoAgAPe3XA=
-Date:   Mon, 15 Aug 2022 06:49:55 +0000
-Message-ID: <PH0PR03MB58481D2CB3F4731DBBF19B7BA3689@PH0PR03MB5848.namprd03.prod.outlook.com>
-References: <1660293805-16053-1-git-send-email-marge.yang@synaptics.corp-partner.google.com>
- <Yvap0uh1U81gqy6J@google.com>
-In-Reply-To: <Yvap0uh1U81gqy6J@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcbXlhbmdcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy03NmY5MzJiZi0xYzY2LTExZWQtODJkNi1mODU5NzE0OTljZGNcYW1lLXRlc3RcNzZmOTMyYzAtMWM2Ni0xMWVkLTgyZDYtZjg1OTcxNDk5Y2RjYm9keS50eHQiIHN6PSIyMjU3IiB0PSIxMzMwNTAxOTc5MzcyMzUyMDIiIGg9Ikt2d1dtVFNqam94QXd4THRRVmt5bkN2WU1Fbz0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
-x-dg-rorf: true
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=tw.synaptics.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bae5f633-0cd7-482f-5233-08da7e8a5cc4
-x-ms-traffictypediagnostic: CH0PR03MB6113:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eEEW0PaDfokzLPcMXc1VLL+Rf94SX48Ao0jPtjCTIKU8zihVHzi2ARwCiJL0Hz2tjaedEaq8x8IkYM5TrN2sRuPfm3sH3f5WSL0kwnGdYkGbu+PTc9XYgw5+zvTsMl21pMISLYKJpx1lrqsCSuwcjeqreAuoUrIo8ZKaJgpLhd9QmXnuP52exTVnFpnXjtBAGEECZjO4LnCuPuGAcr9aL2DX476dDLxPvtuNlpoAVJuPg3ZuHjUj9+pl4tzWYV1kD3OHYtv2D69c7pjfSwGwI9XJHWOj/YqlCad2+eAqbt3g5v4vRp0dqQw7xjQrTqsBvNAzFDC3Q5MGGOwuKleb9ybDMS6NSUTBwEexxL3huArlRc8O4tQlbZuuUi3aonL6U7cCMC6ejKfQ2IDgiwGH+9KseiPGp9p79HSucvFSHdU2vrSmL144lsESMRo+3uRv9XDmx6awau5JyoHJDfYtOKujzYa99HWOvUldbIZGT1GcmqbIilPs/8jfPE82CZeLreoSteLDa5ge9+8U3+Ooro+oM3S5Q2S+fPBMTVKEmYvY62TvJ0hI8EAampedxh3weye79o9GjtOKMggd7CzQB/NYx8DQ2KQbYfHhYHTj/HqNxBk+hBDtJEjuroly/gJ9hYYnZNwuL79hw7rk5UBZs6jhHPks3U50oKpyGyZ0spaWFDWsu8Ni2o+Mp5hu8UpWJOoNp76dijGFYScZJWlkKItabFS+H1X4qre6OggP691FfZSluTuCiuN2u90jlzPtPH9YwZzqG17HT66FSDbCHCAe6AH/hl7HKAOx2kCbqek=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR03MB5848.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(376002)(39850400004)(396003)(366004)(8936002)(55016003)(2906002)(5660300002)(52536014)(86362001)(38070700005)(38100700002)(122000001)(478600001)(71200400001)(6506007)(7696005)(41300700001)(110136005)(54906003)(316002)(83380400001)(8676002)(66446008)(66476007)(64756008)(66556008)(66946007)(76116006)(4326008)(26005)(53546011)(9686003)(186003)(33656002)(107886003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uDz897fbbtqb5hWjVcTdCfMuMC0q31thCfVQRO/NIuAGt0w4zG8z8vnTs/Pv?=
- =?us-ascii?Q?QuXWpvq26uRj4bXYqneeTPs7JC7jPZbe5TNT7oDIlTmjFeS03k98TFEeh0aK?=
- =?us-ascii?Q?inF36kxhF+3ylnenIKogE0XVFxWOhwVKh3vyap+qxcIY7WPd1A3MwRv50wJ7?=
- =?us-ascii?Q?N8O8S5HHUL7RbNH/WNxJBa3vM3U/Q5GAUpaLjnQc4VO2cW2lXBjAJLgfKz2k?=
- =?us-ascii?Q?i+LWlfytlIdkrOobpQvb136pmsPxMi9pwirsv5GVlWeieW/GHH3nc2TEBuSi?=
- =?us-ascii?Q?UaPbDDbY+dOCZXicohEHw1Dk+F7quHuG6U1YQv9Cg1VvvhR65nwKChkykvjK?=
- =?us-ascii?Q?R/iPAPRGtKJLo2/PEWB4dXKuFfmtSeujp8n2cWCfpMk6tyEmzQAnamEAlCix?=
- =?us-ascii?Q?wZyqC4P4obfJsP/P9DvBSwVG8IghNZi3yuqzxYotsgsfpbAD5jYKec3YFvwH?=
- =?us-ascii?Q?lJKiRDlk8aNFAmQzK7/Fn9uHV5h1D/NeUqLsMHZyHph5jEmxP+GAqPMRlP9/?=
- =?us-ascii?Q?3FBG5p9IqCchEiHnsdIazA5ZOdRfgyvVEs0NH2QWDwFHobgRJ2h2uDxY0SXt?=
- =?us-ascii?Q?hYr/VjEGkzq+CwACSZbJT+Ew22bQWtVLXF/FU4BjboDNeBuPU6drWh1jeQjM?=
- =?us-ascii?Q?CW05WAaGFt5xAmrUWtcpbUidLGxohaELDXBRrl/YG+Y1+qXv0ILuof35KK/C?=
- =?us-ascii?Q?13XgHtv5pDOSO05UrFN2w+7Y1qTYcSo9sFZOMlC7PmjF8m9tVv0B7S6mowV1?=
- =?us-ascii?Q?vIBuAlVGaFCZTsXzvA2tM6gzC5o752F2z/CGbgytlpAMgCQxsvI8YNywrbw2?=
- =?us-ascii?Q?GDFwHuqq33IUAXjC02+hFJkGYNCiYnwZoo4HkccfBKzF5a4c86dHGWI/20PE?=
- =?us-ascii?Q?VSj1h9m7LrnvopRYHbOjhDFEa/ztQB354IWvghgth/tgBzZzSla44wOmjPLU?=
- =?us-ascii?Q?kRPRM8eIqeu34OnztSc4ZAPBXijlIfNxV8Fk4AK/b+YVxvvkQqtgxtNkN8zv?=
- =?us-ascii?Q?6cvCrB/mYGnhAWIcATPt/FdTcVvWY6dIxIjK9E5Wuu3VTAcUb2hNlfeYgWXI?=
- =?us-ascii?Q?fey4w8+23yGIW1yX6ztTBbm2LOYVAJmpWBdxiOBlIyeSLXeHqflXvxFb0Yco?=
- =?us-ascii?Q?Tvd5ld7kgqUJ1l5noij9d0NPlsbBLQcZYBT90V0ko8BZleELVSoBrkVN+eH9?=
- =?us-ascii?Q?S+XzrrSIb68aaAfp4nNVrFBKgfnxpFvL1uJG6Udl74gUIXP5E4cng94iwfaH?=
- =?us-ascii?Q?ACSO7b9xzHPQbMHKo2oAAnW9xpB2PKo3Eyk6oeZjaC3qi+jqjTsTUOEikjYX?=
- =?us-ascii?Q?UNMvol8rP4MoAWBmhZXx5KPeJ27u/yT0fGn6cq2SXn2PHVyGwSZneOYShwlb?=
- =?us-ascii?Q?lrgZCh6tpL9KTjf/wejQF4ajDqkZTVqIsg7YK1pXFwFT6xh/566UcC+m9hWU?=
- =?us-ascii?Q?zGp7ybo92CoEbvOsFckXKutNWt3YSJjcFNPXS3a6wLDMXZFSo2O7P/1QQeEP?=
- =?us-ascii?Q?N7htyYjWs7wuXTzZTGnSMjtqZbioTLsIlMr1BNYo0OS4wd+6pjSdikfDRb9H?=
- =?us-ascii?Q?wzZbslqdT5weZyg5HO+kFke7p8PtJD+B68+1UXun?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 15 Aug 2022 02:50:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A70A64C2
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660546241;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fH5UwWIX9OQs+lDeT8kxr/N3oertTip+Q2crz6TCHlw=;
+        b=hqZcnnR7VM7YPZPCOlYJ5rQtDE7he27thvCqGzifel0N0C0TXyxXUm/Fum3gKyTO6VPz6F
+        hPdH+NxA6pj4ho50ldRazt3r983Qtqbm6bhHHuaYIS9rTqPvpmESkKVVIfg+UWDxejuTbq
+        BFVitD90GUUKLD4FBQgXrDrVR+APY9E=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-631-wit3zXdiPAKVKHxkLiPzFg-1; Mon, 15 Aug 2022 02:50:40 -0400
+X-MC-Unique: wit3zXdiPAKVKHxkLiPzFg-1
+Received: by mail-pl1-f197.google.com with SMTP id k13-20020a170902c40d00b0016f90eba744so4496090plk.22
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 23:50:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=fH5UwWIX9OQs+lDeT8kxr/N3oertTip+Q2crz6TCHlw=;
+        b=uFB/TZJBZcdu0nsSr42Typz5O0FKAZKtSu9WlS+had1lGDQkO5nqfIkCEvEwmnyBo2
+         jM2G6pUsL30uZruYIaEgHBNJup1M9aNkFQwjqUIwDGg6v/mLc8ZuKORalEaKMs5r4OIh
+         P/GVa4G2bxoIPGEq/sDW12DutrQNnJ4r1R0rpYSckom+OZAlJfCZQ7t/EHSkmyrN5AkQ
+         W+QGUPLN0/HgX1oEwGiNycgJNU5f4+c7bnv9ErODGj/SjVTUQIOEA3/Vcrymi4RdcRqv
+         RW1oCYsFbyfcGjXGvEagNoodL1jlcdbbAotPaMYsSRPZPCl/7oVPsEGgX8r81FKRm5s2
+         p5Eg==
+X-Gm-Message-State: ACgBeo3pTquQFU13tVLMXykRiO57Kn0+kzYxWRw0yNdYrQEkqGyoZEPZ
+        pqUwJMf3DJRrz6Dx9X8S1WM/5mfOAjljeCEd4KKcYJ9bmxxt/anALU2FMDkT1JORkIbOmVR72OE
+        Oe9TdRY/mSBJY2kMCHMPE4muE
+X-Received: by 2002:a05:6a00:1a49:b0:528:6ea0:14e2 with SMTP id h9-20020a056a001a4900b005286ea014e2mr14839000pfv.22.1660546238691;
+        Sun, 14 Aug 2022 23:50:38 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4PQGZOnNvpKrm4VdqdTXnzXqXIyQPGqkluzieKE/EdGg9J7TGEQ7aCkqPIvuBbI8mBEFkBhw==
+X-Received: by 2002:a05:6a00:1a49:b0:528:6ea0:14e2 with SMTP id h9-20020a056a001a4900b005286ea014e2mr14838964pfv.22.1660546237888;
+        Sun, 14 Aug 2022 23:50:37 -0700 (PDT)
+Received: from localhost ([240e:3a1:2ea:acc0:8cff:e01c:2dbf:2ae8])
+        by smtp.gmail.com with ESMTPSA id d1-20020a623601000000b00534abad34easm2744569pfa.51.2022.08.14.23.50.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Aug 2022 23:50:37 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 14:48:13 +0800
+From:   Coiby Xu <coxu@redhat.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>
+Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
+        nasastry@in.ibm.com, mpe@ellerman.id.au
+Subject: Re: [PATCH v7 0/6] tpm: Preserve TPM measurement log across kexec
+ (ppc64)
+Message-ID: <20220815064813.77g6icbkygrbmapa@Rk>
+References: <20220812164305.2056641-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
-X-OriginatorOrg: tw.synaptics.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR03MB5848.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bae5f633-0cd7-482f-5233-08da7e8a5cc4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2022 06:49:55.3146
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +mext06H+AFbN+bnSaPAlgy1eTZGWV7Gbb3VoVbIoBfud1w4hLDLPjjmEoj4kGQI/EPls7r/IDnCPohOqZt2Mg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR03MB6113
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220812164305.2056641-1-stefanb@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Synaptics firmware member
+I can confirm this patch set fixes an issue that guest kdump kernel
+crashes on POWER9 host by applying it to 5.19.1 (there is a conflict
+when applying this patch set to latest kernel i.e. 6.0.0-rc1).
 
-Hi Dmitry,
-	Update Synaptics firmware's comment.
-[Wayne 08/15]
-To address the transaction error case in the middle would potential lead to=
- the unexpected data transaction and latency between styk device and host d=
-river.  F$03 didn't really parse any data packet but simply works as bridge=
- functionality to bypass the command and response packets between styk devi=
-ce and driver.
+Tested-by: Coiby Xu <coxu@redhat.com>
 
-Thanks
-Marge Yang
+Previously, the issue can be reproduced as follows,
 
------Original Message-----
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>=20
-Sent: Saturday, August 13, 2022 3:28 AM
-To: margeyang <marge.yang@synaptics.corp-partner.google.com>
-Cc: linux-input@vger.kernel.org; linux-kernel@vger.kernel.org; hdegoede@red=
-hat.com; benjamin.tissoires@redhat.com; Marge Yang <Marge.Yang@tw.synaptics=
-.com>; Derek Cheng <derek.cheng@tw.synaptics.com>; Vincent Huang <Vincent.h=
-uang@tw.synaptics.com>
-Subject: Re: [PATCH V2] Input: synaptics-rmi4 - filter incomplete relative =
-packet.
+1. revert commit 7c5ed82b800d ("powerpc: Set crashkernel offset to mid
+    of RMA region") which masks the issue
+2. build & boot the kernel with crashkernel=512M 
+3. load kdump kernel and trigger kernel crash,
+[    4.209792] Oops: Kernel access of bad area, sig: 11 [#1]
+[    4.210373] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
+[    4.210985] Modules linked in:
+[    4.211570] CPU: 12 PID: 1 Comm: swapper/12 Not tainted 6.0.0-rc1+ #3
+[    4.212204] NIP:  c0000000080a6540 LR: c00000000840c630 CTR: 0000000000000800
+[    4.212871] REGS: c00000000e66b130 TRAP: 0300   Not tainted  (6.0.0-rc1+)
+[    4.213529] MSR:  800000000280b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE>  CR: 24000280  XER: 0000005b
+[    4.214242] CFAR: c0000000080a6528 DAR: c00000002ffb0000 DSISR: 40000000 IRQMASK: 0 
+[    4.214242] GPR00: 000000000e000000 c00000000e66b3d0 c00000000aa69a00 c0000000117c0000 
+[    4.214242] GPR04: c00000002ffb0000 0000000000040000 0000000000000800 03fffffffee84000 
+[    4.214242] GPR08: 0000000080000000 0000000000000010 0000000000000020 0000000000000030 
+[    4.214242] GPR12: 0000000000000040 c00000000ad61000 0000000000000050 0000000000000060 
+[    4.214242] GPR16: 0000000000000070 0000000000000000 0000000000000000 0000000000000000 
+[    4.214242] GPR20: 0000000000000000 0000000000000000 c000000008f7ebd8 c00000000e418420 
+[    4.214242] GPR24: c00000000ad3c389 c000000008f7ed60 c00000000ecc9000 c000000011271848 
+[    4.214242] GPR28: c000000027fcee5c c00000002ffb0000 0000000000040000 c0000000117c0000 
+[    4.220176] NIP [c0000000080a6540] memcpy_power7+0x400/0x7d0
+[    4.220808] LR [c00000000840c630] kmemdup+0x50/0x80
+[    4.221428] Call Trace:
+[    4.222006] [c00000000e66b3d0] [c0000000080a63b4] memcpy_power7+0x274/0x7d0 (unreliable)
+[    4.222662] [c00000000e66b4d0] [c00000000840c630] kmemdup+0x50/0x80
+[    4.223293] [c00000000e66b510] [c000000008973ee0] tpm_read_log_of+0x110/0x1f0
+[    4.223929] [c00000000e66b5a0] [c000000008973020] tpm_bios_log_setup+0x80/0x250
+[    4.224552] [c00000000e66b630] [c00000000896b938] tpm_chip_register.part.0+0x38/0x2a0
+[    4.225170] [c00000000e66b6b0] [c000000008979a80] tpm_ibmvtpm_probe+0x530/0x7d0
+[    4.225777] [c00000000e66b790] [c0000000081055e4] vio_bus_probe+0x94/0x150
+[    4.226366] [c00000000e66b7e0] [c0000000089936d4] really_probe+0x104/0x550
+[    4.226947] [c00000000e66b860] [c000000008993bd4] __driver_probe_device+0xb4/0x240
+[    4.227560] [c00000000e66b8e0] [c000000008993db4] driver_probe_device+0x54/0x130
+[    4.228159] [c00000000e66b920] [c000000008994a88] __driver_attach+0x128/0x2d0
+[    4.228748] [c00000000e66b9a0] [c00000000898fcf8] bus_for_each_dev+0xa8/0x130
+[    4.229325] [c00000000e66ba00] [c000000008992bd4] driver_attach+0x34/0x50
+[    4.229887] [c00000000e66ba20] [c0000000089922d8] bus_add_driver+0x218/0x300
+[    4.230453] [c00000000e66bab0] [c000000008995f94] driver_register+0xb4/0x1c0
+[    4.231012] [c00000000e66bb20] [c000000008103fb0] __vio_register_driver+0x80/0xf0
+[    4.231569] [c00000000e66bba0] [c00000000a06807c] ibmvtpm_module_init+0x34/0x48
+[    4.232119] [c00000000e66bbc0] [c000000008011c14] do_one_initcall+0x64/0x300
+[    4.232664] [c00000000e66bca0] [c00000000a0053f0] do_initcalls+0x13c/0x190
+[    4.233183] [c00000000e66bd50] [c00000000a00570c] kernel_init_freeable+0x22c/0x2a0
+[    4.233706] [c00000000e66bdb0] [c000000008012240] kernel_init+0x30/0x1a0
+[    4.234204] [c00000000e66be10] [c00000000800ca54] ret_from_kernel_thread+0x5c/0x64
+[    4.234721] Instruction dump:
+[    4.235191] fa010080 39800040 39c00050 39e00060 3a000070 7cc903a6 48000018 60000000 
+[    4.235738] 60000000 60000000 60000000 60000000 <7ce020ce> 7cc448ce 7ca450ce 7c8458ce 
+[    4.236302] ---[ end trace 0000000000000000 ]---
 
-CAUTION: Email originated externally, do not click links or open attachment=
-s unless you recognize the sender and know the content is safe.
-
-
-Hi Marge,
-
-On Fri, Aug 12, 2022 at 04:43:25PM +0800, margeyang wrote:
-> From: Marge Yang <marge.yang@synaptics.corp-partner.google.com>
+On Fri, Aug 12, 2022 at 12:42:59PM -0400, Stefan Berger wrote:
+>The of-tree subsystem does not currently preserve the IBM vTPM 1.2 and
+>vTPM 2.0 measurement logs across a kexec on PowerVM and PowerKVM. This
+>series fixes this for the kexec_file_load() syscall using the flattened
+>device tree (fdt) to carry the TPM measurement log's buffer across kexec.
 >
-> RMI4 F03 supports the Stick function,
-> it's designed to support relative packet.
-> This patch supports the following case.
-> When relative packet can't be reported completely, it may miss one=20
-> byte or two byte.
-> New Synaptics firmware will report PARITY error.
-> When timeout error or parity error happens,
-> RMI4 driver will sends 0xFE command and ask FW to Re-send stick packet=20
-> again.
+>   Stefan
+>
+>v7:
+> - Added Nageswara's Tested-by tags
+> - Added back original comment to inline function and removed Jarkko's R-b tag
+>
+>v6:
+> - Add __init to get_kexec_buffer as suggested by Jonathan
+> - Fixed issue detected by kernel test robot
+>
+>v5:
+> - Rebased on 1 more patch that would otherwise create merge conflicts
+>
+>v4:
+> - Rebased on 2 patches that would otherwise create merge conflicts;
+>   posting these patches in this series with several tags removed so
+>   krobot can test the series already
+> - Changes to individual patches documented in patch descripitons
+>
+>v3:
+> - Moved TPM Open Firmware related function to drivers/char/tpm/eventlog/tpm_of.c
+>
+>v2:
+> - rearranged patches
+> - fixed compilation issues for x86
+>
+>
+>Jonathan McDowell (1):
+>  x86/kexec: Carry forward IMA measurement log on kexec
+>
+>Palmer Dabbelt (1):
+>  drivers: of: kexec ima: Support 32-bit platforms
+>
+>Stefan Berger (3):
+>  tpm: of: Make of-tree specific function commonly available
+>  of: kexec: Refactor IMA buffer related functions to make them reusable
+>  tpm/kexec: Duplicate TPM measurement log in of-tree for kexec
+>
+>Vaibhav Jain (1):
+>  of: check previous kernel's ima-kexec-buffer against memory bounds
+>
+> arch/x86/Kconfig                      |   1 +
+> arch/x86/include/uapi/asm/bootparam.h |   9 +
+> arch/x86/kernel/e820.c                |   6 +-
+> arch/x86/kernel/kexec-bzimage64.c     |  42 +++-
+> arch/x86/kernel/setup.c               |  63 +++++
+> drivers/char/tpm/eventlog/of.c        |  31 +--
+> drivers/of/kexec.c                    | 342 ++++++++++++++++++++++----
+> include/linux/ima.h                   |   5 +
+> include/linux/kexec.h                 |   6 +
+> include/linux/of.h                    |  11 +-
+> include/linux/tpm.h                   |  36 +++
+> kernel/kexec_file.c                   |   6 +
+> security/integrity/ima/ima_kexec.c    |   2 +-
+> 13 files changed, 478 insertions(+), 82 deletions(-)
+>
+>
+>base-commit: 3d7cb6b04c3f3115719235cc6866b10326de34cd
+>-- 
+>2.35.1
+>
+>
+>_______________________________________________
+>kexec mailing list
+>kexec@lists.infradead.org
+>http://lists.infradead.org/mailman/listinfo/kexec
+>
 
-My understanding is that F03 is intended to be a pass-through mechanism for=
- PS/2-compatible devices. In that spirit all protocol handling and validati=
-on should happen in psmouse driver that attaches to a serio port provided b=
-y F03.
+-- 
+Best regards,
+Coiby
 
-Historically we did not pay attention to parity and frame errors for
-PS/2 mice/touchpads (and for keyboards on x86) but we coudl add such code t=
-here. Do we actually observe this with RMI devices? Can RMI firmware handle=
- this better instead?
-
-Thanks.
-
---
-Dmitry
