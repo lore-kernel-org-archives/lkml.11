@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E695CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C43C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348480AbiHOVd2 (ORCPT
+        id S1348529AbiHOVdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        Mon, 15 Aug 2022 17:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348506AbiHOVb1 (ORCPT
+        with ESMTP id S1348569AbiHOVbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:31:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD82EF9DD;
-        Mon, 15 Aug 2022 12:24:09 -0700 (PDT)
+        Mon, 15 Aug 2022 17:31:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E954DF0745;
+        Mon, 15 Aug 2022 12:24:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 81E3FCE12C8;
-        Mon, 15 Aug 2022 19:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEDAC433D6;
-        Mon, 15 Aug 2022 19:24:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AC3610A2;
+        Mon, 15 Aug 2022 19:24:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D027BC433D7;
+        Mon, 15 Aug 2022 19:24:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591445;
-        bh=Y2YVxMxFUYn+u8NnVUBKFgPVl4Mn/bDpZE1Y3UP0Zr4=;
+        s=korg; t=1660591452;
+        bh=i8hmpQ53bR+sr3him2AXH2AmyhXku3SVxEQnzBlMJxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lFmQYvQ2/0KZDe3ipzLp7ilm6R68WObnrpeYYh1GPtGamiUtL/UCcT3ZroelDCjHw
-         /WyMvdRVcru9qJCjHwfFLtcrTiag1NZ2URSoJMt+S3WyXYB+lqUrYpAw6D6XF6+pVt
-         +oxkcwhcs6QqhCRCiY6j6puDNFKZqPfYTtoxrj4I=
+        b=foa4AwPr9KderzW8y2tdRNnWslYsCfUBWEavbUKkaBbE+WCawk5wqEpoSA+lTrGmJ
+         Cdy6bJAvDz+PEmWkDmKbKFUnm5YbjE+rd+KqUvnmzWXfh8BXTwISrh9Cx3/blJFVOb
+         WR3DHE8MH1pCl0FpjFTf5CX2mkFjqRitZrAJoZ10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0543/1095] mtd: maps: Fix refcount leak in ap_flash_init
-Date:   Mon, 15 Aug 2022 19:59:02 +0200
-Message-Id: <20220815180452.002892916@linuxfoundation.org>
+Subject: [PATCH 5.18 0577/1095] scsi: qla2xxx: edif: Tear down session if keys have been removed
+Date:   Mon, 15 Aug 2022 19:59:36 +0200
+Message-Id: <20220815180453.443224603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,36 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 77087a04c8fd554134bddcb8a9ff87b21f357926 ]
+[ Upstream commit d7e2e4a68fc047a025afcd200e6b7e1fbc8b1999 ]
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+If all keys for a session have been deleted, trigger a session teardown.
 
-Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220523143255.4376-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220608115849.16693-6-njavali@marvell.com
+Fixes: dd30706e73b7 ("scsi: qla2xxx: edif: Add key update")
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/maps/physmap-versatile.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_def.h | 5 +++++
+ drivers/scsi/qla2xxx/qla_isr.c | 1 +
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
-index 297a50957356..a1b8b7b25f88 100644
---- a/drivers/mtd/maps/physmap-versatile.c
-+++ b/drivers/mtd/maps/physmap-versatile.c
-@@ -93,6 +93,7 @@ static int ap_flash_init(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 	ebi_base = of_iomap(ebi, 0);
-+	of_node_put(ebi);
- 	if (!ebi_base)
- 		return -ENODEV;
+diff --git a/drivers/scsi/qla2xxx/qla_def.h b/drivers/scsi/qla2xxx/qla_def.h
+index c2b92a6fef90..4062d46f33a6 100644
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -2158,6 +2158,11 @@ typedef struct {
+ #define CS_IOCB_ERROR		0x31	/* Generic error for IOCB request
+ 					   failure */
+ #define CS_REJECT_RECEIVED	0x4E	/* Reject received */
++#define CS_EDIF_AUTH_ERROR	0x63	/* decrypt error */
++#define CS_EDIF_PAD_LEN_ERROR	0x65	/* pad > frame size, not 4byte align */
++#define CS_EDIF_INV_REQ		0x66	/* invalid request */
++#define CS_EDIF_SPI_ERROR	0x67	/* rx frame unable to locate sa */
++#define CS_EDIF_HDR_ERROR	0x69	/* data frame != expected len */
+ #define CS_BAD_PAYLOAD		0x80	/* Driver defined */
+ #define CS_UNKNOWN		0x81	/* Driver defined */
+ #define CS_RETRY		0x82	/* Driver defined */
+diff --git a/drivers/scsi/qla2xxx/qla_isr.c b/drivers/scsi/qla2xxx/qla_isr.c
+index 5deea6bff09f..ad55eace66aa 100644
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -3424,6 +3424,7 @@ qla2x00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
+ 	case CS_PORT_UNAVAILABLE:
+ 	case CS_TIMEOUT:
+ 	case CS_RESET:
++	case CS_EDIF_INV_REQ:
  
+ 		/*
+ 		 * We are going to have the fc class block the rport
 -- 
 2.35.1
 
