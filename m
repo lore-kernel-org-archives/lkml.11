@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57C1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94B5C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245387AbiHOTEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
+        id S245396AbiHOTFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245230AbiHOTBf (ORCPT
+        with ESMTP id S245248AbiHOTBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87B133A1D;
-        Mon, 15 Aug 2022 11:33:01 -0700 (PDT)
+        Mon, 15 Aug 2022 15:01:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A6F33A1E;
+        Mon, 15 Aug 2022 11:33:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19E5260F7A;
-        Mon, 15 Aug 2022 18:33:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15794C433C1;
-        Mon, 15 Aug 2022 18:32:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA9AFB8105D;
+        Mon, 15 Aug 2022 18:32:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E085C433D6;
+        Mon, 15 Aug 2022 18:32:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588380;
-        bh=HrPimmobdIk2vbtJv/TMugZDKgUGpjvpS3KaV+bxIQk=;
+        s=korg; t=1660588374;
+        bh=1wr7CAmYtvRQCyqKCWnL96CuCnp+lTL5P0DPj5UZM94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VikBquhg9sLn8uVIOtkpPOLlxszMI0fsRJLB8T72mMSDU/xsGYdTpwh5YN7BxXb43
-         GhbJYdRfUKsX33KkPJHS6GywOf5K2CzTyxHAgVv6HvlnoUbwhSmNKsvjLJGHQi4+8b
-         iA55iKbzcg/Lj2ZkRIeE98jetLTaOG4Y5NBYIiT4=
+        b=kw1PnymjhgZSRro1o2uBAM4OiR+J7LTMlOC7kG63JOAxfQ8YTtLJThJtnlO2MKgbY
+         MFr8E2ujchHptY+QiU2u0bVcXjHiSlpoXCWKXnnm1EyXrIoAPWykiae24Tlz1/FGdY
+         BXnaqyYarV42wEArrozx+GUoCSkhDvjIIBWBdZck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 384/779] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
-Date:   Mon, 15 Aug 2022 20:00:28 +0200
-Message-Id: <20220815180353.698944137@linuxfoundation.org>
+Subject: [PATCH 5.15 382/779] net: rose: fix netdev reference changes
+Date:   Mon, 15 Aug 2022 20:00:26 +0200
+Message-Id: <20220815180353.616960976@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,68 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a41b17ff9dacd22f5f118ee53d82da0f3e52d5e3 ]
+[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
 
-In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
-will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
-released before sock_alloc_send_skb and then relocked after
-sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
-to add skb to an already full sk_write_queue:
+Bernard reported that trying to unload rose module would lead
+to infamous messages:
 
-thread1--->lock
-thread1--->dccp_qpolicy_full: queue is full. drop a skb
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
-thread2--->unlock
-thread1--->lock
-thread1--->dccp_qpolicy_push: add a skb. queue is full.
-thread1--->unlock
-thread2--->lock
-thread2--->dccp_qpolicy_push: add a skb!
-thread2--->unlock
+unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
 
-Fix this by moving dccp_qpolicy_full.
+This patch solves the issue, by making sure each socket referring to
+a netdevice holds a reference count on it, and properly releases it
+in rose_release().
 
-Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220729110027.40569-1-hbh25y@gmail.com
+rose_dev_first() is also fixed to take a device reference
+before leaving the rcu_read_locked section.
+
+Following patch will add ref_tracker annotations to ease
+future bug hunting.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Tested-by: Bernard Pidoux <f6bvp@free.fr>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dccp/proto.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ net/rose/af_rose.c    | 11 +++++++++--
+ net/rose/rose_route.c |  2 ++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index fc44dadc778b..c4de716f4994 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -747,11 +747,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index cf7d974e0f61..29a208ed8fb8 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -191,6 +191,7 @@ static void rose_kill_by_device(struct net_device *dev)
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			if (rose->neighbour)
+ 				rose->neighbour->use--;
++			dev_put(rose->device);
+ 			rose->device = NULL;
+ 		}
+ 	}
+@@ -591,6 +592,8 @@ static struct sock *rose_make_new(struct sock *osk)
+ 	rose->idle	= orose->idle;
+ 	rose->defer	= orose->defer;
+ 	rose->device	= orose->device;
++	if (rose->device)
++		dev_hold(rose->device);
+ 	rose->qbitincl	= orose->qbitincl;
  
- 	lock_sock(sk);
+ 	return sk;
+@@ -644,6 +647,7 @@ static int rose_release(struct socket *sock)
+ 		break;
+ 	}
  
--	if (dccp_qpolicy_full(sk)) {
--		rc = -EAGAIN;
--		goto out_release;
--	}
--
- 	timeo = sock_sndtimeo(sk, noblock);
++	dev_put(rose->device);
+ 	sock->sk = NULL;
+ 	release_sock(sk);
+ 	sock_put(sk);
+@@ -720,7 +724,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	struct rose_sock *rose = rose_sk(sk);
+ 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
+ 	unsigned char cause, diagnostic;
+-	struct net_device *dev;
+ 	ax25_uid_assoc *user;
+ 	int n, err = 0;
  
- 	/*
-@@ -770,6 +765,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	if (skb == NULL)
- 		goto out_release;
+@@ -777,9 +780,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	}
  
-+	if (dccp_qpolicy_full(sk)) {
-+		rc = -EAGAIN;
-+		goto out_discard;
-+	}
+ 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
++		struct net_device *dev;
 +
- 	if (sk->sk_state == DCCP_CLOSED) {
- 		rc = -ENOTCONN;
- 		goto out_discard;
+ 		sock_reset_flag(sk, SOCK_ZAPPED);
+ 
+-		if ((dev = rose_dev_first()) == NULL) {
++		dev = rose_dev_first();
++		if (!dev) {
+ 			err = -ENETUNREACH;
+ 			goto out_release;
+ 		}
+@@ -787,6 +793,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 		user = ax25_findbyuid(current_euid());
+ 		if (!user) {
+ 			err = -EINVAL;
++			dev_put(dev);
+ 			goto out_release;
+ 		}
+ 
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index 764a726debb1..66aa05db5390 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -615,6 +615,8 @@ struct net_device *rose_dev_first(void)
+ 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
+ 				first = dev;
+ 	}
++	if (first)
++		dev_hold(first);
+ 	rcu_read_unlock();
+ 
+ 	return first;
 -- 
 2.35.1
 
