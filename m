@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B4FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E39C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242135AbiHOS2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        id S242208AbiHOS2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242978AbiHOS0h (ORCPT
+        with ESMTP id S242010AbiHOSZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:26:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DE931208;
-        Mon, 15 Aug 2022 11:19:36 -0700 (PDT)
+        Mon, 15 Aug 2022 14:25:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391672BEA;
+        Mon, 15 Aug 2022 11:18:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DA3760BFE;
-        Mon, 15 Aug 2022 18:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3563EC433D6;
-        Mon, 15 Aug 2022 18:19:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74A76B81063;
+        Mon, 15 Aug 2022 18:18:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B3AC433C1;
+        Mon, 15 Aug 2022 18:18:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587543;
-        bh=//pzvalXiDFERDVTn7mkwh9A1vGWIPKab/JROE8rypI=;
+        s=korg; t=1660587511;
+        bh=SSdxrt6SaLn3uYwefwPyPC+2wEBxa+Rwk3ncl4tY+FE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIqrV5xwbpGpqc+MOiS2EtmPnGLJmTHid/Nltegrk4k2VG6lHOu3fyHoCDZCwGUEg
-         ysbJFYybsbGUoFKOcHdGvjLMsGwBMx0/XyLwNaZwl76vg87IZNZWErCxFVKSQMwmlW
-         LIbskwTmYNJd4Mgimf4TPg5i97rlQU/kOfGz4CIU=
+        b=IiK1fLZLKr6cL8FE8zKDHx2NMSJIrQiY/mxQnb3ffRbLvwW8IFFomWfEmVN8g0hSQ
+         ZIfsh9bx5GweVXBybcll8o8xAloUANgBKu5bD+DkjS8FJh4DKIT1+U0ATweVA4jD19
+         YWSZI5Su0CJHw9jzOesXAE4Y8+ksAwDg5zqDF2Uw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 116/779] ext2: Add more validity checks for inode counts
-Date:   Mon, 15 Aug 2022 19:56:00 +0200
-Message-Id: <20220815180342.279871800@linuxfoundation.org>
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 107/779] netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
+Date:   Mon, 15 Aug 2022 19:55:51 +0200
+Message-Id: <20220815180341.897318476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,55 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
+commit 95f466d22364a33d183509629d0879885b4f547e upstream.
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+When doing lookups for chains on the same batch by using its ID, a chain
+from a different table can be used. If a rule is added to a table but
+refers to a chain in a different table, it will be linked to the chain in
+table2, but would have expressions referring to objects in table1.
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Then, when table1 is removed, the rule will not be removed as its linked to
+a chain in table2. When expressions in the rule are processed or removed,
+that will lead to a use-after-free.
+
+When looking for chains by ID, use the table that was used for the lookup
+by name, and only return chains belonging to that same table.
+
+Fixes: 837830a4b439 ("netfilter: nf_tables: add NFTA_RULE_CHAIN_ID attribute")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_api.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index 3d21279fe2cb..fd855574ef09 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1058,9 +1058,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2377,6 +2377,7 @@ err:
+ }
+ 
+ static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
++					       const struct nft_table *table,
+ 					       const struct nlattr *nla)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -2387,6 +2388,7 @@ static struct nft_chain *nft_chain_looku
+ 		struct nft_chain *chain = trans->ctx.chain;
+ 
+ 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
++		    chain->table == table &&
+ 		    id == nft_trans_chain_id(trans))
+ 			return chain;
  	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1070,6 +1071,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
-+	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array(db_count,
--- 
-2.35.1
-
+@@ -3320,7 +3322,7 @@ static int nf_tables_newrule(struct sk_b
+ 			return -EOPNOTSUPP;
+ 
+ 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
+-		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
++		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
+ 		if (IS_ERR(chain)) {
+ 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
+ 			return PTR_ERR(chain);
+@@ -9451,7 +9453,7 @@ static int nft_verdict_init(const struct
+ 						 tb[NFTA_VERDICT_CHAIN],
+ 						 genmask);
+ 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
+-			chain = nft_chain_lookup_byid(ctx->net,
++			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
+ 						      tb[NFTA_VERDICT_CHAIN_ID]);
+ 			if (IS_ERR(chain))
+ 				return PTR_ERR(chain);
 
 
