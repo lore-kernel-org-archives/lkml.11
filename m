@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3B2C32757
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BFAC49EC5
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356440AbiHPAHa (ORCPT
+        id S1356612AbiHPAHo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
+        Mon, 15 Aug 2022 20:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353598AbiHOX7Z (ORCPT
+        with ESMTP id S1352027AbiHPAAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:59:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C6C80512;
-        Mon, 15 Aug 2022 13:21:09 -0700 (PDT)
+        Mon, 15 Aug 2022 20:00:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0773D43E5B;
+        Mon, 15 Aug 2022 13:21:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07ADF61058;
-        Mon, 15 Aug 2022 20:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5E05C433D6;
-        Mon, 15 Aug 2022 20:21:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9560161007;
+        Mon, 15 Aug 2022 20:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D831C433D6;
+        Mon, 15 Aug 2022 20:21:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594868;
-        bh=t6X4DYWsdAQrVcgJ5oFrczsQEWu0s0WebpG6qMScSiQ=;
+        s=korg; t=1660594881;
+        bh=FX9Ax3Z/cmlPDDEf6qOtcz300bPFrJUo0VquF6pu9PY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c45kaFDMJowyHtchEvtDVervsid4THi7kYTAuyyuPhHXFcXXMmO2unY0X1e6lR+mU
-         gwV+An5NuGKgUKXGCELj10SaUfz68WqYh27ag8bj50ZUIrGtDu1c7DsoVFRQ3o9okz
-         f+jHv+0Yu1TeBiHuzA7US2t6aATiRRxepqd2QQP8=
+        b=Bh8E6bmX5bt9hFSRYiT+Jcsi+1IVqUfezjltrry+AQ9Z1qYzeSO2J/fJoLAO4v3db
+         HKqonC3KbROjB782bc+P5EfQzTiCTuHquZvf4RWW0x0BzPsRAeLAbgg5+njlrIW8Rc
+         uNlsOKl1uT7IGOUXVuMvbUGFt8l/3Gvbm6BOIw/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+        stable@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0551/1157] net/mlx5e: Fix calculations related to max MPWQE size
-Date:   Mon, 15 Aug 2022 19:58:27 +0200
-Message-Id: <20220815180501.681037943@linuxfoundation.org>
+Subject: [PATCH 5.19 0555/1157] net/mlx5: Fix driver use of uninitialized timeout
+Date:   Mon, 15 Aug 2022 19:58:31 +0200
+Message-Id: <20220815180501.828367540@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,105 +51,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-[ Upstream commit 677e78c8d44f326a73a77d71acf3a49ea562c1d9 ]
+[ Upstream commit 42b4f7f66a43cdb9216e76e595c8a9af154806da ]
 
-Before commit 76c31e5f7585 ("net/mlx5e: Use FW limitation for max MPW
-WQEBBs"), the maximum size of MPWQE in WQEBBs was hardcoded as a driver
-constant. That commit started using the firmware capability that can
-further limit the size, however, it unintentionally changed a few
-things:
+Currently, driver is setting default values to all timeouts during
+function setup. The offending commit is using a timeout before
+function setup, meaning: the timeout is 0 (or garbage), since no
+value have been set.
+This may result in failure to probe the driver:
+mlx5_function_setup:1034:(pid 69850): Firmware over 4294967296 MS in pre-initializing state, aborting
+probe_one:1591:(pid 69850): mlx5_init_one failed with error code -16
 
-1. The calculation of MLX5E_MAX_KLM_PER_WQE used the size in DS, which
-was replaced by the size in WQEBBs, making the resulting value 4 times
-smaller.
+Hence, set default values to timeouts during tout_init()
 
-2. MLX5E_TX_MPW_MAX_WQEBBS used to be aligned to the cache line size
-(either 64 or 128 bytes, i.e. 1 or 2 WQEBBs), but it's no longer the
-case if the firmware capability is smaller than the driver maximum.
-
-Fix both issues by using the correct units for MLX5E_MAX_KLM_PER_WQE and
-by aligning mlx5e_get_sw_max_sq_mpw_wqebbs after taking the minimum.
-
-Besides fixing the arithmetics in calculation of MLX5E_MAX_KLM_PER_WQE,
-also use appropriate constants: `size of BSF * num of DS per WQEBB *
-number of WQEBBs` (the calculation before the blamed commit) doesn't
-make much sense to calculate the WQE size in bytes, so just use `size of
-WQEBB * number of WQEBBs`.
-
-While at it, replace the types that hold the number of WQEBBs by u8.
-These values don't exceed 16, and it allows to fill holes in two
-structs.
-
-Fixes: 76c31e5f7585 ("net/mlx5e: Use FW limitation for max MPW WQEBBs")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fixes: 37ca95e62ee2 ("net/mlx5: Increase FW pre-init timeout for health recovery")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c | 11 ++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h |  1 -
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  2 --
+ 3 files changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index f794ffaf1e04..29b10ef787b9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -174,8 +174,8 @@ struct page_pool;
- 	ALIGN_DOWN(MLX5E_KLM_MAX_ENTRIES_PER_WQE(wqe_size), MLX5_UMR_KLM_ALIGNMENT)
- 
- #define MLX5E_MAX_KLM_PER_WQE(mdev) \
--	MLX5E_KLM_ENTRIES_PER_WQE(mlx5e_get_sw_max_sq_mpw_wqebbs(mlx5e_get_max_sq_wqebbs(mdev)) \
--				   << MLX5_MKEY_BSF_OCTO_SIZE)
-+	MLX5E_KLM_ENTRIES_PER_WQE(MLX5_SEND_WQE_BB * \
-+		mlx5e_get_sw_max_sq_mpw_wqebbs(mlx5e_get_max_sq_wqebbs(mdev)))
- 
- #define MLX5E_MSG_LEVEL			NETIF_MSG_LINK
- 
-@@ -233,7 +233,7 @@ static inline u16 mlx5e_get_max_sq_wqebbs(struct mlx5_core_dev *mdev)
- 		     MLX5_CAP_GEN(mdev, max_wqe_sz_sq) / MLX5_SEND_WQE_BB);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index d758848d34d0..696e45e2bd06 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -32,20 +32,17 @@ static void tout_set(struct mlx5_core_dev *dev, u64 val, enum mlx5_timeouts_type
+ 	dev->timeouts->to[type] = val;
  }
  
--static inline u16 mlx5e_get_sw_max_sq_mpw_wqebbs(u16 max_sq_wqebbs)
-+static inline u8 mlx5e_get_sw_max_sq_mpw_wqebbs(u8 max_sq_wqebbs)
+-void mlx5_tout_set_def_val(struct mlx5_core_dev *dev)
++int mlx5_tout_init(struct mlx5_core_dev *dev)
  {
- /* The return value will be multiplied by MLX5_SEND_WQEBB_NUM_DS.
-  * Since max_sq_wqebbs may be up to MLX5_SEND_WQE_MAX_WQEBBS == 16,
-@@ -242,11 +242,12 @@ static inline u16 mlx5e_get_sw_max_sq_mpw_wqebbs(u16 max_sq_wqebbs)
-  * than MLX5_SEND_WQE_MAX_WQEBBS to let a full-session WQE be
-  * cache-aligned.
-  */
--#if L1_CACHE_BYTES < 128
--	return min_t(u16, max_sq_wqebbs, MLX5_SEND_WQE_MAX_WQEBBS - 1);
--#else
--	return min_t(u16, max_sq_wqebbs, MLX5_SEND_WQE_MAX_WQEBBS - 2);
-+	u8 wqebbs = min_t(u8, max_sq_wqebbs, MLX5_SEND_WQE_MAX_WQEBBS - 1);
+ 	int i;
+ 
+-	for (i = 0; i < MAX_TIMEOUT_TYPES; i++)
+-		tout_set(dev, tout_def_sw_val[i], i);
+-}
+-
+-int mlx5_tout_init(struct mlx5_core_dev *dev)
+-{
+ 	dev->timeouts = kmalloc(sizeof(*dev->timeouts), GFP_KERNEL);
+ 	if (!dev->timeouts)
+ 		return -ENOMEM;
+ 
++	for (i = 0; i < MAX_TIMEOUT_TYPES; i++)
++		tout_set(dev, tout_def_sw_val[i], i);
 +
-+#if L1_CACHE_BYTES >= 128
-+	wqebbs = ALIGN_DOWN(wqebbs, 2);
- #endif
-+	return wqebbs;
+ 	return 0;
  }
  
- struct mlx5e_tx_wqe {
-@@ -455,7 +456,7 @@ struct mlx5e_txqsq {
- 	struct netdev_queue       *txq;
- 	u32                        sqn;
- 	u16                        stop_room;
--	u16                        max_sq_mpw_wqebbs;
-+	u8                         max_sq_mpw_wqebbs;
- 	u8                         min_inline_mode;
- 	struct device             *pdev;
- 	__be32                     mkey_be;
-@@ -570,7 +571,7 @@ struct mlx5e_xdpsq {
- 	struct device             *pdev;
- 	__be32                     mkey_be;
- 	u16                        stop_room;
--	u16                        max_sq_mpw_wqebbs;
-+	u8                         max_sq_mpw_wqebbs;
- 	u8                         min_inline_mode;
- 	unsigned long              state;
- 	unsigned int               hw_mtu;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 257c03eeab36..bc9e9aeda847 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -35,7 +35,6 @@ int mlx5_tout_init(struct mlx5_core_dev *dev);
+ void mlx5_tout_cleanup(struct mlx5_core_dev *dev);
+ void mlx5_tout_query_iseg(struct mlx5_core_dev *dev);
+ int mlx5_tout_query_dtor(struct mlx5_core_dev *dev);
+-void mlx5_tout_set_def_val(struct mlx5_core_dev *dev);
+ u64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);
+ 
+ #define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 95f26624b57c..ba2e5232b90b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1023,8 +1023,6 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ 	if (mlx5_core_is_pf(dev))
+ 		pcie_print_link_status(dev->pdev);
+ 
+-	mlx5_tout_set_def_val(dev);
+-
+ 	/* wait for firmware to accept initialization segments configurations
+ 	 */
+ 	err = wait_fw_init(dev, timeout,
 -- 
 2.35.1
 
