@@ -2,111 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05508C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3294C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiHONmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
+        id S232694AbiHONmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232233AbiHONmg (ORCPT
+        with ESMTP id S231840AbiHONmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 09:42:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA3C13E8D;
-        Mon, 15 Aug 2022 06:42:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A44E60EEA;
-        Mon, 15 Aug 2022 13:42:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8CBDC4347C;
-        Mon, 15 Aug 2022 13:42:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660570954;
-        bh=ihsoHw6swMHBcNjKbyZ/awdMFSUepCqZnSAEI50Meig=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3Qgne5tMHtSYVZIfOSWj4TY9OrPPsIF5MoQbfD8INVfCiqbQ0b5T+Q6lS8wHmQB7
-         mtQC0AlFY0xn/oYeE3qgtgxOC55QnWe0mQMObc7PleL9DqbD2mnvVwmtRB6yryHGws
-         1Hm4K/NLG0kD6MKTIO02rDJ18ngEJ/Dyo8wtgLJ/SGoAOx5j1JyzVJpJiuMMrFDlXx
-         Hyp4G39EsNtBbthgesNM9p5sNNq/Ba+QGGOY/EGUkI2HsA4rL8LQijgnjb9MRXM38d
-         4h6OnxHfDelpNyGWME4zA2H4Io7+jnxbT+uSRc29YlsPNo5yFfdISKuuaI8OK5NwmJ
-         FC5tD9hLrB+Xg==
-From:   Ard Biesheuvel <ardb@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-efi@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Michael Roth <michael.roth@amd.com>
-Subject: [PATCH 2/6] efi/x86: simplify IDT/GDT preserve/restore
-Date:   Mon, 15 Aug 2022 15:42:19 +0200
-Message-Id: <20220815134223.740112-3-ardb@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220815134223.740112-1-ardb@kernel.org>
-References: <20220815134223.740112-1-ardb@kernel.org>
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E51114016
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:42:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ymx1JuhfzbLd9HnTlhd4KkXQB7Y5XGw5d1uyjIOTCSE=; b=DVByCXY/KjJg5ab+iBImJEaNwe
+        +/qSOoi7I2FcltLe9D2oU+x+45/2Ugw6cZ5BencRAbucbv/vmsQSmZOZO88hJ20pWeU4zn8bMJif4
+        Kf40ET1seUMRi8sv2hv7wKwICb1un/vnQuX75nvUd3fke8wIiTTX21JGE6LaE4nrW3DXdacpUocM1
+        /ONtE4rHRNzc1gLt8Fx2LCuNAq9JscnxFpXmFpr5eKCDX2Jwx9SNJavGzFD4kQxs2bV8TVsexlTYb
+        l1x1HcHAFRiVlw8TXiH3UA2GU1cxq/6rV4NWhvf6ji/eW6vdNRNWMqdhQp3G7gL0ZjFyENjTdfpUK
+        RQuXao/g==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNaMM-005l61-H5; Mon, 15 Aug 2022 13:42:26 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A95EE980153; Mon, 15 Aug 2022 15:42:25 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 15:42:25 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv6 04/11] x86/mm: Handle LAM on context switch
+Message-ID: <YvpNQSEtu+Tbqrpd@worktop.programming.kicks-ass.net>
+References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
+ <20220815041803.17954-5-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1667; i=ardb@kernel.org; h=from:subject; bh=ihsoHw6swMHBcNjKbyZ/awdMFSUepCqZnSAEI50Meig=; b=owEB7QES/pANAwAKAcNPIjmS2Y8kAcsmYgBi+k00ml/9VAQVR9pgiopOTiemTPgJVpwdMjY3KsGG 3S+k64GJAbMEAAEKAB0WIQT72WJ8QGnJQhU3VynDTyI5ktmPJAUCYvpNNAAKCRDDTyI5ktmPJOU2C/ 91l5W5RmN4Cm1/0M/iQwd4tn4wFfqVvBHRDsHkMdCNV3iaqlvdoQ91nQ3iflP8hy8Q6IilQ5s6mYPa DkvmTpnt6vvpSYV3YvGjSiywMAM9swZtcO6LAMvn220ktZ1zPZ9+Ywyj7KsfqbIdVuJ5+XYYpg1muW x8RkpM3+DWFSoulH5hqpB4Bk2gZyT1Zli+5Vviy2jpVG7m9V7Ag8Yc6XnOXo8TB0jFLadcmrf2TlG2 RvRkR+5PSasKbIIB3prAGU/kbX5EOqpg0NzRixJFNoKeXWlrLuJN+q2mgiRsZodp3XfeenqJenOL77 wvZ3eiBdjfAYONq6ZThF+lveF8362moZzhKQqjuhw9GJkt7Ra+3oyMWKRK/ranmqp4rjeWYsF2M1y3 Owr4nGM7zv91D0FdsBspjKWw+Cgf5BIbRUs36COp7znGBPc391YL8bjIL7t7/edJ4QgF9+THuVChbJ Ukrbw0oxW2Yuty/FJekpsqpWyLNPEypdK+bJWn5A4CeuA=
-X-Developer-Key: i=ardb@kernel.org; a=openpgp; fpr=F43D03328115A198C90016883D200E9CA6329909
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815041803.17954-5-kirill.shutemov@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tweak the asm and remove some redundant instructions. While at it,
-fix the associated comment for style and correctness.
+On Mon, Aug 15, 2022 at 07:17:56AM +0300, Kirill A. Shutemov wrote:
+> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+> index c1e31e9a85d7..fdc0b69b5da7 100644
+> --- a/arch/x86/mm/tlb.c
+> +++ b/arch/x86/mm/tlb.c
+> @@ -154,17 +154,18 @@ static inline u16 user_pcid(u16 asid)
+>  	return ret;
+>  }
+>  
+> -static inline unsigned long build_cr3(pgd_t *pgd, u16 asid)
+> +static inline unsigned long build_cr3(pgd_t *pgd, u16 asid, unsigned long lam)
+>  {
+>  	if (static_cpu_has(X86_FEATURE_PCID)) {
+> -		return __sme_pa(pgd) | kern_pcid(asid);
+> +		return __sme_pa(pgd) | kern_pcid(asid) | lam;
+>  	} else {
+>  		VM_WARN_ON_ONCE(asid != 0);
+> -		return __sme_pa(pgd);
+> +		return __sme_pa(pgd) | lam;
+>  	}
+>  }
+>  
+> -static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid)
+> +static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid,
+> +					      unsigned long lam)
+>  {
+>  	VM_WARN_ON_ONCE(asid > MAX_ASID_AVAILABLE);
+>  	/*
+> @@ -173,7 +174,7 @@ static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid)
+>  	 * boot because all CPU's the have same capabilities:
+>  	 */
+>  	VM_WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_PCID));
+> -	return __sme_pa(pgd) | kern_pcid(asid) | CR3_NOFLUSH;
+> +	return __sme_pa(pgd) | kern_pcid(asid) | lam | CR3_NOFLUSH;
+>  }
 
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
----
- arch/x86/boot/compressed/efi_mixed.S | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+Looking at this; I wonder if we want something like this:
 
-diff --git a/arch/x86/boot/compressed/efi_mixed.S b/arch/x86/boot/compressed/efi_mixed.S
-index 6fd7ac517c53..a0f217c8ab38 100644
---- a/arch/x86/boot/compressed/efi_mixed.S
-+++ b/arch/x86/boot/compressed/efi_mixed.S
-@@ -94,24 +94,20 @@ SYM_FUNC_START(__efi64_thunk)
- 
- 	leaq	0x20(%rsp), %rbx
- 	sgdt	(%rbx)
--
--	addq	$16, %rbx
--	sidt	(%rbx)
-+	sidt	16(%rbx)
- 
- 	leaq	1f(%rip), %rbp
- 
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -157,6 +157,7 @@ static inline u16 user_pcid(u16 asid)
+ static inline unsigned long build_cr3(pgd_t *pgd, u16 asid, unsigned long lam)
+ {
+ 	if (static_cpu_has(X86_FEATURE_PCID)) {
++		VM_WARN_ON_ONCE(asid > MAX_ASID_AVAILABLE);
+ 		return __sme_pa(pgd) | kern_pcid(asid) | lam;
+ 	} else {
+ 		VM_WARN_ON_ONCE(asid != 0);
+@@ -167,14 +168,13 @@ static inline unsigned long build_cr3(pg
+ static inline unsigned long build_cr3_noflush(pgd_t *pgd, u16 asid,
+ 					      unsigned long lam)
+ {
+-	VM_WARN_ON_ONCE(asid > MAX_ASID_AVAILABLE);
  	/*
--	 * Switch to IDT and GDT with 32-bit segments. This is the firmware GDT
--	 * and IDT that was installed when the kernel started executing. The
--	 * pointers were saved at the efi32_stub_handover entry point below.
-+	 * Switch to IDT and GDT with 32-bit segments. These are the firmware
-+	 * GDT and IDT that were installed when the kernel started executing.
-+	 * The pointers were saved at the efi32_entry entry point below.
- 	 *
- 	 * Pass the saved DS selector to the 32-bit code, and use far return to
- 	 * restore the saved CS selector.
+ 	 * Use boot_cpu_has() instead of this_cpu_has() as this function
+ 	 * might be called during early boot. This should work even after
+ 	 * boot because all CPU's the have same capabilities:
  	 */
--	leaq	efi32_boot_idt(%rip), %rax
--	lidt	(%rax)
--	leaq	efi32_boot_gdt(%rip), %rax
--	lgdt	(%rax)
-+	lidt	efi32_boot_idt(%rip)
-+	lgdt	efi32_boot_gdt(%rip)
+ 	VM_WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_PCID));
+-	return __sme_pa(pgd) | kern_pcid(asid) | lam | CR3_NOFLUSH;
++	return build_cr3(pgd, asid, lam) | CR3_NOFLUSH;
+ }
  
- 	movzwl	efi32_boot_ds(%rip), %edx
- 	movzwq	efi32_boot_cs(%rip), %rax
-@@ -185,9 +181,7 @@ SYM_FUNC_START_LOCAL(efi_enter32)
- 	 */
- 	cli
- 
--	lidtl	(%ebx)
--	subl	$16, %ebx
--
-+	lidtl	16(%ebx)
- 	lgdtl	(%ebx)
- 
- 	movl	%cr4, %eax
--- 
-2.35.1
-
+ /*
