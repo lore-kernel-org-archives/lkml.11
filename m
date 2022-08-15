@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1431C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03F4C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350883AbiHOWkv (ORCPT
+        id S1350933AbiHOWky (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
+        Mon, 15 Aug 2022 18:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350519AbiHOWgl (ORCPT
+        with ESMTP id S1350621AbiHOWgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:36:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663DC60529;
-        Mon, 15 Aug 2022 12:50:23 -0700 (PDT)
+        Mon, 15 Aug 2022 18:36:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1257D123C97;
+        Mon, 15 Aug 2022 12:50:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 197FF6125B;
-        Mon, 15 Aug 2022 19:49:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 074D0C43148;
-        Mon, 15 Aug 2022 19:48:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F4861206;
+        Mon, 15 Aug 2022 19:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49BD1C433D6;
+        Mon, 15 Aug 2022 19:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592939;
-        bh=HVlih1cUQcNP31sy4XJn3sx3uxS7BbAuTUytr980X6Q=;
+        s=korg; t=1660593006;
+        bh=yS91eTGYnl0zjneEsllxzuD/65xXWIAvw+naJy6Lyrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W1jTto3K+nUm3sofVPbrxjS6CaWsvCxtqa5XpyffHektFLl/nMan9RgQW9x3KOwsO
-         EcmwwMzuBk/1Cs5gcl+sJ5JYXIAEf7DWZY4re1SjsFLxlUbqsY6E40e+b7s+xG3Xwa
-         UjsvFxECh6CAVylnHOA6Ucik1m4BhTg7QejX4/WE=
+        b=W8++TX5pmJGAgINK+eRxblb2AlrmtVroqHOG4jwlEzrZugHkUvdTcW2COekxGgcJp
+         Sl6nlzSCCwj8CUtb5WDF2YXqAKFKYddQ8yeRrvrZSc7NMWKGgszScqUCCnufhz27dQ
+         oopJi8fH/tZy7KhA9Nr4GX/dQOvHqqF/NPpJiFnU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0869/1095] ASoC: audio-graph-card2.c: use of_property_read_u32() for rate
-Date:   Mon, 15 Aug 2022 20:04:28 +0200
-Message-Id: <20220815180505.313194658@linuxfoundation.org>
+Subject: [PATCH 5.19 0199/1157] arm64: dts: renesas: beacon: Fix regulator node names
+Date:   Mon, 15 Aug 2022 19:52:35 +0200
+Message-Id: <20220815180447.653235166@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 817a62108dfacebd548e38451bf0e7eee023e97f ]
+[ Upstream commit 7512af9f78dedea7e04225f665dad6750df7d095 ]
 
-Audio Graph Card2 is using of_get_property(), but it should use
-of_property_read_u32() to getting rate. Otherwise the setting will be
-strange value. This patch fixup it.
+Currently there are two nodes named "regulator_camera".  This causes the
+former to be overwritten by the latter.
 
-Fixes: c3a15c92a67b701 ("ASoC: audio-graph-card2: add Codec2Codec support")
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/87h741s961.wl-kuninori.morimoto.gx@renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix this by renaming them to unique names, using the preferred hyphen
+instead of an underscore.
+
+While at it, update the name of the audio regulator (which was added in
+the same commit) to use a hyphen.
+
+Fixes: a1d8a344f1ca0709 ("arm64: dts: renesas: Introduce r8a774a1-beacon-rzg2m-kit")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/a9ac82bdf108162487289d091c53a9b3de393f13.1652263918.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/audio-graph-card2.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
-index c0f3907a01fd..328af836cf53 100644
---- a/sound/soc/generic/audio-graph-card2.c
-+++ b/sound/soc/generic/audio-graph-card2.c
-@@ -856,7 +856,7 @@ int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
- 	struct device_node *port0, *port1, *ports;
- 	struct device_node *codec0_port, *codec1_port;
- 	struct device_node *ep0, *ep1;
--	u32 val;
-+	u32 val = 0;
- 	int ret = -EINVAL;
+diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
+index 142e7ffbd2bd..63e7a39e100e 100644
+--- a/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
++++ b/arch/arm64/boot/dts/renesas/beacon-renesom-baseboard.dtsi
+@@ -146,7 +146,7 @@ rgb_panel: endpoint {
+ 		};
+ 	};
  
- 	/*
-@@ -880,7 +880,8 @@ int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
- 	ports = of_get_parent(port0);
- 	port1 = of_get_next_child(ports, lnk);
+-	reg_audio: regulator_audio {
++	reg_audio: regulator-audio {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "audio-1.8V";
+ 		regulator-min-microvolt = <1800000>;
+@@ -174,7 +174,7 @@ reg_lcd_reset: regulator-lcd-reset {
+ 		vin-supply = <&reg_lcd>;
+ 	};
  
--	if (!of_get_property(ports, "rate", &val)) {
-+	of_property_read_u32(ports, "rate", &val);
-+	if (!val) {
- 		struct device *dev = simple_priv_to_dev(priv);
+-	reg_cam0: regulator_camera {
++	reg_cam0: regulator-cam0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "reg_cam0";
+ 		regulator-min-microvolt = <1800000>;
+@@ -183,7 +183,7 @@ reg_cam0: regulator_camera {
+ 		enable-active-high;
+ 	};
  
- 		dev_err(dev, "Codec2Codec needs rate settings\n");
+-	reg_cam1: regulator_camera {
++	reg_cam1: regulator-cam1 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "reg_cam1";
+ 		regulator-min-microvolt = <1800000>;
 -- 
 2.35.1
 
