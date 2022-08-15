@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7291CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EBD6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352228AbiHOWxW (ORCPT
+        id S1352240AbiHOWxb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
+        Mon, 15 Aug 2022 18:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352428AbiHOWvt (ORCPT
+        with ESMTP id S1352486AbiHOWv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:51:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F2BE1394C4;
-        Mon, 15 Aug 2022 12:54:28 -0700 (PDT)
+        Mon, 15 Aug 2022 18:51:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CD91394F2;
+        Mon, 15 Aug 2022 12:54:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CB63B80EAD;
-        Mon, 15 Aug 2022 19:54:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29F3C433D6;
-        Mon, 15 Aug 2022 19:54:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E16BDCE12C3;
+        Mon, 15 Aug 2022 19:54:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F67C433D7;
+        Mon, 15 Aug 2022 19:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593266;
-        bh=CM7F2rOUBmfcXUgNZhY9n4+a8WWv8wo3ROGfc/dqlQo=;
+        s=korg; t=1660593269;
+        bh=6XuJs42zzSrif2xWDq8unK8xnPK6ex258jMWQ5IyGWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvuPv5vVf+Dnn6imBD68MUdYsSap3IZwqiHj/30lVoQBXKYwR/IhspWhvmQ41VW7i
-         PC7xj4gRboc5XBV4/98p5E8VOjO2AOpNBKNeFK8SlPNkSZs3ufWBjEfo99xMrXBYA3
-         CwhTdgbubTJ6gItPlITSNEBvbsEm48UbtsrMiq50=
+        b=0dVrWgp9CFmW/7/jkcU4kK1oSHZP+GiuSFHEXsIY6fCSqSWp4tML99F+Qsxz1hA3G
+         wCG9L7L7hBKVSVZowvCTbSPRLpXhdm9goYAWuFiWeExGHRsyg2iMVFSsaxs7k5W3rf
+         fkY7XIGDszwbVcEWBVvlz0FBjMud2NMEnVl8Tz8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0920/1095] powerpc/iommu: Fix iommu_table_in_use for a small default DMA window case
-Date:   Mon, 15 Aug 2022 20:05:19 +0200
-Message-Id: <20220815180507.336070485@linuxfoundation.org>
+Subject: [PATCH 5.19 0239/1157] ARM: dts: qcom: replace gcc PXO with pxo_board fixed clock
+Date:   Mon, 15 Aug 2022 19:53:15 +0200
+Message-Id: <20220815180449.120282434@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Ansuel Smith <ansuelsmth@gmail.com>
 
-[ Upstream commit d80f6de9d601c30b53c17f00cb7cfe3169f2ddad ]
+[ Upstream commit eb9e93937756a05787977875830c0dc482cb57e0 ]
 
-The existing iommu_table_in_use() helper checks if the kernel is using
-any of TCEs. There are some reserved TCEs:
-1) the very first one if DMA window starts from 0 to avoid having a zero
-but still valid DMA handle;
-2) it_reserved_start..it_reserved_end to exclude MMIO32 window in case
-the default window spans across that - this is the default for the first
-DMA window on PowerNV.
+Replace gcc PXO phandle to pxo_board fixed clock declared in the dts.
+gcc driver doesn't provide PXO_SRC as it's a fixed-clock. This cause a
+kernel panic if any driver actually try to use it.
 
-When 1) is the case and 2) is not the helper does not skip 1) and returns
-wrong status.
-
-This only seems occurring when passing through a PCI device to a nested
-guest (not something we support really well) so it has not been seen
-before.
-
-This fixes the bug by adding a special case for no MMIO32 reservation.
-
-Fixes: 3c33066a2190 ("powerpc/kernel/iommu: Add new iommu_table_in_use() helper")
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220714081119.3714605-1-aik@ozlabs.ru
+Fixes: 40cf5c884a96 ("ARM: dts: qcom: add L2CC and RPM for IPQ8064")
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220430055118.1947-2-ansuelsmth@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-index 07093b7cdcb9..a67fd54ccc57 100644
---- a/arch/powerpc/kernel/iommu.c
-+++ b/arch/powerpc/kernel/iommu.c
-@@ -776,6 +776,11 @@ bool iommu_table_in_use(struct iommu_table *tbl)
- 	/* ignore reserved bit0 */
- 	if (tbl->it_offset == 0)
- 		start = 1;
-+
-+	/* Simple case with no reserved MMIO32 region */
-+	if (!tbl->it_reserved_start && !tbl->it_reserved_end)
-+		return find_next_bit(tbl->it_map, tbl->it_size, start) != tbl->it_size;
-+
- 	end = tbl->it_reserved_start - tbl->it_offset;
- 	if (find_next_bit(tbl->it_map, end, start) != end)
- 		return true;
+diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+index 808ea1862283..d09354ca100d 100644
+--- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+@@ -784,7 +784,7 @@ tcsr: syscon@1a400000 {
+ 		l2cc: clock-controller@2011000 {
+ 			compatible = "qcom,kpss-gcc", "syscon";
+ 			reg = <0x2011000 0x1000>;
+-			clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
++			clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
+ 			clock-names = "pll8_vote", "pxo";
+ 			clock-output-names = "acpu_l2_aux";
+ 		};
 -- 
 2.35.1
 
