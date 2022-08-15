@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE148C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDECC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243678AbiHOVcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
+        id S1347092AbiHOVcO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348044AbiHOV0w (ORCPT
+        with ESMTP id S1348462AbiHOV1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:26:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2502315734;
-        Mon, 15 Aug 2022 12:22:50 -0700 (PDT)
+        Mon, 15 Aug 2022 17:27:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16831EA8B9;
+        Mon, 15 Aug 2022 12:23:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26AA361029;
-        Mon, 15 Aug 2022 19:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BD0C433D6;
-        Mon, 15 Aug 2022 19:22:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82868B81128;
+        Mon, 15 Aug 2022 19:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0284C433C1;
+        Mon, 15 Aug 2022 19:23:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591368;
-        bh=ONiKSiNfoJ7cyniodmbLoVS9aaexIl6o8kiTkIsPUC0=;
+        s=korg; t=1660591405;
+        bh=k7nHqZv4WUM/Gzvi9+9Lkzl3Yklu7UNR2pB54Dnes3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xuFEkvfD0OTB5CfVKmMZMyXVAbwbHhrdrq3Id4wIgfDnawiHFOUuKvePSd/KG0nly
-         vmxfGkpvco73GCJDV2hcfENOb+WZOfsIKJO5ev/OacVjJQC/W0mN7vRlBOAi4oqCeG
-         qhokFOXrCO1MeNvWo6bplkO3zpXok4rl04VdnZRs=
+        b=Q8l2wOn4yIIzEAY8UtN2PqQbC7OetImMlwMkdAj73A7F6ntk8ta5E3yh+vuROUxY9
+         ID4jaT5UrqfPwN/a1M0/sBnTh834A6KkwB4ypSab5EbKbDvhHF5atdDLWBa2OwXOiZ
+         s4a6M70h00fU00k7NG2o2o+y6lU1ZYpG40BMuOwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Xu Yilun <yilun.xu@intel.com>,
+        Marco Pagani <marpagan@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0557/1095] KVM: SVM: Stuff next_rip on emulated INT3 injection if NRIPS is supported
-Date:   Mon, 15 Aug 2022 19:59:16 +0200
-Message-Id: <20220815180452.600078706@linuxfoundation.org>
+Subject: [PATCH 5.18 0568/1095] fpga: altera-pr-ip: fix unsigned comparison with less than zero
+Date:   Mon, 15 Aug 2022 19:59:27 +0200
+Message-Id: <20220815180453.069129334@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,51 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Marco Pagani <marpagan@redhat.com>
 
-[ Upstream commit 3741aec4c38fa4123ab08ae552f05366d4fd05d8 ]
+[ Upstream commit 2df84a757d87fd62869fc401119d429735377ec5 ]
 
-If NRIPS is supported in hardware but disabled in KVM, set next_rip to
-the next RIP when advancing RIP as part of emulating INT3 injection.
-There is no flag to tell the CPU that KVM isn't using next_rip, and so
-leaving next_rip is left as is will result in the CPU pushing garbage
-onto the stack when vectoring the injected event.
+Fix the "comparison with less than zero" warning reported by
+cppcheck for the unsigned (size_t) parameter count of the
+alt_pr_fpga_write() function.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Fixes: 66b7138f9136 ("KVM: SVM: Emulate nRIP feature when reinjecting INT3")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-Message-Id: <cd328309a3b88604daa2359ad56f36cb565ce2d4.1651440202.git.maciej.szmigiero@oracle.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: d201cc17a8a3 ("fpga pr ip: Core driver support for Altera Partial Reconfiguration IP")
+Reviewed-by: Tom Rix <trix@redhat.com>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+Signed-off-by: Marco Pagani <marpagan@redhat.com>
+Link: https://lore.kernel.org/r/20220609140520.42662-1-marpagan@redhat.com
+Signed-off-by: Xu Yilun <yilun.xu@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/fpga/altera-pr-ip-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index e4c736d74fcb..e5a154f0d2ab 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -390,6 +390,10 @@ static void svm_queue_exception(struct kvm_vcpu *vcpu)
- 		 */
- 		(void)svm_skip_emulated_instruction(vcpu);
- 		rip = kvm_rip_read(vcpu);
-+
-+		if (boot_cpu_has(X86_FEATURE_NRIPS))
-+			svm->vmcb->control.next_rip = rip;
-+
- 		svm->int3_rip = rip + svm->vmcb->save.cs.base;
- 		svm->int3_injected = rip - old_rip;
- 	}
-@@ -3616,7 +3620,7 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
- 	/*
- 	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
- 	 * injecting the soft exception/interrupt.  That advancement needs to
--	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
-+	 * be unwound if vectoring didn't complete.  Note, the new event may
- 	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
- 	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
- 	 * be the reported vectored event, but RIP still needs to be unwound.
+diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+index be0667968d33..df8671af4a92 100644
+--- a/drivers/fpga/altera-pr-ip-core.c
++++ b/drivers/fpga/altera-pr-ip-core.c
+@@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
+ 	u32 *buffer_32 = (u32 *)buf;
+ 	size_t i = 0;
+ 
+-	if (count <= 0)
++	if (!count)
+ 		return -EINVAL;
+ 
+ 	/* Write out the complete 32-bit chunks */
 -- 
 2.35.1
 
