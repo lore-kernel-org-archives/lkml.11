@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D439C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0A4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:38:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345377AbiHOUip (ORCPT
+        id S1345117AbiHOUiu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        Mon, 15 Aug 2022 16:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345658AbiHOUdu (ORCPT
+        with ESMTP id S1345848AbiHOUeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:33:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF3EAA4D7;
-        Mon, 15 Aug 2022 12:05:54 -0700 (PDT)
+        Mon, 15 Aug 2022 16:34:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DBD4E608;
+        Mon, 15 Aug 2022 12:06:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 284C6612A0;
-        Mon, 15 Aug 2022 19:05:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE66C433C1;
-        Mon, 15 Aug 2022 19:05:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F2E9B81104;
+        Mon, 15 Aug 2022 19:06:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D00FBC433D6;
+        Mon, 15 Aug 2022 19:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590353;
-        bh=/Lpxmh6bFSCDVgKDrnaHp/eYLGjXz40Fzy1gOOKNKF0=;
+        s=korg; t=1660590360;
+        bh=ROhcCfIKrzYI/OpUhfYzvakQSe0wUMT4P7K7njz8oqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0xMzwWRCZyXozqBOo96/t9Wt83FLLPa6YFTjmzWhOHB/aD0cZpp0qigb+pgFBETOJ
-         un8whgAkV0WkOnz2mqv7qaxFL1k9CDQe9WNpZBqGbUUAMYMBXm6yhm03gLJh66v6pF
-         YoBGxnZKGPfu9Cvbxo6fvhiRA8WiMssxR0evJ9dE=
+        b=ej5Zd1KCR2wofxg4dsAsMBEbPEdcWuYIa2muirWpxeowQYc6/TSY9Z3bvHlVuJrSo
+         Q9dnN1RyoARgarOY4zNKwHMn5EXvopgXe6kckN1BLi20+oqoAheNeQW2+6GvnFku61
+         onFucHGOFAYB3oPOLH64C6jahu+78ReT0L1kso3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0203/1095] arm64: dts: mt8192: Fix idle-states entry-method
-Date:   Mon, 15 Aug 2022 19:53:22 +0200
-Message-Id: <20220815180438.051533781@linuxfoundation.org>
+Subject: [PATCH 5.18 0195/1095] soc: amlogic: Fix refcount leak in meson-secure-pwrc.c
+Date:   Mon, 15 Aug 2022 19:53:14 +0200
+Message-Id: <20220815180437.699287177@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,38 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 2e599740f7e423ee89fb027896cb2635dd43784f ]
+[ Upstream commit d18529a4c12f66d83daac78045ea54063bd43257 ]
 
-The entry-method property of the idle-states node should be "psci" as
-described in the idle-states binding, since this is already the value of
-enable-method in the CPU nodes. Fix it to get rid of a dtbs_check
-warning.
+In meson_secure_pwrc_probe(), there is a refcount leak in one fail
+path.
 
-Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220617233150.2466344-3-nfraprado@collabora.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Fixes: b3dde5013e13 ("soc: amlogic: Add support for Secure power domains controller")
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220616144915.3988071-1-windhl@126.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/amlogic/meson-secure-pwrc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 12972828832e..96439a4bce09 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -170,7 +170,7 @@ l3_0: l3-cache {
- 		};
+diff --git a/drivers/soc/amlogic/meson-secure-pwrc.c b/drivers/soc/amlogic/meson-secure-pwrc.c
+index a10a417a87db..e93518763526 100644
+--- a/drivers/soc/amlogic/meson-secure-pwrc.c
++++ b/drivers/soc/amlogic/meson-secure-pwrc.c
+@@ -152,8 +152,10 @@ static int meson_secure_pwrc_probe(struct platform_device *pdev)
+ 	}
  
- 		idle-states {
--			entry-method = "arm,psci";
-+			entry-method = "psci";
- 			cpu_sleep_l: cpu-sleep-l {
- 				compatible = "arm,idle-state";
- 				arm,psci-suspend-param = <0x00010001>;
+ 	pwrc = devm_kzalloc(&pdev->dev, sizeof(*pwrc), GFP_KERNEL);
+-	if (!pwrc)
++	if (!pwrc) {
++		of_node_put(sm_np);
+ 		return -ENOMEM;
++	}
+ 
+ 	pwrc->fw = meson_sm_get(sm_np);
+ 	of_node_put(sm_np);
 -- 
 2.35.1
 
