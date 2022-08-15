@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B879C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A0AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241284AbiHOU7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36476 "EHLO
+        id S230330AbiHOVAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243237AbiHOU7P (ORCPT
+        with ESMTP id S233257AbiHOU7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:59:15 -0400
+        Mon, 15 Aug 2022 16:59:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9B1C12F5;
-        Mon, 15 Aug 2022 12:12:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EFFC229D;
+        Mon, 15 Aug 2022 12:12:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B563B81115;
-        Mon, 15 Aug 2022 19:12:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D167EC433C1;
-        Mon, 15 Aug 2022 19:12:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 736AAB810A3;
+        Mon, 15 Aug 2022 19:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0448C433C1;
+        Mon, 15 Aug 2022 19:12:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590761;
-        bh=lk2zibXRueDTL0wCxC95DGvLzHBQdWK43EkDL47d7qM=;
+        s=korg; t=1660590758;
+        bh=TBZTjxNObxMeSF9MVLIlhAHznmQOteS10aeexvE2FOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c0d0IdKouN+C0e8LSqdlOI+U0EKfz9wp9URgllk7W0wSU02H2s+zD9H7SDIDhvKcm
-         zfWIZu/dYuJZG0YizTao3+A141CxYABo5GP3CaJfFwPTFdGpMA/pZXV/LOMNIYN4cZ
-         Qv2hfSLXQGBjT9tDxfhSxE8GwYNrsT8JFAi6K8/M=
+        b=YH5cH107sbsHcIrq0xqXtoii3OYlxyRmDfqWdNMwsn6dfYYbvYsJ59+IMsxtAqGV0
+         yh51MpwlCGlRUJIZZJeJWPSN1pbO4dd97D9u8DdhZdVmfuJ+GRnvVog7f7X09xQyND
+         +7OZFckrhw3WqEgT8qALwrPE6Imjy1Gutl8kILkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Antonio Borneo <antonio.borneo@foss.st.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0332/1095] drm: adv7511: override i2c address of cec before accessing it
-Date:   Mon, 15 Aug 2022 19:55:31 +0200
-Message-Id: <20220815180443.526274369@linuxfoundation.org>
+Subject: [PATCH 5.18 0360/1095] media: rcar-vin: Fix channel routing for Ebisu
+Date:   Mon, 15 Aug 2022 19:55:59 +0200
+Message-Id: <20220815180444.624606406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,61 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antonio Borneo <antonio.borneo@foss.st.com>
+From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 
-[ Upstream commit 9cc4853e4781bf0dd0f35355dc92d97c9da02f5d ]
+[ Upstream commit 5b9b598453d3ae5fa66d7ab591008373a89b91a0 ]
 
-Commit 680532c50bca ("drm: adv7511: Add support for
-i2c_new_secondary_device") allows a device tree node to override
-the default addresses of the secondary i2c devices. This is useful
-for solving address conflicts on the i2c bus.
+When converting to full Virtual Channel routing an error crept into the
+routing table for Ebisu (r8a77990). The routing information is used at
+probe time preventing rcar-vin from probing correctly on this SoC, solve
+by correcting the routing table.
 
-In adv7511_init_cec_regmap() the new i2c address of cec device is
-read from device tree and immediately accessed, well before it is
-written in the proper register to override the default address.
-This can cause an i2c error during probe and a consequent probe
-failure.
-
-Once the new i2c address is read from the device tree, override
-the default address before any attempt to access the cec.
-
-Tested with adv7533 and stm32mp157f.
-
-Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-Fixes: 680532c50bca ("drm: adv7511: Add support for i2c_new_secondary_device")
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220607213144.427177-1-antonio.borneo@foss.st.com
+Fixes: 3e52419ec04f9769 ("media: rcar-{csi2,vin}: Move to full Virtual Channel routing per CSI-2 IP")
+Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/media/platform/renesas/rcar-vin/rcar-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 668dcefbae17..fba6ad3bb6ad 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -1060,6 +1060,10 @@ static int adv7511_init_cec_regmap(struct adv7511 *adv)
- 						ADV7511_CEC_I2C_ADDR_DEFAULT);
- 	if (IS_ERR(adv->i2c_cec))
- 		return PTR_ERR(adv->i2c_cec);
-+
-+	regmap_write(adv->regmap, ADV7511_REG_CEC_I2C_ADDR,
-+		     adv->i2c_cec->addr << 1);
-+
- 	i2c_set_clientdata(adv->i2c_cec, adv);
+diff --git a/drivers/media/platform/renesas/rcar-vin/rcar-core.c b/drivers/media/platform/renesas/rcar-vin/rcar-core.c
+index 64cb05b3907c..ed3ddf36f906 100644
+--- a/drivers/media/platform/renesas/rcar-vin/rcar-core.c
++++ b/drivers/media/platform/renesas/rcar-vin/rcar-core.c
+@@ -1264,7 +1264,7 @@ static const struct rvin_info rcar_info_r8a77980 = {
+ };
  
- 	adv->regmap_cec = devm_regmap_init_i2c(adv->i2c_cec,
-@@ -1264,9 +1268,6 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
- 	if (ret)
- 		goto err_i2c_unregister_packet;
+ static const struct rvin_group_route rcar_info_r8a77990_routes[] = {
+-	{ .master = 0, .csi = RVIN_CSI40, .chsel = 0x03 },
++	{ .master = 4, .csi = RVIN_CSI40, .chsel = 0x03 },
+ 	{ /* Sentinel */ }
+ };
  
--	regmap_write(adv7511->regmap, ADV7511_REG_CEC_I2C_ADDR,
--		     adv7511->i2c_cec->addr << 1);
--
- 	INIT_WORK(&adv7511->hpd_work, adv7511_hpd_work);
- 
- 	if (i2c->irq) {
 -- 
 2.35.1
 
