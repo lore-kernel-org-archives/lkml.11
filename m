@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2DBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA54EC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243706AbiHOShA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
+        id S243749AbiHOShF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243821AbiHOSfy (ORCPT
+        with ESMTP id S243521AbiHOSev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:35:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA103AE5C;
-        Mon, 15 Aug 2022 11:22:48 -0700 (PDT)
+        Mon, 15 Aug 2022 14:34:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924D52C13F;
+        Mon, 15 Aug 2022 11:22:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F192EB8107E;
-        Mon, 15 Aug 2022 18:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31201C433C1;
-        Mon, 15 Aug 2022 18:22:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28F48B80F99;
+        Mon, 15 Aug 2022 18:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78ACFC433C1;
+        Mon, 15 Aug 2022 18:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587764;
-        bh=14BO3jFRo9LTUBo+dV5YyJ4Ptn7JKSUmnCiFGI1LRj8=;
+        s=korg; t=1660587743;
+        bh=ApGZls245OFaL4bZDd2zk1ckQldFOthVbDmUJI6iQH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KGJfoLC1Nt9/jXcYDvjXIoOVZ25H2EK8OrSyOgQ6Ld9t+L8Th1Gyv4m0Lfx6lZ9F3
-         n9ejdrNxv0RkpidNp+Xnj8GTxhOt9qJSgBtZ4Y2eis1rrygXNpk4t+INOROkiiB2h3
-         oOXEqaimZgK82BJW9eUyJSLKl8XFqH3vjorAMEDQ=
+        b=BqxyQpKY/jpqzS6PLkPKx+Yc+cBJqmnN4jS2PBuQHlPklWqi/shj28Zz8IzhBeTgi
+         SGnZ/Fg4FVpXKmZ6FIsqwFo44SFm0pibuxZs3n1lowbZcMw/e2VleinOWoCHd6gAXY
+         QGtLx1XHt3xqrLgwajEHAwNyKI03puUzz45nar74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michal Simek <michal.simek@amd.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 186/779] cpufreq: zynq: Fix refcount leak in zynq_get_revision
-Date:   Mon, 15 Aug 2022 19:57:10 +0200
-Message-Id: <20220815180345.220794309@linuxfoundation.org>
+Subject: [PATCH 5.15 180/779] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
+Date:   Mon, 15 Aug 2022 19:57:04 +0200
+Message-Id: <20220815180344.949179655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,33 +52,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d1ff2559cef0f6f8d97fba6337b28adb10689e16 ]
+[ Upstream commit 9705db1eff38d6b9114121f9e253746199b759c9 ]
 
-of_find_compatible_node() returns a node pointer with refcount
+omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
+node. of_find_compatible_node() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+Add missing of_node_put() in later error path and normal path.
 
-Fixes: 00f7dc636366 ("ARM: zynq: Add support for SOC_BUS")
+Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605082807.21526-1-linmq006@gmail.com
-Signed-off-by: Michal Simek <michal.simek@amd.com>
+Message-Id: <20220601044858.3352-1-linmq006@gmail.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-zynq/common.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-omap2/display.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-zynq/common.c b/arch/arm/mach-zynq/common.c
-index e1ca6a5732d2..15e8a321a713 100644
---- a/arch/arm/mach-zynq/common.c
-+++ b/arch/arm/mach-zynq/common.c
-@@ -77,6 +77,7 @@ static int __init zynq_get_revision(void)
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index eb09a25e3b45..8d829f3dafe7 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -260,11 +260,13 @@ static int __init omapdss_init_of(void)
+ 
+ 	if (!pdev) {
+ 		pr_err("Unable to find DSS platform device\n");
++		of_node_put(node);
+ 		return -ENODEV;
  	}
  
- 	zynq_devcfg_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!zynq_devcfg_base) {
- 		pr_err("%s: Unable to map I/O memory\n", __func__);
- 		return -1;
+ 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
+ 	put_device(&pdev->dev);
++	of_node_put(node);
+ 	if (r) {
+ 		pr_err("Unable to populate DSS submodule devices\n");
+ 		return r;
 -- 
 2.35.1
 
