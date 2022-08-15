@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E39C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FA0C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346357AbiHOUO1 (ORCPT
+        id S1346376AbiHOUOb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
+        Mon, 15 Aug 2022 16:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346214AbiHOULD (ORCPT
+        with ESMTP id S1346064AbiHOUKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF7AAE77;
-        Mon, 15 Aug 2022 11:57:07 -0700 (PDT)
+        Mon, 15 Aug 2022 16:10:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B6A2AE4;
+        Mon, 15 Aug 2022 11:56:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B49F6125B;
-        Mon, 15 Aug 2022 18:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 223E3C433D6;
-        Mon, 15 Aug 2022 18:57:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81B20B8109E;
+        Mon, 15 Aug 2022 18:56:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB916C433C1;
+        Mon, 15 Aug 2022 18:56:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589826;
-        bh=7pMGTLfm7+yf402Et0WC41HMCYeZJIfscGaDIL9XAwM=;
+        s=korg; t=1660589795;
+        bh=srz8143zkM9lvsMiZNve4c7EgZK6tCW2Vj7c/1l3Lv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YyciSNjTFsVI903KLmbs2BIgr4Ob/GesIhUJtBubxDfUypYJSwgl8FY+NqKFjugRk
-         E3qhbQM+/ZGyZBlKicbhZm1oGoW1QJsUWuDBa5KnwWL4/QaE/iYwjfz1/KAcf3AbP3
-         s5sqhBm7gLYEHWwEJu47dLC46VsZnKGYSSBEllyk=
+        b=h4fNn/jtTJe6G/tub84XLj2DDCB76NTr3VcvA4mERo7xCEN5T66C0tgs1IDIOTy/m
+         3b+hoGb8FDhAiW36fLOSnU3WIKMdt6fYXpsTU/26r0BNJR1Udemkuyutn/9rjfMddq
+         jfaUuGNwORmc6UJcAtZjOcARZ6tkCMdXxkJmQopQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.18 0059/1095] parisc: io_pgetevents_time64() needs compat syscall in 32-bit compat mode
-Date:   Mon, 15 Aug 2022 19:50:58 +0200
-Message-Id: <20220815180431.926297776@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.18 0050/1095] fbcon: Fix boundary checks for fbcon=vc:n1-n2 parameters
+Date:   Mon, 15 Aug 2022 19:50:49 +0200
+Message-Id: <20220815180431.544474353@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,34 +51,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Helge Deller <deller@gmx.de>
 
-commit 6431e92fc827bdd2d28f79150d90415ba9ce0d21 upstream.
+commit cad564ca557f8d3bb3b1fa965d9a2b3f6490ec69 upstream.
 
-For all syscalls in 32-bit compat mode on 64-bit kernels the upper
-32-bits of the 64-bit registers are zeroed out, so a negative 32-bit
-signed value will show up as positive 64-bit signed value.
+The user may use the fbcon=vc:<n1>-<n2> option to tell fbcon to take
+over the given range (n1...n2) of consoles. The value for n1 and n2
+needs to be a positive number and up to (MAX_NR_CONSOLES - 1).
+The given values were not fully checked against those boundaries yet.
 
-This behaviour breaks the io_pgetevents_time64() syscall which expects
-signed 64-bit values for the "min_nr" and "nr" parameters.
-Fix this by switching to the compat_sys_io_pgetevents_time64() syscall,
-which uses "compat_long_t" types for those parameters.
+To fix the issue, convert first_fb_vc and last_fb_vc to unsigned
+integers and check them against the upper boundary, and make sure that
+first_fb_vc is smaller than last_fb_vc.
 
-Cc: <stable@vger.kernel.org> # v5.1+
+Cc: stable@vger.kernel.org # v4.19+
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 Signed-off-by: Helge Deller <deller@gmx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/YpkYRMojilrtZIgM@p100
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/syscalls/syscall.tbl |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbcon.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/arch/parisc/kernel/syscalls/syscall.tbl
-+++ b/arch/parisc/kernel/syscalls/syscall.tbl
-@@ -413,7 +413,7 @@
- 412	32	utimensat_time64		sys_utimensat			sys_utimensat
- 413	32	pselect6_time64			sys_pselect6			compat_sys_pselect6_time64
- 414	32	ppoll_time64			sys_ppoll			compat_sys_ppoll_time64
--416	32	io_pgetevents_time64		sys_io_pgetevents		sys_io_pgetevents
-+416	32	io_pgetevents_time64		sys_io_pgetevents		compat_sys_io_pgetevents_time64
- 417	32	recvmmsg_time64			sys_recvmmsg			compat_sys_recvmmsg_time64
- 418	32	mq_timedsend_time64		sys_mq_timedsend		sys_mq_timedsend
- 419	32	mq_timedreceive_time64		sys_mq_timedreceive		sys_mq_timedreceive
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -115,8 +115,8 @@ static int logo_lines;
+    enums.  */
+ static int logo_shown = FBCON_LOGO_CANSHOW;
+ /* console mappings */
+-static int first_fb_vc;
+-static int last_fb_vc = MAX_NR_CONSOLES - 1;
++static unsigned int first_fb_vc;
++static unsigned int last_fb_vc = MAX_NR_CONSOLES - 1;
+ static int fbcon_is_default = 1; 
+ static int primary_device = -1;
+ static int fbcon_has_console_bind;
+@@ -464,10 +464,12 @@ static int __init fb_console_setup(char
+ 			options += 3;
+ 			if (*options)
+ 				first_fb_vc = simple_strtoul(options, &options, 10) - 1;
+-			if (first_fb_vc < 0)
++			if (first_fb_vc >= MAX_NR_CONSOLES)
+ 				first_fb_vc = 0;
+ 			if (*options++ == '-')
+ 				last_fb_vc = simple_strtoul(options, &options, 10) - 1;
++			if (last_fb_vc < first_fb_vc || last_fb_vc >= MAX_NR_CONSOLES)
++				last_fb_vc = MAX_NR_CONSOLES - 1;
+ 			fbcon_is_default = 0; 
+ 			continue;
+ 		}
 
 
