@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBC5C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B1AC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350706AbiHPA3V (ORCPT
+        id S1352005AbiHPA3f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
+        Mon, 15 Aug 2022 20:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357568AbiHPA1Q (ORCPT
+        with ESMTP id S1351671AbiHPA2f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:27:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64151815CB;
-        Mon, 15 Aug 2022 13:34:59 -0700 (PDT)
+        Mon, 15 Aug 2022 20:28:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CE11815EE;
+        Mon, 15 Aug 2022 13:35:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 606BFB80EAD;
-        Mon, 15 Aug 2022 20:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACABC433D6;
-        Mon, 15 Aug 2022 20:34:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7342F61089;
+        Mon, 15 Aug 2022 20:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62C0CC433D6;
+        Mon, 15 Aug 2022 20:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595698;
-        bh=IIN9laH3zCZELFAK2RGQArgBKR+rGOeFXnLgHCAwMpo=;
+        s=korg; t=1660595659;
+        bh=RZ0vulzf7UEz5azfjdo4BMoZmo2urF2aS/b4lpbo9RY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WKAhYjmJyy3FqtNfE8fUukP6gzoANMhGTbi2vJY0/BDFbQnGvVdb3ORXQmLYBoDQO
-         ktMIu6Yk8mmufje/Z6qe2dFXciNAnOBnJbp68Hb0H/6p5wamS/KQSTi0Ejo29ZQb+i
-         jqMR8uh4gF5vzK8Nf1jmSBfDe3sTOf5OklMBiarY=
+        b=T4nVmrJVCUcW29YZk3RtD68jptF+tmi3rG7Y3oY1wFihmk3PPEoYpUfNoY6uU8hz/
+         xgyjYqZhydlHth5EWhgQJUnorL1Bx/YB15/ExUpuvVy+urt43Eb7hmZx4sSeuiRVyW
+         EX8RFYMoai1FSiRDP+2uAHJbUNtewb9KaScleL2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Cheng Xu <chengyou@linux.alibaba.com>,
+        Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0846/1157] RDMA/rxe: Fix rnr retry behavior
-Date:   Mon, 15 Aug 2022 20:03:22 +0200
-Message-Id: <20220815180513.340055812@linuxfoundation.org>
+Subject: [PATCH 5.19 0827/1157] RDMA/siw: Fix duplicated reported IW_CM_EVENT_CONNECT_REPLY event
+Date:   Mon, 15 Aug 2022 20:03:03 +0200
+Message-Id: <20220815180512.565150706@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,127 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Pearson <rpearsonhpe@gmail.com>
+From: Cheng Xu <chengyou@linux.alibaba.com>
 
-[ Upstream commit 445fd4f4fb76d513de6b05b08b3a4d0bb980fc80 ]
+[ Upstream commit 3056fc6c32e613b760422b94c7617ac9a24a4721 ]
 
-Currently the completer tasklet when retransmit timer or the rnr timer
-fires the same flag (qp->req.need_retry) is set so that if either timer
-fires it will attempt to perform a retry flow on the send queue.  This has
-the effect of responding to an RNR NAK at the first retransmit timer event
-which might not allow the requested rnr timeout.
+If siw_recv_mpa_rr returns -EAGAIN, it means that the MPA reply hasn't
+been received completely, and should not report IW_CM_EVENT_CONNECT_REPLY
+in this case. This may trigger a call trace in iw_cm. A simple way to
+trigger this:
+ server: ib_send_lat
+ client: ib_send_lat -R <server_ip>
 
-This patch adds a new flag (qp->req.wait_for_rnr_timer) which, if set,
-prevents a retry flow until the rnr nak timer fires.
+The call trace looks like this:
 
-This patch fixes rnr retry errors which can be observed by running the
-pyverbs test_rdmacm_async_traffic_external_qp multiple times. With this
-patch applied they do not occur.
+ kernel BUG at drivers/infiniband/core/iwcm.c:894!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ <...>
+ Workqueue: iw_cm_wq cm_work_handler [iw_cm]
+ Call Trace:
+  <TASK>
+  cm_work_handler+0x1dd/0x370 [iw_cm]
+  process_one_work+0x1e2/0x3b0
+  worker_thread+0x49/0x2e0
+  ? rescuer_thread+0x370/0x370
+  kthread+0xe5/0x110
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x1f/0x30
+  </TASK>
 
-Link: https://lore.kernel.org/linux-rdma/a8287823-1408-4273-bc22-99a0678db640@gmail.com/
-Link: https://lore.kernel.org/linux-rdma/2bafda9e-2bb6-186d-12a1-179e8f6a2678@talpey.com/
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220630190425.2251-6-rpearsonhpe@gmail.com
-Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
+Link: https://lore.kernel.org/r/dae34b5fd5c2ea2bd9744812c1d2653a34a94c67.1657706960.git.chengyou@linux.alibaba.com
+Signed-off-by: Cheng Xu <chengyou@linux.alibaba.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_comp.c  |  8 +++++++-
- drivers/infiniband/sw/rxe/rxe_qp.c    |  1 +
- drivers/infiniband/sw/rxe/rxe_req.c   | 15 +++++++++++++--
- drivers/infiniband/sw/rxe/rxe_verbs.h |  1 +
- 4 files changed, 22 insertions(+), 3 deletions(-)
+ drivers/infiniband/sw/siw/siw_cm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_comp.c b/drivers/infiniband/sw/rxe/rxe_comp.c
-index da3a398053b8..4fc31bb7eee6 100644
---- a/drivers/infiniband/sw/rxe/rxe_comp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_comp.c
-@@ -114,6 +114,8 @@ void retransmit_timer(struct timer_list *t)
- {
- 	struct rxe_qp *qp = from_timer(qp, t, retrans_timer);
+diff --git a/drivers/infiniband/sw/siw/siw_cm.c b/drivers/infiniband/sw/siw/siw_cm.c
+index 17f34d584cd9..f88d2971c2c6 100644
+--- a/drivers/infiniband/sw/siw/siw_cm.c
++++ b/drivers/infiniband/sw/siw/siw_cm.c
+@@ -725,11 +725,11 @@ static int siw_proc_mpareply(struct siw_cep *cep)
+ 	enum mpa_v2_ctrl mpa_p2p_mode = MPA_V2_RDMA_NO_RTR;
  
-+	pr_debug("%s: fired for qp#%d\n", __func__, qp->elem.index);
+ 	rv = siw_recv_mpa_rr(cep);
+-	if (rv != -EAGAIN)
+-		siw_cancel_mpatimer(cep);
+ 	if (rv)
+ 		goto out_err;
+ 
++	siw_cancel_mpatimer(cep);
 +
- 	if (qp->valid) {
- 		qp->comp.timeout = 1;
- 		rxe_run_task(&qp->comp.task, 1);
-@@ -730,11 +732,15 @@ int rxe_completer(void *arg)
- 			break;
+ 	rep = &cep->mpa.hdr;
  
- 		case COMPST_RNR_RETRY:
-+			/* we come here if we received an RNR NAK */
- 			if (qp->comp.rnr_retry > 0) {
- 				if (qp->comp.rnr_retry != 7)
- 					qp->comp.rnr_retry--;
+ 	if (__mpa_rr_revision(rep->params.bits) > MPA_REVISION_2) {
+@@ -895,7 +895,8 @@ static int siw_proc_mpareply(struct siw_cep *cep)
+ 	}
  
--				qp->req.need_retry = 1;
-+				/* don't start a retry flow until the
-+				 * rnr timer has fired
-+				 */
-+				qp->req.wait_for_rnr_timer = 1;
- 				pr_debug("qp#%d set rnr nak timer\n",
- 					 qp_num(qp));
- 				mod_timer(&qp->rnr_nak_timer,
-diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
-index b79e1b43454e..834f40ad00af 100644
---- a/drivers/infiniband/sw/rxe/rxe_qp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_qp.c
-@@ -507,6 +507,7 @@ static void rxe_qp_reset(struct rxe_qp *qp)
- 	atomic_set(&qp->ssn, 0);
- 	qp->req.opcode = -1;
- 	qp->req.need_retry = 0;
-+	qp->req.wait_for_rnr_timer = 0;
- 	qp->req.noack_pkts = 0;
- 	qp->resp.msn = 0;
- 	qp->resp.opcode = -1;
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index 15fefc689ca3..9f8e3db179cc 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -101,7 +101,11 @@ void rnr_nak_timer(struct timer_list *t)
- {
- 	struct rxe_qp *qp = from_timer(qp, t, rnr_nak_timer);
+ out_err:
+-	siw_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY, -EINVAL);
++	if (rv != -EAGAIN)
++		siw_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY, -EINVAL);
  
--	pr_debug("qp#%d rnr nak timer fired\n", qp_num(qp));
-+	pr_debug("%s: fired for qp#%d\n", __func__, qp_num(qp));
-+
-+	/* request a send queue retry */
-+	qp->req.need_retry = 1;
-+	qp->req.wait_for_rnr_timer = 0;
- 	rxe_run_task(&qp->req.task, 1);
+ 	return rv;
  }
- 
-@@ -622,10 +626,17 @@ int rxe_requester(void *arg)
- 		qp->req.need_rd_atomic = 0;
- 		qp->req.wait_psn = 0;
- 		qp->req.need_retry = 0;
-+		qp->req.wait_for_rnr_timer = 0;
- 		goto exit;
- 	}
- 
--	if (unlikely(qp->req.need_retry)) {
-+	/* we come here if the retransmot timer has fired
-+	 * or if the rnr timer has fired. If the retransmit
-+	 * timer fires while we are processing an RNR NAK wait
-+	 * until the rnr timer has fired before starting the
-+	 * retry flow
-+	 */
-+	if (unlikely(qp->req.need_retry && !qp->req.wait_for_rnr_timer)) {
- 		req_retry(qp);
- 		qp->req.need_retry = 0;
- 	}
-diff --git a/drivers/infiniband/sw/rxe/rxe_verbs.h b/drivers/infiniband/sw/rxe/rxe_verbs.h
-index ac464e68c923..9bdf33346511 100644
---- a/drivers/infiniband/sw/rxe/rxe_verbs.h
-+++ b/drivers/infiniband/sw/rxe/rxe_verbs.h
-@@ -124,6 +124,7 @@ struct rxe_req_info {
- 	int			need_rd_atomic;
- 	int			wait_psn;
- 	int			need_retry;
-+	int			wait_for_rnr_timer;
- 	int			noack_pkts;
- 	struct rxe_task		task;
- };
 -- 
 2.35.1
 
