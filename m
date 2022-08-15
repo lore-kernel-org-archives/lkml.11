@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B5B0C2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A2AC32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348009AbiHOUb4 (ORCPT
+        id S1348123AbiHOUcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
+        Mon, 15 Aug 2022 16:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347520AbiHOUZz (ORCPT
+        with ESMTP id S1347747AbiHOU0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:25:55 -0400
+        Mon, 15 Aug 2022 16:26:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5369C8E9;
-        Mon, 15 Aug 2022 12:03:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8BF79DB5E;
+        Mon, 15 Aug 2022 12:03:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B526DB81109;
-        Mon, 15 Aug 2022 19:03:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08EF9C433C1;
-        Mon, 15 Aug 2022 19:03:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AED52B810A2;
+        Mon, 15 Aug 2022 19:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 170B0C433C1;
+        Mon, 15 Aug 2022 19:03:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590189;
-        bh=3ujAZeKEOLhx37OJc1LDzbpYlVYHE67f9O0jS+7wG8I=;
+        s=korg; t=1660590201;
+        bh=DnYtPbjqI8A7s1DpXgqq9UjiYSjr7NuAbLDSButeqbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ft5y9Pttgxu8NtJFZvnFtwfNYaHAHCHjzYd8q8/j2nTVfICEpEWVWBZrr3RJBdhGu
-         9ZZ5qqPZoApClQ7D9SPzrR57VB+JaWb6XrmVSC5QgucATOUiizrO+JouQPlc9Io56N
-         8SUWR7PTQdsEAnT9CYzHA4but6PZmtxePL2N3cvU=
+        b=kHbDQoQc7G5tqvgHzKul6LLRAxCgTUXnVTPU8Gs0/uhQvQaD9RnwvDaMEDkpj+1hd
+         emTsUQIQGjXkHZQGFtuE7RHWhzMnbEy5hWxyw6IyIvKvU+6rrvtIuTe1G/fjG4ucDr
+         JKWlKNdyju75seYCADb9Mn3ADQs9vrRbojd6INfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, madcatx@atlas.cz,
-        jwrdegoede@fedoraproject.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0181/1095] pinctrl: Dont allow PINCTRL_AMD to be a module
-Date:   Mon, 15 Aug 2022 19:53:00 +0200
-Message-Id: <20220815180437.131239314@linuxfoundation.org>
+Subject: [PATCH 5.18 0184/1095] spi: spi-rspi: Fix PIO fallback on RZ platforms
+Date:   Mon, 15 Aug 2022 19:53:03 +0200
+Message-Id: <20220815180437.252014191@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,48 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 41ef3c1a6bb0fd4a3f81170dd17de3adbff80783 ]
+[ Upstream commit b620aa3a7be346f04ae7789b165937615c6ee8d3 ]
 
-It was observed that by allowing pinctrl_amd to be loaded
-later in the boot process that interrupts sent to the GPIO
-controller early in the boot are not serviced.  The kernel treats
-these as a spurious IRQ and disables the IRQ.
+RSPI IP on RZ/{A, G2L} SoC's has the same signal for both interrupt
+and DMA transfer request. Setting DMARS register for DMA transfer
+makes the signal to work as a DMA transfer request signal and
+subsequent interrupt requests to the interrupt controller
+are masked.
 
-This problem was exacerbated because it happened on a system with
-an encrypted partition so the kernel object was not accesssible for
-an extended period of time while waiting for a passphrase.
+PIO fallback does not work as interrupt signal is disabled.
 
-To avoid this situation from occurring, stop allowing pinctrl-amd
-from being built as a module and instead require it to be built-in
-or disabled.
+This patch fixes this issue by re-enabling the interrupts by
+calling dmaengine_synchronize().
 
-Reported-by: madcatx@atlas.cz
-Suggested-by: jwrdegoede@fedoraproject.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216230
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220713175950.964-1-mario.limonciello@amd.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220721143449.879257-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-rspi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
-index f52960d2dfbe..bff144c97e66 100644
---- a/drivers/pinctrl/Kconfig
-+++ b/drivers/pinctrl/Kconfig
-@@ -32,7 +32,7 @@ config DEBUG_PINCTRL
- 	  Say Y here to add some extra checks and diagnostics to PINCTRL calls.
- 
- config PINCTRL_AMD
--	tristate "AMD GPIO pin control"
-+	bool "AMD GPIO pin control"
- 	depends on HAS_IOMEM
- 	depends on ACPI || COMPILE_TEST
- 	select GPIOLIB
+diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
+index 7a014eeec2d0..411b1307b7fd 100644
+--- a/drivers/spi/spi-rspi.c
++++ b/drivers/spi/spi-rspi.c
+@@ -613,6 +613,10 @@ static int rspi_dma_transfer(struct rspi_data *rspi, struct sg_table *tx,
+ 					       rspi->dma_callbacked, HZ);
+ 	if (ret > 0 && rspi->dma_callbacked) {
+ 		ret = 0;
++		if (tx)
++			dmaengine_synchronize(rspi->ctlr->dma_tx);
++		if (rx)
++			dmaengine_synchronize(rspi->ctlr->dma_rx);
+ 	} else {
+ 		if (!ret) {
+ 			dev_err(&rspi->ctlr->dev, "DMA timeout\n");
 -- 
 2.35.1
 
