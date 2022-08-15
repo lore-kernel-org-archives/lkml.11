@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEAFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B917C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245644AbiHOTTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
+        id S244732AbiHOTTS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344332AbiHOTQZ (ORCPT
+        with ESMTP id S1344384AbiHOTQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:16:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF3752FC1;
-        Mon, 15 Aug 2022 11:38:04 -0700 (PDT)
+        Mon, 15 Aug 2022 15:16:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4768E53D13;
+        Mon, 15 Aug 2022 11:38:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52D34B8108B;
-        Mon, 15 Aug 2022 18:38:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93F63C433B5;
-        Mon, 15 Aug 2022 18:38:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88DB3B81084;
+        Mon, 15 Aug 2022 18:38:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E32C433D6;
+        Mon, 15 Aug 2022 18:38:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588682;
-        bh=Gz2Jr+pS+jA08IitzJi1AbwCWv5VZEhjC2YGN6UtlOw=;
+        s=korg; t=1660588688;
+        bh=pB7zu3RI90l0HgRwOw3iQx+aw/N8WeopjvTODowc39M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EnjMv/B60cdFrhJ4MVeoiZrPcIyRxcpJ1mHewJJoj/ab8HRSh+hwjKMsYudBTF0ZN
-         25fnz5uyIqU0N+WnbXGA+35dR8wlBoFVRlRz/0ZhXgpVtXnShs9Vk2tqTdEiiMYKXD
-         3jPH/yJKGxStEiO3V4+6czkzL46b7YApLtLujph0=
+        b=n0Vz+PsIbOFGhL+qY1/Anxxyi/KUhBEPhmV5ghsq5kkCKNnL8IAjewHI3FGtWX/8W
+         S9qY3ByMKKQ5azyYk2t9rTnRfJZzOSExdGTG0cIivqPKmOjeTvrjl4VFQQnwGzNkyj
+         Bxqk07ollZ1QITn0SHOf0bttCavn9OJI2L4qkB1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Karl Olsen <karl@micro-technic.com>,
+        stable@vger.kernel.org, Christian Loehle <cloehle@hyperstone.com>,
         Adrian Hunter <adrian.hunter@intel.com>,
+        Avri Altman <avri.altman@wdc.com>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 481/779] mmc: sdhci-of-at91: fix set_uhs_signaling rewriting of MC1R
-Date:   Mon, 15 Aug 2022 20:02:05 +0200
-Message-Id: <20220815180357.816841310@linuxfoundation.org>
+Subject: [PATCH 5.15 483/779] mmc: block: Add single read for 4k sector cards
+Date:   Mon, 15 Aug 2022 20:02:07 +0200
+Message-Id: <20220815180357.905457608@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,46 +51,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Christian Loehle <CLoehle@hyperstone.com>
 
-[ Upstream commit 5987e6ded29d52e42fc7b06aa575c60a25eee38e ]
+[ Upstream commit b3fa3e6dccc465969721b8bd2824213bd235efeb ]
 
-In set_uhs_signaling, the DDR bit is being set by fully writing the MC1R
-register.
-This can lead to accidental erase of certain bits in this register.
-Avoid this by doing a read-modify-write operation.
+Cards with 4k native sector size may only be read 4k-aligned,
+accommodate for this in the single read recovery and use it.
 
-Fixes: d0918764c17b ("mmc: sdhci-of-at91: fix MMC_DDR_52 timing selection")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Tested-by: Karl Olsen <karl@micro-technic.com>
+Fixes: 81196976ed946 (mmc: block: Add blk-mq support)
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
 Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220630090926.15061-1-eugen.hristev@microchip.com
+Reviewed-by: Avri Altman <avri.altman@wdc.com>
+Link: https://lore.kernel.org/r/cf4f316274c5474586d0d99b17db4a4c@hyperstone.com
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-of-at91.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/mmc/core/block.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-of-at91.c b/drivers/mmc/host/sdhci-of-at91.c
-index d1a1c548c515..0452c312b65e 100644
---- a/drivers/mmc/host/sdhci-of-at91.c
-+++ b/drivers/mmc/host/sdhci-of-at91.c
-@@ -100,8 +100,13 @@ static void sdhci_at91_set_clock(struct sdhci_host *host, unsigned int clock)
- static void sdhci_at91_set_uhs_signaling(struct sdhci_host *host,
- 					 unsigned int timing)
- {
--	if (timing == MMC_TIMING_MMC_DDR52)
--		sdhci_writeb(host, SDMMC_MC1R_DDR, SDMMC_MC1R);
-+	u8 mc1r;
-+
-+	if (timing == MMC_TIMING_MMC_DDR52) {
-+		mc1r = sdhci_readb(host, SDMMC_MC1R);
-+		mc1r |= SDMMC_MC1R_DDR;
-+		sdhci_writeb(host, mc1r, SDMMC_MC1R);
-+	}
- 	sdhci_set_uhs_signaling(host, timing);
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index a196116444a3..3222a9d0c245 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -175,7 +175,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
+ 				      unsigned int part_type);
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int disable_multi,
++			       int recovery_mode,
+ 			       struct mmc_queue *mq);
+ static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
+ 
+@@ -1285,7 +1285,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
  }
  
+ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+-			      int disable_multi, bool *do_rel_wr_p,
++			      int recovery_mode, bool *do_rel_wr_p,
+ 			      bool *do_data_tag_p)
+ {
+ 	struct mmc_blk_data *md = mq->blkdata;
+@@ -1351,12 +1351,12 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+ 			brq->data.blocks--;
+ 
+ 		/*
+-		 * After a read error, we redo the request one sector
++		 * After a read error, we redo the request one (native) sector
+ 		 * at a time in order to accurately determine which
+ 		 * sectors can be read successfully.
+ 		 */
+-		if (disable_multi)
+-			brq->data.blocks = 1;
++		if (recovery_mode)
++			brq->data.blocks = queue_physical_block_size(mq->queue) >> 9;
+ 
+ 		/*
+ 		 * Some controllers have HW issues while operating
+@@ -1573,7 +1573,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
+ 
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int disable_multi,
++			       int recovery_mode,
+ 			       struct mmc_queue *mq)
+ {
+ 	u32 readcmd, writecmd;
+@@ -1582,7 +1582,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 	struct mmc_blk_data *md = mq->blkdata;
+ 	bool do_rel_wr, do_data_tag;
+ 
+-	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
++	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
+ 
+ 	brq->mrq.cmd = &brq->cmd;
+ 
+@@ -1673,7 +1673,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
+ 
+ #define MMC_READ_SINGLE_RETRIES	2
+ 
+-/* Single sector read during recovery */
++/* Single (native) sector read during recovery */
+ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ {
+ 	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
+@@ -1681,6 +1681,7 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 	struct mmc_card *card = mq->card;
+ 	struct mmc_host *host = card->host;
+ 	blk_status_t error = BLK_STS_OK;
++	size_t bytes_per_read = queue_physical_block_size(mq->queue);
+ 
+ 	do {
+ 		u32 status;
+@@ -1715,13 +1716,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 		else
+ 			error = BLK_STS_OK;
+ 
+-	} while (blk_update_request(req, error, 512));
++	} while (blk_update_request(req, error, bytes_per_read));
+ 
+ 	return;
+ 
+ error_exit:
+ 	mrq->data->bytes_xfered = 0;
+-	blk_update_request(req, BLK_STS_IOERR, 512);
++	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
+ 	/* Let it try the remaining request again */
+ 	if (mqrq->retries > MMC_MAX_RETRIES - 1)
+ 		mqrq->retries = MMC_MAX_RETRIES - 1;
+@@ -1862,10 +1863,9 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
+ 		return;
+ 	}
+ 
+-	/* FIXME: Missing single sector read for large sector size */
+-	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
+-	    brq->data.blocks > 1) {
+-		/* Read one sector at a time */
++	if (rq_data_dir(req) == READ && brq->data.blocks >
++			queue_physical_block_size(mq->queue) >> 9) {
++		/* Read one (native) sector at a time */
+ 		mmc_blk_read_single(mq, req);
+ 		return;
+ 	}
 -- 
 2.35.1
 
