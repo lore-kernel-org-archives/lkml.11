@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99378C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF1FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344847AbiHOTrk (ORCPT
+        id S1344888AbiHOTrw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
+        Mon, 15 Aug 2022 15:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345068AbiHOTqE (ORCPT
+        with ESMTP id S1345209AbiHOTqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:46:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919816D57B;
-        Mon, 15 Aug 2022 11:48:47 -0700 (PDT)
+        Mon, 15 Aug 2022 15:46:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4766E2D8;
+        Mon, 15 Aug 2022 11:48:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B01A7611EC;
-        Mon, 15 Aug 2022 18:48:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1056C433D6;
-        Mon, 15 Aug 2022 18:48:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2ADBB81057;
+        Mon, 15 Aug 2022 18:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02CFBC433C1;
+        Mon, 15 Aug 2022 18:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589324;
-        bh=pA8ISevhUsGe/p5+9L1xkYfUhHfjRk8HP8uS3OlHxrU=;
+        s=korg; t=1660589330;
+        bh=StjgcR6nA87Jhlh+ZwYMvS8/tCMtuZEn7F+G7iUqQg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E+jizzapPTJPYqrpNnXOFq1loE9ezlWZYKF+She4FnwUVJP4CGovP3uCVTN1eCkhz
-         lzOLdKMfppEBw7yorsMKdyFa38/VtePtyxN3qcrdAFrAqcHQbTvO0rJDdLyEVLZfX1
-         d8xA+/eA0AeUBPGuN/0G3PwHgUin6uW2dC4IoPc4=
+        b=T5cf+3qHvAyR8uS9j8xu4yMluUBDcpiV7MkkH8YMW7w7EIP6xXg3VBi8+dPHLPsxa
+         3dA0tcv5g1CjFgHIGh4qSj9sINVPA5l04KQicl7xTbDBaYWV+waX8Ma16fIV065dFw
+         kGZDiSqmpKfme4wpFC0HXwBobzZb9bytrG/P4OD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 682/779] ftrace/x86: Add back ftrace_expected assignment
-Date:   Mon, 15 Aug 2022 20:05:26 +0200
-Message-Id: <20220815180406.508928002@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        kernel test robot <lkp@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 5.15 684/779] x86/olpc: fix logical not is only applied to the left hand side
+Date:   Mon, 15 Aug 2022 20:05:28 +0200
+Message-Id: <20220815180406.602991701@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -54,44 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit ac6c1b2ca77e722a1e5d651f12f437f2f237e658 upstream.
+commit 3a2ba42cbd0b669ce3837ba400905f93dd06c79f upstream.
 
-When a ftrace_bug happens (where ftrace fails to modify a location) it is
-helpful to have what was at that location as well as what was expected to
-be there.
+The bitops compile-time optimization series revealed one more
+problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
+warnings:
 
-But with the conversion to text_poke() the variable that assigns the
-expected for debugging was dropped. Unfortunately, I noticed this when I
-needed it. Add it back.
+arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
+arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
+      |                                                               ^~
+arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
 
-Link: https://lkml.kernel.org/r/20220726101851.069d2e70@gandalf.local.home
+Despite this code working as intended, this redundant double
+negation of boolean value, together with comparing to `char`
+with no explicit conversion to bool, makes compilers think
+the author made some unintentional logical mistakes here.
+Make it the other way around and negate the char instead
+to silence the warnings.
 
-Cc: "x86@kernel.org" <x86@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: stable@vger.kernel.org
-Fixes: 768ae4406a5c ("x86/ftrace: Use text_poke()")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
+Cc: stable@vger.kernel.org # 3.5+
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/ftrace.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/platform/olpc/olpc-xo1-sci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -93,6 +93,7 @@ static int ftrace_verify_code(unsigned l
- 
- 	/* Make sure it is what we expect it to be */
- 	if (memcmp(cur_code, old_code, MCOUNT_INSN_SIZE) != 0) {
-+		ftrace_expected = old_code;
- 		WARN_ON(1);
- 		return -EINVAL;
+--- a/arch/x86/platform/olpc/olpc-xo1-sci.c
++++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
+@@ -80,7 +80,7 @@ static void send_ebook_state(void)
+ 		return;
  	}
+ 
+-	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
++	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
+ 		return; /* Nothing new to report. */
+ 
+ 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
 
 
