@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603C8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8246C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353954AbiHOXkO (ORCPT
+        id S1353752AbiHOXkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        Mon, 15 Aug 2022 19:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353958AbiHOXhE (ORCPT
+        with ESMTP id S1353943AbiHOXg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:37:04 -0400
+        Mon, 15 Aug 2022 19:36:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8818F82FB5;
-        Mon, 15 Aug 2022 13:09:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C1361B22;
+        Mon, 15 Aug 2022 13:09:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2656660F11;
-        Mon, 15 Aug 2022 20:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23909C433D6;
-        Mon, 15 Aug 2022 20:09:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04EB160DDC;
+        Mon, 15 Aug 2022 20:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F286DC43470;
+        Mon, 15 Aug 2022 20:09:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594179;
-        bh=dg9/iLNoP90yeUEWFEyZvSjml0J6j+qZ3W5XqIRkfYM=;
+        s=korg; t=1660594176;
+        bh=oOcIlIJ85S0/p/QXX4CCG8Frcd/TUProsPpBiPtfgko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ibZ+2aqQCj0YQJyN2O3GFCm/m01TioONuKUaTtTTVcN500yh2pzk+BR3hml11vUxU
-         3JSPAcjT6gXU1iQcE4u955Voq0PiCTPndtApGzsCv4+RyQ/BsCVqjspq5yNy+4cJte
-         GGLT4dqxbHn3cGieSo1dEv1SxEDwMDlVlcPZCLHU=
+        b=FnEUkxCeIuhhJDKt02zb7krl+WLgIiSVja7uOsdzP+Q/xE+Qa5b9PqxFzAvI5pxpX
+         n3ioeU4A8nQHGsBHJRZL6voJNAOiAIw4hcNgl2PRAyvnrEBRjEZqf09w8tESMfBfrs
+         2YvmuUTvGT5jydaBy1GrNnp6OI+WKV6YW0mCefI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1068/1095] tpm: eventlog: Fix section mismatch for DEBUG_SECTION_MISMATCH
-Date:   Mon, 15 Aug 2022 20:07:47 +0200
-Message-Id: <20220815180513.219516805@linuxfoundation.org>
+Subject: [PATCH 5.19 0390/1157] test_bpf: fix incorrect netdev features
+Date:   Mon, 15 Aug 2022 19:55:46 +0200
+Message-Id: <20220815180455.296732550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,45 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huacai Chen <chenhuacai@loongson.cn>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit bed4593645366ad7362a3aa7bc0d100d8d8236a8 ]
+[ Upstream commit 9676feccacdb0571791c88b23e3b7ac4e7c9c457 ]
 
-If DEBUG_SECTION_MISMATCH enabled, __calc_tpm2_event_size() will not be
-inlined, this cause section mismatch like this:
+The prototype of .features is netdev_features_t, it should use
+NETIF_F_LLTX and NETIF_F_HW_VLAN_STAG_TX, not NETIF_F_LLTX_BIT
+and NETIF_F_HW_VLAN_STAG_TX_BIT.
 
-WARNING: modpost: vmlinux.o(.text.unlikely+0xe30c): Section mismatch in reference from the variable L0 to the function .init.text:early_ioremap()
-The function L0() references
-the function __init early_memremap().
-This is often because L0 lacks a __init
-annotation or the annotation of early_ioremap is wrong.
-
-Fix it by using __always_inline instead of inline for the called-once
-function __calc_tpm2_event_size().
-
-Fixes: 44038bc514a2 ("tpm: Abstract crypto agile event size calculations")
-Cc: stable@vger.kernel.org # v5.3
-Reported-by: WANG Xuerui <git@xen0n.name>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: cf204a718357 ("bpf, testing: Introduce 'gso_linear_no_head_frag' skb_segment test")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/r/20220622135002.8263-1-shenjian15@huawei.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/tpm_eventlog.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/test_bpf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/tpm_eventlog.h b/include/linux/tpm_eventlog.h
-index 739ba9a03ec1..20c0ff54b7a0 100644
---- a/include/linux/tpm_eventlog.h
-+++ b/include/linux/tpm_eventlog.h
-@@ -157,7 +157,7 @@ struct tcg_algorithm_info {
-  * Return: size of the event on success, 0 on failure
-  */
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 2a7836e115b4..5820704165a6 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -14733,9 +14733,9 @@ static struct skb_segment_test skb_segment_tests[] __initconst = {
+ 		.build_skb = build_test_skb_linear_no_head_frag,
+ 		.features = NETIF_F_SG | NETIF_F_FRAGLIST |
+ 			    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_GSO |
+-			    NETIF_F_LLTX_BIT | NETIF_F_GRO |
++			    NETIF_F_LLTX | NETIF_F_GRO |
+ 			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
+-			    NETIF_F_HW_VLAN_STAG_TX_BIT
++			    NETIF_F_HW_VLAN_STAG_TX
+ 	}
+ };
  
--static inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
-+static __always_inline int __calc_tpm2_event_size(struct tcg_pcr_event2_head *event,
- 					 struct tcg_pcr_event *event_header,
- 					 bool do_mapping)
- {
 -- 
 2.35.1
 
