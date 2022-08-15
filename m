@@ -2,129 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA1EC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 02:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4920C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 02:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232855AbiHOCo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 22:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
+        id S231443AbiHOCt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 22:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbiHOCoY (ORCPT
+        with ESMTP id S230148AbiHOCtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 22:44:24 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D42513DD6
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 19:44:23 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id pm17so5868413pjb.3
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 19:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=HMJPJaMTIMpYySj8VKHm3Gs+nJ0hbxCawAYej8HKyzk=;
-        b=7wc6o7/0pvyF+CyEyEa6HPmG6W0tpqwU5s8YgEaLxbvWMc7qZSYiafB1wW2qlhd3Xn
-         y4/a3UDwUhqcgvp44r8MYcGNq2jfN75AUHGbd7K07xb1BcI00EilWEZd4OCas2W2Uvwh
-         RUicsZJ7Z3xr751Vy66k8XDvovGQJlSZw1vSCSmtdXEdNTaW/puM/aiiqyzvf0MqYgAV
-         atM+Tw3YzbUzm3Dr9sQfTVlneVQlbDIF9+KMzemSPVMez6jtJ/Qfbdp7f3y8f+ryBtgY
-         fE/eaV4RRFVAMzJCcy4dYlexI6bWbwciz/dBn0qZqA/SHZVH5SDyqp/5p2PHEJOgyWrS
-         a0mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=HMJPJaMTIMpYySj8VKHm3Gs+nJ0hbxCawAYej8HKyzk=;
-        b=51ESEEVSELZ5EkaAUEXqaUAAUy+A+GmAhmSSQeJgn5zq6ZtGmE5UXxgs+j5HQm+tH3
-         jzDea3xvTwqzxdCmp6MpVNiqFZGjaNQldpoUsZRQI4ERMWuSXXLBNkAvsZL5oUTOzqjg
-         bLHKFCqiJNKX7n7HNMWQkQSJah6WExfwtJlYONXbcQz44WZE8z00ej1HoGGl1WoRus2+
-         bOsYqovBN1wnGoTisGm7hTX4htluvU/pE5FRn8kOfrZTk1W/BHKwLAyIFjSkGAnshI2Z
-         MUqTRxOq4x71MyX62Lydzo7HKnqeUBJvosbBkDn4tYausJMW4DnY8Da4MCfOpROT5owE
-         yuHQ==
-X-Gm-Message-State: ACgBeo3RgXGwKy++k6MasHkdzUxbIGoX/hlJK+Wm9gc2gdfW4nQTtHJX
-        nq6AmTuEWhWiUnDmRxk/62Vvuc8K6xlsygY2
-X-Google-Smtp-Source: AA6agR6nVaQZY93KoXRdYAmjfLmWsZy5x7alg5yp9vK3ofPmDE/iFfEyMMsL/ZyjhssuqA2kr5Rfjg==
-X-Received: by 2002:a17:90a:f418:b0:1f3:223d:4349 with SMTP id ch24-20020a17090af41800b001f3223d4349mr26239379pjb.2.1660531463009;
-        Sun, 14 Aug 2022 19:44:23 -0700 (PDT)
-Received: from [10.94.58.189] ([139.177.225.238])
-        by smtp.gmail.com with ESMTPSA id f18-20020a17090aa79200b001ef9659d711sm3622924pjq.48.2022.08.14.19.44.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Aug 2022 19:44:22 -0700 (PDT)
-Message-ID: <9a6ea177-cbf8-abb1-2077-a2db4ce308bc@bytedance.com>
-Date:   Mon, 15 Aug 2022 10:44:17 +0800
+        Sun, 14 Aug 2022 22:49:55 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38DB13D55
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 19:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660531794; x=1692067794;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=tB6VsR4a2LMqyhb0v/1jwuRQahmaC3JDWBwMeSJ3pmM=;
+  b=l4hcgd8TEOJ0OYI5KJH+GcpeksWDmO8lZkfaYKOoBlkuHwUbssA2fwxL
+   S8eyCyffEF1r7HhJ+PfMFOlLiKzpa3jJqiDnOR3LNGMAf0uDoM1LkfF+y
+   AIxEPxNTBe6wwiQMu/XeuqOyRo+FIsHGs+MN0WR6SjETi11bMrTqqQpMa
+   8Oo71owUqfb6n5gACBO1HhGiv4o/rV7QLPrTNy5+CW36GRZZmooSd6++3
+   vXICIF8xoV6eklc7jNssEvTxS42wFnti0/3M39v/lwaxhjEa3xp69iu6M
+   3by9vZWTXwckn/1m5q8yC9YWLGFhd1OXm9/sHr/Yw1fWLorNxFKz65uVX
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="291875778"
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="291875778"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 19:49:54 -0700
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="557142202"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 19:49:50 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        Bharata B Rao <bharata@amd.com>
+Subject: Re: [PATCH v14 00/10] mm/demotion: Memory tiers and demotion
+References: <20220812055710.357820-1-aneesh.kumar@linux.ibm.com>
+Date:   Mon, 15 Aug 2022 10:49:46 +0800
+In-Reply-To: <20220812055710.357820-1-aneesh.kumar@linux.ibm.com> (Aneesh
+        Kumar K. V.'s message of "Fri, 12 Aug 2022 11:26:59 +0530")
+Message-ID: <87sflycjat.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH 1/5] sched/fair: ignore SIS_UTIL when has idle core
-Content-Language: en-US
-To:     Chen Yu <yu.chen.surf@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220712082036.5130-1-wuyun.abel@bytedance.com>
- <20220712082036.5130-2-wuyun.abel@bytedance.com>
- <CADjb_WRdvKm=uJGe2zE+D6fHkuCX4i+WkrWqz1A3VXmtdKN_Tg@mail.gmail.com>
-From:   Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <CADjb_WRdvKm=uJGe2zE+D6fHkuCX4i+WkrWqz1A3VXmtdKN_Tg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chen, thanks for your testing!
+"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
 
-On 8/10/22 9:50 PM, Chen Yu Wrote:
-> On Tue, Jul 12, 2022 at 4:45 PM Abel Wu <wuyun.abel@bytedance.com> wrote:
->>
->> When SIS_UTIL is enabled, SIS domain scan will be skipped if
->> the LLC is overloaded. Since the overloaded status is checked
->> in the load balancing at LLC level, the interval is llc_size
->> miliseconds. The duration might be long enough to affect the
->> overall system throughput if idle cores are out of reach in
->> SIS domain scan.
->>
->> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->> ---
->>
-> Tested schbench and netperf on latest 5.19 vanilla, it seems that there
-> is latency performance improvement when the load is low in schbench,
-> and no performance difference on netperf.
-> 
->   ./report.py -b 5.19.0+ -c 5.19.0-skip-sis-util+ -t schbench
-> 
-> schbench
-> ========
-> case            load    baseline(std%) compare%( std%)
-> normal          mthread-1 1.00 (  0.00) +7.69 (  0.00)
-> normal          mthread-2 1.00 (  0.00) +13.24 (  0.00)
-> normal          mthread-4 1.00 (  0.00) -5.88 (  0.00)
-> normal          mthread-8 1.00 (  0.00) -0.25 (  0.00)
-> 
-> 
-> ./report.py -b 5.19.0+ -c 5.19.0-skip-sis-util+ -t netperf
-> netperf
-> =======
-> case            load    baseline(std%) compare%( std%)
-> TCP_RR          thread-28 1.00 (  0.62) +0.15 (  0.55)
-> TCP_RR          thread-56 1.00 (  0.42) -0.26 (  0.40)
-> TCP_RR          thread-84 1.00 (  0.29) +0.39 (  0.29)
-> TCP_RR          thread-112 1.00 (  0.22) +0.44 (  0.23)
-> TCP_RR          thread-140 1.00 (  0.17) +0.33 (  0.18)
-> TCP_RR          thread-168 1.00 (  0.17) +0.19 (  0.16)
-> TCP_RR          thread-196 1.00 ( 13.65) -0.62 ( 14.83)
-> TCP_RR          thread-224 1.00 (  9.80) -0.65 (  9.67)
-> UDP_RR          thread-28 1.00 (  0.89) +0.92 (  0.81)
-> UDP_RR          thread-56 1.00 (  0.78) +0.38 (  0.73)
-> UDP_RR          thread-84 1.00 ( 14.03) +0.78 ( 16.85)
-> UDP_RR          thread-112 1.00 ( 12.26) -0.42 ( 11.95)
-> UDP_RR          thread-140 1.00 (  9.86) -0.89 (  6.93)
-> UDP_RR          thread-168 1.00 ( 11.62) -0.82 (  8.80)
-> UDP_RR          thread-196 1.00 ( 19.47) +0.42 ( 16.50)
-> UDP_RR          thread-224 1.00 ( 18.68) +0.72 ( 18.50)
-> 
-> 
-> Tested-by: Chen Yu <yu.c.chen@intel.com>
-> 
+> The current kernel has the basic memory tiering support: Inactive pages on a
+> higher tier NUMA node can be migrated (demoted) to a lower tier NUMA node to
+> make room for new allocations on the higher tier NUMA node. Frequently accessed
+> pages on a lower tier NUMA node can be migrated (promoted) to a higher tier NUMA
+> node to improve the performance.
+>
+> In the current kernel, memory tiers are defined implicitly via a demotion path
+> relationship between NUMA nodes, which is created during the kernel
+> initialization and updated when a NUMA node is hot-added or hot-removed. The
+> current implementation puts all nodes with CPU into the highest tier, and builds the
+> tier hierarchy tier-by-tier by establishing the per-node demotion targets based
+> on the distances between nodes.
+>
+> This current memory tier kernel implementation needs to be improved for several
+> important use cases:
+>
+> * The current tier initialization code always initializes each memory-only NUMA
+>   node into a lower tier. But a memory-only NUMA node may have a high
+>   performance memory device (e.g. a DRAM-backed memory-only node on a virtual
+>   machine) and that should be put into a higher tier.
+>
+> * The current tier hierarchy always puts CPU nodes into the top tier. But on a
+>   system with HBM (e.g. GPU memory) devices, these memory-only HBM NUMA nodes
+>   should be in the top tier, and DRAM nodes with CPUs are better to be placed
+>   into the next lower tier.
+>
+> * Also because the current tier hierarchy always puts CPU nodes into the top
+>   tier, when a CPU is hot-added (or hot-removed) and triggers a memory node from
+>   CPU-less into a CPU node (or vice versa), the memory tier hierarchy gets
+>   changed, even though no memory node is added or removed. This can make the
+>   tier hierarchy unstable and make it difficult to support tier-based memory
+>   accounting.
+>
+> * A higher tier node can only be demoted to nodes with shortest distance on the
+>   next lower tier as defined by the demotion path, not any other node from any
+>   lower tier. This strict, demotion order does not work in all use
+>   cases (e.g. some use cases may want to allow cross-socket demotion to another
+>   node in the same demotion tier as a fallback when the preferred demotion node
+>   is out of space), and has resulted in the feature request for an interface to
+>   override the system-wide, per-node demotion order from the userspace. This
+>   demotion order is also inconsistent with the page allocation fallback order
+>   when all the nodes in a higher tier are out of space: The page allocation can
+>   fall back to any node from any lower tier, whereas the demotion order doesn't
+>   allow that.
+>
+> This patch series make the creation of memory tiers explicit under
+> the control of device driver.
+>
+> Memory Tier Initialization
+> ==========================
+>
+> Linux kernel presents memory devices as NUMA nodes and each memory device is of
+> a specific type. The memory type of a device is represented by its abstract 
+> distance. A memory tier corresponds to a range of abstract distance. This allows
+> for classifying memory devices with a specific performance range into a memory
+> tier.
+>
+> By default, all memory nodes are assigned to the default tier with
+> abstract distance 512.
+>
+> A device driver can move its memory nodes from the default tier. For example,
+> PMEM can move its memory nodes below the default tier, whereas GPU can move its
+> memory nodes above the default tier.
+>
+> The kernel initialization code makes the decision on which exact tier a memory
+> node should be assigned to based on the requests from the device drivers as well
+> as the memory device hardware information provided by the firmware.
+>
+> Hot-adding/removing CPUs doesn't affect memory tier hierarchy.
+>
+> Changes from v13
+> * Address review feedback.
+> * Add path dropping memtier from struct memory_dev_type
+>
+> Changes from v12
+> * Fix kernel crash on module unload
+> * Address review feedback.
+> * Add node_random patch to this series based on review feedback
+>
+> Changes from v11:
+> * smaller abstract distance imply faster(higher) memory tier.
+>
+> Changes from v10:
+> * rename performance level to abstract distance
+> * Thanks to all the good feedback from Huang, Ying <ying.huang@intel.com>.
+>   Updated the patchset to cover most of the review feedback.
+>
+> Changes from v9:
+> * Use performance level for initializing memory tiers.
+>
+> Changes from v8:
+> * Drop the sysfs interface patches and  related documentation changes.
+>
+> Changes from v7:
+> * Fix kernel crash with demotion.
+> * Improve documentation.
+>
+> Changes from v6:
+> * Drop the usage of rank.
+> * Address other review feedback.
+>
+> Changes from v5:
+> * Remove patch supporting N_MEMORY node removal from memory tiers. memory tiers
+>   are going to be used for features other than demotion. Hence keep all N_MEMORY
+>   nodes in memory tiers irrespective of whether they want to participate in promotion or demotion.
+> * Add NODE_DATA->memtier
+> * Rearrage patches to add sysfs files later.
+> * Add support to create memory tiers from userspace.
+> * Address other review feedback.
+>
+>
+> Changes from v4:
+> * Address review feedback.
+> * Reverse the meaning of "rank": higher rank value means higher tier.
+> * Add "/sys/devices/system/memtier/default_tier".
+> * Add node_is_toptier
+>
+> v4:
+> Add support for explicit memory tiers and ranks.
+>
+> v3:
+> - Modify patch 1 subject to make it more specific
+> - Remove /sys/kernel/mm/numa/demotion_targets interface, use
+>   /sys/devices/system/node/demotion_targets instead and make
+>   it writable to override node_states[N_DEMOTION_TARGETS].
+> - Add support to view per node demotion targets via sysfs
+>
+> v2:
+> In v1, only 1st patch of this patch series was sent, which was
+> implemented to avoid some of the limitations on the demotion
+> target sharing, however for certain numa topology, the demotion
+> targets found by that patch was not most optimal, so 1st patch
+> in this series is modified according to suggestions from Huang
+> and Baolin. Different examples of demotion list comparasion
+> between existing implementation and changed implementation can
+> be found in the commit message of 1st patch.
+>
+>
+>
+> Aneesh Kumar K.V (9):
+>   mm/demotion: Add support for explicit memory tiers
+>   mm/demotion: Move memory demotion related code
+>   mm/demotion: Add hotplug callbacks to handle new numa node onlined
+>   mm/demotion/dax/kmem: Set node's abstract distance to
+>     MEMTIER_DEFAULT_DAX_ADISTANCE
+>   mm/demotion: Build demotion targets based on explicit memory tiers
+>   mm/demotion: Add pg_data_t member to track node memory tier details
+>   mm/demotion: Drop memtier from memtype
+>   mm/demotion: Update node_is_toptier to work with memory tiers
+>   lib/nodemask: Optimize node_random for nodemask with single NUMA node
+>
+> Jagdish Gediya (1):
+>   mm/demotion: Demote pages according to allocation fallback order
+>
+>  drivers/dax/kmem.c           |  42 ++-
+>  include/linux/memory-tiers.h |  99 ++++++
+>  include/linux/migrate.h      |  15 -
+>  include/linux/mmzone.h       |   3 +
+>  include/linux/node.h         |   5 -
+>  include/linux/nodemask.h     |  15 +-
+>  mm/Makefile                  |   1 +
+>  mm/huge_memory.c             |   1 +
+>  mm/memory-tiers.c            | 645 +++++++++++++++++++++++++++++++++++
+>  mm/migrate.c                 | 453 +-----------------------
+>  mm/mprotect.c                |   1 +
+>  mm/vmscan.c                  |  59 +++-
+>  mm/vmstat.c                  |   4 -
+>  13 files changed, 846 insertions(+), 497 deletions(-)
+>  create mode 100644 include/linux/memory-tiers.h
+>  create mode 100644 mm/memory-tiers.c
+
+Except some minor comments, the series looks good to me.  Thanks!  Feel
+free to add
+
+Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
+
+for the whole series.
+
+Best Regards,
+Huang, Ying
