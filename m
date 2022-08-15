@@ -2,84 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5A6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD7AC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242890AbiHOSjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53622 "EHLO
+        id S241005AbiHOSjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242120AbiHOSiZ (ORCPT
+        with ESMTP id S232021AbiHOSid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:38:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060663CBFF;
-        Mon, 15 Aug 2022 11:23:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 313FA60C07;
-        Mon, 15 Aug 2022 18:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A9B2C433D6;
-        Mon, 15 Aug 2022 18:23:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587820;
-        bh=7yTsgTxRPiTe1CNGAyg1LU8nwoKF2gMiyP+86hKk4o4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EzC3ARo5Mbqhtxd4BelbW2+SFbV/GxYkdRudOUDJGVPfwFpvzcTcrID9Wvzy0FYKJ
-         SNZTp1L6xC04akHkxJSDm7WBmXFeDMSWkaYPOyP8TYDhgOxP4fS8jzAXy01EFnjbaR
-         tVSKLhdWFhHw8GfKZ68Jm7SfJ2I3qyNwrcAe6Zxo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tam=C3=A1s=20Sz=C5=B1cs?= <tszucs@protonmail.ch>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 206/779] arm64: tegra: Fix SDMMC1 CD on P2888
-Date:   Mon, 15 Aug 2022 19:57:30 +0200
-Message-Id: <20220815180346.082702041@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:38:33 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8973E3C8F8
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:23:47 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-32194238c77so93635167b3.4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Db07G664QdLJL7hbwp7/beOMmf/kBhPqwkUaOy2LwyA=;
+        b=Di5ahuQuUij88dNg/KRUmAKM+aFc4DdrWzvkGo1ivcBnErb9f9it3ced1tX8E1HOnW
+         rLig4vd67w+IDyEGKnA/hiBFKa9SIJo5ovpK9oXEVP3+LRX4wdHl8OBPIMq1rc/4kQNy
+         rLg4IV9NvfkwSDqTHNxE49YD7M/s3X5ncxvBEWc9+/vl3EoxqEMe1PMLKgVLDHqstm4G
+         joJwp2cMBAozP1CUx+KJTNs7dLtt12cRxqdp9lmed/H3XsNHEmXKmwhjuo5TeIJHjYNH
+         eTAkc55YhPGHXbscGy9mPpSlEynn8yRw1Pw5EJDngyR94hoEJzRHIGRMOuHmABb4er0F
+         FE6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Db07G664QdLJL7hbwp7/beOMmf/kBhPqwkUaOy2LwyA=;
+        b=ACmRmb96mxFqMuv9RGybfGpFSNH5HtR+W9nEVSwt3J/iZWkYCrumEvu5HLEMyPBZqf
+         u7HBwCM6gHb5Wd3xiBy+Cbz9rkY2mFMftl6CtwDhWkCm/0CmjzdOCkAaQnymwq7wcWJt
+         4G1TEUTASlxuGlJKmXsxNU3F6egMGQZDdmIfH7cuyTNOzQ8PwyUzAvPWOAulZUuJKqnl
+         ncLvF+KExehtsIjYBOlHpcg2KkOV3dPhY/dHQQdQCOuW52Kvenh7pOktDWdv8BtR1L4Q
+         TmLADzE3h0zjpU4kglqcj8R2RdmMBiM7TUrX5bmQUi9h35xp5ux36BBarfzH096ZKInW
+         95SQ==
+X-Gm-Message-State: ACgBeo0k5hZgs4/c0dTrlDdQMRgQwb8s8EiLCS7V/Fc1iIhkQqS/ul44
+        IL45TnuzZ+o7bHL9FIaGh4Kx0rXsH60C6g1iK0A/5w==
+X-Google-Smtp-Source: AA6agR4wzhsMjeR70OWMz+XaTgfrMhs+/iH3OP2Hd6MDBv3+PPxfDZUE0dnmuD2HQ3WDLtnmiP5GDkAha3prRqse7F4=
+X-Received: by 2002:a25:d353:0:b0:67b:7758:b051 with SMTP id
+ e80-20020a25d353000000b0067b7758b051mr11716143ybf.563.1660587826134; Mon, 15
+ Aug 2022 11:23:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220810060040.321697-1-saravanak@google.com> <YvYiF36M09dX9ASm@atomide.com>
+ <CAGETcx-t0O0B+5i0FWwm5w2=ccOD5zVAaUvgQoP8PT9SOT_btw@mail.gmail.com> <Yvog4K0barAvvVeb@atomide.com>
+In-Reply-To: <Yvog4K0barAvvVeb@atomide.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Mon, 15 Aug 2022 11:23:09 -0700
+Message-ID: <CAGETcx-k+ca5uG42XvW5yiK8RWDYfeRs9va5boqnp33s45AGRg@mail.gmail.com>
+Subject: Re: [PATCH v1 0/9] fw_devlink improvements
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, Abel Vesa <abel.vesa@linaro.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        John Stultz <jstultz@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Guenter Roeck <linux@roeck-us.net>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tamás Szűcs <tszucs@protonmail.ch>
+On Mon, Aug 15, 2022 at 3:33 AM Tony Lindgren <tony@atomide.com> wrote:
+>
+> * Saravana Kannan <saravanak@google.com> [220813 00:45]:
+> > On Fri, Aug 12, 2022 at 2:49 AM Tony Lindgren <tony@atomide.com> wrote:
+> > >
+> > > * Saravana Kannan <saravanak@google.com> [220810 05:54]:
+> > > > Tony,
+> > > >
+> > > > This should handle the odd case of the child being the supplier of the
+> > > > parent. Can you please give this a shot? I want to make sure the cycle
+> > > > detection code handles this properly and treats it like it's NOT a cycle.
+> > >
+> > > Yup, this series works for me, so feel free to add:
+> > >
+> > > Tested-by: Tony Lindgren <tony@atomide.com>
+> >
+> > Thanks for testing!
+> >
+> > Btw, out of curiosity, how many different boards did you test this on?
+> > IIRC you had an issue only in one board, right? Not to say I didn't
+> > break anything else, I'm just trying to see how much confidence we
+> > have on this series so far. I'm hoping the rest of the folks I listed
+> > in the email will get around to testing this series.
+>
+> Sorry if I was not clear earlier. The issue affects several generations
+> of TI 32-bit SoCs at least, not just one board.
 
-[ Upstream commit b415bb7c976f1d595ed752001c0938f702645dab ]
+But this series fixes the issues for all of them or are you still
+seeing some broken boot with this series?
 
-Hook SDMMC1 CD up with CVM GPIO02 (SOC_GPIO11) used for card detection on J4
-(uSD socket) on the carrier.
+-Saravana
 
-Fixes: ef633bfc21e9 ("arm64: tegra: Enable card detect for SD card on P2888")
-Signed-off-by: Tamás Szűcs <tszucs@protonmail.ch>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi b/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi
-index c4058ee36fec..1a444705517f 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi
-@@ -75,7 +75,7 @@ eeprom@50 {
- 
- 		/* SDMMC1 (SD/MMC) */
- 		mmc@3400000 {
--			cd-gpios = <&gpio TEGRA194_MAIN_GPIO(A, 0) GPIO_ACTIVE_LOW>;
-+			cd-gpios = <&gpio TEGRA194_MAIN_GPIO(G, 7) GPIO_ACTIVE_LOW>;
- 		};
- 
- 		/* SDMMC4 (eMMC) */
--- 
-2.35.1
-
-
-
+>
+> > > I have some concerns though on how do we get a working -rc1 with the
+> > > earlier series applied? See the comments in the last patch of this
+> > > series.
+> >
+> > I tried to reply, but not sure if it helps. We'll continue the discussion there.
+>
+> Ack.
+>
+> Tony
+>
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
+>
