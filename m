@@ -2,129 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F8BC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 264D5C25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241051AbiHOEQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 00:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        id S240996AbiHOEPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 00:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240794AbiHOEQc (ORCPT
+        with ESMTP id S240604AbiHOEPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 00:16:32 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B398D14D28
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:16:30 -0700 (PDT)
-Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27F43qGl027861;
-        Mon, 15 Aug 2022 04:16:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pps0720;
- bh=aSHXFdAQ03T2SGv1NgPTxGKHIy2TzHOP7Y3b0nXA+UU=;
- b=RpVqPwqz/n6PaVG2Pr0/AMqGF98xmCcE+af1K92RBPmpIHJ5cKQLo38b7K/FNA2Kal8b
- GHQDrMxsaXFtVfSDLqGH0sBWcUiRCU+snFmEiEnyOgYNwKJjonfAnyJdM90HqCc0vEDP
- Xaesxh4Z3h2hiY1BvEycPqOWwe8H4qPHD/WDAOjtfLxYRBahPWvdPkrRGVcEJUJjH//Q
- mjEtov0FgHoOnre+F6r4py5GzA7cEZA9xzHCqsDQqsB5V52j94Hv3mPblgHTmDFyzJ9e
- yBeEOZ+6y3hMQheU3iWzNIT/v9LozpuRGOORClWLju9opM+L0vDXnxbR/9WsmYdjm0rW Cw== 
-Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3hydktgsb7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 04:16:26 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 171DA8000B7;
-        Mon, 15 Aug 2022 04:16:26 +0000 (UTC)
-Received: from adevxp033-sys.us.rdlabs.hpecorp.net (unknown [16.231.227.36])
-        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id BB12D80560D;
-        Mon, 15 Aug 2022 04:16:25 +0000 (UTC)
-From:   Robert Elliott <elliott@hpe.com>
-To:     apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com,
-        lukas.bulwahn@gmail.com, linux-kernel@vger.kernel.org
-Cc:     toshi.kani@hpe.com, Robert Elliott <elliott@hpe.com>
-Subject: [PATCH 3/3] checkpatch: check line length in Kconfig help text
-Date:   Sun, 14 Aug 2022 23:15:48 -0500
-Message-Id: <20220815041548.43744-4-elliott@hpe.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220815041548.43744-1-elliott@hpe.com>
-References: <20220815041548.43744-1-elliott@hpe.com>
+        Mon, 15 Aug 2022 00:15:22 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCAC14085
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660536912; x=1692072912;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IDZAMF3H0jOJUSFvgSQfeFD1dZ2psaQLK4sileStRHs=;
+  b=GBIXTVBMC1mJPETz0E4WI9uAwJNGBy8dqLiM5IeaI7LZWDWlW97gRhcj
+   jjgKxaWfPDiXG1w5Hq9wHoG7qPcA8DouvsXFHTXntvXYMfcsQQY1N/vLH
+   ol3I70kB1AeMgBD4bdsESXLW20oBLl0QLKEri5v2IBHZ2e8ABpN8VxEeN
+   bmLHRdYZYyUmHjwiWTAsOw7DNlJazrCGzGOd0PuYqiXJN0VLS88euRDoM
+   lYhRiAPLhcLuqWl6UyN3d4y1N4jSpPkKXx+2eJdYwxSDEQARWF1Yqs/Ku
+   oJ03yF8THjxwYpTNU8dTQH4QMTggqzgr/dO/+aJeGfNNAO97YM9i6FLKn
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="271658919"
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="271658919"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:12 -0700
+X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
+   d="scan'208";a="635346906"
+Received: from dmalka-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.249.42.26])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:07 -0700
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 9A162104A70; Mon, 15 Aug 2022 07:18:04 +0300 (+03)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Weihong Zhang <weihong.zhang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 11/11] selftests/x86/lam: Add inherit test cases for linear-address masking
+Date:   Mon, 15 Aug 2022 07:18:03 +0300
+Message-Id: <20220815041803.17954-12-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
+References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: jfcEAwiQtfWhDpxpOu-MkFc9T72ktjAm
-X-Proofpoint-ORIG-GUID: jfcEAwiQtfWhDpxpOu-MkFc9T72ktjAm
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-15_03,2022-08-11_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
- phishscore=0 adultscore=0 priorityscore=1501 mlxscore=0 suspectscore=0
- malwarescore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208150016
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apply the normal --max-line-length=nn line length checks to
-Kconfig help text.
+From: Weihong Zhang <weihong.zhang@intel.com>
 
-The default of 100 is only triggered by one existing line in
-a file named Kconfig. Running with --max-line-length=80 reports
-only a few long lines:
-- 11 between 90 and 99 characters
-- 25 betwen 81 and 89 characters
-9 of which are due to long URLs.
+LAM is enabled per-thread and gets inherited on fork(2)/clone(2). exec()
+reverts LAM status to the default disabled state.
 
-Signed-off-by: Robert Elliott <elliott@hpe.com>
+There are two test scenarios:
+
+ - Fork test cases:
+
+   These cases were used to test the inheritance of LAM for per-thread,
+   Child process generated by fork() should inherit LAM feature from
+   parent process, Child process can get the LAM mode same as parent
+   process.
+
+ - Execve test cases:
+
+   Processes generated by execve() are different from processes
+   generated by fork(), these processes revert LAM status to disabled
+   status.
+
+Signed-off-by: Weihong Zhang <weihong.zhang@intel.com>
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- scripts/checkpatch.pl | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ tools/testing/selftests/x86/lam.c | 123 +++++++++++++++++++++++++++++-
+ 1 file changed, 120 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 4d09a324a586..f8e48af40b81 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -3495,7 +3495,7 @@ sub process {
- 				next if ($f =~ /^-/);
- 				last if ($f !~ /^[\+ ]/);	# !patch context
+diff --git a/tools/testing/selftests/x86/lam.c b/tools/testing/selftests/x86/lam.c
+index 19208ba6047a..074fa0cd65ef 100644
+--- a/tools/testing/selftests/x86/lam.c
++++ b/tools/testing/selftests/x86/lam.c
+@@ -35,8 +35,9 @@
+ #define FUNC_MMAP               0x4
+ #define FUNC_SYSCALL            0x8
+ #define FUNC_URING              0x10
++#define FUNC_INHERITE           0x20
  
--				if ($f =~ /^[\+ ]\s*(?:bool|tristate|prompt)\s*["']/) {
-+				if ($f =~ /^[\+ ]\s*(?:bool|tristate|string|hex|int|prompt)\s*["']/) {
- 					$needs_help = 1;
- 					next;
- 				}
-@@ -3514,12 +3514,27 @@ sub process {
- 				# and so hopefully shouldn't trigger false
- 				# positives, even though some of these are
- 				# common words in help texts
--				if ($f =~ /^(?:config|menuconfig|choice|endchoice|
--					       if|endif|menu|endmenu|source)\b/x) {
-+				if ($f =~ /^(?:config|menuconfig|
-+					       choice|endchoice|
-+					       comment|if|endif|
-+					       menu|endmenu|source)\b/x) {
- 					last;
- 				}
+-#define TEST_MASK               0x1f
++#define TEST_MASK               0x3f
+ 
+ #define LOW_ADDR                (0x1UL << 30)
+ #define HIGH_ADDR               (0x3UL << 48)
+@@ -169,6 +170,28 @@ static unsigned long get_default_tag_bits(void)
+ 	return lam;
+ }
+ 
++/*
++ * Set tagged address and read back untag mask.
++ * check if the untag mask is expected.
++ */
++static int get_lam(void)
++{
++	uint64_t ptr = 0;
++	int ret = -1;
++	/* Get untagged mask */
++	if (syscall(SYS_arch_prctl, ARCH_GET_UNTAG_MASK, &ptr) == -1)
++		return -1;
 +
-+				# no further checking for lines with these keywords
-+				if ($f =~ /^(?:default|def_bool|depends|select|imply)\b/x) {
-+					next;
-+				}
++	/* Check mask returned is expected */
++	if (ptr == ~(0x3fULL << 57))
++		ret = LAM_U57_BITS;
++	else if (ptr == -1ULL)
++		ret = LAM_NONE;
 +
-+				my ($length, $indent) = line_stats($f);
-+				if ($length > $max_line_length) {
-+					WARN("CONFIG_DESCRIPTION",
-+					     "Kconfig help text line length ($length) too long: $f\n");
-+				}
 +
- 				$help_length++ if ($has_help);
++	return ret;
++}
++
+ /* According to LAM mode, set metadata in high bits */
+ static uint64_t get_metadata(uint64_t src, unsigned long lam)
+ {
+@@ -623,6 +646,72 @@ static int fork_test(struct testcases *test)
+ 	return ret;
+ }
+ 
++static int handle_execve(struct testcases *test)
++{
++	int ret, child_ret;
++	int lam = test->lam;
++	pid_t pid;
++
++	pid = fork();
++	if (pid < 0) {
++		perror("Fork failed.");
++		ret = 1;
++	} else if (pid == 0) {
++		char path[PATH_MAX];
++
++		/* Set LAM mode in parent process */
++		if (set_lam(lam) != 0)
++			return 1;
++
++		/* Get current binary's path and the binary was run by execve */
++		if (readlink("/proc/self/exe", path, PATH_MAX) <= 0)
++			exit(-1);
++
++		/* run binary to get LAM mode and return to parent process */
++		if (execlp(path, path, "-t 0x0", NULL) < 0) {
++			perror("error on exec");
++			exit(-1);
++		}
++	} else {
++		wait(&child_ret);
++		ret = WEXITSTATUS(child_ret);
++		if (ret != LAM_NONE)
++			return 1;
++	}
++
++	return 0;
++}
++
++static int handle_inheritance(struct testcases *test)
++{
++	int ret, child_ret;
++	int lam = test->lam;
++	pid_t pid;
++
++	/* Set LAM mode in parent process */
++	if (set_lam(lam) != 0)
++		return 1;
++
++	pid = fork();
++	if (pid < 0) {
++		perror("Fork failed.");
++		return 1;
++	} else if (pid == 0) {
++		/* Set LAM mode in parent process */
++		int child_lam = get_lam();
++
++		exit(child_lam);
++	} else {
++		wait(&child_ret);
++		ret = WEXITSTATUS(child_ret);
++
++		if (lam != ret)
++			return 1;
++	}
++
++	return 0;
++}
++
+ static void run_test(struct testcases *test, int count)
+ {
+ 	int i, ret = 0;
+@@ -724,11 +813,26 @@ static struct testcases mmap_cases[] = {
+ 	},
+ };
+ 
++static struct testcases inheritance_cases[] = {
++	{
++		.expected = 0,
++		.lam = LAM_U57_BITS,
++		.test_func = handle_inheritance,
++		.msg = "FORK: LAM_U57, child process should get LAM mode same as parent\n",
++	},
++	{
++		.expected = 0,
++		.lam = LAM_U57_BITS,
++		.test_func = handle_execve,
++		.msg = "EXECVE: LAM_U57, child process should get disabled LAM mode\n",
++	},
++};
++
+ static void cmd_help(void)
+ {
+ 	printf("usage: lam [-h] [-t test list]\n");
+ 	printf("\t-t test list: run tests specified in the test list, default:0x%x\n", TEST_MASK);
+-	printf("\t\t0x1:malloc; 0x2:max_bits; 0x4:mmap; 0x8:syscall; 0x10:io_uring.\n");
++	printf("\t\t0x1:malloc; 0x2:max_bits; 0x4:mmap; 0x8:syscall; 0x10:io_uring; 0x20:inherit;\n");
+ 	printf("\t-h: help\n");
+ }
+ 
+@@ -748,7 +852,7 @@ int main(int argc, char **argv)
+ 		switch (c) {
+ 		case 't':
+ 			tests = strtoul(optarg, NULL, 16);
+-			if (!(tests & TEST_MASK)) {
++			if (tests && !(tests & TEST_MASK)) {
+ 				ksft_print_msg("Invalid argument!\n");
+ 				return -1;
  			}
+@@ -762,6 +866,16 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
++	/*
++	 * When tests is 0, it is not a real test case;
++	 * the option used by test case(execve) to check the lam mode in
++	 * process generated by execve, the process read back lam mode and
++	 * check with lam mode in parent process.
++	 */
++	if (!tests)
++		return (get_lam());
 +
- 			if ($needs_help &&
- 			    $help_length < $min_conf_desc_length) {
- 				my $stat_real = get_stat_real($linenr, $ln - 1);
++	/* Run test cases */
+ 	if (tests & FUNC_MALLOC)
+ 		run_test(malloc_cases, ARRAY_SIZE(malloc_cases));
+ 
+@@ -777,6 +891,9 @@ int main(int argc, char **argv)
+ 	if (tests & FUNC_URING)
+ 		run_test(uring_cases, ARRAY_SIZE(uring_cases));
+ 
++	if (tests & FUNC_INHERITE)
++		run_test(inheritance_cases, ARRAY_SIZE(inheritance_cases));
++
+ 	ksft_set_plan(tests_cnt);
+ 
+ 	return ksft_exit_pass();
 -- 
-2.37.1
+2.35.1
 
