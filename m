@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F187EC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C955EC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242984AbiHPApB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54972 "EHLO
+        id S1344654AbiHPApH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350945AbiHPAmL (ORCPT
+        with ESMTP id S241202AbiHPAmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:42:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE271907D8;
-        Mon, 15 Aug 2022 13:39:52 -0700 (PDT)
+        Mon, 15 Aug 2022 20:42:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF381741BE;
+        Mon, 15 Aug 2022 13:40:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4C24B80EA8;
-        Mon, 15 Aug 2022 20:39:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18480C433C1;
-        Mon, 15 Aug 2022 20:39:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5836F61224;
+        Mon, 15 Aug 2022 20:40:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D30CC4314C;
+        Mon, 15 Aug 2022 20:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595989;
-        bh=KpSNh/dqVBQh0z5ouk4urpIba6i7ncUAsCBAtiCQDtc=;
+        s=korg; t=1660596004;
+        bh=GdfkdpBvj9sVvCzK3S/OAsYWaO2ZIAXgSq0UY6mnc2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWuI8WVhoTFUl2ALgPYKT+9XMAtfnEGabpJHPiy8ey+3qd4+ZFNXFGiUP+CAPXPBJ
-         /qtH1c9KIe2RTKluan7iBkpCohhIPH3ALQUNzU/BH0LTo7tDOMKiyvnK89qGk73f8I
-         i4ZlOa3GJjChaI5cNqSd4AC+SNURZAVcxnP3fjGc=
+        b=wUJE3lzUg1C9J+gxSlsHxNAiHXlOwsfidrfY2LN/H7qP2nzOGQJyCYgCYVqC8D6kb
+         qan1A716miCSYetcnZFphZI56UCL2z5BnH/Rjg1ah3lcon3KuyDH0LZp9u63LkWMgH
+         tooCJPAm7IjQk0HmOWuUmBGVMnogYGgb3PcT5MnA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0905/1157] ASoC: codecs: wcd9335: move gains from SX_TLV to S8_TLV
-Date:   Mon, 15 Aug 2022 20:04:21 +0200
-Message-Id: <20220815180515.662578441@linuxfoundation.org>
+Subject: [PATCH 5.19 0944/1157] tty: n_gsm: fix DM command
+Date:   Mon, 15 Aug 2022 20:05:00 +0200
+Message-Id: <20220815180517.311889638@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,116 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 2fbe0953732e06b471cdedbf6f615b84235580d8 ]
+[ Upstream commit 18a948c7d90995d127785e308fa7b701df4c499f ]
 
-move all the digital gains form using SX_TLV to S8_TLV, these gains are
-actually 8 bit gains with 7th signed bit and ranges from -84dB to +40dB
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.3.3 defines the DM response. There exists
+no DM command. However, the current implementation incorrectly sends DM as
+command in case of unexpected UIH frames in gsm_queue().
+Correct this behavior by always sending DM as response.
 
-rest of the Qualcomm wcd codecs uses these properly.
-
-Fixes: 8c4f021d806a ("ASoC: wcd9335: add basic controls")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220609111901.318047-3-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220707113223.3685-2-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd9335.c | 81 +++++++++++++++++---------------------
- 1 file changed, 36 insertions(+), 45 deletions(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
-index 3cb7a3eab8c7..541ef1cd3b74 100644
---- a/sound/soc/codecs/wcd9335.c
-+++ b/sound/soc/codecs/wcd9335.c
-@@ -2264,51 +2264,42 @@ static int wcd9335_rx_hph_mode_put(struct snd_kcontrol *kc,
- 
- static const struct snd_kcontrol_new wcd9335_snd_controls[] = {
- 	/* -84dB min - 40dB max */
--	SOC_SINGLE_SX_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX2 Digital Volume", WCD9335_CDC_RX2_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX3 Digital Volume", WCD9335_CDC_RX3_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX4 Digital Volume", WCD9335_CDC_RX4_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX5 Digital Volume", WCD9335_CDC_RX5_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX6 Digital Volume", WCD9335_CDC_RX6_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX7 Digital Volume", WCD9335_CDC_RX7_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX8 Digital Volume", WCD9335_CDC_RX8_RX_VOL_CTL,
--		0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX0 Mix Digital Volume",
--			  WCD9335_CDC_RX0_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX1 Mix Digital Volume",
--			  WCD9335_CDC_RX1_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX2 Mix Digital Volume",
--			  WCD9335_CDC_RX2_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX3 Mix Digital Volume",
--			  WCD9335_CDC_RX3_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX4 Mix Digital Volume",
--			  WCD9335_CDC_RX4_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX5 Mix Digital Volume",
--			  WCD9335_CDC_RX5_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX6 Mix Digital Volume",
--			  WCD9335_CDC_RX6_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX7 Mix Digital Volume",
--			  WCD9335_CDC_RX7_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
--	SOC_SINGLE_SX_TLV("RX8 Mix Digital Volume",
--			  WCD9335_CDC_RX8_RX_VOL_MIX_CTL,
--			  0, -84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX2 Digital Volume", WCD9335_CDC_RX2_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX3 Digital Volume", WCD9335_CDC_RX3_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX4 Digital Volume", WCD9335_CDC_RX4_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX5 Digital Volume", WCD9335_CDC_RX5_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX6 Digital Volume", WCD9335_CDC_RX6_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX7 Digital Volume", WCD9335_CDC_RX7_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX8 Digital Volume", WCD9335_CDC_RX8_RX_VOL_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX0 Mix Digital Volume", WCD9335_CDC_RX0_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX1 Mix Digital Volume", WCD9335_CDC_RX1_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX2 Mix Digital Volume", WCD9335_CDC_RX2_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX3 Mix Digital Volume", WCD9335_CDC_RX3_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX4 Mix Digital Volume", WCD9335_CDC_RX4_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX5 Mix Digital Volume", WCD9335_CDC_RX5_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX6 Mix Digital Volume", WCD9335_CDC_RX6_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX7 Mix Digital Volume", WCD9335_CDC_RX7_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
-+	SOC_SINGLE_S8_TLV("RX8 Mix Digital Volume", WCD9335_CDC_RX8_RX_VOL_MIX_CTL,
-+			-84, 40, digital_gain),
- 	SOC_ENUM("RX INT0_1 HPF cut off", cf_int0_1_enum),
- 	SOC_ENUM("RX INT0_2 HPF cut off", cf_int0_2_enum),
- 	SOC_ENUM("RX INT1_1 HPF cut off", cf_int1_1_enum),
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 1a70e7ae90cc..90060018928f 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2207,7 +2207,7 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 	case UIH:
+ 	case UIH|PF:
+ 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
+-			gsm_command(gsm, address, DM|PF);
++			gsm_response(gsm, address, DM|PF);
+ 			return;
+ 		}
+ 		dlci->data(dlci, gsm->buf, gsm->len);
 -- 
 2.35.1
 
