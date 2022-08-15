@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC4FC25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 326ABC28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233610AbiHOXAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
+        id S1352706AbiHOXA7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245438AbiHOW6x (ORCPT
+        with ESMTP id S1352498AbiHOW6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE75E46DAA;
-        Mon, 15 Aug 2022 12:57:05 -0700 (PDT)
+        Mon, 15 Aug 2022 18:58:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B76753A5;
+        Mon, 15 Aug 2022 12:56:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BD76612A4;
-        Mon, 15 Aug 2022 19:57:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699F3C433C1;
-        Mon, 15 Aug 2022 19:57:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E706FB80EAB;
+        Mon, 15 Aug 2022 19:56:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C502C433D6;
+        Mon, 15 Aug 2022 19:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593424;
-        bh=Mt7AGGcZfiDtZCpqwjCJ+SIH9BMtPjFp1JhQA7qDVTk=;
+        s=korg; t=1660593400;
+        bh=3VMOY1GIzG84TNdxUoN6x/6r5qDozNuhj9Tyb45A5WA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VqZvtZgDelkAtKmEH9wBRNm6W4CETkCeK06SIhKwARIlBuHPUHadGTn4xcICdoG41
-         nVpU3YmPjdKQQRNQ/3m0LjBUq+X8O+mOk1WR9ZI0y+IK2E6OoAH/Jp+EuiiVcrAh6P
-         mzaPJ/HMZA7SB5yY4QVM58brT9rDp5SP5n6gXIGI=
+        b=eXPcRw+pfBf8fbPpyFG1GtIdWfSxf4d0vWa5oulyTHrjR+ZDDG2t508tO/WoZy99m
+         GuapKGai4Ldvk4ujT4ufPqqhJAM9SeB/8cpsei0caGqIlhPyvfGLz4gZh1SKmIJP3V
+         mMDUwNIdnbHD0jedbwzMyC8773zGG4H4SK79xq40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0944/1095] scripts/faddr2line: Fix vmlinux detection on arm64
-Date:   Mon, 15 Aug 2022 20:05:43 +0200
-Message-Id: <20220815180508.218799444@linuxfoundation.org>
+        stable@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>,
+        Yousaf Kaukab <ykaukab@suse.de>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0262/1157] arm64: tegra: Mark BPMP channels as no-memory-wc
+Date:   Mon, 15 Aug 2022 19:53:38 +0200
+Message-Id: <20220815180450.055258047@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,45 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Mikko Perttunen <mperttunen@nvidia.com>
 
-[ Upstream commit b6a5068854cfe372da7dee3224dcf023ed5b00cb ]
+[ Upstream commit 61192a9d8a6367ae1b8234876941b037910a2459 ]
 
-Since commit dcea997beed6 ("faddr2line: Fix overlapping text section
-failures, the sequel"), faddr2line is completely broken on arm64.
+The Tegra SYSRAM contains regions access to which is restricted to
+certain hardware blocks on the system, and speculative accesses to
+those will cause issues.
 
-For some reason, on arm64, the vmlinux ELF object file type is ET_DYN
-rather than ET_EXEC.  Check for both when determining whether the object
-is vmlinux.
+Patch 'misc: sram: Only map reserved areas in Tegra SYSRAM' attempted
+to resolve this by only mapping the regions specified in the device
+tree on the assumption that there are no such restricted areas within
+the 64K-aligned area of memory that contains the memory we wish to map.
 
-Modules and vmlinux.o have type ET_REL on all arches.
+Turns out this assumption is wrong, as there are such areas above the
+4K pages described in the device trees. As such, we need to use the
+bigger hammer that is no-memory-wc, which causes the memory to be
+mapped as Device memory to which speculative accesses are disallowed.
 
-Fixes: dcea997beed6 ("faddr2line: Fix overlapping text section failures, the sequel")
-Reported-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Tested-by: John Garry <john.garry@huawei.com>
-Link: https://lore.kernel.org/r/dad1999737471b06d6188ce4cdb11329aa41682c.1658426357.git.jpoimboe@kernel.org
+As such, the previous patch in the series,
+  'firmware: tegra: bpmp: do only aligned access to IPC memory area',
+is required with this patch to make the BPMP driver only issue aligned
+memory accesses as those are also required with Device memory.
+
+Fixes: fec29bf04994 ("misc: sram: Only map reserved areas in Tegra SYSRAM")
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+Reviewed-by: Yousaf Kaukab <ykaukab@suse.de>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/faddr2line | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 1 +
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi | 1 +
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 94ed98dd899f..57099687e5e1 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -112,7 +112,9 @@ __faddr2line() {
- 	# section offsets.
- 	local file_type=$(${READELF} --file-header $objfile |
- 		${AWK} '$1 == "Type:" { print $2; exit }')
--	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+	if [[ $file_type = "EXEC" ]] || [[ $file_type == "DYN" ]]; then
-+		is_vmlinux=1
-+	fi
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index 0e9afc3e2f26..9eca18b54698 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -1820,6 +1820,7 @@ sram@30000000 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges = <0x0 0x0 0x30000000 0x50000>;
++		no-memory-wc;
  
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
+ 		cpu_bpmp_tx: sram@4e000 {
+ 			reg = <0x4e000 0x1000>;
+diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+index d1f8248c00f4..3fdb0b852718 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+@@ -2684,6 +2684,7 @@ sram@40000000 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges = <0x0 0x0 0x40000000 0x50000>;
++		no-memory-wc;
+ 
+ 		cpu_bpmp_tx: sram@4e000 {
+ 			reg = <0x4e000 0x1000>;
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+index cb3af539e477..0213a7e3dad0 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+@@ -1325,6 +1325,7 @@ sram@40000000 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges = <0x0 0x0 0x40000000 0x80000>;
++		no-memory-wc;
+ 
+ 		cpu_bpmp_tx: sram@70000 {
+ 			reg = <0x70000 0x1000>;
 -- 
 2.35.1
 
