@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC9AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A524C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343883AbiHOVyg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
+        id S243495AbiHOVyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350530AbiHOVvd (ORCPT
+        with ESMTP id S1350534AbiHOVve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:51:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE7C106F9C;
-        Mon, 15 Aug 2022 12:32:59 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB8F106F97;
+        Mon, 15 Aug 2022 12:33:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4D03B80EAD;
-        Mon, 15 Aug 2022 19:32:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A4D8C433D6;
-        Mon, 15 Aug 2022 19:32:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 338F36115A;
+        Mon, 15 Aug 2022 19:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0A3C433C1;
+        Mon, 15 Aug 2022 19:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591976;
-        bh=ydOSK1Hk0GTmHTcy6hWBPyLZP1ki0L2m1F1ee9yKE8g=;
+        s=korg; t=1660591979;
+        bh=reaCaFSvJsZu7N/qYI/xflIODqPJK6dLRIETjCF7GMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zaS2zQCmBPFsosTLDAYZIvsTO2qG8M91OyshRuDXxyAmKvjjyqlJTtHmYV9tivHCR
-         ZOoY/lbJe2RFxTPqOzmOtyaA+WVyw8ZGGQ7MuNwUXJ/UQIPMgbSJPOC49DKzDYWhEe
-         IiA41ppL3Wae+dD9z/J/EXdCN1ZubEPanA5M147I=
+        b=i0TqItxlElUtjLey9HZVbY/jcGPSIU6qU78oUXfSyQmhdt4HpTzFAKmYGC7oQmfYz
+         lXG2gDUGCsBTx76ZM48t8XxbtPZNWMNoebJ+jsfzPMSNmkKgXhqdiJIwii6EZn3tZn
+         xyWj6P7AASHQ9NFRgsmlPQT/NMwuSI500GD31VIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0039/1157] KVM: SVM: Disable SEV-ES support if MMIO caching is disable
-Date:   Mon, 15 Aug 2022 19:49:55 +0200
-Message-Id: <20220815180440.997426890@linuxfoundation.org>
+        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0713/1095] clk: qcom: clk-rcg2: Make sure to not write d=0 to the NMD register
+Date:   Mon, 15 Aug 2022 20:01:52 +0200
+Message-Id: <20220815180458.895291883@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,118 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Nikita Travkin <nikita@trvn.ru>
 
-commit 0c29397ac1fdd64ae59941a477511a05e61a4754 upstream.
+[ Upstream commit d0696770cef35a1fd16ea2167e2198c18aa6fbfe ]
 
-Disable SEV-ES if MMIO caching is disabled as SEV-ES relies on MMIO SPTEs
-generating #NPF(RSVD), which are reflected by the CPU into the guest as
-a #VC.  With SEV-ES, the untrusted host, a.k.a. KVM, doesn't have access
-to the guest instruction stream or register state and so can't directly
-emulate in response to a #NPF on an emulated MMIO GPA.  Disabling MMIO
-caching means guest accesses to emulated MMIO ranges cause #NPF(!PRESENT),
-and those flavors of #NPF cause automatic VM-Exits, not #VC.
+Sometimes calculation of d value may result in 0 because of the
+rounding after integer division. This causes the following error:
 
-Adjust KVM's MMIO masks to account for the C-bit location prior to doing
-SEV(-ES) setup, and document that dependency between adjusting the MMIO
-SPTE mask and SEV(-ES) setup.
+[  113.969689] camss_gp1_clk_src: rcg didn't update its configuration.
+[  113.969754] WARNING: CPU: 3 PID: 35 at drivers/clk/qcom/clk-rcg2.c:122 update_config+0xc8/0xdc
 
-Fixes: b09763da4dd8 ("KVM: x86/mmu: Add module param to disable MMIO caching (for testing)")
-Reported-by: Michael Roth <michael.roth@amd.com>
-Tested-by: Michael Roth <michael.roth@amd.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220803224957.1285926-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Make sure that D value is never zero.
+
+Fixes: 7f891faf596e ("clk: qcom: clk-rcg2: Add support for duty-cycle for RCG")
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220612145955.385787-3-nikita@trvn.ru
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu.h      |    2 ++
- arch/x86/kvm/mmu/spte.c |    1 +
- arch/x86/kvm/mmu/spte.h |    2 --
- arch/x86/kvm/svm/sev.c  |   10 ++++++++++
- arch/x86/kvm/svm/svm.c  |    9 ++++++---
- 5 files changed, 19 insertions(+), 5 deletions(-)
+ drivers/clk/qcom/clk-rcg2.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -11,6 +11,8 @@
- #define PT32_PT_BITS 10
- #define PT32_ENT_PER_PAGE (1 << PT32_PT_BITS)
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index 9611c9a7231f..caafc35eecfd 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -13,6 +13,7 @@
+ #include <linux/rational.h>
+ #include <linux/regmap.h>
+ #include <linux/math64.h>
++#include <linux/minmax.h>
+ #include <linux/slab.h>
  
-+extern bool __read_mostly enable_mmio_caching;
-+
- #define PT_WRITABLE_SHIFT 1
- #define PT_USER_SHIFT 2
+ #include <asm/div64.h>
+@@ -429,9 +430,11 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
+ 	/* Calculate 2d value */
+ 	d = DIV_ROUND_CLOSEST(n * duty_per * 2, 100);
  
---- a/arch/x86/kvm/mmu/spte.c
-+++ b/arch/x86/kvm/mmu/spte.c
-@@ -21,6 +21,7 @@
- 
- bool __read_mostly enable_mmio_caching = true;
- module_param_named(mmio_caching, enable_mmio_caching, bool, 0444);
-+EXPORT_SYMBOL_GPL(enable_mmio_caching);
- 
- u64 __read_mostly shadow_host_writable_mask;
- u64 __read_mostly shadow_mmu_writable_mask;
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -5,8 +5,6 @@
- 
- #include "mmu_internal.h"
- 
--extern bool __read_mostly enable_mmio_caching;
--
- /*
-  * A MMU present SPTE is backed by actual memory and may or may not be present
-  * in hardware.  E.g. MMIO SPTEs are not considered present.  Use bit 11, as it
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -22,6 +22,7 @@
- #include <asm/trapnr.h>
- #include <asm/fpu/xcr.h>
- 
-+#include "mmu.h"
- #include "x86.h"
- #include "svm.h"
- #include "svm_ops.h"
-@@ -2221,6 +2222,15 @@ void __init sev_hardware_setup(void)
- 	if (!sev_es_enabled)
- 		goto out;
- 
+-	 /* Check bit widths of 2d. If D is too big reduce duty cycle. */
+-	if (d > mask)
+-		d = mask;
 +	/*
-+	 * SEV-ES requires MMIO caching as KVM doesn't have access to the guest
-+	 * instruction stream, i.e. can't emulate in response to a #NPF and
-+	 * instead relies on #NPF(RSVD) being reflected into the guest as #VC
-+	 * (the guest can then do a #VMGEXIT to request MMIO emulation).
++	 * Check bit widths of 2d. If D is too big reduce duty cycle.
++	 * Also make sure it is never zero.
 +	 */
-+	if (!enable_mmio_caching)
-+		goto out;
-+
- 	/* Does the CPU support SEV-ES? */
- 	if (!boot_cpu_has(X86_FEATURE_SEV_ES))
- 		goto out;
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4897,13 +4897,16 @@ static __init int svm_hardware_setup(voi
- 	/* Setup shadow_me_value and shadow_me_mask */
- 	kvm_mmu_set_me_spte_mask(sme_me_mask, sme_me_mask);
++	d = clamp_val(d, 1, mask);
  
--	/* Note, SEV setup consumes npt_enabled. */
-+	svm_adjust_mmio_mask();
-+
-+	/*
-+	 * Note, SEV setup consumes npt_enabled and enable_mmio_caching (which
-+	 * may be modified by svm_adjust_mmio_mask()).
-+	 */
- 	sev_hardware_setup();
- 
- 	svm_hv_hardware_setup();
- 
--	svm_adjust_mmio_mask();
--
- 	for_each_possible_cpu(cpu) {
- 		r = svm_cpu_init(cpu);
- 		if (r)
+ 	if ((d / 2) > (n - m))
+ 		d = (n - m) * 2;
+-- 
+2.35.1
+
 
 
