@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EE2C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBD1C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349999AbiHOWfB (ORCPT
+        id S1350038AbiHOWfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
+        Mon, 15 Aug 2022 18:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351059AbiHOW1b (ORCPT
+        with ESMTP id S1351071AbiHOW1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:27:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99193422DE;
-        Mon, 15 Aug 2022 12:46:38 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CC8422CF;
+        Mon, 15 Aug 2022 12:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DAD26122B;
-        Mon, 15 Aug 2022 19:46:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 184BAC433C1;
-        Mon, 15 Aug 2022 19:46:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7342E6068D;
+        Mon, 15 Aug 2022 19:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C53AC433D6;
+        Mon, 15 Aug 2022 19:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592797;
-        bh=WX3GrhU3cMELvExJ8uFidpuIGUve/uH3dcx+G+aVKes=;
+        s=korg; t=1660592813;
+        bh=HopU/MPTRkH9+3zqqnsjOGCkMfvViXYpGAFABHbxMj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FRtp7jtRvoW2BHyq+Izq8SNzbEdfQvN+fUx1PxxOIQUIh+p2naNpDX52zJzSaHlHv
-         L/ImMU+7aUoGfvKKAwGZ+fwrjW1ZJuGylY8cLysZ8TRyXjj3zlEOjLVr/Yviz0iurR
-         E0BPuwMj1CIJATAJBrIAglTOrk9MWaC/E3NLXy+M=
+        b=ABJ2PsAE2BrZ4BSp4hhV9zTJy9j4cayxNfyaFW95fWjMqut/Nqf+uhHq3AtShz5zP
+         rFFPJrFsUVFIHtHxAfUHwMndEF37opGZMLxZghcZpeYbc7on+Y7Kciz5ufT+Fmw/TU
+         ouHpwaVCNq68JDKUsUVdysDKEBmtjKaUEtUW0HY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0846/1095] selftests/powerpc: Skip energy_scale_info test on older firmware
-Date:   Mon, 15 Aug 2022 20:04:05 +0200
-Message-Id: <20220815180504.336731512@linuxfoundation.org>
+Subject: [PATCH 5.19 0168/1157] ARM: dts: imx6ul: fix qspi node compatible
+Date:   Mon, 15 Aug 2022 19:52:04 +0200
+Message-Id: <20220815180446.441091529@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,102 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 4228a996b072d36f3baafb4afdc2d2d66d2cbadf ]
+[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
 
-Older machines don't have the firmware feature that enables the code
-this test is testing. Skip the test if the sysfs directory doesn't
-exist. Also use the FAIL_IF() macro to provide more verbose error
-reporting if an error is encountered.
+imx6ul is not compatible to imx6sx, both have different erratas.
+Fixes the dt_binding_check warning:
+spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
+Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
+'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
+'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
+'fsl,ls1021a-qspi' was expected
+'fsl,imx7d-qspi' was expected
 
-Fixes: 57201d657eb7 ("selftest/powerpc: Add PAPR sysfs attributes sniff test")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220619233103.2666171-1-mpe@ellerman.id.au
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../powerpc/papr_attributes/attr_test.c       | 30 +++++++++++--------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/powerpc/papr_attributes/attr_test.c b/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
-index bab0dc06e90b..9b655be641c9 100644
---- a/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
-+++ b/tools/testing/selftests/powerpc/papr_attributes/attr_test.c
-@@ -7,6 +7,7 @@
-  * Copyright 2022, Pratik Rajesh Sampat, IBM Corp.
-  */
- 
-+#include <errno.h>
- #include <stdio.h>
- #include <string.h>
- #include <dirent.h>
-@@ -32,7 +33,7 @@ enum type {
- 	NUM_VAL
- };
- 
--int value_type(int id)
-+static int value_type(int id)
- {
- 	int val_type;
- 
-@@ -54,15 +55,21 @@ int value_type(int id)
- 	return val_type;
- }
- 
--int verify_energy_info(void)
-+static int verify_energy_info(void)
- {
- 	const char *path = "/sys/firmware/papr/energy_scale_info";
- 	struct dirent *entry;
- 	struct stat s;
- 	DIR *dirp;
- 
--	if (stat(path, &s) || !S_ISDIR(s.st_mode))
--		return -1;
-+	errno = 0;
-+	if (stat(path, &s)) {
-+		SKIP_IF(errno == ENOENT);
-+		FAIL_IF(errno);
-+	}
-+
-+	FAIL_IF(!S_ISDIR(s.st_mode));
-+
- 	dirp = opendir(path);
- 
- 	while ((entry = readdir(dirp)) != NULL) {
-@@ -76,25 +83,24 @@ int verify_energy_info(void)
- 
- 		id = atoi(entry->d_name);
- 		attr_type = value_type(id);
--		if (attr_type == INVALID)
--			return -1;
-+		FAIL_IF(attr_type == INVALID);
- 
- 		/* Check if the files exist and have data in them */
- 		sprintf(file_name, "%s/%d/desc", path, id);
- 		f = fopen(file_name, "r");
--		if (!f || fgetc(f) == EOF)
--			return -1;
-+		FAIL_IF(!f);
-+		FAIL_IF(fgetc(f) == EOF);
- 
- 		sprintf(file_name, "%s/%d/value", path, id);
- 		f = fopen(file_name, "r");
--		if (!f || fgetc(f) == EOF)
--			return -1;
-+		FAIL_IF(!f);
-+		FAIL_IF(fgetc(f) == EOF);
- 
- 		if (attr_type == STR_VAL) {
- 			sprintf(file_name, "%s/%d/value_desc", path, id);
- 			f = fopen(file_name, "r");
--			if (!f || fgetc(f) == EOF)
--				return -1;
-+			FAIL_IF(!f);
-+			FAIL_IF(fgetc(f) == EOF);
- 		}
- 	}
- 
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index bc6548058d8c..eca8bf89ab88 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -1029,7 +1029,7 @@ pxp: pxp@21cc000 {
+ 			qspi: spi@21e0000 {
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
++				compatible = "fsl,imx6ul-qspi";
+ 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
+ 				reg-names = "QuadSPI", "QuadSPI-memory";
+ 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.35.1
 
