@@ -2,96 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D16BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3E3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244310AbiHOSxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        id S244318AbiHOSxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232896AbiHOSs2 (ORCPT
+        with ESMTP id S243618AbiHOSs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:48:28 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC3F42AE6
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:41 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id c185so9418100oia.7
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:28:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=xr6JHD6AFlrXJM6hu6thcV+Az5D3BSvwhjamyNOLK2U=;
-        b=ZL6j2aZKnPT9BzOcJXtmGblq+Cr4dfi/Nv9LSagWsbWX1e4NdbYHodjiedJL70lrR9
-         IQQap1hMa3NR0CwTrdB1Wf42NhJ/kfhJcATdkjdgjcruyhjVBaHrXyaNcQppJ1Li2kQb
-         JE0ye0LdvPw69kByyeqX4ASHgTEnred0IXglQPommePBsHtGhcL4e2s8ro5YPmvxmN3/
-         D2V9b+2BA4s5wGQyfKgceRV9sjm3k9MBN1lWTI/q4jk3HNlYxsmutp55rRKkPa51qQ/0
-         Uu5yMgpCmDioN8eDLnwDa4mRm5ld+CdNaYNUkjSdAKj2mBs4dEaBNx6p8Akae0KHGEY7
-         kgdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=xr6JHD6AFlrXJM6hu6thcV+Az5D3BSvwhjamyNOLK2U=;
-        b=A2QWZ/rALA1BVa7mdNRopBeR/ynrPI8w2Yflv1vIa/kaesVK9U0HgvbLY5ZkCZ+/Xp
-         TQq1PITy8ZjROQq3XpKde8+U5Hq/DlH88fRnViZSXjClKWNhXkrqmUPGTmBqbekkIYc5
-         +SGW27e+y6tmZdtxbfI6m17gaVh1nhjPfff0tBOTNLiP52LDPhL4F6HvuJ84r2NiKK7w
-         JSRvbqvpCbii324YOKNInIrIgJtTt92GFE/4cb8zOxFpnyNZD6l2ikpVBMcGPOPYALxp
-         iLH6COn3CbzuiWlDS3t6rv30m9W0dsuY7soaywxhY4RF3c3kUXSMRhXXhiusvwujOjmH
-         U7Xw==
-X-Gm-Message-State: ACgBeo0TAIN4EN/0935NfFJ9hSQvZipMij04yZTH19kZPpkBEQwuPFT8
-        pNqkpl68eMaEVO4kGjfCQ56tqHVmz+j5tmH6It5A9g==
-X-Google-Smtp-Source: AA6agR4v3x1WhnxjKeasF3bXPDPg2zd7s5kes2dQkr2E98b6hUIgSzGyPCj88i2ddzks+sDf7pzB6zRpG9Hi7SrPdxs=
-X-Received: by 2002:a05:6808:1c06:b0:33a:9b3b:b3ce with SMTP id
- ch6-20020a0568081c0600b0033a9b3bb3cemr7429087oib.53.1660588120827; Mon, 15
- Aug 2022 11:28:40 -0700 (PDT)
+        Mon, 15 Aug 2022 14:48:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B172131DF2;
+        Mon, 15 Aug 2022 11:28:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B343160FD0;
+        Mon, 15 Aug 2022 18:28:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA244C433C1;
+        Mon, 15 Aug 2022 18:28:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588121;
+        bh=KcEV8SKvsjL468XkPQvCHNAT9nTCGEg25sQJaScv6vE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UeCv0/Ekv/Wrz3UWBkSg0TUZjqUGEE9gJsfnWbfzWvHBx46r+DkiDwkTrC0r8bUKG
+         DlU55Z36BroX5owM5VJTsizMMipA2gcQkh3WPBFafr9jX9YXwg+swvppC++qzBHNVi
+         BNE7N/ct3yVWg14QDZLd/Vaa9fvAIfaCex1xAZAU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 302/779] drm/vc4: dsi: Register dsi0 as the correct vc4 encoder type
+Date:   Mon, 15 Aug 2022 19:59:06 +0200
+Message-Id: <20220815180350.197867110@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220727164202.385531-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220727164202.385531-1-krzysztof.kozlowski@linaro.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 15 Aug 2022 20:27:58 +0200
-Message-ID: <CAPDyKFoDNkLk_FLuYRSdGVmCK809v8m_R_tLbgTTRP5tfaz08A@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mmc: mmc-spi-slot: drop unneeded spi-max-frequency
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 at 18:42, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> spi-max-frequency comes from spi-peripheral-props.yaml.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-Applied for next, thanks!
+[ Upstream commit 4d9273c978d4c1af15d7874c10c732ec83d444d0 ]
 
-Kind regards
-Uffe
+vc4_dsi was registering both dsi0 and dsi1 as VC4_ENCODER_TYPE_DSI1
+which seemed to work OK for a single DSI display, but fails
+if there are two DSI displays connected.
+
+Update to register the correct type.
+
+Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-15-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/vc4/vc4_dsi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 81a6c4e9576d..97a258c934af 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -1518,7 +1518,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 		return -ENOMEM;
+ 
+ 	INIT_LIST_HEAD(&dsi->bridge_chain);
+-	vc4_dsi_encoder->base.type = VC4_ENCODER_TYPE_DSI1;
++	vc4_dsi_encoder->base.type = dsi->variant->port ?
++			VC4_ENCODER_TYPE_DSI1 : VC4_ENCODER_TYPE_DSI0;
+ 	vc4_dsi_encoder->dsi = dsi;
+ 	dsi->encoder = &vc4_dsi_encoder->base.base;
+ 
+-- 
+2.35.1
 
 
-> ---
->  Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml | 2 --
->  1 file changed, 2 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
-> index c45b91099325..c0662ce9946d 100644
-> --- a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
-> @@ -23,8 +23,6 @@ properties:
->    reg:
->      maxItems: 1
->
-> -  spi-max-frequency: true
-> -
->    interrupts:
->      maxItems: 1
->
-> --
-> 2.34.1
->
+
