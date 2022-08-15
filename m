@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBEBC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD966C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343566AbiHOXPd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        id S233619AbiHOXRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244510AbiHOXOX (ORCPT
+        with ESMTP id S245338AbiHOXOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:14:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4815C7B1E4;
-        Mon, 15 Aug 2022 13:01:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE9C12F71D;
+        Mon, 15 Aug 2022 13:01:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1D6FB80EAD;
-        Mon, 15 Aug 2022 20:01:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D6EC433D6;
-        Mon, 15 Aug 2022 20:01:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3865061299;
+        Mon, 15 Aug 2022 20:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBBCC433D7;
+        Mon, 15 Aug 2022 20:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593675;
-        bh=RFuo3WxZHd0czDWPWQq5UQkkkavjlJKyFlZDppA2rJU=;
+        s=korg; t=1660593678;
+        bh=wkCfAnjFsSmxAg0uM9KGph7C/w9NhuQf22vBGcpc4qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ye9a+lfIbFO4FCFcltTrjeGwHIaGb0aIYlYpzT+Zob/RDvck4G/yNvK9ZYwqdH/Sg
-         rKDhKBmxEQ9BmPUjXQToNftxIaBqvdzpQs1clGyjKtaQcML0R0u4zBSsgfErbRJ6mX
-         2mluBBiv8Paz5VDJovcfH0ZP1urCCSlN6VHnF80o=
+        b=dAzbwj8la92tG6qAHHRbiWnKA2d5KJr0eel5r/T96EanhMR8Veu/GFX7Qp9ZAybKL
+         i1Hw6I7+yjZ+PidYt1R1jmTsbSfpxwGrYG1e7NJxVBu5wEtKkWK1ibuDohnaNtGQAg
+         GuulmSygY7yIG2tc+QHYGfa6PGwZYgRjrqt6KGuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: [PATCH 5.18 0985/1095] usbnet: smsc95xx: Dont clear read-only PHY interrupt
-Date:   Mon, 15 Aug 2022 20:06:24 +0200
-Message-Id: <20220815180509.873447422@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0306/1157] drm/i915: remove unused GEM_DEBUG_DECL() and GEM_DEBUG_BUG_ON()
+Date:   Mon, 15 Aug 2022 19:54:22 +0200
+Message-Id: <20220815180451.900305479@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,49 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit 3108871f19221372b251f7da1ac38736928b5b3a ]
+[ Upstream commit 1b93ff4d0679190e8812cd0d0b3aebfcba1ed883 ]
 
-Upon receiving data from the Interrupt Endpoint, the SMSC LAN95xx driver
-attempts to clear the signaled interrupts by writing "all ones" to the
-Interrupt Status Register.
+There are already too many choices here, take away the unused ones.
 
-However the driver only ever enables a single type of interrupt, namely
-the PHY Interrupt.  And according to page 119 of the LAN950x datasheet,
-its bit in the Interrupt Status Register is read-only.  There's no other
-way to clear it than in a separate PHY register:
-
-https://www.microchip.com/content/dam/mchp/documents/UNG/ProductDocuments/DataSheets/LAN950x-Data-Sheet-DS00001875D.pdf
-
-Consequently, writing "all ones" to the Interrupt Status Register is
-pointless and can be dropped.
-
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220504183716.987793-1-jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/smsc95xx.c | 4 ----
+ drivers/gpu/drm/i915/i915_gem.h | 4 ----
  1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index edf0492ad489..2cb44d65bbc3 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -572,10 +572,6 @@ static int smsc95xx_link_reset(struct usbnet *dev)
- 	unsigned long flags;
- 	int ret;
+diff --git a/drivers/gpu/drm/i915/i915_gem.h b/drivers/gpu/drm/i915/i915_gem.h
+index d0752e5553db..b7b257f54d2e 100644
+--- a/drivers/gpu/drm/i915/i915_gem.h
++++ b/drivers/gpu/drm/i915/i915_gem.h
+@@ -54,9 +54,7 @@ struct drm_i915_private;
+ 	} while(0)
+ #define GEM_WARN_ON(expr) WARN_ON(expr)
  
--	ret = smsc95xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL_);
--	if (ret < 0)
--		return ret;
--
- 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
- 	if (pdata->phydev->duplex != DUPLEX_FULL) {
- 		pdata->mac_cr &= ~MAC_CR_FDPX_;
+-#define GEM_DEBUG_DECL(var) var
+ #define GEM_DEBUG_EXEC(expr) expr
+-#define GEM_DEBUG_BUG_ON(expr) GEM_BUG_ON(expr)
+ #define GEM_DEBUG_WARN_ON(expr) GEM_WARN_ON(expr)
+ 
+ #else
+@@ -66,9 +64,7 @@ struct drm_i915_private;
+ #define GEM_BUG_ON(expr) BUILD_BUG_ON_INVALID(expr)
+ #define GEM_WARN_ON(expr) ({ unlikely(!!(expr)); })
+ 
+-#define GEM_DEBUG_DECL(var)
+ #define GEM_DEBUG_EXEC(expr) do { } while (0)
+-#define GEM_DEBUG_BUG_ON(expr)
+ #define GEM_DEBUG_WARN_ON(expr) ({ BUILD_BUG_ON_INVALID(expr); 0; })
+ #endif
+ 
 -- 
 2.35.1
 
