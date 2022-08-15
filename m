@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3A3C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9CCC25B0E
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346533AbiHOUUg (ORCPT
+        id S1346574AbiHOUUm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
+        Mon, 15 Aug 2022 16:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344832AbiHOUJo (ORCPT
+        with ESMTP id S1346373AbiHOULP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FA72705;
-        Mon, 15 Aug 2022 11:56:13 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBD42B63D;
+        Mon, 15 Aug 2022 11:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20E876125B;
-        Mon, 15 Aug 2022 18:56:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12D3DC433C1;
-        Mon, 15 Aug 2022 18:56:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B01AFB810CC;
+        Mon, 15 Aug 2022 18:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA187C433C1;
+        Mon, 15 Aug 2022 18:57:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589772;
-        bh=vojduCioZU72AP6BPNWFv/LPak1ZFP+99zslQ2g/d1I=;
+        s=korg; t=1660589854;
+        bh=MqXDXlZKe82M+ZSR3HvDR2TXSZqOQYNlIWIzz4zgi5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cz4b/OhWC1sH5Xsa9C13Si3QrSe47usrNhbWqX6Z53ulJ7/1R00e/VLJssV+NxfKo
-         oYSPR6JkfOxfw00asrI+DYoOqgU1CUvusILFbBYrYK+iRxHr8E9C5dLC9II808VE7w
-         befD0/6wPCNf4lRvuNjlqYgzSPpmCkAXYqjAkXRg=
+        b=OYN4Cuqjz/HC3wkXNBs6lCKviGkRpsKrBw+4ftuqkq1qb3QNRPqDE4iGRToKRPG9R
+         p457fbm/1PEMtoLKsNtys19u4xyfSIPrrq+z14R3jHamm1/h8c4HvqdR7SUIiUCz8P
+         lkOMLyAKIvsp2/RRKUg0PYs+lBHT33AnC4aKj2iI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 0044/1095] ALSA: hda/realtek: Add quirk for another Asus K42JZ model
-Date:   Mon, 15 Aug 2022 19:50:43 +0200
-Message-Id: <20220815180431.275083033@linuxfoundation.org>
+        stable@vger.kernel.org, Atul Khare <atulkhare@rivosinc.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 0062/1095] dt-bindings: riscv: fix SiFive l2-caches cache-sets
+Date:   Mon, 15 Aug 2022 19:51:01 +0200
+Message-Id: <20220815180432.066936189@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,56 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-commit f882c4bef9cb914d9f7be171afb10ed26536bfa7 upstream.
+commit b60cf8e59e61133b6c9514ff8d8c8d7049d040ef upstream.
 
-There is another Asus K42JZ model with the PCI SSID 1043:1313
-that requires the quirk ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE.
-Add the corresponding entry to the quirk table.
+Fix device tree schema validation error messages for the SiFive
+Unmatched: ' cache-sets:0:0: 1024 was expected'.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220805074534.20003-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The existing bindings allow for just 1024 cache-sets but the fu740 on
+Unmatched the has 2048 cache-sets. The ISA itself permits any arbitrary
+power of two, however this is not supported by dt-schema. The RTL for
+the IP, to which the number of cache-sets is a tunable parameter, has
+been released publicly so speculatively adding a small number of
+"reasonable" values seems unwise also.
+
+Instead, as the binding only supports two distinct controllers: add 2048
+and explicitly lock it to the fu740's l2 cache while limiting 1024 to
+the l2 cache on the fu540.
+
+Fixes: af951c3a113b ("dt-bindings: riscv: Update l2 cache DT documentation to add support for SiFive FU740")
+Reported-by: Atul Khare <atulkhare@rivosinc.com>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220803185359.942928-1-mail@conchuod.ie
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6931,6 +6931,7 @@ enum {
- 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST,
- 	ALC269VB_FIXUP_ASUS_ZENBOOK,
- 	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
-+	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
- 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
- 	ALC269VB_FIXUP_ORDISSIMO_EVE2,
- 	ALC283_FIXUP_CHROME_BOOK,
-@@ -7518,6 +7519,15 @@ static const struct hda_fixup alc269_fix
- 		.chained = true,
- 		.chain_id = ALC269VB_FIXUP_ASUS_ZENBOOK,
- 	},
-+	[ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x18, 0x01a110f0 },  /* use as headset mic */
-+			{ }
-+		},
-+		.chained = true,
-+		.chain_id = ALC269_FIXUP_HEADSET_MIC
-+	},
- 	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -9289,6 +9299,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
- 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
+--- a/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
++++ b/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
+@@ -46,7 +46,7 @@ properties:
+     const: 2
+ 
+   cache-sets:
+-    const: 1024
++    enum: [1024, 2048]
+ 
+   cache-size:
+     const: 2097152
+@@ -84,6 +84,8 @@ then:
+       description: |
+         Must contain entries for DirError, DataError and DataFail signals.
+       maxItems: 3
++    cache-sets:
++      const: 1024
+ 
+ else:
+   properties:
+@@ -91,6 +93,8 @@ else:
+       description: |
+         Must contain entries for DirError, DataError, DataFail, DirFail signals.
+       minItems: 4
++    cache-sets:
++      const: 2048
+ 
+ additionalProperties: false
+ 
 
 
