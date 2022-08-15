@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C9AC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 354ACC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238802AbiHOSSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58070 "EHLO
+        id S239052AbiHOSS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239614AbiHOSRm (ORCPT
+        with ESMTP id S233440AbiHOSRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:17:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5435FAF;
-        Mon, 15 Aug 2022 11:15:21 -0700 (PDT)
+        Mon, 15 Aug 2022 14:17:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA8963D2;
+        Mon, 15 Aug 2022 11:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88C33B81071;
-        Mon, 15 Aug 2022 18:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A67AC433C1;
-        Mon, 15 Aug 2022 18:15:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A45B36126D;
+        Mon, 15 Aug 2022 18:15:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC0BCC43470;
+        Mon, 15 Aug 2022 18:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587318;
-        bh=nWz37meKbo+peJBGyeJLJsBcFELwh28xHN20ySPVPcE=;
+        s=korg; t=1660587321;
+        bh=C79IPGE5RKdYaI2Cy2l1oWgppbgDJepX/3dxzUK2F18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JUOvG7P0BR8lrTWetxrjJpj9bmbo2C70mPXAdkwIn7pyVu37UkJXnyMrgOfgAIc4x
-         85IvsGgZOxJkEyhpLDbnXprhMxGK7WbMMfnOg9YMXSgORCMT/v59kpjF8GM8QtHKAU
-         J0K287lnJSrIGB2KUzlEunPCtttgtMSZj5Mu5XtA=
+        b=duwiUXdg8yhSgHjWfaE4eX+hyvR9saVBbin0G+J0ghvdA81upKRDlWguS43wwvGwC
+         XvFCkpzs9tPIeymwAdWnOtiR0GMo9SkoriCkwL8+YUQdDgHPpde/3CiAqggMd7nOdU
+         qwfpy9WwRpe+5ozrCbzYtE7YW2I0QE/E56TE5Fr8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>, stable@kernel.org
-Subject: [PATCH 5.15 046/779] fix short copy handling in copy_mc_pipe_to_iter()
-Date:   Mon, 15 Aug 2022 19:54:50 +0200
-Message-Id: <20220815180339.215030436@linuxfoundation.org>
+        stable@vger.kernel.org, Lei Wang <lei4.wang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 020/779] KVM: nVMX: Snapshot pre-VM-Enter BNDCFGS for !nested_run_pending case
+Date:   Mon, 15 Aug 2022 19:54:24 +0200
+Message-Id: <20220815180338.063381104@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,82 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Sean Christopherson <seanjc@google.com>
 
-commit c3497fd009ef2c59eea60d21c3ac22de3585ed7d upstream.
+commit fa578398a0ba2c079fa1170da21fa5baae0cedb2 upstream.
 
-Unlike other copying operations on ITER_PIPE, copy_mc_to_iter() can
-result in a short copy.  In that case we need to trim the unused
-buffers, as well as the length of partially filled one - it's not
-enough to set ->head, ->iov_offset and ->count to reflect how
-much had we copied.  Not hard to fix, fortunately...
+If a nested run isn't pending, snapshot vmcs01.GUEST_BNDCFGS irrespective
+of whether or not VM_ENTRY_LOAD_BNDCFGS is set in vmcs12.  When restoring
+nested state, e.g. after migration, without a nested run pending,
+prepare_vmcs02() will propagate nested.vmcs01_guest_bndcfgs to vmcs02,
+i.e. will load garbage/zeros into vmcs02.GUEST_BNDCFGS.
 
-I'd put a helper (pipe_discard_from(pipe, head)) into pipe_fs_i.h,
-rather than iov_iter.c - it has nothing to do with iov_iter and
-having it will allow us to avoid an ugly kludge in fs/splice.c.
-We could put it into lib/iov_iter.c for now and move it later,
-but I don't see the point going that way...
+If userspace restores nested state before MSRs, then loading garbage is a
+non-issue as loading BNDCFGS will also update vmcs02.  But if usersepace
+restores MSRs first, then KVM is responsible for propagating L2's value,
+which is actually thrown into vmcs01, into vmcs02.
 
-Cc: stable@kernel.org # 4.19+
-Fixes: ca146f6f091e "lib/iov_iter: Fix pipe handling in _copy_to_iter_mcsafe()"
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
+is all kinds of bizarre and ideally would not be supported.  Sadly, some
+VMMs do exactly that and rely on KVM to make things work.
+
+Note, there's still a lurking SMM bug, as propagating vmcs01.GUEST_BNDFGS
+to vmcs02 across RSM may corrupt L2's BNDCFGS.  But KVM's entire VMX+SMM
+emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
+"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
+
+Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
+Fixes: 62cf9bd8118c ("KVM: nVMX: Fix emulation of VM_ENTRY_LOAD_BNDCFGS")
+Cc: stable@vger.kernel.org
+Cc: Lei Wang <lei4.wang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220614215831.3762138-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pipe_fs_i.h |    9 +++++++++
- lib/iov_iter.c            |   15 +++++++++++----
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ arch/x86/kvm/vmx/nested.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/include/linux/pipe_fs_i.h
-+++ b/include/linux/pipe_fs_i.h
-@@ -229,6 +229,15 @@ static inline bool pipe_buf_try_steal(st
- 	return buf->ops->try_steal(pipe, buf);
- }
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3367,7 +3367,8 @@ enum nvmx_vmentry_status nested_vmx_ente
+ 	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
+ 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
+ 	if (kvm_mpx_supported() &&
+-		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
++	    (!vmx->nested.nested_run_pending ||
++	     !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS)))
+ 		vmx->nested.vmcs01_guest_bndcfgs = vmcs_read64(GUEST_BNDCFGS);
  
-+static inline void pipe_discard_from(struct pipe_inode_info *pipe,
-+		unsigned int old_head)
-+{
-+	unsigned int mask = pipe->ring_size - 1;
-+
-+	while (pipe->head > old_head)
-+		pipe_buf_release(pipe, &pipe->bufs[--pipe->head & mask]);
-+}
-+
- /* Differs from PIPE_BUF in that PIPE_SIZE is the length of the actual
-    memory allocation, whereas PIPE_BUF makes atomicity guarantees.  */
- #define PIPE_SIZE		PAGE_SIZE
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -691,6 +691,7 @@ static size_t copy_mc_pipe_to_iter(const
- 	struct pipe_inode_info *pipe = i->pipe;
- 	unsigned int p_mask = pipe->ring_size - 1;
- 	unsigned int i_head;
-+	unsigned int valid = pipe->head;
- 	size_t n, off, xfer = 0;
- 
- 	if (!sanity(i))
-@@ -704,11 +705,17 @@ static size_t copy_mc_pipe_to_iter(const
- 		rem = copy_mc_to_kernel(p + off, addr + xfer, chunk);
- 		chunk -= rem;
- 		kunmap_local(p);
--		i->head = i_head;
--		i->iov_offset = off + chunk;
--		xfer += chunk;
--		if (rem)
-+		if (chunk) {
-+			i->head = i_head;
-+			i->iov_offset = off + chunk;
-+			xfer += chunk;
-+			valid = i_head + 1;
-+		}
-+		if (rem) {
-+			pipe->bufs[i_head & p_mask].len -= rem;
-+			pipe_discard_from(pipe, valid);
- 			break;
-+		}
- 		n -= chunk;
- 		off = 0;
- 		i_head++;
+ 	/*
 
 
