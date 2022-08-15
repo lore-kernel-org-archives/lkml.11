@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C102C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595E5C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346671AbiHOV52 (ORCPT
+        id S1346917AbiHOV5d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        Mon, 15 Aug 2022 17:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349867AbiHOVzp (ORCPT
+        with ESMTP id S1348216AbiHOVzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:55:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D471A7C307;
-        Mon, 15 Aug 2022 12:33:51 -0700 (PDT)
+        Mon, 15 Aug 2022 17:55:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86E12F669;
+        Mon, 15 Aug 2022 12:33:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D74D961178;
-        Mon, 15 Aug 2022 19:33:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C518BC4314A;
-        Mon, 15 Aug 2022 19:33:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D327B80EA7;
+        Mon, 15 Aug 2022 19:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B29F2C433D7;
+        Mon, 15 Aug 2022 19:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592030;
-        bh=Gi5fhKEQRLorlItAaeCoWCufFbIzNt8b6vIbaqCylvQ=;
+        s=korg; t=1660592027;
+        bh=ELjryB8FWGLugOIuSJFH96NH9H+/KyRj7dUBAwO2eqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DiA7tadZ8M0eAByb4QdEnCbPGp5TzE6bamvZXXJTlD1lQJ9JzBsgAZxRigo8zp4bV
-         BCpm4FYVbQ0iJi9nu+Dk82hK/fAC6nFQH2oKiwrzXRDVs/fuFgXHe8PHM01kVIGhHg
-         RBUOTPkWj+p7gA/q1Q5GZFKweK8vrCGWt6YaI91M=
+        b=HR7yccg662xg1kVzJWTOM33y8i39zBBWlLKE1q5ZEeGZGjt9wZK8v28Dl5ZF4tmZV
+         m+cvitjSuu3K0gmKtpVbnLOL9ZEhf7qSLMOsYWK4tomXFUCAckMfUAiB2UgEPOk/Eo
+         TcTQMPh/BcL7BWkUAb3/QKS5U3QIPsuIIWPzbVds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ferry Toth <fntoth@gmail.com>, Vinod Koul <vkoul@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0720/1095] phy: ti: tusb1210: Dont check for write errors when powering on
-Date:   Mon, 15 Aug 2022 20:01:59 +0200
-Message-Id: <20220815180459.185252388@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.19 0046/1157] ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
+Date:   Mon, 15 Aug 2022 19:50:02 +0200
+Message-Id: <20220815180441.291821883@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,50 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-[ Upstream commit d4a0a189b72a7c98e4256292b18b67c69fbc9343 ]
+commit f83bb2592482fe94c6eea07a8121763c80f36ce5 upstream.
 
-On some platforms, like Intel Merrifield, the writing values during power on
-may timeout:
+There is another LENOVO 20149 (Type1Sku0) Notebook model with
+CX20590, the device PCI SSID is 17aa:3977, which headphones are
+not responding, that requires the quirk CXT_PINCFG_LENOVO_NOTEBOOK.
+Add the corresponding entry to the quirk table.
 
-   tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
-   phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
-   dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
-   dwc3: probe of dwc3.0.auto failed with error -110
-
-which effectively fails the probe of the USB controller.
-Drop the check as it was before the culprit commit (see Fixes tag).
-
-Fixes: 09a3512681b3 ("phy: ti: tusb1210: Improve ulpi_read()/_write() error checking")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Tested-by: Ferry Toth <fntoth@gmail.com>
-Link: https://lore.kernel.org/r/20220613160848.82746-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220808073406.19460-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/phy/ti/phy-tusb1210.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_conexant.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/ti/phy-tusb1210.c b/drivers/phy/ti/phy-tusb1210.c
-index c3ab4b69ea68..669c13d6e402 100644
---- a/drivers/phy/ti/phy-tusb1210.c
-+++ b/drivers/phy/ti/phy-tusb1210.c
-@@ -105,8 +105,9 @@ static int tusb1210_power_on(struct phy *phy)
- 	msleep(TUSB1210_RESET_TIME_MS);
- 
- 	/* Restore the optional eye diagram optimization value */
--	return tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2,
--				   tusb->vendor_specific2);
-+	tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2, tusb->vendor_specific2);
-+
-+	return 0;
- }
- 
- static int tusb1210_power_off(struct phy *phy)
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -222,6 +222,7 @@ enum {
+ 	CXT_PINCFG_LEMOTE_A1205,
+ 	CXT_PINCFG_COMPAQ_CQ60,
+ 	CXT_FIXUP_STEREO_DMIC,
++	CXT_PINCFG_LENOVO_NOTEBOOK,
+ 	CXT_FIXUP_INC_MIC_BOOST,
+ 	CXT_FIXUP_HEADPHONE_MIC_PIN,
+ 	CXT_FIXUP_HEADPHONE_MIC,
+@@ -772,6 +773,14 @@ static const struct hda_fixup cxt_fixups
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cxt_fixup_stereo_dmic,
+ 	},
++	[CXT_PINCFG_LENOVO_NOTEBOOK] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x1a, 0x05d71030 },
++			{ }
++		},
++		.chain_id = CXT_FIXUP_STEREO_DMIC,
++	},
+ 	[CXT_FIXUP_INC_MIC_BOOST] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cxt5066_increase_mic_boost,
+@@ -971,7 +980,7 @@ static const struct snd_pci_quirk cxt506
+ 	SND_PCI_QUIRK(0x17aa, 0x3905, "Lenovo G50-30", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x390b, "Lenovo G50-80", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x3975, "Lenovo U300s", CXT_FIXUP_STEREO_DMIC),
+-	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_FIXUP_STEREO_DMIC),
++	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_PINCFG_LENOVO_NOTEBOOK),
+ 	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo G50-70", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x397b, "Lenovo S205", CXT_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK_VENDOR(0x17aa, "Thinkpad", CXT_FIXUP_THINKPAD_ACPI),
 
 
