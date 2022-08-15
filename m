@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F88C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF12C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343627AbiHOTJY (ORCPT
+        id S1343636AbiHOTJb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
+        Mon, 15 Aug 2022 15:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245731AbiHOTGK (ORCPT
+        with ESMTP id S1343508AbiHOTG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:06:10 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749F533E20
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:34:50 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id 17so7060769plj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:34:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=fpZDxV3FuvKhUJk99+fRvjd0nkg0TSmKhn6atJ1wty8=;
-        b=a1K+P6NVeHSYaQMtXr/LyitVsOi7nOVeQHeTYjzFN9ULPSC59iBbE8SiHTl0W/rmkp
-         fRSn62nD1SfUPJnD+khvkRZfhjIkb2buWTPfmjYE3iLXaj2PL8HpwpVeWMCpyn+VPoPA
-         EcvW9DMwcscmwN1+PMPMPCK4ZnFmomRZxjvDv9faTz7z4byWzH/tYj6oi6dl+MLug7+Z
-         iXye3WTEZwDkiCrqGp9qidOfFhjaQC+Q46v85npKusBU4nnWRSViJMpATPWWUVZwU50E
-         Tz7Fqbxb/Rv+uksfmWRJ21PhkVNDlBvCWVKL8X2xJkMapqilUATc3QDp6N0ERShI+EYf
-         fZEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=fpZDxV3FuvKhUJk99+fRvjd0nkg0TSmKhn6atJ1wty8=;
-        b=4XWxrZAoZ/Joe9DFwjdgNH9aJd9u6I3r0Ui49Y5ivFaCKc5E1y/W5Vs2cOwMBhHHHh
-         h7Sur61hfKCBQQs1cKJ7oU63Bh1HGbJhLipGwjBIb6hdChrrJGVehi0q6ivTLO+B23w8
-         T71E4UhH6SN2+JtrhotB50Y3GbsbVQvp8BT0HCXwmKpwL7vn1QGvjn6K9vNkrR27om5h
-         /k0B85BocNDwf8OElcjQs+tlG9xwA72t5lWsZMo4Kl+fjJv4TglXn8vOKlklrlwDSp/F
-         iheSZK/eXQWjgcxnh1y4ZC6ibx0owH5+oVH0Uo8FpyAcsfpOWMh2eapr06nWAq/LuImS
-         HNig==
-X-Gm-Message-State: ACgBeo0rLaU8sr+upBRxa2M1fS1Ef80M4h3O510YEjUmBJgQEpj4rmP4
-        oM0BzJEYxV2T1vdiV8r9GYY=
-X-Google-Smtp-Source: AA6agR6DID+aTGefAK9b7+8YBYaTXPl4EGnNCw/qrKaz5t3HTdVMKH0b7FbPSyTAVyNyT+6GEmiRqg==
-X-Received: by 2002:a17:903:2601:b0:16d:b055:2985 with SMTP id jd1-20020a170903260100b0016db0552985mr18216404plb.161.1660588489692;
-        Mon, 15 Aug 2022 11:34:49 -0700 (PDT)
-Received: from fedora.. ([103.159.189.148])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0016c78f9f024sm7305175plb.104.2022.08.15.11.34.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 11:34:49 -0700 (PDT)
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-To:     Ruijing Dong <ruijing.dong@amd.com>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Pan Xinhui <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, James Zhu <James.Zhu@amd.com>,
-        Leo Liu <leo.liu@amd.com>, Sonny Jiang <sonny.jiang@amd.com>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Khalid Masum <khalid.masum.92@gmail.com>
-Subject: [PATCH linux-next] drm/amdgpu/vcn: Return void from the stop_dbg_mode
-Date:   Tue, 16 Aug 2022 00:34:25 +0600
-Message-Id: <20220815183425.14867-1-khalid.masum.92@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Mon, 15 Aug 2022 15:06:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF364E86F;
+        Mon, 15 Aug 2022 11:34:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F026B81072;
+        Mon, 15 Aug 2022 18:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FE7C433D6;
+        Mon, 15 Aug 2022 18:34:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588495;
+        bh=TerHaN3ULsneVuFYUiA0zlYmlhU/YrtLSc3KhLzTd38=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iyhKuI/3mNcREr5HbdX5gzDoYZnQvl8KWkGPaGU2cF2OwkMpnXM063rCl9RtOdutG
+         mL2n4TwogcekqfEpErYuhhLlSSZLqQ56M5C4ueyOjK4a9XaoU4cMG2cGqkUsiYONCC
+         AqMRX261IS3q5ZBaPfP82gFGy7P1hHhr5ZVPP2e8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 420/779] scsi: qla2xxx: edif: Reduce disruption due to multiple app start
+Date:   Mon, 15 Aug 2022 20:01:04 +0200
+Message-Id: <20220815180355.218496980@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no point in returning an int here. It only returns 0 which
-the caller never uses. Therefore return void and remove the unnecessary 
-assignment.
+From: Quinn Tran <qutran@marvell.com>
 
-Addresses-Coverity: 1504988 ("Unused value")
-Fixes: 8da1170a16e4 ("drm/amdgpu: add VCN4 ip block support")
-Suggested-by: Ruijing Dong <ruijing.dong@amd.com>
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+[ Upstream commit 0dbfce5255fe8d069a1a3b712a25b263264cfa58 ]
+
+Multiple app start can trigger a session bounce. Make driver skip over
+session teardown if app start is seen more than once.
+
+Link: https://lore.kernel.org/r/20220608115849.16693-4-njavali@marvell.com
+Fixes: 7ebb336e45ef ("scsi: qla2xxx: edif: Add start + stop bsgs")
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Past discussions:
-- V1 Link: https://lore.kernel.org/lkml/20220815070056.10816-1-khalid.masum.92@gmail.com/
+ drivers/scsi/qla2xxx/qla_edif.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes since V1:
-- Make stop_dbg_mode return void
-- Update commit description
-
- drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
-index ca14c3ef742e..fb2d74f30448 100644
---- a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
-@@ -1115,7 +1115,7 @@ static int vcn_v4_0_start(struct amdgpu_device *adev)
-  *
-  * Stop VCN block with dpg mode
-  */
--static int vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
-+static void vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
- {
- 	uint32_t tmp;
+diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
+index 69f8d16effa6..f7953ce17678 100644
+--- a/drivers/scsi/qla2xxx/qla_edif.c
++++ b/drivers/scsi/qla2xxx/qla_edif.c
+@@ -486,8 +486,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 		/* mark doorbell as active since an app is now present */
+ 		vha->e_dbell.db_flags |= EDB_ACTIVE;
+ 	} else {
+-		ql_dbg(ql_dbg_edif, vha, 0x911e, "%s doorbell already active\n",
+-		     __func__);
++		goto out;
+ 	}
  
-@@ -1133,7 +1133,6 @@ static int vcn_v4_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
- 	/* disable dynamic power gating mode */
- 	WREG32_P(SOC15_REG_OFFSET(VCN, inst_idx, regUVD_POWER_STATUS), 0,
- 		~UVD_POWER_STATUS__UVD_PG_MODE_MASK);
--	return 0;
- }
+ 	if (N2N_TOPO(vha->hw)) {
+@@ -555,6 +554,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 		     __func__);
+ 	}
  
- /**
-@@ -1154,7 +1153,7 @@ static int vcn_v4_0_stop(struct amdgpu_device *adev)
- 		fw_shared->sq.queue_mode |= FW_QUEUE_DPG_HOLD_OFF;
- 
- 		if (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG) {
--			r = vcn_v4_0_stop_dpg_mode(adev, i);
-+			vcn_v4_0_stop_dpg_mode(adev, i);
- 			continue;
- 		}
- 
++out:
+ 	appreply.host_support_edif = vha->hw->flags.edif_enabled;
+ 	appreply.edif_enode_active = vha->pur_cinfo.enode_flags;
+ 	appreply.edif_edb_active = vha->e_dbell.db_flags;
 -- 
-2.37.1
+2.35.1
+
+
 
