@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA04C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01186C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244578AbiHOSyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S244587AbiHOSy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244654AbiHOSvj (ORCPT
+        with ESMTP id S244160AbiHOSql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:51:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A81E45F6E;
-        Mon, 15 Aug 2022 11:29:28 -0700 (PDT)
+        Mon, 15 Aug 2022 14:46:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D9B40BE7;
+        Mon, 15 Aug 2022 11:28:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB71CB81087;
-        Mon, 15 Aug 2022 18:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7D7AC433D6;
-        Mon, 15 Aug 2022 18:29:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89CCC6102C;
+        Mon, 15 Aug 2022 18:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8557BC433D7;
+        Mon, 15 Aug 2022 18:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588165;
-        bh=ZCTlZ6oiSDxVQ1XvejSCzZ84C+U5CBdJqQG1WcctKyc=;
+        s=korg; t=1660588093;
+        bh=lRviNUT/rYmASAJMOBhWRjeohlYDqq+Z0AqjhvA7WX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wb9EIrUc9tWysIQkS72pl2LDoob+LSwXiMk1C6PFopfkicuhte7k53OdSvXO86kzg
-         PhW7pFo1J+kiEQSBnaYETYU3yls9tK/6MAuKiRvccLApmPL4e+DM+JDYAGa0yroI7p
-         YnD+qpf8+Ew+xTd+o71jBBHDYZ1MRQwB+N+f2HlE=
+        b=gNki2vpb3eJ+aR2D47HYOASttkC8/eaUd4oMCLGQq7eJGsLdxIjhG9Jyias3cbn3D
+         viVg9OG23w6nS/9PupUaALJ2yuuSNb5OZiOT5q7mz3uAaBJdS/akiZD3+VfXyJ+Tbe
+         vkNj7JxZMWm1J8qLDkVhhPdR3lofQ93h5vURECSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 315/779] drm/mediatek: dpi: Only enable dpi after the bridge is enabled
-Date:   Mon, 15 Aug 2022 19:59:19 +0200
-Message-Id: <20220815180350.750853416@linuxfoundation.org>
+Subject: [PATCH 5.15 261/779] net: fix sk_wmem_schedule() and sk_rmem_schedule() errors
+Date:   Mon, 15 Aug 2022 19:58:25 +0200
+Message-Id: <20220815180348.501598319@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,46 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit aed61ef6beb911cc043af0f2f291167663995065 ]
+[ Upstream commit 7c80b038d23e1f4c7fcc311f43f83b8c60e7fb80 ]
 
-Enabling the dpi too early causes glitches on screen.
+If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
+we want to allocate 1 byte more (rounded up to one page),
+instead of 150001 :/
 
-Move the call to mtk_dpi_enable() at the end of the bridge_enable
-callback to ensure everything is setup properly before enabling dpi.
-
-Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-16-rex-bc.chen@mediatek.com/
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/sock.h | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 675e2e4072df..41c783349321 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -417,7 +417,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
- 	if (dpi->pinctrl && dpi->pins_dpi)
- 		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 819c53965ef3..e0a88bb0a58c 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1507,19 +1507,23 @@ static inline bool sk_has_account(struct sock *sk)
  
--	mtk_dpi_enable(dpi);
- 	return 0;
- 
- err_pixel:
-@@ -639,6 +638,7 @@ static void mtk_dpi_bridge_enable(struct drm_bridge *bridge)
- 
- 	mtk_dpi_power_on(dpi);
- 	mtk_dpi_set_display_mode(dpi, &dpi->mode);
-+	mtk_dpi_enable(dpi);
+ static inline bool sk_wmem_schedule(struct sock *sk, int size)
+ {
++	int delta;
++
+ 	if (!sk_has_account(sk))
+ 		return true;
+-	return size <= sk->sk_forward_alloc ||
+-		__sk_mem_schedule(sk, size, SK_MEM_SEND);
++	delta = size - sk->sk_forward_alloc;
++	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_SEND);
  }
  
- static enum drm_mode_status
+ static inline bool
+ sk_rmem_schedule(struct sock *sk, struct sk_buff *skb, int size)
+ {
++	int delta;
++
+ 	if (!sk_has_account(sk))
+ 		return true;
+-	return size <= sk->sk_forward_alloc ||
+-		__sk_mem_schedule(sk, size, SK_MEM_RECV) ||
++	delta = size - sk->sk_forward_alloc;
++	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_RECV) ||
+ 		skb_pfmemalloc(skb);
+ }
+ 
 -- 
 2.35.1
 
