@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 072A2C2BB41
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECFEC32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351188AbiHOWlg (ORCPT
+        id S1351355AbiHOWmB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
+        Mon, 15 Aug 2022 18:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350805AbiHOWhK (ORCPT
+        with ESMTP id S1350877AbiHOWhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:37:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE1412F72E;
-        Mon, 15 Aug 2022 12:50:29 -0700 (PDT)
+        Mon, 15 Aug 2022 18:37:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01DD5F12B;
+        Mon, 15 Aug 2022 12:50:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A452A61226;
-        Mon, 15 Aug 2022 19:50:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A6A4C433C1;
-        Mon, 15 Aug 2022 19:50:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37A5160FB5;
+        Mon, 15 Aug 2022 19:49:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E40C433C1;
+        Mon, 15 Aug 2022 19:49:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593028;
-        bh=wn8D0zEklwNCAfBuD83TSNKEwQFVSQBJcK0RNaG+0AQ=;
+        s=korg; t=1660592987;
+        bh=u3MJlF94TEUlwGT6XhEOyGzd+wXV3YqFsvsnUO3j5f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lyoJgoIqMRi+5VRJbjKlcMug/ha9ZC7UOAxm6iu3e9gYfJn5wX97+YbUo9Z2456kz
-         SY67ehOK1oPxN6J0fiSiYvy2ugeS40Ym3PEk12hfwtp4VwO0N3leGXDBXP0iTKlRcd
-         xIQKFViG7CwrsbzUMRKME3Lj5Ebqy32y2I939RTE=
+        b=Ld0sjg0NMsfMteaAwSPQyGG3+WPVE50Om7/lZ2o6voLHzC03sTa3qLHY0sNXkqACp
+         U+7GQv/qszIxZaAm1x8JndbF/cXivX6ew4nqYZI8w8SxvVFw4OSyWjdC/7+ZOCceuo
+         KvTC6CLZVH3L05GmApBVCRRuEerotYy788IXqv0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        YC Hung <yc.hung@mediatek.com>, Li-Yu Yu <afg984@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        KuanHsun Cheng <Allen-KH.Cheng@mediatek.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0202/1157] ACPI: processor/idle: Annotate more functions to live in cpuidle section
-Date:   Mon, 15 Aug 2022 19:52:38 +0200
-Message-Id: <20220815180447.763419838@linuxfoundation.org>
+Subject: [PATCH 5.18 0876/1095] ASoC: SOF: mediatek: fix mt8195 StatvectorSel wrong setting
+Date:   Mon, 15 Aug 2022 20:04:35 +0200
+Message-Id: <20220815180505.597440635@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,60 +55,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: YC Hung <yc.hung@mediatek.com>
 
-[ Upstream commit 409dfdcaffb266acfc1f33529a26b1443c9332d4 ]
+[ Upstream commit 99bad468846f7a255dcfc95454401c83ae02e89b ]
 
-Commit 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
-introduced a new text section called cpuidle; with that, we have a mechanism
-to add idling functions in such section and skip them from nmi_backtrace
-output, since they're useless and potentially flooding for such report.
+Fix StatVectorSel wrong setting.
 
-Happens that inlining might cause some real idle functions to end-up
-outside of such section; this is currently the case of ACPI processor_idle
-driver; the functions acpi_idle_enter_* do inline acpi_idle_do_entry(),
-hence they stay out of the cpuidle section.
-Fix that by marking such functions to also live in the cpuidle section.
-
-Fixes: 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: b7f6503830 ("ASoC: SOF: mediatek: Add fw loader and mt8195 dsp ops to load firmware")
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Signed-off-by: YC Hung <yc.hung@mediatek.com>
+Reviewed-by: Li-Yu Yu <afg984@gmail.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: KuanHsun Cheng <Allen-KH.Cheng@mediatek.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220708203904.29214-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/processor_idle.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/sof/mediatek/mt8195/mt8195-loader.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 6a5572a1a80c..13200969ccf3 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -607,7 +607,7 @@ static DEFINE_RAW_SPINLOCK(c3_lock);
-  * @cx: Target state context
-  * @index: index of target state
-  */
--static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
-+static int __cpuidle acpi_idle_enter_bm(struct cpuidle_driver *drv,
- 			       struct acpi_processor *pr,
- 			       struct acpi_processor_cx *cx,
- 			       int index)
-@@ -664,7 +664,7 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
- 	return index;
- }
+diff --git a/sound/soc/sof/mediatek/mt8195/mt8195-loader.c b/sound/soc/sof/mediatek/mt8195/mt8195-loader.c
+index ed18d6379e92..ef2664c3cd47 100644
+--- a/sound/soc/sof/mediatek/mt8195/mt8195-loader.c
++++ b/sound/soc/sof/mediatek/mt8195/mt8195-loader.c
+@@ -21,7 +21,7 @@ void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
  
--static int acpi_idle_enter(struct cpuidle_device *dev,
-+static int __cpuidle acpi_idle_enter(struct cpuidle_device *dev,
- 			   struct cpuidle_driver *drv, int index)
- {
- 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
-@@ -693,7 +693,7 @@ static int acpi_idle_enter(struct cpuidle_device *dev,
- 	return index;
- }
+ 	/* pull high StatVectorSel to use AltResetVec (set bit4 to 1) */
+ 	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,
+-				DSP_RESET_SW, DSP_RESET_SW);
++				STATVECTOR_SEL, STATVECTOR_SEL);
  
--static int acpi_idle_enter_s2idle(struct cpuidle_device *dev,
-+static int __cpuidle acpi_idle_enter_s2idle(struct cpuidle_device *dev,
- 				  struct cpuidle_driver *drv, int index)
- {
- 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+ 	/* toggle  DReset & BReset */
+ 	/* pull high DReset & BReset */
 -- 
 2.35.1
 
