@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 315E2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FCAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244343AbiHOVwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        id S1350262AbiHOVwg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350278AbiHOVrf (ORCPT
+        with ESMTP id S1350282AbiHOVrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 17:47:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D088A2B628;
-        Mon, 15 Aug 2022 12:31:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113415FAEB;
+        Mon, 15 Aug 2022 12:31:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85B05B8107A;
-        Mon, 15 Aug 2022 19:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE49C433D6;
-        Mon, 15 Aug 2022 19:31:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1611E60FB9;
+        Mon, 15 Aug 2022 19:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DC7C433D6;
+        Mon, 15 Aug 2022 19:31:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591895;
-        bh=KKc5u0c4svxwVAcIxxjFmvahLmLCXSorZlxcM4OLRUU=;
+        s=korg; t=1660591898;
+        bh=LReIQ89/CnA3hqpuGEtuig0bfblqLBYyZyH7Eeo99iI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N/QxrU/3+kiRTnCKgzYWAua8DRuARNRFpt//PVWjvvGMOLRPLOaxPiyvX1yNkRSHR
-         ZiXUCytbLjt+bGj9SHPmhmj2r44yMYSuZk7JuibTpmgJFnRjK/b8flHWm0c8V0MXsh
-         wCXevx48iz/k9f7U2o0SJp56alLwrtIZy9CFgxyw=
+        b=U0K+bhox8r/9qZ4OKXwa/vG/TLf7x80iXQ76MljmTq76FnSeduhKtiTMvzPbITQqw
+         lVYKy/nUqGfwFTYbsI7DfQjpomUiMPKI9J8niGvU+0JIrIOeg7TWqtstdvIWJX3dB/
+         ZhDvz0JMJPf2LFe551Eypz4Zl6ytgJO/0Taik2dg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0027/1157] KVM: Drop unused @gpa param from gfn=>pfn caches __release_gpc() helper
-Date:   Mon, 15 Aug 2022 19:49:43 +0200
-Message-Id: <20220815180440.512740346@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0701/1095] clk: qcom: gcc-msm8939: Fix bimc_ddr_clk_src rcgr base address
+Date:   Mon, 15 Aug 2022 20:01:40 +0200
+Message-Id: <20220815180458.372804561@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,86 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit 345b0fd6fe5f66dfe841bad0b39dd11a5672df68 upstream.
+[ Upstream commit 63d42708320d6d2ca9ed505123d50ff4a542c36f ]
 
-Drop the @pga param from __release_gpc() and rename the helper to make it
-more obvious that the cache itself is not being released.  The helper
-will be reused by a future commit to release a pfn+khva combination that
-is _never_ associated with the cache, at which point the current name
-would go from slightly misleading to blatantly wrong.
+Reviewing qcom docs for the 8939 we can see the command rcgr is pointing to
+the wrong address. bimc_ddr_clk_src_rcgr is @ 0x01832024 not 0x01832004.
 
-No functional change intended.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220429210025.3293691-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220504163835.40130-3-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/pfncache.c |   10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/clk/qcom/gcc-msm8939.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -95,7 +95,7 @@ bool kvm_gfn_to_pfn_cache_check(struct k
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_check);
+diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
+index 39ebb443ae3d..31568658d23d 100644
+--- a/drivers/clk/qcom/gcc-msm8939.c
++++ b/drivers/clk/qcom/gcc-msm8939.c
+@@ -632,7 +632,7 @@ static struct clk_rcg2 system_noc_bfdcd_clk_src = {
+ };
  
--static void __release_gpc(struct kvm *kvm, kvm_pfn_t pfn, void *khva, gpa_t gpa)
-+static void gpc_release_pfn_and_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
- {
- 	/* Unmap the old page if it was mapped before, and release it */
- 	if (!is_error_noslot_pfn(pfn)) {
-@@ -146,7 +146,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
- 	unsigned long page_offset = gpa & ~PAGE_MASK;
- 	kvm_pfn_t old_pfn, new_pfn;
- 	unsigned long old_uhva;
--	gpa_t old_gpa;
- 	void *old_khva;
- 	bool old_valid;
- 	int ret = 0;
-@@ -160,7 +159,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
- 
- 	write_lock_irq(&gpc->lock);
- 
--	old_gpa = gpc->gpa;
- 	old_pfn = gpc->pfn;
- 	old_khva = gpc->khva - offset_in_page(gpc->khva);
- 	old_uhva = gpc->uhva;
-@@ -244,7 +242,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct
-  out:
- 	write_unlock_irq(&gpc->lock);
- 
--	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
-+	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
- 
- 	return ret;
- }
-@@ -254,14 +252,12 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
- {
- 	void *old_khva;
- 	kvm_pfn_t old_pfn;
--	gpa_t old_gpa;
- 
- 	write_lock_irq(&gpc->lock);
- 
- 	gpc->valid = false;
- 
- 	old_khva = gpc->khva - offset_in_page(gpc->khva);
--	old_gpa = gpc->gpa;
- 	old_pfn = gpc->pfn;
- 
- 	/*
-@@ -273,7 +269,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
- 
- 	write_unlock_irq(&gpc->lock);
- 
--	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
-+	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
- }
- EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_unmap);
- 
+ static struct clk_rcg2 bimc_ddr_clk_src = {
+-	.cmd_rcgr = 0x32004,
++	.cmd_rcgr = 0x32024,
+ 	.hid_width = 5,
+ 	.parent_map = gcc_xo_gpll0_bimc_map,
+ 	.clkr.hw.init = &(struct clk_init_data){
+-- 
+2.35.1
+
 
 
