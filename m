@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2690CC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D935C282E7
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347228AbiHOVZe (ORCPT
+        id S1347723AbiHOV0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
+        Mon, 15 Aug 2022 17:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241696AbiHOVNs (ORCPT
+        with ESMTP id S1345376AbiHOVRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:13:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AF15722E;
-        Mon, 15 Aug 2022 12:19:47 -0700 (PDT)
+        Mon, 15 Aug 2022 17:17:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C0D58B77;
+        Mon, 15 Aug 2022 12:21:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 22873CE1087;
-        Mon, 15 Aug 2022 19:19:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CF6CC433C1;
-        Mon, 15 Aug 2022 19:19:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9E7360FDA;
+        Mon, 15 Aug 2022 19:21:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70E3C433D6;
+        Mon, 15 Aug 2022 19:21:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591183;
-        bh=TMDXt7jtDWdicJEzEyNkxrX+6SxG2YI30o1x7P3pwRI=;
+        s=korg; t=1660591262;
+        bh=V8KFlUt8vc+S/5k6oJNap1osqTZ/7ZMM2KhwKESJ2xM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sxmx7lL7I8vAFJ4dKQpqzq1bmOIQUSyho5MWMXU2CHkbWHUICTPBMA6nzAX6RSVT6
-         YG7eWiJY+hEMEWUHUmeBm2gBWrbHgou8aDbONGMNIjFGM3talGuu36l+c1yqRdRI1Y
-         FJi1h/vPACKBuRHi01gAN5P9AaL22edTn9opLdk0=
+        b=vMO48c0ZtCNxfe60URy3MdIBmgqIDagb1cmvFvxJYg9pTMJIQgYPtV2AAD7n7nGIu
+         cDl/zoQvX9TMjf4bBAaWuLd7z77DyBqIGmeZr2Am32Zn1+imzX6rsWOM5XiKB8G0iL
+         zLBKImH7xPbe2bdYRl0i/rAexLABipug7t5BAbBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0466/1095] media: cedrus: h265: Fix logic for not low delay flag
-Date:   Mon, 15 Aug 2022 19:57:45 +0200
-Message-Id: <20220815180448.886955062@linuxfoundation.org>
+Subject: [PATCH 5.18 0523/1095] crypto: hisilicon/sec - fix auth key size error
+Date:   Mon, 15 Aug 2022 19:58:42 +0200
+Message-Id: <20220815180451.193254865@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,74 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Kai Ye <yekai13@huawei.com>
 
-[ Upstream commit f1a413902aa71044b6ec41265e5e28ebaf29a9ce ]
+[ Upstream commit 45f5d0176d8426cc1ab0bab84fbd8ef5c57526c6 ]
 
-Now that we know real purpose of "not low delay" flag, logic for
-applying this flag should be fixed too. According to vendor and
-reference implementation, low delay is signaled when POC of current
-frame is lower than POC of at least one reference of a slice.
+The authentication algorithm supports a maximum of 128-byte keys.
+The allocated key memory is insufficient.
 
-Implement mentioned logic and invert it to conform to flag meaning. Also
-don't apply flag for I frames. They don't have any reference.
-
-This fixes decoding of 3 reference bitstreams.
-
-Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 2f072d75d1ab ("crypto: hisilicon - Add aead support on SEC2")
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/sunxi/cedrus/cedrus_h265.c  | 27 ++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 6 +++---
+ drivers/crypto/hisilicon/sec2/sec_crypto.h | 1 +
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-index c26e515d64c9..2f6404fccd5a 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-@@ -301,6 +301,31 @@ static void cedrus_h265_write_scaling_list(struct cedrus_ctx *ctx,
- 		}
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index f193d6b6fa16..dbaa6c918cfd 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -620,7 +620,7 @@ static int sec_auth_init(struct sec_ctx *ctx)
+ {
+ 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+ 
+-	a_ctx->a_key = dma_alloc_coherent(ctx->dev, SEC_MAX_KEY_SIZE,
++	a_ctx->a_key = dma_alloc_coherent(ctx->dev, SEC_MAX_AKEY_SIZE,
+ 					  &a_ctx->a_key_dma, GFP_KERNEL);
+ 	if (!a_ctx->a_key)
+ 		return -ENOMEM;
+@@ -632,8 +632,8 @@ static void sec_auth_uninit(struct sec_ctx *ctx)
+ {
+ 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+ 
+-	memzero_explicit(a_ctx->a_key, SEC_MAX_KEY_SIZE);
+-	dma_free_coherent(ctx->dev, SEC_MAX_KEY_SIZE,
++	memzero_explicit(a_ctx->a_key, SEC_MAX_AKEY_SIZE);
++	dma_free_coherent(ctx->dev, SEC_MAX_AKEY_SIZE,
+ 			  a_ctx->a_key, a_ctx->a_key_dma);
  }
  
-+static int cedrus_h265_is_low_delay(struct cedrus_run *run)
-+{
-+	const struct v4l2_ctrl_hevc_slice_params *slice_params;
-+	const struct v4l2_hevc_dpb_entry *dpb;
-+	s32 poc;
-+	int i;
-+
-+	slice_params = run->h265.slice_params;
-+	poc = run->h265.decode_params->pic_order_cnt_val;
-+	dpb = run->h265.decode_params->dpb;
-+
-+	for (i = 0; i < slice_params->num_ref_idx_l0_active_minus1 + 1; i++)
-+		if (dpb[slice_params->ref_idx_l0[i]].pic_order_cnt_val > poc)
-+			return 1;
-+
-+	if (slice_params->slice_type != V4L2_HEVC_SLICE_TYPE_B)
-+		return 0;
-+
-+	for (i = 0; i < slice_params->num_ref_idx_l1_active_minus1 + 1; i++)
-+		if (dpb[slice_params->ref_idx_l1[i]].pic_order_cnt_val > poc)
-+			return 1;
-+
-+	return 0;
-+}
-+
- static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 			      struct cedrus_run *run)
- {
-@@ -571,7 +596,7 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
- 				V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED,
- 				slice_params->flags);
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.h b/drivers/crypto/hisilicon/sec2/sec_crypto.h
+index 5e039b50e9d4..d033f63b583f 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.h
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.h
+@@ -7,6 +7,7 @@
+ #define SEC_AIV_SIZE		12
+ #define SEC_IV_SIZE		24
+ #define SEC_MAX_KEY_SIZE	64
++#define SEC_MAX_AKEY_SIZE	128
+ #define SEC_COMM_SCENE		0
+ #define SEC_MIN_BLOCK_SZ	1
  
--	if (decode_params->num_poc_st_curr_after == 0)
-+	if (slice_params->slice_type != V4L2_HEVC_SLICE_TYPE_I && !cedrus_h265_is_low_delay(run))
- 		reg |= VE_DEC_H265_DEC_SLICE_HDR_INFO1_FLAG_SLICE_NOT_LOW_DELAY;
- 
- 	cedrus_write(dev, VE_DEC_H265_DEC_SLICE_HDR_INFO1, reg);
 -- 
 2.35.1
 
