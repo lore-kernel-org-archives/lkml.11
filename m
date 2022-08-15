@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4ED0C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01942C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232643AbiHPEsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
+        id S232349AbiHPEtA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232607AbiHPEpn (ORCPT
+        with ESMTP id S232600AbiHPEpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:45:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D654C61B17;
-        Mon, 15 Aug 2022 13:42:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D374AB5E43;
+        Mon, 15 Aug 2022 13:44:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43A52B8113E;
-        Mon, 15 Aug 2022 20:42:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99882C433C1;
-        Mon, 15 Aug 2022 20:42:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B555B80EAD;
+        Mon, 15 Aug 2022 20:44:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3D82C433C1;
+        Mon, 15 Aug 2022 20:44:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596140;
-        bh=n53XmxCgwLMlqFZN8KbH07lCxfM9RjyR4HTH0+4uqBk=;
+        s=korg; t=1660596265;
+        bh=cAuQmdP8eqYQ3pb+Q6BsdvaIZxGrfLolEG77N1flqqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYBX4Chsa1s/S5BPefboKoz8Q2oqz+/N3jc3rtfKR/vH/QT1AdMnCfcKr2l6XaLsh
-         DyficWFi/45nk6ebI6qE6jGs6jSVugy7dW7U1n8DZ4xW7cFKT2KJWtPVs/5FMVcW8g
-         aJtHtqC7ktNhM7mriVi5WAsSRVgp+iqLtu7gdJMM=
+        b=ViGuAeJMpTOkE+/44PnVw/QvFIzCTZniEg942T4/9uMIy0xKiFPj6gn0s7UH7WITo
+         QWXdftuAqDUyoNBCZY15tMHlQs8wUsOS2IczhK3BVyHuevmH1IQlRk/OUHNvztqw4l
+         jPUrIpbOO2/doOJM+afaac+fS5f2SU55NDN5Y3VQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Valentin Schneider <vschneid@redhat.com>,
+        Tianchen Ding <dtcccc@linux.alibaba.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0986/1157] watchdog: f71808e_wdt: Add check for platform_driver_register
-Date:   Mon, 15 Aug 2022 20:05:42 +0200
-Message-Id: <20220815180519.176030437@linuxfoundation.org>
+Subject: [PATCH 5.19 1025/1157] sched: Fix the check of nr_running at queue wakelist
+Date:   Mon, 15 Aug 2022 20:06:21 +0200
+Message-Id: <20220815180520.932083503@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,40 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Tianchen Ding <dtcccc@linux.alibaba.com>
 
-[ Upstream commit 97d5ec548150764946f38632e62e79759832b54b ]
+[ Upstream commit 28156108fecb1f808b21d216e8ea8f0d205a530c ]
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
+The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
+the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
+stacking when WF_ON_CPU.
 
-Fixes: 27e0fe00a5c6 ("watchdog: f71808e_wdt: refactor to platform device/driver pair")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-https://lore.kernel.org/r/20220526080303.1005063-1-jiasheng@iscas.ac.cn
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
+(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
+the deactivate_task() in __schedule(), thus p has been accounted out of
+rq->nr_running. As such, the task being the only runnable task on the rq
+implies reading rq->nr_running == 0 at that point.
+
+The benchmark result is in [1].
+
+[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
+
+Suggested-by: Valentin Schneider <vschneid@redhat.com>
+Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Link: https://lore.kernel.org/r/20220608233412.327341-2-dtcccc@linux.alibaba.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/f71808e_wdt.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/sched/core.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/f71808e_wdt.c b/drivers/watchdog/f71808e_wdt.c
-index 7f59c680de25..6a16d3d0bb1e 100644
---- a/drivers/watchdog/f71808e_wdt.c
-+++ b/drivers/watchdog/f71808e_wdt.c
-@@ -634,7 +634,9 @@ static int __init fintek_wdt_init(void)
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index b4620354767b..6f1e3eef9346 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3829,8 +3829,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+ 	 * CPU then use the wakelist to offload the task activation to
+ 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
+ 	 * nr_running is checked to avoid unnecessary task stacking.
++	 *
++	 * Note that we can only get here with (wakee) p->on_rq=0,
++	 * p->on_cpu can be whatever, we've done the dequeue, so
++	 * the wakee has been accounted out of ->nr_running.
+ 	 */
+-	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
++	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
+ 		return true;
  
- 	pdata.type = ret;
- 
--	platform_driver_register(&fintek_wdt_driver);
-+	ret = platform_driver_register(&fintek_wdt_driver);
-+	if (ret)
-+		return ret;
- 
- 	wdt_res.name = "superio port";
- 	wdt_res.flags = IORESOURCE_IO;
+ 	return false;
 -- 
 2.35.1
 
