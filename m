@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D966EC282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FA7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbiHOUGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
+        id S233505AbiHOUG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346163AbiHOUBr (ORCPT
+        with ESMTP id S1346165AbiHOUBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:01:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FCE7C75F;
-        Mon, 15 Aug 2022 11:53:50 -0700 (PDT)
+        Mon, 15 Aug 2022 16:01:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70325FC;
+        Mon, 15 Aug 2022 11:53:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34BC8B810A9;
-        Mon, 15 Aug 2022 18:53:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 932ADC433D7;
-        Mon, 15 Aug 2022 18:53:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE754B81057;
+        Mon, 15 Aug 2022 18:53:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E3F8C433D6;
+        Mon, 15 Aug 2022 18:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589620;
-        bh=TwC/Maq0bEmceLwEg6k3SJsZPI6n3Zfns4vrT8h+7i4=;
+        s=korg; t=1660589629;
+        bh=831V3Yq52zNLvCLhnmdB7nVvxEFk2hDomNDpBbMwZIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mwp2C2Ft75VWzPyIjeupAzZiqG2xJiJ8Hj94DhzvIboYyYQdo5gwj0k3iqDFSDuiC
-         mNmFsyY8cdufBETHDmTgfOC12d2AALIC+toqpvN3yJf1U7wt+rDfUim6yTEvI7R7FJ
-         Kd3HiM1txyO4M2CKJqoS0jtSA20IZrsp2BDaNvVo=
+        b=DG2va3syTcOWbNXosh7UlnmIXtSIqfA/AxR0WeW1BjND/B0R4LsquAkdel1Wd/jkX
+         4h7e5sAFlw4WcG3Bax+YIJhHS85LHk3/hKj6cFhR+uffy/xJVwoH/PqLXgX9ZeIkWt
+         0qc7ZYHeLalA44CTLlKLB9Gx9bK+XZ3ii/+YR52Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 5.15 776/779] drm/bridge: Move devm_drm_of_get_bridge to bridge/panel.c
-Date:   Mon, 15 Aug 2022 20:07:00 +0200
-Message-Id: <20220815180410.553384486@linuxfoundation.org>
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 779/779] scsi: lpfc: Resolve some cleanup issues following SLI path refactoring
+Date:   Mon, 15 Aug 2022 20:07:03 +0200
+Message-Id: <20220815180410.658725498@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,122 +49,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: James Smart <jsmart2021@gmail.com>
 
-commit d4ae66f10c8b9959dce1766d9a87070e567236eb upstream.
+commit e27f05147bff21408c1b8410ad8e90cd286e7952 upstream.
 
-By depending on devm_drm_panel_bridge_add(), devm_drm_of_get_bridge()
-introduces a circular dependency between the modules drm (where
-devm_drm_of_get_bridge() ends up) and drm_kms_helper (where
-devm_drm_panel_bridge_add() is).
+Following refactoring and consolidation in SLI processing, fix up some
+minor issues related to SLI path:
 
-Fix this by moving devm_drm_of_get_bridge() to bridge/panel.c and thus
-drm_kms_helper.
+ - Correct the setting of LPFC_EXCHANGE_BUSY flag in response IOCB.
 
-Fixes: 87ea95808d53 ("drm/bridge: Add a function to abstract away panels")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210917180925.2602266-1-maxime@cerno.tech
+ - Fix some typographical errors.
+
+ - Fix duplicate log messages.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-4-jsmart2021@gmail.com
+Fixes: 1b64aa9eae28 ("scsi: lpfc: SLI path split: Refactor fast and slow paths to native SLI4")
+Cc: <stable@vger.kernel.org> # v5.18
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/panel.c |   37 +++++++++++++++++++++++++++++++++++++
- drivers/gpu/drm/drm_bridge.c   |   34 ----------------------------------
- 2 files changed, 37 insertions(+), 34 deletions(-)
+ drivers/scsi/lpfc/lpfc_init.c |    2 +-
+ drivers/scsi/lpfc/lpfc_sli.c  |   25 ++++++++++++-------------
+ 2 files changed, 13 insertions(+), 14 deletions(-)
 
---- a/drivers/gpu/drm/bridge/panel.c
-+++ b/drivers/gpu/drm/bridge/panel.c
-@@ -9,6 +9,7 @@
- #include <drm/drm_connector.h>
- #include <drm/drm_encoder.h>
- #include <drm/drm_modeset_helper_vtables.h>
-+#include <drm/drm_of.h>
- #include <drm/drm_panel.h>
- #include <drm/drm_print.h>
- #include <drm/drm_probe_helper.h>
-@@ -332,3 +333,39 @@ struct drm_connector *drm_panel_bridge_c
- 	return &panel_bridge->connector;
- }
- EXPORT_SYMBOL(drm_panel_bridge_connector);
-+
-+#ifdef CONFIG_OF
-+/**
-+ * devm_drm_of_get_bridge - Return next bridge in the chain
-+ * @dev: device to tie the bridge lifetime to
-+ * @np: device tree node containing encoder output ports
-+ * @port: port in the device tree node
-+ * @endpoint: endpoint in the device tree node
-+ *
-+ * Given a DT node's port and endpoint number, finds the connected node
-+ * and returns the associated bridge if any, or creates and returns a
-+ * drm panel bridge instance if a panel is connected.
-+ *
-+ * Returns a pointer to the bridge if successful, or an error pointer
-+ * otherwise.
-+ */
-+struct drm_bridge *devm_drm_of_get_bridge(struct device *dev,
-+					  struct device_node *np,
-+					  u32 port, u32 endpoint)
-+{
-+	struct drm_bridge *bridge;
-+	struct drm_panel *panel;
-+	int ret;
-+
-+	ret = drm_of_find_panel_or_bridge(np, port, endpoint,
-+					  &panel, &bridge);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	if (panel)
-+		bridge = devm_drm_panel_bridge_add(dev, panel);
-+
-+	return bridge;
-+}
-+EXPORT_SYMBOL(devm_drm_of_get_bridge);
-+#endif
---- a/drivers/gpu/drm/drm_bridge.c
-+++ b/drivers/gpu/drm/drm_bridge.c
-@@ -1232,40 +1232,6 @@ struct drm_bridge *of_drm_find_bridge(st
- 	return NULL;
- }
- EXPORT_SYMBOL(of_drm_find_bridge);
--
--/**
-- * devm_drm_of_get_bridge - Return next bridge in the chain
-- * @dev: device to tie the bridge lifetime to
-- * @np: device tree node containing encoder output ports
-- * @port: port in the device tree node
-- * @endpoint: endpoint in the device tree node
-- *
-- * Given a DT node's port and endpoint number, finds the connected node
-- * and returns the associated bridge if any, or creates and returns a
-- * drm panel bridge instance if a panel is connected.
-- *
-- * Returns a pointer to the bridge if successful, or an error pointer
-- * otherwise.
-- */
--struct drm_bridge *devm_drm_of_get_bridge(struct device *dev,
--					  struct device_node *np,
--					  u32 port, u32 endpoint)
--{
--	struct drm_bridge *bridge;
--	struct drm_panel *panel;
--	int ret;
--
--	ret = drm_of_find_panel_or_bridge(np, port, endpoint,
--					  &panel, &bridge);
--	if (ret)
--		return ERR_PTR(ret);
--
--	if (panel)
--		bridge = devm_drm_panel_bridge_add(dev, panel);
--
--	return bridge;
--}
--EXPORT_SYMBOL(devm_drm_of_get_bridge);
- #endif
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -11964,7 +11964,7 @@ lpfc_sli_enable_msi(struct lpfc_hba *phb
+ 	rc = pci_enable_msi(phba->pcidev);
+ 	if (!rc)
+ 		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
+-				"0462 PCI enable MSI mode success.\n");
++				"0012 PCI enable MSI mode success.\n");
+ 	else {
+ 		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
+ 				"0471 PCI enable MSI mode failed (%d)\n", rc);
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -1939,7 +1939,7 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba
+ 	sync_buf = __lpfc_sli_get_iocbq(phba);
+ 	if (!sync_buf) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_CGN_MGMT,
+-				"6213 No available WQEs for CMF_SYNC_WQE\n");
++				"6244 No available WQEs for CMF_SYNC_WQE\n");
+ 		ret_val = ENOMEM;
+ 		goto out_unlock;
+ 	}
+@@ -3737,7 +3737,7 @@ lpfc_sli_process_sol_iocb(struct lpfc_hb
+ 						set_job_ulpword4(cmdiocbp,
+ 								 IOERR_ABORT_REQUESTED);
+ 						/*
+-						 * For SLI4, irsiocb contains
++						 * For SLI4, irspiocb contains
+ 						 * NO_XRI in sli_xritag, it
+ 						 * shall not affect releasing
+ 						 * sgl (xri) process.
+@@ -3755,7 +3755,7 @@ lpfc_sli_process_sol_iocb(struct lpfc_hb
+ 					}
+ 				}
+ 			}
+-			(cmdiocbp->cmd_cmpl) (phba, cmdiocbp, saveq);
++			cmdiocbp->cmd_cmpl(phba, cmdiocbp, saveq);
+ 		} else
+ 			lpfc_sli_release_iocbq(phba, cmdiocbp);
+ 	} else {
+@@ -3995,8 +3995,7 @@ lpfc_sli_handle_fast_ring_event(struct l
+ 				cmdiocbq->cmd_flag &= ~LPFC_DRIVER_ABORTED;
+ 			if (cmdiocbq->cmd_cmpl) {
+ 				spin_unlock_irqrestore(&phba->hbalock, iflag);
+-				(cmdiocbq->cmd_cmpl)(phba, cmdiocbq,
+-						      &rspiocbq);
++				cmdiocbq->cmd_cmpl(phba, cmdiocbq, &rspiocbq);
+ 				spin_lock_irqsave(&phba->hbalock, iflag);
+ 			}
+ 			break;
+@@ -10936,7 +10935,7 @@ lpfc_sli4_iocb2wqe(struct lpfc_hba *phba
+  * @flag: Flag indicating if this command can be put into txq.
+  *
+  * __lpfc_sli_issue_fcp_io_s3 is wrapper function to invoke lockless func to
+- * send  an iocb command to an HBA with SLI-4 interface spec.
++ * send  an iocb command to an HBA with SLI-3 interface spec.
+  *
+  * This function takes the hbalock before invoking the lockless version.
+  * The function will return success after it successfully submit the wqe to
+@@ -12989,7 +12988,7 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba
+ 		cmdiocbq->cmd_cmpl = cmdiocbq->wait_cmd_cmpl;
+ 		cmdiocbq->wait_cmd_cmpl = NULL;
+ 		if (cmdiocbq->cmd_cmpl)
+-			(cmdiocbq->cmd_cmpl)(phba, cmdiocbq, NULL);
++			cmdiocbq->cmd_cmpl(phba, cmdiocbq, NULL);
+ 		else
+ 			lpfc_sli_release_iocbq(phba, cmdiocbq);
+ 		return;
+@@ -13003,9 +13002,9 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba
  
- MODULE_AUTHOR("Ajay Kumar <ajaykumar.rs@samsung.com>");
+ 	/* Set the exchange busy flag for task management commands */
+ 	if ((cmdiocbq->cmd_flag & LPFC_IO_FCP) &&
+-		!(cmdiocbq->cmd_flag & LPFC_IO_LIBDFC)) {
++	    !(cmdiocbq->cmd_flag & LPFC_IO_LIBDFC)) {
+ 		lpfc_cmd = container_of(cmdiocbq, struct lpfc_io_buf,
+-			cur_iocbq);
++					cur_iocbq);
+ 		if (rspiocbq && (rspiocbq->cmd_flag & LPFC_EXCHANGE_BUSY))
+ 			lpfc_cmd->flags |= LPFC_SBUF_XBUSY;
+ 		else
+@@ -14143,7 +14142,7 @@ void lpfc_sli4_els_xri_abort_event_proc(
+  * @irspiocbq: Pointer to work-queue completion queue entry.
+  *
+  * This routine handles an ELS work-queue completion event and construct
+- * a pseudo response ELS IODBQ from the SLI4 ELS WCQE for the common
++ * a pseudo response ELS IOCBQ from the SLI4 ELS WCQE for the common
+  * discovery engine to handle.
+  *
+  * Return: Pointer to the receive IOCBQ, NULL otherwise.
+@@ -14187,7 +14186,7 @@ lpfc_sli4_els_preprocess_rspiocbq(struct
+ 
+ 	if (bf_get(lpfc_wcqe_c_xb, wcqe)) {
+ 		spin_lock_irqsave(&phba->hbalock, iflags);
+-		cmdiocbq->cmd_flag |= LPFC_EXCHANGE_BUSY;
++		irspiocbq->cmd_flag |= LPFC_EXCHANGE_BUSY;
+ 		spin_unlock_irqrestore(&phba->hbalock, iflags);
+ 	}
+ 
+@@ -15046,7 +15045,7 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc
+ 		/* Pass the cmd_iocb and the wcqe to the upper layer */
+ 		memcpy(&cmdiocbq->wcqe_cmpl, wcqe,
+ 		       sizeof(struct lpfc_wcqe_complete));
+-		(cmdiocbq->cmd_cmpl)(phba, cmdiocbq, cmdiocbq);
++		cmdiocbq->cmd_cmpl(phba, cmdiocbq, cmdiocbq);
+ 	} else {
+ 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
+ 				"0375 FCP cmdiocb not callback function "
+@@ -19210,7 +19209,7 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vp
+ 
+ 	/* Free iocb created in lpfc_prep_seq */
+ 	list_for_each_entry_safe(curr_iocb, next_iocb,
+-		&iocbq->list, list) {
++				 &iocbq->list, list) {
+ 		list_del_init(&curr_iocb->list);
+ 		lpfc_sli_release_iocbq(phba, curr_iocb);
+ 	}
 
 
