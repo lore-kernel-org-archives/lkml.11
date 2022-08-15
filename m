@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01186C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24272C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244587AbiHOSy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
+        id S244595AbiHOSzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244160AbiHOSql (ORCPT
+        with ESMTP id S244688AbiHOSvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:46:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D9B40BE7;
-        Mon, 15 Aug 2022 11:28:14 -0700 (PDT)
+        Mon, 15 Aug 2022 14:51:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFCF474CF;
+        Mon, 15 Aug 2022 11:29:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89CCC6102C;
-        Mon, 15 Aug 2022 18:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8557BC433D7;
-        Mon, 15 Aug 2022 18:28:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38E3D60FDA;
+        Mon, 15 Aug 2022 18:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23EC9C433D6;
+        Mon, 15 Aug 2022 18:29:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588093;
-        bh=lRviNUT/rYmASAJMOBhWRjeohlYDqq+Z0AqjhvA7WX8=;
+        s=korg; t=1660588171;
+        bh=TxnbgPq7C531PMW+6Zh6jzpMqahQckFdHnZGC1A72TY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gNki2vpb3eJ+aR2D47HYOASttkC8/eaUd4oMCLGQq7eJGsLdxIjhG9Jyias3cbn3D
-         viVg9OG23w6nS/9PupUaALJ2yuuSNb5OZiOT5q7mz3uAaBJdS/akiZD3+VfXyJ+Tbe
-         vkNj7JxZMWm1J8qLDkVhhPdR3lofQ93h5vURECSU=
+        b=KlqxF1BEqDnVBUxp7cAasyAYj2z9d9HrtIqe7lb4s8sNhPhNX9F4ujJ78HD7aUj3F
+         PMLIRhK/Pp8YVppKJIfENyqxpkwliooc4xadgXL6mQHGeuwk9r91oSepI7e29/9K2c
+         zQQoPPhIGkFqVN02XnlXcwrLbtdf+afnGC/HfB1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 261/779] net: fix sk_wmem_schedule() and sk_rmem_schedule() errors
-Date:   Mon, 15 Aug 2022 19:58:25 +0200
-Message-Id: <20220815180348.501598319@linuxfoundation.org>
+Subject: [PATCH 5.15 317/779] hinic: Use the bitmap API when applicable
+Date:   Mon, 15 Aug 2022 19:59:21 +0200
+Message-Id: <20220815180350.830851945@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,56 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 7c80b038d23e1f4c7fcc311f43f83b8c60e7fb80 ]
+[ Upstream commit 7c2c57263af41cfd8b5022274e6801542831bb69 ]
 
-If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
-we want to allocate 1 byte more (rounded up to one page),
-instead of 150001 :/
+'vlan_bitmap' is a bitmap and is used as such. So allocate it with
+devm_bitmap_zalloc() and its explicit bit size (i.e. VLAN_N_VID).
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+This avoids the need of the VLAN_BITMAP_SIZE macro which:
+   - needlessly has a 'nic_dev' parameter
+   - should be "long" (and not byte) aligned, so that the bitmap semantic
+     is respected
+
+This is in fact not an issue because VLAN_N_VID is 4096 at the time
+being, but devm_bitmap_zalloc() is less verbose and easier to understand.
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/6ff7b7d21414240794a77dc2456914412718a145.1656260842.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_main.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 819c53965ef3..e0a88bb0a58c 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1507,19 +1507,23 @@ static inline bool sk_has_account(struct sock *sk)
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index f8aa80ec201b..bece6a12368d 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -62,8 +62,6 @@ MODULE_PARM_DESC(rx_weight, "Number Rx packets for NAPI budget (default=64)");
  
- static inline bool sk_wmem_schedule(struct sock *sk, int size)
- {
-+	int delta;
-+
- 	if (!sk_has_account(sk))
- 		return true;
--	return size <= sk->sk_forward_alloc ||
--		__sk_mem_schedule(sk, size, SK_MEM_SEND);
-+	delta = size - sk->sk_forward_alloc;
-+	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_SEND);
- }
+ #define HINIC_LRO_RX_TIMER_DEFAULT	16
  
- static inline bool
- sk_rmem_schedule(struct sock *sk, struct sk_buff *skb, int size)
- {
-+	int delta;
-+
- 	if (!sk_has_account(sk))
- 		return true;
--	return size <= sk->sk_forward_alloc ||
--		__sk_mem_schedule(sk, size, SK_MEM_RECV) ||
-+	delta = size - sk->sk_forward_alloc;
-+	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_RECV) ||
- 		skb_pfmemalloc(skb);
- }
+-#define VLAN_BITMAP_SIZE(nic_dev)       (ALIGN(VLAN_N_VID, 8) / 8)
+-
+ #define work_to_rx_mode_work(work)      \
+ 		container_of(work, struct hinic_rx_mode_work, work)
  
+@@ -1241,9 +1239,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	u64_stats_init(&tx_stats->syncp);
+ 	u64_stats_init(&rx_stats->syncp);
+ 
+-	nic_dev->vlan_bitmap = devm_kzalloc(&pdev->dev,
+-					    VLAN_BITMAP_SIZE(nic_dev),
+-					    GFP_KERNEL);
++	nic_dev->vlan_bitmap = devm_bitmap_zalloc(&pdev->dev, VLAN_N_VID,
++						  GFP_KERNEL);
+ 	if (!nic_dev->vlan_bitmap) {
+ 		err = -ENOMEM;
+ 		goto err_vlan_bitmap;
 -- 
 2.35.1
 
