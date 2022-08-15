@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A21E4C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67DEC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243902AbiHPAhh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41842 "EHLO
+        id S240806AbiHPAho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349540AbiHPAf5 (ORCPT
+        with ESMTP id S1350568AbiHPAgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:35:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20131894FF;
-        Mon, 15 Aug 2022 13:37:41 -0700 (PDT)
+        Mon, 15 Aug 2022 20:36:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B174E84D;
+        Mon, 15 Aug 2022 13:37:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAAD9B8113E;
-        Mon, 15 Aug 2022 20:37:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FB6C433C1;
-        Mon, 15 Aug 2022 20:37:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76D2EB80EA9;
+        Mon, 15 Aug 2022 20:37:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACAC8C433C1;
+        Mon, 15 Aug 2022 20:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595858;
-        bh=czjYn8J0I6e71e7Y/NLO/eKFCgECqGoeG9N0x/L0CAM=;
+        s=korg; t=1660595843;
+        bh=J7tXZQAKQ1Enn9d8Kao/WXR5L8k8qxeZb02P9k8WmdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g50fME5Je2PqiuAX9my0/YRFVcNgLSiC852lnITpxRTwOHYsxnEJC6ulyjoH/Q8Ww
-         +jQuukwOqLV1W0XfpD6ZwjhsLWDXIbHji855zA0o8cy0Ui25wrrEDiHg6EPLhc2ijY
-         0K5ChzxH3Wfkjq7p5h9olR3GCcS+DkxKT8+VOYsU=
+        b=SDLQR2Ee4BWI71QtCKMh9IZyclVJgQjUpg6D/s+T+jmQuinyTq5EG7Q8pLx5K/x6d
+         BSpLbJQI/9TW0jB/7nmrQkXJcmi4tFmpdfft25Zp7FwIPsIGBz/063ZQDOY4MhZyvR
+         H/K9jpIUM2zI866muamL40PXDebzkjavK8AMdPME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Adam Sindelar <adam@wowsignal.io>,
+        David Vernet <void@manifault.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0896/1157] ASoC: codecs: da7210: add check for i2c_add_driver
-Date:   Mon, 15 Aug 2022 20:04:12 +0200
-Message-Id: <20220815180515.280271797@linuxfoundation.org>
+Subject: [PATCH 5.19 0865/1157] selftests/vm: fix errno handling in mrelease_test
+Date:   Mon, 15 Aug 2022 20:03:41 +0200
+Message-Id: <20220815180514.070470167@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,39 +52,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Adam Sindelar <adam@wowsignal.io>
 
-[ Upstream commit 82fa8f581a954ddeec1602bed9f8b4a09d100e6e ]
+[ Upstream commit 3b8e7f5c42d1aa44f71fd219717c80e34101361e ]
 
-As i2c_add_driver could return error if fails, it should be
-better to check the return value.
-However, if the CONFIG_I2C and CONFIG_SPI_MASTER are both true,
-the return value of i2c_add_driver will be covered by
-spi_register_driver.
-Therefore, it is necessary to add check and return error if fails.
+mrelease_test should return KSFT_SKIP when process_mrelease is not
+defined, but due to a perror call consuming the errno, it returns
+KSFT_FAIL.
 
-Fixes: aa0e25caafb7 ("ASoC: da7210: Add support for spi regmap")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220531094712.2376759-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This patch decides the exit code before calling perror.
+
+[adam@wowsignal.io: fix remaining instances of errno mishandling]
+  Link: https://lkml.kernel.org/r/20220706141602.10159-1-adam@wowsignal.io
+Link: https://lkml.kernel.org/r/20220704173351.19595-1-adam@wowsignal.io
+Fixes: 33776141b812 ("selftests: vm: add process_mrelease tests")
+Signed-off-by: Adam Sindelar <adam@wowsignal.io>
+Reviewed-by: David Vernet <void@manifault.com>
+Reviewed-by: Suren Baghdasaryan <surenb@google.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/da7210.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/vm/mrelease_test.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
-index 3fa3042e4424..76a21976ccdd 100644
---- a/sound/soc/codecs/da7210.c
-+++ b/sound/soc/codecs/da7210.c
-@@ -1335,6 +1335,8 @@ static int __init da7210_modinit(void)
- 	int ret = 0;
- #if IS_ENABLED(CONFIG_I2C)
- 	ret = i2c_add_driver(&da7210_i2c_driver);
-+	if (ret)
-+		return ret;
- #endif
- #if defined(CONFIG_SPI_MASTER)
- 	ret = spi_register_driver(&da7210_spi_driver);
+diff --git a/tools/testing/selftests/vm/mrelease_test.c b/tools/testing/selftests/vm/mrelease_test.c
+index 96671c2f7d48..6c62966ab5db 100644
+--- a/tools/testing/selftests/vm/mrelease_test.c
++++ b/tools/testing/selftests/vm/mrelease_test.c
+@@ -62,19 +62,22 @@ static int alloc_noexit(unsigned long nr_pages, int pipefd)
+ /* The process_mrelease calls in this test are expected to fail */
+ static void run_negative_tests(int pidfd)
+ {
++	int res;
+ 	/* Test invalid flags. Expect to fail with EINVAL error code. */
+ 	if (!syscall(__NR_process_mrelease, pidfd, (unsigned int)-1) ||
+ 			errno != EINVAL) {
++		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
+ 		perror("process_mrelease with wrong flags");
+-		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
++		exit(res);
+ 	}
+ 	/*
+ 	 * Test reaping while process is alive with no pending SIGKILL.
+ 	 * Expect to fail with EINVAL error code.
+ 	 */
+ 	if (!syscall(__NR_process_mrelease, pidfd, 0) || errno != EINVAL) {
++		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
+ 		perror("process_mrelease on a live process");
+-		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
++		exit(res);
+ 	}
+ }
+ 
+@@ -100,8 +103,9 @@ int main(void)
+ 
+ 	/* Test a wrong pidfd */
+ 	if (!syscall(__NR_process_mrelease, -1, 0) || errno != EBADF) {
++		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
+ 		perror("process_mrelease with wrong pidfd");
+-		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
++		exit(res);
+ 	}
+ 
+ 	/* Start the test with 1MB child memory allocation */
+@@ -156,8 +160,9 @@ int main(void)
+ 	run_negative_tests(pidfd);
+ 
+ 	if (kill(pid, SIGKILL)) {
++		res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
+ 		perror("kill");
+-		exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
++		exit(res);
+ 	}
+ 
+ 	success = (syscall(__NR_process_mrelease, pidfd, 0) == 0);
+@@ -172,9 +177,10 @@ int main(void)
+ 		if (errno == ESRCH) {
+ 			retry = (size <= MAX_SIZE_MB);
+ 		} else {
++			res = (errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
+ 			perror("process_mrelease");
+ 			waitpid(pid, NULL, 0);
+-			exit(errno == ENOSYS ? KSFT_SKIP : KSFT_FAIL);
++			exit(res);
+ 		}
+ 	}
+ 
 -- 
 2.35.1
 
