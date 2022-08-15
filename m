@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BF2C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C192C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232929AbiHOVpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S1350333AbiHOVrp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349661AbiHOVlk (ORCPT
+        with ESMTP id S1349789AbiHOVmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:41:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47A05C97D;
-        Mon, 15 Aug 2022 12:29:25 -0700 (PDT)
+        Mon, 15 Aug 2022 17:42:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6821B6DAFA;
+        Mon, 15 Aug 2022 12:29:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96551B8107A;
-        Mon, 15 Aug 2022 19:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00475C433C1;
-        Mon, 15 Aug 2022 19:29:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D191FB8107A;
+        Mon, 15 Aug 2022 19:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32829C433D7;
+        Mon, 15 Aug 2022 19:29:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591762;
-        bh=ROX/1QPSrkWehly//Z9ez2AbVEnBFV5ns4JBLQV7t80=;
+        s=korg; t=1660591771;
+        bh=EzOr3ecHRSRRF9rDsjBNuE8SLcI+04DTjOy9tRGAHBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oyyx+tGpTtbyyXf0Xy6FpUu4hL7ecH7gFybphFTGfmvuVWE7IU7yktMVphUeIsFAi
-         a4I3uUyBTs/MkGubFoP32lSZG8Sc7FLmwmUZ5PWAuvTIeCrtGXEAy9HI6rujwQGklH
-         lChWm/Czrrfpi6idJF2FoAX/TEZsEDNxTjAIYqjY=
+        b=Ex9fHHHJE1SmsPhDjENlC/nLaEpebcONzQbLm1mU9TlK79txKJqsZxjnBlAzu7oOX
+         4o2ohWded0FNqLZlM82XsLpbAKODtEMDIyDksyPIttc7/YRmmVpMCxBX4GKutbre1g
+         9GqCnIGMPuxeS6tg046sNfA21n38m4KttR6wKN9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.19 0005/1157] pNFS/flexfiles: Report RDMA connection errors to the server
-Date:   Mon, 15 Aug 2022 19:49:21 +0200
-Message-Id: <20220815180439.694875850@linuxfoundation.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rui Miguel Silva <rui.silva@linaro.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0659/1095] iio: gyro: fxas210002c: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:58 +0200
+Message-Id: <20220815180456.669805424@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,42 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-commit 7836d75467e9d214bdf5c693b32721de729a6e38 upstream.
+[ Upstream commit 3aafe923987cb4a15e16f03c6185ed4b6a78ca00 ]
 
-The RPC/RDMA driver will return -EPROTO and -ENODEV as connection errors
-under certain circumstances. Make sure that we handle them and report
-them to the server. If not, we can end up cycling forever in a
-LAYOUTGET/LAYOUTRETURN loop.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-Fixes: a12f996d3413 ("NFSv4/pNFS: Use connections to a DS that are all of the same protocol family")
-Cc: stable@vger.kernel.org # 5.11.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Updated the comment to 'may' require.
+
+Fixes: a0701b6263ae ("iio: gyro: add core driver for fxas21002c")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Rui Miguel Silva <rui.silva@linaro.org>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220508175712.647246-76-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/flexfilelayout/flexfilelayout.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/gyro/fxas21002c_core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/nfs/flexfilelayout/flexfilelayout.c
-+++ b/fs/nfs/flexfilelayout/flexfilelayout.c
-@@ -1131,6 +1131,8 @@ static int ff_layout_async_handle_error_
- 	case -EIO:
- 	case -ETIMEDOUT:
- 	case -EPIPE:
-+	case -EPROTO:
-+	case -ENODEV:
- 		dprintk("%s DS connection error %d\n", __func__,
- 			task->tk_status);
- 		nfs4_delete_deviceid(devid->ld, devid->nfs_client,
-@@ -1236,6 +1238,8 @@ static void ff_layout_io_track_ds_error(
- 		case -ENOBUFS:
- 		case -EPIPE:
- 		case -EPERM:
-+		case -EPROTO:
-+		case -ENODEV:
- 			*op_status = status = NFS4ERR_NXIO;
- 			break;
- 		case -EACCES:
+diff --git a/drivers/iio/gyro/fxas21002c_core.c b/drivers/iio/gyro/fxas21002c_core.c
+index 410e5e9f2672..7a459a823f6e 100644
+--- a/drivers/iio/gyro/fxas21002c_core.c
++++ b/drivers/iio/gyro/fxas21002c_core.c
+@@ -150,10 +150,10 @@ struct fxas21002c_data {
+ 	struct regulator *vddio;
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
+-	 * transfer buffers to live in their own cache lines.
++	 * DMA (thus cache coherency maintenance) may require the
++	 * transfer buffers live in their own cache lines.
+ 	 */
+-	s16 buffer[8] ____cacheline_aligned;
++	s16 buffer[8] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ enum fxas21002c_channel_index {
+-- 
+2.35.1
+
 
 
