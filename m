@@ -2,120 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9A0C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7A9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242049AbiHOSkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
+        id S242194AbiHOSkT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240822AbiHOSjO (ORCPT
+        with ESMTP id S242048AbiHOSjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:39:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9B82ED4B;
-        Mon, 15 Aug 2022 11:23:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43F5360FA3;
-        Mon, 15 Aug 2022 18:23:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E031C433C1;
-        Mon, 15 Aug 2022 18:23:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587833;
-        bh=G2wKVs2hxomJLfCHleVjEq03UftGpFfhnCPiTRRTtEU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jk5ECl1GYkZOgqQqeAqUb3Y+A5s5NgKRVcOvfHU0oRwQOGGcBnPiDMscXTqmbYBHP
-         rDVJWxHC+gWLm0oeqcdAyJTcwcqDAcsAFFcVcHu8a5+BlS/XJp94wcGBZlc2Vjz76w
-         zlhmg0+sbnEu30z44lXQ2mTUEOeW73dO6UNGLMas=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 209/779] spi: Fix simplification of devm_spi_register_controller
-Date:   Mon, 15 Aug 2022 19:57:33 +0200
-Message-Id: <20220815180346.204631619@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 14:39:15 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57412E6B8;
+        Mon, 15 Aug 2022 11:23:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Peq9JtWu1E4wR6oLY4ARrrcqindLx2FfBvAEgWzQ1g0=; b=w2tLn6ETVYP0VvljwROUi5c9Q/
+        rveWi+fG4t0fVcKB8q1gaZj8w72ZcqqAKvJDoLctt58naFC32aD+X4WKR+yk4FIlBv/57aq3IMObi
+        6jS7VEFtjnk4FEMuwQ8+Fjy8laYEJZy6EcLFItyiTPh5qAGwOMKYiQ6KeIQKxCsNKd2oY6u19eCRm
+        pR2Hzxb627+lWtmepjuPenaVX0DcWRc5KKJNlIxPNAzsI6C9Lino+xxMTUciyHL/wKO+9SgnbZbvI
+        YEg3IuCRpq7nZ2tZ9dWcU9PJPGY179wOkToWpHf9rdYl4q/9kHG57Ze0zJ4QSdhMVDEFbqJTVyy6e
+        BlseRfMA==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oNekh-004kXN-TZ;
+        Mon, 15 Aug 2022 18:23:52 +0000
+Date:   Mon, 15 Aug 2022 19:23:51 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Jiacheng Xu <578001344xu@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        konishi.ryusuke@gmail.com, linux-nilfs@vger.kernel.org,
+        security@kernel.org
+Subject: Re: KASAN: use-after-free in nilfs_mdt_destroy
+Message-ID: <YvqPN2T3Q8pfnCoV@ZenIV>
+References: <CAO4S-mficMz1mQW06EuCF+o11+mRDiCpufqVfoHkcRbQbs8kVw@mail.gmail.com>
+ <YvqKJppIL4lVCn9+@ZenIV>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvqKJppIL4lVCn9+@ZenIV>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+On Mon, Aug 15, 2022 at 07:02:14PM +0100, Al Viro wrote:
+> On Mon, Aug 15, 2022 at 10:03:21PM +0800, Jiacheng Xu wrote:
+> 
+> > Patch:
+> > Fix this bug by moving the assignment of inode->i_private before
+> > security_inode_alloc.
+> > An ad-hoc patch is proposed:
+> > https://patchwork.kernel.org/project/linux-fsdevel/patch/20211011030956.2459172-1-mudongliangabcd@gmail.com/
+> 
+> ... and that looks like utter bollocks.  Why does security_inode_alloc()
+> look at ->i_private?  Which LSM is involved?
 
-[ Upstream commit 43cc5a0afe4184a7fafe1eba32b5a11bb69c9ce0 ]
+OK, I see...  The role of security_inode_alloc() here is that it's
+a possible cause of failure.  And yes, dealing with that class of
+bugs here might be better.
 
-This reverts commit 59ebbe40fb51 ("spi: simplify
-devm_spi_register_controller").
+However, *IF* we go that way, why not move that thing to the
+very end?  Just prior to
+        this_cpu_inc(nr_inodes);
 
-If devm_add_action() fails in devm_add_action_or_reset(),
-devm_spi_unregister() will be called, it decreases the
-refcount of 'ctlr->dev' to 0, then it will cause uaf in
-the drivers that calling spi_put_controller() in error path.
+Sure, nilfs2 steps only into uninitialized ->i_private.
+Who's to say that we won't run into somebody deciding that e.g.
+inode->i_data.private_data is worth a look?
 
-Fixes: 59ebbe40fb51 ("spi: simplify devm_spi_register_controller")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-Link: https://lore.kernel.org/r/20220712135504.1055688-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/spi/spi.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+Just move the call of security_inode_alloc() down to immediately
+before the nr_inode increment, with explanation along the lines
+of
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index d0bbf8f9414d..556d65af5e23 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -2949,9 +2949,9 @@ int spi_register_controller(struct spi_controller *ctlr)
- }
- EXPORT_SYMBOL_GPL(spi_register_controller);
- 
--static void devm_spi_unregister(void *ctlr)
-+static void devm_spi_unregister(struct device *dev, void *res)
- {
--	spi_unregister_controller(ctlr);
-+	spi_unregister_controller(*(struct spi_controller **)res);
- }
- 
- /**
-@@ -2970,13 +2970,22 @@ static void devm_spi_unregister(void *ctlr)
- int devm_spi_register_controller(struct device *dev,
- 				 struct spi_controller *ctlr)
- {
-+	struct spi_controller **ptr;
- 	int ret;
- 
-+	ptr = devres_alloc(devm_spi_unregister, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return -ENOMEM;
-+
- 	ret = spi_register_controller(ctlr);
--	if (ret)
--		return ret;
-+	if (!ret) {
-+		*ptr = ctlr;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
-+	}
- 
--	return devm_add_action_or_reset(dev, devm_spi_unregister, ctlr);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(devm_spi_register_controller);
- 
--- 
-2.35.1
-
-
-
+"In case of security_inode_alloc() failure the inode is passed to
+->destroy_inode(); doing security_inode_alloc() last makes for
+easier life for ->destroy_inode() instances - they can rely upon
+the rest of inode_init_always() having been done.  It's not
+just a theoretical problem - nilfs2 has actually stepped into that
+[reference to report]"
