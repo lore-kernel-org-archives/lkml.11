@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E88DEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB409C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiHOUHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39532 "EHLO
+        id S243806AbiHOUHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346058AbiHOUGA (ORCPT
+        with ESMTP id S1346176AbiHOUGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:06:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9843481B02;
-        Mon, 15 Aug 2022 11:55:02 -0700 (PDT)
+        Mon, 15 Aug 2022 16:06:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F7E81698;
+        Mon, 15 Aug 2022 11:55:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45FC8B8105C;
-        Mon, 15 Aug 2022 18:55:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0CA0C433D7;
-        Mon, 15 Aug 2022 18:54:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 881D06125E;
+        Mon, 15 Aug 2022 18:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D722C433D6;
+        Mon, 15 Aug 2022 18:54:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589699;
-        bh=4WBlhzPsjfVj1rRFmuAP5awjPtNhQi4gcsTz5aOQEgc=;
+        s=korg; t=1660589695;
+        bh=9oKqhmwN4AKakxaJwaUN3W6bPQ1UeHS2y21A6FGtcaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aWYApASO/dsnHAGhXRDvtJqaIwS5Lt5xu7YLNjsRz/eL2uk3Yt2gnBYNQ9lDmwjNk
-         zprJ43RM9OPS6vTor4MTGrDNJpRSE8Yrx0i/IiCA3teCve+BP+gOfKi+ST8vI7ZmTp
-         HcsmEu6eufxyFDSb3bU5Gm28lqbg95/JCjClx8fs=
+        b=bxxvwr+88wAOpFhluwFxohjWSb89auHUyTPks3YMnwZbi/IgP+MwC96Es86dPk/zo
+         aAS73yHs7UapZxU8pBX0HY7Qdcha9zEC6qryhMGgKPb9cKXJHY8xubDzLigfulMJEx
+         0wK+QZKOZ4Zt5JPYnNlQjdsT5Zhww/rHSL3wBmOc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Daniel J. Ogorchock" <djogorchock@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.18 0020/1095] HID: nintendo: Add missing array termination
-Date:   Mon, 15 Aug 2022 19:50:19 +0200
-Message-Id: <20220815180430.187702863@linuxfoundation.org>
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 0002/1095] x86: link vdso and boot with -z noexecstack --no-warn-rwx-segments
+Date:   Mon, 15 Aug 2022 19:50:01 +0200
+Message-Id: <20220815180429.383780689@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,38 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-commit ab5f3404b7762b88403fbddbdda6b1b464bd6cbc upstream.
+commit ffcf9c5700e49c0aee42dcba9a12ba21338e8136 upstream.
 
-joycon_dpad_inputs_jc[] is unterminated. This may result in odd warnings
-such as
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
 
-input: input_set_capability: invalid code 3077588140 for type 1
+  ld: warning: arch/x86/boot/pmjump.o: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: arch/x86/boot/compressed/vmlinux has a LOAD segment with RWX permissions
 
-or in kernel crashes in nintendo_hid_probe(). Terminate the array to fix
-the problem.
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
 
-Fixes: 2af16c1f846bd ("HID: nintendo: add nintendo switch controller driver")
-Cc: Daniel J. Ogorchock <djogorchock@gmail.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
+
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
+
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-nintendo.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/boot/Makefile            |    2 +-
+ arch/x86/boot/compressed/Makefile |    4 ++++
+ arch/x86/entry/vdso/Makefile      |    2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/hid/hid-nintendo.c
-+++ b/drivers/hid/hid-nintendo.c
-@@ -1586,6 +1586,7 @@ static const unsigned int joycon_button_
- /* We report joy-con d-pad inputs as buttons and pro controller as a hat. */
- static const unsigned int joycon_dpad_inputs_jc[] = {
- 	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
-+	0 /* 0 signals end of array */
- };
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -103,7 +103,7 @@ $(obj)/zoffset.h: $(obj)/compressed/vmli
+ AFLAGS_header.o += -I$(objtree)/$(obj)
+ $(obj)/header.o: $(obj)/zoffset.h
  
- static int joycon_input_create(struct joycon_ctlr *ctlr)
+-LDFLAGS_setup.elf	:= -m elf_i386 -T
++LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
+ $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
+ 	$(call if_changed,ld)
+ 
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -69,6 +69,10 @@ LDFLAGS_vmlinux := -pie $(call ld-option
+ ifdef CONFIG_LD_ORPHAN_WARN
+ LDFLAGS_vmlinux += --orphan-handling=warn
+ endif
++LDFLAGS_vmlinux += -z noexecstack
++ifeq ($(CONFIG_LD_IS_BFD),y)
++LDFLAGS_vmlinux += $(call ld-option,--no-warn-rwx-segments)
++endif
+ LDFLAGS_vmlinux += -T
+ 
+ hostprogs	:= mkpiggy
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -179,7 +179,7 @@ quiet_cmd_vdso = VDSO    $@
+ 		 sh $(srctree)/$(src)/checkundef.sh '$(NM)' '$@'
+ 
+ VDSO_LDFLAGS = -shared --hash-style=both --build-id=sha1 \
+-	$(call ld-option, --eh-frame-hdr) -Bsymbolic
++	$(call ld-option, --eh-frame-hdr) -Bsymbolic -z noexecstack
+ GCOV_PROFILE := n
+ 
+ quiet_cmd_vdso_and_check = VDSO    $@
 
 
