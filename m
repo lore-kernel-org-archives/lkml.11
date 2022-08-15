@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2C8C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CFAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244324AbiHOXTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
+        id S240485AbiHOXT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353063AbiHOXPv (ORCPT
+        with ESMTP id S1353099AbiHOXPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:15:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB857CB69;
-        Mon, 15 Aug 2022 13:02:50 -0700 (PDT)
+        Mon, 15 Aug 2022 19:15:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E96146CCC;
+        Mon, 15 Aug 2022 13:02:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 547DD612D7;
-        Mon, 15 Aug 2022 20:02:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464B7C433C1;
-        Mon, 15 Aug 2022 20:02:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC851B80EA8;
+        Mon, 15 Aug 2022 20:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F52C433D6;
+        Mon, 15 Aug 2022 20:02:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593769;
-        bh=TbANiIQd+FPDA4iJn6Ixa9itBumf/koL+SuMqUIt8yg=;
+        s=korg; t=1660593772;
+        bh=LMkp6NyyuV2Ez/uJw716SkPh5MsLtM2lf94sqx8wvtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T1ByAi9uw/oYAMI5X3qTyx2VstCKenTdy6G502GePe8K8rQXHSe9M2OTHk6GoOhnR
-         bzr0VPSP4lTV7ULvmI9D1P0UC2JUTnAD5mhlN5Zh0FV4foNjOBa/eSGCmnlfdfj+70
-         ebR/CMWHKZcygvu/uwAn8yn0I/PWcGLHPqTpWBPk=
+        b=XkjqOiDuOgvAxZYh1Rx5zVQ+UiHf2OtF+jf527GKmlR8EKjHz0UPN/MGOZnk+0/dl
+         b3iQz+4giD3LV/901RaVWNilviA6Z1KDPD/KT1FkUoDKN3nTVmg6hjgG2N4W3Hmlyg
+         724w7RVTOwl4CIFlM0b1GmaMxgFTBe1pAuLSjdzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Baoquan He <bhe@redhat.com>, Coiby Xu <coxu@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1003/1095] kexec: clean up arch_kexec_kernel_verify_sig
-Date:   Mon, 15 Aug 2022 20:06:42 +0200
-Message-Id: <20220815180510.604450713@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0323/1157] wifi: rtlwifi: fix error codes in rtl_debugfs_set_write_h2c()
+Date:   Mon, 15 Aug 2022 19:54:39 +0200
+Message-Id: <20220815180452.578637490@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,105 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coiby Xu <coxu@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 689a71493bd2f31c024f8c0395f85a1fd4b2138e ]
+[ Upstream commit b88d28146c30a8e14f0f012d56ebf19b68a348f4 ]
 
-Before commit 105e10e2cf1c ("kexec_file: drop weak attribute from
-functions"), there was already no arch-specific implementation
-of arch_kexec_kernel_verify_sig. With weak attribute dropped by that
-commit, arch_kexec_kernel_verify_sig is completely useless. So clean it
-up.
+If the copy_from_user() fails or the user gives invalid date then the
+correct thing to do is to return a negative error code.  (Currently it
+returns success).
 
-Note later patches are dependent on this patch so it should be backported
-to the stable tree as well.
+I made a copy additional related cleanups:
+1) There is no need to check "buffer" for NULL.  That's handled by
+copy_from_user().
+2) The "h2c_len" variable cannot be negative because it is unsigned
+and because sscanf() does not return negative error codes.
 
-Cc: stable@vger.kernel.org
-Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
-Reviewed-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Coiby Xu <coxu@redhat.com>
-[zohar@linux.ibm.com: reworded patch description "Note"]
-Link: https://lore.kernel.org/linux-integrity/20220714134027.394370-1-coxu@redhat.com/
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: 610247f46feb ("rtlwifi: Improve debugging by using debugfs")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/YoOLnDkHgVltyXK7@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/kexec.h |  5 -----
- kernel/kexec_file.c   | 33 +++++++++++++--------------------
- 2 files changed, 13 insertions(+), 25 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/debug.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-index 87c1795297b0..f3e7680befcc 100644
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -212,11 +212,6 @@ static inline void *arch_kexec_kernel_image_load(struct kimage *image)
- }
- #endif
+diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
+index 901cdfe3723c..0b1bc04cb6ad 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/debug.c
++++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
+@@ -329,8 +329,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
  
--#ifdef CONFIG_KEXEC_SIG
--int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
--				 unsigned long buf_len);
--#endif
--
- extern int kexec_add_buffer(struct kexec_buf *kbuf);
- int kexec_locate_mem_hole(struct kexec_buf *kbuf);
+ 	tmp_len = (count > sizeof(tmp) - 1 ? sizeof(tmp) - 1 : count);
  
-diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 925953dfef05..ad005cd184a4 100644
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -81,24 +81,6 @@ int kexec_image_post_load_cleanup_default(struct kimage *image)
- 	return image->fops->cleanup(image->image_loader_data);
- }
+-	if (!buffer || copy_from_user(tmp, buffer, tmp_len))
+-		return count;
++	if (copy_from_user(tmp, buffer, tmp_len))
++		return -EFAULT;
  
--#ifdef CONFIG_KEXEC_SIG
--static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
--					  unsigned long buf_len)
--{
--	if (!image->fops || !image->fops->verify_sig) {
--		pr_debug("kernel loader does not support signature verification.\n");
--		return -EKEYREJECTED;
--	}
--
--	return image->fops->verify_sig(buf, buf_len);
--}
--
--int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf, unsigned long buf_len)
--{
--	return kexec_image_verify_sig_default(image, buf, buf_len);
--}
--#endif
--
- /*
-  * Free up memory used by kernel, initrd, and command line. This is temporary
-  * memory allocation which is not needed any more after these buffers have
-@@ -141,13 +123,24 @@ void kimage_file_post_load_cleanup(struct kimage *image)
- }
+ 	tmp[tmp_len] = '\0';
  
- #ifdef CONFIG_KEXEC_SIG
-+static int kexec_image_verify_sig(struct kimage *image, void *buf,
-+				  unsigned long buf_len)
-+{
-+	if (!image->fops || !image->fops->verify_sig) {
-+		pr_debug("kernel loader does not support signature verification.\n");
-+		return -EKEYREJECTED;
-+	}
-+
-+	return image->fops->verify_sig(buf, buf_len);
-+}
-+
- static int
- kimage_validate_signature(struct kimage *image)
- {
- 	int ret;
+@@ -340,8 +340,8 @@ static ssize_t rtl_debugfs_set_write_h2c(struct file *filp,
+ 			 &h2c_data[4], &h2c_data[5],
+ 			 &h2c_data[6], &h2c_data[7]);
  
--	ret = arch_kexec_kernel_verify_sig(image, image->kernel_buf,
--					   image->kernel_buf_len);
-+	ret = kexec_image_verify_sig(image, image->kernel_buf,
-+				     image->kernel_buf_len);
- 	if (ret) {
+-	if (h2c_len <= 0)
+-		return count;
++	if (h2c_len == 0)
++		return -EINVAL;
  
- 		if (sig_enforce) {
+ 	for (i = 0; i < h2c_len; i++)
+ 		h2c_data_packed[i] = (u8)h2c_data[i];
 -- 
 2.35.1
 
