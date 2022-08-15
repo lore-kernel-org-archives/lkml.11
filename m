@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFABC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B57AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346858AbiHOVYs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
+        id S245036AbiHOVY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346566AbiHOVSG (ORCPT
+        with ESMTP id S1346798AbiHOVSH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:18:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F77100;
-        Mon, 15 Aug 2022 12:21:29 -0700 (PDT)
+        Mon, 15 Aug 2022 17:18:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D046CB51;
+        Mon, 15 Aug 2022 12:21:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A67AB81109;
-        Mon, 15 Aug 2022 19:21:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D837DC433C1;
-        Mon, 15 Aug 2022 19:21:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4AADDCE12C8;
+        Mon, 15 Aug 2022 19:21:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31A4CC433C1;
+        Mon, 15 Aug 2022 19:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591287;
-        bh=CjcsINQYa6VArzm2wXQ8YIirX6aD5SJf3S+UBgXgnuQ=;
+        s=korg; t=1660591293;
+        bh=iHhW4qyLdoFyQYBl6J+HvzCnbf6OZqPZB8iVowfHA8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WzGPHx89VEUsOfuedTqiC/tmB07O8DIfxV/9pIHZQ9KsIMJdodTD1WBZG8Q939VAb
-         Bz985+H8+7YYoCQKqt/fq9Py1SbkDDa/gBMsv5//oe64O2h8w9gDU3CMVPtbtQn3Yb
-         rNl26ETYqpQtfYTP1xBHz8znvgaPP6Ry0ri6s3DU=
+        b=UJiNHNG5q/8gTJ3G2XgHyPQQ0qR4YBEVrlTw37GBHT1VRyVoZ96HsdarOeNTAp7et
+         vRGO2hxzBSP5Xj7NBZKb9rIs3M+lrw3v9duJREr19UB+Bqm/BCGAzDBVFzZZoVyThW
+         kA99V0rLwxAn1vVENJTd9bV6ory0ZBs42LCS2Cek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0530/1095] iavf: Fix tc qdisc show listing too many queues
-Date:   Mon, 15 Aug 2022 19:58:49 +0200
-Message-Id: <20220815180451.468305203@linuxfoundation.org>
+Subject: [PATCH 5.18 0532/1095] net: rose: fix netdev reference changes
+Date:   Mon, 15 Aug 2022 19:58:51 +0200
+Message-Id: <20220815180451.559061671@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -55,121 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 93cb804edab1b9a5bb7bb7b6824012dbb20abf22 ]
+[ Upstream commit 931027820e4dafabc78aff82af59f8c1c4bd3128 ]
 
-Fix tc qdisc show dev <ethX> root displaying too many fq_codel qdiscs.
-tc_modify_qdisc, which is caller of ndo_setup_tc, expects driver to call
-netif_set_real_num_tx_queues, which prepares qdiscs.
-Without this patch, fq_codel qdiscs would not be adjusted to number of
-queues on VF.
-e.g.:
-tc qdisc show dev <ethX>
-qdisc mq 0: root
-qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-tc qdisc add dev <ethX> root mqprio num_tc 2 map 1 0 0 0 0 0 0 0 queues 1@0 1@1 hw 1 mode channel shaper bw_rlimit max_rate 5000Mbit 150Mbit
-tc qdisc show dev <ethX>
-qdisc mqprio 8003: root tc 2 map 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-             queues:(0:0) (1:1)
-             mode:channel
-             shaper:bw_rlimit   max_rate:5Gbit 150Mbit
-qdisc fq_codel 0: parent 8003:4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8003:3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8003:2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8003:1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+Bernard reported that trying to unload rose module would lead
+to infamous messages:
 
-While after fix:
-tc qdisc add dev <ethX> root mqprio num_tc 2 map 1 0 0 0 0 0 0 0 queues 1@0 1@1 hw 1 mode channel shaper bw_rlimit max_rate 5000Mbit 150Mbit
-tc qdisc show dev <ethX> #should show 2, shows 4
-qdisc mqprio 8004: root tc 2 map 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-             queues:(0:0) (1:1)
-             mode:channel
-             shaper:bw_rlimit   max_rate:5Gbit 150Mbit
-qdisc fq_codel 0: parent 8004:2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8004:1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
 
-Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Co-developed-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+This patch solves the issue, by making sure each socket referring to
+a netdevice holds a reference count on it, and properly releases it
+in rose_release().
+
+rose_dev_first() is also fixed to take a device reference
+before leaving the rcu_read_locked section.
+
+Following patch will add ref_tracker annotations to ease
+future bug hunting.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Tested-by: Bernard Pidoux <f6bvp@free.fr>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h      |  5 +++++
- drivers/net/ethernet/intel/iavf/iavf_main.c | 21 +++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+ net/rose/af_rose.c    | 11 +++++++++--
+ net/rose/rose_route.c |  2 ++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index c241fbc30f93..a988c08e906f 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -431,6 +431,11 @@ struct iavf_adapter {
- 	/* lock to protect access to the cloud filter list */
- 	spinlock_t cloud_filter_list_lock;
- 	u16 num_cloud_filters;
-+	/* snapshot of "num_active_queues" before setup_tc for qdisc add
-+	 * is invoked. This information is useful during qdisc del flow,
-+	 * to restore correct number of queues
-+	 */
-+	int orig_num_active_queues;
- 
- #define IAVF_MAX_FDIR_FILTERS 128	/* max allowed Flow Director filters */
- 	u16 fdir_active_fltr;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 51ae10eb348c..3dbfaead2ac7 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3429,6 +3429,7 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
- 			netif_tx_disable(netdev);
- 			iavf_del_all_cloud_filters(adapter);
- 			adapter->aq_required = IAVF_FLAG_AQ_DISABLE_CHANNELS;
-+			total_qps = adapter->orig_num_active_queues;
- 			goto exit;
- 		} else {
- 			return -EINVAL;
-@@ -3472,7 +3473,21 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
- 				adapter->ch_config.ch_info[i].offset = 0;
- 			}
- 		}
-+
-+		/* Take snapshot of original config such as "num_active_queues"
-+		 * It is used later when delete ADQ flow is exercised, so that
-+		 * once delete ADQ flow completes, VF shall go back to its
-+		 * original queue configuration
-+		 */
-+
-+		adapter->orig_num_active_queues = adapter->num_active_queues;
-+
-+		/* Store queue info based on TC so that VF gets configured
-+		 * with correct number of queues when VF completes ADQ config
-+		 * flow
-+		 */
- 		adapter->ch_config.total_qps = total_qps;
-+
- 		netif_tx_stop_all_queues(netdev);
- 		netif_tx_disable(netdev);
- 		adapter->aq_required |= IAVF_FLAG_AQ_ENABLE_CHANNELS;
-@@ -3489,6 +3504,12 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index bf2d986a6bc3..a8e3ec800a9c 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -192,6 +192,7 @@ static void rose_kill_by_device(struct net_device *dev)
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			if (rose->neighbour)
+ 				rose->neighbour->use--;
++			dev_put(rose->device);
+ 			rose->device = NULL;
  		}
  	}
- exit:
-+	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
-+		return 0;
-+
-+	netif_set_real_num_rx_queues(netdev, total_qps);
-+	netif_set_real_num_tx_queues(netdev, total_qps);
-+
- 	return ret;
- }
+@@ -592,6 +593,8 @@ static struct sock *rose_make_new(struct sock *osk)
+ 	rose->idle	= orose->idle;
+ 	rose->defer	= orose->defer;
+ 	rose->device	= orose->device;
++	if (rose->device)
++		dev_hold(rose->device);
+ 	rose->qbitincl	= orose->qbitincl;
  
+ 	return sk;
+@@ -645,6 +648,7 @@ static int rose_release(struct socket *sock)
+ 		break;
+ 	}
+ 
++	dev_put(rose->device);
+ 	sock->sk = NULL;
+ 	release_sock(sk);
+ 	sock_put(sk);
+@@ -721,7 +725,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	struct rose_sock *rose = rose_sk(sk);
+ 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
+ 	unsigned char cause, diagnostic;
+-	struct net_device *dev;
+ 	ax25_uid_assoc *user;
+ 	int n, err = 0;
+ 
+@@ -778,9 +781,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 	}
+ 
+ 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
++		struct net_device *dev;
++
+ 		sock_reset_flag(sk, SOCK_ZAPPED);
+ 
+-		if ((dev = rose_dev_first()) == NULL) {
++		dev = rose_dev_first();
++		if (!dev) {
+ 			err = -ENETUNREACH;
+ 			goto out_release;
+ 		}
+@@ -788,6 +794,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 		user = ax25_findbyuid(current_euid());
+ 		if (!user) {
+ 			err = -EINVAL;
++			dev_put(dev);
+ 			goto out_release;
+ 		}
+ 
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index 5e93510fa3d2..09ad2d9e63c9 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -615,6 +615,8 @@ struct net_device *rose_dev_first(void)
+ 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
+ 				first = dev;
+ 	}
++	if (first)
++		dev_hold(first);
+ 	rcu_read_unlock();
+ 
+ 	return first;
 -- 
 2.35.1
 
