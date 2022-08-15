@@ -2,103 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00502C2BBC5
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15776C2BB9D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350221AbiHOW03 (ORCPT
+        id S1350289AbiHOW0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
+        Mon, 15 Aug 2022 18:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345855AbiHOWO6 (ORCPT
+        with ESMTP id S1348533AbiHOWQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:14:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E79567473;
-        Mon, 15 Aug 2022 12:39:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5668B81136;
-        Mon, 15 Aug 2022 19:39:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F35D3C433D6;
-        Mon, 15 Aug 2022 19:39:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592375;
-        bh=Eyld/4JG6PhdZddQPy7uQIKN0fHrDm8Y8aZZ1sd1+VY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ILWLujrKP3uUZtv73cF9aNihNiI7ERvxG6+i8yO73O8k5OtBjweB+Fy26Pxl72yml
-         MJx0Jh7JJEPzWH5gczQI6C8ge2ofqUxMO4EewWqMxcMp/kwvyPrgWN2VE8BmHcgvx7
-         VxByfwaZQUgMGkGxPuWB0RNwh00IqyjCeiMbCM/8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fawzi Khaber <fawzi.khaber@tdk.com>,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.19 0101/1157] iio: fix iio_format_avail_range() printing for none IIO_VAL_INT
-Date:   Mon, 15 Aug 2022 19:50:57 +0200
-Message-Id: <20220815180443.673794513@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:16:39 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119E97A76E;
+        Mon, 15 Aug 2022 12:40:11 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 19:40:04 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1660592406;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
+        bh=dDSkv5MwGBvgI78bM5xANHUjiQSD2UHZhDvpjhNR+Zg=;
+        b=IDGATL8v0xndArtTjxMUmTEUjjWnHF5XDE9sFAE0ZOp+CFULFXzgLL4m/NGuggm06pzj0h
+        jOyaURGGtXPp978tgbrkMkT3lyUzzHxdESg3FcN4sTVCj8ZDO2DOQBP9QAXnI5sKeJM0tG
+        WxjldCNLUkN5mL/2WTvQSFitw+mdylIHAPL/4oW0Ge0cZBtJB/PmIkOi3Qn1WmxqOD+kH2
+        ypPE7mZaSPDYsQgzA+4ZWn/xKgAP2A+Lg8w2CRhzyOFXE2nk3/dWB9odL2yqTRcVycdHwL
+        814v6/AXNote7OE/TkZ+ogD7nfy1QKciVK2Bjx135nM/eRQS1nmak2ZW7uQZDw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1660592406;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
+        bh=dDSkv5MwGBvgI78bM5xANHUjiQSD2UHZhDvpjhNR+Zg=;
+        b=ddwH8zwXcnyClJcJEABIanPqp0rpb0yiUXTK0YsjHMbcSY6gPIcSuHPWaugNWKskB43MtX
+        oBzP3t7xdSOSVGCw==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/microcode] x86/microcode/AMD: Attempt applying on every
+ logical thread
+Cc:     stefantalpalaru@yahoo.com, Borislav Petkov <bp@suse.de>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <166059240449.401.10624523214894054628.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fawzi Khaber <fawzi.khaber@tdk.com>
+The following commit has been merged into the x86/microcode branch of tip:
 
-commit 5e1f91850365de55ca74945866c002fda8f00331 upstream.
+Commit-ID:     71da8a554f25713964a919311c324e5a32f08239
+Gitweb:        https://git.kernel.org/tip/71da8a554f25713964a919311c324e5a32f=
+08239
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Sun, 14 Aug 2022 12:37:49 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 15 Aug 2022 21:25:31 +02:00
 
-iio_format_avail_range() should print range as follow [min, step, max], so
-the function was previously calling iio_format_list() with length = 3,
-length variable refers to the array size of values not the number of
-elements. In case of non IIO_VAL_INT values each element has integer part
-and decimal part. With length = 3 this would cause premature end of loop
-and result in printing only one element.
+x86/microcode/AMD: Attempt applying on every logical thread
 
-Signed-off-by: Fawzi Khaber <fawzi.khaber@tdk.com>
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Fixes: eda20ba1e25e ("iio: core: Consolidate iio_format_avail_{list,range}()")
-Link: https://lore.kernel.org/r/20220718130706.32571-1-jmaneyrol@invensense.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Currently, the patch application logic checks whether patch application
+is needed on each CPU. Therefore, on SMT designs where the microcode
+engine is shared between the two threads, the application happens only
+on one of them.
+
+However, there are microcode patches which do per-thread modification,
+see Link tag below.
+
+Therefore, drop the revision check and try applying on each thread. This
+is what the BIOS does too so this method is very much tested.
+
+Reported-by:  =C8=98tefan Talpalaru <stefantalpalaru@yahoo.com>
+Tested-by:  =C8=98tefan Talpalaru <stefantalpalaru@yahoo.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D216211
 ---
- drivers/iio/industrialio-core.c |   18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ arch/x86/kernel/cpu/microcode/amd.c | 39 ++++++----------------------
+ 1 file changed, 9 insertions(+), 30 deletions(-)
 
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -835,7 +835,23 @@ static ssize_t iio_format_avail_list(cha
- 
- static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
+diff --git a/arch/x86/kernel/cpu/microcode/amd.c b/arch/x86/kernel/cpu/microc=
+ode/amd.c
+index 8b2fcdf..a575dbb 100644
+--- a/arch/x86/kernel/cpu/microcode/amd.c
++++ b/arch/x86/kernel/cpu/microcode/amd.c
+@@ -420,8 +420,8 @@ apply_microcode_early_amd(u32 cpuid_1_eax, void *ucode, s=
+ize_t size, bool save_p
+ 	struct cont_desc desc =3D { 0 };
+ 	u8 (*patch)[PATCH_MAX_SIZE];
+ 	struct microcode_amd *mc;
+-	u32 rev, dummy, *new_rev;
+ 	bool ret =3D false;
++	u32 *new_rev;
+=20
+ #ifdef CONFIG_X86_32
+ 	new_rev =3D (u32 *)__pa_nodebug(&ucode_new_rev);
+@@ -439,10 +439,6 @@ apply_microcode_early_amd(u32 cpuid_1_eax, void *ucode, =
+size_t size, bool save_p
+ 	if (!mc)
+ 		return ret;
+=20
+-	native_rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
+-	if (rev >=3D mc->hdr.patch_id)
+-		return ret;
+-
+ 	if (!__apply_microcode_amd(mc)) {
+ 		*new_rev =3D mc->hdr.patch_id;
+ 		ret      =3D true;
+@@ -516,7 +512,7 @@ void load_ucode_amd_ap(unsigned int cpuid_1_eax)
  {
--	return iio_format_list(buf, vals, type, 3, "[", "]");
-+	int length;
-+
-+	/*
-+	 * length refers to the array size , not the number of elements.
-+	 * The purpose is to print the range [min , step ,max] so length should
-+	 * be 3 in case of int, and 6 for other types.
-+	 */
-+	switch (type) {
-+	case IIO_VAL_INT:
-+		length = 3;
-+		break;
-+	default:
-+		length = 6;
-+		break;
-+	}
-+
-+	return iio_format_list(buf, vals, type, length, "[", "]");
+ 	struct microcode_amd *mc;
+ 	struct cpio_data cp;
+-	u32 *new_rev, rev, dummy;
++	u32 *new_rev;
+=20
+ 	if (IS_ENABLED(CONFIG_X86_32)) {
+ 		mc	=3D (struct microcode_amd *)__pa_nodebug(amd_ucode_patch);
+@@ -526,10 +522,8 @@ void load_ucode_amd_ap(unsigned int cpuid_1_eax)
+ 		new_rev =3D &ucode_new_rev;
+ 	}
+=20
+-	native_rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
+-
+ 	/* Check whether we have saved a new patch already: */
+-	if (*new_rev && rev < mc->hdr.patch_id) {
++	if (*new_rev) {
+ 		if (!__apply_microcode_amd(mc)) {
+ 			*new_rev =3D mc->hdr.patch_id;
+ 			return;
+@@ -571,23 +565,17 @@ int __init save_microcode_in_initrd_amd(unsigned int cp=
+uid_1_eax)
+=20
+ void reload_ucode_amd(void)
+ {
+-	struct microcode_amd *mc;
+-	u32 rev, dummy __always_unused;
+-
+-	mc =3D (struct microcode_amd *)amd_ucode_patch;
++	struct microcode_amd *mc =3D (struct microcode_amd *)amd_ucode_patch;
+=20
+-	rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
+-
+-	if (rev < mc->hdr.patch_id) {
+-		if (!__apply_microcode_amd(mc)) {
+-			ucode_new_rev =3D mc->hdr.patch_id;
+-			pr_info("reload patch_level=3D0x%08x\n", ucode_new_rev);
+-		}
++	if (!__apply_microcode_amd(mc)) {
++		ucode_new_rev =3D mc->hdr.patch_id;
++		pr_info("reload patch_level=3D0x%08x\n", ucode_new_rev);
+ 	}
  }
- 
- static ssize_t iio_read_channel_info_avail(struct device *dev,
-
-
+ static u16 __find_equiv_id(unsigned int cpu)
+ {
+ 	struct ucode_cpu_info *uci =3D ucode_cpu_info + cpu;
++
+ 	return find_equiv_id(&equiv_table, uci->cpu_sig.sig);
+ }
+=20
+@@ -678,7 +666,7 @@ static enum ucode_state apply_microcode_amd(int cpu)
+ 	struct ucode_cpu_info *uci;
+ 	struct ucode_patch *p;
+ 	enum ucode_state ret;
+-	u32 rev, dummy __always_unused;
++	u32 rev;
+=20
+ 	BUG_ON(raw_smp_processor_id() !=3D cpu);
+=20
+@@ -691,14 +679,6 @@ static enum ucode_state apply_microcode_amd(int cpu)
+ 	mc_amd  =3D p->data;
+ 	uci->mc =3D p->data;
+=20
+-	rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
+-
+-	/* need to apply patch? */
+-	if (rev >=3D mc_amd->hdr.patch_id) {
+-		ret =3D UCODE_OK;
+-		goto out;
+-	}
+-
+ 	if (__apply_microcode_amd(mc_amd)) {
+ 		pr_err("CPU%d: update failed for patch_level=3D0x%08x\n",
+ 			cpu, mc_amd->hdr.patch_id);
+@@ -710,7 +690,6 @@ static enum ucode_state apply_microcode_amd(int cpu)
+=20
+ 	pr_info("CPU%d: new patch_level=3D0x%08x\n", cpu, rev);
+=20
+-out:
+ 	uci->cpu_sig.rev =3D rev;
+ 	c->microcode	 =3D rev;
+=20
