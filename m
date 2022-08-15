@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D61C3276B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2CC0C3276A
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351128AbiHOWhj (ORCPT
+        id S1351009AbiHOWha (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        Mon, 15 Aug 2022 18:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349590AbiHOWbD (ORCPT
+        with ESMTP id S1349564AbiHOWbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:31:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDAAD7D27;
-        Mon, 15 Aug 2022 12:48:22 -0700 (PDT)
+        Mon, 15 Aug 2022 18:31:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F92A12AD3F;
+        Mon, 15 Aug 2022 12:48:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C13FDCE12E1;
-        Mon, 15 Aug 2022 19:48:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB10C433D6;
-        Mon, 15 Aug 2022 19:48:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 492B3B81144;
+        Mon, 15 Aug 2022 19:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95AFBC433C1;
+        Mon, 15 Aug 2022 19:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592899;
-        bh=VNrgWDWeGuoXAxyxWEQ/kH7r5U6avZqdm5orjP6BqDY=;
+        s=korg; t=1660592896;
+        bh=z8eH2YCWtzXeziL3IDd+ciLA3px/Rel1/M0UzW/TDLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1nmSRERI2XwMxbTRdU0npZzYUhkfkcSaHV+kXt64VK4S5hXmlltxCBKBnbZFnRrWa
-         YcNevuBTJhzpRgKfk+HUH3v2tMmr5ua77r7TUUhX3xxGLz9B1CywB+mYTjPotQOCQg
-         RkxxUFXS9GnPD62RgMURtc7+wx872s6iJy4V3zpo=
+        b=mxI+vEYheuICxmQcUEX3uY6VZb1iCvD2Vzob+eug9w5HFKLqu0lYk0ryNtvWM1uLY
+         6suyWtGBbzi1c3KqZ8LtdgWXJ1HpRrX6GcAXSgX0m+ChGjkV3/uZvkJjaus/nu7OCV
+         fybE3DxzA9lV3xa/6sN6OiB4ff3n5UadSDPBxeGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.18 0863/1095] ASoC: qcom: Fix missing of_node_put() in asoc_qcom_lpass_cpu_platform_probe()
-Date:   Mon, 15 Aug 2022 20:04:22 +0200
-Message-Id: <20220815180505.044102979@linuxfoundation.org>
+        stable@vger.kernel.org, Manyi Li <limanyi@uniontech.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0179/1157] ACPI: PM: save NVS memory for Lenovo G40-45
+Date:   Mon, 15 Aug 2022 19:52:15 +0200
+Message-Id: <20220815180446.905402711@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Manyi Li <limanyi@uniontech.com>
 
-[ Upstream commit f507c0c67dac57d2bcd5dcae4b6139b0305d8957 ]
+[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
 
-We should call of_node_put() for the reference 'dsp_of_node' returned by
-of_parse_phandle() which will increase the refcount.
+[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
+produced from 2012 to now not saving NVS region to accelerate S3.
 
-Fixes: 9bae4880acee ("ASoC: qcom: move ipq806x specific bits out of lpass driver.")
-Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220702020109.263980-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
+saving during S3. A quirk is introduced for this platform.
+
+Signed-off-by: Manyi Li <limanyi@uniontech.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/qcom/lpass-cpu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/sleep.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/sound/soc/qcom/lpass-cpu.c b/sound/soc/qcom/lpass-cpu.c
-index e6846ad2b5fa..964eb07f46d6 100644
---- a/sound/soc/qcom/lpass-cpu.c
-+++ b/sound/soc/qcom/lpass-cpu.c
-@@ -1090,6 +1090,7 @@ int asoc_qcom_lpass_cpu_platform_probe(struct platform_device *pdev)
- 	dsp_of_node = of_parse_phandle(pdev->dev.of_node, "qcom,adsp", 0);
- 	if (dsp_of_node) {
- 		dev_err(dev, "DSP exists and holds audio resources\n");
-+		of_node_put(dsp_of_node);
- 		return -EBUSY;
- 	}
- 
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 04ea1569df78..974746e6e59d 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -360,6 +360,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
+ 		},
+ 	},
++	{
++	.callback = init_nvs_save_s3,
++	.ident = "Lenovo G40-45",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
++		},
++	},
+ 	/*
+ 	 * ThinkPad X1 Tablet(2016) cannot do suspend-to-idle using
+ 	 * the Low Power S0 Idle firmware interface (see
 -- 
 2.35.1
 
