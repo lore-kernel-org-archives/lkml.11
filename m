@@ -2,89 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B28F8C25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E15C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353588AbiHOXcE (ORCPT
+        id S1353631AbiHOXcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
+        Mon, 15 Aug 2022 19:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343925AbiHOX0K (ORCPT
+        with ESMTP id S1343956AbiHOX0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:26:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91561474D4;
-        Mon, 15 Aug 2022 13:06:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D2D760025;
-        Mon, 15 Aug 2022 20:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2041CC433C1;
-        Mon, 15 Aug 2022 20:06:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593980;
-        bh=FU27mNks8W5srJ5JvNYi5+dQrXnSsKiy73X4z1VGlp4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sYf26RQI3lCEMsbeutyGd8QSEn9KF8SaTnQ+wlmNa6fFoEHe7bx18881GYO9rdRve
-         smY6iR2jS0GGYIETkz6wN2Tc4VKmj/qgx68K/fr3JcAE0q9GlnB8niOJVKo73QKnUo
-         sxD5A1jCTGHiinEiIQcQ8Hc9YEZXcjAQ3cjFyRqI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@riseup.net>,
-        Tales Lelo da Aparecida <tales.aparecida@gmail.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8521747B9B;
+        Mon, 15 Aug 2022 13:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=UeErxgbLsIOnl1kKr0gd1MbfngQnOPyfN93GP4+152g=; b=KwI+w1Wmmgs2RIYXYUmn/oWg3t
+        HZubBothMQce3fFWX8GXOWkWDc7Vc6TNeF2nZPtru/dO1woNE1bvTZ/mViIZ5PRbpuGvu3FQdRsOv
+        y5/3PvKxKUrOGiCTFPJPz17iDysP5xjxIdBnh9MpOyVYGWhe1vLxH2BYaeDLuZIohrSvqUpHtwKMV
+        V+DLtqiLsKQZJquaiKbQVPDOy+R8Xygz5EKfDS7FQiG4MM4dTUldAe5o7QG2RUBg2a9ptovyvzov/
+        JTxIrcqbNiLAAiQZlG9FFLt+oi234Ibx1AU4Xh1YFLCSGwrHTfwIbj7c/lTZu55Clddn0Dm7hkw6k
+        /0WcpsTQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNgLt-006383-RC; Mon, 15 Aug 2022 20:06:21 +0000
+Date:   Mon, 15 Aug 2022 21:06:21 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joe Perches <joe@perches.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0357/1157] drm/vkms: check plane_composer->map[0] before using it
-Date:   Mon, 15 Aug 2022 19:55:13 +0200
-Message-Id: <20220815180453.997054498@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+Subject: Re: [PATCH 5.19 0246/1157] usercopy: use unsigned long instead of
+ uintptr_t
+Message-ID: <YvqnPRmBDgUwKpzg@casper.infradead.org>
 References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+ <20220815180449.423777119@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815180449.423777119@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+On Mon, Aug 15, 2022 at 07:53:22PM +0200, Greg Kroah-Hartman wrote:
+> From: Jason A. Donenfeld <Jason@zx2c4.com>
+> 
+> [ Upstream commit 170b2c350cfcb6f74074e44dd9f916787546db0d ]
+> 
+> A recent commit factored out a series of annoying (unsigned long) casts
+> into a single variable declaration, but made the pointer type a
+> `uintptr_t` rather than the usual `unsigned long`. This patch changes it
+> to be the integer type more typically used by the kernel to represent
+> addresses.
+> 
+> Fixes: 35fb9ae4aa2e ("usercopy: Cast pointer to an integer once")
 
-[ Upstream commit 24f6fe3226c6f9f1b8406311a96b59c6e650b707 ]
+Not sure why this needs to be backported?
 
-Fix a copypasta error. The caller of compose_plane() already checks
-primary_composer->map. In contrast, plane_composer->map is never
-verified here before handling.
-
-Fixes: 7938f4218168 ("dma-buf-map: Rename to iosys-map")
-Reviewed-by: André Almeida <andrealmeid@riseup.net>
-Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220415111300.61013-2-tales.aparecida@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/vkms/vkms_composer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/vkms/vkms_composer.c b/drivers/gpu/drm/vkms/vkms_composer.c
-index c6a1036bf2ea..b47ac170108c 100644
---- a/drivers/gpu/drm/vkms/vkms_composer.c
-+++ b/drivers/gpu/drm/vkms/vkms_composer.c
-@@ -157,7 +157,7 @@ static void compose_plane(struct vkms_composer *primary_composer,
- 	void *vaddr;
- 	void (*pixel_blend)(const u8 *p_src, u8 *p_dst);
- 
--	if (WARN_ON(iosys_map_is_null(&primary_composer->map[0])))
-+	if (WARN_ON(iosys_map_is_null(&plane_composer->map[0])))
- 		return;
- 
- 	vaddr = plane_composer->map[0].vaddr;
--- 
-2.35.1
-
-
-
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Cc: Uladzislau Rezki <urezki@gmail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> Cc: Joe Perches <joe@perches.com>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Link: https://lore.kernel.org/r/20220616143617.449094-1-Jason@zx2c4.com
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  mm/usercopy.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/usercopy.c b/mm/usercopy.c
+> index 4e1da708699b..c1ee15a98633 100644
+> --- a/mm/usercopy.c
+> +++ b/mm/usercopy.c
+> @@ -161,7 +161,7 @@ static inline void check_bogus_address(const unsigned long ptr, unsigned long n,
+>  static inline void check_heap_object(const void *ptr, unsigned long n,
+>  				     bool to_user)
+>  {
+> -	uintptr_t addr = (uintptr_t)ptr;
+> +	unsigned long addr = (unsigned long)ptr;
+>  	unsigned long offset;
+>  	struct folio *folio;
+>  
+> -- 
+> 2.35.1
+> 
+> 
+> 
