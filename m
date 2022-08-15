@@ -2,216 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A62C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 519CFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241585AbiHOJRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
+        id S231459AbiHOJRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:17:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233314AbiHOJRC (ORCPT
+        with ESMTP id S232000AbiHOJRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:17:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0366122280
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:17:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660555020;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=+lgH1hBRD1m/mzbQi1aYCWsf/2qMXaicGixcF+IMRPc=;
-        b=ax/FgiIJ3bFaojNaZ9WTG0zxbg0kDUFlApC73dQicKk11jlTzeAvupNBP6Y2xZnhxy9qQu
-        /AGbWlr7cjP6mPKy7JnL51ePQxYfVpLOimUDu2L4TPy5EZm9NnuIWthG5RjiYtadLJfOmQ
-        7Wy/cE9FXujLRC6erCQ3jMz/4RIxARc=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-594-vd5C2-7ZMU6icdutI_J4mw-1; Mon, 15 Aug 2022 05:16:58 -0400
-X-MC-Unique: vd5C2-7ZMU6icdutI_J4mw-1
-Received: by mail-ed1-f69.google.com with SMTP id o2-20020a056402438200b0043d552deb2aso4400428edc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:16:58 -0700 (PDT)
+        Mon, 15 Aug 2022 05:17:21 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AF122528;
+        Mon, 15 Aug 2022 02:17:17 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id d14so9835379lfl.13;
+        Mon, 15 Aug 2022 02:17:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=eiqkvF+xYiNF2DpRXQeLPgqIYFAmFLS0V8w6NeOkAps=;
+        b=nLzwUzH1mFhYYOp7STOZsHfn7f2SW3Gl6xJ8vP+9vPX2YAZB2C6OlzaSKAeYnmAQv1
+         1PdjeD/WpfSf7CrTfALpgrSOS4Z5IcOcuc/ZJTLrj+ypqyWlP8AusY08hpNwC6czmjy0
+         zc3VJeNGhdWq/xRoIuGB7Kygb2vskfasVGLXx0rbvEwJgKMLskTKjBNlQ388bRI6Mpcf
+         RvjU2kUboC2pvVZnkXL00TmNZnpEmLvxb59g9DI9T5v/teeX3DQaOM+ybyPGLI1qOL7l
+         Ys5Ddw4/L4rYxBm9Vvmxcq23T86HxaW/lYWcHNVjV0cjAhfpCGgmjCbWXyayuOFE9Om/
+         oqWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=+lgH1hBRD1m/mzbQi1aYCWsf/2qMXaicGixcF+IMRPc=;
-        b=hYw8TyGpRmv4XQJ09AL1mgouSHS+fjIe1jMHGbC6KTOM9gMAQFgua76+CfV9dX3S3P
-         0Ts/aA4py+rWAyFOOIAAjMQXOmYutCR3bCxSr5iw6XAk8mo/zLs3N04SDe2FQkVztqJk
-         rA5uc3kaN0nhytY7ofJiMB8+w/vnExspdpMtw/v/i9bGYIUCllPH6dhrcC+pycHj6dnL
-         tPhh/NKj0a0Aqd71MQOjuK355PLiyOKcZ2b6NFWMIYDkGzPJIiIjduKqI4AjJpBw7EMN
-         VksIC6XQmpTfCy4Zope7vSEp1zwmNmnwS0ADyARtglGW0TjelGI4Dw0RsJGTWGBNqa46
-         JyGQ==
-X-Gm-Message-State: ACgBeo1QSgOIkVYDL/EEnMpJZM8OvCfpSLym/406HVxAx7BUD8yfJosi
-        hviRQcYXpe4Cpq1k7DT6C6mUO2QOwMwTCy3B3T7ZOTC8RHmEHYSJTqorx2gnHg7mCzGI1RK4EQR
-        U2pDOwl/hwBOI/ijsFBrFdjxzLoqLDyJlqDGMR/QPOON/DHf8TOF+JWgzf9489VKIZUWb6A==
-X-Received: by 2002:a05:6402:1e8d:b0:441:58db:b6a2 with SMTP id f13-20020a0564021e8d00b0044158dbb6a2mr13472969edf.277.1660555017152;
-        Mon, 15 Aug 2022 02:16:57 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4TUuxXLf4X9ZxvGDLmurzNR+B1PhAkCo7uKtZy520YFWqKHF1q3eDJtrRUZuNuy6tNLwZeog==
-X-Received: by 2002:a05:6402:1e8d:b0:441:58db:b6a2 with SMTP id f13-20020a0564021e8d00b0044158dbb6a2mr13472939edf.277.1660555016769;
-        Mon, 15 Aug 2022 02:16:56 -0700 (PDT)
-Received: from redhat.com ([2.54.169.49])
-        by smtp.gmail.com with ESMTPSA id i20-20020a17090685d400b00722e50dab2csm3817610ejy.109.2022.08.15.02.16.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 02:16:56 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 05:16:50 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
- size by find_vqs()"
-Message-ID: <20220815090521.127607-1-mst@redhat.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=eiqkvF+xYiNF2DpRXQeLPgqIYFAmFLS0V8w6NeOkAps=;
+        b=nCz0ovPiC8u3aMwwcLR9eiegH+kRAWzmqzTr+zvOppZUqgG0Z4qDNpG8j6ahVJ9d6Q
+         Z4itMMY/N1wu0xKxK8Q68t7iVVWwkTxv0pPZokRenzk6eMa8Vjvhdv9FkSK4DPon71SK
+         Ydspf3lCeh9Chb91nWxUoK49m/UFER4zdu4Cf8PREJDxbaKnQCFYlL9jV8X3zYPkvjqk
+         3mXqR0fL5UAnQLmOHaPxyOWw/RxbhwCJ6StVP00bffkx3dQOXCC/jzE+q0CAY+mN41kJ
+         qh9UJ4lhUODH/YQWwSm8vjOXpf9mQM+D0aUgN6nUwUGsy6DUKJ0tsmWafn+UUbGS6uDf
+         R8dw==
+X-Gm-Message-State: ACgBeo1FcuAdcwZXVKzdgSrPF44ZT0Qp2vsmtz3RVD7/aUBc8U8/FuYr
+        Ji/rtghYLE77Hng4G2QKtaqEO0t+W+8XYFJgQAM=
+X-Google-Smtp-Source: AA6agR6NRl73OVz82MXGLJl9DCyFw+Kd1gGiZOJDreYij/FP+Eg+bC+4oLHzg/8uCquuCYWlmwyz99uA1rF3z7USpMI=
+X-Received: by 2002:ac2:4e4f:0:b0:48c:e6b6:9d7e with SMTP id
+ f15-20020ac24e4f000000b0048ce6b69d7emr4850618lfr.128.1660555035731; Mon, 15
+ Aug 2022 02:17:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+References: <1660298966-11493-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <YvakpukeF9d35Bc8@slm.duckdns.org> <CAGWkznG6n=+v7hUKR8Rmg8VEF=BTDegk8bh6aHfvOU5TbmeXDw@mail.gmail.com>
+ <CAGWkznHa9WTV2oK=HB1OVEdKeMZ1V2omDDiNrRdyBdyYd=q5Fg@mail.gmail.com>
+In-Reply-To: <CAGWkznHa9WTV2oK=HB1OVEdKeMZ1V2omDDiNrRdyBdyYd=q5Fg@mail.gmail.com>
+From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
+Date:   Mon, 15 Aug 2022 17:17:03 +0800
+Message-ID: <CAGWkznEQ_njmNt8usr-DyaiYDAHJE-niC2QxoXPQkDqY7v_Mqg@mail.gmail.com>
+Subject: Re: [RFC PATCH] cgroup: use root_mem_cgroup as css when current is
+ not enabled
+To:     Tejun Heo <tj@kernel.org>
+Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        cgroups mailinglist <cgroups@vger.kernel.org>,
+        Ke Wang <ke.wang@unisoc.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Suren Baghdasaryan <surenb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
-
-This has been reported to trip up guests on GCP (Google Cloud).  Why is
-not yet clear - to be debugged, but the patch itself has several other
-issues:
-
-- It treats unknown speed as < 10G
-- It leaves userspace no way to find out the ring size set by hypervisor
-- It tests speed when link is down
-- It ignores the virtio spec advice:
-        Both \field{speed} and \field{duplex} can change, thus the driver
-        is expected to re-read these values after receiving a
-        configuration change notification.
-- It is not clear the performance impact has been tested properly
-
-Revert the patch for now.
-
-Link: https://lore.kernel.org/r/20220814212610.GA3690074%40roeck-us.net
-Link: https://lore.kernel.org/r/20220815070203.plwjx7b3cyugpdt7%40awork3.anarazel.de
-Link: https://lore.kernel.org/r/3df6bb82-1951-455d-a768-e9e1513eb667%40www.fastmail.com
-Link: https://lore.kernel.org/r/FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE%40anarazel.de
-Fixes: 762faee5a267 ("virtio_net: set the default max ring size by find_vqs()")
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Tested-by: Andres Freund <andres@anarazel.de>
----
- drivers/net/virtio_net.c | 42 ++++------------------------------------
- 1 file changed, 4 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index d934774e9733..ece00b84e3a7 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -3432,29 +3432,6 @@ static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqu
- 		   (unsigned int)GOOD_PACKET_LEN);
- }
- 
--static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
--{
--	u32 i, rx_size, tx_size;
--
--	if (vi->speed == SPEED_UNKNOWN || vi->speed < SPEED_10000) {
--		rx_size = 1024;
--		tx_size = 1024;
--
--	} else if (vi->speed < SPEED_40000) {
--		rx_size = 1024 * 4;
--		tx_size = 1024 * 4;
--
--	} else {
--		rx_size = 1024 * 8;
--		tx_size = 1024 * 8;
--	}
--
--	for (i = 0; i < vi->max_queue_pairs; i++) {
--		sizes[rxq2vq(i)] = rx_size;
--		sizes[txq2vq(i)] = tx_size;
--	}
--}
--
- static int virtnet_find_vqs(struct virtnet_info *vi)
- {
- 	vq_callback_t **callbacks;
-@@ -3462,7 +3439,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
- 	int ret = -ENOMEM;
- 	int i, total_vqs;
- 	const char **names;
--	u32 *sizes;
- 	bool *ctx;
- 
- 	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
-@@ -3490,15 +3466,10 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
- 		ctx = NULL;
- 	}
- 
--	sizes = kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
--	if (!sizes)
--		goto err_sizes;
--
- 	/* Parameters for control virtqueue, if any */
- 	if (vi->has_cvq) {
- 		callbacks[total_vqs - 1] = NULL;
- 		names[total_vqs - 1] = "control";
--		sizes[total_vqs - 1] = 64;
- 	}
- 
- 	/* Allocate/initialize parameters for send/receive virtqueues */
-@@ -3513,10 +3484,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
- 			ctx[rxq2vq(i)] = true;
- 	}
- 
--	virtnet_config_sizes(vi, sizes);
--
--	ret = virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
--				       names, sizes, ctx, NULL);
-+	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
-+				  names, ctx, NULL);
- 	if (ret)
- 		goto err_find;
- 
-@@ -3536,8 +3505,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
- 
- 
- err_find:
--	kfree(sizes);
--err_sizes:
- 	kfree(ctx);
- err_ctx:
- 	kfree(names);
-@@ -3897,9 +3864,6 @@ static int virtnet_probe(struct virtio_device *vdev)
- 		vi->curr_queue_pairs = num_online_cpus();
- 	vi->max_queue_pairs = max_queue_pairs;
- 
--	virtnet_init_settings(dev);
--	virtnet_update_settings(vi);
--
- 	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
- 	err = init_vqs(vi);
- 	if (err)
-@@ -3912,6 +3876,8 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
- 	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
- 
-+	virtnet_init_settings(dev);
-+
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
- 		vi->failover = net_failover_create(vi->dev);
- 		if (IS_ERR(vi->failover)) {
--- 
-MST
-
+On Mon, Aug 15, 2022 at 9:38 AM Zhaoyang Huang <huangzhaoyang@gmail.com> wrote:
+>
+> On Sun, Aug 14, 2022 at 2:40 PM Zhaoyang Huang <huangzhaoyang@gmail.com> wrote:
+> >
+> > On Sat, Aug 13, 2022 at 3:06 AM Tejun Heo <tj@kernel.org> wrote:
+> > >
+> > > On Fri, Aug 12, 2022 at 06:09:26PM +0800, zhaoyang.huang wrote:
+> > > > From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > > >
+> > > > Memory charged on group B abserved on belowing v2 hierarchy where we just would
+> > > > like to only have group E's memory be controlled and B's descendants compete freely
+> > > > for memory. This should be the consequences of unified hierarchy. Solve this by
+> > > > have the cgroup without valid memory css alloced use root_mem_cgroup instead of
+> > > > its ancestor's.
+> > > >
+> > > >  A(subtree_control = memory) - B(subtree_control = NULL) - C()
+> > > >                                                          \ D()
+> > > >                            - E(subtree_control = memory) - F()
+> > > >                                                          \ G()
+> > > >
+> > > > Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > > > ---
+> > > >  kernel/cgroup/cgroup.c | 8 ++++++++
+> > > >  1 file changed, 8 insertions(+)
+> > > >
+> > > > diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+> > > > index 1779ccd..b29b3f6 100644
+> > > > --- a/kernel/cgroup/cgroup.c
+> > > > +++ b/kernel/cgroup/cgroup.c
+> > > > @@ -533,6 +533,14 @@ static struct cgroup_subsys_state *cgroup_e_css_by_mask(struct cgroup *cgrp,
+> > > >        * can't test the csses directly.  Test ss_mask.
+> > > >        */
+> > > >       while (!(cgroup_ss_mask(cgrp) & (1 << ss->id))) {
+> > > > +             /*
+> > > > +              * charging to the parent cgroup which hasn't distribute
+> > > > +              * memory control to its descendants doesn't make sense
+> > > > +              * especially on cgroup v2, where the parent could be configured
+> > > > +              * to use memory controller as its sibling want to use it
+> > > > +              */
+> > > > +             if (memory_cgrp_id == ss->id)
+> > > > +                     return &root_mem_cgroup->css;
+> > >
+> > > This is gonna be a hard nack. A given cgroup always encompasses all the
+> > > resources consumed in its self-including subtree.
+> > >
+> > > Thanks.
+> > IMHO, I would like to say if it makes more sense as "A given cgroup
+> > always encompasses all the resources consumed in its ENABLED
+> > self-including subtree." Otherwise, how should I couple with the
+> > scenarios I raised in the commit message which I prefer parts of the
+> > subtrees compete for "memory" while others are free for it. The free
+> > here is not only without "min/low/high watermarks" but also not
+> > charged to their own LRU.
+> I would like to state more why these make sense. Memory cgroup is a
+> little bit different to other cgroups, that is, memcg will have real
+> physical resources attached, say pages. From perspective of memory
+> reclaiming, it is odd to find that pages under free memcgs are charged
+> to separate LRUs but without any management(no watermark control) and
+> perhaps affect workingset mechanism by LRU reason. Furthermore, v2
+> should grant the groups with the right to reject the subsys which
+> introduced by sibling enable, which could be deemed as v2's
+> inconvenient. The memcg could also apply subtree_control to enroll all
+> memory back whenever it want.
+As suggested by zefan, raise the practical scenario here to make more
+sense. The issue is observed in android system where per-app cgroup is
+demanded by freezer subsys and part of them require memory control.
+Under this scenario, less efficient memory reclaim is observed when
+comparing with no memory control. It is believed that multi LRU
+scanning introduces some of the overhead. Furthermore, page thrashing
+is also heavier than global LRU which could be the consequences of
+partial failure of WORKINGSET mechanism as LRU is too short to protect
+the active pages.
+> > >
+> > > --
+> > > tejun
