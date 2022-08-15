@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A60A0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A313C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244957AbiHOXRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
+        id S245102AbiHOXR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345787AbiHOXOZ (ORCPT
+        with ESMTP id S241157AbiHOXOZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:14:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FDC13B8AA;
-        Mon, 15 Aug 2022 13:01:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F968A1DE;
+        Mon, 15 Aug 2022 13:01:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF0AD6068D;
-        Mon, 15 Aug 2022 20:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9573C433D6;
-        Mon, 15 Aug 2022 20:01:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 889F9B80EA8;
+        Mon, 15 Aug 2022 20:01:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E20B6C433D6;
+        Mon, 15 Aug 2022 20:01:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593684;
-        bh=Aw/fON7IO1BsUp28ps98awEXsb/ffwFXAmfYFpR0noA=;
+        s=korg; t=1660593687;
+        bh=pNYcoTpG4Vva9kv7QzWq1FSRNEWbBS/YySs1ndBRAAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gEcbe+qMiF9zHNc8ijP5fV8INEH63Sh7FFmMjH2fNQy1LqIhomGhD7eZJzrJ8Lc0P
-         RLPaK8sW8PBZ60AshL+t/J+45gjCoDrwAO2xPFxIXeVPO5InrrMfuCF+xdzECTJA7Y
-         dWOOqijgEyeLxCsXr3QxmPnr92GbVt4dTg+9+sC8=
+        b=wWz0tIJz6kysUB9dUFsZZhzroMXeu7wIQUWvJrp9H2iOEAMIkElt5PPZzA8arqDb+
+         H9Emd2XU2aB4L4EkfH9I37Fxfzk4NAsVVncoEPZycLk/1A6ywoW62zZI0D4huBf9CB
+         NYp9E/Q5Aat8f4Mmw0+mv2C04TtDuoxl56O1FUAc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0307/1157] drm/rockchip: vop2: unlock on error path in vop2_crtc_atomic_enable()
-Date:   Mon, 15 Aug 2022 19:54:23 +0200
-Message-Id: <20220815180451.944615389@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0958/1095] video: fbdev: s3fb: Check the size of screen before memset_io()
+Date:   Mon, 15 Aug 2022 20:05:57 +0200
+Message-Id: <20220815180508.713587087@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,34 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 98526c5bbe3267d447ddd076b685439e3e1396c6 ]
+[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
 
-This error path needs an unlock before returning.
+In the function s3fb_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause the following bug:
 
-Fixes: 604be85547ce ("drm/rockchip: Add VOP2 driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/YnjZQRV9lpub2ET8@kili
+[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
+[   54.083742] #PF: supervisor write access in kernel mode
+[   54.083744] #PF: error_code(0x0002) - not-present page
+[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
+[   54.083782] Call Trace:
+[   54.083788]  s3fb_set_par+0x1ec6/0x4040
+[   54.083806]  fb_set_var+0x604/0xeb0
+[   54.083836]  do_fb_ioctl+0x234/0x670
+
+Fix the this by checking the value of 'screen_size' before memset_io().
+
+Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/video/fbdev/s3fb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-index 26ac91db0f35..d6e831576cd2 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1524,6 +1524,7 @@ static void vop2_crtc_atomic_enable(struct drm_crtc *crtc,
- 	if (ret < 0) {
- 		drm_err(vop2->drm, "failed to enable dclk for video port%d - %d\n",
- 			vp->id, ret);
-+		vop2_unlock(vop2);
- 		return;
- 	}
+diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
+index b93c8eb02336..5069f6f67923 100644
+--- a/drivers/video/fbdev/s3fb.c
++++ b/drivers/video/fbdev/s3fb.c
+@@ -905,6 +905,8 @@ static int s3fb_set_par(struct fb_info *info)
+ 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
+ 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
  
++	if (screen_size > info->screen_size)
++		screen_size = info->screen_size;
+ 	memset_io(info->screen_base, 0x00, screen_size);
+ 	/* Device and screen back on */
+ 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
 -- 
 2.35.1
 
