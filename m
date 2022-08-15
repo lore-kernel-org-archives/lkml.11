@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3631DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C037C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353468AbiHOXbp (ORCPT
+        id S1353542AbiHOXb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
+        Mon, 15 Aug 2022 19:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343985AbiHOX0K (ORCPT
+        with ESMTP id S1343959AbiHOX0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:26:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685947FE5C;
-        Mon, 15 Aug 2022 13:06:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474BF47BB0;
+        Mon, 15 Aug 2022 13:06:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04AA86069E;
-        Mon, 15 Aug 2022 20:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB8C9C433D6;
-        Mon, 15 Aug 2022 20:06:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6E2B60025;
+        Mon, 15 Aug 2022 20:06:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BAB9C433C1;
+        Mon, 15 Aug 2022 20:06:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593990;
-        bh=OoFLweGMGU3hs6aXiOhf2CsOVzv7McoV0UwXcZHxGHw=;
+        s=korg; t=1660593987;
+        bh=Y90tnlUVSUiStAoCfOycRQTm2/CT4hSOvEKma5fE894=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q+sDy9HvSIhcil2q8gyBgRI7qul0gwlFoJ7Y5vS/yd3dFHSeaMcJLGuYybdKzCXhK
-         6DYuTGFxhk+MsVVAela91Wr0CA8JTvUMI7yeTKS40gXpCN4bW1t/K1mlXsOEBNaIB0
-         wso/UoUNt5gNeF8q315N+XHWKz98ZpKiCp1SSLT4=
+        b=kXMR5c1nR03d+3QD3pf5MKsaVvsj3UjUl4rgcEYsp6G2yoGjIxsfyCkLwazFw/frE
+         ljz35E5cQC3Q2baWy1Yh5kRpKlK8xK1DdpZpS9KvVxPyjo8nWgxFWkne7SIbVPp0dn
+         USmxwPZImMQUQorNMYg4sphmI1KJkT8gMrwQyb7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Max Staudt <max@enpas.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1021/1095] btrfs: let can_allocate_chunk return error
-Date:   Mon, 15 Aug 2022 20:07:00 +0200
-Message-Id: <20220815180511.327770468@linuxfoundation.org>
+Subject: [PATCH 5.19 0358/1157] can: netlink: allow configuring of fixed data bit rates without need for do_set_data_bittiming callback
+Date:   Mon, 15 Aug 2022 19:55:14 +0200
+Message-Id: <20220815180454.035732331@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,64 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit bb9950d3df7169a673c594d38fb74e241ed4fb2a ]
+[ Upstream commit ec30c109391c5eac9b1d689a61e4bfed88148947 ]
 
-For the later patch, convert the return type from bool to int and return
-errors. No functional changes.
+This patch is similar to 7e193a42c37c ("can: netlink: allow
+configuring of fixed bit rates without need for do_set_bittiming
+callback") but for data bit rates instead of bit rates.
 
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Usually CAN devices support configurable data bit rates. The limits
+are defined by struct can_priv::data_bittiming_const. Another way is
+to implement the struct can_priv::do_set_data_bittiming callback.
+
+If the bit rate is configured via netlink, the can_changelink()
+function checks that either can_priv::data_bittiming_const or struct
+can_priv::do_set_data_bittiming is implemented.
+
+In commit 431af779256c ("can: dev: add CAN interface API for fixed
+bitrates") an API for configuring bit rates on CAN interfaces that
+only support fixed bit rates was added. The supported bit rates are
+defined by struct can_priv::bitrate_const.
+
+However the above mentioned commit forgot to add the struct
+can_priv::data_bitrate_const to the check in can_changelink().
+
+In order to avoid to implement a no-op can_priv::do_set_data_bittiming
+callback on devices with fixed data bit rates, extend the check in
+can_changelink() accordingly.
+
+Link: https://lore.kernel.org/all/20220613143633.4151884-1-mkl@pengutronix.de
+Fixes: 431af779256c ("can: dev: add CAN interface API for fixed bitrates")
+Acked-by: Max Staudt <max@enpas.org>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/extent-tree.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/can/dev/netlink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/extent-tree.c b/fs/btrfs/extent-tree.c
-index f45ecd939a2c..8bdcbc0c6d60 100644
---- a/fs/btrfs/extent-tree.c
-+++ b/fs/btrfs/extent-tree.c
-@@ -3985,12 +3985,12 @@ static void found_extent(struct find_free_extent_ctl *ffe_ctl,
- 	}
- }
- 
--static bool can_allocate_chunk(struct btrfs_fs_info *fs_info,
--			       struct find_free_extent_ctl *ffe_ctl)
-+static int can_allocate_chunk(struct btrfs_fs_info *fs_info,
-+			      struct find_free_extent_ctl *ffe_ctl)
- {
- 	switch (ffe_ctl->policy) {
- 	case BTRFS_EXTENT_ALLOC_CLUSTERED:
--		return true;
-+		return 0;
- 	case BTRFS_EXTENT_ALLOC_ZONED:
- 		/*
- 		 * If we have enough free space left in an already
-@@ -4000,8 +4000,8 @@ static bool can_allocate_chunk(struct btrfs_fs_info *fs_info,
+diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+index 667ddd28fcdc..037824011266 100644
+--- a/drivers/net/can/dev/netlink.c
++++ b/drivers/net/can/dev/netlink.c
+@@ -279,7 +279,8 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
+ 		 * directly via do_set_bitrate(). Bail out if neither
+ 		 * is given.
  		 */
- 		if (ffe_ctl->max_extent_size >= ffe_ctl->min_alloc_size &&
- 		    !btrfs_can_activate_zone(fs_info->fs_devices, ffe_ctl->flags))
--			return false;
--		return true;
-+			return -ENOSPC;
-+		return 0;
- 	default:
- 		BUG();
- 	}
-@@ -4083,8 +4083,9 @@ static int find_free_extent_update_loop(struct btrfs_fs_info *fs_info,
- 			int exist = 0;
+-		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming)
++		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming &&
++		    !priv->data_bitrate_const)
+ 			return -EOPNOTSUPP;
  
- 			/*Check if allocation policy allows to create a new chunk */
--			if (!can_allocate_chunk(fs_info, ffe_ctl))
--				return -ENOSPC;
-+			ret = can_allocate_chunk(fs_info, ffe_ctl);
-+			if (ret)
-+				return ret;
- 
- 			trans = current->journal_info;
- 			if (trans)
+ 		memcpy(&dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
 -- 
 2.35.1
 
