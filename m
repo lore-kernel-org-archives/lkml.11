@@ -2,46 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 365E2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C0EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241074AbiHOXAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
+        id S1352584AbiHOXAX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345352AbiHOW6d (ORCPT
+        with ESMTP id S1346663AbiHOW6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:58:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380A075FEE;
-        Mon, 15 Aug 2022 12:56:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C2F760C0;
+        Mon, 15 Aug 2022 12:56:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7F8C60FD8;
-        Mon, 15 Aug 2022 19:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B621FC433D6;
-        Mon, 15 Aug 2022 19:56:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6549AB80EAD;
+        Mon, 15 Aug 2022 19:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 975FFC433D6;
+        Mon, 15 Aug 2022 19:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593388;
-        bh=LlyLbRg2vFLS4ph5qJL+ouCVBytnnYnLYD7VRmv8WO4=;
+        s=korg; t=1660593391;
+        bh=wDfmcr8hqpXBUVKskBOJMr0tIJOdTKM3fBqq+O/LQL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xSDz/K4yg63s+rEe82kCojFJF6cnbRHjGA+GxanUfwLlvDSyg2HLpWGlYinPgBj6u
-         Nv7Yj3MJAd+PKynR1W056V5wpsMjvzli43RsMMJxkl1sIASAf3PTeihlLZii//OBCY
-         bTqOmYTqwQR51p5kiQkT4jV1yT6HhDT+nrQ5Nd3o=
+        b=wDUCGWni8H85LLNHmdeh8ahoSkzYPlPeZu/15aElcUkw7my7K9CMvIXpu3Ptg6kWK
+         uVjxheY2rDpR8l/J7cNJMryyK+tV1vBxLnq8jkKoClC1h91/LYInkIwS88WgUrRcpn
+         b3bdmpYsMn3YPwKQRHx6njbuRfjHV5GSvXv8I/XE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Ian Rogers <irogers@google.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0260/1157] arm64: dts: qcom: sm8250: add missing PCIe PHY clock-cells
-Date:   Mon, 15 Aug 2022 19:53:36 +0200
-Message-Id: <20220815180449.977511505@linuxfoundation.org>
+Subject: [PATCH 5.18 0939/1095] perf symbol: Fail to read phdr workaround
+Date:   Mon, 15 Aug 2022 20:05:38 +0200
+Message-Id: <20220815180508.040651404@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +57,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Ian Rogers <irogers@google.com>
 
-[ Upstream commit d9fd162ce764c227fcfd4242f6c1639895a9481f ]
+[ Upstream commit 6d518ac7be6223811ab947897273b1bbef846180 ]
 
-Add the missing '#clock-cells' properties to the PCIe QMP PHY nodes.
+The perf jvmti agent doesn't create program headers, in this case
+fallback on section headers as happened previously.
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Fixes: e53bdfc00977 ("arm64: dts: qcom: sm8250: Add PCIe support")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220705114032.22787-3-johan+linaro@kernel.org
+Committer notes:
+
+To test this, from a public post by Ian:
+
+1) download a Java workload dacapo-9.12-MR1-bach.jar from
+https://sourceforge.net/projects/dacapobench/
+
+2) build perf such as "make -C tools/perf O=/tmp/perf NO_LIBBFD=1" it
+should detect Java and create /tmp/perf/libperf-jvmti.so
+
+3) run perf with the jvmti agent:
+
+  perf record -k 1 java -agentpath:/tmp/perf/libperf-jvmti.so -jar dacapo-9.12-MR1-bach.jar -n 10 fop
+
+4) run perf inject:
+
+  perf inject -i perf.data -o perf-injected.data -j
+
+5) run perf report
+
+  perf report -i perf-injected.data | grep org.apache.fop
+
+With this patch reverted I see lots of symbols like:
+
+     0.00%  java             jitted-388040-4656.so  [.] org.apache.fop.fo.FObj.bind(org.apache.fop.fo.PropertyList)
+
+With the patch (2d86612aacb7805f ("perf symbol: Correct address for bss
+symbols")) I see lots of:
+
+  dso__load_sym_internal: failed to find program header for symbol:
+  Lorg/apache/fop/fo/FObj;bind(Lorg/apache/fop/fo/PropertyList;)V
+  st_value: 0x40
+
+Fixes: 2d86612aacb7805f ("perf symbol: Correct address for bss symbols")
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+Signed-off-by: Ian Rogers <irogers@google.com>
+Tested-by: Leo Yan <leo.yan@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Link: http://lore.kernel.org/lkml/20220731164923.691193-1-irogers@google.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8250.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/perf/util/symbol-elf.c | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-index d0760e6ec942..e8cdca50bc83 100644
---- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-@@ -1884,6 +1884,8 @@ pcie0_lane: phy@1c06200 {
- 				clock-names = "pipe0";
+diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
+index ef6ced5c5746..cb7b24493782 100644
+--- a/tools/perf/util/symbol-elf.c
++++ b/tools/perf/util/symbol-elf.c
+@@ -1294,16 +1294,29 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
  
- 				#phy-cells = <0>;
-+
-+				#clock-cells = <0>;
- 				clock-output-names = "pcie_0_pipe_clk";
- 			};
- 		};
-@@ -1990,6 +1992,8 @@ pcie1_lane: phy@1c0e200 {
- 				clock-names = "pipe0";
+ 			if (elf_read_program_header(syms_ss->elf,
+ 						    (u64)sym.st_value, &phdr)) {
+-				pr_warning("%s: failed to find program header for "
++				pr_debug4("%s: failed to find program header for "
+ 					   "symbol: %s st_value: %#" PRIx64 "\n",
+ 					   __func__, elf_name, (u64)sym.st_value);
+-				continue;
++				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
++					"sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n",
++					__func__, (u64)sym.st_value, (u64)shdr.sh_addr,
++					(u64)shdr.sh_offset);
++				/*
++				 * Fail to find program header, let's rollback
++				 * to use shdr.sh_addr and shdr.sh_offset to
++				 * calibrate symbol's file address, though this
++				 * is not necessary for normal C ELF file, we
++				 * still need to handle java JIT symbols in this
++				 * case.
++				 */
++				sym.st_value -= shdr.sh_addr - shdr.sh_offset;
++			} else {
++				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
++					"p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
++					__func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
++					(u64)phdr.p_offset);
++				sym.st_value -= phdr.p_vaddr - phdr.p_offset;
+ 			}
+-			pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
+-				  "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
+-				  __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
+-				  (u64)phdr.p_offset);
+-			sym.st_value -= phdr.p_vaddr - phdr.p_offset;
+ 		}
  
- 				#phy-cells = <0>;
-+
-+				#clock-cells = <0>;
- 				clock-output-names = "pcie_1_pipe_clk";
- 			};
- 		};
-@@ -2096,6 +2100,8 @@ pcie2_lane: phy@1c16200 {
- 				clock-names = "pipe0";
- 
- 				#phy-cells = <0>;
-+
-+				#clock-cells = <0>;
- 				clock-output-names = "pcie_2_pipe_clk";
- 			};
- 		};
+ 		demangled = demangle_sym(dso, kmodule, elf_name);
 -- 
 2.35.1
 
