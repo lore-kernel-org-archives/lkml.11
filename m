@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB29CC25B0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 884F8C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343913AbiHPA4Z (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
+        id S245281AbiHPAz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244612AbiHPAuD (ORCPT
+        with ESMTP id S244269AbiHPAtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:50:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A841B5160;
-        Mon, 15 Aug 2022 13:46:00 -0700 (PDT)
+        Mon, 15 Aug 2022 20:49:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4CBB603B;
+        Mon, 15 Aug 2022 13:46:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9A32B80EB1;
-        Mon, 15 Aug 2022 20:45:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A11C433D6;
-        Mon, 15 Aug 2022 20:45:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E238C61241;
+        Mon, 15 Aug 2022 20:46:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DACC433C1;
+        Mon, 15 Aug 2022 20:46:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596357;
-        bh=V2/mh1k9Uk+itrV3o3kw5XDjTceOvOUITZxxSgSKmPg=;
+        s=korg; t=1660596382;
+        bh=CPaFUPaj3NVtsuDxVI0hezS2wWYQlJAYNKy5/DDGMgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZeLVLzIAa9Zs2hlVgrYXZdeTmzTRt6qbuw+QW6MySEfuY4rle2O9M3GFKYKJSpLiZ
-         b+5p84Z69ihN7ZCDg3eIv3jyB7Nk2h6SBuHk7nqYkyWHfTxjroIv7zhS+uNLC7vnbD
-         M2FM4dJ+qNiojf/0ihRly++iUUkO76C531s4LwfQ=
+        b=ynBC6I43z0LE82FeDx21BBsWAEF7tkY/Wwul78TB2v4wGPskyfLhlUzrVNpqHKKew
+         CYqIZITQXZyuXykn1yvn3arQ5nG3XrrICX+gW8uWqFqOC3qWw2eXrdL1Y6FWWzpjEP
+         sZterP45916+H5m64ihboaQgzmzfDKBtX/mw95p8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>
-Subject: [PATCH 5.19 1055/1157] csky: abiv1: Fixup compile error
-Date:   Mon, 15 Aug 2022 20:06:51 +0200
-Message-Id: <20220815180522.260637041@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.19 1045/1157] cifs: fix lock length calculation
+Date:   Mon, 15 Aug 2022 20:06:41 +0200
+Message-Id: <20220815180521.834544546@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,46 +50,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Paulo Alcantara <pc@cjr.nz>
 
-commit 45fef4c4b9c94e86d9c13f0b2e7e71bb32254509 upstream.
+commit 773891ffd4d628d05c4e22f34541e4779ee7a076 upstream.
 
-  LD      vmlinux.o
-arch/csky/lib/string.o: In function `memmove':
-string.c:(.text+0x108): multiple definition of `memmove'
-lib/string.o:string.c:(.text+0x7e8): first defined here
-arch/csky/lib/string.o: In function `memset':
-string.c:(.text+0x148): multiple definition of `memset'
-lib/string.o:string.c:(.text+0x2ac): first defined here
-scripts/Makefile.vmlinux_o:68: recipe for target 'vmlinux.o' failed
-make[4]: *** [vmlinux.o] Error 1
+The lock length was wrongly set to 0 when fl_end == OFFSET_MAX, thus
+failing to lock the whole file when l_start=0 and l_len=0.
 
-Fixes: e4df2d5e852a ("csky: Add C based string functions")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
+This fixes test 2 from cthon04.
+
+Before patch:
+
+$ ./cthon04/lock/tlocklfs -t 2 /mnt
+
+Creating parent/child synchronization pipes.
+
+Test #1 - Test regions of an unlocked file.
+        Parent: 1.1  - F_TEST  [               0,               1] PASSED.
+        Parent: 1.2  - F_TEST  [               0,          ENDING] PASSED.
+        Parent: 1.3  - F_TEST  [               0,7fffffffffffffff] PASSED.
+        Parent: 1.4  - F_TEST  [               1,               1] PASSED.
+        Parent: 1.5  - F_TEST  [               1,          ENDING] PASSED.
+        Parent: 1.6  - F_TEST  [               1,7fffffffffffffff] PASSED.
+        Parent: 1.7  - F_TEST  [7fffffffffffffff,               1] PASSED.
+        Parent: 1.8  - F_TEST  [7fffffffffffffff,          ENDING] PASSED.
+        Parent: 1.9  - F_TEST  [7fffffffffffffff,7fffffffffffffff] PASSED.
+
+Test #2 - Try to lock the whole file.
+        Parent: 2.0  - F_TLOCK [               0,          ENDING] PASSED.
+        Child:  2.1  - F_TEST  [               0,               1] FAILED!
+        Child:  **** Expected EACCES, returned success...
+        Child:  **** Probably implementation error.
+
+**  CHILD pass 1 results: 0/0 pass, 0/0 warn, 1/1 fail (pass/total).
+        Parent: Child died
+
+** PARENT pass 1 results: 10/10 pass, 0/0 warn, 0/0 fail (pass/total).
+
+After patch:
+
+$ ./cthon04/lock/tlocklfs -t 2 /mnt
+
+Creating parent/child synchronization pipes.
+
+Test #2 - Try to lock the whole file.
+        Parent: 2.0  - F_TLOCK [               0,          ENDING] PASSED.
+        Child:  2.1  - F_TEST  [               0,               1] PASSED.
+        Child:  2.2  - F_TEST  [               0,          ENDING] PASSED.
+        Child:  2.3  - F_TEST  [               0,7fffffffffffffff] PASSED.
+        Child:  2.4  - F_TEST  [               1,               1] PASSED.
+        Child:  2.5  - F_TEST  [               1,          ENDING] PASSED.
+        Child:  2.6  - F_TEST  [               1,7fffffffffffffff] PASSED.
+        Child:  2.7  - F_TEST  [7fffffffffffffff,               1] PASSED.
+        Child:  2.8  - F_TEST  [7fffffffffffffff,          ENDING] PASSED.
+        Child:  2.9  - F_TEST  [7fffffffffffffff,7fffffffffffffff] PASSED.
+        Parent: 2.10 - F_ULOCK [               0,          ENDING] PASSED.
+
+** PARENT pass 1 results: 2/2 pass, 0/0 warn, 0/0 fail (pass/total).
+
+**  CHILD pass 1 results: 9/9 pass, 0/0 warn, 0/0 fail (pass/total).
+
+Fixes: d80c69846ddf ("cifs: fix signed integer overflow when fl_end is OFFSET_MAX")
+Reported-by: Xiaoli Feng <xifeng@redhat.com>
 Cc: <stable@vger.kernel.org>
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/csky/abiv1/inc/abi/string.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/cifs/cifsglob.h |    4 ++--
+ fs/cifs/file.c     |    6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/csky/abiv1/inc/abi/string.h b/arch/csky/abiv1/inc/abi/string.h
-index 9d95594b0feb..de50117b904d 100644
---- a/arch/csky/abiv1/inc/abi/string.h
-+++ b/arch/csky/abiv1/inc/abi/string.h
-@@ -6,4 +6,10 @@
- #define __HAVE_ARCH_MEMCPY
- extern void *memcpy(void *, const void *, __kernel_size_t);
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -2085,9 +2085,9 @@ static inline bool cifs_is_referral_serv
+ 	return is_tcon_dfs(tcon) || (ref && (ref->flags & DFSREF_REFERRAL_SERVER));
+ }
  
-+#define __HAVE_ARCH_MEMMOVE
-+extern void *memmove(void *, const void *, __kernel_size_t);
-+
-+#define __HAVE_ARCH_MEMSET
-+extern void *memset(void *, int,  __kernel_size_t);
-+
- #endif /* __ABI_CSKY_STRING_H */
--- 
-2.37.2
-
+-static inline u64 cifs_flock_len(struct file_lock *fl)
++static inline u64 cifs_flock_len(const struct file_lock *fl)
+ {
+-	return fl->fl_end == OFFSET_MAX ? 0 : fl->fl_end - fl->fl_start + 1;
++	return (u64)fl->fl_end - fl->fl_start + 1;
+ }
+ 
+ static inline size_t ntlmssp_workstation_name_size(const struct cifs_ses *ses)
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -1861,9 +1861,9 @@ int cifs_lock(struct file *file, int cmd
+ 	rc = -EACCES;
+ 	xid = get_xid();
+ 
+-	cifs_dbg(FYI, "Lock parm: 0x%x flockflags: 0x%x flocktype: 0x%x start: %lld end: %lld\n",
+-		 cmd, flock->fl_flags, flock->fl_type,
+-		 flock->fl_start, flock->fl_end);
++	cifs_dbg(FYI, "%s: %pD2 cmd=0x%x type=0x%x flags=0x%x r=%lld:%lld\n", __func__, file, cmd,
++		 flock->fl_flags, flock->fl_type, (long long)flock->fl_start,
++		 (long long)flock->fl_end);
+ 
+ 	cfile = (struct cifsFileInfo *)file->private_data;
+ 	tcon = tlink_tcon(cfile->tlink);
 
 
