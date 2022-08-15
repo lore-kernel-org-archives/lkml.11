@@ -2,151 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED72C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 083BFC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231708AbiHOUTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
+        id S239464AbiHOUTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241783AbiHOUJP (ORCPT
+        with ESMTP id S1346983AbiHOUMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:15 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A97F2B;
-        Mon, 15 Aug 2022 11:56:00 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d16so7097999pll.11;
-        Mon, 15 Aug 2022 11:56:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=YNgoWYCY1lPrjzW0L6uvTUDhqO8Va4cbu+Lukza45Kk=;
-        b=LLqk6nZx0CZaFFAKrYtayFNSQtFEufiNWAnBpPZzb6NuyTnfFHJ50yjihvOX09BnKM
-         S47QhKHOD34cTFOPR6PhaMP7mmdaLrRYSmY3S08Yq78sPmyEiJxae5DQvOOdYruhjV2K
-         VainybYqq60xbvb9Mjvhb2WTFrPUhyaHxn2OUAWwknzK883JGnUdbEkTFKzA/VFk6DlK
-         U8j6FtQ9cjPFpqQ5YnVDfhVJc2COUwxSydLt+v/jUsytUL1hfqyDMVpnBKcHVytFmRqk
-         lLrXpBUiei5hCA+Dw8+0AgZvhFxuDhaZTjwgI8a7Iu6XaMONbkJrwlTwh1AJurWNAhXM
-         TeLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=YNgoWYCY1lPrjzW0L6uvTUDhqO8Va4cbu+Lukza45Kk=;
-        b=p3N8ylRRo1xuQ7hq7lzpNtbdQImWvMlISs05rWYf80hU2G+ZLFk5HeHJa+KlMApiNs
-         43xJnUXKajXYcSgOMnsTr7KKfDJZCCyIiGSul2ucbp9DMwyWyXQsmly4kUJkx/k42f+e
-         fOe9EKUF1/xO6CJpK0Gr1vAek89gxjNtCugQfKhJ/j2YvR7vENnIygdIYLkFKPsaZi1k
-         HaRZEKkmv3bEJALow5HyJt7nZIUe0j0dWvT7d6KQiOHunbj0RTjogAC5D94Jf963jcrr
-         PrdZufeUwx55NyWJsEMlyK4WwTr9OdcqIEnFn2ilC2T441Wb1UWQgiyJE/X3z6d6C0JF
-         AH/Q==
-X-Gm-Message-State: ACgBeo2N0tdLLI6JI67uRsyBo5Wlf1Ra7r4AEdTxgc9qV5qa860J06rR
-        7kRmw/fA0B6SHk1RGYkzTDhpLqBDHFgCq7nv
-X-Google-Smtp-Source: AA6agR7Ao983jsJzFfh+XdeTEh3h2BJEmqP3wgZdEa6QB7GpFTZxxIDE7k3xHAwvuKwa7uOA/N5Omg==
-X-Received: by 2002:a17:902:ef81:b0:16d:cd36:7955 with SMTP id iz1-20020a170902ef8100b0016dcd367955mr17848496plb.24.1660589759453;
-        Mon, 15 Aug 2022 11:55:59 -0700 (PDT)
-Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
-        by smtp.googlemail.com with ESMTPSA id x190-20020a6231c7000000b0052def2e20dasm6858174pfx.167.2022.08.15.11.55.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 11:55:59 -0700 (PDT)
-From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-Subject: [PATCH 2/7] btrfs: Convert __process_pages_contig() to use filemap_get_folios_contig()
-Date:   Mon, 15 Aug 2022 11:54:47 -0700
-Message-Id: <20220815185452.37447-3-vishal.moola@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220815185452.37447-1-vishal.moola@gmail.com>
-References: <20220815185452.37447-1-vishal.moola@gmail.com>
+        Mon, 15 Aug 2022 16:12:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7553B89914;
+        Mon, 15 Aug 2022 11:58:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F112B8109E;
+        Mon, 15 Aug 2022 18:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B4EAC433D7;
+        Mon, 15 Aug 2022 18:58:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660589920;
+        bh=AG+Uiec8voQAxe4xbm6dYZ5iaa1ZLFeWAYPNJDAg5og=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PuCNnrSiZPSVQpD9Ssf528fKP+CTepLhKvVFMcpbUMBlSVDcXdLCFgzGUUtroaSP2
+         q0a2DnOt/QBwcltrt41+jID0tjFhNtZn4x4bbRbV80ZJVmhamDPHK+eXghOXLF4ebq
+         KU8nnPo8PBW2TsdS3lyMZLlyuBujq7lk5/XqjOVM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 0064/1095] RISC-V: cpu_ops_spinwait.c should include head.h
+Date:   Mon, 15 Aug 2022 19:51:03 +0200
+Message-Id: <20220815180432.143299948@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert to use folios throughout. This is in preparation for the removal of
-find_get_pages_contig(). Now also supports large folios.
+From: Ben Dooks <ben.dooks@sifive.com>
 
-Since we may receive more than nr_pages pages, nr_pages may underflow.
-Since nr_pages > 0 is equivalent to index <= end_index, we replaced it
-with this check instead.
+commit e4aa991c05aedc3ead92d1352af86db74090dc3c upstream.
 
-Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
+Running sparse shows cpu_ops_spinwait.c is missing two definitions
+found in head.h, so include it to stop the following warnings:
+
+arch/riscv/kernel/cpu_ops_spinwait.c:15:6: warning: symbol '__cpu_spinwait_stack_pointer' was not declared. Should it be static?
+arch/riscv/kernel/cpu_ops_spinwait.c:16:6: warning: symbol '__cpu_spinwait_task_pointer' was not declared. Should it be static?
+
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Link: https://lore.kernel.org/r/20220713215306.94675-1-ben.dooks@sifive.com
+Fixes: c78f94f35cf6 ("RISC-V: Use __cpu_up_stack/task_pointer only for spinwait method")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
+ arch/riscv/kernel/cpu_ops_spinwait.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-index bfae67c593c5..2c2f0e281014 100644
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -1900,9 +1900,8 @@ static int __process_pages_contig(struct address_space *mapping,
- 	pgoff_t start_index = start >> PAGE_SHIFT;
- 	pgoff_t end_index = end >> PAGE_SHIFT;
- 	pgoff_t index = start_index;
--	unsigned long nr_pages = end_index - start_index + 1;
- 	unsigned long pages_processed = 0;
--	struct page *pages[16];
-+	struct folio_batch fbatch;
- 	int err = 0;
- 	int i;
+--- a/arch/riscv/kernel/cpu_ops_spinwait.c
++++ b/arch/riscv/kernel/cpu_ops_spinwait.c
+@@ -11,6 +11,8 @@
+ #include <asm/sbi.h>
+ #include <asm/smp.h>
  
-@@ -1911,16 +1910,17 @@ static int __process_pages_contig(struct address_space *mapping,
- 		ASSERT(processed_end && *processed_end == start);
- 	}
- 
--	if ((page_ops & PAGE_SET_ERROR) && nr_pages > 0)
-+	if ((page_ops & PAGE_SET_ERROR) && start_index <= end_index)
- 		mapping_set_error(mapping, -EIO);
- 
--	while (nr_pages > 0) {
--		int found_pages;
-+	folio_batch_init(&fbatch);
-+	while (index <= end_index) {
-+		int found_folios;
++#include "head.h"
 +
-+		found_folios = filemap_get_folios_contig(mapping, &index,
-+				end_index, &fbatch);
- 
--		found_pages = find_get_pages_contig(mapping, index,
--				     min_t(unsigned long,
--				     nr_pages, ARRAY_SIZE(pages)), pages);
--		if (found_pages == 0) {
-+		if (found_folios == 0) {
- 			/*
- 			 * Only if we're going to lock these pages, we can find
- 			 * nothing at @index.
-@@ -1930,23 +1930,20 @@ static int __process_pages_contig(struct address_space *mapping,
- 			goto out;
- 		}
- 
--		for (i = 0; i < found_pages; i++) {
-+		for (i = 0; i < found_folios; i++) {
- 			int process_ret;
--
-+			struct folio *folio = fbatch.folios[i];
- 			process_ret = process_one_page(fs_info, mapping,
--					pages[i], locked_page, page_ops,
-+					&folio->page, locked_page, page_ops,
- 					start, end);
- 			if (process_ret < 0) {
--				for (; i < found_pages; i++)
--					put_page(pages[i]);
- 				err = -EAGAIN;
-+				folio_batch_release(&fbatch);
- 				goto out;
- 			}
--			put_page(pages[i]);
--			pages_processed++;
-+			pages_processed += folio_nr_pages(folio);
- 		}
--		nr_pages -= found_pages;
--		index += found_pages;
-+		folio_batch_release(&fbatch);
- 		cond_resched();
- 	}
- out:
--- 
-2.36.1
+ const struct cpu_operations cpu_ops_spinwait;
+ void *__cpu_spinwait_stack_pointer[NR_CPUS] __section(".data");
+ void *__cpu_spinwait_task_pointer[NR_CPUS] __section(".data");
+
 
