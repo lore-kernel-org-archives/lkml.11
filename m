@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10426C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87CAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344713AbiHOTo1 (ORCPT
+        id S1344727AbiHOTob (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        Mon, 15 Aug 2022 15:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344576AbiHOTlI (ORCPT
+        with ESMTP id S1344621AbiHOTlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:41:08 -0400
+        Mon, 15 Aug 2022 15:41:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34F9419B6;
-        Mon, 15 Aug 2022 11:47:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6969865566;
+        Mon, 15 Aug 2022 11:47:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECA39611CA;
-        Mon, 15 Aug 2022 18:47:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6BCC4347C;
-        Mon, 15 Aug 2022 18:47:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6FC1611EC;
+        Mon, 15 Aug 2022 18:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C4CC433D7;
+        Mon, 15 Aug 2022 18:47:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589240;
-        bh=fmKx06rMjjpXJdunefnM2+WN1TOv8vRZu90f/apMnXA=;
+        s=korg; t=1660589237;
+        bh=2SlUA2K4kh8vddRQQgvCpzFLKXrX5y1ZP1t2OfhpRwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9wSF7oEjtATKdJFovRX5Foaa82zYxy+BL/68RAlnL2ukozJ1InTY4C+Ge5bW3jS2
-         /tgQUC6QdFqb/WTWYQsKa2jAgEjrQx2rPimYKSTTihaM48E7Zig8tJlChvN0FIdaGQ
-         rq5iEv53bMDhVGrkpMHyYjsVpYKmtY87p0Wn1oew=
+        b=VMRD65oWpG7KfpGrZQ24PqlIzpBVe/JZzEqW26IDbGkOvtAbem4HLcnWoBJMJxuUv
+         0JfmUqH5FL4H0EJYbOkUFCB2RV3KssdSYCY38tPvP/ytZBlwuv9wS2jUwPky6EojkG
+         G0mUsLFWKIR5h6jaKtjRi3iE5HFPY4jeuD9eK36U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 629/779] ASoC: audio-graph-card: Add of_node_put() in fail path
-Date:   Mon, 15 Aug 2022 20:04:33 +0200
-Message-Id: <20220815180404.253880323@linuxfoundation.org>
+Subject: [PATCH 5.15 655/779] sched/deadline: Merge dl_task_can_attach() and dl_cpu_busy()
+Date:   Mon, 15 Aug 2022 20:04:59 +0200
+Message-Id: <20220815180405.374160004@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,37 +52,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-[ Upstream commit 65fb8e2ef3531a6e950060fca6e551c923fb0f0e ]
+[ Upstream commit 772b6539fdda31462cc08368e78df60b31a58bab ]
 
-In asoc_simple_parse_dai(), we should call of_node_put() for the
-reference returned by of_graph_get_port_parent() in fail path.
+Both functions are doing almost the same, that is checking if admission
+control is still respected.
 
-Fixes: ae30a694da4c ("ASoC: simple-card-utils: add asoc_simple_card_parse_dai()")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220721144308.1301587-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+With exclusive cpusets, dl_task_can_attach() checks if the destination
+cpuset (i.e. its root domain) has enough CPU capacity to accommodate the
+task.
+dl_cpu_busy() checks if there is enough CPU capacity in the cpuset in
+case the CPU is hot-plugged out.
+
+dl_task_can_attach() is used to check if a task can be admitted while
+dl_cpu_busy() is used to check if a CPU can be hotplugged out.
+
+Make dl_cpu_busy() able to deal with a task and use it instead of
+dl_task_can_attach() in task_can_attach().
+
+Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lore.kernel.org/r/20220302183433.333029-4-dietmar.eggemann@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/audio-graph-card.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/sched/core.c     | 13 +++++++----
+ kernel/sched/deadline.c | 52 +++++++++++------------------------------
+ kernel/sched/sched.h    |  3 +--
+ 3 files changed, 24 insertions(+), 44 deletions(-)
 
-diff --git a/sound/soc/generic/audio-graph-card.c b/sound/soc/generic/audio-graph-card.c
-index 546f6fd0609e..28cbcdb56857 100644
---- a/sound/soc/generic/audio-graph-card.c
-+++ b/sound/soc/generic/audio-graph-card.c
-@@ -158,8 +158,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
- 	 *    if he unbinded CPU or Codec.
- 	 */
- 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
--	if (ret < 0)
-+	if (ret < 0) {
-+		of_node_put(node);
- 		return ret;
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 012c037da58a..154506e4d1f5 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8760,8 +8760,11 @@ int task_can_attach(struct task_struct *p,
+ 	}
+ 
+ 	if (dl_task(p) && !cpumask_intersects(task_rq(p)->rd->span,
+-					      cs_cpus_allowed))
+-		ret = dl_task_can_attach(p, cs_cpus_allowed);
++					      cs_cpus_allowed)) {
++		int cpu = cpumask_any_and(cpu_active_mask, cs_cpus_allowed);
++
++		ret = dl_cpu_busy(cpu, p);
 +	}
  
- 	dlc->of_node = node;
+ out:
+ 	return ret;
+@@ -9045,8 +9048,10 @@ static void cpuset_cpu_active(void)
+ static int cpuset_cpu_inactive(unsigned int cpu)
+ {
+ 	if (!cpuhp_tasks_frozen) {
+-		if (dl_cpu_busy(cpu))
+-			return -EBUSY;
++		int ret = dl_cpu_busy(cpu, NULL);
++
++		if (ret)
++			return ret;
+ 		cpuset_update_active_cpus();
+ 	} else {
+ 		num_cpus_frozen++;
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index ee673a205e22..147b757d162b 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2864,41 +2864,6 @@ bool dl_param_changed(struct task_struct *p, const struct sched_attr *attr)
+ }
+ 
+ #ifdef CONFIG_SMP
+-int dl_task_can_attach(struct task_struct *p, const struct cpumask *cs_cpus_allowed)
+-{
+-	unsigned long flags, cap;
+-	unsigned int dest_cpu;
+-	struct dl_bw *dl_b;
+-	bool overflow;
+-	int ret;
+-
+-	dest_cpu = cpumask_any_and(cpu_active_mask, cs_cpus_allowed);
+-
+-	rcu_read_lock_sched();
+-	dl_b = dl_bw_of(dest_cpu);
+-	raw_spin_lock_irqsave(&dl_b->lock, flags);
+-	cap = dl_bw_capacity(dest_cpu);
+-	overflow = __dl_overflow(dl_b, cap, 0, p->dl.dl_bw);
+-	if (overflow) {
+-		ret = -EBUSY;
+-	} else {
+-		/*
+-		 * We reserve space for this task in the destination
+-		 * root_domain, as we can't fail after this point.
+-		 * We will free resources in the source root_domain
+-		 * later on (see set_cpus_allowed_dl()).
+-		 */
+-		int cpus = dl_bw_cpus(dest_cpu);
+-
+-		__dl_add(dl_b, p->dl.dl_bw, cpus);
+-		ret = 0;
+-	}
+-	raw_spin_unlock_irqrestore(&dl_b->lock, flags);
+-	rcu_read_unlock_sched();
+-
+-	return ret;
+-}
+-
+ int dl_cpuset_cpumask_can_shrink(const struct cpumask *cur,
+ 				 const struct cpumask *trial)
+ {
+@@ -2920,7 +2885,7 @@ int dl_cpuset_cpumask_can_shrink(const struct cpumask *cur,
+ 	return ret;
+ }
+ 
+-bool dl_cpu_busy(unsigned int cpu)
++int dl_cpu_busy(int cpu, struct task_struct *p)
+ {
+ 	unsigned long flags, cap;
+ 	struct dl_bw *dl_b;
+@@ -2930,11 +2895,22 @@ bool dl_cpu_busy(unsigned int cpu)
+ 	dl_b = dl_bw_of(cpu);
+ 	raw_spin_lock_irqsave(&dl_b->lock, flags);
+ 	cap = dl_bw_capacity(cpu);
+-	overflow = __dl_overflow(dl_b, cap, 0, 0);
++	overflow = __dl_overflow(dl_b, cap, 0, p ? p->dl.dl_bw : 0);
++
++	if (!overflow && p) {
++		/*
++		 * We reserve space for this task in the destination
++		 * root_domain, as we can't fail after this point.
++		 * We will free resources in the source root_domain
++		 * later on (see set_cpus_allowed_dl()).
++		 */
++		__dl_add(dl_b, p->dl.dl_bw, dl_bw_cpus(cpu));
++	}
++
+ 	raw_spin_unlock_irqrestore(&dl_b->lock, flags);
+ 	rcu_read_unlock_sched();
+ 
+-	return overflow;
++	return overflow ? -EBUSY : 0;
+ }
+ #endif
+ 
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index fe8be2f8a47d..2bbf1f006d63 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -348,9 +348,8 @@ extern void __setparam_dl(struct task_struct *p, const struct sched_attr *attr);
+ extern void __getparam_dl(struct task_struct *p, struct sched_attr *attr);
+ extern bool __checkparam_dl(const struct sched_attr *attr);
+ extern bool dl_param_changed(struct task_struct *p, const struct sched_attr *attr);
+-extern int  dl_task_can_attach(struct task_struct *p, const struct cpumask *cs_cpus_allowed);
+ extern int  dl_cpuset_cpumask_can_shrink(const struct cpumask *cur, const struct cpumask *trial);
+-extern bool dl_cpu_busy(unsigned int cpu);
++extern int  dl_cpu_busy(int cpu, struct task_struct *p);
+ 
+ #ifdef CONFIG_CGROUP_SCHED
  
 -- 
 2.35.1
