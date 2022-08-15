@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E271C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3A1C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241302AbiHPAwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
+        id S240463AbiHPAxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349872AbiHPAqr (ORCPT
+        with ESMTP id S240319AbiHPAoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D67196848;
-        Mon, 15 Aug 2022 13:45:10 -0700 (PDT)
+        Mon, 15 Aug 2022 20:44:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5E0AED99;
+        Mon, 15 Aug 2022 13:40:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3B4D60F60;
-        Mon, 15 Aug 2022 20:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EB7C433D6;
-        Mon, 15 Aug 2022 20:45:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79B56B8114A;
+        Mon, 15 Aug 2022 20:40:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66C6C433C1;
+        Mon, 15 Aug 2022 20:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596309;
-        bh=x41DbS8qV3r1/pYkKDJeNP/yz9M9kqdvIN4rxibxN+0=;
+        s=korg; t=1660596034;
+        bh=tFMruD26R0zJmsKIkmvOkf54yAsxhFD3bcYpfWVgLpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nSenYtoN+FtvpaXq2gRY2vs54BoNh5MRwzPDKNQ8Cq+pTq25N2CbN6kYoUciwIufA
-         Y2kHvVNyJVLoK3/4FXO4ouFOrfv2vbBOucQmOkDw6mx2DjnpTrH21xxdZGY9oEDh7n
-         aur62dEJndX60WoUTlHqvGrIwGXrKDN/5x41wuCw=
+        b=n1Nfu9NYR1fctv/FDsZbh5nKas72CguQ7zUlgVziDe1ZotECg3MNQuu3Kgr9hHwKX
+         FYDQ4EfWCLXdigLs6z46n3dRSL+srviBUvahM2/RSXfbjYde6gCn0fYKeqpEDKwMgF
+         A/I0UqBZ1WzIfb1iWmA8djToma7c5EFoUBgYaB48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 1037/1157] scsi: qla2xxx: Turn off multi-queue for 8G adapters
-Date:   Mon, 15 Aug 2022 20:06:33 +0200
-Message-Id: <20220815180521.467569249@linuxfoundation.org>
+        stable@vger.kernel.org, Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0935/1157] MIPS: Loongson64: Fix section mismatch warning
+Date:   Mon, 15 Aug 2022 20:04:51 +0200
+Message-Id: <20220815180516.905931442@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,61 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Tiezhu Yang <yangtiezhu@loongson.cn>
 
-commit 5304673bdb1635e27555bd636fd5d6956f1cd552 upstream.
+[ Upstream commit 08472f6ebdc23334ad11dcd761d2d52c32897793 ]
 
-For 8G adapters, multi-queue was enabled accidentally. Make sure
-multi-queue is not enabled.
+prom_init_numa_memory() is annotated __init and not used by any module,
+thus don't export it.
 
-Link: https://lore.kernel.org/r/20220616053508.27186-5-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Remove not needed EXPORT_SYMBOL for prom_init_numa_memory() to fix the
+following section mismatch warning:
+
+  LD      vmlinux.o
+  MODPOST vmlinux.symvers
+WARNING: modpost: vmlinux.o(___ksymtab+prom_init_numa_memory+0x0): Section mismatch in reference
+from the variable __ksymtab_prom_init_numa_memory to the function .init.text:prom_init_numa_memory()
+The symbol prom_init_numa_memory is exported and annotated __init
+Fix this by removing the __init annotation of prom_init_numa_memory or drop the export.
+
+This is build on Linux 5.19-rc4.
+
+Fixes: 6fbde6b492df ("MIPS: Loongson64: Move files to the top-level directory")
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h |    4 ++--
- drivers/scsi/qla2xxx/qla_isr.c |   16 ++++++----------
- 2 files changed, 8 insertions(+), 12 deletions(-)
+ arch/mips/loongson64/numa.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -4264,8 +4264,8 @@ struct qla_hw_data {
- #define IS_OEM_001(ha)          ((ha)->device_type & DT_OEM_001)
- #define HAS_EXTENDED_IDS(ha)    ((ha)->device_type & DT_EXTENDED_IDS)
- #define IS_CT6_SUPPORTED(ha)	((ha)->device_type & DT_CT6_SUPPORTED)
--#define IS_MQUE_CAPABLE(ha)	((ha)->mqenable || IS_QLA83XX(ha) || \
--				IS_QLA27XX(ha) || IS_QLA28XX(ha))
-+#define IS_MQUE_CAPABLE(ha)	(IS_QLA83XX(ha) || IS_QLA27XX(ha) || \
-+				 IS_QLA28XX(ha))
- #define IS_BIDI_CAPABLE(ha) \
-     (IS_QLA25XX(ha) || IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
- /* Bit 21 of fw_attributes decides the MCTP capabilities */
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -4419,16 +4419,12 @@ msix_register_fail:
- 	}
+diff --git a/arch/mips/loongson64/numa.c b/arch/mips/loongson64/numa.c
+index 69a533148efd..8f61e93c0c5b 100644
+--- a/arch/mips/loongson64/numa.c
++++ b/arch/mips/loongson64/numa.c
+@@ -196,7 +196,6 @@ void __init prom_init_numa_memory(void)
+ 	pr_info("CP0_PageGrain: CP0 5.1 (0x%x)\n", read_c0_pagegrain());
+ 	prom_meminit();
+ }
+-EXPORT_SYMBOL(prom_init_numa_memory);
  
- 	/* Enable MSI-X vector for response queue update for queue 0 */
--	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
--		if (ha->msixbase && ha->mqiobase &&
--		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
--		     ql2xmqsupport))
--			ha->mqenable = 1;
--	} else
--		if (ha->mqiobase &&
--		    (ha->max_rsp_queues > 1 || ha->max_req_queues > 1 ||
--		     ql2xmqsupport))
--			ha->mqenable = 1;
-+	if (IS_MQUE_CAPABLE(ha) &&
-+	    (ha->msixbase && ha->mqiobase && ha->max_qpairs))
-+		ha->mqenable = 1;
-+	else
-+		ha->mqenable = 0;
-+
- 	ql_dbg(ql_dbg_multiq, vha, 0xc005,
- 	    "mqiobase=%p, max_rsp_queues=%d, max_req_queues=%d.\n",
- 	    ha->mqiobase, ha->max_rsp_queues, ha->max_req_queues);
+ pg_data_t * __init arch_alloc_nodedata(int nid)
+ {
+-- 
+2.35.1
+
 
 
