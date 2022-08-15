@@ -2,108 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D86C7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A85C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 03:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239890AbiHODng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 14 Aug 2022 23:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        id S240208AbiHODo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 14 Aug 2022 23:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230081AbiHODnd (ORCPT
+        with ESMTP id S230003AbiHODo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 14 Aug 2022 23:43:33 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B3F13F21
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:43:28 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id f22so8132685edc.7
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:43:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=8GGB/49mCW+ASejosbIfzxpTGaMVR2I7jGs9zaiNEuA=;
-        b=NzuKLoOEIbmS2zWZ6FLQc9Z0EReusgl0yz0sb1p0uTvAtt0HMvEgCWcsUvAgYVt+Ll
-         Gcskv3uZLFw6E+Jf86vRQIq8cjy9hVjAf51w7UEf69hytsRgwj8vCSSMvPGClnkKmEsy
-         LyElPxKcSnmJSaZ1SbJF3Xrh6G+qeSTZgw2SM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=8GGB/49mCW+ASejosbIfzxpTGaMVR2I7jGs9zaiNEuA=;
-        b=nHnscXV7OhhCdfTZl0IDL+mnLwHnW7ZfZAKr7EkDwWY8YLV4t2fgvGFsDeGPEkfNVN
-         s0ksdc0mbix7O9z2fBfSbiW5KYmDVEHWJO+ySTiFR3NTJbCWQBt86mDDWFYhQ2wxqv+o
-         xYs9tWpCMnECzLy58W2oTRiGmMTNdfm3ebFN2LRF7QQq2kZuB4KF/K+0YBxX5U92fSlL
-         xGTjICp3jWy4jERRZFKbfgFU2LqBcCSM0MT9Py7o0hCRw/X8DPG7C0yj3GJ7jX5oivqG
-         gtQnjM8puA9rYw3HVTDRuBOUMqciAfT1eEAut8bZf1QOGzDWyVQr4VjVcdkKfDIAoz0q
-         kWeQ==
-X-Gm-Message-State: ACgBeo1BW3wvshHgJPtHeAIq6wgxeofGsU9Me5N8Usc74BdihePkyD6Y
-        Qa5ZzOvQGoSFLakWTaAKYZztVSaUN0ioETpb
-X-Google-Smtp-Source: AA6agR7fKyeEHB8pEJ52+L6YEaTXp6uAkKkQ+FjsJMOzFC3QZfib58lsRJIJc4xc4onhojxDzwPE0g==
-X-Received: by 2002:aa7:dc17:0:b0:441:e5fc:7f91 with SMTP id b23-20020aa7dc17000000b00441e5fc7f91mr12763998edu.301.1660535006560;
-        Sun, 14 Aug 2022 20:43:26 -0700 (PDT)
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
-        by smtp.gmail.com with ESMTPSA id jl15-20020a17090775cf00b00730df07629fsm3622239ejc.174.2022.08.14.20.43.25
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Aug 2022 20:43:25 -0700 (PDT)
-Received: by mail-wm1-f52.google.com with SMTP id h1so3339104wmd.3
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 20:43:25 -0700 (PDT)
-X-Received: by 2002:a05:600c:657:b0:3a5:e4e6:ee24 with SMTP id
- p23-20020a05600c065700b003a5e4e6ee24mr3981246wmm.68.1660535005014; Sun, 14
- Aug 2022 20:43:25 -0700 (PDT)
+        Sun, 14 Aug 2022 23:44:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8115311451;
+        Sun, 14 Aug 2022 20:44:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A8F26100A;
+        Mon, 15 Aug 2022 03:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E511C433D6;
+        Mon, 15 Aug 2022 03:44:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660535094;
+        bh=QmW6TZ05gI7wLhWNPi4o2fOw3zdY7DdawLkSRpSyaU4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ve5VsOEA+wK0Tp6uUr84kkWwifrkUFRtqfBM4loMTP+3/LIqcAKvgSu3d3zKZj8MY
+         QLKrhYTm2hVkdH9jPvjKunLzzior4RVIdNMPHdScSeNtQCLdTYId94tWHQDziP6CuR
+         XxODg6gyhmdxfpWaZQ/Xo3+QD7Kp9KFylG2aCflHmAoUTGRvhhbVABn3lIUFxKxLgd
+         Ix2JiG6PamQCET2m+0N+BmKajfeW7NKLkBA6OngcMiOMTzbZf9I5dalbU8tQApwtye
+         fM8vhetLyjppmXwSpVefiQ6kqI28BQzEmTdUGB5TFy7awmP4tEFxKZHuL6tShSGCrc
+         XVoUFnS1Lt+3Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4303DC4166F;
+        Mon, 15 Aug 2022 03:44:54 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <CAHk-=wh1xHi-WeytuAK1-iSsR0wi=6e4-WgFq6ZPt8Z1mvqoNA@mail.gmail.com>
- <20220814225415.n546anzvud6sumux@box.shutemov.name> <CAHk-=wiOqbuzy7xzsLrN8LXKGGUUMH109wcKOXx_PV9PkHa=Zw@mail.gmail.com>
-In-Reply-To: <CAHk-=wiOqbuzy7xzsLrN8LXKGGUUMH109wcKOXx_PV9PkHa=Zw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 14 Aug 2022 20:43:09 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whSGBmH7zKvD-=qJLkWPSGZo1cM7GyLH=8cuide7+ri_Q@mail.gmail.com>
-Message-ID: <CAHk-=whSGBmH7zKvD-=qJLkWPSGZo1cM7GyLH=8cuide7+ri_Q@mail.gmail.com>
-Subject: Re: Simplify load_unaligned_zeropad() (was Re: [GIT PULL] Ceph
- updates for 5.20-rc1)
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Mike Rapoport <rppt@kernel.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 0/9] Type-C switch driver and Type-C framework updates
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <166053509426.30867.1002265857567976624.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Aug 2022 03:44:54 +0000
+References: <20220711072333.2064341-1-pmalani@chromium.org>
+In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev, bleung@chromium.org,
+        heikki.krogerus@linux.intel.com, dnojiri@chromium.org,
+        dustin@howett.net, gregkh@linuxfoundation.org, groeck@chromium.org,
+        gustavoars@kernel.org, keescook@chromium.org,
+        sebastian.reichel@collabora.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 3:59 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> If TDX has problems with it, then TDX needs to be fixed. And it's
-> simple enough - just make sure you have a guard page between any
-> kernel RAM mapping and whatever odd crazy page.
+Hello:
 
-.. thinking about this more, I thought we had already done that in the
-memory initialization code - ie make sure that we always leave a gap
-between any page we mark and any IO memory after it.
+This series was applied to chrome-platform/linux.git (for-kernelci)
+by Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
 
-But it's possible that I'm confused with the IO window allocation
-code, which does the reverse (ie actively try to avoid starting
-allocations close to the end-of-RAM because there is often
-undocumented stolen memory there)
+On Mon, 11 Jul 2022 07:22:54 +0000 you wrote:
+> This series introduces a retimer class to the USB Type-C framework,
+> It also introduces a Chrome EC (Embedded Controller) switch driver which
+> registers the aforementioned retimer switches as well as mode-switches.
+> 
+> Patch 1 and 2 introduce the retimer class and associated functions to
+> the Type-C common code.
+> 
+> [...]
 
-I'd much rather lose one page from the page allocator at the end of a
-RAM region than lose the ability to do string word operations.
+Here is the summary with links:
+  - [v4,1/9] usb: typec: Add support for retimers
+    https://git.kernel.org/chrome-platform/c/ddaf8d96f93b
+  - [v4,2/9] usb: typec: Add retimer handle to port
+    https://git.kernel.org/chrome-platform/c/f31a8702cd36
+  - [v4,3/9] platform/chrome: Add Type-C mux set command definitions
+    https://git.kernel.org/chrome-platform/c/28a6ed8e39f7
+  - [v4,4/9] platform/chrome: cros_typec_switch: Add switch driver
+    https://git.kernel.org/chrome-platform/c/e54369058f3d
+  - [v4,5/9] platform/chrome: cros_typec_switch: Set EC retimer
+    https://git.kernel.org/chrome-platform/c/34f375f0fdf6
+  - [v4,6/9] platform/chrome: cros_typec_switch: Add event check
+    https://git.kernel.org/chrome-platform/c/bb53ad958012
+  - [v4,7/9] platform/chrome: cros_typec_switch: Register mode switches
+    https://git.kernel.org/chrome-platform/c/f5434e30011e
+  - [v4,8/9] platform/chrome: cros_ec_typec: Cleanup switch handle return paths
+    https://git.kernel.org/chrome-platform/c/66fe238a9bcc
+  - [v4,9/9] platform/chrome: cros_ec_typec: Get retimer handle
+    https://git.kernel.org/chrome-platform/c/c76d09da77d6
 
-Of course, it's also entirely possible that even if my memory about us
-already trying to do that is right (which it might not be), we might
-also have lost that whole thing over time, since we've had a lot of
-updates to the bootmem/memblock setup.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Bringing in Mike Rapoport in case he can point to the code (or lack there-of).
 
-Mike?
-
-               Linus
