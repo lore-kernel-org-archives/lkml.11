@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE73DC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB3DC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344403AbiHPAeN (ORCPT
+        id S1344391AbiHPAeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Mon, 15 Aug 2022 20:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353493AbiHPAbW (ORCPT
+        with ESMTP id S1353691AbiHPAb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856E2185C9C;
-        Mon, 15 Aug 2022 13:36:11 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FC518599D;
+        Mon, 15 Aug 2022 13:36:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1FF6120E;
-        Mon, 15 Aug 2022 20:36:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB83BC433C1;
-        Mon, 15 Aug 2022 20:36:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65CB0B8114A;
+        Mon, 15 Aug 2022 20:36:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F21AC433C1;
+        Mon, 15 Aug 2022 20:36:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595769;
-        bh=879SVTF4CPuTDdHHJAZqEaC9dzhVX5nmvypw3+NjBfc=;
+        s=korg; t=1660595763;
+        bh=MCXpGzAljQyU9//it1iIzxOk/vrAdFjns2DFn7aJgXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aguJHxx5sBgygGfZ0lcB3orr/6mRWfBHBDfHkd2fLl+oqwoiJKeDMzbe6CjHml36i
-         ktDAWLpnVk9XyH0wyUFNnPpGvxzHFp/q1kF6dVw4TB36LfL2xA+NXLw2PgG8ARVN9E
-         kDglgbnOLj+S9G0CNa8KLgjELyh2Q0JFHItQYrQw=
+        b=AufXQEy/FWDTiE5tL0AlsrrPyp7zeLrnDALIBJlxTqItkcj5uZBc+2wu5E2osNHnV
+         pl7ZpYU/E1jVmVAVx4D5/6J53w/Eys3rsWAswlVFEkUiRKau7G682WP+ggQ3xdgpx3
+         2Qy6Bg2l0r0Xxxf8mgUJBC7krwr0OIh/a6qUX3NU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haoyue Xu <xuhaoyue1@hisilicon.com>,
-        Wenpeng Liang <liangwenpeng@huawei.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0826/1157] RDMA/hns: Fix incorrect clearing of interrupt status register
-Date:   Mon, 15 Aug 2022 20:03:02 +0200
-Message-Id: <20220815180512.526681789@linuxfoundation.org>
+Subject: [PATCH 5.19 0834/1157] gpio: gpiolib-of: Fix refcount bugs in of_mm_gpiochip_add_data()
+Date:   Mon, 15 Aug 2022 20:03:10 +0200
+Message-Id: <20220815180512.846477387@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,39 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haoyue Xu <xuhaoyue1@hisilicon.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ecb4db5c3590aa956b4b2c352081a5b632d1f9f9 ]
+[ Upstream commit 5d07a692f9562f9c06e62cce369e9dd108173a0f ]
 
-The driver will clear all the interrupts in the same area
-when the driver handles the interrupt of type AEQ overflow.
-It should only set the interrupt status bit of type AEQ overflow.
+We should use of_node_get() when a new reference of device_node
+is created. It is noted that the old reference stored in
+'mm_gc->gc.of_node' should also be decreased.
 
-Fixes: a5073d6054f7 ("RDMA/hns: Add eq support of hip08")
-Link: https://lore.kernel.org/r/20220714134353.16700-4-liangwenpeng@huawei.com
-Signed-off-by: Haoyue Xu <xuhaoyue1@hisilicon.com>
-Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+This patch is based on the fact that there is a call site in function
+'qe_add_gpiochips()' of src file 'drivers\soc\fsl\qe\gpio.c'. In this
+function, of_mm_gpiochip_add_data() is contained in an iteration of
+for_each_compatible_node() which will automatically increase and
+decrease the refcount. So we need additional of_node_get() for the
+reference escape in of_mm_gpiochip_add_data().
+
+Fixes: a19e3da5bc5f ("of/gpio: Kill of_gpio_chip and add members directly to gpio_chip")
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpio/gpiolib-of.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-index ba3c742258ef..b354caeaa9b2 100644
---- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-@@ -6000,8 +6000,8 @@ static irqreturn_t hns_roce_v2_msix_interrupt_abn(int irq, void *dev_id)
+diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
+index 3d6c3ffd5576..de100b0217da 100644
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -860,7 +860,8 @@ int of_mm_gpiochip_add_data(struct device_node *np,
+ 	if (mm_gc->save_regs)
+ 		mm_gc->save_regs(mm_gc);
  
- 		dev_err(dev, "AEQ overflow!\n");
+-	mm_gc->gc.of_node = np;
++	of_node_put(mm_gc->gc.of_node);
++	mm_gc->gc.of_node = of_node_get(np);
  
--		int_st |= 1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S;
--		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG, int_st);
-+		roce_write(hr_dev, ROCEE_VF_ABN_INT_ST_REG,
-+			   1 << HNS_ROCE_V2_VF_INT_ST_AEQ_OVERFLOW_S);
+ 	ret = gpiochip_add_data(gc, data);
+ 	if (ret)
+@@ -868,6 +869,7 @@ int of_mm_gpiochip_add_data(struct device_node *np,
  
- 		/* Set reset level for reset_event() */
- 		if (ops->set_default_reset_request)
+ 	return 0;
+ err2:
++	of_node_put(np);
+ 	iounmap(mm_gc->regs);
+ err1:
+ 	kfree(gc->label);
 -- 
 2.35.1
 
