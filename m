@@ -2,52 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9577C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EC3C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347631AbiHOWD4 (ORCPT
+        id S1346755AbiHOWEC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        Mon, 15 Aug 2022 18:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348990AbiHOWBZ (ORCPT
+        with ESMTP id S1349705AbiHOWBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC8810EEDD;
-        Mon, 15 Aug 2022 12:35:53 -0700 (PDT)
+        Mon, 15 Aug 2022 18:01:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629DD111C2B;
+        Mon, 15 Aug 2022 12:35:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60C1C61089;
-        Mon, 15 Aug 2022 19:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 448E0C433D6;
-        Mon, 15 Aug 2022 19:35:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40C16B80EA7;
+        Mon, 15 Aug 2022 19:35:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD04C433C1;
+        Mon, 15 Aug 2022 19:35:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592152;
-        bh=e1bcoMHQ8z6gZIrlyNFmAhWYxrybUozV7Q7y76/g4bc=;
+        s=korg; t=1660592155;
+        bh=n8kGDEThAQHhugP3eQZrg2pbr2WIP20ZO2NAN93hyeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=phGKZyY0K/2zKzift24YxRkAiSBpX9yL1AQb0vAoI8dD080+Qlu6FxmNEpG2dXz7E
-         6wyXNyCOY6+k4RXxdBoSSmxdS+kU6hH5FMsU/fhN6ti/2tTHuxaTHQUtpz6jnX0RZZ
-         Kl7a+Dau/dWX5JrB7MPxpNPHc7jtWN99liMAP3D8=
+        b=mjLHHk5dYGxvfkNqxF5SmuzepBOaSMxoDT2Zu72+lae5xPMz+Xbyx8j1UYqwUn3lH
+         wP400IVR27wRslv/r+0Hdhij53U4MrC0o9ioE5I5nlcTG1nP2P35/txsi47e+VIe6C
+         QwsJuf9pvqpjeHqSvzjEFalVxo9OmjVwFpDeS83g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Namjae Jeon <linkinjeon@kernel.org>, stable@kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Steve French <sfrench@samba.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.19 0053/1157] vfs: Check the truncate maximum size in inode_newsize_ok()
-Date:   Mon, 15 Aug 2022 19:50:09 +0200
-Message-Id: <20220815180441.572481916@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0742/1095] mmc: renesas_sdhi: Get the reset handle early in the probe
+Date:   Mon, 15 Aug 2022 20:02:21 +0200
+Message-Id: <20220815180500.060476774@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,68 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-commit e2ebff9c57fe4eb104ce4768f6ebcccf76bef849 upstream.
+[ Upstream commit 0dac1e498f8130fdacfdd5289e3a7ac87ec1b9ad ]
 
-If something manages to set the maximum file size to MAX_OFFSET+1, this
-can cause the xfs and ext4 filesystems at least to become corrupt.
+In case of devm_reset_control_get_optional_exclusive() failure we returned
+directly instead of jumping to the error path to roll back initialization.
 
-Ordinarily, the kernel protects against userspace trying this by
-checking the value early in the truncate() and ftruncate() system calls
-calls - but there are at least two places that this check is bypassed:
+This patch moves devm_reset_control_get_optional_exclusive() early in the
+probe so that we have the reset handle prior to initialization of the
+hardware.
 
- (1) Cachefiles will round up the EOF of the backing file to DIO block
-     size so as to allow DIO on the final block - but this might push
-     the offset negative. It then calls notify_change(), but this
-     inadvertently bypasses the checking. This can be triggered if
-     someone puts an 8EiB-1 file on a server for someone else to try and
-     access by, say, nfs.
-
- (2) ksmbd doesn't check the value it is given in set_end_of_file_info()
-     and then calls vfs_truncate() directly - which also bypasses the
-     check.
-
-In both cases, it is potentially possible for a network filesystem to
-cause a disk filesystem to be corrupted: cachefiles in the client's
-cache filesystem; ksmbd in the server's filesystem.
-
-nfsd is okay as it checks the value, but we can then remove this check
-too.
-
-Fix this by adding a check to inode_newsize_ok(), as called from
-setattr_prepare(), thereby catching the issue as filesystems set up to
-perform the truncate with minimal opportunity for bypassing the new
-check.
-
-Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
-Fixes: f44158485826 ("cifsd: add file operations")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reported-by: Jeff Layton <jlayton@kernel.org>
-Tested-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
-Cc: stable@kernel.org
-Acked-by: Alexander Viro <viro@zeniv.linux.org.uk>
-cc: Steve French <sfrench@samba.org>
-cc: Hyunchul Lee <hyc.lee@gmail.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Dave Wysochanski <dwysocha@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b4d86f37eacb7 ("mmc: renesas_sdhi: do hard reset if possible")
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Link: https://lore.kernel.org/r/20220624181438.4355-2-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/attr.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mmc/host/renesas_sdhi_core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/attr.c
-+++ b/fs/attr.c
-@@ -184,6 +184,8 @@ EXPORT_SYMBOL(setattr_prepare);
-  */
- int inode_newsize_ok(const struct inode *inode, loff_t offset)
- {
-+	if (offset < 0)
-+		return -EINVAL;
- 	if (inode->i_size < offset) {
- 		unsigned long limit;
+diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
+index ddb5ca2f559e..4fb49306275e 100644
+--- a/drivers/mmc/host/renesas_sdhi_core.c
++++ b/drivers/mmc/host/renesas_sdhi_core.c
+@@ -940,6 +940,10 @@ int renesas_sdhi_probe(struct platform_device *pdev,
+ 	if (IS_ERR(priv->clk_cd))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(priv->clk_cd), "cannot get cd clock");
  
++	priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
++	if (IS_ERR(priv->rstc))
++		return PTR_ERR(priv->rstc);
++
+ 	priv->pinctrl = devm_pinctrl_get(&pdev->dev);
+ 	if (!IS_ERR(priv->pinctrl)) {
+ 		priv->pins_default = pinctrl_lookup_state(priv->pinctrl,
+@@ -1032,10 +1036,6 @@ int renesas_sdhi_probe(struct platform_device *pdev,
+ 	if (ret)
+ 		goto efree;
+ 
+-	priv->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
+-	if (IS_ERR(priv->rstc))
+-		return PTR_ERR(priv->rstc);
+-
+ 	ver = sd_ctrl_read16(host, CTL_VERSION);
+ 	/* GEN2_SDR104 is first known SDHI to use 32bit block count */
+ 	if (ver < SDHI_VER_GEN2_SDR104 && mmc_data->max_blk_count > U16_MAX)
+-- 
+2.35.1
+
 
 
