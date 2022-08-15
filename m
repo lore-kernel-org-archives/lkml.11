@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B070EC2BB43
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D02A1C2BB9D
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346900AbiHOUQb (ORCPT
+        id S1346950AbiHOUQf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
+        Mon, 15 Aug 2022 16:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346108AbiHOUKr (ORCPT
+        with ESMTP id S1346465AbiHOUL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:10:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD8F64ED;
-        Mon, 15 Aug 2022 11:56:44 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69AC32EC8;
+        Mon, 15 Aug 2022 11:57:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6D35B8105C;
-        Mon, 15 Aug 2022 18:56:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1A5C433C1;
-        Mon, 15 Aug 2022 18:56:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16531B81057;
+        Mon, 15 Aug 2022 18:57:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAB6C43140;
+        Mon, 15 Aug 2022 18:57:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589801;
-        bh=pTtIM64RdILeVy25ARrvbKCjUMJ6DkCoiulUOCyVutE=;
+        s=korg; t=1660589863;
+        bh=l0t7eNncgRAPZynlvUSG53rLZJLTg+ipE9Z/Sl0djqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o81CxyRpGLO6VdE3NnJ464wgUFLyFobjOzhuyM0mdsbGRNtlZM0ixrKN2gwfcJf/G
-         xrsX9XE4d9xe96AQbBoKogtYGGeEGTGlpPRs7dNmJIPIY3qgjs+IQgl7jWJceKu4oa
-         pORoMxS03lVPAlHN0kTvLIh8xBo1xPf/NPQiJYIg=
+        b=GgVWqmwnvWqx+vhs+Gb+KnTEjG9g0RqavLa00TQUum8lIhUdo395CBXwhxIXuWj5h
+         cHB0u+DgikCulSVLml0rLeV98oSkQz5oF2/WBbkHnZlr5URDEWyKhfklKSSs5I85lo
+         WrOP25G989yTPGWksm7wF6JqNFjTSnfuFQWGL0L8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Lukas Wunner <lukas@wunner.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 0052/1095] usbnet: Fix linkwatch use-after-free on disconnect
-Date:   Mon, 15 Aug 2022 19:50:51 +0200
-Message-Id: <20220815180431.625608326@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 0073/1095] wireguard: selftests: set CONFIG_NONPORTABLE on riscv32
+Date:   Mon, 15 Aug 2022 19:51:12 +0200
+Message-Id: <20220815180432.535168786@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,85 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit a69e617e533edddf3fa3123149900f36e0a6dc74 upstream.
+commit 9019b4f6d9bd88524ecd95420cf9cd4aaed7a125 upstream.
 
-usbnet uses the work usbnet_deferred_kevent() to perform tasks which may
-sleep.  On disconnect, completion of the work was originally awaited in
-->ndo_stop().  But in 2003, that was moved to ->disconnect() by historic
-commit "[PATCH] USB: usbnet, prevent exotic rtnl deadlock":
+When the CONFIG_PORTABLE/CONFIG_NONPORTABLE switches were added, various
+configs were updated, but the wireguard config was forgotten about. This
+leads to unbootable test kernels, causing CI fails. Add
+CONFIG_NONPORTABLE=y to the wireguard test suite configuration for
+riscv32.
 
-  https://git.kernel.org/tglx/history/c/0f138bbfd83c
-
-The change was made because back then, the kernel's workqueue
-implementation did not allow waiting for a single work.  One had to wait
-for completion of *all* work by calling flush_scheduled_work(), and that
-could deadlock when waiting for usbnet_deferred_kevent() with rtnl_mutex
-held in ->ndo_stop().
-
-The commit solved one problem but created another:  It causes a
-use-after-free in USB Ethernet drivers aqc111.c, asix_devices.c,
-ax88179_178a.c, ch9200.c and smsc75xx.c:
-
-* If the drivers receive a link change interrupt immediately before
-  disconnect, they raise EVENT_LINK_RESET in their (non-sleepable)
-  ->status() callback and schedule usbnet_deferred_kevent().
-* usbnet_deferred_kevent() invokes the driver's ->link_reset() callback,
-  which calls netif_carrier_{on,off}().
-* That in turn schedules the work linkwatch_event().
-
-Because usbnet_deferred_kevent() is awaited after unregister_netdev(),
-netif_carrier_{on,off}() may operate on an unregistered netdev and
-linkwatch_event() may run after free_netdev(), causing a use-after-free.
-
-In 2010, usbnet was changed to only wait for a single instance of
-usbnet_deferred_kevent() instead of *all* work by commit 23f333a2bfaf
-("drivers/net: don't use flush_scheduled_work()").
-
-Unfortunately the commit neglected to move the wait back to
-->ndo_stop().  Rectify that omission at long last.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Fixes: 44c1e84a38a0 ("RISC-V: Add CONFIG_{NON,}PORTABLE")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Cc: stable@vger.kernel.org
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/d1c87ebe9fc502bffcd1576e238d685ad08321e4.1655987888.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220809145757.83673-1-Jason@zx2c4.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/usbnet.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ tools/testing/selftests/wireguard/qemu/arch/riscv32.config |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -849,13 +849,11 @@ int usbnet_stop (struct net_device *net)
- 
- 	mpn = !test_and_clear_bit(EVENT_NO_RUNTIME_PM, &dev->flags);
- 
--	/* deferred work (task, timer, softirq) must also stop.
--	 * can't flush_scheduled_work() until we drop rtnl (later),
--	 * else workers could deadlock; so make workers a NOP.
--	 */
-+	/* deferred work (timer, softirq, task) must also stop */
- 	dev->flags = 0;
- 	del_timer_sync (&dev->delay);
- 	tasklet_kill (&dev->bh);
-+	cancel_work_sync(&dev->kevent);
- 	if (!pm)
- 		usb_autopm_put_interface(dev->intf);
- 
-@@ -1619,8 +1617,6 @@ void usbnet_disconnect (struct usb_inter
- 	net = dev->net;
- 	unregister_netdev (net);
- 
--	cancel_work_sync(&dev->kevent);
--
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
- 	if (dev->driver_info->unbind)
+--- a/tools/testing/selftests/wireguard/qemu/arch/riscv32.config
++++ b/tools/testing/selftests/wireguard/qemu/arch/riscv32.config
+@@ -1,3 +1,4 @@
++CONFIG_NONPORTABLE=y
+ CONFIG_ARCH_RV32I=y
+ CONFIG_MMU=y
+ CONFIG_FPU=y
 
 
