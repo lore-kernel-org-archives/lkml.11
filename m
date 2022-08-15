@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E439C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20908C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245532AbiHOTFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
+        id S245100AbiHOTGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245540AbiHOTCS (ORCPT
+        with ESMTP id S245213AbiHOTBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:02:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B5D4D143;
-        Mon, 15 Aug 2022 11:33:26 -0700 (PDT)
+        Mon, 15 Aug 2022 15:01:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C20533346;
+        Mon, 15 Aug 2022 11:33:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 403C4B8106E;
-        Mon, 15 Aug 2022 18:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 896F8C433C1;
-        Mon, 15 Aug 2022 18:33:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09A1F60EEB;
+        Mon, 15 Aug 2022 18:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0102EC433C1;
+        Mon, 15 Aug 2022 18:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588405;
-        bh=vYKQ+tCX8WDdMfseVHQsF3kvwn3B0p/f7dOk+AcTaPc=;
+        s=korg; t=1660588377;
+        bh=fgbD63ZK38KAvlC/0IPEiqXYZOkpZEoUNR19gQ29OQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TGsnAQCWrQUjz3+/1poSwLls6us6OELeZcSbwY0P70YgoAUebtQiOg3MUDWcYEOif
-         zHS465s+Fh75hzUOQqux6qPSkbS3+MkDYFkudECNuHJDhm0q/dQm7J/SFgoKrOPPRU
-         JAP+Fzku8LZJ+IifGAxjv1K6t6rkAzh4tnzrniCI=
+        b=UWtP1P/hVxBSlvrJYhE2UCSleRGnop20lLKb0P6Q0m8GFpWRc2pw7FDyzrvM2+mEn
+         RmWcanFGKPA4IUBB4K7Efy6Yavut5RwB6kr905/rsNwOoDGCV9k0YY70STG8dJHZsg
+         1eJsqTMAPn6A4T2khXSCASuR09xLj1Nl6Wyr7kAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 362/779] i2c: cadence: Support PEC for SMBus block read
-Date:   Mon, 15 Aug 2022 20:00:06 +0200
-Message-Id: <20220815180352.714268192@linuxfoundation.org>
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 383/779] net: ionic: fix error check for vlan flags in ionic_set_nic_features()
+Date:   Mon, 15 Aug 2022 20:00:27 +0200
+Message-Id: <20220815180353.657188214@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,74 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 9fdf6d97f03035ad5298e2d1635036c74c2090ed ]
+[ Upstream commit a86e86db5e6d72c82724a63ca1c5293409a21518 ]
 
-SMBus packet error checking (PEC) is implemented by appending one
-additional byte of checksum data at the end of the message. This provides
-additional protection and allows to detect data corruption on the I2C bus.
+The prototype of input features of ionic_set_nic_features() is
+netdev_features_t, but the vlan_flags is using the private
+definition of ionic drivers. It should use the variable
+ctx.cmd.lif_setattr.features, rather than features to check
+the vlan flags. So fixes it.
 
-SMBus block reads support variable length reads. The first byte in the read
-message is the number of available data bytes.
-
-The combination of PEC and block read is currently not supported by the
-Cadence I2C driver.
- * When PEC is enabled the maximum transfer length for block reads
-   increases from 33 to 34 bytes.
- * The I2C core smbus emulation layer relies on the driver updating the
-   `i2c_msg` `len` field with the number of received bytes. The updated
-   length is used when checking the PEC.
-
-Add support to the Cadence I2C driver for handling SMBus block reads with
-PEC. To determine the maximum transfer length uses the initial `len` value
-of the `i2c_msg`. When PEC is enabled this will be 2, when it is disabled
-it will be 1.
-
-Once a read transfer is done also increment the `len` field by the amount
-of received data bytes.
-
-This change has been tested with a UCM90320 PMBus power monitor, which
-requires block reads to access certain data fields, but also has PEC
-enabled by default.
-
-Fixes: df8eb5691c48 ("i2c: Add driver for Cadence I2C controller")
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Tested-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Acked-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 630cfa4ddd46..33f5588a50c0 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -573,8 +573,13 @@ static void cdns_i2c_mrecv(struct cdns_i2c *id)
- 	ctrl_reg = cdns_i2c_readreg(CDNS_I2C_CR_OFFSET);
- 	ctrl_reg |= CDNS_I2C_CR_RW | CDNS_I2C_CR_CLR_FIFO;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 6ac507ddf09a..781313dbd04f 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1565,7 +1565,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+ 	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
+ 		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
  
-+	/*
-+	 * Receive up to I2C_SMBUS_BLOCK_MAX data bytes, plus one message length
-+	 * byte, plus one checksum byte if PEC is enabled. p_msg->len will be 2 if
-+	 * PEC is enabled, otherwise 1.
-+	 */
- 	if (id->p_msg->flags & I2C_M_RECV_LEN)
--		id->recv_count = I2C_SMBUS_BLOCK_MAX + 1;
-+		id->recv_count = I2C_SMBUS_BLOCK_MAX + id->p_msg->len;
- 
- 	id->curr_recv_count = id->recv_count;
- 
-@@ -789,6 +794,9 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 	if (id->err_status & CDNS_I2C_IXR_ARB_LOST)
- 		return -EAGAIN;
- 
-+	if (msg->flags & I2C_M_RECV_LEN)
-+		msg->len += min_t(unsigned int, msg->buf[0], I2C_SMBUS_BLOCK_MAX);
-+
- 	return 0;
- }
+-	if ((vlan_flags & features) &&
++	if ((vlan_flags & le64_to_cpu(ctx.cmd.lif_setattr.features)) &&
+ 	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
+ 		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
  
 -- 
 2.35.1
