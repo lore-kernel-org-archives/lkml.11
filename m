@@ -2,127 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 255EDC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F8BC25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240911AbiHOEQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 00:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
+        id S241051AbiHOEQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 00:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240893AbiHOEQb (ORCPT
+        with ESMTP id S240794AbiHOEQc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 00:16:31 -0400
+        Mon, 15 Aug 2022 00:16:32 -0400
 Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D926140A5
-        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:16:29 -0700 (PDT)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27F3wF6p016367;
-        Mon, 15 Aug 2022 04:16:24 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B398D14D28
+        for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:16:30 -0700 (PDT)
+Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27F43qGl027861;
+        Mon, 15 Aug 2022 04:16:26 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pps0720;
- bh=0ukIsswr7jv4Q0zqB8Tov8ZNl+GRYQNfvf7V28HUxG8=;
- b=GnoDOIE5YM8Xjy574xRYo/HSJQ8Ua+uWcfBOLIrRD3hObGleeqE+j7MKofpJ/aybMwrs
- oDx1FxhdZ06llq8Qr/bIKPN8EM3VJv+R5Zl/1Flo/wHGvLVlcV5W9BjhJ1mF/YtcFCNZ
- C9/DNGw5jFjOI0LcLMbJNwDDHj0jM65GYeihhi+AnzhPdjncnwfAn2b+tAYHCPNlYVQS
- fZpcuNn27ADfPAWKT3hjVrhXmoEbABcxbWLJOOv/MJYNy8hQkKuI/pz/CFogNg/8PtTP
- L2bUm3nJCIfZdKL7Io+QjTH4LF3CzjlIU67jBM96SMS4Bw5hG06p5S0djgyoCEwhldZP Gg== 
-Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3hyeq2r9hx-1
+ bh=aSHXFdAQ03T2SGv1NgPTxGKHIy2TzHOP7Y3b0nXA+UU=;
+ b=RpVqPwqz/n6PaVG2Pr0/AMqGF98xmCcE+af1K92RBPmpIHJ5cKQLo38b7K/FNA2Kal8b
+ GHQDrMxsaXFtVfSDLqGH0sBWcUiRCU+snFmEiEnyOgYNwKJjonfAnyJdM90HqCc0vEDP
+ Xaesxh4Z3h2hiY1BvEycPqOWwe8H4qPHD/WDAOjtfLxYRBahPWvdPkrRGVcEJUJjH//Q
+ mjEtov0FgHoOnre+F6r4py5GzA7cEZA9xzHCqsDQqsB5V52j94Hv3mPblgHTmDFyzJ9e
+ yBeEOZ+6y3hMQheU3iWzNIT/v9LozpuRGOORClWLju9opM+L0vDXnxbR/9WsmYdjm0rW Cw== 
+Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3hydktgsb7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 04:16:24 +0000
+        Mon, 15 Aug 2022 04:16:26 +0000
 Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id 9009FD2F8;
-        Mon, 15 Aug 2022 04:16:22 +0000 (UTC)
+        by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 171DA8000B7;
+        Mon, 15 Aug 2022 04:16:26 +0000 (UTC)
 Received: from adevxp033-sys.us.rdlabs.hpecorp.net (unknown [16.231.227.36])
-        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id 407A58048EE;
-        Mon, 15 Aug 2022 04:16:22 +0000 (UTC)
+        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id BB12D80560D;
+        Mon, 15 Aug 2022 04:16:25 +0000 (UTC)
 From:   Robert Elliott <elliott@hpe.com>
 To:     apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com,
         lukas.bulwahn@gmail.com, linux-kernel@vger.kernel.org
 Cc:     toshi.kani@hpe.com, Robert Elliott <elliott@hpe.com>
-Subject: [PATCH 1/3] checkpatch: improve Kconfig help text patch parsing
-Date:   Sun, 14 Aug 2022 23:15:46 -0500
-Message-Id: <20220815041548.43744-2-elliott@hpe.com>
+Subject: [PATCH 3/3] checkpatch: check line length in Kconfig help text
+Date:   Sun, 14 Aug 2022 23:15:48 -0500
+Message-Id: <20220815041548.43744-4-elliott@hpe.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220815041548.43744-1-elliott@hpe.com>
 References: <20220815041548.43744-1-elliott@hpe.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: Og3yy0Z5LYdfpZ53DvAkYzWey1qvH7OA
-X-Proofpoint-ORIG-GUID: Og3yy0Z5LYdfpZ53DvAkYzWey1qvH7OA
+X-Proofpoint-GUID: jfcEAwiQtfWhDpxpOu-MkFc9T72ktjAm
+X-Proofpoint-ORIG-GUID: jfcEAwiQtfWhDpxpOu-MkFc9T72ktjAm
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-15_03,2022-08-11_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 malwarescore=0 impostorscore=0 lowpriorityscore=0 phishscore=0
- suspectscore=0 bulkscore=0 mlxscore=0 mlxlogscore=999 clxscore=1015
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ phishscore=0 adultscore=0 priorityscore=1501 mlxscore=0 suspectscore=0
+ malwarescore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2207270000 definitions=main-2208150016
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While parsing Kconfig help text, allow the strings that affect
-parsing (e.g., help, bool, tristate, and prompt) to be in existing
-text, not just added text (i.e., allow both + and a space character
-at the beginning of the line).
+Apply the normal --max-line-length=nn line length checks to
+Kconfig help text.
 
-This improves parsing of a patch like:
-
-+config CRYPTO_SHA512_S390
-+       tristate "SHA384 and SHA512 (s390)"
-+       depends on S390
-        select CRYPTO_HASH
-        help
--         SHA512 secure hash standard (DFIPS 180-2).
-+         SHA-384 and SHA-512 secure hash algorithms (FIPS 180)
-
--         This version of SHA implements a 512 bit hash with 256 bits of
--         security against collision attacks.
-+         Architecture: s390
-
--         This code also includes SHA-384, a 384 bit hash with 192 bits
--         of security against collision attacks.
-+         It is available as of z10.
+The default of 100 is only triggered by one existing line in
+a file named Kconfig. Running with --max-line-length=80 reports
+only a few long lines:
+- 11 between 90 and 99 characters
+- 25 betwen 81 and 89 characters
+9 of which are due to long URLs.
 
 Signed-off-by: Robert Elliott <elliott@hpe.com>
 ---
- scripts/checkpatch.pl | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ scripts/checkpatch.pl | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 503e8abbb2c1..b0cda2f6414d 100755
+index 4d09a324a586..f8e48af40b81 100755
 --- a/scripts/checkpatch.pl
 +++ b/scripts/checkpatch.pl
-@@ -3489,11 +3489,11 @@ sub process {
+@@ -3495,7 +3495,7 @@ sub process {
  				next if ($f =~ /^-/);
  				last if ($f !~ /^[\+ ]/);	# !patch context
  
--				if ($f =~ /^\+\s*(?:bool|tristate|prompt)\s*["']/) {
-+				if ($f =~ /^[\+ ]\s*(?:bool|tristate|prompt)\s*["']/) {
+-				if ($f =~ /^[\+ ]\s*(?:bool|tristate|prompt)\s*["']/) {
++				if ($f =~ /^[\+ ]\s*(?:bool|tristate|string|hex|int|prompt)\s*["']/) {
  					$needs_help = 1;
  					next;
  				}
--				if ($f =~ /^\+\s*help\s*$/) {
-+				if ($f =~ /^[\+ ]\s*help\s*$/) {
- 					$has_help = 1;
- 					next;
+@@ -3514,12 +3514,27 @@ sub process {
+ 				# and so hopefully shouldn't trigger false
+ 				# positives, even though some of these are
+ 				# common words in help texts
+-				if ($f =~ /^(?:config|menuconfig|choice|endchoice|
+-					       if|endif|menu|endmenu|source)\b/x) {
++				if ($f =~ /^(?:config|menuconfig|
++					       choice|endchoice|
++					       comment|if|endif|
++					       menu|endmenu|source)\b/x) {
+ 					last;
  				}
-@@ -3518,7 +3518,8 @@ sub process {
++
++				# no further checking for lines with these keywords
++				if ($f =~ /^(?:default|def_bool|depends|select|imply)\b/x) {
++					next;
++				}
++
++				my ($length, $indent) = line_stats($f);
++				if ($length > $max_line_length) {
++					WARN("CONFIG_DESCRIPTION",
++					     "Kconfig help text line length ($length) too long: $f\n");
++				}
++
+ 				$help_length++ if ($has_help);
+ 			}
++
+ 			if ($needs_help &&
  			    $help_length < $min_conf_desc_length) {
  				my $stat_real = get_stat_real($linenr, $ln - 1);
- 				WARN("CONFIG_DESCRIPTION",
--				     "please write a help paragraph that fully describes the config symbol\n" . "$here\n$stat_real\n");
-+				     "please write $min_conf_desc_length lines of help text that fully describes the config symbol (detected $help_length lines)\n" .
-+				     "$here\n$stat_real\n");
- 			}
- 		}
- 
 -- 
 2.37.1
 
