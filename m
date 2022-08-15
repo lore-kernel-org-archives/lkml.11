@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A0EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B941C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352208AbiHOWzL (ORCPT
+        id S1352249AbiHOWzU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36340 "EHLO
+        Mon, 15 Aug 2022 18:55:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352162AbiHOWxI (ORCPT
+        with ESMTP id S1352242AbiHOWxe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:53:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14DA7F10C;
-        Mon, 15 Aug 2022 12:54:44 -0700 (PDT)
+        Mon, 15 Aug 2022 18:53:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66DD45076;
+        Mon, 15 Aug 2022 12:54:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FB42B81144;
-        Mon, 15 Aug 2022 19:54:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F727C433D7;
-        Mon, 15 Aug 2022 19:54:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC25A6125B;
+        Mon, 15 Aug 2022 19:54:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB419C433D6;
+        Mon, 15 Aug 2022 19:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593281;
-        bh=keQl0RqzTCXOjfuUaTm3QR3v50m15zFuKa0dQ4j6y1c=;
+        s=korg; t=1660593285;
+        bh=j55TNd95ho6ZbsHNHDPW0cph+TjLYNpouX6nY95nTmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r9j8aEMAR5LCQNrfKbKnfoxyq4Pr/HIs4z3RsrOY9R254XN24jgH0kwHarp95xnaJ
-         7pt3d3USjMx1e6TtU9cl7DYzrUX+rsDiFRPdHR9FVdnFT16M52a00Pt7jDdoVS5L6y
-         Jlc1xTW1Xm2PiNFXBLOIEk32c5yLPdlhVPERj9os=
+        b=uSkipxBjJx9dfeW52fXuy7MlMnNhwbWDgj4IqXf3RfVhXouPmBYu663JQejwJat5y
+         BFkPZwCYSC6Uu/L2bUie6ajoCpKCxgCbD4CRson/Z43FJ/Vnqvqod7BrftUG2D/iJo
+         V4MN1DRuFGM7NUwUrq/r8YMeecjQ05kEuAzKkEpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guo Mengqi <guomengqi3@huawei.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Brian Masney <masneyb@onstation.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0922/1095] serial: 8250_bcm2835aux: Add missing clk_disable_unprepare()
-Date:   Mon, 15 Aug 2022 20:05:21 +0200
-Message-Id: <20220815180507.406769177@linuxfoundation.org>
+Subject: [PATCH 5.19 0241/1157] soc: qcom: ocmem: Fix refcount leak in of_get_ocmem
+Date:   Mon, 15 Aug 2022 19:53:17 +0200
+Message-Id: <20220815180449.198484131@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Mengqi <guomengqi3@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b9f1736e475dba0d6da48fdcb831248ab1597886 ]
+[ Upstream commit 92a563fcf14b3093226fb36f12e9b5cf630c5a5d ]
 
-The error path when get clock frequency fails in bcm2835aux_serial
-driver does not correctly disable the clock.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() will check NULL pointer.
 
-This flaw was found using a static analysis tool "Hulk Robot", which
-reported the following warning when analyzing linux-next/master:
-
-    drivers/tty/serial/8250/8250_bcm2835aux.c:
-    warning: clk_disable_unprepare_missing.cocci
-
-The cocci script checks for the existence of clk_disable_unprepare()
-paired with clk_prepare_enable().
-
-Add the missing clk_disable_unprepare() to the error path.
-
-Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
-Link: https://lore.kernel.org/r/20220715023312.37808-1-guomengqi3@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 88c1e9404f1d ("soc: qcom: add OCMEM driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220602042430.1114-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/soc/qcom/ocmem.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-index 2a1226a78a0c..21939bb44613 100644
---- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-+++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-@@ -166,8 +166,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
- 	uartclk = clk_get_rate(data->clk);
- 	if (!uartclk) {
- 		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
--		if (ret)
--			return dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
-+		if (ret) {
-+			dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
-+			goto dis_clk;
-+		}
+diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
+index 97fd24c178f8..c92d26b73e6f 100644
+--- a/drivers/soc/qcom/ocmem.c
++++ b/drivers/soc/qcom/ocmem.c
+@@ -194,14 +194,17 @@ struct ocmem *of_get_ocmem(struct device *dev)
+ 	devnode = of_parse_phandle(dev->of_node, "sram", 0);
+ 	if (!devnode || !devnode->parent) {
+ 		dev_err(dev, "Cannot look up sram phandle\n");
++		of_node_put(devnode);
+ 		return ERR_PTR(-ENODEV);
  	}
  
- 	/* the HW-clock divider for bcm2835aux is 8,
+ 	pdev = of_find_device_by_node(devnode->parent);
+ 	if (!pdev) {
+ 		dev_err(dev, "Cannot find device node %s\n", devnode->name);
++		of_node_put(devnode);
+ 		return ERR_PTR(-EPROBE_DEFER);
+ 	}
++	of_node_put(devnode);
+ 
+ 	ocmem = platform_get_drvdata(pdev);
+ 	if (!ocmem) {
 -- 
 2.35.1
 
