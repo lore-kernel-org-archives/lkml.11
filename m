@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12314C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E641DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348848AbiHOWZt (ORCPT
+        id S1348793AbiHOWZr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
+        Mon, 15 Aug 2022 18:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350827AbiHOWSj (ORCPT
+        with ESMTP id S1350817AbiHOWSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BEDC50;
-        Mon, 15 Aug 2022 12:42:37 -0700 (PDT)
+        Mon, 15 Aug 2022 18:18:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C6341D1D;
+        Mon, 15 Aug 2022 12:42:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5419B80EAB;
-        Mon, 15 Aug 2022 19:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04B75C433C1;
-        Mon, 15 Aug 2022 19:42:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F6706068D;
+        Mon, 15 Aug 2022 19:42:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 792A1C433C1;
+        Mon, 15 Aug 2022 19:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592555;
-        bh=b09QnvDg7xfHPslMRVg7vHUSCPbJTeYQlqKvtTja7U4=;
+        s=korg; t=1660592546;
+        bh=VWGqh+CG2Lil5Z4q1lpCoF7XgqNZB5NgJibu9/AVpOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NazJukh/X15o7SbaM9daahqt/2KMPqpzBEHy77mkRnaHM0wAcRx9k3dlVrRK04eNY
-         z5FfT1otwRlmU6dp5L4mnXao3BXucIvJ9wjWhLo5Nva0qlcUe7iA3F9GcuYVh2WYcN
-         KhOb+/Y6mxTZjRWUodGyqTbnBkwmZHvk2wrhfAA8=
+        b=mIRUqHJ8JfCEViZlOpV0xJqGfHw0SN68XMhN7p4kf/azDrZnGho4ascp/+uzmJDpx
+         b6zxmUN0F7SByWTiFOMixQV1cxjIBxrooTrcPCKBwNHiwnqpArCKPhFDlFZCrLGQvH
+         xJqApFqsVeAROGSsPQhp1Eqp+ZwUFSZABvlrpGzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.19 0129/1157] powerpc/powernv: Avoid crashing if rng is NULL
-Date:   Mon, 15 Aug 2022 19:51:25 +0200
-Message-Id: <20220815180444.766219146@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0806/1095] mm/mmap.c: fix missing call to vm_unacct_memory in mmap_region
+Date:   Mon, 15 Aug 2022 20:03:25 +0200
+Message-Id: <20220815180502.619094244@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,39 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit 90b5d4fe0b3ba7f589c6723c6bfb559d9e83956a upstream.
+[ Upstream commit 7f82f922319ede486540e8746769865b9508d2c2 ]
 
-On a bare-metal Power8 system that doesn't have an "ibm,power-rng", a
-malicious QEMU and guest that ignore the absence of the
-KVM_CAP_PPC_HWRNG flag, and calls H_RANDOM anyway, will dereference a
-NULL pointer.
+Since the beginning, charged is set to 0 to avoid calling vm_unacct_memory
+twice because vm_unacct_memory will be called by above unmap_region.  But
+since commit 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from
+the unmap_vmas() interfaces"), unmap_region doesn't call vm_unacct_memory
+anymore.  So charged shouldn't be set to 0 now otherwise the calling to
+paired vm_unacct_memory will be missed and leads to imbalanced account.
 
-In practice all Power8 machines have an "ibm,power-rng", but let's not
-rely on that, add a NULL check and early return in
-powernv_get_random_real_mode().
-
-Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
-Cc: stable@vger.kernel.org # v4.1+
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220727143219.2684192-1-mpe@ellerman.id.au
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/20220618082027.43391-1-linmiaohe@huawei.com
+Fixes: 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from the unmap_vmas() interfaces")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/rng.c |    2 ++
- 1 file changed, 2 insertions(+)
+ mm/mmap.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -63,6 +63,8 @@ int powernv_get_random_real_mode(unsigne
- 	struct powernv_rng *rng;
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 313b57d55a63..6d9bfd9c94ca 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1882,7 +1882,6 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
  
- 	rng = raw_cpu_read(powernv_rng);
-+	if (!rng)
-+		return 0;
- 
- 	*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
- 
+ 	/* Undo any partial mapping done by a device driver. */
+ 	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
+-	charged = 0;
+ 	if (vm_flags & VM_SHARED)
+ 		mapping_unmap_writable(file->f_mapping);
+ free_vma:
+-- 
+2.35.1
+
 
 
