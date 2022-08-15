@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9D8C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7E2C25B0E
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345162AbiHPAuv (ORCPT
+        id S1345757AbiHPAvA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
+        Mon, 15 Aug 2022 20:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347949AbiHPAqI (ORCPT
+        with ESMTP id S1348224AbiHPAqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:46:08 -0400
+        Mon, 15 Aug 2022 20:46:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C62195814;
-        Mon, 15 Aug 2022 13:44:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5424194E59;
+        Mon, 15 Aug 2022 13:44:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 730F2B8114A;
-        Mon, 15 Aug 2022 20:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5D61C433C1;
-        Mon, 15 Aug 2022 20:44:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8BFDB811A0;
+        Mon, 15 Aug 2022 20:44:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C9EC433C1;
+        Mon, 15 Aug 2022 20:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596284;
-        bh=ZkfPhjN2avtPFEMPzc3hA7bzstrynbp1NHZb4XLt1sc=;
+        s=korg; t=1660596271;
+        bh=5IEb6acwQmYQthvmIkjzgYaEeuiFuIMa3jBkhoCvLuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pNpgDJLKr51uXHOsUXfOCHq1wSUEhL7d62AFKBSCynqwtjQcx8+AuhQMKPNam43Nt
-         T7HMO1dLuVFPR+sKzH4OnASwtY47mAdkDwXFfj6ArMHGqWOBuHLm6Vw6OTWQvw6HPt
-         bkeFm7/PMoOT+++3TPg21KHGx5xLQ0P2KJ4Rb074=
+        b=BaHVYEMRGq7GckSXZ+LN9Fy6Sy7XFpySbU86/l4KwwO1uoeme+FIzA55uJb6MIvpd
+         t/EwyyuddGXEeC8fqn9r10fOfqBaF/iEIGmW3edjX/NaAkWpePqh+xsMWmlkNeNib0
+         ZTnVgOJw0vCAt65JVI1b29OK6Yp7Wh1FbGbBjkOM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1030/1157] video: fbdev: vt8623fb: Check the size of screen before memset_io()
-Date:   Mon, 15 Aug 2022 20:06:26 +0200
-Message-Id: <20220815180521.157105252@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1009/1157] cifs: Fix memory leak when using fscache
+Date:   Mon, 15 Aug 2022 20:06:05 +0200
+Message-Id: <20220815180520.207005048@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,48 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-[ Upstream commit ec0754c60217248fa77cc9005d66b2b55200ac06 ]
+[ Upstream commit c6f62f81b488d00afaa86bae26c6ce9ab12c709e ]
 
-In the function vt8623fb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+If we hit the 'index == next_cached' case, we leak a refcount on the
+struct page.  Fix this by using readahead_folio() which takes care of
+the refcount for you.
 
-[  583.339036] BUG: unable to handle page fault for address: ffffc90005000000
-[  583.339049] #PF: supervisor write access in kernel mode
-[  583.339052] #PF: error_code(0x0002) - not-present page
-[  583.339074] RIP: 0010:memset_orig+0x33/0xb0
-[  583.339110] Call Trace:
-[  583.339118]  vt8623fb_set_par+0x11cd/0x21e0
-[  583.339146]  fb_set_var+0x604/0xeb0
-[  583.339181]  do_fb_ioctl+0x234/0x670
-[  583.339209]  fb_ioctl+0xdd/0x130
-
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: 558b7bd86c32 ("vt8623fb: new framebuffer driver for VIA VT8623")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 0174ee9947bd ("cifs: Implement cache I/O by accessing the cache directly")
+Cc: David Howells <dhowells@redhat.com>
+Cc: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/vt8623fb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/cifs/file.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/vt8623fb.c b/drivers/video/fbdev/vt8623fb.c
-index a92a8c670cf0..4274c6efb249 100644
---- a/drivers/video/fbdev/vt8623fb.c
-+++ b/drivers/video/fbdev/vt8623fb.c
-@@ -507,6 +507,8 @@ static int vt8623fb_set_par(struct fb_info *info)
- 			 (info->var.vmode & FB_VMODE_DOUBLE) ? 2 : 1, 1,
- 			 1, info->node);
- 
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 
- 	/* Device and screen back on */
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index e64cda7a7610..6985710e14c2 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -4459,10 +4459,10 @@ static void cifs_readahead(struct readahead_control *ractl)
+ 				 * TODO: Send a whole batch of pages to be read
+ 				 * by the cache.
+ 				 */
+-				page = readahead_page(ractl);
+-				last_batch_size = 1 << thp_order(page);
++				struct folio *folio = readahead_folio(ractl);
++				last_batch_size = folio_nr_pages(folio);
+ 				if (cifs_readpage_from_fscache(ractl->mapping->host,
+-							       page) < 0) {
++							       &folio->page) < 0) {
+ 					/*
+ 					 * TODO: Deal with cache read failure
+ 					 * here, but for the moment, delegate
+@@ -4470,7 +4470,7 @@ static void cifs_readahead(struct readahead_control *ractl)
+ 					 */
+ 					caching = false;
+ 				}
+-				unlock_page(page);
++				folio_unlock(folio);
+ 				next_cached++;
+ 				cache_nr_pages--;
+ 				if (cache_nr_pages == 0)
 -- 
 2.35.1
 
