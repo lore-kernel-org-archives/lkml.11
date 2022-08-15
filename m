@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2ADC00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82851C28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346645AbiHOUQR (ORCPT
+        id S1346692AbiHOUQT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        Mon, 15 Aug 2022 16:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243473AbiHOUJh (ORCPT
+        with ESMTP id S1347046AbiHOUMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:37 -0400
+        Mon, 15 Aug 2022 16:12:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5627844D1;
-        Mon, 15 Aug 2022 11:56:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298328A6F6;
+        Mon, 15 Aug 2022 11:58:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D1A26123D;
-        Mon, 15 Aug 2022 18:56:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95DAC43142;
-        Mon, 15 Aug 2022 18:56:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6655B6126A;
+        Mon, 15 Aug 2022 18:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 745F3C433D6;
+        Mon, 15 Aug 2022 18:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589769;
-        bh=5T9sZsUjVjATFoJV6q2ZZ2gMz8QuQmNVK0O3y/brn4g=;
+        s=korg; t=1660589931;
+        bh=+GXNjbHUTKV1L2+1A30K3LneaVHLN5tQdbVxlRebuCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBwgeNjsWhISEosYxjGbSRoh1CQm5wBA2QAZBolGp3+12cDSQYxwuGEst/kgs0dgm
-         K+Fh/S3Z3LUtR0VOZsOrfwYSCeROpFsHerEc285xhU8dBjhjvSf2KeICcV3qFTKpVf
-         D3rSHR41kSw3iFVKLCCv/z2fIohsRHP40iqP3Rp4=
+        b=YFzGYtgJUEbaydHODiXDRUORx151z2ZMoi1Au3+lqTvxAYbYI79OzX5GY48P7778t
+         TUWrm7SM+QeChE5J8CzTbPk2PMVqY8yWNij8pSJmJvu5GrPdtSTQtu61SHV9STAFIW
+         fVuBHxrk9tmrtrFWgMlemADOfr4l3HcgNGOQKjCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Allen Ballway <ballway@chromium.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 0043/1095] ALSA: hda/cirrus - support for iMac 12,1 model
-Date:   Mon, 15 Aug 2022 19:50:42 +0200
-Message-Id: <20220815180431.225529328@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Dooks <ben.dooks@sifive.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 0065/1095] RISC-V: Declare cpu_ops_spinwait in <asm/cpu_ops.h>
+Date:   Mon, 15 Aug 2022 19:51:04 +0200
+Message-Id: <20220815180432.187936691@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,34 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Allen Ballway <ballway@chromium.org>
+From: Ben Dooks <ben.dooks@sifive.com>
 
-commit 74bba640d69914cf832b87f6bbb700e5ba430672 upstream.
+commit da6d2128e56a50a0d497c8e41ca1d33d88bcc0aa upstream.
 
-The 12,1 model requires the same configuration as the 12,2 model
-to enable headphones but has a different codec SSID. Adds
-12,1 SSID for matching quirk.
+The cpu_ops_spinwait is used in a couple of places in arch/riscv
+and is causing a sparse warning due to no declaration. Add this
+to <asm/cpu_ops.h> with the others to fix the following:
 
-[ re-sorted in SSID order by tiwai ]
+arch/riscv/kernel/cpu_ops_spinwait.c:16:29: warning: symbol 'cpu_ops_spinwait' was not declared. Should it be static?
 
-Signed-off-by: Allen Ballway <ballway@chromium.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220810152701.1.I902c2e591bbf8de9acb649d1322fa1f291849266@changeid
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Link: https://lore.kernel.org/r/20220714071811.187491-1-ben.dooks@sifive.com
+[Palmer: Drop the extern from cpu_ops.c]
+Fixes: 2ffc48fc7071 ("RISC-V: Move spinwait booting method to its own config")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_cirrus.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/include/asm/cpu_ops.h | 1 +
+ arch/riscv/kernel/cpu_ops.c      | 4 +---
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
---- a/sound/pci/hda/patch_cirrus.c
-+++ b/sound/pci/hda/patch_cirrus.c
-@@ -395,6 +395,7 @@ static const struct snd_pci_quirk cs420x
+diff --git a/arch/riscv/include/asm/cpu_ops.h b/arch/riscv/include/asm/cpu_ops.h
+index 134590f1b843..aa128466c4d4 100644
+--- a/arch/riscv/include/asm/cpu_ops.h
++++ b/arch/riscv/include/asm/cpu_ops.h
+@@ -38,6 +38,7 @@ struct cpu_operations {
+ #endif
+ };
  
- 	/* codec SSID */
- 	SND_PCI_QUIRK(0x106b, 0x0600, "iMac 14,1", CS420X_IMAC27_122),
-+	SND_PCI_QUIRK(0x106b, 0x0900, "iMac 12,1", CS420X_IMAC27_122),
- 	SND_PCI_QUIRK(0x106b, 0x1c00, "MacBookPro 8,1", CS420X_MBP81),
- 	SND_PCI_QUIRK(0x106b, 0x2000, "iMac 12,2", CS420X_IMAC27_122),
- 	SND_PCI_QUIRK(0x106b, 0x2800, "MacBookPro 10,1", CS420X_MBP101),
++extern const struct cpu_operations cpu_ops_spinwait;
+ extern const struct cpu_operations *cpu_ops[NR_CPUS];
+ void __init cpu_set_ops(int cpu);
+ 
+diff --git a/arch/riscv/kernel/cpu_ops.c b/arch/riscv/kernel/cpu_ops.c
+index 170d07e57721..f92c0e6eddb1 100644
+--- a/arch/riscv/kernel/cpu_ops.c
++++ b/arch/riscv/kernel/cpu_ops.c
+@@ -15,9 +15,7 @@
+ const struct cpu_operations *cpu_ops[NR_CPUS] __ro_after_init;
+ 
+ extern const struct cpu_operations cpu_ops_sbi;
+-#ifdef CONFIG_RISCV_BOOT_SPINWAIT
+-extern const struct cpu_operations cpu_ops_spinwait;
+-#else
++#ifndef CONFIG_RISCV_BOOT_SPINWAIT
+ const struct cpu_operations cpu_ops_spinwait = {
+ 	.name		= "",
+ 	.cpu_prepare	= NULL,
+-- 
+2.37.1
+
 
 
