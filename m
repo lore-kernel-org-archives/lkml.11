@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E2EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D74C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344835AbiHOVxg (ORCPT
+        id S1347485AbiHOVxn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        Mon, 15 Aug 2022 17:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350285AbiHOVu6 (ORCPT
+        with ESMTP id S1350348AbiHOVvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:50:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D83DEB7D;
-        Mon, 15 Aug 2022 12:32:25 -0700 (PDT)
+        Mon, 15 Aug 2022 17:51:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65959104B24;
+        Mon, 15 Aug 2022 12:32:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 967A6B80FD3;
-        Mon, 15 Aug 2022 19:32:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3291C433D6;
-        Mon, 15 Aug 2022 19:32:21 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 463EECE12DB;
+        Mon, 15 Aug 2022 19:32:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D3EC433C1;
+        Mon, 15 Aug 2022 19:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591942;
-        bh=RIXvlqtErnqUU+6Rz5r6bqonG4MImcLLPCMCxhVxYak=;
+        s=korg; t=1660591945;
+        bh=exXlSyE6+QPcILp+nxmGivamKTdZ39q0PQQr8Zupu9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gVudz0XcvtFdoKs2UH7LtgyjxoH0EgXd3/6idn3t+GtQ54+yrdBrrweaeppHs6fst
-         MbrRMn67yowA0kzbt8n09eb9qkGrmGxzW4WF2yReN4H/jMQbYsnKFTPdmtGODTr1RH
-         I4LHmlGa2qEUEgU+qtwMipmLLleBM/HEv68/3YQc=
+        b=cFZWbY3+/XlNxBUkgyiEpFi3kJuYnh59rhShxtM6vOgqmOL4U8YnAHcFvQ+DbDRe7
+         vPCZ4UbIyPC33UOs73GFWvZcgBOytnB/1HoWa8MObWS38KXolRrCBNj/c8QeLx1yKi
+         kc4DuXasggjHduFAX5VPxb5I+KrIRgTs+YiAMVww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0034/1157] KVM: nVMX: Account for KVM reserved CR4 bits in consistency checks
-Date:   Mon, 15 Aug 2022 19:49:50 +0200
-Message-Id: <20220815180440.799547938@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Marko <robimarko@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0708/1095] clk: qcom: ipq8074: fix NSS port frequency tables
+Date:   Mon, 15 Aug 2022 20:01:47 +0200
+Message-Id: <20220815180458.671139666@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,45 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Robert Marko <robimarko@gmail.com>
 
-commit ca58f3aa53d165afe4ab74c755bc2f6d168617ac upstream.
+[ Upstream commit 0e9e61a2815b5cd34f1b495b2d72e8127ce9b794 ]
 
-Check that the guest (L2) and host (L1) CR4 values that would be loaded
-by nested VM-Enter and VM-Exit respectively are valid with respect to
-KVM's (L0 host) allowed CR4 bits.  Failure to check KVM reserved bits
-would allow L1 to load an illegal CR4 (or trigger hardware VM-Fail or
-failed VM-Entry) by massaging guest CPUID to allow features that are not
-supported by KVM.  Amusingly, KVM itself is an accomplice in its doom, as
-KVM adjusts L1's MSR_IA32_VMX_CR4_FIXED1 to allow L1 to enable bits for
-L2 based on L1's CPUID model.
+NSS port 5 and 6 frequency tables are currently broken and are causing a
+wide ranges of issue like 1G not working at all on port 6 or port 5 being
+clocked with 312 instead of 125 MHz as UNIPHY1 gets selected.
 
-Note, although nested_{guest,host}_cr4_valid() are _currently_ used if
-and only if the vCPU is post-VMXON (nested.vmxon == true), that may not
-be true in the future, e.g. emulating VMXON has a bug where it doesn't
-check the allowed/required CR0/CR4 bits.
+So, update the frequency tables with the ones from the downstream QCA 5.4
+based kernel which has already fixed this.
 
-Cc: stable@vger.kernel.org
-Fixes: 3899152ccbf4 ("KVM: nVMX: fix checks on CR{0,4} during virtual VMX operation")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220607213604.3346000-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7117a51ed303 ("clk: qcom: ipq8074: add NSS ethernet port clocks")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220515210048.483898-3-robimarko@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/x86/kvm/vmx/nested.h
-+++ b/arch/x86/kvm/vmx/nested.h
-@@ -281,7 +281,8 @@ static inline bool nested_cr4_valid(stru
- 	u64 fixed0 = to_vmx(vcpu)->nested.msrs.cr4_fixed0;
- 	u64 fixed1 = to_vmx(vcpu)->nested.msrs.cr4_fixed1;
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index b4291ba53c78..f1017f2e61bd 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -1788,8 +1788,10 @@ static struct clk_regmap_div nss_port4_tx_div_clk_src = {
+ static const struct freq_tbl ftbl_nss_port5_rx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
+ 	F(25000000, P_UNIPHY1_RX, 12.5, 0, 0),
++	F(25000000, P_UNIPHY0_RX, 5, 0, 0),
+ 	F(78125000, P_UNIPHY1_RX, 4, 0, 0),
+ 	F(125000000, P_UNIPHY1_RX, 2.5, 0, 0),
++	F(125000000, P_UNIPHY0_RX, 1, 0, 0),
+ 	F(156250000, P_UNIPHY1_RX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY1_RX, 1, 0, 0),
+ 	{ }
+@@ -1828,8 +1830,10 @@ static struct clk_regmap_div nss_port5_rx_div_clk_src = {
+ static const struct freq_tbl ftbl_nss_port5_tx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
+ 	F(25000000, P_UNIPHY1_TX, 12.5, 0, 0),
++	F(25000000, P_UNIPHY0_TX, 5, 0, 0),
+ 	F(78125000, P_UNIPHY1_TX, 4, 0, 0),
+ 	F(125000000, P_UNIPHY1_TX, 2.5, 0, 0),
++	F(125000000, P_UNIPHY0_TX, 1, 0, 0),
+ 	F(156250000, P_UNIPHY1_TX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY1_TX, 1, 0, 0),
+ 	{ }
+@@ -1867,8 +1871,10 @@ static struct clk_regmap_div nss_port5_tx_div_clk_src = {
  
--	return fixed_bits_valid(val, fixed0, fixed1);
-+	return fixed_bits_valid(val, fixed0, fixed1) &&
-+	       __kvm_is_valid_cr4(vcpu, val);
- }
+ static const struct freq_tbl ftbl_nss_port6_rx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
++	F(25000000, P_UNIPHY2_RX, 5, 0, 0),
+ 	F(25000000, P_UNIPHY2_RX, 12.5, 0, 0),
+ 	F(78125000, P_UNIPHY2_RX, 4, 0, 0),
++	F(125000000, P_UNIPHY2_RX, 1, 0, 0),
+ 	F(125000000, P_UNIPHY2_RX, 2.5, 0, 0),
+ 	F(156250000, P_UNIPHY2_RX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY2_RX, 1, 0, 0),
+@@ -1907,8 +1913,10 @@ static struct clk_regmap_div nss_port6_rx_div_clk_src = {
  
- /* No difference in the restrictions on guest and host CR4 in VMX operation. */
+ static const struct freq_tbl ftbl_nss_port6_tx_clk_src[] = {
+ 	F(19200000, P_XO, 1, 0, 0),
++	F(25000000, P_UNIPHY2_TX, 5, 0, 0),
+ 	F(25000000, P_UNIPHY2_TX, 12.5, 0, 0),
+ 	F(78125000, P_UNIPHY2_TX, 4, 0, 0),
++	F(125000000, P_UNIPHY2_TX, 1, 0, 0),
+ 	F(125000000, P_UNIPHY2_TX, 2.5, 0, 0),
+ 	F(156250000, P_UNIPHY2_TX, 2, 0, 0),
+ 	F(312500000, P_UNIPHY2_TX, 1, 0, 0),
+-- 
+2.35.1
+
 
 
