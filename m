@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3396C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56256C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231680AbiHPEnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        id S231912AbiHPEnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232024AbiHPEkp (ORCPT
+        with ESMTP id S232038AbiHPEkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:40:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCDF4D156;
-        Mon, 15 Aug 2022 13:32:03 -0700 (PDT)
+        Tue, 16 Aug 2022 00:40:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E872CA50FB;
+        Mon, 15 Aug 2022 13:32:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8648B80EB1;
-        Mon, 15 Aug 2022 20:32:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09D8EC433C1;
-        Mon, 15 Aug 2022 20:31:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8612861089;
+        Mon, 15 Aug 2022 20:32:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7728EC433C1;
+        Mon, 15 Aug 2022 20:32:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595520;
-        bh=6C7ENA4cQDsVVzsv3Rq/WPhMIsQM9CeSXYdCC1IQNHM=;
+        s=korg; t=1660595526;
+        bh=O+ZF0S3TxUZwPUpgyNNN8n7Tiwbji4dnIU/dpyt8iXk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=flGGXDnT8Ch7+0B+6DWACjDpAuhB4dWqci88XMwPvD2zF6Uz2iRyuVll4p5mQw4ej
-         Rm6UY9wLJIe7el34mdbUP5WE08xzHtForGLWN3Snf1aL62xGtToadcb6nokMAZmYG+
-         kfmwx3G9oi9VouDHfjiYS+NXLxfqn11f3pX0+qwc=
+        b=bF4HD1k98iynhGZ0ODgMGK+biiGrZkxXUGSb17wyzskChE6aDu42b9mHpq/h/Y4hK
+         oowq7Q7nNH5JCUwB7mOfxxOlpn4t6fWqg2aY3xZCrW9JXZBMJCcMwlUyg0DxHAwmz/
+         XurdIw82mNZeKnbXkHo8+IGmxmvv8sjRg31zayYw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Carlos Llamas <cmllamas@google.com>,
+        stable@vger.kernel.org, Nikita Travkin <nikita@trvn.ru>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0789/1157] binder: fix redefinition of seq_file attributes
-Date:   Mon, 15 Aug 2022 20:02:25 +0200
-Message-Id: <20220815180511.040822341@linuxfoundation.org>
+Subject: [PATCH 5.19 0761/1157] clk: qcom: clk-rcg2: Fail Duty-Cycle configuration if MND divider is not enabled.
+Date:   Mon, 15 Aug 2022 20:01:57 +0200
+Message-Id: <20220815180509.927263804@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,344 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carlos Llamas <cmllamas@google.com>
+From: Nikita Travkin <nikita@trvn.ru>
 
-[ Upstream commit b7e241bbff24f9e106bf616408fd58bcedc44bae ]
+[ Upstream commit bdafb609c3bb848d710ad9cd4debd2ee9d6a4049 ]
 
-The patchset in [1] exported some definitions to binder_internal.h in
-order to make the debugfs entries such as 'stats' and 'transaction_log'
-available in a binderfs instance. However, the DEFINE_SHOW_ATTRIBUTE
-macro expands into a static function/variable pair, which in turn get
-redefined each time a source file includes this internal header.
+In cases when MND is not enabled (e.g. when only Half Integer Divider is
+used), setting D registers makes no effect.
 
-This problem was made evident after a report from the kernel test robot
-<lkp@intel.com> where several W=1 build warnings are seen in downstream
-kernels. See the following example:
+Fail instead of making ineffective write.
 
-  include/../drivers/android/binder_internal.h:111:23: warning: 'binder_stats_fops' defined but not used [-Wunused-const-variable=]
-     111 | DEFINE_SHOW_ATTRIBUTE(binder_stats);
-         |                       ^~~~~~~~~~~~
-  include/linux/seq_file.h:174:37: note: in definition of macro 'DEFINE_SHOW_ATTRIBUTE'
-     174 | static const struct file_operations __name ## _fops = {                 \
-         |                                     ^~~~~~
-
-This patch fixes the above issues by moving back the definitions into
-binder.c and instead creates an array of the debugfs entries which is
-more convenient to share with binderfs and iterate through.
-
-  [1] https://lore.kernel.org/all/20190903161655.107408-1-hridya@google.com/
-
-Fixes: 0e13e452dafc ("binder: Add stats, state and transactions files")
-Fixes: 03e2e07e3814 ("binder: Make transaction_log available in binderfs")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Link: https://lore.kernel.org/r/20220701182041.2134313-1-cmllamas@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7f891faf596e ("clk: qcom: clk-rcg2: Add support for duty-cycle for RCG")
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220612145955.385787-2-nikita@trvn.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/android/binder.c          | 114 +++++++++++++++++++++---------
- drivers/android/binder_internal.h |  46 +++---------
- drivers/android/binderfs.c        |  47 +++---------
- 3 files changed, 100 insertions(+), 107 deletions(-)
+ drivers/clk/qcom/clk-rcg2.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index 362c0deb65f1..54ac94fed015 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -197,8 +197,32 @@ static inline void binder_stats_created(enum binder_stat_types type)
- 	atomic_inc(&binder_stats.obj_created[type]);
- }
- 
--struct binder_transaction_log binder_transaction_log;
--struct binder_transaction_log binder_transaction_log_failed;
-+struct binder_transaction_log_entry {
-+	int debug_id;
-+	int debug_id_done;
-+	int call_type;
-+	int from_proc;
-+	int from_thread;
-+	int target_handle;
-+	int to_proc;
-+	int to_thread;
-+	int to_node;
-+	int data_size;
-+	int offsets_size;
-+	int return_error_line;
-+	uint32_t return_error;
-+	uint32_t return_error_param;
-+	char context_name[BINDERFS_MAX_NAME + 1];
-+};
-+
-+struct binder_transaction_log {
-+	atomic_t cur;
-+	bool full;
-+	struct binder_transaction_log_entry entry[32];
-+};
-+
-+static struct binder_transaction_log binder_transaction_log;
-+static struct binder_transaction_log binder_transaction_log_failed;
- 
- static struct binder_transaction_log_entry *binder_transaction_log_add(
- 	struct binder_transaction_log *log)
-@@ -6197,8 +6221,7 @@ static void print_binder_proc_stats(struct seq_file *m,
- 	print_binder_stats(m, "  ", &proc->stats);
- }
- 
--
--int binder_state_show(struct seq_file *m, void *unused)
-+static int state_show(struct seq_file *m, void *unused)
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index 8e5dce09d162..2375e8122012 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -437,7 +437,7 @@ static int clk_rcg2_get_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
+ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
  {
- 	struct binder_proc *proc;
- 	struct binder_node *node;
-@@ -6237,7 +6260,7 @@ int binder_state_show(struct seq_file *m, void *unused)
- 	return 0;
- }
- 
--int binder_stats_show(struct seq_file *m, void *unused)
-+static int stats_show(struct seq_file *m, void *unused)
- {
- 	struct binder_proc *proc;
- 
-@@ -6253,7 +6276,7 @@ int binder_stats_show(struct seq_file *m, void *unused)
- 	return 0;
- }
- 
--int binder_transactions_show(struct seq_file *m, void *unused)
-+static int transactions_show(struct seq_file *m, void *unused)
- {
- 	struct binder_proc *proc;
- 
-@@ -6309,7 +6332,7 @@ static void print_binder_transaction_log_entry(struct seq_file *m,
- 			"\n" : " (incomplete)\n");
- }
- 
--int binder_transaction_log_show(struct seq_file *m, void *unused)
-+static int transaction_log_show(struct seq_file *m, void *unused)
- {
- 	struct binder_transaction_log *log = m->private;
- 	unsigned int log_cur = atomic_read(&log->cur);
-@@ -6341,6 +6364,45 @@ const struct file_operations binder_fops = {
- 	.release = binder_release,
- };
- 
-+DEFINE_SHOW_ATTRIBUTE(state);
-+DEFINE_SHOW_ATTRIBUTE(stats);
-+DEFINE_SHOW_ATTRIBUTE(transactions);
-+DEFINE_SHOW_ATTRIBUTE(transaction_log);
-+
-+const struct binder_debugfs_entry binder_debugfs_entries[] = {
-+	{
-+		.name = "state",
-+		.mode = 0444,
-+		.fops = &state_fops,
-+		.data = NULL,
-+	},
-+	{
-+		.name = "stats",
-+		.mode = 0444,
-+		.fops = &stats_fops,
-+		.data = NULL,
-+	},
-+	{
-+		.name = "transactions",
-+		.mode = 0444,
-+		.fops = &transactions_fops,
-+		.data = NULL,
-+	},
-+	{
-+		.name = "transaction_log",
-+		.mode = 0444,
-+		.fops = &transaction_log_fops,
-+		.data = &binder_transaction_log,
-+	},
-+	{
-+		.name = "failed_transaction_log",
-+		.mode = 0444,
-+		.fops = &transaction_log_fops,
-+		.data = &binder_transaction_log_failed,
-+	},
-+	{} /* terminator */
-+};
-+
- static int __init init_binder_device(const char *name)
- {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+-	u32 notn_m, n, m, d, not2d, mask, duty_per;
++	u32 notn_m, n, m, d, not2d, mask, duty_per, cfg;
  	int ret;
-@@ -6386,36 +6448,18 @@ static int __init binder_init(void)
- 	atomic_set(&binder_transaction_log_failed.cur, ~0U);
  
- 	binder_debugfs_dir_entry_root = debugfs_create_dir("binder", NULL);
--	if (binder_debugfs_dir_entry_root)
-+	if (binder_debugfs_dir_entry_root) {
-+		const struct binder_debugfs_entry *db_entry;
+ 	/* Duty-cycle cannot be modified for non-MND RCGs */
+@@ -448,6 +448,11 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
+ 
+ 	regmap_read(rcg->clkr.regmap, RCG_N_OFFSET(rcg), &notn_m);
+ 	regmap_read(rcg->clkr.regmap, RCG_M_OFFSET(rcg), &m);
++	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
 +
-+		binder_for_each_debugfs_entry(db_entry)
-+			debugfs_create_file(db_entry->name,
-+					    db_entry->mode,
-+					    binder_debugfs_dir_entry_root,
-+					    db_entry->data,
-+					    db_entry->fops);
-+
- 		binder_debugfs_dir_entry_proc = debugfs_create_dir("proc",
- 						 binder_debugfs_dir_entry_root);
--
--	if (binder_debugfs_dir_entry_root) {
--		debugfs_create_file("state",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    NULL,
--				    &binder_state_fops);
--		debugfs_create_file("stats",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    NULL,
--				    &binder_stats_fops);
--		debugfs_create_file("transactions",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    NULL,
--				    &binder_transactions_fops);
--		debugfs_create_file("transaction_log",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    &binder_transaction_log,
--				    &binder_transaction_log_fops);
--		debugfs_create_file("failed_transaction_log",
--				    0444,
--				    binder_debugfs_dir_entry_root,
--				    &binder_transaction_log_failed,
--				    &binder_transaction_log_fops);
- 	}
++	/* Duty-cycle cannot be modified if MND divider is in bypass mode. */
++	if (!(cfg & CFG_MODE_MASK))
++		return -EINVAL;
  
- 	if (!IS_ENABLED(CONFIG_ANDROID_BINDERFS) &&
-diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
-index 8dc0bccf8513..abe19d88c6ec 100644
---- a/drivers/android/binder_internal.h
-+++ b/drivers/android/binder_internal.h
-@@ -107,41 +107,19 @@ static inline int __init init_binderfs(void)
- }
- #endif
+ 	n = (~(notn_m) + m) & mask;
  
--int binder_stats_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_stats);
--
--int binder_state_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_state);
--
--int binder_transactions_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_transactions);
--
--int binder_transaction_log_show(struct seq_file *m, void *unused);
--DEFINE_SHOW_ATTRIBUTE(binder_transaction_log);
--
--struct binder_transaction_log_entry {
--	int debug_id;
--	int debug_id_done;
--	int call_type;
--	int from_proc;
--	int from_thread;
--	int target_handle;
--	int to_proc;
--	int to_thread;
--	int to_node;
--	int data_size;
--	int offsets_size;
--	int return_error_line;
--	uint32_t return_error;
--	uint32_t return_error_param;
--	char context_name[BINDERFS_MAX_NAME + 1];
-+struct binder_debugfs_entry {
-+	const char *name;
-+	umode_t mode;
-+	const struct file_operations *fops;
-+	void *data;
- };
- 
--struct binder_transaction_log {
--	atomic_t cur;
--	bool full;
--	struct binder_transaction_log_entry entry[32];
--};
-+extern const struct binder_debugfs_entry binder_debugfs_entries[];
-+
-+#define binder_for_each_debugfs_entry(entry)	\
-+	for ((entry) = binder_debugfs_entries;	\
-+	     (entry)->name;			\
-+	     (entry)++)
- 
- enum binder_stat_types {
- 	BINDER_STAT_PROC,
-@@ -580,6 +558,4 @@ struct binder_object {
- 	};
- };
- 
--extern struct binder_transaction_log binder_transaction_log;
--extern struct binder_transaction_log binder_transaction_log_failed;
- #endif /* _LINUX_BINDER_INTERNAL_H */
-diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
-index 6c5e94f6cb3a..588d753a7a19 100644
---- a/drivers/android/binderfs.c
-+++ b/drivers/android/binderfs.c
-@@ -629,6 +629,7 @@ static int init_binder_features(struct super_block *sb)
- static int init_binder_logs(struct super_block *sb)
- {
- 	struct dentry *binder_logs_root_dir, *dentry, *proc_log_dir;
-+	const struct binder_debugfs_entry *db_entry;
- 	struct binderfs_info *info;
- 	int ret = 0;
- 
-@@ -639,43 +640,15 @@ static int init_binder_logs(struct super_block *sb)
- 		goto out;
- 	}
- 
--	dentry = binderfs_create_file(binder_logs_root_dir, "stats",
--				      &binder_stats_fops, NULL);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir, "state",
--				      &binder_state_fops, NULL);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir, "transactions",
--				      &binder_transactions_fops, NULL);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir,
--				      "transaction_log",
--				      &binder_transaction_log_fops,
--				      &binder_transaction_log);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
--	}
--
--	dentry = binderfs_create_file(binder_logs_root_dir,
--				      "failed_transaction_log",
--				      &binder_transaction_log_fops,
--				      &binder_transaction_log_failed);
--	if (IS_ERR(dentry)) {
--		ret = PTR_ERR(dentry);
--		goto out;
-+	binder_for_each_debugfs_entry(db_entry) {
-+		dentry = binderfs_create_file(binder_logs_root_dir,
-+					      db_entry->name,
-+					      db_entry->fops,
-+					      db_entry->data);
-+		if (IS_ERR(dentry)) {
-+			ret = PTR_ERR(dentry);
-+			goto out;
-+		}
- 	}
- 
- 	proc_log_dir = binderfs_create_dir(binder_logs_root_dir, "proc");
 -- 
 2.35.1
 
