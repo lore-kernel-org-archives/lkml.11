@@ -2,163 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66586C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D7CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242081AbiHOJmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
+        id S242095AbiHOJn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiHOJmW (ORCPT
+        with ESMTP id S233186AbiHOJn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:42:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1925D1CB34;
-        Mon, 15 Aug 2022 02:42:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEAD960FF1;
-        Mon, 15 Aug 2022 09:42:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11076C433D6;
-        Mon, 15 Aug 2022 09:42:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660556541;
-        bh=mIIGTw4aMzZ/OGv8lX0rJKJzHZ9/juqllmTKoHRRuhE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=N0D3MH8E8sRUuyIISUB0yg0MTGKTs+svFi/lTl6j9NLut5T1CmxLRaV3NvrJE1/Ft
-         O2Kc6H6qirviHJVUbSUUx1rF0hOUFv2CGDrmfLsOIq8Tts7zQRWEPxoR37u5FkPIfK
-         S3orIWnDsO8P3SleGpSYQz3xgZXZP5I8PorJgCW7sf8QqtCUM8QHMtfKS5M3UmF9yf
-         kNdaxVwA298T3CHhbUxzcsOO3YR0opEdWzidz2H9v1wCEpEBOX5HULsslrC32I8lDn
-         HTQQwCcuIponvsZ2IFu4tQL4vRFFoMI9g13eNGaOlKbj8I6a+IZeRMmGCIt2wUE2Z/
-         coT04CdADqLIA==
-Received: by mail-wr1-f41.google.com with SMTP id j7so8453737wrh.3;
-        Mon, 15 Aug 2022 02:42:20 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3cCKAHrmguHqqlALQ2ryq3VrgMu76OUy7/vajJlP+osofxkU/d
-        vFzNk6diQfoZU1ZMSheVGH7iSgNNmDAE6vdeDKY=
-X-Google-Smtp-Source: AA6agR4sVq1vePjI1vORqyjjgxd+/zzwKVWOL7SwNmNgiAKdmWT73zj5V2uLM0EH2VK1oXNXIBhbRYCzkz8x8zO+4Fg=
-X-Received: by 2002:a5d:64a6:0:b0:21f:b3b:5cc9 with SMTP id
- m6-20020a5d64a6000000b0021f0b3b5cc9mr7806696wrp.601.1660556539286; Mon, 15
- Aug 2022 02:42:19 -0700 (PDT)
+        Mon, 15 Aug 2022 05:43:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C98891EAE2
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:43:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660556606;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FQOUTS80HcZiERMDGmDJApodo1j0CVdPfRMkvjW6yzY=;
+        b=VRFEUIWbq4cKrqmyxCUrKgiy31gD7AS7IVXDmqpO+SuIhIOFI6BdMIIyKLEjZEGWau6Qar
+        dxySlQ2pun2dqi3f6lZbEKNYFvZLBaPSbii2BwtUC4X2frw0JsPPW1uGNYP2B7hEcLIZhO
+        WMlt0pfD/nZHFnBacO+NZwfMaeqCi4o=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-517-5nYc0maTN72kVU6qKCSKEA-1; Mon, 15 Aug 2022 05:43:24 -0400
+X-MC-Unique: 5nYc0maTN72kVU6qKCSKEA-1
+Received: by mail-ed1-f69.google.com with SMTP id q18-20020a056402519200b0043dd2ff50feso4419435edd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:43:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=FQOUTS80HcZiERMDGmDJApodo1j0CVdPfRMkvjW6yzY=;
+        b=RHvKQB61nx3HzScK/ZW6mcJfiKcEjQL0AoPXhMKfYEzBw7s0weAJfZe3AmYQpStiQm
+         QJYmk401T4vrmWmevdzwwEQ3qC1MS7jiQpjEuSjOVmkh7OMUl/olXTXp2ZCB33GTQq4p
+         20OxgtShx9HvVWTrzlrecg0DMsOalFgSCO9iRAykg7Er19ojCK5kDxd2ykMiifBKuj+z
+         JZTidXhmikPzgUIJ/F+YeHvcDhk1lTlhYk5AA+HGrpMNzWynfB/WfBU8bkoW7SKldAgn
+         I87tPwzXBfiDmqja8GUL38UcwmXLZmGB8V7bIzeFwktYrV0hUKyqRja2ddvtT5xdpSvz
+         PWCw==
+X-Gm-Message-State: ACgBeo0wpwdRz9h/T0QraqEeVsPPykxeaKP4SopLeEEfz87wCMMXpkD6
+        09Tc3gmKwLAOnALn4axERg3MYAjMH335/mc2SquNMfhneKWJnH9fUsooV9N+xmp/6QeFa8xFfZs
+        49NRlQDMbhfjIvv7FZKUa0uts
+X-Received: by 2002:a05:6402:3506:b0:43e:954b:bc8a with SMTP id b6-20020a056402350600b0043e954bbc8amr14220063edd.266.1660556603283;
+        Mon, 15 Aug 2022 02:43:23 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4dZtsSaRr3BCotU+lOGZMYhjH0zBr8qOJ26Q22OdX1qtkhhmkvzHqqJQdyvWrI2LG5tPO00Q==
+X-Received: by 2002:a05:6402:3506:b0:43e:954b:bc8a with SMTP id b6-20020a056402350600b0043e954bbc8amr14220048edd.266.1660556603021;
+        Mon, 15 Aug 2022 02:43:23 -0700 (PDT)
+Received: from redhat.com ([2.54.169.49])
+        by smtp.gmail.com with ESMTPSA id n6-20020aa7c686000000b0043d34ab7ad6sm6333009edq.49.2022.08.15.02.43.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 02:43:22 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 05:43:19 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: upstream kernel crashes
+Message-ID: <20220815054117-mutt-send-email-mst@kernel.org>
+References: <20220814212610.GA3690074@roeck-us.net>
 MIME-Version: 1.0
-References: <20220815042915.44547-1-elliott@hpe.com>
-In-Reply-To: <20220815042915.44547-1-elliott@hpe.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 15 Aug 2022 11:42:08 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXH1rU=HCd8bV4AP18JXhMKSs7wdJoiYQkPFsPRj=iuZPQ@mail.gmail.com>
-Message-ID: <CAMj1kXH1rU=HCd8bV4AP18JXhMKSs7wdJoiYQkPFsPRj=iuZPQ@mail.gmail.com>
-Subject: Re: [PATCH] crypto: tcrypt - remove mode=1000
-To:     Robert Elliott <elliott@hpe.com>
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        toshi.kani@hpe.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220814212610.GA3690074@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 15 Aug 2022 at 06:30, Robert Elliott <elliott@hpe.com> wrote:
->
-> The lists of algothms checked for existence by
->     modprobe tcrypt mode=1000
-> generates three bogus errors:
->     modprobe tcrypt mode=1000
->
->     console log:
->     tcrypt: alg rot13 not found
->     tcrypt: alg cts not found
->     tcrypt: alg arc4 not found
->
-> rot13 is not an algorithm in the crypto API or tested.
->
-> cts is a wrapper, not a base algorithm.
->
-> arc4 is named ecb(arc4), not arc4.
->
-> Also, the list is missing numerous algorithms that are tested by
-> other test modes:
->     blake2b-512
->     blake2s-256
->     crct10dif
->     xxhash64
->     ghash
->     cast5
->     sm4
->     ansi_prng
->
-> Several of the algorithms are only available if
-> CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE is enabled:
->     arc4
->     khazad
->     seed
->     tea, xtea, xeta
->
-> Rather that fix that list, remove test mode=1000 entirely.
-> It seems to have limited utility, and a web search shows no
-> discussion of anybody using it.
->
-> Suggested-by: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Robert Elliott <elliott@hpe.com>
+On Sun, Aug 14, 2022 at 02:26:10PM -0700, Guenter Roeck wrote:
+> Hi all,
+> 
+> syscaller reports lots of crashes with the mainline kernel. The latest
+> I have seen, based on the current ToT, is attached. Backtraces are not
+> always the same, but this one is typical.
+> 
+> I have not tried to analyze this further.
+> 
+> Guenter
 
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Thanks a lot for the report!
 
-> ---
->  crypto/tcrypt.c | 28 ----------------------------
->  1 file changed, 28 deletions(-)
->
-> diff --git a/crypto/tcrypt.c b/crypto/tcrypt.c
-> index 2bacf8384f59..35d70382ee54 100644
-> --- a/crypto/tcrypt.c
-> +++ b/crypto/tcrypt.c
-> @@ -65,18 +65,6 @@ static int mode;
->  static u32 num_mb = 8;
->  static unsigned int klen;
->  static char *tvmem[TVMEMSIZE];
-> -
-> -static const char *check[] = {
-> -       "des", "md5", "des3_ede", "rot13", "sha1", "sha224", "sha256", "sm3",
-> -       "blowfish", "twofish", "serpent", "sha384", "sha512", "md4", "aes",
-> -       "cast6", "arc4", "michael_mic", "deflate", "crc32c", "tea", "xtea",
-> -       "khazad", "wp512", "wp384", "wp256", "xeta",  "fcrypt",
-> -       "camellia", "seed", "rmd160",
-> -       "lzo", "lzo-rle", "cts", "sha3-224", "sha3-256", "sha3-384",
-> -       "sha3-512", "streebog256", "streebog512",
-> -       NULL
-> -};
-> -
->  static const int block_sizes[] = { 16, 64, 128, 256, 1024, 1420, 4096, 0 };
->  static const int aead_sizes[] = { 16, 64, 256, 512, 1024, 1420, 4096, 8192, 0 };
->
-> @@ -1454,18 +1442,6 @@ static void test_cipher_speed(const char *algo, int enc, unsigned int secs,
->                                    false);
->  }
->
-> -static void test_available(void)
-> -{
-> -       const char **name = check;
-> -
-> -       while (*name) {
-> -               printk("alg %s ", *name);
-> -               printk(crypto_has_alg(*name, 0, 0) ?
-> -                      "found\n" : "not found\n");
-> -               name++;
-> -       }
-> -}
-> -
->  static inline int tcrypt_test(const char *alg)
->  {
->         int ret;
-> @@ -2825,10 +2801,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
->                 test_mb_skcipher_speed("ctr(blowfish)", DECRYPT, sec, NULL, 0,
->                                        speed_template_8_32, num_mb);
->                 break;
-> -
-> -       case 1000:
-> -               test_available();
-> -               break;
->         }
->
->         return ret;
-> --
-> 2.37.1
->
+Could you please try the latest vhost tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+
+which has been reported by Andres Freund to fix a similar issue?
+
+Thanks!
+
+-- 
+MST
+
