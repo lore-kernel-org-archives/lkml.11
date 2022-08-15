@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CF4C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D488C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347394AbiHOWFF (ORCPT
+        id S1347537AbiHOWFL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
+        Mon, 15 Aug 2022 18:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350190AbiHOWBy (ORCPT
+        with ESMTP id S1350175AbiHOWBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13E0113682;
-        Mon, 15 Aug 2022 12:36:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2834B81136;
-        Mon, 15 Aug 2022 19:36:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B29CC43470;
-        Mon, 15 Aug 2022 19:36:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592168;
-        bh=WInj4pOrN2LEbYBEShrOBHF7IyqIhqtVGRwA7OG/tBo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xpGEggu1uTwAiA0V37ZK5pSSQaFzkqYLYZ42MduTNPY3D+Tb00NEFsZ632Ddkjcyh
-         Hk0dLVQcYsGt6CCE6dYig3HHyYueVtKcqgXfnFnzkBhMhL7GWEIuo+WUlVZEHMtdXA
-         Flt3H7aheG1zbHurNfYuIQZnmg2x6Zmw52bpWiR0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0744/1095] memstick/ms_block: Fix a memory leak
-Date:   Mon, 15 Aug 2022 20:02:23 +0200
-Message-Id: <20220815180500.140907842@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 18:01:53 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0F7112FB9;
+        Mon, 15 Aug 2022 12:36:10 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 2F8FB5C012D;
+        Mon, 15 Aug 2022 15:36:02 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Mon, 15 Aug 2022 15:36:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1660592162; x=1660678562; bh=DNdw0j1TNN+ttmL1Ka7ho+2gv
+        Y2WjWAZUT+c7H7rzqU=; b=RodAOIGAhqLLlqeYqORk44XOWjF1OWeuc5D1VMEWM
+        EkMC3eUi+bsKfqg1zm3z6OWoum80cIX3lghOplkMrE6N8RFLJk8xsen9+G931dUG
+        rG9AZa19SBA4YXhO43KCii5/xYxCgy1HbUHcvZEzui1RJqJoB6J9Qoy57nSrQWOV
+        m1UwDbmQns3q1j07RRECMY2WV3lIoEPGkTVcXpJ+TBBC/W/kWWRPLM2ERspCvohv
+        Yu5SGrE6GDS2RWchOiTyLqdcx0QIdmDl5ff5TqNQHoCnCQZqV0Rx5VJZ7VEynhXu
+        MvclqllvQ5YkPIw6sz3VNZbKOqfbJCLytavbaslN5CXNg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1660592162; x=1660678562; bh=DNdw0j1TNN+ttmL1Ka7ho+2gvY2WjWAZUT+
+        c7H7rzqU=; b=fK9aE9yOEgbddZ9PS0h4B8avf1ld4C/7wIaJrfiwTEGk+UJLcla
+        swwEsLLxiMPMazbwiiNDFtaz67aDzpKdxKzpT66NFNLP9ujk7OHopwJTNjl1BOr+
+        eOqd2nD3+QdRZVGSZQqvbpZXas2tUdzCTZQQdJbFeDWUTWMOa3QQ8pTywXZUXkjj
+        bihlm4rpb6cHuOft9kMuF0gJtPJmPNjOKgcKz0aP+EOQeuF24OH7hph8XFEu+GkM
+        IsVqOVLfKah4LmcHnE/SbQH1MpdJNRu2PIwY2A7GWsMhwidbJdlnU0C5GMmjWaAU
+        37u65ENo1uYlIQZdhZyeohlKGMA7sWj3GOA==
+X-ME-Sender: <xms:IaD6YvR9T9igMeY6R5BTc-DCXLNcdIAniqH04D-GjYu32Ihv7llqaQ>
+    <xme:IaD6Ygz154Gp7Xmd7i-O2KnJOzFRu1eoKEuBSayHIM-WHja3tVqMDB3ztTMTw4u7Z
+    MP494iZcHdkjP3TIQ>
+X-ME-Received: <xmr:IaD6Yk12XPyi7R-4FLCssOkpz3Tj6g1ZAjtB9YAEB89cfcsyDMKexkTaRElLmYxCPM3MieZo4wQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudegudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
+    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
+    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufe
+    ekuddvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigv
+    pedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:IaD6YvD4hp8mezAGDamjoAKG43UkTdSrkmyjo5g-Fw3066fSiN3oGw>
+    <xmx:IaD6YohiowkawBZwduAk7NqU894eDTXK380YQNBKk7rg5NPbusLtNg>
+    <xmx:IaD6YjrAXSvmrbVEezLTtZ3n1Lwc4S6xuzHeEXgamd42Wjh800zsFg>
+    <xmx:IqD6YrM1DHk3MhjV9t3-5iSDRptr0mHGYe6x4m0m8s_Wgv7z5pJhEQ>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 15:36:00 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, memxor@gmail.com
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next 0/3] Support direct writes to nf_conn:mark
+Date:   Mon, 15 Aug 2022 13:35:45 -0600
+Message-Id: <cover.1660592020.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Support direct writes to nf_conn:mark from TC and XDP prog types. This
+is useful when applications want to store per-connection metadata. This
+is also particularly useful for applications that run both bpf and
+iptables/nftables because the latter can trivially access this metadata.
 
-[ Upstream commit 54eb7a55be6779c4d0c25eaf5056498a28595049 ]
+One example use case would be if a bpf prog is responsible for advanced
+packet classification and iptables/nftables is later used for routing
+due to pre-existing/legacy code.
 
-'erased_blocks_bitmap' is never freed. As it is allocated at the same time
-as 'used_blocks_bitmap', it is likely that it should be freed also at the
-same time.
+Daniel Xu (3):
+  bpf: Remove duplicate PTR_TO_BTF_ID RO check
+  bpf: Add support for writing to nf_conn:mark
+  selftests/bpf: Add tests for writing to nf_conn:mark
 
-Add the corresponding bitmap_free() in msb_data_clear().
+ include/net/netfilter/nf_conntrack_bpf.h      | 18 +++++++
+ kernel/bpf/verifier.c                         |  3 --
+ net/core/filter.c                             | 34 +++++++++++++
+ net/netfilter/nf_conntrack_bpf.c              | 50 +++++++++++++++++++
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c |  1 +
+ .../testing/selftests/bpf/progs/test_bpf_nf.c |  6 ++-
+ .../selftests/bpf/progs/test_bpf_nf_fail.c    | 14 ++++++
+ 7 files changed, 121 insertions(+), 5 deletions(-)
 
-Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/b3b78926569445962ea5c3b6e9102418a9effb88.1656155715.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/memstick/core/ms_block.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
-index f8f151163667..f8fdf88fb240 100644
---- a/drivers/memstick/core/ms_block.c
-+++ b/drivers/memstick/core/ms_block.c
-@@ -1947,6 +1947,7 @@ static void msb_data_clear(struct msb_data *msb)
- {
- 	kfree(msb->boot_page);
- 	bitmap_free(msb->used_blocks_bitmap);
-+	bitmap_free(msb->erased_blocks_bitmap);
- 	kfree(msb->lba_to_pba_table);
- 	kfree(msb->cache);
- 	msb->card = NULL;
 -- 
-2.35.1
-
-
+2.37.1
 
