@@ -2,166 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9423FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C852FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241025AbiHOSXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
+        id S241094AbiHOSXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240900AbiHOSW7 (ORCPT
+        with ESMTP id S240924AbiHOSW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:22:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A652DAB1;
-        Mon, 15 Aug 2022 11:17:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 836316068C;
-        Mon, 15 Aug 2022 18:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8559EC433C1;
-        Mon, 15 Aug 2022 18:17:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587442;
-        bh=Rc5Op+0myWs6Q/Jv3mGOh1rKnK6qSxCpqCXzJBr4HGg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WqvFEZZF/XkpaCbxSFP02MSc8g3YPiC0+YOP17Z/KvfXHKlC3ChIZDp6RnX7nzF3A
-         aL0TqA2BgG33SUN687QDYBynGq5Xh4xh+abHxmTgxfMGFQrGaAfJKU7emPNLgm4EO7
-         AUVtlpVZMuKw8lZ+KUFfQpO80MWqRlqYInup06ms=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 057/779] RISC-V: Fixup schedule out issue in machine_crash_shutdown()
-Date:   Mon, 15 Aug 2022 19:55:01 +0200
-Message-Id: <20220815180339.695055218@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from sonic310-21.consmr.mail.gq1.yahoo.com (sonic310-21.consmr.mail.gq1.yahoo.com [98.137.69.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CF92DAB0
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:17:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1660587442; bh=3s531Pd45xAL3WDjGl79WaBT/cIfjLGMa/q/nD5W+W4=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=nXt0NNd+84LNPDfCP5PnDgVXLr83Zb0d9wCuWquu2R1Q1vKvJYMqgtXctndKE3xenr1e2n5QI+O+daXxxnFSAccLI821xdAl4Zp5V2PilZRPKYpd2dMTCP6IYkyoa//6JMsc1Fq2FlDzsPMVoUHj2nKaG/0zFrqNjL5y8b4fqWZKKKQ6haGY8vxWzOp6G1m65oSyv/yCAJ4ARntZJcoazvHA6EbMvG0wnhQ3u/izcckNsvt00IWFLhHjWdfYjZAyImzMNW5+eVjHIW+FY/7bZrz+6TZf60GBwuR/yJYGayjkvCDcoVUjrzDhAs+NbATEunFdDtcupjhalZrayUuc5A==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1660587442; bh=TsST2RuuTsY45uRxXDELW0uQDUn7huiOUvHVBJMEcWR=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=qDycNvblgIVG0m+5S7Dy4ZVPx/slsES1ZauZTAVbwqvzsYMpYtNCKiZ33k2exDr7cDewy2fG9UDH9s1/sUQ4GG7l00jwO4HXCY8sVpqBK9gncWyWIGPOArQMjdiQfcDbvy0C4CnBmSlom2ByezhZlKcDukG//MRwbjAq9NGs3LKqhCsGq5BPFQ/jpDKdYZm4NjVPOdqzgY1pSJQFNZBXpZpcYOQktW6jeIKo56tdmjVSOH+OMEe3ZmoPMdjjjh8g4oKNtay4mLtB1U9ek6FUU0yqmdtPQnoGMWZKhxmNW8mCbhGbbW+pFi2yFlJ9D+Dh5w1K+oSMh0k0ei7VxF78yg==
+X-YMail-OSG: KR4D4v8VM1nC33Fe42cMm4tJLG5.n9tLYom.HdhBKhsZWsXfo8mNAIaqPncAxYw
+ 0.Gdi2E1JKUvefbEdR8plvDvbqtPVF1WY6F7JeJoepW1xKIfC.a94KAlC9cyz1LgYBen6TtVbmFT
+ GK.0pyF2Opro1bzJuIZP5fvXqTosQlioP1GlzipnzOaG0lqnKdCkwyDnKZNnhmvAXCTD_ogBQAc6
+ 8oERlj.rx0qeL_C6niLKkGIHhTWxUo0apwj_JgMLZVQb6g1mirQ4jIEDQjtTJKDl0fmNQDktejLY
+ Q5bgFtxGxxRCvwoQQxBSJlDcfEWRg59vOIb1utHoTVxxFp9Sq_fn95QcdsM5oh5lRlTfazAFXeAR
+ fhDIgxmA_d.V9y.kFclbzkQto2X5gh4RLLdSm5F9cxa4F4jvWUHcOXVH5TVbNN8fFTampw6RWGVb
+ K0XcWS8RbcBaK2OVeyORZwMcu8f7IfKamDjrhJI.WTw5yzq070H1nksi.fVfA3xrZG01QBXtx5p_
+ d.dRQnl4IK0vSrWyqzpb8KLlE9kjwPDXSwdPg5fQE.3PrNZqKWurxFc1yKlvwjfiO_vJzO.fBNih
+ 0_IDUCEp63BpdK_KKR9zN6rDrbCQqyeXtWbJjsuJ1wSd71pRm1VDjm_5_3AMbS385ayosHiCCNTf
+ XnUFFk8X2HAzvG3eWur9EaWVVbbKvILsqNyiS072ODDaIYBt4Rh4I_qfYCIf0NBURqT7YbBqkRVG
+ 3X4CcCDIdYyYrn06ac8FfuefQ8K6Jk6krsjqLzeNn_QdipKV6uI9V768518b.uXYPsuODgoaCTiL
+ LWJ7P9tys7t2t58AV93U5x1o6zfmWk_6s5CZledc_dc6Vrkm7GITqWk96zNxuXoAm4nLz7rEdpbX
+ A_6cYq_utLB4.ER4XqYnMgpU9DNFtG1LpfYi5Z1PAM58LCrkbbSHF_U52vn0NiEc92ocLsigZhDj
+ VeXCN3Rp26mmefw7glHFgFr1b5Zd04xA2KETJNgVGKMnQ2lNn9qXDnSmzrUUxz08pXhgWGKsHrRu
+ gB_Z1gZsidsXZ6HPYzPh4AAT6yddRJ9c1F1S1h.b6J1uES5EBcDLMLYqAOy.kLMo5yFv04eSLW4T
+ 96q68sMJ6Tf9CFisXcoJtol_MJw5xSyvkGZH7kg3IRwvpDkpcQsfr9TzspeSIzcDnEeRuf8bEXnd
+ JgsO9APF5JUQdNCUABwMB4vdOSY5YHZvxETMGhkX1zBz9CaMAqV7Wu.eIsPw_6m02caWImgnfFkS
+ ZZPruMfXhz6CTDbPcs9IhRmYaNQOPL0G8tpi.n6vhb_GeNS42nWzckep6aIfPhqUYO4MdH_cwUDd
+ Q2XuT8I1rd.E4fIo0qFBT1ADVybFPlgS8PdJz_dCgqnM8YHtj44UodjUxPsbIx2vwca7r0G8RIZ7
+ IpSZ.QZrVvOXbM5LQzqfe_gTNjZE7UAucmqvIPNiSxBC23t8BqhctEf6oVcyEBkK4S7541RCJo5Y
+ aYjshe2lScGKfLoMgZ2SyFYo3pvjwURas21iO7qM3SW5XZ308G5xuY.8u7vxo62qp1wS77d72c71
+ AfOChuUkF1hwbInpElD1F_HsvFQqVr1oO1tZnOpUJlcedyrxrdOB00Ss0JDgx6WFga4hvjodGnLV
+ z0H2Y1yQwDfKmKROb.tqTltHikg7QDR1tCDSE9ylMl6703Yli.BmD95GGPxj59yDens4KItVyLed
+ vKoCuYPcXH_6t9oPVne4cTCbh1ForCaGyvVFAJWRoUutARHU1ZjSDUG2kDM6Z97GlgPy2LqO5xWT
+ K_oSxlcl5HBze6Bo9QpgnmftlEoEQy4eN.WS6.sosSfiIfE0Kb2_RT330Fym2Lk9WrXu3ohgMAuF
+ nUutQmmKvTGjPeY.go1KEzA6Ac6kNoOBeaFe1JAQ8CVyKU5hrcaSdIA1ycXyz1DkWawHjnWB1v1s
+ ks6HreFerYVmVCf.johBcvjXdXd3l3QUXEXdgK3aO1ihGcr0_ZGbss9hdOG.iOm6ZK0Rg5Cb0cim
+ .6bV0LQFxNTIsJGvFq2fPHwkjcKJPXIuRj8vvcfjEK_pAnyw.ygPfFeTJxBR8K8xI_pKswof1LWs
+ __Y4s5p6723A3TsCUgid5ulehsyJOUN_d3KFa8t8vBnsVO_4iD8RnThv76VEAldrVLB4qe5IujqC
+ DugKjQyn47w.K9ui0c1CNmOis4H4__8GSD7zdeEAV3Gk090_SPmFlUcAIuCG.0WBQBOvOqmrqFeY
+ U5LSflnmNFUAPKp.Cgg--
+X-Sonic-MF: <brchuckz@aim.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.gq1.yahoo.com with HTTP; Mon, 15 Aug 2022 18:17:22 +0000
+Received: by hermes--production-bf1-7586675c46-klczj (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID e7a9986af8b5cf78b3987899a0ba9fa0;
+          Mon, 15 Aug 2022 18:17:17 +0000 (UTC)
+Message-ID: <8d148826-62a5-95f9-8662-be14f56a6336@netscape.net>
+Date:   Mon, 15 Aug 2022 14:17:14 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH 0/3] x86: make pat and mtrr independent from each other
+Content-Language: en-US
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     jbeulich@suse.com, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Juergen Gross <jgross@suse.com>
+References: <20220715142549.25223-1-jgross@suse.com>
+ <efbde93b-e280-0e40-798d-dc7bf8ca83cf@leemhuis.info>
+ <a0ce2f59-b653-fa8b-a016-1335f05c86ae@netscape.net>
+ <32ed59c9-c894-c426-dd27-3602625cf3b1@netscape.net>
+ <c88ea08c-a9d5-ef6a-333a-db9e00c6da6f@suse.com>
+ <bd66b5bc-4d07-d968-f46c-40cf624499a7@netscape.net>
+ <a29a66e0-2075-8084-84ad-8bd3e8a9fd4a@netscape.net>
+ <a7d10605-87e3-c4bd-4a76-f07a04f5751c@leemhuis.info>
+From:   Chuck Zmudzinski <brchuckz@netscape.net>
+In-Reply-To: <a7d10605-87e3-c4bd-4a76-f07a04f5751c@leemhuis.info>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20531 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+On 8/15/2022 2:00 PM, Thorsten Leemhuis wrote:
+> Hi Chuck!
+>
+> On 15.08.22 18:56, Chuck Zmudzinski wrote:
+> > 
+> > I am forwarding this to you to help you cut through the noise.
+>
+> Sorry for not replying earlier, I ignored this thread and all other
+> non-urgent mail in the past two weeks: I was on vacation until a few
+> days ago and when I came home I had to deal with some other stuff first.
+>
+> > I do not apologize for trying to get
+> > the fix for this regression rolling again.
+>
+> Yeah, it's important to ensure regressions don't simply fall though the
+> cracks, but my advice in this case: let things rest for a few days now,
 
-commit ad943893d5f1d0aeea892bf7b781cf8062b36d58 upstream.
+Actually, I was planning on letting things rest for another two weeks, so I am
+totally in agreement with you here.
 
-Current task of executing crash kexec will be schedule out when panic is
-triggered by RCU Stall, as it needs to wait rcu completion. It lead to
-inability to enter the crash system.
+> the right people have the issue on their radar again; give them time to
+> breath and work out a solution: it's not something that can be fixed
+> easily within a few minutes by one person alone, as previous discussions
+> have shown (also keep in mind that the merge window was open until
+> yesterday, which keeps many maintainers quite busy).
+>
+> And FWIW: I've seen indicators that a solution to resolve this is
+> hopefully pretty close now.
 
-The implementation of machine_crash_shutdown() is non-standard for RISC-V
-according to other Arch's implementation(eg, x86, arm64), we need to send
-IPI to stop secondary harts.
+That's good to know. But I must ask, can you provide a link to a public
+discussion that indicates a fix is close? Or do you know a fix is close
+because of private discussions? That distinction is important to me
+because open source software is much less useful to me if the solutions
+to problems are not discussed openly (except, of course, for solutions
+to security vulnerabilities that are not yet public).
 
-[224521.877268] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-[224521.883471] rcu: 	0-...0: (3 GPs behind) idle=cfa/0/0x1 softirq=3968793/3968793 fqs=2495
-[224521.891742] 	(detected by 2, t=5255 jiffies, g=60855593, q=328)
-[224521.897754] Task dump for CPU 0:
-[224521.901074] task:swapper/0     state:R  running task   stack:  0 pid:  0 ppid:   0 flags:0x00000008
-[224521.911090] Call Trace:
-[224521.913638] [<ffffffe000c432de>] __schedule+0x208/0x5ea
-[224521.918957] Kernel panic - not syncing: RCU Stall
-[224521.923773] bad: scheduling from the idle thread!
-[224521.928571] CPU: 2 PID: 0 Comm: swapper/2 Kdump: loaded Tainted: G   O  5.10.113-yocto-standard #1
-[224521.938658] Call Trace:
-[224521.941200] [<ffffffe00020395c>] walk_stackframe+0x0/0xaa
-[224521.946689] [<ffffffe000c34f8e>] show_stack+0x32/0x3e
-[224521.951830] [<ffffffe000c39020>] dump_stack_lvl+0x7e/0xa2
-[224521.957317] [<ffffffe000c39058>] dump_stack+0x14/0x1c
-[224521.962459] [<ffffffe000243884>] dequeue_task_idle+0x2c/0x40
-[224521.968207] [<ffffffe000c434f4>] __schedule+0x41e/0x5ea
-[224521.973520] [<ffffffe000c43826>] schedule+0x34/0xe4
-[224521.978487] [<ffffffe000c46cae>] schedule_timeout+0xc6/0x170
-[224521.984234] [<ffffffe000c4491e>] wait_for_completion+0x98/0xf2
-[224521.990157] [<ffffffe00026d9e2>] __wait_rcu_gp+0x148/0x14a
-[224521.995733] [<ffffffe0002761c4>] synchronize_rcu+0x5c/0x66
-[224522.001307] [<ffffffe00026f1a6>] rcu_sync_enter+0x54/0xe6
-[224522.006795] [<ffffffe00025a436>] percpu_down_write+0x32/0x11c
-[224522.012629] [<ffffffe000c4266a>] _cpu_down+0x92/0x21a
-[224522.017771] [<ffffffe000219a0a>] smp_shutdown_nonboot_cpus+0x90/0x118
-[224522.024299] [<ffffffe00020701e>] machine_crash_shutdown+0x30/0x4a
-[224522.030483] [<ffffffe00029a3f8>] __crash_kexec+0x62/0xa6
-[224522.035884] [<ffffffe000c3515e>] panic+0xfa/0x2b6
-[224522.040678] [<ffffffe0002772be>] rcu_sched_clock_irq+0xc26/0xcb8
-[224522.046774] [<ffffffe00027fc7a>] update_process_times+0x62/0x8a
-[224522.052785] [<ffffffe00028d522>] tick_sched_timer+0x9e/0x102
-[224522.058533] [<ffffffe000280c3a>] __hrtimer_run_queues+0x16a/0x318
-[224522.064716] [<ffffffe0002812ec>] hrtimer_interrupt+0xd4/0x228
-[224522.070551] [<ffffffe0009a69b6>] riscv_timer_interrupt+0x3c/0x48
-[224522.076646] [<ffffffe000268f8c>] handle_percpu_devid_irq+0xb0/0x24c
-[224522.083004] [<ffffffe00026428e>] __handle_domain_irq+0xa8/0x122
-[224522.089014] [<ffffffe00062f954>] riscv_intc_irq+0x38/0x60
-[224522.094501] [<ffffffe000201bd4>] ret_from_exception+0x0/0xc
-[224522.100161] [<ffffffe000c42146>] rcu_eqs_enter.constprop.0+0x8c/0xb8
+>
+> >  After all, it has been over three months
+> > since the regression was first reported.
+>
+> Yes, things take/took to long, as a few things were far from ideal how
+> this regression was dealt with. But that happens sometimes, we're all
+> just humans and make errors. I did a few as well and learned a thing or
+> two from then. Due to that I'll do a few things slightly different in
+> the future to hopefully get similar situations resolved a lot quicker in
+> the future.
+>
+> Ciao, Thorsten
 
-With the patch, it can enter crash system when RCU Stall occur.
+Thanks for your quick reply and best regards,
 
-Fixes: e53d28180d4d ("RISC-V: Add kdump support")
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220811074150.3020189-4-xianting.tian@linux.alibaba.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/riscv/kernel/machine_kexec.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
-
-diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
-index 86d1b5f9dfb5..ee79e6839b86 100644
---- a/arch/riscv/kernel/machine_kexec.c
-+++ b/arch/riscv/kernel/machine_kexec.c
-@@ -138,19 +138,37 @@ void machine_shutdown(void)
- #endif
- }
- 
-+/* Override the weak function in kernel/panic.c */
-+void crash_smp_send_stop(void)
-+{
-+	static int cpus_stopped;
-+
-+	/*
-+	 * This function can be called twice in panic path, but obviously
-+	 * we execute this only once.
-+	 */
-+	if (cpus_stopped)
-+		return;
-+
-+	smp_send_stop();
-+	cpus_stopped = 1;
-+}
-+
- /*
-  * machine_crash_shutdown - Prepare to kexec after a kernel crash
-  *
-  * This function is called by crash_kexec just before machine_kexec
-- * below and its goal is similar to machine_shutdown, but in case of
-- * a kernel crash. Since we don't handle such cases yet, this function
-- * is empty.
-+ * and its goal is to shutdown non-crashing cpus and save registers.
-  */
- void
- machine_crash_shutdown(struct pt_regs *regs)
- {
-+	local_irq_disable();
-+
-+	/* shutdown non-crashing cpus */
-+	crash_smp_send_stop();
-+
- 	crash_save_cpu(regs, smp_processor_id());
--	machine_shutdown();
- 	pr_info("Starting crashdump kernel...\n");
- }
- 
--- 
-2.37.1
-
-
-
+Chuck
