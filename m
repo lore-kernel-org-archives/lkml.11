@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E334C32792
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F97C38145
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356071AbiHPAG6 (ORCPT
+        id S1356138AbiHPAHE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
+        Mon, 15 Aug 2022 20:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353860AbiHOX6u (ORCPT
+        with ESMTP id S1354536AbiHOX6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:58:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01658C740C;
-        Mon, 15 Aug 2022 13:20:27 -0700 (PDT)
+        Mon, 15 Aug 2022 19:58:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3751180F75;
+        Mon, 15 Aug 2022 13:21:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21C4BB80EA8;
-        Mon, 15 Aug 2022 20:20:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 686A4C433C1;
-        Mon, 15 Aug 2022 20:20:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C66EB61007;
+        Mon, 15 Aug 2022 20:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75EBAC433D6;
+        Mon, 15 Aug 2022 20:20:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594824;
-        bh=6WkHnJVm5rzOj2ShWWfniZvz3jfM09Vn7mLBc0nYWV8=;
+        s=korg; t=1660594859;
+        bh=COkNRrEX6w4UbdnjU7Ri0CSOfhCU3mGHHhJ6+4yGcDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UDihl3pW9iwYfSCEedAdEsqUDk6fs1MBffGJQpXL1QmBR0ZZO/fPzSiXtpp1tPJim
-         ckVT3ruqfnA+TXbYaORNIBxZ3hZyOwT+XAifqeA8q7+XslvLxcieeyVr/oFkLZmZHA
-         9W9paclPxw6I17LQ0Jd3nCUOJ+vQWSFqgN7wm/84=
+        b=l+YWZz62TSciX/DjESD4WwD3+NrVwdDU4xkbQylVWjoCif+gp+jTdURxLcdW7FDa4
+         tbiBO4tTf0GSTChnJu1Z+yy5l0GFKOASGO4vJJGgf9MAf9KwaLoNW0Vq8efuBmKgrY
+         suUcfptns7VVzTCDDkXBj7RmEsbDeb9rBXH1qaAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        Prakhar Srivastava <prsriva@linux.microsoft.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Rob Herring <robh@kernel.org>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0570/1157] net: usb: make USB_RTL8153_ECM non user configurable
-Date:   Mon, 15 Aug 2022 19:58:46 +0200
-Message-Id: <20220815180502.420456612@linuxfoundation.org>
+Subject: [PATCH 5.19 0580/1157] of: check previous kernels ima-kexec-buffer against memory bounds
+Date:   Mon, 15 Aug 2022 19:58:56 +0200
+Message-Id: <20220815180502.850825253@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,98 +56,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+From: Vaibhav Jain <vaibhav@linux.ibm.com>
 
-[ Upstream commit f56530dcdb0684406661ac9f1accf48319d07600 ]
+[ Upstream commit cbf9c4b9617b6767886a913705ca14b7600c77db ]
 
-This refixes:
+Presently ima_get_kexec_buffer() doesn't check if the previous kernel's
+ima-kexec-buffer lies outside the addressable memory range. This can result
+in a kernel panic if the new kernel is booted with 'mem=X' arg and the
+ima-kexec-buffer was allocated beyond that range by the previous kernel.
+The panic is usually of the form below:
 
-    commit 7da17624e7948d5d9660b910f8079d26d26ce453
-    nt: usb: USB_RTL8153_ECM should not default to y
+$ sudo kexec --initrd initrd vmlinux --append='mem=16G'
 
-    In general, device drivers should not be enabled by default.
+<snip>
+ BUG: Unable to handle kernel data access on read at 0xc000c01fff7f0000
+ Faulting instruction address: 0xc000000000837974
+ Oops: Kernel access of bad area, sig: 11 [#1]
+<snip>
+ NIP [c000000000837974] ima_restore_measurement_list+0x94/0x6c0
+ LR [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+ Call Trace:
+ [c00000000371fa80] [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+ [c00000000371fb00] [c0000000020512c4] ima_init+0x80/0x108
+ [c00000000371fb70] [c0000000020514dc] init_ima+0x4c/0x120
+ [c00000000371fbf0] [c000000000012240] do_one_initcall+0x60/0x2c0
+ [c00000000371fcc0] [c000000002004ad0] kernel_init_freeable+0x344/0x3ec
+ [c00000000371fda0] [c0000000000128a4] kernel_init+0x34/0x1b0
+ [c00000000371fe10] [c00000000000ce64] ret_from_kernel_thread+0x5c/0x64
+ Instruction dump:
+ f92100b8 f92100c0 90e10090 910100a0 4182050c 282a0017 3bc00000 40810330
+ 7c0802a6 fb610198 7c9b2378 f80101d0 <a1240000> 2c090001 40820614 e9240010
+ ---[ end trace 0000000000000000 ]---
 
-which basically broke the commit it claimed to fix, ie:
+Fix this issue by checking returned PFN range of previous kernel's
+ima-kexec-buffer with page_is_ram() to ensure correct memory bounds.
 
-    commit 657bc1d10bfc23ac06d5d687ce45826c760744f9
-    r8153_ecm: avoid to be prior to r8152 driver
-
-    Avoid r8153_ecm is compiled as built-in, if r8152 driver is compiled
-    as modules. Otherwise, the r8153_ecm would be used, even though the
-    device is supported by r8152 driver.
-
-this commit amounted to:
-
-drivers/net/usb/Kconfig:
-
-+config USB_RTL8153_ECM
-+       tristate "RTL8153 ECM support"
-+       depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
-+       default y
-+       help
-+         This option supports ECM mode for RTL8153 ethernet adapter, when
-+         CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
-+         supported by r8152 driver.
-
-drivers/net/usb/Makefile:
-
--obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o r8153_ecm.o
-+obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o
-+obj-$(CONFIG_USB_RTL8153_ECM)  += r8153_ecm.o
-
-And as can be seen it pulls a piece of the cdc_ether driver out into
-a separate config option to be able to make this piece modular in case
-cdc_ether is builtin, while r8152 is modular.
-
-While in general, device drivers should indeed not be enabled by default:
-this isn't a device driver per say, but rather this is support code for
-the CDCETHER (ECM) driver, and should thus be enabled if it is enabled.
-
-See also email thread at:
-  https://www.spinics.net/lists/netdev/msg767649.html
-
-In:
-  https://www.spinics.net/lists/netdev/msg768284.html
-
-Jakub wrote:
-  And when we say "removed" we can just hide it from what's prompted
-  to the user (whatever such internal options are called)? I believe
-  this way we don't bring back Marek's complaint.
-
-Side note: these incorrect defaults will result in Android 13
-on 5.15 GKI kernels lacking USB_RTL8153_ECM support while having
-USB_NET_CDCETHER (luckily we also have USB_RTL8150 and USB_RTL8152,
-so it's probably only an issue for very new RTL815x hardware with
-no native 5.15 driver).
-
-Fixes: 7da17624e7948d5d ("nt: usb: USB_RTL8153_ECM should not default to y")
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Hayes Wang <hayeswang@realtek.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Link: https://lore.kernel.org/r/20220730230113.4138858-1-zenczykowski@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 467d27824920 ("powerpc: ima: get the kexec buffer passed by the previous kernel")
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Prakhar Srivastava <prsriva@linux.microsoft.com>
+Cc: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
+Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Ritesh Harjani <ritesh.list@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220531041446.3334259-1-vaibhav@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/of/kexec.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
-index e62fc4f2aee0..76659c1c525a 100644
---- a/drivers/net/usb/Kconfig
-+++ b/drivers/net/usb/Kconfig
-@@ -637,8 +637,9 @@ config USB_NET_AQC111
- 	  * Aquantia AQtion USB to 5GbE
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index 8d374cc552be..91b04b04eec4 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -126,6 +126,7 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+ {
+ 	int ret, len;
+ 	unsigned long tmp_addr;
++	unsigned long start_pfn, end_pfn;
+ 	size_t tmp_size;
+ 	const void *prop;
  
- config USB_RTL8153_ECM
--	tristate "RTL8153 ECM support"
-+	tristate
- 	depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=n)
-+	default y
- 	help
- 	  This option supports ECM mode for RTL8153 ethernet adapter, when
- 	  CONFIG_USB_RTL8152 is not set, or the RTL8153 device is not
+@@ -140,6 +141,22 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Do some sanity on the returned size for the ima-kexec buffer */
++	if (!tmp_size)
++		return -ENOENT;
++
++	/*
++	 * Calculate the PFNs for the buffer and ensure
++	 * they are with in addressable memory.
++	 */
++	start_pfn = PHYS_PFN(tmp_addr);
++	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
++	if (!page_is_ram(start_pfn) || !page_is_ram(end_pfn)) {
++		pr_warn("IMA buffer at 0x%lx, size = 0x%zx beyond memory\n",
++			tmp_addr, tmp_size);
++		return -EINVAL;
++	}
++
+ 	*addr = __va(tmp_addr);
+ 	*size = tmp_size;
+ 
 -- 
 2.35.1
 
