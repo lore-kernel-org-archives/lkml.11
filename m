@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6705C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67451C28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbiHOXCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50212 "EHLO
+        id S244346AbiHOXCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239740AbiHOW7u (ORCPT
+        with ESMTP id S1352566AbiHOW76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:59:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680CA76478;
-        Mon, 15 Aug 2022 12:57:28 -0700 (PDT)
+        Mon, 15 Aug 2022 18:59:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E324D7757F;
+        Mon, 15 Aug 2022 12:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 763D560FD8;
-        Mon, 15 Aug 2022 19:57:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78538C433D7;
-        Mon, 15 Aug 2022 19:57:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F286B80EAD;
+        Mon, 15 Aug 2022 19:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 782C6C43470;
+        Mon, 15 Aug 2022 19:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593446;
-        bh=i0Q7KMBwpnuSbMDsMG/RH6Tk1dLZHV3lTCNdlvGU9MU=;
+        s=korg; t=1660593449;
+        bh=qTrRxe6w0Z+uWcp4krLAZw9IEg3f36QngPy9the/PDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2na6FJ8FUXhAfXKqiDceHnQZt8x75CPHxSXwDivZRvHIV706KMGIUabFtXWrgwkgV
-         jWSwjMAWoX55TTdukER1G5MU1KuK1TTJuEdYqvoprLWaNKdRzezB3zI94Hn87Vy4BP
-         afd8pJThY6RuV4NmT0HRVuMKhKAGLx4gDxIBPdc8=
+        b=PjOkA4wdDBhrDxFP6L5fCLO4zfzqylGB4h/7uynAzreo8Wu9uuC0SaGBpk34nt56f
+         x9YfiC/8ASVFbOv30YDIf+Q3KAK1FOzKv1prgs/znRnGrACsREK0GUs2s76zc95Hu6
+         7Xe6cWErWYPx9qtEN0q1LqqAf/jw3tAR8QSreMFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Siddh Raman Pant <code@siddh.me>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0947/1095] x86/numa: Use cpumask_available instead of hardcoded NULL check
-Date:   Mon, 15 Aug 2022 20:05:46 +0200
-Message-Id: <20220815180508.310832026@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nandhini Srikandan <nandhini.srikandan@intel.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0269/1157] spi: dw: Fix IP-core versions macro
+Date:   Mon, 15 Aug 2022 19:53:45 +0200
+Message-Id: <20220815180450.380740204@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,71 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddh Raman Pant <code@siddh.me>
+From: Nandhini Srikandan <nandhini.srikandan@intel.com>
 
-[ Upstream commit 625395c4a0f4775e0fe00f616888d2e6c1ba49db ]
+[ Upstream commit 5d76b7509cb223e94ff73a672273e58f1957ac68 ]
 
-GCC-12 started triggering a new warning:
+Add the missing underscore in IP version macro to avoid compilation issue.
+The macro is used for IP version comparison in the current patchset.
 
-  arch/x86/mm/numa.c: In function ‘cpumask_of_node’:
-  arch/x86/mm/numa.c:916:39: warning: the comparison will always evaluate as ‘false’ for the address of ‘node_to_cpumask_map’ will never be NULL [-Waddress]
-    916 |         if (node_to_cpumask_map[node] == NULL) {
-        |                                       ^~
-
-node_to_cpumask_map is of type cpumask_var_t[].
-
-When CONFIG_CPUMASK_OFFSTACK is set, cpumask_var_t is typedef'd to a
-pointer for dynamic allocation, else to an array of one element. The
-"wicked game" can be checked on line 700 of include/linux/cpumask.h.
-
-The original code in debug_cpumask_set_cpu() and cpumask_of_node() were
-probably written by the original authors with CONFIG_CPUMASK_OFFSTACK=y
-(i.e. dynamic allocation) in mind, checking if the cpumask was available
-via a direct NULL check.
-
-When CONFIG_CPUMASK_OFFSTACK is not set, GCC gives the above warning
-while compiling the kernel.
-
-Fix that by using cpumask_available(), which does the NULL check when
-CONFIG_CPUMASK_OFFSTACK is set, otherwise returns true. Use it wherever
-such checks are made.
-
-Conditional definitions of cpumask_available() can be found along with
-the definition of cpumask_var_t. Check the cpumask.h reference mentioned
-above.
-
-Fixes: c032ef60d1aa ("cpumask: convert node_to_cpumask_map[] to cpumask_var_t")
-Fixes: de2d9445f162 ("x86: Unify node_to_cpumask_map handling between 32 and 64bit")
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/20220731160913.632092-1-code@siddh.me
+Fixes: 2cc8d9227bbb ("spi: dw: Introduce Synopsys IP-core versions interface")
+Signed-off-by: Nandhini Srikandan <nandhini.srikandan@intel.com>
+Acked-by: Serge Semin <fancer.lancer@gmail.com>
+Link: https://lore.kernel.org/r/20220713042223.1458-2-nandhini.srikandan@intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/mm/numa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/spi/spi-dw.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-index e8b061557887..2aadb2019b4f 100644
---- a/arch/x86/mm/numa.c
-+++ b/arch/x86/mm/numa.c
-@@ -867,7 +867,7 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enable)
- 		return;
- 	}
- 	mask = node_to_cpumask_map[node];
--	if (!mask) {
-+	if (!cpumask_available(mask)) {
- 		pr_err("node_to_cpumask_map[%i] NULL\n", node);
- 		dump_stack();
- 		return;
-@@ -913,7 +913,7 @@ const struct cpumask *cpumask_of_node(int node)
- 		dump_stack();
- 		return cpu_none_mask;
- 	}
--	if (node_to_cpumask_map[node] == NULL) {
-+	if (!cpumask_available(node_to_cpumask_map[node])) {
- 		printk(KERN_WARNING
- 			"cpumask_of_node(%d): no node_to_cpumask_map!\n",
- 			node);
+diff --git a/drivers/spi/spi-dw.h b/drivers/spi/spi-dw.h
+index d5ee5130601e..79d853f6d192 100644
+--- a/drivers/spi/spi-dw.h
++++ b/drivers/spi/spi-dw.h
+@@ -23,7 +23,7 @@
+ 	((_dws)->ip == DW_ ## _ip ## _ID)
+ 
+ #define __dw_spi_ver_cmp(_dws, _ip, _ver, _op) \
+-	(dw_spi_ip_is(_dws, _ip) && (_dws)->ver _op DW_ ## _ip ## _ver)
++	(dw_spi_ip_is(_dws, _ip) && (_dws)->ver _op DW_ ## _ip ## _ ## _ver)
+ 
+ #define dw_spi_ver_is(_dws, _ip, _ver) __dw_spi_ver_cmp(_dws, _ip, _ver, ==)
+ 
 -- 
 2.35.1
 
