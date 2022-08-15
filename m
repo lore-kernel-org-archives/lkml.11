@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B4EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B535DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343752AbiHOWI7 (ORCPT
+        id S1347954AbiHOWJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
+        Mon, 15 Aug 2022 18:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348484AbiHOWF7 (ORCPT
+        with ESMTP id S1348625AbiHOWGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:05:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C8E1160B6;
-        Mon, 15 Aug 2022 12:37:34 -0700 (PDT)
+        Mon, 15 Aug 2022 18:06:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8A0116ED8;
+        Mon, 15 Aug 2022 12:37:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F9766114B;
-        Mon, 15 Aug 2022 19:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81931C433D6;
-        Mon, 15 Aug 2022 19:37:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 632CFB80EA9;
+        Mon, 15 Aug 2022 19:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 922EBC433C1;
+        Mon, 15 Aug 2022 19:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592253;
-        bh=lyksit9egkFgQzevi8lT0Oeq5R1tu5DzG6yzRvGK+bk=;
+        s=korg; t=1660592256;
+        bh=N3qyH8pGWQC5ePmuhX+7tI2CgB4S9Qep2kWgA+wiwOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MQjzlJ6R+7iNrYQAWwKYTIQz6ujAtSAueVpxsbyEsT9w8N005HiLBZVMyv+63kzfg
-         gfxtvNd3PclwznWCZvE5OOfzGMQcH3Txf04fuVqQ9Hs0xAQS/xCBA18Oy5mR/n+rud
-         tKIasBxbVSWNjZ+gxUE1NRoJP0OUr6K7uioYL2RY=
+        b=tr11Psr/zYoLN/qnRKLNyvd3RH+EsUh6L5Cdv0tJXCFCIkW6238hAcjSH9WbgIjBj
+         YUqzVyhNc2xz5y+IJl4DfPPP58tAwuxrv2imzkiSugToifHsYjUkIBrQ5Mx8SdbmgL
+         BR9Ph/kSIVvCkF96IX3zzvFCn9mbODWAjxZq5LgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mathew McBride <matt@traverse.com.au>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.19 0081/1157] rtc: rx8025: fix 12/24 hour mode detection on RX-8035
-Date:   Mon, 15 Aug 2022 19:50:37 +0200
-Message-Id: <20220815180442.776331196@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0730/1095] dmaengine: sf-pdma: Add multithread support for a DMA channel
+Date:   Mon, 15 Aug 2022 20:02:09 +0200
+Message-Id: <20220815180459.585797127@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,108 +50,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathew McBride <matt@traverse.com.au>
+From: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
 
-commit 71af91565052214ad86f288e0d8ffb165f790995 upstream.
+[ Upstream commit b2cc5c465c2cb8ab697c3fd6583c614e3f6cfbcc ]
 
-The 12/24hr flag in the RX-8035 can be found in the hour register,
-instead of the CTRL1 on the RX-8025. This was overlooked when
-support for the RX-8035 was added, and was causing read errors when
-the hour register 'overflowed'.
+When we get a DMA channel and try to use it in multiple threads it
+will cause oops and hanging the system.
 
-To deal with the relevant register not always being visible in
-the relevant functions, determine the 12/24 mode at startup and
-store it in the driver state.
+% echo 64 > /sys/module/dmatest/parameters/threads_per_chan
+% echo 10000 > /sys/module/dmatest/parameters/iterations
+% echo 1 > /sys/module/dmatest/parameters/run
+[   89.480664] Unable to handle kernel NULL pointer dereference at virtual
+               address 00000000000000a0
+[   89.488725] Oops [#1]
+[   89.494708] CPU: 2 PID: 1008 Comm: dma0chan0-copy0 Not tainted
+               5.17.0-rc5
+[   89.509385] epc : vchan_find_desc+0x32/0x46
+[   89.513553]  ra : sf_pdma_tx_status+0xca/0xd6
 
-Signed-off-by: Mathew McBride <matt@traverse.com.au>
-Fixes: f120e2e33ac8 ("rtc: rx8025: implement RX-8035 support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220706074236.24011-1-matt@traverse.com.au
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This happens because of data race. Each thread rewrite channels's
+descriptor as soon as device_prep_dma_memcpy() is called. It leads to the
+situation when the driver thinks that it uses right descriptor that
+actually is freed or substituted for other one.
+
+With current fixes a descriptor changes its value only when it has
+been used. A new descriptor is acquired from vc->desc_issued queue that
+is already filled with descriptors that are ready to be sent. Threads
+have no direct access to DMA channel descriptor. Now it is just possible
+to queue a descriptor for further processing.
+
+Fixes: 6973886ad58e ("dmaengine: sf-pdma: add platform DMA support for HiFive Unleashed A00")
+Signed-off-by: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
+Link: https://lore.kernel.org/r/20220701082942.12835-1-v.v.mitrofanov@yadro.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-rx8025.c |   22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ drivers/dma/sf-pdma/sf-pdma.c | 44 ++++++++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 14 deletions(-)
 
---- a/drivers/rtc/rtc-rx8025.c
-+++ b/drivers/rtc/rtc-rx8025.c
-@@ -55,6 +55,8 @@
- #define RX8025_BIT_CTRL2_XST	BIT(5)
- #define RX8025_BIT_CTRL2_VDET	BIT(6)
+diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
+index f12606aeff87..ab0ad7a2f201 100644
+--- a/drivers/dma/sf-pdma/sf-pdma.c
++++ b/drivers/dma/sf-pdma/sf-pdma.c
+@@ -52,16 +52,6 @@ static inline struct sf_pdma_desc *to_sf_pdma_desc(struct virt_dma_desc *vd)
+ static struct sf_pdma_desc *sf_pdma_alloc_desc(struct sf_pdma_chan *chan)
+ {
+ 	struct sf_pdma_desc *desc;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&chan->lock, flags);
+-
+-	if (chan->desc && !chan->desc->in_use) {
+-		spin_unlock_irqrestore(&chan->lock, flags);
+-		return chan->desc;
+-	}
+-
+-	spin_unlock_irqrestore(&chan->lock, flags);
  
-+#define RX8035_BIT_HOUR_1224	BIT(7)
+ 	desc = kzalloc(sizeof(*desc), GFP_NOWAIT);
+ 	if (!desc)
+@@ -111,7 +101,6 @@ sf_pdma_prep_dma_memcpy(struct dma_chan *dchan,	dma_addr_t dest, dma_addr_t src,
+ 	desc->async_tx = vchan_tx_prep(&chan->vchan, &desc->vdesc, flags);
+ 
+ 	spin_lock_irqsave(&chan->vchan.lock, iflags);
+-	chan->desc = desc;
+ 	sf_pdma_fill_desc(desc, dest, src, len);
+ 	spin_unlock_irqrestore(&chan->vchan.lock, iflags);
+ 
+@@ -170,11 +159,17 @@ static size_t sf_pdma_desc_residue(struct sf_pdma_chan *chan,
+ 	unsigned long flags;
+ 	u64 residue = 0;
+ 	struct sf_pdma_desc *desc;
+-	struct dma_async_tx_descriptor *tx;
++	struct dma_async_tx_descriptor *tx = NULL;
+ 
+ 	spin_lock_irqsave(&chan->vchan.lock, flags);
+ 
+-	tx = &chan->desc->vdesc.tx;
++	list_for_each_entry(vd, &chan->vchan.desc_submitted, node)
++		if (vd->tx.cookie == cookie)
++			tx = &vd->tx;
 +
- /* Clock precision adjustment */
- #define RX8025_ADJ_RESOLUTION	3050 /* in ppb */
- #define RX8025_ADJ_DATA_MAX	62
-@@ -78,6 +80,7 @@ struct rx8025_data {
- 	struct rtc_device *rtc;
- 	enum rx_model model;
- 	u8 ctrl1;
-+	int is_24;
- };
- 
- static s32 rx8025_read_reg(const struct i2c_client *client, u8 number)
-@@ -226,7 +229,7 @@ static int rx8025_get_time(struct device
- 
- 	dt->tm_sec = bcd2bin(date[RX8025_REG_SEC] & 0x7f);
- 	dt->tm_min = bcd2bin(date[RX8025_REG_MIN] & 0x7f);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		dt->tm_hour = bcd2bin(date[RX8025_REG_HOUR] & 0x3f);
- 	else
- 		dt->tm_hour = bcd2bin(date[RX8025_REG_HOUR] & 0x1f) % 12
-@@ -254,7 +257,7 @@ static int rx8025_set_time(struct device
- 	 */
- 	date[RX8025_REG_SEC] = bin2bcd(dt->tm_sec);
- 	date[RX8025_REG_MIN] = bin2bcd(dt->tm_min);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		date[RX8025_REG_HOUR] = bin2bcd(dt->tm_hour);
- 	else
- 		date[RX8025_REG_HOUR] = (dt->tm_hour >= 12 ? 0x20 : 0)
-@@ -279,6 +282,7 @@ static int rx8025_init_client(struct i2c
- 	struct rx8025_data *rx8025 = i2c_get_clientdata(client);
- 	u8 ctrl[2], ctrl2;
- 	int need_clear = 0;
-+	int hour_reg;
- 	int err;
- 
- 	err = rx8025_read_regs(client, RX8025_REG_CTRL1, 2, ctrl);
-@@ -303,6 +307,16 @@ static int rx8025_init_client(struct i2c
- 
- 		err = rx8025_write_reg(client, RX8025_REG_CTRL2, ctrl2);
- 	}
++	if (!tx)
++		goto out;
 +
-+	if (rx8025->model == model_rx_8035) {
-+		/* In RX-8035, 12/24 flag is in the hour register */
-+		hour_reg = rx8025_read_reg(client, RX8025_REG_HOUR);
-+		if (hour_reg < 0)
-+			return hour_reg;
-+		rx8025->is_24 = (hour_reg & RX8035_BIT_HOUR_1224);
-+	} else {
-+		rx8025->is_24 = (ctrl[1] & RX8025_BIT_CTRL1_1224);
-+	}
- out:
- 	return err;
+ 	if (cookie == tx->chan->completed_cookie)
+ 		goto out;
+ 
+@@ -241,6 +236,19 @@ static void sf_pdma_enable_request(struct sf_pdma_chan *chan)
+ 	writel(v, regs->ctrl);
  }
-@@ -329,7 +343,7 @@ static int rx8025_read_alarm(struct devi
- 	/* Hardware alarms precision is 1 minute! */
- 	t->time.tm_sec = 0;
- 	t->time.tm_min = bcd2bin(ald[0] & 0x7f);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		t->time.tm_hour = bcd2bin(ald[1] & 0x3f);
- 	else
- 		t->time.tm_hour = bcd2bin(ald[1] & 0x1f) % 12
-@@ -350,7 +364,7 @@ static int rx8025_set_alarm(struct devic
- 	int err;
  
- 	ald[0] = bin2bcd(t->time.tm_min);
--	if (rx8025->ctrl1 & RX8025_BIT_CTRL1_1224)
-+	if (rx8025->is_24)
- 		ald[1] = bin2bcd(t->time.tm_hour);
- 	else
- 		ald[1] = (t->time.tm_hour >= 12 ? 0x20 : 0)
++static struct sf_pdma_desc *sf_pdma_get_first_pending_desc(struct sf_pdma_chan *chan)
++{
++	struct virt_dma_chan *vchan = &chan->vchan;
++	struct virt_dma_desc *vdesc;
++
++	if (list_empty(&vchan->desc_issued))
++		return NULL;
++
++	vdesc = list_first_entry(&vchan->desc_issued, struct virt_dma_desc, node);
++
++	return container_of(vdesc, struct sf_pdma_desc, vdesc);
++}
++
+ static void sf_pdma_xfer_desc(struct sf_pdma_chan *chan)
+ {
+ 	struct sf_pdma_desc *desc = chan->desc;
+@@ -268,8 +276,11 @@ static void sf_pdma_issue_pending(struct dma_chan *dchan)
+ 
+ 	spin_lock_irqsave(&chan->vchan.lock, flags);
+ 
+-	if (vchan_issue_pending(&chan->vchan) && chan->desc)
++	if (!chan->desc && vchan_issue_pending(&chan->vchan)) {
++		/* vchan_issue_pending has made a check that desc in not NULL */
++		chan->desc = sf_pdma_get_first_pending_desc(chan);
+ 		sf_pdma_xfer_desc(chan);
++	}
+ 
+ 	spin_unlock_irqrestore(&chan->vchan.lock, flags);
+ }
+@@ -298,6 +309,11 @@ static void sf_pdma_donebh_tasklet(struct tasklet_struct *t)
+ 	spin_lock_irqsave(&chan->vchan.lock, flags);
+ 	list_del(&chan->desc->vdesc.node);
+ 	vchan_cookie_complete(&chan->desc->vdesc);
++
++	chan->desc = sf_pdma_get_first_pending_desc(chan);
++	if (chan->desc)
++		sf_pdma_xfer_desc(chan);
++
+ 	spin_unlock_irqrestore(&chan->vchan.lock, flags);
+ }
+ 
+-- 
+2.35.1
+
 
 
