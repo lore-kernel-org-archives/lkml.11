@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C74C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170ECC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241550AbiHOVD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33240 "EHLO
+        id S1343761AbiHOVDd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346927AbiHOVBS (ORCPT
+        with ESMTP id S1346970AbiHOVBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:01:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970CEC7B9F;
-        Mon, 15 Aug 2022 12:13:19 -0700 (PDT)
+        Mon, 15 Aug 2022 17:01:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBB4C7F9B;
+        Mon, 15 Aug 2022 12:13:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACEB4B81116;
-        Mon, 15 Aug 2022 19:13:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5874C433C1;
-        Mon, 15 Aug 2022 19:13:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2836460EEE;
+        Mon, 15 Aug 2022 19:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28310C43148;
+        Mon, 15 Aug 2022 19:13:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590796;
-        bh=AZdgHdd7Lzfg2eg8h8WDpyyCu/wK8MepgvhUm1bY0G8=;
+        s=korg; t=1660590805;
+        bh=2OjajXMonsA43H6MGn0Yk7kn041C0Uia5PRSs490OSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hu9oTFbfu7vCy908yzbPPp+IUdoy+c7l5WmjS8hme9q91Uf8ZNkNl8R8LoPLryHiL
-         wk1dYKVNNvza7xYY9sUvaGTp5g9bDTZ/q4l4E4S+4DLcgdu72GiGkWCz5zt8oTQhhS
-         qp0TnISJ5iFLZO6iINjfwgPAQzuiLfCHNvAkf5Lk=
+        b=0tOUhY3Wgo9TxoPVZMCTSoArf6mcOSBsk/YNJDqdHjGl/DarRk9Gzt4tQsK2RzDey
+         yRa6ZvEFv6ofUDMfIOeBySHLCKvV7gINl3lzcIgaWigkeG4p2l6gjC5BFLO0JhHTBA
+         vTQ2cwob0ycz2q5lYy+Bajvg9kdTmA08brQahNJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0374/1095] drm/mcde: Fix refcount leak in mcde_dsi_bind
-Date:   Mon, 15 Aug 2022 19:56:13 +0200
-Message-Id: <20220815180445.182185394@linuxfoundation.org>
+Subject: [PATCH 5.18 0377/1095] media: sta2x11: remove VIRT_TO_BUS dependency
+Date:   Mon, 15 Aug 2022 19:56:16 +0200
+Message-Id: <20220815180445.290541533@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,36 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 3a149169e4a2f9127022fec6ef5d71b4e804b3b9 ]
+[ Upstream commit a157802359f7451ed8046b2b6dbaca187797e062 ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference counter of the previous node. There is no decrement
-when break out from the loop and results in refcount leak.
-Add missing of_node_put() to fix this.
+This driver does not use the virt_to_bus() function, though it
+depends on x86 specific fixups in the swiotlb code, which was
+last rewritten in commit e380a0394c36 ("x86/PCI: sta2x11: use
+default DMA address translation").
 
-Fixes: 5fc537bfd000 ("drm/mcde: Add new driver for ST-Ericsson MCDE")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220525115411.65455-1-linmq006@gmail.com
+It is possible that the driver still fails to build on some
+architectures that are missing CONFIG_VIRT_TO_BUS, but it is
+always set on x86 machines with the STA2X11 platform enabled.
+
+More likely though is that it was never meant to depend on
+CONFIG_VIRT_TO_BUS, and the Kconfig dependency was kept from
+an out-of-tree version when the driver was originally merged.
+
+Fixes: efeb98b4e2b2 ("[media] STA2X11 VIP: new V4L2 driver")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mcde/mcde_dsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/pci/sta2x11/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/mcde/mcde_dsi.c b/drivers/gpu/drm/mcde/mcde_dsi.c
-index 5651734ce977..9f9ac8699310 100644
---- a/drivers/gpu/drm/mcde/mcde_dsi.c
-+++ b/drivers/gpu/drm/mcde/mcde_dsi.c
-@@ -1111,6 +1111,7 @@ static int mcde_dsi_bind(struct device *dev, struct device *master,
- 			bridge = of_drm_find_bridge(child);
- 			if (!bridge) {
- 				dev_err(dev, "failed to find bridge\n");
-+				of_node_put(child);
- 				return -EINVAL;
- 			}
- 		}
+diff --git a/drivers/media/pci/sta2x11/Kconfig b/drivers/media/pci/sta2x11/Kconfig
+index a96e170ab04e..118b922c08c3 100644
+--- a/drivers/media/pci/sta2x11/Kconfig
++++ b/drivers/media/pci/sta2x11/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config STA2X11_VIP
+ 	tristate "STA2X11 VIP Video For Linux"
+-	depends on PCI && VIDEO_DEV && VIRT_TO_BUS && I2C
++	depends on PCI && VIDEO_DEV && I2C
+ 	depends on STA2X11 || COMPILE_TEST
+ 	select GPIOLIB if MEDIA_SUBDRV_AUTOSELECT
+ 	select VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT
 -- 
 2.35.1
 
