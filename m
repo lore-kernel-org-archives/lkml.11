@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F39C32770
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66674C3276F
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349693AbiHOW0E (ORCPT
+        id S1350550AbiHOW07 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
+        Mon, 15 Aug 2022 18:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350832AbiHOWSk (ORCPT
+        with ESMTP id S1350950AbiHOWS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:40 -0400
+        Mon, 15 Aug 2022 18:18:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF8141D1B;
-        Mon, 15 Aug 2022 12:42:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C9C67CA5;
+        Mon, 15 Aug 2022 12:43:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3E72B80EA7;
-        Mon, 15 Aug 2022 19:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 397F4C433C1;
-        Mon, 15 Aug 2022 19:42:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 818F9B81141;
+        Mon, 15 Aug 2022 19:43:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC3FFC433C1;
+        Mon, 15 Aug 2022 19:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592561;
-        bh=dN16VvJHR/zUhnh0L+qtYA5bmwA3MJYkt+qkY5TKb3E=;
+        s=korg; t=1660592586;
+        bh=Z/b5BWHJW+g75sTUAQz13S8RCfehdjJmeZQfNNJWBK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x16JCQbGd4kzJ5pLX1dDkUBc+MlwhlEHDjkX8ahkgVeEohinCXx0E//GdRxeLIJ1j
-         c0b9j4PJAo7pYYUnVsuGyhBCHWnJcOqZdX5qS3FuntRAvp5ktq+pxm38QQ551I/hM9
-         RZGY8t0UNtLsL4HUG5j4NOv33lh59uXCWjf8U07Q=
+        b=pRCcoW1SGIb2elqJnAdnxrw7igROnMI3PJQjqtlDfGJbkDrxkpENro8vj09mz86uw
+         gw/8XCxlrzwZdPndOUkljB3s9/wbZhcZr4Ai4Y/Zqqx0UR8qNgF7/cQ6mseHxHO5hS
+         8hm6aa7R9W2h0bhvZMBJQG3he9EAw4YvdQ+kLOHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0808/1095] selftest/vm: uninitialized variable in main()
-Date:   Mon, 15 Aug 2022 20:03:27 +0200
-Message-Id: <20220815180502.695764789@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Qiang <xuqiang36@huawei.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0812/1095] of/fdt: declared return type does not match actual return type
+Date:   Mon, 15 Aug 2022 20:03:31 +0200
+Message-Id: <20220815180502.859861917@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,38 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Xu Qiang <xuqiang36@huawei.com>
 
-[ Upstream commit 360b420dbded8ad5b70a41de98e77354dd9e7d36 ]
+[ Upstream commit 7913145afa51bbed9eaf8e5b4ee55fa9884a71e5 ]
 
-Initialize "length" to zero by default.
+The commit 649cab56de8e (“of: properly check for error returned
+by fdt_get_name()”) changed the return value type from bool to int,
+but forgot to change the return value simultaneously.
 
-Link: https://lkml.kernel.org/r/YtZzjvHXVXMXxpXO@kili
-Fixes: ff712a627f72 ("selftests/vm: cleanup hugetlb file after mremap test")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Mina Almasry <almasrymina@google.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+populate_node was only called in unflatten_dt_nodes, and returns
+with values greater than or equal to 0 were discarded without further
+processing. Considering that return 0 usually indicates success,
+return 0 instead of return true.
+
+Fixes: 649cab56de8e (“of: properly check for error returned by fdt_get_name()”)
+Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220801120506.11461-2-xuqiang36@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/hugepage-mremap.c | 2 +-
+ drivers/of/fdt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/vm/hugepage-mremap.c b/tools/testing/selftests/vm/hugepage-mremap.c
-index 1d689084a54b..22546f279534 100644
---- a/tools/testing/selftests/vm/hugepage-mremap.c
-+++ b/tools/testing/selftests/vm/hugepage-mremap.c
-@@ -107,7 +107,7 @@ static void register_region_with_uffd(char *addr, size_t len)
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 0f30496ce80b..d624e8b185aa 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -246,7 +246,7 @@ static int populate_node(const void *blob,
+ 	}
  
- int main(int argc, char *argv[])
- {
--	size_t length;
-+	size_t length = 0;
+ 	*pnp = np;
+-	return true;
++	return 0;
+ }
  
- 	if (argc != 2 && argc != 3) {
- 		printf("Usage: %s [length_in_MB] <hugetlb_file>\n", argv[0]);
+ static void reverse_nodes(struct device_node *parent)
 -- 
 2.35.1
 
