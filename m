@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38DFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B5A0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243226AbiHOScE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39530 "EHLO
+        id S243251AbiHOScI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243447AbiHOSbH (ORCPT
+        with ESMTP id S243483AbiHOSbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:31:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E169F32B8E;
-        Mon, 15 Aug 2022 11:21:03 -0700 (PDT)
+        Mon, 15 Aug 2022 14:31:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E9432D81;
+        Mon, 15 Aug 2022 11:21:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E3D6B8107B;
-        Mon, 15 Aug 2022 18:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D14D2C433C1;
-        Mon, 15 Aug 2022 18:20:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE83EB8105B;
+        Mon, 15 Aug 2022 18:20:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36EB0C433D6;
+        Mon, 15 Aug 2022 18:20:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587630;
-        bh=gQm1GOy4uLgvoCwWW/Up8QpHprwb0rVnwltmn9hY3LI=;
+        s=korg; t=1660587648;
+        bh=VJCmYCac8+0GtJU2jX1P9L9/IdytulRpy/aYEWsiEso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AnBDxwHYd16wqdSz+iMu4LM8Aw4CfsJmjX2F4MAJZsUFxbnpEqqvlb+tAqK1Qm3PZ
-         E3zPUbj5QA3pxplwz8IIZOAkw+x8DJvi8ml06c2UIENOAVVMTke7iAfRV0YD6mwTDz
-         NDW3X8TjGLbGJThv2cAv2LkLnIRlPG8rMwfc8jps=
+        b=1S3JwEsJaH5ZCS8UzOBt14Q015LN18ciXY40KMajlTOLMwceN0S93o/dJpiN8eVaQ
+         XB2+08VXwyueNBJ8rTj4WmtQ5Xm6X99ka4uvK6BlD0fWF9YIvrFvTojfwicVX6P9vh
+         74LgyZy1yGKlnQMdRu2YDk7dRRuEYc3ID5VyM1SU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 144/779] firmware: tegra: Fix error check return value of debugfs_create_file()
-Date:   Mon, 15 Aug 2022 19:56:28 +0200
-Message-Id: <20220815180343.485758274@linuxfoundation.org>
+Subject: [PATCH 5.15 149/779] selinux: Add boundary check in put_entry()
+Date:   Mon, 15 Aug 2022 19:56:33 +0200
+Message-Id: <20220815180343.681170622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,66 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-[ Upstream commit afcdb8e55c91c6ff0700ab272fd0f74e899ab884 ]
+[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
 
-If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
-so use IS_ERR() to check it.
+Just like next_entry(), boundary check is necessary to prevent memory
+out-of-bound access.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ security/selinux/ss/policydb.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
-index 3e9fa4b54358..1ed881a567d5 100644
---- a/drivers/firmware/tegra/bpmp-debugfs.c
-+++ b/drivers/firmware/tegra/bpmp-debugfs.c
-@@ -465,7 +465,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
- 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
- 			dentry = debugfs_create_file(name, mode, parent, bpmp,
- 						     &bpmp_debug_fops);
--			if (!dentry) {
-+			if (IS_ERR(dentry)) {
- 				err = -ENOMEM;
- 				goto out;
- 			}
-@@ -716,7 +716,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
+index c24d4e1063ea..ffc4e7bad205 100644
+--- a/security/selinux/ss/policydb.h
++++ b/security/selinux/ss/policydb.h
+@@ -370,6 +370,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
+ {
+ 	size_t len = bytes * num;
  
- 		if (t & DEBUGFS_S_ISDIR) {
- 			dentry = debugfs_create_dir(name, parent);
--			if (!dentry)
-+			if (IS_ERR(dentry))
- 				return -ENOMEM;
- 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
- 			if (err < 0)
-@@ -729,7 +729,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
- 			dentry = debugfs_create_file(name, mode,
- 						     parent, bpmp,
- 						     &debugfs_fops);
--			if (!dentry)
-+			if (IS_ERR(dentry))
- 				return -ENOMEM;
- 		}
- 	}
-@@ -779,11 +779,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
- 		return 0;
- 
- 	root = debugfs_create_dir("bpmp", NULL);
--	if (!root)
-+	if (IS_ERR(root))
- 		return -ENOMEM;
- 
- 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
--	if (!bpmp->debugfs_mirror) {
-+	if (IS_ERR(bpmp->debugfs_mirror)) {
- 		err = -ENOMEM;
- 		goto out;
- 	}
++	if (len > fp->len)
++		return -EINVAL;
+ 	memcpy(fp->data, buf, len);
+ 	fp->data += len;
+ 	fp->len -= len;
 -- 
 2.35.1
 
