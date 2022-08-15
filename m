@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1CAC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE34BC28B2C
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349848AbiHOVv6 (ORCPT
+        id S1349899AbiHOVwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
+        Mon, 15 Aug 2022 17:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349810AbiHOVqh (ORCPT
+        with ESMTP id S1350233AbiHOVra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:46:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE948F1;
-        Mon, 15 Aug 2022 12:30:14 -0700 (PDT)
+        Mon, 15 Aug 2022 17:47:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D75B20BFA;
+        Mon, 15 Aug 2022 12:31:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F21360FB9;
-        Mon, 15 Aug 2022 19:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F010C433C1;
-        Mon, 15 Aug 2022 19:30:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1931610A3;
+        Mon, 15 Aug 2022 19:31:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7250C433D6;
+        Mon, 15 Aug 2022 19:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591813;
-        bh=Dods9/N9gaUudH92kC+aHYMD4cxqqiaIWH0rZtPAawc=;
+        s=korg; t=1660591880;
+        bh=UOH6REFJS8cP2N9uoUPHkUleTOhh+U4QEU+B7D5bc6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F+MbkmzNtKCtw0gork6g7yWhZTtx2qVH96+xmpdYhrYeEGdr7vgcuKIyNo7gg/2rp
-         nmEDOYTLXXUWM5NHG3okac68yIARodKr7fFCJWbZ6g1eL6TV3Lufb7Wax+Q3bqr0Tf
-         6Vk+glFDuHhaSVrhT/InnoLA1iyWHiAuE3d9wy8M=
+        b=HFFIlybauDg/ardgHNbMvLYzlOFR0uhbgsdKJVUeYpuvwSMhv3dqbKoEFLX3gAbB1
+         DWKbVzpaVATnklPa289Dl/+9sbA6JktZao2EUBU58DGl+a6jcYoYbd9huOTZyCHxzc
+         XniqxbFm3R5AW+avxZybqyQ8TaHxTuyqdTRq/vUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syed sabakareem <Syed.SabaKareem@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        David Korth <gerbilsoft@gerbilsoft.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.19 0012/1157] ASoC: amd: yc: Update DMI table entries
-Date:   Mon, 15 Aug 2022 19:49:28 +0200
-Message-Id: <20220815180439.955407174@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0693/1095] clk: qcom: camcc-sm8250: Fix halt on boot by reducing drivers init level
+Date:   Mon, 15 Aug 2022 20:01:32 +0200
+Message-Id: <20220815180458.050992029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,80 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: syed sabakareem <Syed.SabaKareem@amd.com>
+From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-commit be0aa8d4b0fcb4532bf7973141e911998ab39508 upstream.
+[ Upstream commit c4f40351901a10cd662ac2c081396d8fb04f584d ]
 
-Removed intel DMI product id's 21AW/21AX/21D8/21D9/21BN/21BQ
-in DMI table and updated DMI entry for AMD platform X13 Gen 3
-platform 21CM/21CN.
+Access to I/O of SM8250 camera clock controller IP depends on enabled
+GCC_CAMERA_AHB_CLK clock supplied by global clock controller, the latter
+one is inited on subsys level, so, to satisfy the dependency, it would
+make sense to deprive the init level of camcc-sm8250 driver.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216267
+If both drivers are compiled as built-in, there is a change that a board
+won't boot up due to a race, which happens on the same init level.
 
-Signed-off-by: syed sabakareem <Syed.SabaKareem@amd.com>
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Reported-by: David Korth <gerbilsoft@gerbilsoft.com>
-Fixes: fa991481b8b2 ("ASoC: amd: add YC machine driver using dmic")
-Link: https://lore.kernel.org/r/20220722134603.316668-1-Syed.SabaKareem@amd.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5d66ca79b58c ("clk: qcom: Add camera clock controller driver for SM8250")
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220518103554.949511-1-vladimir.zapolskiy@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/amd/yc/acp6x-mach.c |   32 ++------------------------------
- 1 file changed, 2 insertions(+), 30 deletions(-)
+ drivers/clk/qcom/camcc-sm8250.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
---- a/sound/soc/amd/yc/acp6x-mach.c
-+++ b/sound/soc/amd/yc/acp6x-mach.c
-@@ -105,28 +105,14 @@ static const struct dmi_system_id yc_acp
- 		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21AW"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "21CM"),
- 		}
+diff --git a/drivers/clk/qcom/camcc-sm8250.c b/drivers/clk/qcom/camcc-sm8250.c
+index 439eaafdcc86..ae4e9774f36e 100644
+--- a/drivers/clk/qcom/camcc-sm8250.c
++++ b/drivers/clk/qcom/camcc-sm8250.c
+@@ -2440,17 +2440,7 @@ static struct platform_driver cam_cc_sm8250_driver = {
  	},
- 	{
- 		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21AX"),
--		}
--	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21BN"),
--		}
--	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21BQ"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "21CN"),
- 		}
- 	},
- 	{
-@@ -157,20 +143,6 @@ static const struct dmi_system_id yc_acp
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CL"),
- 		}
- 	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21D8"),
--		}
--	},
--	{
--		.driver_data = &acp6x_card,
--		.matches = {
--			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "21D9"),
--		}
--	},
- 	{}
  };
  
+-static int __init cam_cc_sm8250_init(void)
+-{
+-	return platform_driver_register(&cam_cc_sm8250_driver);
+-}
+-subsys_initcall(cam_cc_sm8250_init);
+-
+-static void __exit cam_cc_sm8250_exit(void)
+-{
+-	platform_driver_unregister(&cam_cc_sm8250_driver);
+-}
+-module_exit(cam_cc_sm8250_exit);
++module_platform_driver(cam_cc_sm8250_driver);
+ 
+ MODULE_DESCRIPTION("QTI CAMCC SM8250 Driver");
+ MODULE_LICENSE("GPL v2");
+-- 
+2.35.1
+
 
 
