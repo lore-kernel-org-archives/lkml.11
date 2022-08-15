@@ -2,159 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC9CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB0AC25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344580AbiHOXFj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50270 "EHLO
+        id S243310AbiHOXHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345590AbiHOXDf (ORCPT
+        with ESMTP id S231646AbiHOXDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:03:35 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002FB140383;
-        Mon, 15 Aug 2022 12:58:25 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-32a09b909f6so99762267b3.0;
-        Mon, 15 Aug 2022 12:58:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=SaKpW6zKf3J+BDdw7lydmtNN4p2oq5j0Q5VFDNof+pM=;
-        b=mClJbEgUZn7mid1IMN6JVxp3CUtP2f+GgqIus6vTR3wa/69syGLtTNMNumUfGQzXCp
-         uRDUujND1uBLSov9tLJdTrhBNK4B/ta9oo+peGB6mwcb8/kM4OmseN8nDM9YLPfiHgSu
-         RrtJxBtdwb6OC6Eu1qdUXMMnROTgoZ2W2e+6A3ATXr99NvzmM59FmVMYNT9KmeXOLaRD
-         C2C/byWulXxqj0E4VMlC2YXPNO9aDoJf4mHM1cueQC2FLe14+lm/ePG6cQFQPmcSWlOY
-         UKsBZAfBlelS45l7Cx7P5f2skan3K6PWshyYKKfIFbFtHx6ntkMKbYnO/pXNhZDRqzoe
-         HI7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=SaKpW6zKf3J+BDdw7lydmtNN4p2oq5j0Q5VFDNof+pM=;
-        b=EWkA1Y6h3hKyYblxQFVtr9CXuhHcLEAkGQs807hTsonqJPaNRBUOSdVN6XPS0WWCCE
-         p2Z7vI3sZgZk4lfdE40HiPJrXJgqt/UCqVTvg8V5R6LMSGQTShgh0cWXue3Hu7XkRdaE
-         vFyn3ycPS+wzwj8FrtOenZKs5htFWiSBjLirbSGyv9ySWz7O9gfRvJc2/13bEW6eOGlr
-         deDmFxD7jah2z/YP5jZSSY95ypKIBXxVVPnUg+NC6gDp4zTAxAIsOCV0HECuxB+piGpa
-         BLKzTdQatY3HzrF3ttC9E2YCnW/wr5XilJ/cfBTPd71LNmJNZsmlVA+dpO3jMHS5/m2N
-         +NWw==
-X-Gm-Message-State: ACgBeo2brk+cjwCUSeJJiCJfMdkEDlpUeLH9BmvgqKBMzhlm1wBhKzP2
-        qJ/tIT5p8tOsLxS8JFvGa5MhT08PN/QEKguw/ETF3AGFtkY=
-X-Google-Smtp-Source: AA6agR7YZhetSRriR3fxyVoEb45vvhBzsBWV2fXqw33tgHSOBo2R5O1+udwaFBShKA5Xahd/ARVynHtaGCyY7Ch4dU8=
-X-Received: by 2002:a25:2245:0:b0:67b:7758:808b with SMTP id
- i66-20020a252245000000b0067b7758808bmr13450908ybi.279.1660593505118; Mon, 15
- Aug 2022 12:58:25 -0700 (PDT)
+        Mon, 15 Aug 2022 19:03:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D0E140387;
+        Mon, 15 Aug 2022 12:58:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE0961299;
+        Mon, 15 Aug 2022 19:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BA6EC433C1;
+        Mon, 15 Aug 2022 19:58:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660593504;
+        bh=v6rhzKfkgAizoOjuCss4MtEIm16S+hpSuSNYbD1EtjM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JVXYvYuuxQqBTeZI/9ep/xmlcBFbH24Ju4zLw5rn0DwUjPobLmNuZTd6YbvcB9Fs5
+         OUG1difKCHMzMfNfzzxvb1g1uPlioRPsmeD/pAa05Xti80g2FhZzkKTsjuUr9w/sFq
+         JgPMBy9HGSuKzyF4CobtaRInuGMR/X9i+jdsyRxU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Junbeom Yeom <junbeom.yeom@samsung.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Youngjin Gil <youngjin.gil@samsung.com>,
+        Jaewook Kim <jw5454.kim@samsung.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0955/1095] f2fs: do not allow to decompress files have FI_COMPRESS_RELEASED
+Date:   Mon, 15 Aug 2022 20:05:54 +0200
+Message-Id: <20220815180508.602611543@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220815151451.23293-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220815151451.23293-5-prabhakar.mahadev-lad.rj@bp.renesas.com> <d9d0deef-92e1-05b4-a195-d2ca03801129@microchip.com>
-In-Reply-To: <d9d0deef-92e1-05b4-a195-d2ca03801129@microchip.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 15 Aug 2022 20:57:57 +0100
-Message-ID: <CA+V-a8utT6UE=rc62LPE=UoU0DTJ2dDt7KO9UJ1vAG9r80E2pg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/8] RISC-V: Kconfig.socs: Add Renesas RZ/Five SoC
- kconfig option
-To:     Conor.Dooley@microchip.com
-Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Anup Patel <anup@brainfault.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+From: Jaewook Kim <jw5454.kim@samsung.com>
 
-Thank you for the review.
+[ Upstream commit 90be48bd9d29ece3965e5e8b21499b6db166e57b ]
 
-On Mon, Aug 15, 2022 at 8:10 PM <Conor.Dooley@microchip.com> wrote:
->
-> On 15/08/2022 16:14, Lad Prabhakar wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > Introduce SOC_RENESAS_RZFIVE config option to enable Renesas RZ/Five
-> > (R9A07G043) SoC, along side also add ARCH_RENESAS config option as most
-> > of the Renesas drivers depend on this config option.
->
-> Hey Lad,
->
-> I think I said something similar on v1, but I said it again
-> to Samuel today so I may as well repost here too:
-> "I think this and patch 12/12 with the defconfig changes should be
-patch 8/8.
+If a file has FI_COMPRESS_RELEASED, all writes for it should not be
+allowed. However, as of now, in case of compress_mode=user, writes
+triggered by IOCTLs like F2FS_IOC_DE/COMPRESS_FILE are allowed unexpectly,
+which could crash that file.
+To fix it, let's do not allow F2FS_IOC_DE/COMPRESS_IOCTL if a file already
+has FI_COMPRESS_RELEASED flag.
+
+This is the reproduction process:
+1.  $ touch ./file
+2.  $ chattr +c ./file
+3.  $ dd if=/dev/random of=./file bs=4096 count=30 conv=notrunc
+4.  $ dd if=/dev/zero of=./file bs=4096 count=34 seek=30 conv=notrunc
+5.  $ sync
+6.  $ do_compress ./file      ; call F2FS_IOC_COMPRESS_FILE
+7.  $ get_compr_blocks ./file ; call F2FS_IOC_GET_COMPRESS_BLOCKS
+8.  $ release ./file          ; call F2FS_IOC_RELEASE_COMPRESS_BLOCKS
+9.  $ do_compress ./file      ; call F2FS_IOC_COMPRESS_FILE again
+10. $ get_compr_blocks ./file ; call F2FS_IOC_GET_COMPRESS_BLOCKS again
+
+This reproduction process is tested in 128kb cluster size.
+You can find compr_blocks has a negative value.
+
+Fixes: 5fdb322ff2c2b ("f2fs: add F2FS_IOC_DECOMPRESS_FILE and F2FS_IOC_COMPRESS_FILE")
+
+Signed-off-by: Junbeom Yeom <junbeom.yeom@samsung.com>
+Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Youngjin Gil <youngjin.gil@samsung.com>
+Signed-off-by: Jaewook Kim <jw5454.kim@samsung.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/f2fs/file.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index 9a676ea080e4..c2644a085876 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -3914,6 +3914,11 @@ static int f2fs_ioc_decompress_file(struct file *filp, unsigned long arg)
+ 		goto out;
+ 	}
+ 
++	if (is_inode_flag_set(inode, FI_COMPRESS_RELEASED)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
+ 	if (ret)
+ 		goto out;
+@@ -3981,6 +3986,11 @@ static int f2fs_ioc_compress_file(struct file *filp, unsigned long arg)
+ 		goto out;
+ 	}
+ 
++	if (is_inode_flag_set(inode, FI_COMPRESS_RELEASED)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
+ 	if (ret)
+ 		goto out;
+-- 
+2.35.1
 
 
-> deferred until post LPC (which still leaves plenty of time for
-> making the 6.1 merge window). We already have like 4 different
-> approaches between the existing SOC_FOO symbols & two more when
-> D1 stuff and the Renesas stuff is considered.
->
-> Plan is to decide at LPC on one approach for what to do with
-> Kconfig.socs & to me it seems like a good idea to do what's being
-> done here - it's likely that further arm vendors will move and
-> keeping the common symbols makes a lot of sense to me..."
->
-Sure not a problem. But delaying patch 4 and 8 will make RZ/Five SoC
-not buildable. Is that OK?
 
-> Also, for the sake of my OCD could you pick either riscv or
-> RISC-V and use it for the whole series? Pedantic I guess, but
-> /shrug
->
-Sorry did you mean I add riscv/RISC-V in the subject?
-
-Cheers,
-Prabhakar
-
-
-> Thanks,
-> Conor.
->
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> > v1->v2
-> > * No Change
-> > ---
-> >  arch/riscv/Kconfig.socs | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> >
-> > diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-> > index 69774bb362d6..91b7f38b77a8 100644
-> > --- a/arch/riscv/Kconfig.socs
-> > +++ b/arch/riscv/Kconfig.socs
-> > @@ -80,4 +80,18 @@ config SOC_CANAAN_K210_DTB_SOURCE
-> >
-> >  endif # SOC_CANAAN
-> >
-> > +config ARCH_RENESAS
-> > +       bool
-> > +       select GPIOLIB
-> > +       select PINCTRL
-> > +       select SOC_BUS
-> > +
-> > +config SOC_RENESAS_RZFIVE
-> > +       bool "Renesas RZ/Five SoC"
-> > +       select ARCH_R9A07G043
-> > +       select ARCH_RENESAS
-> > +       select RESET_CONTROLLER
-> > +       help
-> > +         This enables support for Renesas RZ/Five SoC.
-> > +
-> >  endmenu # "SoC selection"
-> > --
-> > 2.25.1
-> >
->
