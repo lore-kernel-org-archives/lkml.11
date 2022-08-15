@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FA7C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7723C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233505AbiHOUG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        id S239719AbiHOUHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346165AbiHOUBs (ORCPT
+        with ESMTP id S231231AbiHOUEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:01:48 -0400
+        Mon, 15 Aug 2022 16:04:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70325FC;
-        Mon, 15 Aug 2022 11:53:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E22804AA;
+        Mon, 15 Aug 2022 11:54:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE754B81057;
-        Mon, 15 Aug 2022 18:53:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E3F8C433D6;
-        Mon, 15 Aug 2022 18:53:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE24B810A0;
+        Mon, 15 Aug 2022 18:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B9CCC433C1;
+        Mon, 15 Aug 2022 18:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589629;
-        bh=831V3Yq52zNLvCLhnmdB7nVvxEFk2hDomNDpBbMwZIo=;
+        s=korg; t=1660589680;
+        bh=hFyo2XgHTNhpFAos2x6onS2Xb8rlO70wxV1epeC4aZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DG2va3syTcOWbNXosh7UlnmIXtSIqfA/AxR0WeW1BjND/B0R4LsquAkdel1Wd/jkX
-         4h7e5sAFlw4WcG3Bax+YIJhHS85LHk3/hKj6cFhR+uffy/xJVwoH/PqLXgX9ZeIkWt
-         0qc7ZYHeLalA44CTLlKLB9Gx9bK+XZ3ii/+YR52Y=
+        b=kgOV8c9iKHI6+8SaOxA0eYbE4ZjaDpSN9VU1ZYjqHTDMMXJYzpLdUuRJfFPkAEfWc
+         wXBB0CTVPpqRAChde//8YhLMCBZhtgf/NLmZ88Yl8dmhVHCnWvJNUbmm41OrcDRm3o
+         +73vrN2OxkxqFPHQMK+6B1AyXCCYQOaYfHbzWys0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 779/779] scsi: lpfc: Resolve some cleanup issues following SLI path refactoring
-Date:   Mon, 15 Aug 2022 20:07:03 +0200
-Message-Id: <20220815180410.658725498@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Jeongik Cha <jeongik@google.com>
+Subject: [PATCH 5.18 0015/1095] wifi: mac80211_hwsim: add back erroneously removed cast
+Date:   Mon, 15 Aug 2022 19:50:14 +0200
+Message-Id: <20220815180429.957757907@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,147 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit e27f05147bff21408c1b8410ad8e90cd286e7952 upstream.
+commit 58b6259d820d63c2adf1c7541b54cce5a2ae6073 upstream.
 
-Following refactoring and consolidation in SLI processing, fix up some
-minor issues related to SLI path:
+The robots report that we're now casting to a differently
+sized integer, which is correct, and the previous patch
+had erroneously removed it.
 
- - Correct the setting of LPFC_EXCHANGE_BUSY flag in response IOCB.
-
- - Fix some typographical errors.
-
- - Fix duplicate log messages.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-4-jsmart2021@gmail.com
-Fixes: 1b64aa9eae28 ("scsi: lpfc: SLI path split: Refactor fast and slow paths to native SLI4")
-Cc: <stable@vger.kernel.org> # v5.18
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 4ee186fa7e40 ("wifi: mac80211_hwsim: fix race condition in pending packet")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Cc: Jeongik Cha <jeongik@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c |    2 +-
- drivers/scsi/lpfc/lpfc_sli.c  |   25 ++++++++++++-------------
- 2 files changed, 13 insertions(+), 14 deletions(-)
+ drivers/net/wireless/mac80211_hwsim.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -11964,7 +11964,7 @@ lpfc_sli_enable_msi(struct lpfc_hba *phb
- 	rc = pci_enable_msi(phba->pcidev);
- 	if (!rc)
- 		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
--				"0462 PCI enable MSI mode success.\n");
-+				"0012 PCI enable MSI mode success.\n");
- 	else {
- 		lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
- 				"0471 PCI enable MSI mode failed (%d)\n", rc);
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -1939,7 +1939,7 @@ lpfc_issue_cmf_sync_wqe(struct lpfc_hba
- 	sync_buf = __lpfc_sli_get_iocbq(phba);
- 	if (!sync_buf) {
- 		lpfc_printf_log(phba, KERN_ERR, LOG_CGN_MGMT,
--				"6213 No available WQEs for CMF_SYNC_WQE\n");
-+				"6244 No available WQEs for CMF_SYNC_WQE\n");
- 		ret_val = ENOMEM;
- 		goto out_unlock;
- 	}
-@@ -3737,7 +3737,7 @@ lpfc_sli_process_sol_iocb(struct lpfc_hb
- 						set_job_ulpword4(cmdiocbp,
- 								 IOERR_ABORT_REQUESTED);
- 						/*
--						 * For SLI4, irsiocb contains
-+						 * For SLI4, irspiocb contains
- 						 * NO_XRI in sli_xritag, it
- 						 * shall not affect releasing
- 						 * sgl (xri) process.
-@@ -3755,7 +3755,7 @@ lpfc_sli_process_sol_iocb(struct lpfc_hb
- 					}
- 				}
- 			}
--			(cmdiocbp->cmd_cmpl) (phba, cmdiocbp, saveq);
-+			cmdiocbp->cmd_cmpl(phba, cmdiocbp, saveq);
- 		} else
- 			lpfc_sli_release_iocbq(phba, cmdiocbp);
- 	} else {
-@@ -3995,8 +3995,7 @@ lpfc_sli_handle_fast_ring_event(struct l
- 				cmdiocbq->cmd_flag &= ~LPFC_DRIVER_ABORTED;
- 			if (cmdiocbq->cmd_cmpl) {
- 				spin_unlock_irqrestore(&phba->hbalock, iflag);
--				(cmdiocbq->cmd_cmpl)(phba, cmdiocbq,
--						      &rspiocbq);
-+				cmdiocbq->cmd_cmpl(phba, cmdiocbq, &rspiocbq);
- 				spin_lock_irqsave(&phba->hbalock, iflag);
- 			}
- 			break;
-@@ -10936,7 +10935,7 @@ lpfc_sli4_iocb2wqe(struct lpfc_hba *phba
-  * @flag: Flag indicating if this command can be put into txq.
-  *
-  * __lpfc_sli_issue_fcp_io_s3 is wrapper function to invoke lockless func to
-- * send  an iocb command to an HBA with SLI-4 interface spec.
-+ * send  an iocb command to an HBA with SLI-3 interface spec.
-  *
-  * This function takes the hbalock before invoking the lockless version.
-  * The function will return success after it successfully submit the wqe to
-@@ -12989,7 +12988,7 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba
- 		cmdiocbq->cmd_cmpl = cmdiocbq->wait_cmd_cmpl;
- 		cmdiocbq->wait_cmd_cmpl = NULL;
- 		if (cmdiocbq->cmd_cmpl)
--			(cmdiocbq->cmd_cmpl)(phba, cmdiocbq, NULL);
-+			cmdiocbq->cmd_cmpl(phba, cmdiocbq, NULL);
- 		else
- 			lpfc_sli_release_iocbq(phba, cmdiocbq);
- 		return;
-@@ -13003,9 +13002,9 @@ lpfc_sli_wake_iocb_wait(struct lpfc_hba
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -4112,7 +4112,7 @@ static int hwsim_tx_info_frame_received_
+ 		u64 skb_cookie;
  
- 	/* Set the exchange busy flag for task management commands */
- 	if ((cmdiocbq->cmd_flag & LPFC_IO_FCP) &&
--		!(cmdiocbq->cmd_flag & LPFC_IO_LIBDFC)) {
-+	    !(cmdiocbq->cmd_flag & LPFC_IO_LIBDFC)) {
- 		lpfc_cmd = container_of(cmdiocbq, struct lpfc_io_buf,
--			cur_iocbq);
-+					cur_iocbq);
- 		if (rspiocbq && (rspiocbq->cmd_flag & LPFC_EXCHANGE_BUSY))
- 			lpfc_cmd->flags |= LPFC_SBUF_XBUSY;
- 		else
-@@ -14143,7 +14142,7 @@ void lpfc_sli4_els_xri_abort_event_proc(
-  * @irspiocbq: Pointer to work-queue completion queue entry.
-  *
-  * This routine handles an ELS work-queue completion event and construct
-- * a pseudo response ELS IODBQ from the SLI4 ELS WCQE for the common
-+ * a pseudo response ELS IOCBQ from the SLI4 ELS WCQE for the common
-  * discovery engine to handle.
-  *
-  * Return: Pointer to the receive IOCBQ, NULL otherwise.
-@@ -14187,7 +14186,7 @@ lpfc_sli4_els_preprocess_rspiocbq(struct
+ 		txi = IEEE80211_SKB_CB(skb);
+-		skb_cookie = (u64)txi->rate_driver_data[0];
++		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
  
- 	if (bf_get(lpfc_wcqe_c_xb, wcqe)) {
- 		spin_lock_irqsave(&phba->hbalock, iflags);
--		cmdiocbq->cmd_flag |= LPFC_EXCHANGE_BUSY;
-+		irspiocbq->cmd_flag |= LPFC_EXCHANGE_BUSY;
- 		spin_unlock_irqrestore(&phba->hbalock, iflags);
- 	}
- 
-@@ -15046,7 +15045,7 @@ lpfc_sli4_fp_handle_fcp_wcqe(struct lpfc
- 		/* Pass the cmd_iocb and the wcqe to the upper layer */
- 		memcpy(&cmdiocbq->wcqe_cmpl, wcqe,
- 		       sizeof(struct lpfc_wcqe_complete));
--		(cmdiocbq->cmd_cmpl)(phba, cmdiocbq, cmdiocbq);
-+		cmdiocbq->cmd_cmpl(phba, cmdiocbq, cmdiocbq);
- 	} else {
- 		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
- 				"0375 FCP cmdiocb not callback function "
-@@ -19210,7 +19209,7 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vp
- 
- 	/* Free iocb created in lpfc_prep_seq */
- 	list_for_each_entry_safe(curr_iocb, next_iocb,
--		&iocbq->list, list) {
-+				 &iocbq->list, list) {
- 		list_del_init(&curr_iocb->list);
- 		lpfc_sli_release_iocbq(phba, curr_iocb);
- 	}
+ 		if (skb_cookie == ret_skb_cookie) {
+ 			__skb_unlink(skb, &data2->pending);
 
 
