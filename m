@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC52C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB7AC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346869AbiHOWHy (ORCPT
+        id S1347897AbiHOWH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
+        Mon, 15 Aug 2022 18:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350468AbiHOWCL (ORCPT
+        with ESMTP id S1350493AbiHOWCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:02:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC0C7268B;
-        Mon, 15 Aug 2022 12:36:56 -0700 (PDT)
+        Mon, 15 Aug 2022 18:02:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7EC03057E;
+        Mon, 15 Aug 2022 12:36:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBB3D610A3;
-        Mon, 15 Aug 2022 19:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACCF0C433B5;
-        Mon, 15 Aug 2022 19:36:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF563610A5;
+        Mon, 15 Aug 2022 19:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE95C433D6;
+        Mon, 15 Aug 2022 19:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592215;
-        bh=iA3kgPdrYq8HZkBGT4PqxpGRtbzq58obzUta28Y1qg4=;
+        s=korg; t=1660592218;
+        bh=S03DrVIez8ZhURF5AK3S4u4nvNPVH0sG3GwEDu/RG8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2xrdKKrOP+Dzl6Ec6UF8LCU7FprcIs/wirOy2J3hgcHxi/PF6kLQWF7i05kKSNrw
-         1cwYr77FLvWrE+PVkat6nfGE259WH9MCy5GNWGTXOqX7E4LyXcOoJ2kCi5cOHpc5b7
-         rgDIaypRlrPnLBTo2Oa7WEgcog1YNDi67xcuAsPA=
+        b=hU2Atgml2UGkoAsbDyn7ImVdn5Akhj1IpoT91dg6AOfwufUVxUp5GzUy5iPa/iMmF
+         fp1b58NroqaRqh/ZXv6ObwRNfTI7RFBkhBPZRum/txug9abg50smPSbrO7a6VsLDv/
+         pJEvbVSl+OpxwY6Uo7cBrqffgXRfYTseN8ucA5w4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
-        Scott Teel <scott.teel@microchip.com>,
-        Mike McGowen <mike.mcgowen@microchip.com>,
-        Kevin Barnett <kevin.barnett@microchip.com>,
-        Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>,
-        Don Brace <don.brace@microchip.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0751/1095] scsi: smartpqi: Fix DMA direction for RAID requests
-Date:   Mon, 15 Aug 2022 20:02:30 +0200
-Message-Id: <20220815180500.417389117@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.19 0076/1157] RISC-V: Add modules to virtual kernel memory layout dump
+Date:   Mon, 15 Aug 2022 19:50:32 +0200
+Message-Id: <20220815180442.559813771@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,68 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit 69695aeaa6621bc49cdd7a8e5a8d1042461e496e ]
+commit f9293ad46d8ba9909187a37b7215324420ad4596 upstream.
 
-Correct a SOP READ and WRITE DMA flags for some requests.
+Modules always live before the kernel, MODULES_END is fixed but
+MODULES_VADDR isn't fixed, it depends on the kernel size.
+Let's add it to virtual kernel memory layout dump.
 
-This update corrects DMA direction issues with SCSI commands removed from
-the controller's internal lookup table.
+As MODULES is only defined for CONFIG_64BIT, so we dump it when
+CONFIG_64BIT=y.
 
-Currently, SCSI READ BLOCK LIMITS (0x5) was removed from the controller
-lookup table and exposed a DMA direction flag issue.
+eg,
+MODULES_VADDR - MODULES_END
+0xffffffff01133000 - 0xffffffff80000000
 
-SCSI READ BLOCK LIMITS was recently removed from our controller lookup
-table so the controller uses the respective IU flag field to set the DMA
-data direction. Since the DMA direction is incorrect the FW never completes
-the request causing a hang.
-
-Some SCSI commands which use SCSI READ BLOCK LIMITS
-
-      * sg_map
-      * mt -f /dev/stX status
-
-After updating controller firmware, users may notice their tape units
-failing. This patch resolves the issue.
-
-Also, the AIO path DMA direction is correct.
-
-The DMA direction flag is a day-one bug with no reported BZ.
-
-Fixes: 6c223761eb54 ("smartpqi: initial commit of Microsemi smartpqi driver")
-Link: https://lore.kernel.org/r/165730605618.177165.9054223644512926624.stgit@brunhilda
-Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
-Reviewed-by: Scott Teel <scott.teel@microchip.com>
-Reviewed-by: Mike McGowen <mike.mcgowen@microchip.com>
-Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
-Signed-off-by: Mahesh Rajashekhara <Mahesh.Rajashekhara@microchip.com>
-Signed-off-by: Don Brace <don.brace@microchip.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220811074150.3020189-5-xianting.tian@linux.alibaba.com
+Cc: stable@vger.kernel.org
+Fixes: 2bfc6cd81bd1 ("riscv: Move kernel mapping outside of linear mapping")
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/smartpqi/smartpqi_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/riscv/mm/init.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 7c0d069a3158..e1fc6f5b9612 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -5484,10 +5484,10 @@ static int pqi_raid_submit_scsi_cmd_with_io_request(
- 	}
- 
- 	switch (scmd->sc_data_direction) {
--	case DMA_TO_DEVICE:
-+	case DMA_FROM_DEVICE:
- 		request->data_direction = SOP_READ_FLAG;
- 		break;
--	case DMA_FROM_DEVICE:
-+	case DMA_TO_DEVICE:
- 		request->data_direction = SOP_WRITE_FLAG;
- 		break;
- 	case DMA_NONE:
--- 
-2.35.1
-
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -135,6 +135,10 @@ static void __init print_vm_layout(void)
+ 		(unsigned long)VMEMMAP_END);
+ 	print_ml("vmalloc", (unsigned long)VMALLOC_START,
+ 		(unsigned long)VMALLOC_END);
++#ifdef CONFIG_64BIT
++	print_ml("modules", (unsigned long)MODULES_VADDR,
++		(unsigned long)MODULES_END);
++#endif
+ 	print_ml("lowmem", (unsigned long)PAGE_OFFSET,
+ 		(unsigned long)high_memory);
+ 	if (IS_ENABLED(CONFIG_64BIT)) {
 
 
