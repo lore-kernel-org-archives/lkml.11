@@ -2,133 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B708AC282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98584C00140
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242068AbiHONZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38664 "EHLO
+        id S233321AbiHONZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241432AbiHONZY (ORCPT
+        with ESMTP id S232091AbiHONZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:25:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 230FA5FC0
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:25:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660569921;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 15 Aug 2022 09:25:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE56E1036;
+        Mon, 15 Aug 2022 06:25:17 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id DAB533745A;
+        Mon, 15 Aug 2022 13:25:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1660569915; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=dIIzjPxeddzxMn7RZ9/iKALDcfamsWN+Y3QvwDD0LAQ=;
-        b=HQkC9+r428EDkWPmbBpUhX/NXorfdxCkf1gETUN/ra99SNJI4t+f/TUdFlrK4/xW3by+zE
-        eFvpNYrYu57+pwRsB65hiJ2icMYdbf+SXSrEZQuDnTuVOthulBBt2SLMI3wI+tt4QDBf96
-        2/et5c+ppWNYhM//T58+qpy9fT7pRy4=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-37-nIvCrt5HOHu_dvSAN2j5yw-1; Mon, 15 Aug 2022 09:25:20 -0400
-X-MC-Unique: nIvCrt5HOHu_dvSAN2j5yw-1
-Received: by mail-ed1-f72.google.com with SMTP id x20-20020a05640226d400b0043d50aadf3fso4811331edd.23
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:25:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=dIIzjPxeddzxMn7RZ9/iKALDcfamsWN+Y3QvwDD0LAQ=;
-        b=3kyuKB17Ph69kiRiA0TvZmL245NvWijQAkNdjiwp9oF0DhyoxwBFZ8jLNVvJkgGopD
-         OFuu2tRiqYxugzGNuW41pX4mShtZW8N9rk1vfzE8RDnE0W5CDjj49n6LSWLFBgbEC3/U
-         pEQJDnBSldzeY7mwt4UMsSW40eQpFnVU0B9HTaPg1cYZswKR1cQlL/67KDm0IzkaJWEo
-         F/O1Ytyd7/KeUMH/eSiSZ5HJtvwzIkebmRfs0fgO9Auu5yDEKT5W3fDVP+eMYMUOOtfi
-         j23HuX++WNUDQl9PBEpaI/OSR5N1OEOhdYzDrcUL9sKJiguW8LMorpWOVLzSlKWxhkHr
-         pk5w==
-X-Gm-Message-State: ACgBeo2vM2u26FJqkdDMsHIEeBOApJgpUngn0i2YbGzTONg176Tnwfv7
-        Gtv4otc4fGcbL789ik9s2ozxtYp0Z9ylU9277xzHFS6insyvfPdc5wGwOsC+xXmgMOZEiNfsoCd
-        98V8B3x9K2IbbJHqfe5PgP+Gd
-X-Received: by 2002:a17:907:a06b:b0:730:9496:4f63 with SMTP id ia11-20020a170907a06b00b0073094964f63mr10323126ejc.238.1660569916908;
-        Mon, 15 Aug 2022 06:25:16 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7Np8EHjN3xV6j5gtUKKxrJruO/oaY6oPl7sUzHkQj7ymdHJKpTA67SMUruPrbigSRKc8zgyg==
-X-Received: by 2002:a17:907:a06b:b0:730:9496:4f63 with SMTP id ia11-20020a170907a06b00b0073094964f63mr10323118ejc.238.1660569916757;
-        Mon, 15 Aug 2022 06:25:16 -0700 (PDT)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id j4-20020aa7ca44000000b0043d1a9f6e4asm6703036edt.9.2022.08.15.06.25.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 06:25:16 -0700 (PDT)
-Message-ID: <fc250b82-c7c7-9215-f3dd-be87e0a72edd@redhat.com>
-Date:   Mon, 15 Aug 2022 15:25:15 +0200
+        bh=6q2WO4AmQuh9iuaaSO3JJijV/6iigIiM8yJP+m2QwPg=;
+        b=goHYz/Yedd0LZnwAvE8XJhyYC0REbZEYIm93loMa/qNsojPxW1V078B816deGXzwXyHxow
+        3al0T+uTKlSBh6WlIudh0s53b/c8gmpyNNbwcT33SkM7GA0aq/k7mbeHIUh4eAUuMqckWY
+        zDPQpygYQo+cNQRtSVIznoojmIzcUGc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9674913A93;
+        Mon, 15 Aug 2022 13:25:15 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id pE6+IztJ+mIoRQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Mon, 15 Aug 2022 13:25:15 +0000
+Date:   Mon, 15 Aug 2022 15:25:14 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     hannes@cmpxchg.org, tj@kernel.org, corbet@lwn.net,
+        surenb@google.com, mingo@redhat.com, peterz@infradead.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, cgroups@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        songmuchun@bytedance.com
+Subject: Re: [PATCH v2 00/10] sched/psi: some optimization and extension
+Message-ID: <20220815132514.GB22640@blackbody.suse.cz>
+References: <20220808110341.15799-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/6] Fixes 98829e84dc67 ("asus-wmi: Add dgpu disable
- method")
-Content-Language: en-US
-To:     "Luke D. Jones" <luke@ljones.dev>
-Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220812222509.292692-1-luke@ljones.dev>
- <20220812222509.292692-2-luke@ljones.dev>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220812222509.292692-2-luke@ljones.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808110341.15799-1-zhouchengming@bytedance.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Luke,
+On Mon, Aug 08, 2022 at 07:03:31PM +0800, Chengming Zhou <zhouchengming@bytedance.com> wrote:
+> This patch series are some optimization and extension for PSI,
 
-On 8/13/22 00:25, Luke D. Jones wrote:
-> The dgpu_disable attribute was not documented, this adds the
-> required documentation.
-> 
-> Signed-off-by: Luke D. Jones <luke@ljones.dev>
+BTW do you have some numbers/example how much these modifications save
+when aggregated together?
 
-Thanks for the patch. Note that the Fixes tag should be above your
-signed-off-by and then the patch should otherwise have a normal
-subject + body. I've changed the commit msg to the following
-while merging this:
-
-"""
-platform/x86: asus-wmi: Document the dgpu_disable sysfs attribute
-    
-The dgpu_disable attribute was not documented, this adds the
-required documentation.
-    
-Fixes 98829e84dc67 ("asus-wmi: Add dgpu disable method")
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
-"""
-
-and I will make similar changes to patch 2/6 and 3/6
-> ---
->  Documentation/ABI/testing/sysfs-platform-asus-wmi | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-platform-asus-wmi b/Documentation/ABI/testing/sysfs-platform-asus-wmi
-> index 04885738cf15..0f932fd60f4a 100644
-> --- a/Documentation/ABI/testing/sysfs-platform-asus-wmi
-> +++ b/Documentation/ABI/testing/sysfs-platform-asus-wmi
-> @@ -57,3 +57,12 @@ Description:
->  			* 0 - default,
->  			* 1 - overboost,
->  			* 2 - silent
-> +
-> +What:          /sys/devices/platform/<platform>/dgpu_disable
-> +Date:          Aug 2022
-> +KernelVersion: 5.17
-> +Contact:       "Luke Jones" <luke@ljones.dev>
-> +Description:
-> +               Disable discrete GPU:
-> +                       * 0 - Enable dGPU,
-> +                       * 1 - Disable dGPU,
-> \ No newline at end of file
-
-Next time please make sure the file always ends with a newline
-even in intermediate patches.
-
-Regards,
-
-Hans
-
-
+Thanks,
+Michal
