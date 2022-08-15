@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B20C28B2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B845CC2BB41
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233099AbiHPEuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
+        id S233294AbiHPEuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiHPEqj (ORCPT
+        with ESMTP id S232320AbiHPEq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:46:39 -0400
+        Tue, 16 Aug 2022 00:46:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0526FB24BC;
-        Mon, 15 Aug 2022 13:43:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32126AFAC9;
+        Mon, 15 Aug 2022 13:43:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DFF06122B;
-        Mon, 15 Aug 2022 20:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F09AC433D6;
-        Mon, 15 Aug 2022 20:43:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1060611FA;
+        Mon, 15 Aug 2022 20:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F326C433C1;
+        Mon, 15 Aug 2022 20:43:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596210;
-        bh=DSa1Nww/GJG07Ljq8FXOs2YqiTMvpeYFmc1IDhYdfg8=;
+        s=korg; t=1660596195;
+        bh=keQl0RqzTCXOjfuUaTm3QR3v50m15zFuKa0dQ4j6y1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvN7GSvU+GxXs6m9T3Mog5ReA6Lg35cB+ROU7eE9Sg7iArhUmV6cSrn89M4cKbbRN
-         57W2UP0v6u3YbEzgMxKRAe+OwDzg68y3R5oMydFA26uzg2GuWC6tPIdELE630PjfyJ
-         0+N6aBGhSINAz4pantkBycr56YD+al9/4KGqCjxY=
+        b=hMu6YL118bBdmoqL25LOIcrsoIjYKbWjJnJwb12zY7XS4m08C1ueVVGsPwOpxTYgu
+         +XK/1ONn8sNvnkP+fZSzsCv/ilefz9JXMCYqj4KQyisSy8bbAfbHzjbf948kopKbSD
+         tKymAJCVYQP4G5nDvqlVm0RvVjCSwHv2S6eN2JYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyeong-Jun Kim <hj514.kim@samsung.com>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guo Mengqi <guomengqi3@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1006/1157] f2fs: fix to invalidate META_MAPPING before DIO write
-Date:   Mon, 15 Aug 2022 20:06:02 +0200
-Message-Id: <20220815180520.056683269@linuxfoundation.org>
+Subject: [PATCH 5.19 1001/1157] serial: 8250_bcm2835aux: Add missing clk_disable_unprepare()
+Date:   Mon, 15 Aug 2022 20:05:57 +0200
+Message-Id: <20220815180519.824818825@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,86 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Guo Mengqi <guomengqi3@huawei.com>
 
-[ Upstream commit 67ca06872eb02944b4c6f92cffa9242e92c63109 ]
+[ Upstream commit b9f1736e475dba0d6da48fdcb831248ab1597886 ]
 
-Quoted from commit e3b49ea36802 ("f2fs: invalidate META_MAPPING before
-IPU/DIO write")
+The error path when get clock frequency fails in bcm2835aux_serial
+driver does not correctly disable the clock.
 
-"
-Encrypted pages during GC are read and cached in META_MAPPING.
-However, due to cached pages in META_MAPPING, there is an issue where
-newly written pages are lost by IPU or DIO writes.
+This flaw was found using a static analysis tool "Hulk Robot", which
+reported the following warning when analyzing linux-next/master:
 
-Thread A - f2fs_gc()            Thread B
-/* phase 3 */
-down_write(i_gc_rwsem)
-ra_data_block()       ---- (a)
-up_write(i_gc_rwsem)
-                                f2fs_direct_IO() :
-                                 - down_read(i_gc_rwsem)
-                                 - __blockdev_direct_io()
-                                 - get_data_block_dio_write()
-                                 - f2fs_dio_submit_bio()  ---- (b)
-                                 - up_read(i_gc_rwsem)
-/* phase 4 */
-down_write(i_gc_rwsem)
-move_data_block()     ---- (c)
-up_write(i_gc_rwsem)
+    drivers/tty/serial/8250/8250_bcm2835aux.c:
+    warning: clk_disable_unprepare_missing.cocci
 
-(a) In phase 3 of f2fs_gc(), up-to-date page is read from storage and
-    cached in META_MAPPING.
-(b) In thread B, writing new data by IPU or DIO write on same blkaddr as
-    read in (a). cached page in META_MAPPING become out-dated.
-(c) In phase 4 of f2fs_gc(), out-dated page in META_MAPPING is copied to
-    new blkaddr. In conclusion, the newly written data in (b) is lost.
+The cocci script checks for the existence of clk_disable_unprepare()
+paired with clk_prepare_enable().
 
-To address this issue, invalidating pages in META_MAPPING before IPU or
-DIO write.
-"
+Add the missing clk_disable_unprepare() to the error path.
 
-In previous commit, we missed to cover extent cache hit case, and passed
-wrong value for parameter @end of invalidate_mapping_pages(), fix both
-issues.
-
-Fixes: 6aa58d8ad20a ("f2fs: readahead encrypted block during GC")
-Fixes: e3b49ea36802 ("f2fs: invalidate META_MAPPING before IPU/DIO write")
-Cc: Hyeong-Jun Kim <hj514.kim@samsung.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+Link: https://lore.kernel.org/r/20220715023312.37808-1-guomengqi3@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 7fcbcf979737..f2a272613477 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -1463,9 +1463,12 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
- 			*map->m_next_extent = pgofs + map->m_len;
- 
- 		/* for hardware encryption, but to avoid potential issue in future */
--		if (flag == F2FS_GET_BLOCK_DIO)
-+		if (flag == F2FS_GET_BLOCK_DIO) {
- 			f2fs_wait_on_block_writeback_range(inode,
- 						map->m_pblk, map->m_len);
-+			invalidate_mapping_pages(META_MAPPING(sbi),
-+				map->m_pblk, map->m_pblk + map->m_len - 1);
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index 2a1226a78a0c..21939bb44613 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -166,8 +166,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	uartclk = clk_get_rate(data->clk);
+ 	if (!uartclk) {
+ 		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
+-		if (ret)
+-			return dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
++		if (ret) {
++			dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
++			goto dis_clk;
 +		}
+ 	}
  
- 		if (map->m_multidev_dio) {
- 			block_t blk_addr = map->m_pblk;
-@@ -1682,7 +1685,7 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
- 		f2fs_wait_on_block_writeback_range(inode,
- 						map->m_pblk, map->m_len);
- 		invalidate_mapping_pages(META_MAPPING(sbi),
--						map->m_pblk, map->m_pblk);
-+				map->m_pblk, map->m_pblk + map->m_len - 1);
- 
- 		if (map->m_multidev_dio) {
- 			block_t blk_addr = map->m_pblk;
+ 	/* the HW-clock divider for bcm2835aux is 8,
 -- 
 2.35.1
 
