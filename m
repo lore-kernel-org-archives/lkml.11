@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A40C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01A7C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243538AbiHOScv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
+        id S242001AbiHOSdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243087AbiHOSby (ORCPT
+        with ESMTP id S243293AbiHOScO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:31:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359D533415;
-        Mon, 15 Aug 2022 11:21:27 -0700 (PDT)
+        Mon, 15 Aug 2022 14:32:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C26033424;
+        Mon, 15 Aug 2022 11:21:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F6DF60ED3;
-        Mon, 15 Aug 2022 18:21:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38FCC433D6;
-        Mon, 15 Aug 2022 18:21:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76385B8107E;
+        Mon, 15 Aug 2022 18:20:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA934C433C1;
+        Mon, 15 Aug 2022 18:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587666;
-        bh=i2jhH5/szEKqI2jW51v3Ub9wFARlUPzzK8ZZbQhSzOU=;
+        s=korg; t=1660587633;
+        bh=fJlX3h+MOj3Xfe/dl4vL1uJNZJFo+EAzH1jy8cqdO+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2gj7j/7UosS3fzNvpQPnrcD4K9PJc1UQ/sd4umlVRdpieSjOPw1jANODU3xBSVOXH
-         A0y/SaMH8f0RWTsf0c1G/mBKGlmLSKwpQ/d2uXTcg/pPWy+N14kdgb3QnFAFxl78v8
-         xbkhiMG9cNosRuvmp+T85V0bwRvHH65VGLdSoVLs=
+        b=YXILqoJvs43UJcfrInA9w0qPXgZugcbtaM4WF6aELFbEGVQ6bLBL5G2rB/abBFM4a
+         2oLJOSKBHg9IJ6qdSeKX2tSpzR2bEa06GJhlvFVIcpUTHJfBnnvHb5XT31GMVk2aih
+         1uPaIHwmaJHoG5Olsn+qqirrGTatX63NF6a/0Y7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/779] ARM: dts: imx6ul: change operating-points to uint32-matrix
-Date:   Mon, 15 Aug 2022 19:56:09 +0200
-Message-Id: <20220815180342.629882893@linuxfoundation.org>
+Subject: [PATCH 5.15 145/779] hwmon: (dell-smm) Add Dell XPS 13 7390 to fan control whitelist
+Date:   Mon, 15 Aug 2022 19:56:29 +0200
+Message-Id: <20220815180343.518187007@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,61 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit edb67843983bbdf61b4c8c3c50618003d38bb4ae ]
+[ Upstream commit 385e5f57053ff293282fea84c1c27186d53f66e1 ]
 
-operating-points is a uint32-matrix as per opp-v1.yaml. Change it
-accordingly. While at it, change fsl,soc-operating-points as well,
-although there is no bindings file (yet). But they should have the same
-format. Fixes the dt_binding_check warning:
-cpu@0: operating-points:0: [696000, 1275000, 528000, 1175000, 396000,
-1025000, 198000, 950000] is too long
-cpu@0: operating-points:0: Additional items are not allowed (528000,
-1175000, 396000, 1025000, 198000, 950000 were unexpected)
+A user reported that the program dell-bios-fan-control
+worked on his Dell XPS 13 7390 to switch off automatic
+fan control.
+Since it uses the same mechanism as the dell_smm_hwmon
+module, add this model to the fan control whitelist.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Compile-tested only.
+
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Acked-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20220612041806.11367-1-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ drivers/hwmon/dell-smm-hwmon.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 1d435a46fc5c..2fcbd9d91521 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -64,20 +64,18 @@ cpu0: cpu@0 {
- 			clock-frequency = <696000000>;
- 			clock-latency = <61036>; /* two CLK32 periods */
- 			#cooling-cells = <2>;
--			operating-points = <
-+			operating-points =
- 				/* kHz	uV */
--				696000	1275000
--				528000	1175000
--				396000	1025000
--				198000	950000
--			>;
--			fsl,soc-operating-points = <
-+				<696000	1275000>,
-+				<528000	1175000>,
-+				<396000	1025000>,
-+				<198000	950000>;
-+			fsl,soc-operating-points =
- 				/* KHz	uV */
--				696000	1275000
--				528000	1175000
--				396000	1175000
--				198000	1175000
--			>;
-+				<696000	1275000>,
-+				<528000	1175000>,
-+				<396000	1175000>,
-+				<198000	1175000>;
- 			clocks = <&clks IMX6UL_CLK_ARM>,
- 				 <&clks IMX6UL_CLK_PLL2_BUS>,
- 				 <&clks IMX6UL_CLK_PLL2_PFD2>,
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
+index 9cb1c3588038..597cbb4391bd 100644
+--- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -1198,6 +1198,14 @@ static const struct dmi_system_id i8k_whitelist_fan_control[] __initconst = {
+ 		},
+ 		.driver_data = (void *)&i8k_fan_control_data[I8K_FAN_34A3_35A3],
+ 	},
++	{
++		.ident = "Dell XPS 13 7390",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 13 7390"),
++		},
++		.driver_data = (void *)&i8k_fan_control_data[I8K_FAN_34A3_35A3],
++	},
+ 	{ }
+ };
+ 
 -- 
 2.35.1
 
