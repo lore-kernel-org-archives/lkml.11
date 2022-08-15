@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51233C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F71C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347059AbiHOWWU (ORCPT
+        id S1347536AbiHOWWc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
+        Mon, 15 Aug 2022 18:22:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350437AbiHOWRu (ORCPT
+        with ESMTP id S1350491AbiHOWRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:17:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42C51232D2;
-        Mon, 15 Aug 2022 12:41:05 -0700 (PDT)
+        Mon, 15 Aug 2022 18:17:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCAA4D262;
+        Mon, 15 Aug 2022 12:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D033C611E0;
-        Mon, 15 Aug 2022 19:41:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF19CC433C1;
-        Mon, 15 Aug 2022 19:41:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95A5C611DD;
+        Mon, 15 Aug 2022 19:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E4FC433D6;
+        Mon, 15 Aug 2022 19:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592464;
-        bh=0nr3dvpuE+TRL/Rv3+CcJjSKcgLnDpBsi++iakikz4Y=;
+        s=korg; t=1660592458;
+        bh=yqibmGB8lQdsS1eWP4a+ONsj3+OHTEMl5n8rAQ0Jouo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vh2RLvpdNuVAi+bmkO3jK4pXErNtde8C7gZECoTBHPwm+n7pDiC+Ea2sJUm1pc0dZ
-         emYTRrOPngnXW4oIKI1PezzdnhjhVHmd/CSRqsZNWD1EbPe6FABg2O4f2DPJ6V8zYY
-         QqcxcumZDYtQ6S/S2w2Likn4Tt0YT734yHReuxCQ=
+        b=QvkyQPJIW8+UxDc4D3suHZ+nRU6NYBc0vocM4SBGkgvT5Z51PmwF4MzfuI9fPu255
+         7RzBczu8zCWuNWI9vj+fqxanL4XjEqOCG5sQz56ABqVLXwoCQTIXbA+xy/gl77yn6M
+         CMwNDZMRlMghzSDy+h8vlPBe2ibnzWk/5TjUXt6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0790/1095] PCI: tegra194: Fix Root Port interrupt handling
-Date:   Mon, 15 Aug 2022 20:03:09 +0200
-Message-Id: <20220815180501.915410366@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH 5.19 0086/1157] drm/fb-helper: Fix out-of-bounds access
+Date:   Mon, 15 Aug 2022 19:50:42 +0200
+Message-Id: <20220815180442.996471118@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,115 +53,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vidya Sagar <vidyas@nvidia.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-[ Upstream commit 6646e99bcec627e866bc84365af37942c72b4b76 ]
+commit ae25885bdf59fde40726863c57fd20e4a0642183 upstream.
 
-As part of Root Port interrupt handling, level-0 register is read first and
-based on the bits set in that, corresponding level-1 registers are read for
-further interrupt processing. Since both these values are currently read
-into the same 'val' variable, checking level-0 bits the second time around
-is happening on the 'val' variable value of level-1 register contents
-instead of freshly reading the level-0 value again.
+Clip memory range to screen-buffer size to avoid out-of-bounds access
+in fbdev deferred I/O's damage handling.
 
-Fix by using different variables to store level-0 and level-1 registers
-contents.
+Fbdev's deferred I/O can only track pages. From the range of pages, the
+damage handler computes the clipping rectangle for the display update.
+If the fbdev screen buffer ends near the beginning of a page, that page
+could contain more scanlines. The damage handler would then track these
+non-existing scanlines as dirty and provoke an out-of-bounds access
+during the screen update. Hence, clip the maximum memory range to the
+size of the screen buffer.
 
-Link: https://lore.kernel.org/r/20220721142052.25971-11-vidyas@nvidia.com
-Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
-Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+While at it, rename the variables min/max to min_off/max_off in
+drm_fb_helper_deferred_io(). This avoids confusion with the macros of
+the same name.
+
+Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
+Fixes: 67b723f5b742 ("drm/fb-helper: Calculate damaged area in separate helper")
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: <stable@vger.kernel.org> # v5.18+
+Link: https://patchwork.freedesktop.org/patch/msgid/20220621104617.8817-1-tzimmermann@suse.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-tegra194.c | 46 +++++++++++-----------
- 1 file changed, 22 insertions(+), 24 deletions(-)
+ drivers/gpu/drm/drm_fb_helper.c |   27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 0888c3726414..85d405057ba8 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -352,15 +352,14 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 	struct tegra194_pcie *pcie = arg;
- 	struct dw_pcie *pci = &pcie->pci;
- 	struct pcie_port *pp = &pci->pp;
--	u32 val, tmp;
-+	u32 val, status_l0, status_l1;
- 	u16 val_w;
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -680,7 +680,11 @@ static void drm_fb_helper_damage(struct
+ 	schedule_work(&helper->damage_work);
+ }
  
--	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
--	if (val & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
--		if (val & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
--			appl_writel(pcie, val, APPL_INTR_STATUS_L1_0_0);
--
-+	status_l0 = appl_readl(pcie, APPL_INTR_STATUS_L0);
-+	if (status_l0 & APPL_INTR_STATUS_L0_LINK_STATE_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_0_0);
-+		appl_writel(pcie, status_l1, APPL_INTR_STATUS_L1_0_0);
-+		if (status_l1 & APPL_INTR_STATUS_L1_0_0_LINK_REQ_RST_NOT_CHGED) {
- 			/* SBR & Surprise Link Down WAR */
- 			val = appl_readl(pcie, APPL_CAR_RESET_OVRD);
- 			val &= ~APPL_CAR_RESET_OVRD_CYA_OVERRIDE_CORE_RST_N;
-@@ -376,15 +375,15 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 		}
+-/* Convert memory region into area of scanlines and pixels per scanline */
++/*
++ * Convert memory region into area of scanlines and pixels per
++ * scanline. The parameters off and len must not reach beyond
++ * the end of the framebuffer.
++ */
+ static void drm_fb_helper_memory_range_to_clip(struct fb_info *info, off_t off, size_t len,
+ 					       struct drm_rect *clip)
+ {
+@@ -715,22 +719,29 @@ static void drm_fb_helper_memory_range_t
+  */
+ void drm_fb_helper_deferred_io(struct fb_info *info, struct list_head *pagereflist)
+ {
+-	unsigned long start, end, min, max;
++	unsigned long start, end, min_off, max_off;
+ 	struct fb_deferred_io_pageref *pageref;
+ 	struct drm_rect damage_area;
+ 
+-	min = ULONG_MAX;
+-	max = 0;
++	min_off = ULONG_MAX;
++	max_off = 0;
+ 	list_for_each_entry(pageref, pagereflist, list) {
+ 		start = pageref->offset;
+ 		end = start + PAGE_SIZE;
+-		min = min(min, start);
+-		max = max(max, end);
++		min_off = min(min_off, start);
++		max_off = max(max_off, end);
  	}
+-	if (min >= max)
++	if (min_off >= max_off)
+ 		return;
  
--	if (val & APPL_INTR_STATUS_L0_INT_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
--		if (val & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
-+	if (status_l0 & APPL_INTR_STATUS_L0_INT_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_8_0);
-+		if (status_l1 & APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS) {
- 			appl_writel(pcie,
- 				    APPL_INTR_STATUS_L1_8_0_AUTO_BW_INT_STS,
- 				    APPL_INTR_STATUS_L1_8_0);
- 			apply_bad_link_workaround(pp);
- 		}
--		if (val & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS) {
- 			appl_writel(pcie,
- 				    APPL_INTR_STATUS_L1_8_0_BW_MGT_INT_STS,
- 				    APPL_INTR_STATUS_L1_8_0);
-@@ -396,25 +395,24 @@ static irqreturn_t tegra_pcie_rp_irq_handler(int irq, void *arg)
- 		}
- 	}
- 
--	val = appl_readl(pcie, APPL_INTR_STATUS_L0);
--	if (val & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
--		val = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
--		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
-+	if (status_l0 & APPL_INTR_STATUS_L0_CDM_REG_CHK_INT) {
-+		status_l1 = appl_readl(pcie, APPL_INTR_STATUS_L1_18);
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS);
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMPLT) {
- 			dev_info(pci->dev, "CDM check complete\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_COMPLETE;
- 		}
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_CMP_ERR) {
- 			dev_err(pci->dev, "CDM comparison mismatch\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_COMPARISON_ERROR;
- 		}
--		if (val & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
-+		if (status_l1 & APPL_INTR_STATUS_L1_18_CDM_REG_CHK_LOGIC_ERR) {
- 			dev_err(pci->dev, "CDM Logic error\n");
--			tmp |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
-+			val |= PCIE_PL_CHK_REG_CHK_REG_LOGIC_ERROR;
- 		}
--		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, tmp);
--		tmp = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
--		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", tmp);
-+		dw_pcie_writel_dbi(pci, PCIE_PL_CHK_REG_CONTROL_STATUS, val);
-+		val = dw_pcie_readl_dbi(pci, PCIE_PL_CHK_REG_ERR_ADDR);
-+		dev_err(pci->dev, "CDM Error Address Offset = 0x%08X\n", val);
- 	}
- 
- 	return IRQ_HANDLED;
--- 
-2.35.1
-
+-	drm_fb_helper_memory_range_to_clip(info, min, max - min, &damage_area);
++	/*
++	 * As we can only track pages, we might reach beyond the end
++	 * of the screen and account for non-existing scanlines. Hence,
++	 * keep the covered memory area within the screen buffer.
++	 */
++	max_off = min(max_off, info->screen_size);
++
++	drm_fb_helper_memory_range_to_clip(info, min_off, max_off - min_off, &damage_area);
+ 	drm_fb_helper_damage(info, damage_area.x1, damage_area.y1,
+ 			     drm_rect_width(&damage_area),
+ 			     drm_rect_height(&damage_area));
 
 
