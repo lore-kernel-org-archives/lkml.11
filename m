@@ -2,123 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C99AEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582A6C25B06
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242704AbiHONMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51788 "EHLO
+        id S242731AbiHONN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242703AbiHONMk (ORCPT
+        with ESMTP id S242703AbiHONNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:12:40 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E3713F5A;
-        Mon, 15 Aug 2022 06:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660569157; x=1692105157;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gq/fej4FBaML6o3xDYJDCSHN5i7ykUWDL6Znr89C5Yo=;
-  b=U4qq/P8r+xZyrt7QgDuO/WFeOFVKWKoE07vvbB/zb+JN71Br8cAMK+/2
-   q2dNRkHiNYb+pJG71WZTGctQcxswaARUnPjRq+Cy68OSWW+lag6bUpIcJ
-   MWpq22GCtoS/TV2+HxI/CMLNLgOo9QX701fPkSsqjZ0OKEEPVbLjbSqqk
-   s4jR7jhiPy9crvxkNdBakAijJJTs+pbM5mIPn0mFle0yE5fPDvg/gVW7/
-   VDlahXIeC1OFMpchXW/aEbMPaV4/xg0bA8qImblT5Pjv5r5Qb5fhsJaSy
-   tWsW7NIc91qlJHCf2vuW54BODRJ19kRt2++kR5SWw8E9VEgrRfHUSuNpk
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="271725523"
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="271725523"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 06:12:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="609901893"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 15 Aug 2022 06:12:34 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNZtR-00010z-28;
-        Mon, 15 Aug 2022 13:12:33 +0000
-Date:   Mon, 15 Aug 2022 21:12:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Szuying Chen <chensiying21@gmail.com>, gregkh@linuxfoundation.org,
-        mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
-        michael.jamet@intel.com, YehezkelShB@gmail.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Yd_Tseng@asmedia.com.tw,
-        Chloe_Chen@asmedia.com.tw, Richard_Hsu@asmedia.com.tw
-Subject: Re: [PATCH] thunderbolt: thunderbolt: add vendor's NVM formats
-Message-ID: <202208152107.P6jLM6te-lkp@intel.com>
-References: <20220815041145.35629-1-chensiying21@gmail.com>
+        Mon, 15 Aug 2022 09:13:23 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A707D12D3E;
+        Mon, 15 Aug 2022 06:13:22 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 2CEB381D0;
+        Mon, 15 Aug 2022 13:06:29 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        Ladislav Michl <ladis@linux-mips.org>,
+        Nishanth Menon <nm@ti.com>, Suman Anna <s-anna@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 1/9] clocksource/drivers/timer-ti-dm: Drop unused functions
+Date:   Mon, 15 Aug 2022 16:12:42 +0300
+Message-Id: <20220815131250.34603-2-tony@atomide.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220815131250.34603-1-tony@atomide.com>
+References: <20220815131250.34603-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815041145.35629-1-chensiying21@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Szuying,
+We still have some unused functions left, let's drop them.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/clocksource/timer-ti-dm.c | 51 -------------------------------
+ include/clocksource/timer-ti-dm.h |  7 -----
+ 2 files changed, 58 deletions(-)
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.0-rc1 next-20220815]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Szuying-Chen/thunderbolt-thunderbolt-add-vendor-s-NVM-formats/20220815-121330
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220815/202208152107.P6jLM6te-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/de39c1897bc8c08ddfa4d3019c95314e697b7256
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Szuying-Chen/thunderbolt-thunderbolt-add-vendor-s-NVM-formats/20220815-121330
-        git checkout de39c1897bc8c08ddfa4d3019c95314e697b7256
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/thunderbolt/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/thunderbolt/nvm.c:150: warning: Function parameter or member 'mode' not described in 'tb_nvm_validate'
->> drivers/thunderbolt/nvm.c:150: warning: expecting prototype for tb_nvm_vendor_handle(). Prototype was for tb_nvm_validate() instead
-
-
-vim +150 drivers/thunderbolt/nvm.c
-
-   143	
-   144	/**
-   145	 * tb_nvm_vendor_handle() - support vendor's NVM format
-   146	 * @sw: Thunderbolt switch
-   147	 * @handle: 0:NvmUpgradeSuppport, 1:NvmAdd, 2:NvmWrite
-   148	 */
-   149	int tb_nvm_validate(struct tb_switch *sw, unsigned int mode)
- > 150	{
-   151		int res, i;
-   152	
-   153		for (i = 0; i < ARRAY_SIZE(tb_nvm_vendors); i++) {
-   154			const struct tb_nvm_id *id = &tb_nvm_vendors[i];
-   155	
-   156			if (id->hw_vendor_id && id->hw_vendor_id != sw->config.vendor_id)
-   157				continue;
-   158	
-   159			 res = id->validate(sw, mode);
-   160		}
-   161		return res;
-   162	}
-   163	
-
+diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
+--- a/drivers/clocksource/timer-ti-dm.c
++++ b/drivers/clocksource/timer-ti-dm.c
+@@ -388,16 +388,6 @@ static inline u32 omap_dm_timer_reserved_systimer(int id)
+ 	return (omap_reserved_systimers & (1 << (id - 1))) ? 1 : 0;
+ }
+ 
+-int omap_dm_timer_reserve_systimer(int id)
+-{
+-	if (omap_dm_timer_reserved_systimer(id))
+-		return -ENODEV;
+-
+-	omap_reserved_systimers |= (1 << (id - 1));
+-
+-	return 0;
+-}
+-
+ static struct omap_dm_timer *_omap_dm_timer_request(int req_type, void *data)
+ {
+ 	struct omap_dm_timer *timer = NULL, *t;
+@@ -499,20 +489,6 @@ static struct omap_dm_timer *omap_dm_timer_request_specific(int id)
+ 	return _omap_dm_timer_request(REQUEST_BY_ID, &id);
+ }
+ 
+-/**
+- * omap_dm_timer_request_by_cap - Request a timer by capability
+- * @cap:	Bit mask of capabilities to match
+- *
+- * Find a timer based upon capabilities bit mask. Callers of this function
+- * should use the definitions found in the plat/dmtimer.h file under the
+- * comment "timer capabilities used in hwmod database". Returns pointer to
+- * timer handle on success and a NULL pointer on failure.
+- */
+-struct omap_dm_timer *omap_dm_timer_request_by_cap(u32 cap)
+-{
+-	return _omap_dm_timer_request(REQUEST_BY_CAP, &cap);
+-}
+-
+ /**
+  * omap_dm_timer_request_by_node - Request a timer by device-tree node
+  * @np:		Pointer to device-tree timer node
+@@ -606,17 +582,6 @@ __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
+ 
+ #endif
+ 
+-int omap_dm_timer_trigger(struct omap_dm_timer *timer)
+-{
+-	if (unlikely(!timer || !atomic_read(&timer->enabled))) {
+-		pr_err("%s: timer not available or enabled.\n", __func__);
+-		return -EINVAL;
+-	}
+-
+-	omap_dm_timer_write_reg(timer, OMAP_TIMER_TRIGGER_REG, 0);
+-	return 0;
+-}
+-
+ static int omap_dm_timer_start(struct omap_dm_timer *timer)
+ {
+ 	u32 l;
+@@ -833,22 +798,6 @@ static int omap_dm_timer_write_counter(struct omap_dm_timer *timer, unsigned int
+ 	return 0;
+ }
+ 
+-int omap_dm_timers_active(void)
+-{
+-	struct omap_dm_timer *timer;
+-
+-	list_for_each_entry(timer, &omap_timer_list, node) {
+-		if (!timer->reserved)
+-			continue;
+-
+-		if (omap_dm_timer_read_reg(timer, OMAP_TIMER_CTRL_REG) &
+-		    OMAP_TIMER_CTRL_ST) {
+-			return 1;
+-		}
+-	}
+-	return 0;
+-}
+-
+ static int __maybe_unused omap_dm_timer_runtime_suspend(struct device *dev)
+ {
+ 	struct omap_dm_timer *timer = dev_get_drvdata(dev);
+diff --git a/include/clocksource/timer-ti-dm.h b/include/clocksource/timer-ti-dm.h
+--- a/include/clocksource/timer-ti-dm.h
++++ b/include/clocksource/timer-ti-dm.h
+@@ -119,17 +119,10 @@ struct omap_dm_timer {
+ 	struct notifier_block nb;
+ };
+ 
+-int omap_dm_timer_reserve_systimer(int id);
+-struct omap_dm_timer *omap_dm_timer_request_by_cap(u32 cap);
+-
+ int omap_dm_timer_get_irq(struct omap_dm_timer *timer);
+ 
+ u32 omap_dm_timer_modify_idlect_mask(u32 inputmask);
+ 
+-int omap_dm_timer_trigger(struct omap_dm_timer *timer);
+-
+-int omap_dm_timers_active(void);
+-
+ /*
+  * Do not use the defines below, they are not needed. They should be only
+  * used by dmtimer.c and sys_timer related code.
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
