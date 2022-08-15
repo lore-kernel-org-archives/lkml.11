@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B74C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC759C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345553AbiHOWAM (ORCPT
+        id S1346078AbiHOWA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
+        Mon, 15 Aug 2022 18:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244035AbiHOV7V (ORCPT
+        with ESMTP id S1347213AbiHOV73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:59:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCB810E952;
-        Mon, 15 Aug 2022 12:35:06 -0700 (PDT)
+        Mon, 15 Aug 2022 17:59:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A5910DCE9;
+        Mon, 15 Aug 2022 12:35:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 751F5B80EA8;
-        Mon, 15 Aug 2022 19:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA44C433C1;
-        Mon, 15 Aug 2022 19:34:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29B1561184;
+        Mon, 15 Aug 2022 19:34:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C7FCC433C1;
+        Mon, 15 Aug 2022 19:34:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592100;
-        bh=49uVIo5yxX6YOHCXdzDZ21EmAzU5bpz2xA4aVGHhjq0=;
+        s=korg; t=1660592081;
+        bh=bOmIgRM4vNz3Df9Jf/OuuxejBYT6qZkU/b0bYL8I7/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k6+2xmL2LESP2Rtlads+8xGoHogmQzhf2jI+5xHHgdLaXgP0El0orkodqZAyreNkU
-         7w7qmQhFcrU+/qgWCNlM9d9kLwTYCkfK2ngP7Mva0AOJJM4gcoIZ3p/TA828+8uCmM
-         JjiYPC0QsEZbanMAj1bSeNO9wRLfRiaaIlatmT4s=
+        b=tmJ/Hn0Y7VPD1ZxOrbMhfJDQjYmWXa5IoMSUPbZmoOi/ZmjSVRVzyNhvQ+J3dwQAj
+         5oOXTHPMoZVADEZLI4KIlo9f5QnR7Cxo/Dkie/Ir4JBdhZ8Z5Vgq3My7CWsUVbv/Tm
+         Kfjh70JGEUCbYmCKvU1OU/cU5c8P3NJ4uyIpyJ3E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0734/1095] intel_th: Fix a resource leak in an error handling path
-Date:   Mon, 15 Aug 2022 20:02:13 +0200
-Message-Id: <20220815180459.755182054@linuxfoundation.org>
+Subject: [PATCH 5.18 0692/1095] mtd: dataflash: Add SPI ID table
+Date:   Mon, 15 Aug 2022 20:01:31 +0200
+Message-Id: <20220815180458.001073972@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,53 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 086c28ab7c5699256aced0049aae9c42f1410313 ]
+[ Upstream commit ac4f83482afbfd927d0fe118151b747cf175e724 ]
 
-If an error occurs after calling 'pci_alloc_irq_vectors()',
-'pci_free_irq_vectors()' must be called as already done in the remove
-function.
+Currently autoloading for SPI devices does not use the DT ID table, it uses
+SPI modalises. Supporting OF modalises is going to be difficult if not
+impractical, an attempt was made but has been reverted, so ensure that
+module autoloading works for this driver by adding an id_table listing the
+SPI IDs for everything.
 
-Fixes: 7b7036d47c35 ("intel_th: pci: Use MSI interrupt signalling")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-2-alexander.shishkin@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 96c8395e2166 ("spi: Revert modalias changes")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220620152313.708768-1-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/pci.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/mtd/devices/mtd_dataflash.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
-index 7da4f298ed01..fcd0aca75007 100644
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -100,8 +100,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 		}
+diff --git a/drivers/mtd/devices/mtd_dataflash.c b/drivers/mtd/devices/mtd_dataflash.c
+index 134e27328597..25bad4318305 100644
+--- a/drivers/mtd/devices/mtd_dataflash.c
++++ b/drivers/mtd/devices/mtd_dataflash.c
+@@ -112,6 +112,13 @@ static const struct of_device_id dataflash_dt_ids[] = {
+ MODULE_DEVICE_TABLE(of, dataflash_dt_ids);
+ #endif
  
- 	th = intel_th_alloc(&pdev->dev, drvdata, resource, r);
--	if (IS_ERR(th))
--		return PTR_ERR(th);
-+	if (IS_ERR(th)) {
-+		err = PTR_ERR(th);
-+		goto err_free_irq;
-+	}
- 
- 	th->activate   = intel_th_pci_activate;
- 	th->deactivate = intel_th_pci_deactivate;
-@@ -109,6 +111,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 	pci_set_master(pdev);
- 
- 	return 0;
++static const struct spi_device_id dataflash_spi_ids[] = {
++	{ .name = "at45", },
++	{ .name = "dataflash", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(spi, dataflash_spi_ids);
 +
-+err_free_irq:
-+	pci_free_irq_vectors(pdev);
-+	return err;
- }
+ /* ......................................................................... */
  
- static void intel_th_pci_remove(struct pci_dev *pdev)
+ /*
+@@ -936,6 +943,7 @@ static struct spi_driver dataflash_driver = {
+ 
+ 	.probe		= dataflash_probe,
+ 	.remove		= dataflash_remove,
++	.id_table	= dataflash_spi_ids,
+ 
+ 	/* FIXME:  investigate suspend and resume... */
+ };
 -- 
 2.35.1
 
