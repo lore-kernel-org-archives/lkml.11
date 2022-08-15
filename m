@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FD8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0EAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349738AbiHOWfP (ORCPT
+        id S1348919AbiHOWfW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
+        Mon, 15 Aug 2022 18:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351078AbiHOW1e (ORCPT
+        with ESMTP id S1351077AbiHOW1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:27:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D817641D39;
-        Mon, 15 Aug 2022 12:47:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80C9422D4;
+        Mon, 15 Aug 2022 12:47:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94CBAB80EB2;
-        Mon, 15 Aug 2022 19:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C38A5C433D7;
-        Mon, 15 Aug 2022 19:47:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C411B80EAD;
+        Mon, 15 Aug 2022 19:47:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981D4C433D6;
+        Mon, 15 Aug 2022 19:46:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592823;
-        bh=ZcY8ootTVmsrvVa0ppEC/BOYMKO/1AIrNuHec3gCNc8=;
+        s=korg; t=1660592820;
+        bh=MOvtGiMoYwIYVJR+7YLmztgfXnun9fymk2/KDu70Jb4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XF89TOx+3yg9qB3iOyReuI2VvefZxYKntM3o2qbiFriR4j1uL3d95qib0JN9lR7z9
-         IGsNPmA1/qZDwP5BMe/VggLQSiA/ViccbHPxBUWfDvWvdHia5WgNfnk+Dx/X36DWae
-         0oVKCIkoEsxXk56EnIiWfdPS2DlLjXrTPjbmk1Iw=
+        b=nYqmJSewrRD5//458pgL6nuenVFAjrPPnlPDA8rK94CQw44eLLedkHXR7NUYc1xFh
+         RmXTRgd19iKYadJu8yNBzuVGSQOyxbAQCthZLJtpo66WznD1k8tIbxkJ4CpMp/F5c+
+         tsTGNsJ9wAFOiVZSkZSU7lDuiD3PNLNZmE+AacnI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0850/1095] ASoC: codecs: wsa881x: handle timeouts in resume path
-Date:   Mon, 15 Aug 2022 20:04:09 +0200
-Message-Id: <20220815180504.497172715@linuxfoundation.org>
+Subject: [PATCH 5.19 0169/1157] ARM: dts: BCM5301X: Add DT for Meraki MR26
+Date:   Mon, 15 Aug 2022 19:52:05 +0200
+Message-Id: <20220815180446.475197695@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,51 +50,258 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit cf6af24b54903f9f70c29b3e5b19cb72cc862d60 ]
+[ Upstream commit 935327a73553001f8d81375c76985d05f604507f ]
 
-Currently we do not check if SoundWire slave initialization timeout
-expired before continuing to access its registers.
+Meraki MR26 is an EOL wireless access point featuring a
+PoE ethernet port and two dual-band 3x3 MIMO 802.11n
+radios and 1x1 dual-band WIFI dedicated to scanning.
 
-Its possible that the registers are not accessible if timeout is
-expired. Handle this by returning timeout in resume path.
+Thank you Amir for the unit and PSU.
 
-Reported-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Fixes: 8dd552458361 ("ASoC: codecs: wsa881x: add runtime pm support")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220630130023.9308-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Hardware info:
+SOC   : Broadcom BCM53015A1KFEBG (dual-core Cortex-A9 CPU at 800 MHz)
+RAM   : SK Hynix Inc. H5TQ1G63EFR, 1 GBit DDR3 SDRAM = 128 MiB
+NAND  : Spansion S34ML01G100TF100, 1 GBit SLC NAND Flash = 128 MiB
+ETH   : 1 GBit Ethernet Port - PoE (TPS23754 PoE Interface)
+WIFI0 : Broadcom BCM43431KMLG, BCM43431 802.11 abgn (3x3:3)
+WIFI1 : Broadcom BCM43431KMLG, BCM43431 802.11 abgn (3x3:3)
+WIFI2 : Broadcom BCM43428 "Air Marshal" 802.11 abgn (1x1:1)
+BUTTON: One reset key behind a small hole next to the Ethernet Port
+LEDS  : One amber (fault), one white (indicator) LED, separate RGB-LED
+MISC  : Atmel AT24C64 8KiB EEPROM i2c
+      : Ti INA219 26V, 12-bit, i2c output current/voltage/power monitor
+
+SERIAL:
+      WARNING: The serial port needs a TTL/RS-232 3V3 level converter!
+      The Serial setting is 115200-8-N-1. The board has a populated
+      right angle 1x4 0.1" pinheader.
+      The pinout is: VCC (next to J3, has the pin 1 indicator), RX, TX, GND.
+
+Odd stuff:
+
+- uboot does not support lzma compression, but gzip'd uImage/DTB work.
+- uboot claims to support FIT, but fails to pass the DTB to the kernel.
+  Appending the dtb after the kernel image works.
+- RGB-controller is supported through an external userspace program.
+- The ubi partition contains a "board-config" volume. It stores the
+  MAC Address (0x66 in binary) and Serial No. (0x7c alpha-numerical).
+- SoC's temperature sensor always reports that it is on fire.
+  This causes the system to immediately shutdown! Looking at reported
+  "418 degree Celsius" suggests that this sensor is not working.
+
+WIFI:
+b43 is able to initialize all three WIFIs @ 802.11bg.
+| b43-phy0: Broadcom 43431 WLAN found (core revision 29)
+| bcma-pci-bridge 0000:01:00.0: bus1: Switched to core: 0x812
+| b43-phy0: Found PHY: Analog 9, Type 7 (HT), Revision 1
+| b43-phy0: Found Radio: Manuf 0x17F, ID 0x2059, Revision 0, Version 1
+| b43-phy0 warning: 5 GHz band is unsupported on this PHY
+| b43-phy1: Broadcom 43431 WLAN found (core revision 29)
+| bcma-pci-bridge 0001:01:00.0: bus2: Switched to core: 0x812
+| b43-phy1: Found PHY: Analog 9, Type 7 (HT), Revision 1
+| b43-phy1: Found Radio: Manuf 0x17F, ID 0x2059, Revision 0, Version 1
+| b43-phy1 warning: 5 GHz band is unsupported on this PHY
+| b43-phy2: Broadcom 43228 WLAN found (core revision 30)
+| bcma-pci-bridge 0002:01:00.0: bus3: Switched to core: 0x812
+| b43-phy2: Found PHY: Analog 9, Type 4 (N), Revision 16
+| b43-phy2: Found Radio: Manuf 0x17F, ID 0x2057, Revision 9, Version 1
+| Broadcom 43xx driver loaded [ Features: NL ]
+
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wsa881x.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/Makefile                 |   1 +
+ arch/arm/boot/dts/bcm53015-meraki-mr26.dts | 166 +++++++++++++++++++++
+ 2 files changed, 167 insertions(+)
+ create mode 100644 arch/arm/boot/dts/bcm53015-meraki-mr26.dts
 
-diff --git a/sound/soc/codecs/wsa881x.c b/sound/soc/codecs/wsa881x.c
-index 616b26c70c3b..649c7e73f774 100644
---- a/sound/soc/codecs/wsa881x.c
-+++ b/sound/soc/codecs/wsa881x.c
-@@ -1174,11 +1174,17 @@ static int __maybe_unused wsa881x_runtime_resume(struct device *dev)
- 	struct sdw_slave *slave = dev_to_sdw_dev(dev);
- 	struct regmap *regmap = dev_get_regmap(dev, NULL);
- 	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
-+	unsigned long time;
- 
- 	gpiod_direction_output(wsa881x->sd_n, 1);
- 
--	wait_for_completion_timeout(&slave->initialization_complete,
--				    msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
-+	time = wait_for_completion_timeout(&slave->initialization_complete,
-+					   msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
-+	if (!time) {
-+		dev_err(dev, "Initialization not complete, timed out\n");
-+		gpiod_direction_output(wsa881x->sd_n, 0);
-+		return -ETIMEDOUT;
-+	}
- 
- 	regcache_cache_only(regmap, false);
- 	regcache_sync(regmap);
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 5112f493f494..27eec8e670ec 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -135,6 +135,7 @@ dtb-$(CONFIG_ARCH_BCM_5301X) += \
+ 	bcm47094-luxul-xwr-3150-v1.dtb \
+ 	bcm47094-netgear-r8500.dtb \
+ 	bcm47094-phicomm-k3.dtb \
++	bcm53015-meraki-mr26.dtb \
+ 	bcm53016-meraki-mr32.dtb \
+ 	bcm94708.dtb \
+ 	bcm94709.dtb \
+diff --git a/arch/arm/boot/dts/bcm53015-meraki-mr26.dts b/arch/arm/boot/dts/bcm53015-meraki-mr26.dts
+new file mode 100644
+index 000000000000..14f58033efeb
+--- /dev/null
++++ b/arch/arm/boot/dts/bcm53015-meraki-mr26.dts
+@@ -0,0 +1,166 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Broadcom BCM470X / BCM5301X ARM platform code.
++ * DTS for Meraki MR26 / Codename: Venom
++ *
++ * Copyright (C) 2022 Christian Lamparter <chunkeey@gmail.com>
++ */
++
++/dts-v1/;
++
++#include "bcm4708.dtsi"
++#include "bcm5301x-nand-cs0-bch8.dtsi"
++#include <dt-bindings/leds/common.h>
++
++/ {
++	compatible = "meraki,mr26", "brcm,bcm53015", "brcm,bcm4708";
++	model = "Meraki MR26";
++
++	memory@0 {
++		reg = <0x00000000 0x08000000>;
++		device_type = "memory";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		led-0 {
++			function = LED_FUNCTION_FAULT;
++			color = <LED_COLOR_ID_AMBER>;
++			gpios = <&chipcommon 13 GPIO_ACTIVE_HIGH>;
++			panic-indicator;
++		};
++		led-1 {
++			function = LED_FUNCTION_INDICATOR;
++			color = <LED_COLOR_ID_WHITE>;
++			gpios = <&chipcommon 12 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
++	keys {
++		compatible = "gpio-keys";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		key-restart {
++			label = "Reset";
++			linux,code = <KEY_RESTART>;
++			gpios = <&chipcommon 11 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
++
++&uart0 {
++	clock-frequency = <50000000>;
++	/delete-property/ clocks;
++};
++
++&uart1 {
++	status = "disabled";
++};
++
++&gmac0 {
++	status = "okay";
++};
++
++&gmac1 {
++	status = "disabled";
++};
++&gmac2 {
++	status = "disabled";
++};
++&gmac3 {
++	status = "disabled";
++};
++
++&nandcs {
++	nand-ecc-algo = "hw";
++
++	partitions {
++		compatible = "fixed-partitions";
++		#address-cells = <0x1>;
++		#size-cells = <0x1>;
++
++		partition@0 {
++			label = "u-boot";
++			reg = <0x0 0x200000>;
++			read-only;
++		};
++
++		partition@200000 {
++			label = "u-boot-env";
++			reg = <0x200000 0x200000>;
++			/* empty */
++		};
++
++		partition@400000 {
++			label = "u-boot-backup";
++			reg = <0x400000 0x200000>;
++			/* empty */
++		};
++
++		partition@600000 {
++			label = "u-boot-env-backup";
++			reg = <0x600000 0x200000>;
++			/* empty */
++		};
++
++		partition@800000 {
++			label = "ubi";
++			reg = <0x800000 0x7780000>;
++		};
++	};
++};
++
++&srab {
++	status = "okay";
++
++	ports {
++		port@0 {
++			reg = <0>;
++			label = "poe";
++		};
++
++		port@5 {
++			reg = <5>;
++			label = "cpu";
++			ethernet = <&gmac0>;
++
++			fixed-link {
++				speed = <1000>;
++				duplex-full;
++			};
++		};
++	};
++};
++
++&i2c0 {
++	status = "okay";
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinmux_i2c>;
++
++	clock-frequency = <100000>;
++
++	ina219@40 {
++		compatible = "ti,ina219"; /* PoE power */
++		reg = <0x40>;
++		shunt-resistor = <60000>; /* = 60 mOhms */
++	};
++
++	eeprom@56 {
++		compatible = "atmel,24c64";
++		reg = <0x56>;
++		pagesize = <32>;
++		read-only;
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		/* it's empty */
++	};
++};
++
++&thermal {
++	status = "disabled";
++	/* does not work, reads 418 degree Celsius */
++};
 -- 
 2.35.1
 
