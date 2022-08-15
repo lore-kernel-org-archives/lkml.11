@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F58C28B2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC324C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbiHPEpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42450 "EHLO
+        id S232489AbiHPEpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231343AbiHPEmA (ORCPT
+        with ESMTP id S231244AbiHPEmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 16 Aug 2022 00:42:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B7AAB4ED;
-        Mon, 15 Aug 2022 13:36:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E4D31EF5;
+        Mon, 15 Aug 2022 13:36:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A323E611D6;
-        Mon, 15 Aug 2022 20:36:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D536C433D6;
-        Mon, 15 Aug 2022 20:36:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63056611D6;
+        Mon, 15 Aug 2022 20:36:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4FFC433D6;
+        Mon, 15 Aug 2022 20:36:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595808;
-        bh=NJNHvyU6mSG0RyKd01r4Te1bG8tFBEb8/NemvxO5O3Y=;
+        s=korg; t=1660595801;
+        bh=P6zsy+Br50IxBtDghnh0AItILePGuWVPwZtgnBjUs34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bbWX2fu0DgG7ZF7Dilkux8hCLANnFGBUTd2EaLoXzKXeJTMZ2VJJghVMigvRcHXFB
-         01QWVjdjm8dh6ORY6awRInjd3gtAi1lKuz0jLyWom9q6Cv2Ysf7+obZsSJPafP1NeA
-         qCQ+Sa8nzITs4LOBAUSESQKjQAeB7jgO/lwgMDoc=
+        b=xmcTCX/h7vgy5NZGLnGpDxpa3D5NVTngVNBxy1VQf7yJF+b7CCdH7TJdZm3Atb33J
+         Aqxke/qRzu7Jm45eRy2moWm1wvlLQIgg5VmAl5a5ESe1Pgo7klaISYCnS0YLvdV3wW
+         /KDVjNlqhriDzSHGTXAK4zLhYM5S7coY27OwLNvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0864/1157] mm/mmap.c: fix missing call to vm_unacct_memory in mmap_region
-Date:   Mon, 15 Aug 2022 20:03:40 +0200
-Message-Id: <20220815180514.031777622@linuxfoundation.org>
+Subject: [PATCH 5.19 0880/1157] nvme: use command_id instead of req->tag in trace_nvme_complete_rq()
+Date:   Mon, 15 Aug 2022 20:03:56 +0200
+Message-Id: <20220815180514.631632038@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,38 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Bean Huo <beanhuo@micron.com>
 
-[ Upstream commit 7f82f922319ede486540e8746769865b9508d2c2 ]
+[ Upstream commit 679c54f2de672b7d79d02f8c4ad483ff6dd8ce2e ]
 
-Since the beginning, charged is set to 0 to avoid calling vm_unacct_memory
-twice because vm_unacct_memory will be called by above unmap_region.  But
-since commit 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from
-the unmap_vmas() interfaces"), unmap_region doesn't call vm_unacct_memory
-anymore.  So charged shouldn't be set to 0 now otherwise the calling to
-paired vm_unacct_memory will be missed and leads to imbalanced account.
+Use command_id instead of req->tag in trace_nvme_complete_rq(),
+because of commit e7006de6c238 ("nvme: code command_id with a genctr
+for use authentication after release"), cmd->common.command_id is set to
+((genctl & 0xf)< 12 | req->tag), no longer req->tag, which makes cid in
+trace_nvme_complete_rq and trace_nvme_setup_cmd are not the same.
 
-Link: https://lkml.kernel.org/r/20220618082027.43391-1-linmiaohe@huawei.com
-Fixes: 4f74d2c8e827 ("vm: remove 'nr_accounted' calculations from the unmap_vmas() interfaces")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: e7006de6c238 ("nvme: code command_id with a genctr for use authentication after release")
+Signed-off-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/mmap.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/nvme/host/trace.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 61e6135c54ef..7c59ec73acc3 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1894,7 +1894,6 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
- 
- 	/* Undo any partial mapping done by a device driver. */
- 	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
--	charged = 0;
- 	if (vm_flags & VM_SHARED)
- 		mapping_unmap_writable(file->f_mapping);
- free_vma:
+diff --git a/drivers/nvme/host/trace.h b/drivers/nvme/host/trace.h
+index 37c7f4c89f92..6f0eaf6a1528 100644
+--- a/drivers/nvme/host/trace.h
++++ b/drivers/nvme/host/trace.h
+@@ -98,7 +98,7 @@ TRACE_EVENT(nvme_complete_rq,
+ 	    TP_fast_assign(
+ 		__entry->ctrl_id = nvme_req(req)->ctrl->instance;
+ 		__entry->qid = nvme_req_qid(req);
+-		__entry->cid = req->tag;
++		__entry->cid = nvme_req(req)->cmd->common.command_id;
+ 		__entry->result = le64_to_cpu(nvme_req(req)->result.u64);
+ 		__entry->retries = nvme_req(req)->retries;
+ 		__entry->flags = nvme_req(req)->flags;
 -- 
 2.35.1
 
