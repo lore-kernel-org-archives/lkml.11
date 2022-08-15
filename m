@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56299C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D9EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240164AbiHOSkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        id S238419AbiHOSkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243151AbiHOSjR (ORCPT
+        with ESMTP id S242853AbiHOSj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:39:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0098B3D5B4;
-        Mon, 15 Aug 2022 11:23:53 -0700 (PDT)
+        Mon, 15 Aug 2022 14:39:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAFE2E9DA;
+        Mon, 15 Aug 2022 11:24:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2A7DB81063;
-        Mon, 15 Aug 2022 18:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23579C433C1;
-        Mon, 15 Aug 2022 18:23:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7927DCE125D;
+        Mon, 15 Aug 2022 18:23:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59E83C433D6;
+        Mon, 15 Aug 2022 18:23:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587830;
-        bh=HrjeGzSjUbhYge2bysfUgm0Vx0JRUCCCtMSjLG4PpmA=;
+        s=korg; t=1660587836;
+        bh=aYfBpaDeef5Znhw5Y3gET+gcNL4/+NCrvZDXnC7zbfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kIgIJX1RxbxcEOkP2plsL1hNBI7c8tf6sPPUbhIapSIDKAHfqQkLtyuYW13L2aar3
-         cNHeTOsdRKCGrszD2bnF0Mtc4Vep2lZD3W+7ao9whYxw3OdnFZg+sK1eQufDQ1XDDs
-         y++lHPdZOFiYn+JsJ8ibe86mQqmSyOIq6mjZ33D8=
+        b=FWyf6+E1YidnHic1n8UjkaiIiMXPqt/2/X4iyhwLCjb0G2y+vgil2LRcqv7CCXDF7
+         hYjiiih/kOJxUT9ot+MUqj00mqzjfPj64pu6qAPVaDvErm7HCxYlox/2RI9r/6a0G+
+         YLsHtkdIZH7wOFHj36HEZMNTn4ve37/8SfJM9PdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Zhang <yi.zhang@redhat.com>,
-        Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 208/779] blk-mq: dont create hctx debugfs dir until q->debugfs_dir is created
-Date:   Mon, 15 Aug 2022 19:57:32 +0200
-Message-Id: <20220815180346.163032797@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 210/779] spi: tegra20-slink: fix UAF in tegra_slink_remove()
+Date:   Mon, 15 Aug 2022 19:57:34 +0200
+Message-Id: <20220815180346.251985427@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,41 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit f3ec5d11554778c24ac8915e847223ed71d104fc ]
+[ Upstream commit 7e9984d183bb1e99e766c5c2b950ff21f7f7b6c0 ]
 
-blk_mq_debugfs_register_hctx() can be called by blk_mq_update_nr_hw_queues
-when gendisk isn't added yet, such as nvme tcp.
+After calling spi_unregister_master(), the refcount of master will
+be decrease to 0, and it will be freed in spi_controller_release(),
+the device data also will be freed, so it will lead a UAF when using
+'tspi'. To fix this, get the master before unregister and put it when
+finish using it.
 
-Fixes the warning of 'debugfs: Directory 'hctx0' with parent '/' already present!'
-which can be observed reliably when running blktests nvme/005.
-
-Fixes: 6cfc0081b046 ("blk-mq: no need to check return value of debugfs_create functions")
-Reported-by: Yi Zhang <yi.zhang@redhat.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Tested-by: Yi Zhang <yi.zhang@redhat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220711090808.259682-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 26c863418221 ("spi: tegra20-slink: Don't use resource-managed spi_register helper")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220713094024.1508869-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq-debugfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/spi/spi-tegra20-slink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index 3b38d15723de..7023257a133d 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -879,6 +879,9 @@ void blk_mq_debugfs_register_hctx(struct request_queue *q,
- 	char name[20];
- 	int i;
+diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
+index 3b44ca455049..cf61bf302a05 100644
+--- a/drivers/spi/spi-tegra20-slink.c
++++ b/drivers/spi/spi-tegra20-slink.c
+@@ -1130,7 +1130,7 @@ static int tegra_slink_probe(struct platform_device *pdev)
  
-+	if (!q->debugfs_dir)
-+		return;
-+
- 	snprintf(name, sizeof(name), "hctx%u", hctx->queue_num);
- 	hctx->debugfs_dir = debugfs_create_dir(name, q->debugfs_dir);
+ static int tegra_slink_remove(struct platform_device *pdev)
+ {
+-	struct spi_master *master = platform_get_drvdata(pdev);
++	struct spi_master *master = spi_master_get(platform_get_drvdata(pdev));
+ 	struct tegra_slink_data	*tspi = spi_master_get_devdata(master);
+ 
+ 	spi_unregister_master(master);
+@@ -1145,6 +1145,7 @@ static int tegra_slink_remove(struct platform_device *pdev)
+ 	if (tspi->rx_dma_chan)
+ 		tegra_slink_deinit_dma_param(tspi, true);
+ 
++	spi_master_put(master);
+ 	return 0;
+ }
  
 -- 
 2.35.1
