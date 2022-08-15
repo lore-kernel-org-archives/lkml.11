@@ -2,104 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F23C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE422C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244560AbiHOSyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:54:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
+        id S244153AbiHOSym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244643AbiHOSvh (ORCPT
+        with ESMTP id S244662AbiHOSvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:51:37 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38F546DA9
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:29:26 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id bb16so9392327oib.11
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kKQFgWHEbY+p2ZFCCe57naXRy0LRcwbgkfnnHiuAaKI=;
-        b=dXTeuhXE2fMa8lJrfwZYFIdaVIzgrPygmU0f1QQ0c5f8eDvL0TaRVpZkemuok3gkSV
-         cByWuo3hoGYzk92+fWoo8RZAX4Kkx7J5UOerAAZd2iROc3GuDEiDLWwNL/0QcDfJmEd6
-         MCkjP9g7ZjL6DmyA3R7NGbIZt7bH/+Z6G67LsDWhqqhRhDYjUj7hDY5gFZBw29oB+Dwr
-         IC+bUkyLsAai3ke2ZbDWnyljOK7N7c59WY/CJQWwuHoDNVXdG8Zv8ehjVpG6nqyUY5+g
-         M8S/WJTHFFb5qxzxVa5GkHPgKR3IDAELKrBwlF03airGtJYG/xyZxuj5tMZ6NycqnZLk
-         8dAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kKQFgWHEbY+p2ZFCCe57naXRy0LRcwbgkfnnHiuAaKI=;
-        b=1nn0YTQmtyBwjcykdku6Tu7qUTEJU+LhDlXGn0odXafNbjycqTO38gv5DIr0ERh82e
-         ff2RIL/fnuPBpTOqdhXvx6hmPAhExele5iCl59i+ITfkbwAQw8VhbAbsDSWuLvBDG2Ty
-         nUAweKFA6BzTmIKtZQPq9+3K1qy1hKBtMgMDZBBBJ7K2nN9X1euPdb1vVmd9pZi0f/pC
-         Y06/OCKRHaefsYPRNVMIL57WFX7GeCtb0Jn0QS13mPvv9IWHOlIP/jTx7fxmP7ZZXQcu
-         F+iDaFKT+zM4XP0/o2uqTC2sTf/7hYgxznaDqA2RJG0Oee49r1YkGsKy7noZdHPASpmA
-         K5CQ==
-X-Gm-Message-State: ACgBeo3DGLMS+RuIzr00pmXVUPhcU7Dsi8xz3u//Hx5Dbf2KMklFv4vd
-        Qj655dmGR44YFl1lwkLCmD1+VBvXeQ8kXptjYR6UNQ==
-X-Google-Smtp-Source: AA6agR6mHgLUwhhSGDDVkPAeBPIKfkAX3M0vhyj+SC2VMmz19Px/LCYhJDzW/ocV6X5KfhKTBwhnrixkhl4hvuHusSw=
-X-Received: by 2002:aca:5e89:0:b0:344:80ab:1351 with SMTP id
- s131-20020aca5e89000000b0034480ab1351mr4591083oib.105.1660588165502; Mon, 15
- Aug 2022 11:29:25 -0700 (PDT)
+        Mon, 15 Aug 2022 14:51:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FF646DBD;
+        Mon, 15 Aug 2022 11:29:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C6260F23;
+        Mon, 15 Aug 2022 18:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D54AFC433D7;
+        Mon, 15 Aug 2022 18:29:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660588168;
+        bh=LZk7gSWpaSoUsHd/k9TE2xG/PGVAIeKrKwCihr/MDmk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YrJXdSSGVH9Lsoji0c8fujkuPgYPeNbVNAH/hcScH9z1rtsqDyOTDA7ng8LB2SbgZ
+         sV2IeaI1Ic4ed2Lv8wzr8ocwJ1T0Swii0QIyFlD1cYKfhBLuVvrZmLH3fCqiPJsVYk
+         yPnEOObvQe9LwNreY4WORUBErCghprbtrjXRUOmM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 316/779] drm: bridge: sii8620: fix possible off-by-one
+Date:   Mon, 15 Aug 2022 19:59:20 +0200
+Message-Id: <20220815180350.788189441@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
+References: <20220815180337.130757997@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-References: <20220811204024.182453-1-mail@conchuod.ie>
-In-Reply-To: <20220811204024.182453-1-mail@conchuod.ie>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 15 Aug 2022 20:28:28 +0200
-Message-ID: <CAPDyKFrefLiR=QtuRuCdXgo1Y=vuwF6ok=kVK0hYgzVtaGHrSQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mmc: cdns: remove Piotr Sroka as a maintainer
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Piotr Sroka <piotrs@cadence.com>, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Conor Dooley <conor.dooley@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 11 Aug 2022 at 22:41, Conor Dooley <mail@conchuod.ie> wrote:
->
-> From: Conor Dooley <conor.dooley@microchip.com>
->
-> Mails to Piotr bounce with a :550 5.1.1 User Unknown and the last
-> mention of him on lore is the orphaning of Cadence NFC drivers.
-> Remove him from the binding too.
->
-> Link: https://lore.kernel.org/all/20200510122430.19105-1-miquel.raynal@bootlin.com/
+From: Hangyu Hua <hbh25y@gmail.com>
 
-This link doesn't work, so I decided to simply drop it.
+[ Upstream commit 21779cc21c732c5eff8ea1624be6590450baa30f ]
 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+The next call to sii8620_burst_get_tx_buf will result in off-by-one
+When ctx->burst.tx_count + size == ARRAY_SIZE(ctx->burst.tx_buf). The same
+thing happens in sii8620_burst_get_rx_buf.
 
-Applied for next, thanks!
+This patch also change tx_count and tx_buf to rx_count and rx_buf in
+sii8620_burst_get_rx_buf. It is unreasonable to check tx_buf's size and
+use rx_buf.
 
-Kind regards
-Uffe
+Fixes: e19e9c692f81 ("drm/bridge/sii8620: add support for burst eMSC transmissions")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220518065856.18936-1-hbh25y@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/bridge/sil-sii8620.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/sil-sii8620.c b/drivers/gpu/drm/bridge/sil-sii8620.c
+index ec7745c31da0..ab0bce4a988c 100644
+--- a/drivers/gpu/drm/bridge/sil-sii8620.c
++++ b/drivers/gpu/drm/bridge/sil-sii8620.c
+@@ -605,7 +605,7 @@ static void *sii8620_burst_get_tx_buf(struct sii8620 *ctx, int len)
+ 	u8 *buf = &ctx->burst.tx_buf[ctx->burst.tx_count];
+ 	int size = len + 2;
+ 
+-	if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
++	if (ctx->burst.tx_count + size >= ARRAY_SIZE(ctx->burst.tx_buf)) {
+ 		dev_err(ctx->dev, "TX-BLK buffer exhausted\n");
+ 		ctx->error = -EINVAL;
+ 		return NULL;
+@@ -622,7 +622,7 @@ static u8 *sii8620_burst_get_rx_buf(struct sii8620 *ctx, int len)
+ 	u8 *buf = &ctx->burst.rx_buf[ctx->burst.rx_count];
+ 	int size = len + 1;
+ 
+-	if (ctx->burst.tx_count + size > ARRAY_SIZE(ctx->burst.tx_buf)) {
++	if (ctx->burst.rx_count + size >= ARRAY_SIZE(ctx->burst.rx_buf)) {
+ 		dev_err(ctx->dev, "RX-BLK buffer exhausted\n");
+ 		ctx->error = -EINVAL;
+ 		return NULL;
+-- 
+2.35.1
 
 
-> ---
->  Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> index 99f89eb19356..7124e77617c9 100644
-> --- a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> @@ -8,7 +8,6 @@ title: Cadence SD/SDIO/eMMC Host Controller (SD4HC)
->
->  maintainers:
->    - Masahiro Yamada <yamada.masahiro@socionext.com>
-> -  - Piotr Sroka <piotrs@cadence.com>
->
->  allOf:
->    - $ref: mmc-controller.yaml
-> --
-> 2.37.1
->
+
