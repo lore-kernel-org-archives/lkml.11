@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC848C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA0BC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344509AbiHPAmw (ORCPT
+        id S1344737AbiHPAm7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
+        Mon, 15 Aug 2022 20:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347091AbiHPAkn (ORCPT
+        with ESMTP id S1348315AbiHPAlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:40:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710BA18DC12;
-        Mon, 15 Aug 2022 13:38:56 -0700 (PDT)
+        Mon, 15 Aug 2022 20:41:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F8F18DC35;
+        Mon, 15 Aug 2022 13:39:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49947B80EA8;
-        Mon, 15 Aug 2022 20:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9505BC433C1;
-        Mon, 15 Aug 2022 20:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8329360F60;
+        Mon, 15 Aug 2022 20:38:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 868B6C433D6;
+        Mon, 15 Aug 2022 20:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595933;
-        bh=E+ulq/STAWwHQuTcMCyRYJi1Yuj3JPnEACZhaX/4lQU=;
+        s=korg; t=1660595938;
+        bh=HXHscwO9QOfb9zLnH2H8pGByDOuKTqJ/hzGJVmwDK6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tekgBPi8vc3D/D0NLiLjMIlVe3rhad0ALc0+lnC87PlLYK+dwu4YYnRj7jCPGhc2f
-         iq7V6aSHVfP9XouCAa7s4CVl5L+i3uknSJXQypzcmJ89Ns36eeMx6nwpq+PzLvCeyW
-         PbG329HOtkI7IqDy0V0C06D1oK9VzRM+YDLvSfYc=
+        b=HTTk8DkB7UAy0H72Q/JZZJ2/jyBQ/3LsTXj/ItqiQUcvRSl+CWZhEQ3WdQKTuibuz
+         776ZxtMvOApYtOrVGvSr+U79gSKlPqIe+4QFVpVnOXJSPzz50yfsj4pkRT2kxEAVaz
+         +eSpVbqMZhYbitT2J89TjS8XKqn4CQFK6YYbHbpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0920/1157] serial: 8250_dw: Take port lock while accessing LSR
-Date:   Mon, 15 Aug 2022 20:04:36 +0200
-Message-Id: <20220815180516.255718805@linuxfoundation.org>
+Subject: [PATCH 5.19 0922/1157] vfio/mlx5: Protect mlx5vf_disable_fds() upon close device
+Date:   Mon, 15 Aug 2022 20:04:38 +0200
+Message-Id: <20220815180516.331712301@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,38 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Yishai Hadas <yishaih@nvidia.com>
 
-[ Upstream commit b9491b2e45d71eb64245560e208897af95ffbf95 ]
+[ Upstream commit 2b1c1906286fa547845f5385ee72db74b2b0251d ]
 
-Accessing LSR requires port lock because it mutates lsr_saved_flags
-in serial_lsr_in().
+Protect mlx5vf_disable_fds() upon close device to be called under the
+state mutex as done in all other places.
 
-Fixes: 197eb5c416ff ("serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/c5879db7-bee9-93f-526e-872a292442@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This will prevent a race with any other flow which calls
+mlx5vf_disable_fds() as of health/recovery upon
+MLX5_PF_NOTIFY_DISABLE_VF event.
+
+Encapsulate this functionality in a separate function named
+mlx5vf_cmd_close_migratable() to consider migration caps and for further
+usage upon close device.
+
+Fixes: 6fadb021266d ("vfio/mlx5: Implement vfio_pci driver for mlx5 devices")
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Link: https://lore.kernel.org/r/20220628155910.171454-2-yishaih@nvidia.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_dw.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/vfio/pci/mlx5/cmd.c  | 10 ++++++++++
+ drivers/vfio/pci/mlx5/cmd.h  |  1 +
+ drivers/vfio/pci/mlx5/main.c |  2 +-
+ 3 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index c0ab67033a25..d0dfbf1fc9d8 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -266,7 +266,10 @@ static int dw8250_handle_irq(struct uart_port *p)
+diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
+index 9b9f33ca270a..cdd0c667dc77 100644
+--- a/drivers/vfio/pci/mlx5/cmd.c
++++ b/drivers/vfio/pci/mlx5/cmd.c
+@@ -88,6 +88,16 @@ static int mlx5fv_vf_event(struct notifier_block *nb,
+ 	return 0;
+ }
  
- 	/* Manually stop the Rx DMA transfer when acting as flow controller */
- 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
-+		spin_lock_irqsave(&p->lock, flags);
- 		status = serial_lsr_in(up);
-+		spin_unlock_irqrestore(&p->lock, flags);
++void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev)
++{
++	if (!mvdev->migrate_cap)
++		return;
 +
- 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
- 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
- 			dw8250_writel_ext(p, DW_UART_DMASA, 1);
++	mutex_lock(&mvdev->state_mutex);
++	mlx5vf_disable_fds(mvdev);
++	mlx5vf_state_mutex_unlock(mvdev);
++}
++
+ void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev)
+ {
+ 	if (!mvdev->migrate_cap)
+diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
+index 6c3112fdd8b1..aa692d9ce656 100644
+--- a/drivers/vfio/pci/mlx5/cmd.h
++++ b/drivers/vfio/pci/mlx5/cmd.h
+@@ -64,6 +64,7 @@ int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
+ 					  size_t *state_size);
+ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev);
+ void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev);
++void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev);
+ int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+ 			       struct mlx5_vf_migration_file *migf);
+ int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+index 0558d0649ddb..d754990f0662 100644
+--- a/drivers/vfio/pci/mlx5/main.c
++++ b/drivers/vfio/pci/mlx5/main.c
+@@ -570,7 +570,7 @@ static void mlx5vf_pci_close_device(struct vfio_device *core_vdev)
+ 	struct mlx5vf_pci_core_device *mvdev = container_of(
+ 		core_vdev, struct mlx5vf_pci_core_device, core_device.vdev);
+ 
+-	mlx5vf_disable_fds(mvdev);
++	mlx5vf_cmd_close_migratable(mvdev);
+ 	vfio_pci_core_close_device(core_vdev);
+ }
+ 
 -- 
 2.35.1
 
