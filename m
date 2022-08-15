@@ -2,245 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A18C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC1FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 13:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbiHON7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 09:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43476 "EHLO
+        id S242066AbiHON7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 09:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbiHON72 (ORCPT
+        with ESMTP id S232339AbiHON7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 09:59:28 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC30922B23;
-        Mon, 15 Aug 2022 06:59:26 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FDhZRC010502;
-        Mon, 15 Aug 2022 13:59:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=oyXLuDwoqKoBqtixFcLUxvAdEJpipLRmAoin7itaNu4=;
- b=kHdRad97OBPdppFHAtUUKwazvszb+Ed1qRuHDoWeVXFbB8H3VTeEmpyZT9de4fxpzcDH
- VS/Egyka1MzYlZmojnbxayWa2p0xrc3/zilxgejklkbVVMJXFbLl4n9LSnR1wepvVIfG
- 0IpiwS17q4GFDlR5ZAAINXrUHeaLo0guvqGLE9hOUg3n3SD1q1+SXtiW9Okzdezro8bL
- QOoXCe+fS6u0Kqhk8lfaqbeUMwP5OyQRvp/KlKqzy2sS5Nnce2hz/gI9fTYGJOo4uzSA
- /1eufCnGlSJKkrbdfdydWY0FLnMDc//pDcXl219DKSr4ehjK2T2eyZMCBFJjDKIk1Phi iQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyq9h0cxg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 13:59:06 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FDiK5v014684;
-        Mon, 15 Aug 2022 13:59:06 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyq9h0cw1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 13:59:06 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FDnjqM014593;
-        Mon, 15 Aug 2022 13:59:04 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma02wdc.us.ibm.com with ESMTP id 3hx3k9m91d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 13:59:04 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FDx4RK1507942
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Aug 2022 13:59:04 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F2B14B205F;
-        Mon, 15 Aug 2022 13:59:03 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 80DCAB2064;
-        Mon, 15 Aug 2022 13:59:03 +0000 (GMT)
-Received: from [9.77.146.160] (unknown [9.77.146.160])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 13:59:03 +0000 (GMT)
-Message-ID: <f56c7486-2b78-48ac-3c5d-c7c20d1e78f5@linux.ibm.com>
-Date:   Mon, 15 Aug 2022 08:59:03 -0500
+        Mon, 15 Aug 2022 09:59:47 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B11122B16
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:59:46 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id jm11so4180377plb.13
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 06:59:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=gYLMwJl3NqL1MH7BfhUrQSE5Y3rEltoe6FStUMqBxDI=;
+        b=W2TsMdlSfECTGIJ58CoX+zpPXKllKXkKofGMaE0tAk68/ssCPnfEZRpUUxqagEO8IM
+         g3OQuiRCNdjWxzODBmQJShRlJWcy2ZkOq0NePdgQDJDvDDDbJuoOE14/dg/gfa4FfJ2M
+         MKCIpAFywB84XKT8r1n0xOzXjC2bOzMsO6TSm+G+P607uNWtZrlgZG3JwJU4AKQ/lDz6
+         /iNZ5qR1tHqGOKpt5BdHRRzMBjO6Fo21W+6Aavlzxp8XKW/vZ2z6jFMlghiEUt6qvyCn
+         5sYF3iqiMX0pl9F4vYkaxW9wsKMsN0JbXQCnixaNAvQT2lhf1jWiVnmZNryLGhli9Ant
+         oEjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=gYLMwJl3NqL1MH7BfhUrQSE5Y3rEltoe6FStUMqBxDI=;
+        b=19q8147WxKXA0dqpoGbMxkh8/VGHeytVpeiaKicTNecJjjiN4IkEFEh7CTy1pEBD6i
+         Sa2ACUsh9hBA9sOXCKhf5N6/BcL3hURCZjLThCHii/UM7BUFE/B+MOaqQhi+SaWaTKOE
+         xi18r/2RRTq6agxdm1+s4eK1hoyPubiFjZOoWlAiL6JBA7ttiLmjCTDT4l591KVvCXlE
+         pHO4F8TK37lWTb1w3hU6CI+m2PnMvrK00Gol9QFwvrdUA4Dr1KJSNdSAhZvaZ9F1dcTI
+         tJGOrgtJ3ak8v8kgobJbfZrHrbBfXfcMNCL+qjxFQVTprVDvM7cBxggTM/yfgSoXG1cr
+         Fi7w==
+X-Gm-Message-State: ACgBeo0XBbgJ5ox37CjTapybw7APpNZm3wSgGmhHALOMpqyVWaaVBP9L
+        WsL09dedU0QPT2sSUfBl6zVrwg==
+X-Google-Smtp-Source: AA6agR4hciO1La3ySB4NpnxnAka7c32UzQNn3TlPYUUC+HmN5100km4viSKL/BvKGHlhQ5bqS4PdyA==
+X-Received: by 2002:a17:90b:388e:b0:1f5:40d4:828d with SMTP id mu14-20020a17090b388e00b001f540d4828dmr18972421pjb.31.1660571986101;
+        Mon, 15 Aug 2022 06:59:46 -0700 (PDT)
+Received: from [10.94.58.189] ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id k4-20020a170902c40400b0016d21697ed9sm7053629plk.48.2022.08.15.06.59.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 06:59:45 -0700 (PDT)
+Message-ID: <e834147d-ff5a-9212-5458-3ba91475c21d@bytedance.com>
+Date:   Mon, 15 Aug 2022 21:59:40 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 2/2] iio: pressure: dps310: Reset chip if MEAS_CFG is
- corrupt
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v4 0/7] sched/fair: improve scan efficiency of SIS
 Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>
-References: <20220809211246.251006-1-eajames@linux.ibm.com>
- <20220809211246.251006-3-eajames@linux.ibm.com>
- <CAHp75VdbRiWxxbnW61SNdj+pC4skeRF3prXgPvKB+btjW3dLKw@mail.gmail.com>
-From:   Eddie James <eajames@linux.ibm.com>
-In-Reply-To: <CAHp75VdbRiWxxbnW61SNdj+pC4skeRF3prXgPvKB+btjW3dLKw@mail.gmail.com>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        "Gautham R . Shenoy" <gautham.shenoy@amd.com>,
+        linux-kernel@vger.kernel.org
+References: <20220619120451.95251-1-wuyun.abel@bytedance.com>
+ <dfcfae9c-caae-1d94-3f7d-de3d644de9e0@amd.com>
+From:   Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <dfcfae9c-caae-1d94-3f7d-de3d644de9e0@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: eFzUiPUmn3NZt_6_sBugfKfki2IlSf4G
-X-Proofpoint-GUID: vYziDs7p1oPGlA5fHTRZq0IjfzH4MXk-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- lowpriorityscore=0 malwarescore=0 clxscore=1015 bulkscore=0 spamscore=0
- mlxlogscore=999 phishscore=0 mlxscore=0 impostorscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208150053
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi K Prateek, thanks for your test and sorry for the late reply..
 
-On 8/12/22 17:13, Andy Shevchenko wrote:
-> On Wed, Aug 10, 2022 at 12:12 AM Eddie James <eajames@linux.ibm.com> wrote:
->> Corruption of the MEAS_CFG register has been observed soon after
->> system boot. In order to recover this scenario, check MEAS_CFG if
->> measurement isn't ready, and if it's incorrect, reset the DPS310
->> and execute the startup procedure.
-> Looks like both patches miss the Fixes tag. Can you add them?
+On 7/18/22 7:00 PM, K Prateek Nayak Wrote:
+> Hello Abel,
+> 
+> We've tested the patch on a dual socket Zen3 System (2 x 64C/128T).
+> 
+> tl;dr
+> 
+> - There is a noticeable regression for Hackbench with the system
+>    configured in NPS4 mode. This regression is more noticeable
+>    with SIS_UTIL enabled and not as severe with SIS_PROP.
+>    This regression is surprising given the patch should have
+>    improved SIS Efficiency in case of fully loaded system and is
+>    consistently reproducible across multiple runs and reboots.
 
+The regression seems unexpected, I will try to reproduce with my
+Intel server. While staring at the code, I found something may be
+relative to the issue:
 
-Well this isn't really a software fix - there's no identifiable bug in 
-the driver. Just trying to recover the chip in this observed mystery 
-scenario.
+  - The cpumask_and() in select_idle_cpu() is before SIS_UTIL which
+    could bail out early. So when SIS filter is enabled, lots of
+    useless efforts could be made if nr_idle_scan==0 (e.g. 16groups).
+    While the SIS_PROP case is different, the efforts done by the
+    filter won't be all in vain, that's probably the reason why the
+    regression under SIS_UTIL is more noticeable. I am working on a
+    patch to optimize this.
 
+  - If nr_idle_scan == 0 then select_idle_cpu() will bail out early,
+    so it's pointless to update SIS filter which may further burden
+    the overhead together with the above issue. This will be fixed
+    in next version.
 
->
-> ...
->
->> +/*
->> + * Called with lock held. Returns a negative value on error, a positive value
->> + * when the device is not ready, and zero when the device is ready.
->> + */
->> +static int dps310_check_reset_meas_cfg(struct dps310_data *data, int ready_bit)
->> +{
->> +       int meas_cfg;
->> +       int rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &meas_cfg);
->> +
->> +       if (rc < 0)
->> +               return rc;
-> Please, split definition and assignment.
+I will rework the whole patchset to fit the new SIS_UTIL feature.
 
+> 
+> - Apart from the above anomaly, the results look positive overall
+>    with the patched kernel behaving as well as, or better than the tip.
 
-Ack.
+Cheers!
 
+> 
+> [..snip..]
+> 
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Hackbench - 15 runs statistics
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> o NPS 4 - 16 groups (SIS_UTIL)
+> 
+> - tip
+> 
+> Min           : 7.35
+> Max           : 12.66
+> Median        : 10.60
+> AMean         : 10.00
+> GMean         : 9.82
+> HMean         : 9.64
+> AMean Stddev  : 1.88
+> AMean CoefVar : 18.85 pct
+> 
+> - SIS_Eff
+> 
+> Min           : 12.32
+> Max           : 18.92
+> Median        : 13.82
+> AMean         : 14.96	(-49.60 pct)
+> GMean         : 14.80
+> HMean         : 14.66
+> AMean Stddev  : 2.25
+> AMean CoefVar : 15.01 pct
+> 
+> o NPS 4 - 16 groups (SIS_PROP)
+> 
+> - tip
+> 
+> Min           : 7.04
+> Max           : 8.22
+> Median        : 7.49
+> AMean         : 7.52
+> GMean         : 7.52
+> HMean         : 7.51
+> AMean Stddev  : 0.29
+> AMean CoefVar : 3.88 pct
+> 
+> - SIS_Eff
+> 
+> Min           : 7.04
+> Max           : 9.78
+> Median        : 8.16
+> AMean         : 8.42	(-11.06 pct)
+> GMean         : 8.39
+> HMean         : 8.36
+> AMean Stddev  : 0.78
+> AMean CoefVar : 9.23 pct
+> 
+> The Hackbench regression is much more noticeable with SIS_UTIL
+> enabled but only when the test machine is running in NPS4 mode.
+> It is not obvious why this is happening given the patch series
+> aims at improving SIS Efficiency.
 
->
->> +       /* Device is ready, proceed to measurement */
->> +       if (meas_cfg & ready_bit)
->> +               return 0;
->> +
->> +       /* Device is OK, just not ready */
->> +       if (meas_cfg & (DPS310_PRS_EN | DPS310_TEMP_EN | DPS310_BACKGROUND))
->> +               return 1;
->> +
->> +       /* DPS310 register state corrupt, better start from scratch */
->> +       rc = regmap_write(data->regmap, DPS310_RESET, DPS310_RESET_MAGIC);
->> +       if (rc < 0)
->> +               return rc;
->> +
->> +       /* Wait for device chip access: 2.5ms in specification */
->> +       usleep_range(2500, 12000);
->> +
->> +       /* Reinitialize the chip */
->> +       rc = dps310_startup(data);
->> +       if (rc)
->> +               return rc;
->> +
->> +       dev_info(&data->client->dev,
->> +                "recovered from corrupted MEAS_CFG=%02x\n", meas_cfg);
->> +       return 1;
->> +}
->> +
->>   static int dps310_read_pres_raw(struct dps310_data *data)
->>   {
->>          int rc;
->> @@ -405,16 +443,26 @@ static int dps310_read_pres_raw(struct dps310_data *data)
->>          if (mutex_lock_interruptible(&data->lock))
->>                  return -EINTR;
->>
->> -       rate = dps310_get_pres_samp_freq(data);
->> -       timeout = DPS310_POLL_TIMEOUT_US(rate);
->> -
->> -       /* Poll for sensor readiness; base the timeout upon the sample rate. */
->> -       rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
->> -                                     ready & DPS310_PRS_RDY,
->> -                                     DPS310_POLL_SLEEP_US(timeout), timeout);
->> -       if (rc)
->> +       rc = dps310_check_reset_meas_cfg(data, DPS310_PRS_RDY);
->> +       if (rc < 0)
->>                  goto done;
->>
->> +       if (rc > 0) {
->> +               rate = dps310_get_pres_samp_freq(data);
->> +               timeout = DPS310_POLL_TIMEOUT_US(rate);
->> +
->> +               /*
->> +                * Poll for sensor readiness; base the timeout upon the sample
->> +                * rate.
->> +                */
->> +               rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
->> +                                             ready, ready & DPS310_PRS_RDY,
->> +                                             DPS310_POLL_SLEEP_US(timeout),
->> +                                             timeout);
->> +               if (rc)
->> +                       goto done;
->> +       }
-> If you split the condition body to a helper, it can be rewritten like
-> (also note special definition for positive returned numbers):
->
->    rc = ..._reset_meas_cfg(...);
->    if (rc  == DPS310_MEAS_NOT_READY)
->      rc = ..._new_helper_func(...);
->    if (rc)
->      goto done;
->
-> and looking at this it might be worth considering calling that
-> conditional in the middle in the _reset_meas_cfg(), so the latter will
-> return either 0 or negative error code.
+The result seems to get some kind of connection with the LLC size.
+I need some time to figure it out.
 
+> 
+> It would be great if you can test the series with SIS_UTIL
+> enabled and SIS_PROP disabled to see if it effects any benchmark
+> behavior given SIS_UTIL is the default SIS logic currently on
+> the tip.
 
-To be honest that looks more complicated than the way it is now? And I 
-don't think I can make it common between the temp and pressure without 
-some complicated macro business.
+Yes, I will.
 
-
->
->> +       rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY);
->>          if (rc < 0)
->>                  goto done;
->>
->> +       if (rc > 0) {
->> +               rate = dps310_get_temp_samp_freq(data);
-> Okay, I see this function is different, but still you may realize a
-> helper from below and something like above suggestion can still be
-> achieved.
->
->> +               timeout = DPS310_POLL_TIMEOUT_US(rate);
->> +
->> +               /*
->> +                * Poll for sensor readiness; base the timeout upon the sample
->> +                * rate.
->> +                */
->> +               rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
->> +                                             ready, ready & DPS310_TMP_RDY,
->> +                                             DPS310_POLL_SLEEP_US(timeout),
->> +                                             timeout);
->> +               if (rc < 0)
-> Why out of a sudden ' < 0'?
-
-
-Good point, I'll fix that.
-
-
->
->> +                       goto done;
->> +       }
-> As per above.
->
->>          rc = dps310_read_temp_ready(data);
->
+Thanks & Best Regards,
+Abel
