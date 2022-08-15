@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0BBC28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD74C25B0E
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353730AbiHOXgG (ORCPT
+        id S1353749AbiHOXgM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
+        Mon, 15 Aug 2022 19:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353490AbiHOX2Q (ORCPT
+        with ESMTP id S1353489AbiHOX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:28:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BE014EC8E;
-        Mon, 15 Aug 2022 13:07:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839D414EC8D;
+        Mon, 15 Aug 2022 13:07:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8708860B9F;
-        Mon, 15 Aug 2022 20:07:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79DC0C433D6;
-        Mon, 15 Aug 2022 20:07:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38092B80EA8;
+        Mon, 15 Aug 2022 20:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77507C433D6;
+        Mon, 15 Aug 2022 20:07:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594064;
-        bh=uBTs2mOn13ESBinmKiYeWbj6FUqajHxRdNTleHPJqw0=;
+        s=korg; t=1660594061;
+        bh=uxd7EsReGra/kxKK0MUI8FhFK70UAPwYm5or0x5vyGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1EbYjf9VoPItVOLSvSDS9wxhh/JeVhoIl94JKLTorIjXdO+r9LUwivWcPwSQausYb
-         xWycYWWuDlNn4tmSedP1s1SQ0kGMoFeLkPBeVvZPOhQycbzUJ2B42KlznZds/rvVqt
-         syrZU5AKljPc047Cx7qILnZ7PjIBOazwgd+EOBHg=
+        b=dRFHwtetQADb+N/0Dx/lD4xyA5lldub/nCjISAhZBRGagzy0ktGg+orYgqqRw7dzd
+         PLPlq5HiGQUA5E3v7kusZlA0aoArEB3lJPaBwFP+OgEqqwTs+kYKTlaZaSY1jywPot
+         YDd5Qm+5BH7r/IUVY9oSpeE746EstcYDnShkD1kc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0369/1157] raw: convert raw sockets to RCU
-Date:   Mon, 15 Aug 2022 19:55:25 +0200
-Message-Id: <20220815180454.479726199@linuxfoundation.org>
+Subject: [PATCH 5.18 1049/1095] ksmbd: smbd: change prototypes of RDMA read/write related functions
+Date:   Mon, 15 Aug 2022 20:07:28 +0200
+Message-Id: <20220815180512.469753235@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,465 +51,256 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Hyunchul Lee <hyc.lee@gmail.com>
 
-[ Upstream commit 0daf07e527095e64ee8927ce297ab626643e9f51 ]
+[ Upstream commit 1807abcf8778bcbbf584fe54da9ccbe9029c49bb ]
 
-Using rwlock in networking code is extremely risky.
-writers can starve if enough readers are constantly
-grabing the rwlock.
+Change the prototypes of RDMA read/write
+operations to accept a pointer and length
+of buffer descriptors.
 
-I thought rwlock were at fault and sent this patch:
-
-https://lkml.org/lkml/2022/6/17/272
-
-But Peter and Linus essentially told me rwlock had to be unfair.
-
-We need to get rid of rwlock in networking code.
-
-Without this fix, following script triggers soft lockups:
-
-for i in {1..48}
-do
- ping -f -n -q 127.0.0.1 &
- sleep 0.1
-done
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
+Acked-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/raw.h   | 11 +++++-
- include/net/rawv6.h |  1 +
- net/ipv4/af_inet.c  |  2 ++
- net/ipv4/raw.c      | 83 +++++++++++++++++++++------------------------
- net/ipv4/raw_diag.c | 22 +++++++-----
- net/ipv6/af_inet6.c |  3 ++
- net/ipv6/raw.c      | 28 +++++++--------
- 7 files changed, 80 insertions(+), 70 deletions(-)
+ fs/ksmbd/connection.c     | 20 ++++++++++----------
+ fs/ksmbd/connection.h     | 27 ++++++++++++++++-----------
+ fs/ksmbd/smb2pdu.c        | 23 ++++++++---------------
+ fs/ksmbd/transport_rdma.c | 30 +++++++++++++++++-------------
+ 4 files changed, 51 insertions(+), 49 deletions(-)
 
-diff --git a/include/net/raw.h b/include/net/raw.h
-index 6324965779ec..537d9d1df890 100644
---- a/include/net/raw.h
-+++ b/include/net/raw.h
-@@ -33,9 +33,18 @@ int raw_rcv(struct sock *, struct sk_buff *);
+diff --git a/fs/ksmbd/connection.c b/fs/ksmbd/connection.c
+index bc6050b67256..e8f476c5f189 100644
+--- a/fs/ksmbd/connection.c
++++ b/fs/ksmbd/connection.c
+@@ -205,31 +205,31 @@ int ksmbd_conn_write(struct ksmbd_work *work)
+ 	return 0;
+ }
  
- struct raw_hashinfo {
- 	rwlock_t lock;
--	struct hlist_head ht[RAW_HTABLE_SIZE];
-+	struct hlist_nulls_head ht[RAW_HTABLE_SIZE];
+-int ksmbd_conn_rdma_read(struct ksmbd_conn *conn, void *buf,
+-			 unsigned int buflen, u32 remote_key, u64 remote_offset,
+-			 u32 remote_len)
++int ksmbd_conn_rdma_read(struct ksmbd_conn *conn,
++			 void *buf, unsigned int buflen,
++			 struct smb2_buffer_desc_v1 *desc,
++			 unsigned int desc_len)
+ {
+ 	int ret = -EINVAL;
+ 
+ 	if (conn->transport->ops->rdma_read)
+ 		ret = conn->transport->ops->rdma_read(conn->transport,
+ 						      buf, buflen,
+-						      remote_key, remote_offset,
+-						      remote_len);
++						      desc, desc_len);
+ 	return ret;
+ }
+ 
+-int ksmbd_conn_rdma_write(struct ksmbd_conn *conn, void *buf,
+-			  unsigned int buflen, u32 remote_key,
+-			  u64 remote_offset, u32 remote_len)
++int ksmbd_conn_rdma_write(struct ksmbd_conn *conn,
++			  void *buf, unsigned int buflen,
++			  struct smb2_buffer_desc_v1 *desc,
++			  unsigned int desc_len)
+ {
+ 	int ret = -EINVAL;
+ 
+ 	if (conn->transport->ops->rdma_write)
+ 		ret = conn->transport->ops->rdma_write(conn->transport,
+ 						       buf, buflen,
+-						       remote_key, remote_offset,
+-						       remote_len);
++						       desc, desc_len);
+ 	return ret;
+ }
+ 
+diff --git a/fs/ksmbd/connection.h b/fs/ksmbd/connection.h
+index 7a59aacb5daa..98c1cbe45ec9 100644
+--- a/fs/ksmbd/connection.h
++++ b/fs/ksmbd/connection.h
+@@ -122,11 +122,14 @@ struct ksmbd_transport_ops {
+ 	int (*writev)(struct ksmbd_transport *t, struct kvec *iovs, int niov,
+ 		      int size, bool need_invalidate_rkey,
+ 		      unsigned int remote_key);
+-	int (*rdma_read)(struct ksmbd_transport *t, void *buf, unsigned int len,
+-			 u32 remote_key, u64 remote_offset, u32 remote_len);
+-	int (*rdma_write)(struct ksmbd_transport *t, void *buf,
+-			  unsigned int len, u32 remote_key, u64 remote_offset,
+-			  u32 remote_len);
++	int (*rdma_read)(struct ksmbd_transport *t,
++			 void *buf, unsigned int len,
++			 struct smb2_buffer_desc_v1 *desc,
++			 unsigned int desc_len);
++	int (*rdma_write)(struct ksmbd_transport *t,
++			  void *buf, unsigned int len,
++			  struct smb2_buffer_desc_v1 *desc,
++			  unsigned int desc_len);
  };
  
-+static inline void raw_hashinfo_init(struct raw_hashinfo *hashinfo)
-+{
-+	int i;
-+
-+	rwlock_init(&hashinfo->lock);
-+	for (i = 0; i < RAW_HTABLE_SIZE; i++)
-+		INIT_HLIST_NULLS_HEAD(&hashinfo->ht[i], i);
-+}
-+
- #ifdef CONFIG_PROC_FS
- int raw_proc_init(void);
- void raw_proc_exit(void);
-diff --git a/include/net/rawv6.h b/include/net/rawv6.h
-index c48c1298699a..bc70909625f6 100644
---- a/include/net/rawv6.h
-+++ b/include/net/rawv6.h
-@@ -3,6 +3,7 @@
- #define _NET_RAWV6_H
- 
- #include <net/protocol.h>
-+#include <net/raw.h>
- 
- extern struct raw_hashinfo raw_v6_hashinfo;
- bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 252c8bceaba4..6f5556cb0d97 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1919,6 +1919,8 @@ static int __init inet_init(void)
- 
- 	sock_skb_cb_check_size(sizeof(struct inet_skb_parm));
- 
-+	raw_hashinfo_init(&raw_v4_hashinfo);
-+
- 	rc = proto_register(&tcp_prot, 1);
- 	if (rc)
- 		goto out;
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 05e0de4a7c7f..d28bf0b901a2 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -85,20 +85,19 @@ struct raw_frag_vec {
- 	int hlen;
- };
- 
--struct raw_hashinfo raw_v4_hashinfo = {
--	.lock = __RW_LOCK_UNLOCKED(raw_v4_hashinfo.lock),
--};
-+struct raw_hashinfo raw_v4_hashinfo;
- EXPORT_SYMBOL_GPL(raw_v4_hashinfo);
- 
- int raw_hash_sk(struct sock *sk)
+ struct ksmbd_transport {
+@@ -148,12 +151,14 @@ struct ksmbd_conn *ksmbd_conn_alloc(void);
+ void ksmbd_conn_free(struct ksmbd_conn *conn);
+ bool ksmbd_conn_lookup_dialect(struct ksmbd_conn *c);
+ int ksmbd_conn_write(struct ksmbd_work *work);
+-int ksmbd_conn_rdma_read(struct ksmbd_conn *conn, void *buf,
+-			 unsigned int buflen, u32 remote_key, u64 remote_offset,
+-			 u32 remote_len);
+-int ksmbd_conn_rdma_write(struct ksmbd_conn *conn, void *buf,
+-			  unsigned int buflen, u32 remote_key, u64 remote_offset,
+-			  u32 remote_len);
++int ksmbd_conn_rdma_read(struct ksmbd_conn *conn,
++			 void *buf, unsigned int buflen,
++			 struct smb2_buffer_desc_v1 *desc,
++			 unsigned int desc_len);
++int ksmbd_conn_rdma_write(struct ksmbd_conn *conn,
++			  void *buf, unsigned int buflen,
++			  struct smb2_buffer_desc_v1 *desc,
++			  unsigned int desc_len);
+ void ksmbd_conn_enqueue_request(struct ksmbd_work *work);
+ int ksmbd_conn_try_dequeue_request(struct ksmbd_work *work);
+ void ksmbd_conn_init_server_callbacks(struct ksmbd_conn_ops *ops);
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index 5df87fe18905..8f86b8d6765f 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -6132,7 +6132,6 @@ static noinline int smb2_read_pipe(struct ksmbd_work *work)
+ static int smb2_set_remote_key_for_rdma(struct ksmbd_work *work,
+ 					struct smb2_buffer_desc_v1 *desc,
+ 					__le32 Channel,
+-					__le16 ChannelInfoOffset,
+ 					__le16 ChannelInfoLength)
  {
- 	struct raw_hashinfo *h = sk->sk_prot->h.raw_hash;
--	struct hlist_head *head;
-+	struct hlist_nulls_head *hlist;
+ 	unsigned int i, ch_count;
+@@ -6158,7 +6157,8 @@ static int smb2_set_remote_key_for_rdma(struct ksmbd_work *work,
  
--	head = &h->ht[inet_sk(sk)->inet_num & (RAW_HTABLE_SIZE - 1)];
-+	hlist = &h->ht[inet_sk(sk)->inet_num & (RAW_HTABLE_SIZE - 1)];
- 
- 	write_lock_bh(&h->lock);
--	sk_add_node(sk, head);
-+	hlist_nulls_add_head_rcu(&sk->sk_nulls_node, hlist);
-+	sock_set_flag(sk, SOCK_RCU_FREE);
- 	write_unlock_bh(&h->lock);
- 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
- 
-@@ -111,7 +110,7 @@ void raw_unhash_sk(struct sock *sk)
- 	struct raw_hashinfo *h = sk->sk_prot->h.raw_hash;
- 
- 	write_lock_bh(&h->lock);
--	if (sk_del_node_init(sk))
-+	if (__sk_nulls_del_node_init_rcu(sk))
- 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
- 	write_unlock_bh(&h->lock);
- }
-@@ -164,17 +163,16 @@ static int icmp_filter(const struct sock *sk, const struct sk_buff *skb)
- static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
- {
- 	struct net *net = dev_net(skb->dev);
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
- 	int sdif = inet_sdif(skb);
- 	int dif = inet_iif(skb);
--	struct hlist_head *head;
- 	int delivered = 0;
- 	struct sock *sk;
- 
--	head = &raw_v4_hashinfo.ht[hash];
--	if (hlist_empty(head))
--		return 0;
--	read_lock(&raw_v4_hashinfo.lock);
--	sk_for_each(sk, head) {
-+	hlist = &raw_v4_hashinfo.ht[hash];
-+	rcu_read_lock();
-+	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 		if (!raw_v4_match(net, sk, iph->protocol,
- 				  iph->saddr, iph->daddr, dif, sdif))
- 			continue;
-@@ -189,7 +187,7 @@ static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
- 				raw_rcv(sk, clone);
- 		}
- 	}
--	read_unlock(&raw_v4_hashinfo.lock);
-+	rcu_read_unlock();
- 	return delivered;
+ 	work->need_invalidate_rkey =
+ 		(Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE);
+-	work->remote_key = le32_to_cpu(desc->token);
++	if (Channel == SMB2_CHANNEL_RDMA_V1_INVALIDATE)
++		work->remote_key = le32_to_cpu(desc->token);
+ 	return 0;
  }
  
-@@ -265,25 +263,26 @@ static void raw_err(struct sock *sk, struct sk_buff *skb, u32 info)
- void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
+@@ -6166,14 +6166,12 @@ static ssize_t smb2_read_rdma_channel(struct ksmbd_work *work,
+ 				      struct smb2_read_req *req, void *data_buf,
+ 				      size_t length)
  {
- 	struct net *net = dev_net(skb->dev);;
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
- 	int dif = skb->dev->ifindex;
- 	int sdif = inet_sdif(skb);
--	struct hlist_head *head;
- 	const struct iphdr *iph;
- 	struct sock *sk;
- 	int hash;
+-	struct smb2_buffer_desc_v1 *desc =
+-		(struct smb2_buffer_desc_v1 *)&req->Buffer[0];
+ 	int err;
  
- 	hash = protocol & (RAW_HTABLE_SIZE - 1);
--	head = &raw_v4_hashinfo.ht[hash];
-+	hlist = &raw_v4_hashinfo.ht[hash];
- 
--	read_lock(&raw_v4_hashinfo.lock);
--	sk_for_each(sk, head) {
-+	rcu_read_lock();
-+	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 		iph = (const struct iphdr *)skb->data;
- 		if (!raw_v4_match(net, sk, iph->protocol,
- 				  iph->saddr, iph->daddr, dif, sdif))
- 			continue;
- 		raw_err(sk, skb, info);
- 	}
--	read_unlock(&raw_v4_hashinfo.lock);
-+	rcu_read_unlock();
- }
- 
- static int raw_rcv_skb(struct sock *sk, struct sk_buff *skb)
-@@ -944,44 +943,41 @@ struct proto raw_prot = {
- };
- 
- #ifdef CONFIG_PROC_FS
--static struct sock *raw_get_first(struct seq_file *seq)
-+static struct sock *raw_get_first(struct seq_file *seq, int bucket)
- {
--	struct sock *sk;
- 	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
- 	struct raw_iter_state *state = raw_seq_private(seq);
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
-+	struct sock *sk;
- 
--	for (state->bucket = 0; state->bucket < RAW_HTABLE_SIZE;
-+	for (state->bucket = bucket; state->bucket < RAW_HTABLE_SIZE;
- 			++state->bucket) {
--		sk_for_each(sk, &h->ht[state->bucket])
-+		hlist = &h->ht[state->bucket];
-+		hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 			if (sock_net(sk) == seq_file_net(seq))
--				goto found;
-+				return sk;
-+		}
- 	}
--	sk = NULL;
--found:
--	return sk;
-+	return NULL;
- }
- 
- static struct sock *raw_get_next(struct seq_file *seq, struct sock *sk)
- {
--	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
- 	struct raw_iter_state *state = raw_seq_private(seq);
- 
- 	do {
--		sk = sk_next(sk);
--try_again:
--		;
-+		sk = sk_nulls_next(sk);
- 	} while (sk && sock_net(sk) != seq_file_net(seq));
- 
--	if (!sk && ++state->bucket < RAW_HTABLE_SIZE) {
--		sk = sk_head(&h->ht[state->bucket]);
--		goto try_again;
--	}
-+	if (!sk)
-+		return raw_get_first(seq, state->bucket + 1);
- 	return sk;
- }
- 
- static struct sock *raw_get_idx(struct seq_file *seq, loff_t pos)
- {
--	struct sock *sk = raw_get_first(seq);
-+	struct sock *sk = raw_get_first(seq, 0);
- 
- 	if (sk)
- 		while (pos && (sk = raw_get_next(seq, sk)) != NULL)
-@@ -990,11 +986,9 @@ static struct sock *raw_get_idx(struct seq_file *seq, loff_t pos)
- }
- 
- void *raw_seq_start(struct seq_file *seq, loff_t *pos)
--	__acquires(&h->lock)
-+	__acquires(RCU)
- {
--	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
--
--	read_lock(&h->lock);
-+	rcu_read_lock();
- 	return *pos ? raw_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
- }
- EXPORT_SYMBOL_GPL(raw_seq_start);
-@@ -1004,7 +998,7 @@ void *raw_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- 	struct sock *sk;
- 
- 	if (v == SEQ_START_TOKEN)
--		sk = raw_get_first(seq);
-+		sk = raw_get_first(seq, 0);
- 	else
- 		sk = raw_get_next(seq, v);
- 	++*pos;
-@@ -1013,11 +1007,9 @@ void *raw_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- EXPORT_SYMBOL_GPL(raw_seq_next);
- 
- void raw_seq_stop(struct seq_file *seq, void *v)
--	__releases(&h->lock)
-+	__releases(RCU)
- {
--	struct raw_hashinfo *h = pde_data(file_inode(seq->file));
--
--	read_unlock(&h->lock);
-+	rcu_read_unlock();
- }
- EXPORT_SYMBOL_GPL(raw_seq_stop);
- 
-@@ -1079,6 +1071,7 @@ static __net_initdata struct pernet_operations raw_net_ops = {
- 
- int __init raw_proc_init(void)
- {
-+
- 	return register_pernet_subsys(&raw_net_ops);
- }
- 
-diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
-index b6d92dc7b051..5f208e840d85 100644
---- a/net/ipv4/raw_diag.c
-+++ b/net/ipv4/raw_diag.c
-@@ -57,31 +57,32 @@ static bool raw_lookup(struct net *net, struct sock *sk,
- static struct sock *raw_sock_get(struct net *net, const struct inet_diag_req_v2 *r)
- {
- 	struct raw_hashinfo *hashinfo = raw_get_hashinfo(r);
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
- 	struct sock *sk;
- 	int slot;
- 
- 	if (IS_ERR(hashinfo))
- 		return ERR_CAST(hashinfo);
- 
--	read_lock(&hashinfo->lock);
-+	rcu_read_lock();
- 	for (slot = 0; slot < RAW_HTABLE_SIZE; slot++) {
--		sk_for_each(sk, &hashinfo->ht[slot]) {
-+		hlist = &hashinfo->ht[slot];
-+		hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 			if (raw_lookup(net, sk, r)) {
- 				/*
- 				 * Grab it and keep until we fill
--				 * diag meaage to be reported, so
-+				 * diag message to be reported, so
- 				 * caller should call sock_put then.
--				 * We can do that because we're keeping
--				 * hashinfo->lock here.
- 				 */
--				sock_hold(sk);
--				goto out_unlock;
-+				if (refcount_inc_not_zero(&sk->sk_refcnt))
-+					goto out_unlock;
- 			}
- 		}
- 	}
- 	sk = ERR_PTR(-ENOENT);
- out_unlock:
--	read_unlock(&hashinfo->lock);
-+	rcu_read_unlock();
- 
- 	return sk;
- }
-@@ -141,6 +142,8 @@ static void raw_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	struct raw_hashinfo *hashinfo = raw_get_hashinfo(r);
- 	struct net *net = sock_net(skb->sk);
- 	struct inet_diag_dump_data *cb_data;
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
- 	int num, s_num, slot, s_slot;
- 	struct sock *sk = NULL;
- 	struct nlattr *bc;
-@@ -157,7 +160,8 @@ static void raw_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	for (slot = s_slot; slot < RAW_HTABLE_SIZE; s_num = 0, slot++) {
- 		num = 0;
- 
--		sk_for_each(sk, &hashinfo->ht[slot]) {
-+		hlist = &hashinfo->ht[slot];
-+		hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 			struct inet_sock *inet = inet_sk(sk);
- 
- 			if (!net_eq(sock_net(sk), net))
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 6f354f8be2c5..9f6f4a41245d 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -63,6 +63,7 @@
- #include <net/compat.h>
- #include <net/xfrm.h>
- #include <net/ioam6.h>
-+#include <net/rawv6.h>
- 
- #include <linux/uaccess.h>
- #include <linux/mroute6.h>
-@@ -1073,6 +1074,8 @@ static int __init inet6_init(void)
- 		goto out;
- 	}
- 
-+	raw_hashinfo_init(&raw_v6_hashinfo);
-+
- 	err = proto_register(&tcpv6_prot, 1);
+ 	err = ksmbd_conn_rdma_write(work->conn, data_buf, length,
+-				    le32_to_cpu(desc->token),
+-				    le64_to_cpu(desc->offset),
+-				    le32_to_cpu(desc->length));
++				    (struct smb2_buffer_desc_v1 *)
++				    ((char *)req + le16_to_cpu(req->ReadChannelInfoOffset)),
++				    le16_to_cpu(req->ReadChannelInfoLength));
  	if (err)
- 		goto out;
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index c0f2e3475984..f6119998700e 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -61,9 +61,7 @@
+ 		return err;
  
- #define	ICMPV6_HDRLEN	4	/* ICMPv6 header, RFC 4443 Section 2.1 */
- 
--struct raw_hashinfo raw_v6_hashinfo = {
--	.lock = __RW_LOCK_UNLOCKED(raw_v6_hashinfo.lock),
--};
-+struct raw_hashinfo raw_v6_hashinfo;
- EXPORT_SYMBOL_GPL(raw_v6_hashinfo);
- 
- bool raw_v6_match(struct net *net, struct sock *sk, unsigned short num,
-@@ -143,9 +141,10 @@ EXPORT_SYMBOL(rawv6_mh_filter_unregister);
- static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
+@@ -6217,7 +6215,6 @@ int smb2_read(struct ksmbd_work *work)
+ 						   (struct smb2_buffer_desc_v1 *)
+ 						   ((char *)req + ch_offset),
+ 						   req->Channel,
+-						   req->ReadChannelInfoOffset,
+ 						   req->ReadChannelInfoLength);
+ 		if (err)
+ 			goto out;
+@@ -6395,21 +6392,18 @@ static ssize_t smb2_write_rdma_channel(struct ksmbd_work *work,
+ 				       struct ksmbd_file *fp,
+ 				       loff_t offset, size_t length, bool sync)
  {
- 	struct net *net = dev_net(skb->dev);
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
- 	const struct in6_addr *saddr;
- 	const struct in6_addr *daddr;
--	struct hlist_head *head;
- 	struct sock *sk;
- 	bool delivered = false;
- 	__u8 hash;
-@@ -154,11 +153,9 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
- 	daddr = saddr + 1;
+-	struct smb2_buffer_desc_v1 *desc;
+ 	char *data_buf;
+ 	int ret;
+ 	ssize_t nbytes;
  
- 	hash = nexthdr & (RAW_HTABLE_SIZE - 1);
--	head = &raw_v6_hashinfo.ht[hash];
--	if (hlist_empty(head))
--		return false;
--	read_lock(&raw_v6_hashinfo.lock);
--	sk_for_each(sk, head) {
-+	hlist = &raw_v6_hashinfo.ht[hash];
-+	rcu_read_lock();
-+	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 		int filtered;
+-	desc = (struct smb2_buffer_desc_v1 *)&req->Buffer[0];
+-
+ 	data_buf = kvmalloc(length, GFP_KERNEL | __GFP_ZERO);
+ 	if (!data_buf)
+ 		return -ENOMEM;
  
- 		if (!raw_v6_match(net, sk, nexthdr, daddr, saddr,
-@@ -203,7 +200,7 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
- 			}
- 		}
- 	}
--	read_unlock(&raw_v6_hashinfo.lock);
-+	rcu_read_unlock();
- 	return delivered;
+ 	ret = ksmbd_conn_rdma_read(work->conn, data_buf, length,
+-				   le32_to_cpu(desc->token),
+-				   le64_to_cpu(desc->offset),
+-				   le32_to_cpu(desc->length));
++				   (struct smb2_buffer_desc_v1 *)
++				   ((char *)req + le16_to_cpu(req->WriteChannelInfoOffset)),
++				   le16_to_cpu(req->WriteChannelInfoLength));
+ 	if (ret < 0) {
+ 		kvfree(data_buf);
+ 		return ret;
+@@ -6461,7 +6455,6 @@ int smb2_write(struct ksmbd_work *work)
+ 						   (struct smb2_buffer_desc_v1 *)
+ 						   ((char *)req + ch_offset),
+ 						   req->Channel,
+-						   req->WriteChannelInfoOffset,
+ 						   req->WriteChannelInfoLength);
+ 		if (err)
+ 			goto out;
+diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
+index 3f5d13571694..479d279ee146 100644
+--- a/fs/ksmbd/transport_rdma.c
++++ b/fs/ksmbd/transport_rdma.c
+@@ -1352,14 +1352,18 @@ static void write_done(struct ib_cq *cq, struct ib_wc *wc)
+ 	read_write_done(cq, wc, DMA_TO_DEVICE);
  }
  
-@@ -337,14 +334,15 @@ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+-static int smb_direct_rdma_xmit(struct smb_direct_transport *t, void *buf,
+-				int buf_len, u32 remote_key, u64 remote_offset,
+-				u32 remote_len, bool is_read)
++static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
++				void *buf, int buf_len,
++				struct smb2_buffer_desc_v1 *desc,
++				unsigned int desc_len,
++				bool is_read)
  {
- 	const struct in6_addr *saddr, *daddr;
- 	struct net *net = dev_net(skb->dev);
--	struct hlist_head *head;
-+	struct hlist_nulls_head *hlist;
-+	struct hlist_nulls_node *hnode;
- 	struct sock *sk;
- 	int hash;
+ 	struct smb_direct_rdma_rw_msg *msg;
+ 	int ret;
+ 	DECLARE_COMPLETION_ONSTACK(completion);
+ 	struct ib_send_wr *first_wr = NULL;
++	u32 remote_key = le32_to_cpu(desc[0].token);
++	u64 remote_offset = le64_to_cpu(desc[0].offset);
  
- 	hash = nexthdr & (RAW_HTABLE_SIZE - 1);
--	head = &raw_v6_hashinfo.ht[hash];
--	read_lock(&raw_v6_hashinfo.lock);
--	sk_for_each(sk, head) {
-+	hlist = &raw_v6_hashinfo.ht[hash];
-+	rcu_read_lock();
-+	hlist_nulls_for_each_entry(sk, hnode, hlist, sk_nulls_node) {
- 		/* Note: ipv6_hdr(skb) != skb->data */
- 		const struct ipv6hdr *ip6h = (const struct ipv6hdr *)skb->data;
- 		saddr = &ip6h->saddr;
-@@ -355,7 +353,7 @@ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
- 			continue;
- 		rawv6_err(sk, skb, NULL, type, code, inner_offset, info);
- 	}
--	read_unlock(&raw_v6_hashinfo.lock);
-+	rcu_read_unlock();
+ 	ret = wait_for_credits(t, &t->wait_rw_avail_ops, &t->rw_avail_ops);
+ 	if (ret < 0)
+@@ -1424,22 +1428,22 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t, void *buf,
+ 	return ret;
  }
  
- static inline int rawv6_rcv_skb(struct sock *sk, struct sk_buff *skb)
+-static int smb_direct_rdma_write(struct ksmbd_transport *t, void *buf,
+-				 unsigned int buflen, u32 remote_key,
+-				 u64 remote_offset, u32 remote_len)
++static int smb_direct_rdma_write(struct ksmbd_transport *t,
++				 void *buf, unsigned int buflen,
++				 struct smb2_buffer_desc_v1 *desc,
++				 unsigned int desc_len)
+ {
+ 	return smb_direct_rdma_xmit(smb_trans_direct_transfort(t), buf, buflen,
+-				    remote_key, remote_offset,
+-				    remote_len, false);
++				    desc, desc_len, false);
+ }
+ 
+-static int smb_direct_rdma_read(struct ksmbd_transport *t, void *buf,
+-				unsigned int buflen, u32 remote_key,
+-				u64 remote_offset, u32 remote_len)
++static int smb_direct_rdma_read(struct ksmbd_transport *t,
++				void *buf, unsigned int buflen,
++				struct smb2_buffer_desc_v1 *desc,
++				unsigned int desc_len)
+ {
+ 	return smb_direct_rdma_xmit(smb_trans_direct_transfort(t), buf, buflen,
+-				    remote_key, remote_offset,
+-				    remote_len, true);
++				    desc, desc_len, true);
+ }
+ 
+ static void smb_direct_disconnect(struct ksmbd_transport *t)
 -- 
 2.35.1
 
