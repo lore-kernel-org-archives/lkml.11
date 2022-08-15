@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED64C25B0E
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54376C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345314AbiHPAcG (ORCPT
+        id S1346598AbiHPAcP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
+        Mon, 15 Aug 2022 20:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbiHPAaK (ORCPT
+        with ESMTP id S1346640AbiHPAaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:30:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D003F183122;
-        Mon, 15 Aug 2022 13:35:25 -0700 (PDT)
+        Mon, 15 Aug 2022 20:30:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFB61849D2;
+        Mon, 15 Aug 2022 13:35:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A490B811A5;
-        Mon, 15 Aug 2022 20:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC55C433C1;
-        Mon, 15 Aug 2022 20:34:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C11C6121A;
+        Mon, 15 Aug 2022 20:35:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15BECC433C1;
+        Mon, 15 Aug 2022 20:35:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595695;
-        bh=0DD4p/4boBuJc0WUfW/tRCXt/2UI7dH2bDTdd2p/vnw=;
+        s=korg; t=1660595747;
+        bh=KM2BqJ70Ryu+d2ZegbEKyHkGysngUz+E2aiY5tWpnY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GyEB22cPDCcCbpDtTbQeSYL3whCy8qeACyAlObdHy55YyPESp+a0SHGaS8w56gDGS
-         bhmQZ7nJnFAa4SGOGPSFy84bsNfu0FYQRGVrKCqInY34UXFnYioe6YJ1mgxFlKduoN
-         VpHv2wVccF/g4dsCHml/+er2IU3n+Czv4iWE+h/Q=
+        b=vgOmT7c6YNq86Y2SmXT3AvEZPJRMy9UQrxU/yVJXJkC9azjJkDlf025p5AFfC/NxI
+         98G4Jgcbu20F/2kY//5BrlRbMVQ3Qnq6fjZ2hJ4sMdl7LAnODfOtqqqNP5mTsYBuMs
+         vtm9Nxz+0XXDmJTOd48JboZD1k4JKII3oAl9HBeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhu Yanjun <yanjun.zhu@linux.dev>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0828/1157] RDMA/rxe: Fix BUG: KASAN: null-ptr-deref in rxe_qp_do_cleanup
-Date:   Mon, 15 Aug 2022 20:03:04 +0200
-Message-Id: <20220815180512.603314197@linuxfoundation.org>
+Subject: [PATCH 5.19 0861/1157] RDMA/srpt: Introduce a reference count in struct srpt_device
+Date:   Mon, 15 Aug 2022 20:03:37 +0200
+Message-Id: <20220815180513.904605508@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,78 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhu Yanjun <yanjun.zhu@linux.dev>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 37da51efe6eaa0560f46803c8c436a48a2084da7 ]
+[ Upstream commit aa7dfbb41b5a60ab90e244d6f586b8cb5c791c3e ]
 
-The function rxe_create_qp calls rxe_qp_from_init. If some error
-occurs, the error handler of function rxe_qp_from_init will set
-both scq and rcq to NULL.
+This will be used to keep struct srpt_device around as long as either the
+RDMA port exists or a LIO target port is associated with the struct
+srpt_device.
 
-Then rxe_create_qp calls rxe_put to handle qp. In the end,
-rxe_qp_do_cleanup is called by rxe_put. rxe_qp_do_cleanup directly
-accesses scq and rcq before checking them. This will cause
-null-ptr-deref error.
-
-The call graph is as below:
-
-rxe_create_qp {
-  ...
-  rxe_qp_from_init {
-    ...
-  err1:
-    ...
-    qp->rcq = NULL;  <---rcq is set to NULL
-    qp->scq = NULL;  <---scq is set to NULL
-    ...
-  }
-
-qp_init:
-  rxe_put{
-    ...
-    rxe_qp_do_cleanup {
-      ...
-      atomic_dec(&qp->scq->num_wq); <--- scq is accessed
-      ...
-      atomic_dec(&qp->rcq->num_wq); <--- rcq is accessed
-    }
-}
-
-Fixes: 4703b4f0d94a ("RDMA/rxe: Enforce IBA C11-17")
-Link: https://lore.kernel.org/r/20220705225414.315478-1-yanjun.zhu@linux.dev
-Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Reviewed-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Link: https://lore.kernel.org/r/20220727193415.1583860-3-bvanassche@acm.org
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_qp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/infiniband/ulp/srpt/ib_srpt.c | 17 +++++++++++++++--
+ drivers/infiniband/ulp/srpt/ib_srpt.h |  2 ++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
-index 22e9b85344c3..b79e1b43454e 100644
---- a/drivers/infiniband/sw/rxe/rxe_qp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_qp.c
-@@ -804,13 +804,15 @@ static void rxe_qp_do_cleanup(struct work_struct *work)
- 	if (qp->rq.queue)
- 		rxe_queue_cleanup(qp->rq.queue);
+diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.c b/drivers/infiniband/ulp/srpt/ib_srpt.c
+index 8253d55b9c26..1fbce9225424 100644
+--- a/drivers/infiniband/ulp/srpt/ib_srpt.c
++++ b/drivers/infiniband/ulp/srpt/ib_srpt.c
+@@ -3104,6 +3104,18 @@ static int srpt_use_srq(struct srpt_device *sdev, bool use_srq)
+ 	return ret;
+ }
  
--	atomic_dec(&qp->scq->num_wq);
--	if (qp->scq)
-+	if (qp->scq) {
-+		atomic_dec(&qp->scq->num_wq);
- 		rxe_put(qp->scq);
-+	}
++static void srpt_free_sdev(struct kref *refcnt)
++{
++	struct srpt_device *sdev = container_of(refcnt, typeof(*sdev), refcnt);
++
++	kfree(sdev);
++}
++
++static void srpt_sdev_put(struct srpt_device *sdev)
++{
++	kref_put(&sdev->refcnt, srpt_free_sdev);
++}
++
+ /**
+  * srpt_add_one - InfiniBand device addition callback function
+  * @device: Describes a HCA.
+@@ -3122,6 +3134,7 @@ static int srpt_add_one(struct ib_device *device)
+ 	if (!sdev)
+ 		return -ENOMEM;
  
--	atomic_dec(&qp->rcq->num_wq);
--	if (qp->rcq)
-+	if (qp->rcq) {
-+		atomic_dec(&qp->rcq->num_wq);
- 		rxe_put(qp->rcq);
-+	}
++	kref_init(&sdev->refcnt);
+ 	sdev->device = device;
+ 	mutex_init(&sdev->sdev_mutex);
  
- 	if (qp->pd)
- 		rxe_put(qp->pd);
+@@ -3217,7 +3230,7 @@ static int srpt_add_one(struct ib_device *device)
+ 	srpt_free_srq(sdev);
+ 	ib_dealloc_pd(sdev->pd);
+ free_dev:
+-	kfree(sdev);
++	srpt_sdev_put(sdev);
+ 	pr_info("%s(%s) failed.\n", __func__, dev_name(&device->dev));
+ 	return ret;
+ }
+@@ -3261,7 +3274,7 @@ static void srpt_remove_one(struct ib_device *device, void *client_data)
+ 
+ 	ib_dealloc_pd(sdev->pd);
+ 
+-	kfree(sdev);
++	srpt_sdev_put(sdev);
+ }
+ 
+ static struct ib_client srpt_client = {
+diff --git a/drivers/infiniband/ulp/srpt/ib_srpt.h b/drivers/infiniband/ulp/srpt/ib_srpt.h
+index 3844a7058559..0cb867d580f1 100644
+--- a/drivers/infiniband/ulp/srpt/ib_srpt.h
++++ b/drivers/infiniband/ulp/srpt/ib_srpt.h
+@@ -434,6 +434,7 @@ struct srpt_port {
+ 
+ /**
+  * struct srpt_device - information associated by SRPT with a single HCA
++ * @refcnt:	   Reference count for this device.
+  * @device:        Backpointer to the struct ib_device managed by the IB core.
+  * @pd:            IB protection domain.
+  * @lkey:          L_Key (local key) with write access to all local memory.
+@@ -449,6 +450,7 @@ struct srpt_port {
+  * @port:          Information about the ports owned by this HCA.
+  */
+ struct srpt_device {
++	struct kref		refcnt;
+ 	struct ib_device	*device;
+ 	struct ib_pd		*pd;
+ 	u32			lkey;
 -- 
 2.35.1
 
