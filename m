@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F69DC2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A50CC2BB43
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347852AbiHOUbo (ORCPT
+        id S1347657AbiHOUba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
+        Mon, 15 Aug 2022 16:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347346AbiHOUZH (ORCPT
+        with ESMTP id S1347181AbiHOUXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:25:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488AF9AFE3;
-        Mon, 15 Aug 2022 12:03:13 -0700 (PDT)
+        Mon, 15 Aug 2022 16:23:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0684C62C;
+        Mon, 15 Aug 2022 12:02:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20FD861281;
-        Mon, 15 Aug 2022 19:03:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E8FC433C1;
-        Mon, 15 Aug 2022 19:02:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69442612A3;
+        Mon, 15 Aug 2022 19:02:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DBCBC433D6;
+        Mon, 15 Aug 2022 19:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590180;
-        bh=FlO2+rc4HsuR7lvaoZ66kubdG1FhTpV3XY3NhuCS+jk=;
+        s=korg; t=1660590173;
+        bh=4pNbcfBY7sSXixtKDEXaS8TRXL9OvdOoDNaQXO+z7ao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bOF/BLmJ+js4eyKcO+h5vqvSV3K6g7PgMm71rRKG5WfEEDUCiufKCMR6CBJEVU4QJ
-         PABaR7JzY4juvcZLxVXvdZd6cCmvccdRtow/JtWOJA7/KloAXxpQu7VypvyV5Nw0Do
-         cjirQJZqLybdi4KQ70LyLfAPkcMhpUK4OCc7vvB8=
+        b=PIkT9X6+lbPJX3aZ7uZspuAcSjl76jlB2Hw9knZuoKBikP0WHj6sahWmZsy4K8EZK
+         R99ERPdX4tmJRwoKZ8u9sQTr775jKHrMfXfP1ocmVN8s7MJOZUvhEXIzzqraCv6XdG
+         ILmzacrCJGpG3nvAETKddt1CsagWPcHqEIcLbYMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0178/1095] selinux: fix memleak in security_read_state_kernel()
-Date:   Mon, 15 Aug 2022 19:52:57 +0200
-Message-Id: <20220815180437.001001168@linuxfoundation.org>
+Subject: [PATCH 5.18 0176/1095] hwmon: (sht15) Fix wrong assumptions in device remove callback
+Date:   Mon, 15 Aug 2022 19:52:55 +0200
+Message-Id: <20220815180436.916251708@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,47 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 73de1befcc53a7c68b0c5e76b9b5ac41c517760f ]
+[ Upstream commit 7d4edccc9bbfe1dcdff641343f7b0c6763fbe774 ]
 
-In this function, it directly returns the result of __security_read_policy
-without freeing the allocated memory in *data, cause memory leak issue,
-so free the memory if __security_read_policy failed.
+Taking a lock at the beginning of .remove() doesn't prevent new readers.
+With the existing approach it can happen, that a read occurs just when
+the lock was taken blocking the reader until the lock is released at the
+end of the remove callback which then accessed *data that is already
+freed then.
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-[PM: subject line tweak]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+To actually fix this problem the hwmon core needs some adaption. Until
+this is implemented take the optimistic approach of assuming that all
+readers are gone after hwmon_device_unregister() and
+sysfs_remove_group() as most other drivers do. (And once the core
+implements that, taking the lock would deadlock.)
+
+So drop the lock, move the reset to after device unregistration to keep
+the device in a workable state until it's deregistered. Also add a error
+message in case the reset fails and return 0 anyhow. (Returning an error
+code, doesn't stop the platform device unregistration and only results
+in a little helpful error message before the devm cleanup handlers are
+called.)
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220725194344.150098-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/ss/services.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/hwmon/sht15.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
-index 6901dc07680d..cad54f454d01 100644
---- a/security/selinux/ss/services.c
-+++ b/security/selinux/ss/services.c
-@@ -4049,6 +4049,7 @@ int security_read_policy(struct selinux_state *state,
- int security_read_state_kernel(struct selinux_state *state,
- 			       void **data, size_t *len)
+diff --git a/drivers/hwmon/sht15.c b/drivers/hwmon/sht15.c
+index 7f4a63959730..ae4d14257a11 100644
+--- a/drivers/hwmon/sht15.c
++++ b/drivers/hwmon/sht15.c
+@@ -1020,25 +1020,20 @@ static int sht15_probe(struct platform_device *pdev)
+ static int sht15_remove(struct platform_device *pdev)
  {
-+	int err;
- 	struct selinux_policy *policy;
+ 	struct sht15_data *data = platform_get_drvdata(pdev);
++	int ret;
  
- 	policy = rcu_dereference_protected(
-@@ -4061,5 +4062,11 @@ int security_read_state_kernel(struct selinux_state *state,
- 	if (!*data)
- 		return -ENOMEM;
+-	/*
+-	 * Make sure any reads from the device are done and
+-	 * prevent new ones beginning
+-	 */
+-	mutex_lock(&data->read_lock);
+-	if (sht15_soft_reset(data)) {
+-		mutex_unlock(&data->read_lock);
+-		return -EFAULT;
+-	}
+ 	hwmon_device_unregister(data->hwmon_dev);
+ 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
++
++	ret = sht15_soft_reset(data);
++	if (ret)
++		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
++
+ 	if (!IS_ERR(data->reg)) {
+ 		regulator_unregister_notifier(data->reg, &data->nb);
+ 		regulator_disable(data->reg);
+ 	}
  
--	return __security_read_policy(policy, *data, len);
-+	err = __security_read_policy(policy, *data, len);
-+	if (err) {
-+		vfree(*data);
-+		*data = NULL;
-+		*len = 0;
-+	}
-+	return err;
+-	mutex_unlock(&data->read_lock);
+-
+ 	return 0;
  }
+ 
 -- 
 2.35.1
 
