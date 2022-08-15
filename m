@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3421BC25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4A6C28B2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348333AbiHOVat (ORCPT
+        id S1348385AbiHOVbE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        Mon, 15 Aug 2022 17:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348376AbiHOV1b (ORCPT
+        with ESMTP id S1348439AbiHOV1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:27:31 -0400
+        Mon, 15 Aug 2022 17:27:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C56EA33C;
-        Mon, 15 Aug 2022 12:23:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38709EA8AA;
+        Mon, 15 Aug 2022 12:23:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A2B60EF0;
-        Mon, 15 Aug 2022 19:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89924C433D6;
-        Mon, 15 Aug 2022 19:23:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0FC060FBE;
+        Mon, 15 Aug 2022 19:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B90B1C433C1;
+        Mon, 15 Aug 2022 19:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591393;
-        bh=NsVV9z4D0is7Au0wRGSembh84gMxq1mQKQCq5GKTZn0=;
+        s=korg; t=1660591402;
+        bh=UA4CGN5pQUGKiJSR+n6oMVNpzJodTwCIgeiovrvABLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLkqxHySpZXhSF7J/uSz1o+XMEhuHpZyiEoZKreeq6H4a8jQhhDSCyiCf9+pC3Ibx
-         pNMdZOOAaI+SS2bs26xB7lD3bKOhVuwkKuWTDc05MJjkooO8hoydPk83HDrOatV8Wk
-         7l75DUL+l7GtaWN0a7CQOnBEaBWFn0to2DTrMBMA=
+        b=InHLUGGuCBic7HKAYQkqdiaYcotMgw9+Be8unnPR5XWdq6pgpl6bmGLq6wAuYX7fx
+         jPgTKQh2mjcs4jIB0Rfc05ijRM8ywC6+iLpsEqJtgQkKcBdF6eDsMd7WgB3fPvIiJY
+         NA/yz+ynCRX8wGEnkQcNSQs23ZWvV2YJVtkP/CMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0564/1095] mtd: partitions: Fix refcount leak in parse_redboot_of
-Date:   Mon, 15 Aug 2022 19:59:23 +0200
-Message-Id: <20220815180452.900950659@linuxfoundation.org>
+Subject: [PATCH 5.18 0567/1095] PCI: mediatek-gen3: Fix refcount leak in mtk_pcie_init_irq_domains()
+Date:   Mon, 15 Aug 2022 19:59:26 +0200
+Message-Id: <20220815180453.036262195@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,33 +54,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 9f7e62815cf3cbbcb1b8cb21649fb4dfdb3aa016 ]
+[ Upstream commit bf038503d5fe90189743124233fe7aeb0984e961 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
+of_get_child_by_name() returns a node pointer with refcount incremented, so
+we should use of_node_put() on it when we don't need it anymore.
+
 Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 237960880960 ("mtd: partitions: redboot: seek fis-index-block in the right node")
+Fixes: 814cceebba9b ("PCI: mediatek-gen3: Add INTx support")
+Link: https://lore.kernel.org/r/20220601041259.56185-1-linmq006@gmail.com
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220526110652.64849-1-linmq006@gmail.com
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Acked-by: Jianjun Wang <jianjun.wang@mediatek.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/parsers/redboot.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/pcie-mediatek-gen3.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/parsers/redboot.c b/drivers/mtd/parsers/redboot.c
-index feb44a573d44..a16b42a88581 100644
---- a/drivers/mtd/parsers/redboot.c
-+++ b/drivers/mtd/parsers/redboot.c
-@@ -58,6 +58,7 @@ static void parse_redboot_of(struct mtd_info *master)
- 		return;
+diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+index 5d9fd36b02d1..a02c466a597c 100644
+--- a/drivers/pci/controller/pcie-mediatek-gen3.c
++++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+@@ -600,7 +600,8 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
+ 						  &intx_domain_ops, pcie);
+ 	if (!pcie->intx_domain) {
+ 		dev_err(dev, "failed to create INTx IRQ domain\n");
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto out_put_node;
+ 	}
  
- 	ret = of_property_read_u32(npart, "fis-index-block", &dirblock);
-+	of_node_put(npart);
- 	if (ret)
- 		return;
+ 	/* Setup MSI */
+@@ -623,13 +624,15 @@ static int mtk_pcie_init_irq_domains(struct mtk_gen3_pcie *pcie)
+ 		goto err_msi_domain;
+ 	}
+ 
++	of_node_put(intc_node);
+ 	return 0;
+ 
+ err_msi_domain:
+ 	irq_domain_remove(pcie->msi_bottom_domain);
+ err_msi_bottom_domain:
+ 	irq_domain_remove(pcie->intx_domain);
+-
++out_put_node:
++	of_node_put(intc_node);
+ 	return ret;
+ }
  
 -- 
 2.35.1
