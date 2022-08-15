@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B0EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC74C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343990AbiHOV6P (ORCPT
+        id S1344805AbiHOV6S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
+        Mon, 15 Aug 2022 17:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350591AbiHOV4f (ORCPT
+        with ESMTP id S1350676AbiHOV4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:56:35 -0400
+        Mon, 15 Aug 2022 17:56:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710DB10AE2D;
-        Mon, 15 Aug 2022 12:34:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A052261D5A;
+        Mon, 15 Aug 2022 12:34:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA3DC610A5;
-        Mon, 15 Aug 2022 19:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABF2C433D7;
-        Mon, 15 Aug 2022 19:34:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DEA06111E;
+        Mon, 15 Aug 2022 19:34:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F31B5C433C1;
+        Mon, 15 Aug 2022 19:34:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592049;
-        bh=viaFuZBfoGpqRxPtLy9x71upvo+m2Mrt9nmJ52GbDR8=;
+        s=korg; t=1660592055;
+        bh=He9yFZ0PBN2pXNs4et5MYLrZXmt8FEEOC+rpwFysooI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aF+xciMtkB9N47iR5q+jbChHIRh2donOFpEMpQ+2Ppw6LA3eP9FHmZ9bEz+GmfP5m
-         IP/d22bXYOQC7SQxB6LPd4l5JNQWUha5rGL9hMkGEXQspZN1ZBtE76SSf2kX5+zqQE
-         ikQllyHNoXzC9SOKYyzAdFsdSax1e1m2CN/OiUIg=
+        b=h8k33mugp3EaYHbv3uCDgq2FX9mwZ5nr3EHMqV6HP2GKK8NGR0ShGqiozBTApTy6F
+         j0LgDi2cPAwQikCQjzkzgHKmYuHqQ4Cdg/oOF4R4sud0OME9VC5k3MFa2e9l44sQjH
+         G74hRHNgTo8mntl67EOW+E9GGAug2E57rU4LL0gI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0723/1095] PCI: dwc: Disable outbound windows only for controllers using iATU
-Date:   Mon, 15 Aug 2022 20:02:02 +0200
-Message-Id: <20220815180459.300158610@linuxfoundation.org>
+        stable@vger.kernel.org, Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH 5.19 0050/1157] LoongArch: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
+Date:   Mon, 15 Aug 2022 19:50:06 +0200
+Message-Id: <20220815180441.456232544@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,70 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Huacai Chen <chenhuacai@loongson.cn>
 
-[ Upstream commit d60a2e281e9de2b2f67343b2e39417ca0f4fd54e ]
+commit 28e112afa44ad0814120d41c68fa72372a2cd2c2 upstream.
 
-Some DWC-based controllers (e.g., pcie-al.c and pci-keystone.c, identified
-by the fact that they override the default dw_child_pcie_ops) use their own
-address translation approach instead of the DWC internal ATU (iATU).  For
-those controllers, skip disabling the iATU outbound windows.
+When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
+cpu_max_bits_warn() generates a runtime warning similar as below while
+we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
+instead of NR_CPUS to iterate CPUs.
 
-[bhelgaas: commit log, update multiple window comment]
-Fixes: 458ad06c4cdd ("PCI: dwc: Ensure all outbound ATU windows are reset")
-Link: https://lore.kernel.org/r/20220624143428.8334-4-Sergey.Semin@baikalelectronics.ru
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[    3.052463] ------------[ cut here ]------------
+[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
+[    3.070072] Modules linked in: efivarfs autofs4
+[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
+[    3.084034] Hardware name: Loongson Loongson-3A5000-7A1000-1w-V0.1-CRB/Loongson-LS3A5000-7A1000-1w-EVB-V1.21, BIOS Loongson-UDK2018-V2.0.04082-beta7 04/27
+[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
+[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
+[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
+[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
+[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
+[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
+[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
+[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
+[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
+[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
+[    3.195868]         ...
+[    3.199917] Call Trace:
+[    3.203941] [<90000000002086d8>] show_stack+0x38/0x14c
+[    3.210666] [<9000000000cf846c>] dump_stack_lvl+0x60/0x88
+[    3.217625] [<900000000023d268>] __warn+0xd0/0x100
+[    3.223958] [<9000000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
+[    3.231150] [<9000000000210220>] show_cpuinfo+0x5e8/0x5f0
+[    3.238080] [<90000000004f578c>] seq_read_iter+0x354/0x4b4
+[    3.245098] [<90000000004c2e90>] new_sync_read+0x17c/0x1c4
+[    3.252114] [<90000000004c5174>] vfs_read+0x138/0x1d0
+[    3.258694] [<90000000004c55f8>] ksys_read+0x70/0x100
+[    3.265265] [<9000000000cfde9c>] do_syscall+0x7c/0x94
+[    3.271820] [<9000000000202fe4>] handle_syscall+0xc4/0x160
+[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-designware-host.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ arch/loongarch/kernel/proc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index bc9a7df130ef..d0d768f22ac3 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -543,7 +543,6 @@ static struct pci_ops dw_pcie_ops = {
- 
- void dw_pcie_setup_rc(struct pcie_port *pp)
+--- a/arch/loongarch/kernel/proc.c
++++ b/arch/loongarch/kernel/proc.c
+@@ -106,7 +106,7 @@ static void *c_start(struct seq_file *m,
  {
--	int i;
- 	u32 val, ctrl, num_ctrls;
- 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+ 	unsigned long i = *pos;
  
-@@ -594,19 +593,22 @@ void dw_pcie_setup_rc(struct pcie_port *pp)
- 		PCI_COMMAND_MASTER | PCI_COMMAND_SERR;
- 	dw_pcie_writel_dbi(pci, PCI_COMMAND, val);
+-	return i < NR_CPUS ? (void *)(i + 1) : NULL;
++	return i < nr_cpu_ids ? (void *)(i + 1) : NULL;
+ }
  
--	/* Ensure all outbound windows are disabled so there are multiple matches */
--	for (i = 0; i < pci->num_ob_windows; i++)
--		dw_pcie_disable_atu(pci, i, DW_PCIE_REGION_OUTBOUND);
--
- 	/*
- 	 * If the platform provides its own child bus config accesses, it means
- 	 * the platform uses its own address translation component rather than
- 	 * ATU, so we should not program the ATU here.
- 	 */
- 	if (pp->bridge->child_ops == &dw_child_pcie_ops) {
--		int atu_idx = 0;
-+		int i, atu_idx = 0;
- 		struct resource_entry *entry;
- 
-+		/*
-+		 * Disable all outbound windows to make sure a transaction
-+		 * can't match multiple windows.
-+		 */
-+		for (i = 0; i < pci->num_ob_windows; i++)
-+			dw_pcie_disable_atu(pci, i, DW_PCIE_REGION_OUTBOUND);
-+
- 		/* Get last memory resource entry */
- 		resource_list_for_each_entry(entry, &pp->bridge->windows) {
- 			if (resource_type(entry->res) != IORESOURCE_MEM)
--- 
-2.35.1
-
+ static void *c_next(struct seq_file *m, void *v, loff_t *pos)
 
 
