@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEE7C28B2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D07C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348170AbiHOXbY (ORCPT
+        id S1347057AbiHOXbF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        Mon, 15 Aug 2022 19:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245553AbiHOXZt (ORCPT
+        with ESMTP id S242854AbiHOXZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:25:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948D4804A0;
-        Mon, 15 Aug 2022 13:06:08 -0700 (PDT)
+        Mon, 15 Aug 2022 19:25:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC43C14C376;
+        Mon, 15 Aug 2022 13:05:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 312B86068D;
-        Mon, 15 Aug 2022 20:06:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3980CC433D6;
-        Mon, 15 Aug 2022 20:06:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EFA2B80EAB;
+        Mon, 15 Aug 2022 20:05:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3947C433C1;
+        Mon, 15 Aug 2022 20:05:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593967;
-        bh=1INTIgiR9Q84Laxhh1/gssi/tKckhPOIoCaK9zQByIo=;
+        s=korg; t=1660593956;
+        bh=lEN1fCLC/6iKvx1k5nKAURL3pxUzJBCCafkLf8DB6jY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfRmi+71AzB2ThggYx9IJ+9PNfVVdeNK+gLWP3Z0v6V9nSwsLlt3c/BOEk9MfntVV
-         +S4fP88CH76DS2DEe49xa+RlHAEzb/UtUAjUCwUlI3rD3EhjQWXcflLq+U9wQOOFbF
-         f5zwRoPz/duA9wJtiqluKF7/S2aD842q9YsmR5IY=
+        b=gEdGA1wukE2NIGPL7JM6e3SN+pobzmKv5q+nIMm4RjvWZY9zJlsy75bYLWuoGVCuR
+         PLAXvoMc9lm0mRE2RhYFfi2V39Qn2h4imL0WofMUl9y9Zc1O003Z/qrhxaIWCxT2jl
+         Il2hK/36GF6z9bJnTcoazgTAQZi+L2eSPHr80QeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0355/1157] net: fix sk_wmem_schedule() and sk_rmem_schedule() errors
-Date:   Mon, 15 Aug 2022 19:55:11 +0200
-Message-Id: <20220815180453.914237573@linuxfoundation.org>
+Subject: [PATCH 5.18 1034/1095] ACPI: CPPC: Do not prevent CPPC from working in the future
+Date:   Mon, 15 Aug 2022 20:07:13 +0200
+Message-Id: <20220815180511.845105655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,56 +50,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 7c80b038d23e1f4c7fcc311f43f83b8c60e7fb80 ]
+[ Upstream commit 4f4179fcf420873002035cf1941d844c9e0e7cb3 ]
 
-If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
-we want to allocate 1 byte more (rounded up to one page),
-instead of 150001 :/
+There is a problem with the current revision checks in
+is_cppc_supported() that they essentially prevent the CPPC support
+from working if a new _CPC package format revision being a proper
+superset of the v3 and only causing _CPC to return a package with more
+entries (while retaining the types and meaning of the entries defined by
+the v3) is introduced in the future and used by the platform firmware.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+In that case, as long as the number of entries in the _CPC return
+package is at least CPPC_V3_NUM_ENT, it should be perfectly fine to
+use the v3 support code and disregard the additional package entries
+added by the new package format revision.
+
+For this reason, drop is_cppc_supported() altogether, put the revision
+checks directly into acpi_cppc_processor_probe() so they are easier to
+follow and rework them to take the case mentioned above into account.
+
+Fixes: 4773e77cdc9b ("ACPI / CPPC: Add support for CPPC v3")
+Cc: 4.18+ <stable@vger.kernel.org> # 4.18+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/acpi/cppc_acpi.c | 54 ++++++++++++++++++----------------------
+ include/acpi/cppc_acpi.h |  2 +-
+ 2 files changed, 25 insertions(+), 31 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 7a48991cdb19..13944ceea7ed 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1552,19 +1552,23 @@ static inline bool sk_has_account(struct sock *sk)
- 
- static inline bool sk_wmem_schedule(struct sock *sk, int size)
- {
-+	int delta;
-+
- 	if (!sk_has_account(sk))
- 		return true;
--	return size <= sk->sk_forward_alloc ||
--		__sk_mem_schedule(sk, size, SK_MEM_SEND);
-+	delta = size - sk->sk_forward_alloc;
-+	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_SEND);
+diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
+index b8e26b6b5523..35d894674eba 100644
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -600,33 +600,6 @@ static int pcc_data_alloc(int pcc_ss_id)
+ 	return 0;
  }
  
- static inline bool
- sk_rmem_schedule(struct sock *sk, struct sk_buff *skb, int size)
- {
-+	int delta;
-+
- 	if (!sk_has_account(sk))
- 		return true;
--	return size <= sk->sk_forward_alloc ||
--		__sk_mem_schedule(sk, size, SK_MEM_RECV) ||
-+	delta = size - sk->sk_forward_alloc;
-+	return delta <= 0 || __sk_mem_schedule(sk, delta, SK_MEM_RECV) ||
- 		skb_pfmemalloc(skb);
- }
+-/* Check if CPPC revision + num_ent combination is supported */
+-static bool is_cppc_supported(int revision, int num_ent)
+-{
+-	int expected_num_ent;
+-
+-	switch (revision) {
+-	case CPPC_V2_REV:
+-		expected_num_ent = CPPC_V2_NUM_ENT;
+-		break;
+-	case CPPC_V3_REV:
+-		expected_num_ent = CPPC_V3_NUM_ENT;
+-		break;
+-	default:
+-		pr_debug("Firmware exports unsupported CPPC revision: %d\n",
+-			revision);
+-		return false;
+-	}
+-
+-	if (expected_num_ent != num_ent) {
+-		pr_debug("Firmware exports %d entries. Expected: %d for CPPC rev:%d\n",
+-			num_ent, expected_num_ent, revision);
+-		return false;
+-	}
+-
+-	return true;
+-}
+-
+ /*
+  * An example CPC table looks like the following.
+  *
+@@ -715,7 +688,6 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
+ 			 cpc_obj->type, pr->id);
+ 		goto out_free;
+ 	}
+-	cpc_ptr->num_entries = num_ent;
  
+ 	/* Second entry should be revision. */
+ 	cpc_obj = &out_obj->package.elements[1];
+@@ -726,10 +698,32 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
+ 			 cpc_obj->type, pr->id);
+ 		goto out_free;
+ 	}
+-	cpc_ptr->version = cpc_rev;
+ 
+-	if (!is_cppc_supported(cpc_rev, num_ent))
++	if (cpc_rev < CPPC_V2_REV) {
++		pr_debug("Unsupported _CPC Revision (%d) for CPU:%d\n", cpc_rev,
++			 pr->id);
++		goto out_free;
++	}
++
++	/*
++	 * Disregard _CPC if the number of entries in the return pachage is not
++	 * as expected, but support future revisions being proper supersets of
++	 * the v3 and only causing more entries to be returned by _CPC.
++	 */
++	if ((cpc_rev == CPPC_V2_REV && num_ent != CPPC_V2_NUM_ENT) ||
++	    (cpc_rev == CPPC_V3_REV && num_ent != CPPC_V3_NUM_ENT) ||
++	    (cpc_rev > CPPC_V3_REV && num_ent <= CPPC_V3_NUM_ENT)) {
++		pr_debug("Unexpected number of _CPC return package entries (%d) for CPU:%d\n",
++			 num_ent, pr->id);
+ 		goto out_free;
++	}
++	if (cpc_rev > CPPC_V3_REV) {
++		num_ent = CPPC_V3_NUM_ENT;
++		cpc_rev = CPPC_V3_REV;
++	}
++
++	cpc_ptr->num_entries = num_ent;
++	cpc_ptr->version = cpc_rev;
+ 
+ 	/* Iterate through remaining entries in _CPC */
+ 	for (i = 2; i < num_ent; i++) {
+diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
+index 181907349b49..a76f8c6b732d 100644
+--- a/include/acpi/cppc_acpi.h
++++ b/include/acpi/cppc_acpi.h
+@@ -17,7 +17,7 @@
+ #include <acpi/pcc.h>
+ #include <acpi/processor.h>
+ 
+-/* Support CPPCv2 and CPPCv3  */
++/* CPPCv2 and CPPCv3 support */
+ #define CPPC_V2_REV	2
+ #define CPPC_V3_REV	3
+ #define CPPC_V2_NUM_ENT	21
 -- 
 2.35.1
 
