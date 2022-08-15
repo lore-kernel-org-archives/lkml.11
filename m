@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9730AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F4BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346414AbiHOUtl (ORCPT
+        id S1345345AbiHOUtt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43636 "EHLO
+        Mon, 15 Aug 2022 16:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345628AbiHOUsr (ORCPT
+        with ESMTP id S1346151AbiHOUtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:48:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DC7B8F1F;
-        Mon, 15 Aug 2022 12:09:03 -0700 (PDT)
+        Mon, 15 Aug 2022 16:49:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D705B81E0;
+        Mon, 15 Aug 2022 12:09:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3589460BBF;
-        Mon, 15 Aug 2022 19:09:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20395C433D7;
-        Mon, 15 Aug 2022 19:09:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 627646069E;
+        Mon, 15 Aug 2022 19:09:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A63AC433C1;
+        Mon, 15 Aug 2022 19:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590542;
-        bh=b73m9hpZsq1LPof4CJ65b/MGPVplSqIlbYsDVlENReA=;
+        s=korg; t=1660590548;
+        bh=+iw9H9HE5DC6fgpz+aGX4rOtBTIwTitF/Aqy17elXPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H0BVWg85ek9rDqxammAbu0q/Acsp01NELHopSR9PBk6Po7efX4Vr8JuO3Q0WMQL8H
-         KIu6w16gkHc9UxsJiS+XJQSglxuCuXBadSKHPy7FBYTy52UVo0cYa4nD92dFzmfVIV
-         CAb05D0mkqXUY563gX1eHPBLUpjJ8MoCv0bUkGyc=
+        b=Mnh3u/gqYL36Y3vsVffq/sZwf28uprhqXEe2TJD5VWIyCZZb8n5o5Gb6rwIOC3Iao
+         i9n1DNHbVP4EyBdgiCrX6ga4ojg8eo3hlRqixw1/+7oATLYp+ozlCazlZH4sYNK/hR
+         TqND1JJ8Q8YUoAxieKO19WNULeiWa7yNZT7PlyiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0291/1095] io_uring: move to separate directory
-Date:   Mon, 15 Aug 2022 19:54:50 +0200
-Message-Id: <20220815180441.830696103@linuxfoundation.org>
+Subject: [PATCH 5.18 0293/1095] arm64: Expand ESR_ELx_WFx_ISS_TI to match its ARMv8.7 definition
+Date:   Mon, 15 Aug 2022 19:54:52 +0200
+Message-Id: <20220815180441.903354670@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,133 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit ed29b0b4fd835b058ddd151c49d021e28d631ee6 ]
+[ Upstream commit 6a437208cb942a2dd98f7e1c3fd347ed3d425ffc ]
 
-In preparation for splitting io_uring up a bit, move it into its own
-top level directory. It didn't really belong in fs/ anyway, as it's
-not a file system only API.
+Starting with FEAT_WFXT in ARMv8.7, the TI field in the ISS
+that is reported on a WFx trap is expanded by one bit to
+allow the description of WFET and WFIT.
 
-This adds io_uring/ and moves the core files in there, and updates the
-MAINTAINERS file for the new location.
+Special care is taken to exclude the WFxT bit from the mask
+used to match WFI so that it also matches WFIT when trapped from
+EL0.
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: Joey Gouly <joey.gouly@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220419182755.601427-2-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- MAINTAINERS                 | 7 +------
- Makefile                    | 1 +
- fs/Makefile                 | 2 --
- io_uring/Makefile           | 6 ++++++
- {fs => io_uring}/io-wq.c    | 0
- {fs => io_uring}/io-wq.h    | 0
- {fs => io_uring}/io_uring.c | 2 +-
- kernel/sched/core.c         | 2 +-
- 8 files changed, 10 insertions(+), 10 deletions(-)
- create mode 100644 io_uring/Makefile
- rename {fs => io_uring}/io-wq.c (100%)
- rename {fs => io_uring}/io-wq.h (100%)
- rename {fs => io_uring}/io_uring.c (99%)
+ arch/arm64/include/asm/esr.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b70e2d21405..c7c7a96b62a8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7599,9 +7599,6 @@ F:	include/linux/fs.h
- F:	include/linux/fs_types.h
- F:	include/uapi/linux/fs.h
- F:	include/uapi/linux/openat2.h
--X:	fs/io-wq.c
--X:	fs/io-wq.h
--X:	fs/io_uring.c
+diff --git a/arch/arm64/include/asm/esr.h b/arch/arm64/include/asm/esr.h
+index d52a0b269ee8..65c2201b11b2 100644
+--- a/arch/arm64/include/asm/esr.h
++++ b/arch/arm64/include/asm/esr.h
+@@ -133,7 +133,8 @@
+ #define ESR_ELx_CV		(UL(1) << 24)
+ #define ESR_ELx_COND_SHIFT	(20)
+ #define ESR_ELx_COND_MASK	(UL(0xF) << ESR_ELx_COND_SHIFT)
+-#define ESR_ELx_WFx_ISS_TI	(UL(1) << 0)
++#define ESR_ELx_WFx_ISS_TI	(UL(3) << 0)
++#define ESR_ELx_WFx_ISS_WFxT	(UL(2) << 0)
+ #define ESR_ELx_WFx_ISS_WFI	(UL(0) << 0)
+ #define ESR_ELx_WFx_ISS_WFE	(UL(1) << 0)
+ #define ESR_ELx_xVC_IMM_MASK	((1UL << 16) - 1)
+@@ -146,7 +147,8 @@
+ #define DISR_EL1_ESR_MASK	(ESR_ELx_AET | ESR_ELx_EA | ESR_ELx_FSC)
  
- FINTEK F75375S HARDWARE MONITOR AND FAN CONTROLLER DRIVER
- M:	Riku Voipio <riku.voipio@iki.fi>
-@@ -10277,9 +10274,7 @@ L:	io-uring@vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.dk/linux-block
- T:	git git://git.kernel.dk/liburing
--F:	fs/io-wq.c
--F:	fs/io-wq.h
--F:	fs/io_uring.c
-+F:	io_uring/
- F:	include/linux/io_uring.h
- F:	include/uapi/linux/io_uring.h
- F:	tools/io_uring/
-diff --git a/Makefile b/Makefile
-index 13dd4bd226cb..90e2129a3b80 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1100,6 +1100,7 @@ export MODULES_NSDEPS := $(extmod_prefix)modules.nsdeps
- ifeq ($(KBUILD_EXTMOD),)
- core-y			+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/
- core-$(CONFIG_BLOCK)	+= block/
-+core-$(CONFIG_IO_URING)	+= io_uring/
+ /* ESR value templates for specific events */
+-#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK | ESR_ELx_WFx_ISS_TI)
++#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK |			\
++				 (ESR_ELx_WFx_ISS_TI & ~ESR_ELx_WFx_ISS_WFxT))
+ #define ESR_ELx_WFx_WFI_VAL	((ESR_ELx_EC_WFx << ESR_ELx_EC_SHIFT) |	\
+ 				 ESR_ELx_WFx_ISS_WFI)
  
- vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, \
- 		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
-diff --git a/fs/Makefile b/fs/Makefile
-index 208a74e0b00e..93b80529f8e8 100644
---- a/fs/Makefile
-+++ b/fs/Makefile
-@@ -34,8 +34,6 @@ obj-$(CONFIG_TIMERFD)		+= timerfd.o
- obj-$(CONFIG_EVENTFD)		+= eventfd.o
- obj-$(CONFIG_USERFAULTFD)	+= userfaultfd.o
- obj-$(CONFIG_AIO)               += aio.o
--obj-$(CONFIG_IO_URING)		+= io_uring.o
--obj-$(CONFIG_IO_WQ)		+= io-wq.o
- obj-$(CONFIG_FS_DAX)		+= dax.o
- obj-$(CONFIG_FS_ENCRYPTION)	+= crypto/
- obj-$(CONFIG_FS_VERITY)		+= verity/
-diff --git a/io_uring/Makefile b/io_uring/Makefile
-new file mode 100644
-index 000000000000..3680425df947
---- /dev/null
-+++ b/io_uring/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for io_uring
-+
-+obj-$(CONFIG_IO_URING)		+= io_uring.o
-+obj-$(CONFIG_IO_WQ)		+= io-wq.o
-diff --git a/fs/io-wq.c b/io_uring/io-wq.c
-similarity index 100%
-rename from fs/io-wq.c
-rename to io_uring/io-wq.c
-diff --git a/fs/io-wq.h b/io_uring/io-wq.h
-similarity index 100%
-rename from fs/io-wq.h
-rename to io_uring/io-wq.h
-diff --git a/fs/io_uring.c b/io_uring/io_uring.c
-similarity index 99%
-rename from fs/io_uring.c
-rename to io_uring/io_uring.c
-index 3d97372e811e..b25e59da129f 100644
---- a/fs/io_uring.c
-+++ b/io_uring/io_uring.c
-@@ -86,7 +86,7 @@
- 
- #include <uapi/linux/io_uring.h>
- 
--#include "internal.h"
-+#include "../fs/internal.h"
- #include "io-wq.h"
- 
- #define IORING_MAX_ENTRIES	32768
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 6baf96d2fa39..72b2f277b0dd 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -88,7 +88,7 @@
- #include "stats.h"
- 
- #include "../workqueue_internal.h"
--#include "../../fs/io-wq.h"
-+#include "../../io_uring/io-wq.h"
- #include "../smpboot.h"
- 
- /*
 -- 
 2.35.1
 
