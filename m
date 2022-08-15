@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EA4C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95722C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232991AbiHPEw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
+        id S233006AbiHPExE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbiHPEt0 (ORCPT
+        with ESMTP id S232645AbiHPEt2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:49:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A384D197057;
-        Mon, 15 Aug 2022 13:45:29 -0700 (PDT)
+        Tue, 16 Aug 2022 00:49:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02437197044;
+        Mon, 15 Aug 2022 13:45:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85421B811A1;
-        Mon, 15 Aug 2022 20:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BF5C433D7;
-        Mon, 15 Aug 2022 20:45:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C7EFB80EAD;
+        Mon, 15 Aug 2022 20:45:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01EAC433D6;
+        Mon, 15 Aug 2022 20:45:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596327;
-        bh=k935GoVJXQbcafwXpDDhnY454TvxIKotimdvrKaiCQw=;
+        s=korg; t=1660596324;
+        bh=ckpDEeEgJ/UECDM9viJTkM7Sj1003rU4VIiNM4CXKbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TncXf3ksVpTioUsP1uwX4DYE9WI4mU9eNZ32/eiS0eVjr6jpyoQ2lsn5Wh5gi5VeB
-         D6J8HA29fPnL/z+hbNt6ouhEqVM2SQIP9ysweP9QKVOvJOMtbUYPAGqtxOsOtTejCA
-         Y/aFePj+G2tp1bm65Q+s5qn5bhq8eSp34LywKKBc=
+        b=cTEIBZKFo9Vqb1cMzRJz71y6y3SMGAc8MB1KAvZSLfvwYYdVIPBV3RRCgmVWnYBve
+         HhXgoZ/rsS2Dh/8mT+dsWlW4zvBqcPtdtWxrWEdv19W71PiAA+XAIScWTzUH27A7N7
+         5Y6iTJp4X2w3y42hXgjpMY83m4WNqPn8C299NCCY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1011/1157] powerpc/xive: Fix refcount leak in xive_get_max_prio
-Date:   Mon, 15 Aug 2022 20:06:07 +0200
-Message-Id: <20220815180520.307845151@linuxfoundation.org>
+        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 1042/1157] scsi: qla2xxx: Fix losing FCP-2 targets on long port disable with I/Os
+Date:   Mon, 15 Aug 2022 20:06:38 +0200
+Message-Id: <20220815180521.692625168@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,37 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit 255b650cbec6849443ce2e0cdd187fd5e61c218c ]
+commit 2416ccd3815ba1613e10a6da0a24ef21acfe5633 upstream.
 
-of_find_node_by_path() returns a node pointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+FCP-2 devices were not coming back online once they were lost, login
+retries exhausted, and then came back up.  Fix this by accepting RSCN when
+the device is not online.
 
-Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220605053225.56125-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220616053508.27186-10-njavali@marvell.com
+Fixes: 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_init.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index d02911e78cfc..e2c8f93b535b 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -718,6 +718,7 @@ static bool __init xive_get_max_prio(u8 *max_prio)
- 	}
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1834,7 +1834,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 	case RSCN_PORT_ADDR:
+ 		fcport = qla2x00_find_fcport_by_nportid(vha, &ea->id, 1);
+ 		if (fcport) {
+-			if (fcport->flags & FCF_FCP2_DEVICE) {
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE) {
+ 				ql_dbg(ql_dbg_disc, vha, 0x2115,
+ 				       "Delaying session delete for FCP2 portid=%06x %8phC ",
+ 					fcport->d_id.b24, fcport->port_name);
+@@ -1866,7 +1867,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 		break;
+ 	case RSCN_AREA_ADDR:
+ 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+-			if (fcport->flags & FCF_FCP2_DEVICE)
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE)
+ 				continue;
  
- 	reg = of_get_property(rootdn, "ibm,plat-res-int-priorities", &len);
-+	of_node_put(rootdn);
- 	if (!reg) {
- 		pr_err("Failed to read 'ibm,plat-res-int-priorities' property\n");
- 		return false;
--- 
-2.35.1
-
+ 			if ((ea->id.b24 & 0xffff00) == (fcport->d_id.b24 & 0xffff00)) {
+@@ -1877,7 +1879,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 		break;
+ 	case RSCN_DOM_ADDR:
+ 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+-			if (fcport->flags & FCF_FCP2_DEVICE)
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE)
+ 				continue;
+ 
+ 			if ((ea->id.b24 & 0xff0000) == (fcport->d_id.b24 & 0xff0000)) {
+@@ -1889,7 +1892,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 	case RSCN_FAB_ADDR:
+ 	default:
+ 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+-			if (fcport->flags & FCF_FCP2_DEVICE)
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE)
+ 				continue;
+ 
+ 			fcport->scan_needed = 1;
 
 
