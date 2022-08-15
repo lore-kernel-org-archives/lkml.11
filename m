@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2270FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E06C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbiHOUzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S1346428AbiHOUzT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346316AbiHOUyI (ORCPT
+        with ESMTP id S1346761AbiHOUyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:54:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D9B40BE4;
-        Mon, 15 Aug 2022 12:10:58 -0700 (PDT)
+        Mon, 15 Aug 2022 16:54:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45197BE4DF;
+        Mon, 15 Aug 2022 12:11:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 462EA60BB5;
-        Mon, 15 Aug 2022 19:10:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB34C433C1;
-        Mon, 15 Aug 2022 19:10:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AC32B8110A;
+        Mon, 15 Aug 2022 19:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A61C433D7;
+        Mon, 15 Aug 2022 19:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590657;
-        bh=vrIzN52GEEHh/T0R5cqvOZOYcnv5hQLjIKksDxnlmEo=;
+        s=korg; t=1660590651;
+        bh=QZhC4OWnf79y4pgVUj71VLW5Nv7lL1FdigrexeGZP/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F31StDHArfmopv0xywsziVMsMX8GLfooG1yybw+fPa12p5pqVXA4y3qcqaujdlQZq
-         B60n6baxzFLCFbvH2knMuFltsNz0DIvjKijznFf0MmACnntiVtvTWqSysHXv+QaiVI
-         14Db8LU06h6NhfSt1ECOc7Oy/eBX9gTU2/wHR7mk=
+        b=JD4PwPNfldsNFxi18K02zzL/mjWHfCegrHmavUCrujpGOcgTrZkrbyzeBK36Wh8+/
+         BYjlQc1isGDTbw+GPN85QNxNve+KhpouR1ALh1dvpvQFjMiP+Rgv9uXD3V2TonzMzI
+         7nLBrk/Eu9Oh/FlqCJJMFA40SKdCe6PwSl+WuGwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0298/1095] pwm: sifive: Simplify offset calculation for PWMCMP registers
-Date:   Mon, 15 Aug 2022 19:54:57 +0200
-Message-Id: <20220815180442.092452046@linuxfoundation.org>
+Subject: [PATCH 5.18 0326/1095] drm/bridge: lt9611uxc: Cancel only drivers work
+Date:   Mon, 15 Aug 2022 19:55:25 +0200
+Message-Id: <20220815180443.275948975@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,69 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-[ Upstream commit 20550a61880fc55e68a0d290ad195b74729c0e7b ]
+[ Upstream commit dfa687bffc8a4a21ed929c7dececf01b8f1f52ee ]
 
-Instead of explicitly using PWM_SIFIVE_PWMCMP0 + pwm->hwpwm *
-PWM_SIFIVE_SIZE_PWMCMP for each access to one of the PWMCMP registers,
-introduce a macro that takes the hwpwm id as parameter.
+During device remove care needs to be taken that no work is pending
+before it removes the underlying DRM bridge etc, but this can be done on
+the specific work rather than waiting for the flush of the system-wide
+workqueue.
 
-For the register definition using a plain 4 instead of the cpp constant
-PWM_SIFIVE_SIZE_PWMCMP is easier to read, so define the offset macro
-without the constant. The latter can then be dropped as there are no
-users left.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: bc6fa8676ebb ("drm/bridge/lontium-lt9611uxc: move HPD notification out of IRQ handler")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220601233818.1877963-1-bjorn.andersson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-sifive.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/bridge/lontium-lt9611uxc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index 253c4a17d255..a55f7345dc87 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -23,7 +23,7 @@
- #define PWM_SIFIVE_PWMCFG		0x0
- #define PWM_SIFIVE_PWMCOUNT		0x8
- #define PWM_SIFIVE_PWMS			0x10
--#define PWM_SIFIVE_PWMCMP0		0x20
-+#define PWM_SIFIVE_PWMCMP(i)		(0x20 + 4 * (i))
+diff --git a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+index 3d62e6bf6892..310b3b194491 100644
+--- a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
++++ b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+@@ -982,7 +982,7 @@ static int lt9611uxc_remove(struct i2c_client *client)
+ 	struct lt9611uxc *lt9611uxc = i2c_get_clientdata(client);
  
- /* PWMCFG fields */
- #define PWM_SIFIVE_PWMCFG_SCALE		GENMASK(3, 0)
-@@ -36,8 +36,6 @@
- #define PWM_SIFIVE_PWMCFG_GANG		BIT(24)
- #define PWM_SIFIVE_PWMCFG_IP		BIT(28)
+ 	disable_irq(client->irq);
+-	flush_scheduled_work();
++	cancel_work_sync(&lt9611uxc->work);
+ 	lt9611uxc_audio_exit(lt9611uxc);
+ 	drm_bridge_remove(&lt9611uxc->bridge);
  
--/* PWM_SIFIVE_SIZE_PWMCMP is used to calculate offset for pwmcmpX registers */
--#define PWM_SIFIVE_SIZE_PWMCMP		4
- #define PWM_SIFIVE_CMPWIDTH		16
- #define PWM_SIFIVE_DEFAULT_PERIOD	10000000
- 
-@@ -112,8 +110,7 @@ static void pwm_sifive_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_sifive_ddata *ddata = pwm_sifive_chip_to_ddata(chip);
- 	u32 duty, val;
- 
--	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP0 +
--		     pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+	duty = readl(ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
- 
- 	state->enabled = duty > 0;
- 
-@@ -194,8 +191,7 @@ static int pwm_sifive_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 		pwm_sifive_update_clock(ddata, clk_get_rate(ddata->clk));
- 	}
- 
--	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP0 +
--	       pwm->hwpwm * PWM_SIFIVE_SIZE_PWMCMP);
-+	writel(frac, ddata->regs + PWM_SIFIVE_PWMCMP(pwm->hwpwm));
- 
- 	if (state->enabled != enabled)
- 		pwm_sifive_enable(chip, state->enabled);
 -- 
 2.35.1
 
