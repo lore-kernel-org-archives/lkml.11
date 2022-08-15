@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494EDC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A23C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347643AbiHOV0C (ORCPT
+        id S1347491AbiHOVZl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
+        Mon, 15 Aug 2022 17:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343941AbiHOVRR (ORCPT
+        with ESMTP id S241608AbiHOVNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:17:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B1529829;
-        Mon, 15 Aug 2022 12:20:34 -0700 (PDT)
+        Mon, 15 Aug 2022 17:13:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB262DABB5;
+        Mon, 15 Aug 2022 12:19:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3550B810A3;
-        Mon, 15 Aug 2022 19:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFAD8C433C1;
-        Mon, 15 Aug 2022 19:20:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49EF460A52;
+        Mon, 15 Aug 2022 19:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37903C433D6;
+        Mon, 15 Aug 2022 19:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591231;
-        bh=77p0F+fhXx8FwC7ansFUH3g5OXXvP6hKPXv1B2Jh3cc=;
+        s=korg; t=1660591186;
+        bh=qXskdu1j9rHf85RE4xREBJawMz2p1A/Hq3++wgRptaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sQMS38i4JHbgM7Qhdn68Z63JifgT9mUqkSmb930Ur4aWVzTtCnk4usiX76eUXAptt
-         IUuMbpZsu9TemAaC1+MaeCIHRMaBqIlmN/bOsOtTpdZtnB066jxDuwbNFr2S9ZbkbR
-         WUosSeb1VwkCKiu1PgKkWdwvFFlsu5BESIhQ3YxU=
+        b=Cpiikw84cllnhkM4OGWv5CIppUOh0eunSQjR4WRk1GbvvHVffEEMb1MeTHkSDBOm1
+         wgenBsf5/HEV0z9QGknKhFz89bBlYAF/1ypwAAp8ddP7a1DAtPwWxTIGdL+7iNAIQJ
+         yhTq0uv6bF4AXqj8eSBCyLCRUIkx5hmTaJekq9EU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0514/1095] net/mlx5e: xsk: Account for XSK RQ UMRs when calculating ICOSQ size
-Date:   Mon, 15 Aug 2022 19:58:33 +0200
-Message-Id: <20220815180450.804339679@linuxfoundation.org>
+Subject: [PATCH 5.18 0467/1095] wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()
+Date:   Mon, 15 Aug 2022 19:57:46 +0200
+Message-Id: <20220815180448.927414587@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,53 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 52586d2f56b3e4f528ca7268d65074e92c936681 ]
+[ Upstream commit 7a4836560a6198d245d5732e26f94898b12eb760 ]
 
-ICOSQ is used to post UMR WQEs for both regular RQ and XSK RQ. However,
-space in ICOSQ is reserved only for the regular RQ, which may cause
-ICOSQ overflows when using XSK (the most risk is on activating
-channels).
+The simple_write_to_buffer() function will succeed if even a single
+byte is initialized.  However, we need to initialize the whole buffer
+to prevent information leaks.  Just use memdup_user().
 
-This commit fixes the issue by reserving space for XSK UMR WQEs as well.
-As XSK may be enabled without restarting the channel and recreating the
-ICOSQ, this space is reserved unconditionally.
-
-Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: ff974e408334 ("wil6210: debugfs interface to send raw WMI command")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/Ysg14NdKAZF/hcNG@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/wireless/ath/wil6210/debugfs.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 08fd1370a8b0..75da12e1b0c7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -797,8 +797,20 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
- 		return MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index 4c944e595978..c6f8254cb21d 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -1012,18 +1012,12 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 	u16 cmdid;
+ 	int rc, rc1;
  
- 	wqebbs = MLX5E_UMR_WQEBBS * BIT(mlx5e_get_rq_log_wq_sz(rqp->rqc));
-+
-+	/* If XDP program is attached, XSK may be turned on at any time without
-+	 * restarting the channel. ICOSQ must be big enough to fit UMR WQEs of
-+	 * both regular RQ and XSK RQ.
-+	 * Although mlx5e_mpwqe_get_log_rq_size accepts mlx5e_xsk_param, it
-+	 * doesn't affect its return value, as long as params->xdp_prog != NULL,
-+	 * so we can just multiply by 2.
-+	 */
-+	if (params->xdp_prog)
-+		wqebbs *= 2;
-+
- 	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
- 		wqebbs += mlx5e_shampo_icosq_sz(mdev, params, rqp);
-+
- 	return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE, order_base_2(wqebbs));
- }
+-	if (cmdlen < 0)
++	if (cmdlen < 0 || *ppos != 0)
+ 		return -EINVAL;
  
+-	wmi = kmalloc(len, GFP_KERNEL);
+-	if (!wmi)
+-		return -ENOMEM;
+-
+-	rc = simple_write_to_buffer(wmi, len, ppos, buf, len);
+-	if (rc < 0) {
+-		kfree(wmi);
+-		return rc;
+-	}
++	wmi = memdup_user(buf, len);
++	if (IS_ERR(wmi))
++		return PTR_ERR(wmi);
+ 
+ 	cmd = (cmdlen > 0) ? &wmi[1] : NULL;
+ 	cmdid = le16_to_cpu(wmi->command_id);
 -- 
 2.35.1
 
