@@ -2,181 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2EBC282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B503C2BB43
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243281AbiHOUNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52362 "EHLO
+        id S1343556AbiHOUNT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345957AbiHOUJJ (ORCPT
+        with ESMTP id S1346161AbiHOUKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:09 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB858832EF;
-        Mon, 15 Aug 2022 11:55:59 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id 17so7145994pli.0;
-        Mon, 15 Aug 2022 11:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=DC0lDtuVz6yFca92GBSK6djBgAZXj0wHc7OOD2pjghE=;
-        b=QWwJlBuMd3BZgQulNy3FF7Q8pHPEfKIeqgRJRGAHI5ml30UD5XY5UUb29NmNZ8GBjD
-         GxKLYh8ECcsSkfb8EV5IztKhRaUL+Onv2MfPhcIiNquRk71zD8RiLLFXvt/rviGRyCIk
-         8Y4upNBC2pPja+wNdchcY0q5S40PIsZtaqTiOA9sRc5a2o5UyIANJhCZaX0QOfz/9BVr
-         GEtb3lgFajKMMwzsCGpuGJ5UlCPBFGxy93H79eQF8kL1tcdvqUpqF3vDpp8wcQvlX07b
-         aXwTAzF6n1dZNb0C6hPPmmlC4TUj3CmYGpvXa+ZGc7hQxiNrXl1vl+Y7ZpGVOO5I7umb
-         rtCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=DC0lDtuVz6yFca92GBSK6djBgAZXj0wHc7OOD2pjghE=;
-        b=bqY4Exf39EF0MJAKCoEzJQrr/9Cqbq8+3cyBDtp7WicKrm80u+rIexnXl0u98qceTH
-         K37UVoh0kQNKPcVgEm5WHDiyyqq4/X91DGzFzPe+7knJbhIHhfuccgHfovckd7UGHHiH
-         G60pG9klrA1gYTSUQlZrt+tTaXDEv1jMUDklowZEzGdNf6a0CaJleGXLkm4NXqDvsg4B
-         WrVXLvKJxm3eodfKpkWPXKY4hQr27lejs1Vk3/EkzgYN2iZJPGNzLR4klnQA/6OVQwHJ
-         TmcWtfoN6ZNB3piaT0Wi2rFnMOE1cqsXcKHnJHRsmdb3OkkPjz4+58z0YUu1qpyJbP75
-         cuXw==
-X-Gm-Message-State: ACgBeo2gW1npB6LJHigWlKjMzGUGbKqzKeHACT33Gar9VPeJyVt49SpQ
-        FC32nzHV9yJjQMJTPJPxFHVbTnmGrXGntrwX
-X-Google-Smtp-Source: AA6agR6oRWqK8fWSNacTEJBV1JAilD8l4rIaZKnYmiUqRPSQ33T+fZtCDVjT3SqOVrTd4JO1xkIN3Q==
-X-Received: by 2002:a17:903:41c6:b0:16f:3d1:f63 with SMTP id u6-20020a17090341c600b0016f03d10f63mr18064404ple.50.1660589758240;
-        Mon, 15 Aug 2022 11:55:58 -0700 (PDT)
-Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
-        by smtp.googlemail.com with ESMTPSA id x190-20020a6231c7000000b0052def2e20dasm6858174pfx.167.2022.08.15.11.55.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 11:55:57 -0700 (PDT)
-From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
-Subject: [PATCH 1/7] filemap: Add filemap_get_folios_contig()
-Date:   Mon, 15 Aug 2022 11:54:46 -0700
-Message-Id: <20220815185452.37447-2-vishal.moola@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220815185452.37447-1-vishal.moola@gmail.com>
-References: <20220815185452.37447-1-vishal.moola@gmail.com>
+        Mon, 15 Aug 2022 16:10:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F657670;
+        Mon, 15 Aug 2022 11:56:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0857EB8109E;
+        Mon, 15 Aug 2022 18:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3069FC433C1;
+        Mon, 15 Aug 2022 18:56:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660589807;
+        bh=oaG8uRFFATYpJIIbw+3NNlxAQIMb14Wg6pkWXbXB2uw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NLArbumIyyQIwgSxpDdUDl07W53UIOTHHAcxcZ0WnqYJcjKNEi1W3M5M0+SQi97db
+         DDqtH1PtzaNAAvb4BhnIdgvQx/Zx9nK1lhtDyvsHS6z1JQOE4XZ6t/hHqnljFIJQ8g
+         kQ2FXWQYAlpdePPxPslP88f0PomNGQDzP+rCd+Uw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.18 0054/1095] crypto: ccp - Use kzalloc for sev ioctl interfaces to prevent kernel memory leak
+Date:   Mon, 15 Aug 2022 19:50:53 +0200
+Message-Id: <20220815180431.705430741@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This function is meant to replace find_get_pages_contig().
+From: John Allen <john.allen@amd.com>
 
-Unlike find_get_pages_contig(), filemap_get_folios_contig() no
-longer takes in a target number of pages to find - It returns up to 15
-contiguous folios.
+commit 13dc15a3f5fd7f884e4bfa8c011a0ae868df12ae upstream.
 
-To be more consistent with filemap_get_folios(), filemap_get_folios_contig()
-now also updates the start index passed in, and takes an end index.
+For some sev ioctl interfaces, input may be passed that is less than or
+equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data that PSP
+firmware returns. In this case, kmalloc will allocate memory that is the
+size of the input rather than the size of the data. Since PSP firmware
+doesn't fully overwrite the buffer, the sev ioctl interfaces with the
+issue may return uninitialized slab memory.
 
-Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
+Currently, all of the ioctl interfaces in the ccp driver are safe, but
+to prevent future problems, change all ioctl interfaces that allocate
+memory with kmalloc to use kzalloc and memset the data buffer to zero
+in sev_ioctl_do_platform_status.
+
+Fixes: 38103671aad3 ("crypto: ccp: Use the stack and common buffer for status commands")
+Fixes: e799035609e15 ("crypto: ccp: Implement SEV_PEK_CSR ioctl command")
+Fixes: 76a2b524a4b1d ("crypto: ccp: Implement SEV_PDH_CERT_EXPORT ioctl command")
+Fixes: d6112ea0cb344 ("crypto: ccp - introduce SEV_GET_ID2 command")
+Cc: stable@vger.kernel.org
+Reported-by: Andy Nguyen <theflow@google.com>
+Suggested-by: David Rientjes <rientjes@google.com>
+Suggested-by: Peter Gonda <pgonda@google.com>
+Signed-off-by: John Allen <john.allen@amd.com>
+Reviewed-by: Peter Gonda <pgonda@google.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pagemap.h |  2 ++
- mm/filemap.c            | 73 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 75 insertions(+)
+ drivers/crypto/ccp/sev-dev.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 0178b2040ea3..8689c32d628b 100644
---- a/include/linux/pagemap.h
-+++ b/include/linux/pagemap.h
-@@ -718,6 +718,8 @@ static inline struct page *find_subpage(struct page *head, pgoff_t index)
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -577,6 +577,8 @@ static int sev_ioctl_do_platform_status(
+ 	struct sev_user_data_status data;
+ 	int ret;
  
- unsigned filemap_get_folios(struct address_space *mapping, pgoff_t *start,
- 		pgoff_t end, struct folio_batch *fbatch);
-+unsigned filemap_get_folios_contig(struct address_space *mapping,
-+		pgoff_t *start, pgoff_t end, struct folio_batch *fbatch);
- unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t start,
- 			       unsigned int nr_pages, struct page **pages);
- unsigned find_get_pages_range_tag(struct address_space *mapping, pgoff_t *index,
-diff --git a/mm/filemap.c b/mm/filemap.c
-index 15800334147b..3a497e178fde 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2194,6 +2194,79 @@ bool folio_more_pages(struct folio *folio, pgoff_t index, pgoff_t max)
- 	return index < folio->index + folio_nr_pages(folio) - 1;
- }
++	memset(&data, 0, sizeof(data));
++
+ 	ret = __sev_do_cmd_locked(SEV_CMD_PLATFORM_STATUS, &data, &argp->error);
+ 	if (ret)
+ 		return ret;
+@@ -630,7 +632,7 @@ static int sev_ioctl_do_pek_csr(struct s
+ 	if (input.length > SEV_FW_BLOB_MAX_SIZE)
+ 		return -EFAULT;
  
-+/**
-+ * filemap_get_folios_contig - Get a batch of contiguous folios
-+ * @mapping:	The address_space to search
-+ * @start:	The starting page index
-+ * @end:	The final page index (inclusive)
-+ * @fbatch:	The batch to fill
-+ *
-+ * filemap_get_folios_contig() works exactly like filemap_get_folios(),
-+ * except the returned folios are guaranteed to be contiguous. This may
-+ * not return all contiguous folios if the batch gets filled up.
-+ *
-+ * Return: The number of folios found.
-+ * Also update @start to be positioned for traversal of the next folio.
-+ */
-+
-+unsigned filemap_get_folios_contig(struct address_space *mapping,
-+		pgoff_t *start, pgoff_t end, struct folio_batch *fbatch)
-+{
-+	XA_STATE(xas, &mapping->i_pages, *start);
-+	unsigned long nr;
-+	struct folio *folio;
-+
-+	rcu_read_lock();
-+
-+	for (folio = xas_load(&xas); folio && xas.xa_index <= end;
-+			folio = xas_next(&xas)) {
-+		if (xas_retry(&xas, folio))
-+			continue;
-+		/*
-+		 * If the entry has been swapped out, we can stop looking.
-+		 * No current caller is looking for DAX entries.
-+		 */
-+		if (xa_is_value(folio))
-+			goto update_start;
-+
-+		if (!folio_try_get_rcu(folio))
-+			goto retry;
-+
-+		if (unlikely(folio != xas_reload(&xas)))
-+			goto put_folio;
-+
-+		if (!folio_batch_add(fbatch, folio)) {
-+			nr = folio_nr_pages(folio);
-+
-+			if (folio_test_hugetlb(folio))
-+				nr = 1;
-+			*start = folio->index + nr;
-+			goto out;
-+		}
-+		continue;
-+put_folio:
-+		folio_put(folio);
-+
-+retry:
-+		xas_reset(&xas);
-+	}
-+
-+update_start:
-+	nr = folio_batch_count(fbatch);
-+
-+	if (nr) {
-+		folio = fbatch->folios[nr - 1];
-+		if (folio_test_hugetlb(folio))
-+			*start = folio->index + 1;
-+		else
-+			*start = folio->index + folio_nr_pages(folio);
-+	}
-+out:
-+	rcu_read_unlock();
-+	return folio_batch_count(fbatch);
-+}
-+EXPORT_SYMBOL(filemap_get_folios_contig);
-+
- /**
-  * find_get_pages_contig - gang contiguous pagecache lookup
-  * @mapping:	The address_space to search
--- 
-2.36.1
+-	blob = kmalloc(input.length, GFP_KERNEL);
++	blob = kzalloc(input.length, GFP_KERNEL);
+ 	if (!blob)
+ 		return -ENOMEM;
+ 
+@@ -854,7 +856,7 @@ static int sev_ioctl_do_get_id2(struct s
+ 	input_address = (void __user *)input.address;
+ 
+ 	if (input.address && input.length) {
+-		id_blob = kmalloc(input.length, GFP_KERNEL);
++		id_blob = kzalloc(input.length, GFP_KERNEL);
+ 		if (!id_blob)
+ 			return -ENOMEM;
+ 
+@@ -973,14 +975,14 @@ static int sev_ioctl_do_pdh_export(struc
+ 	if (input.cert_chain_len > SEV_FW_BLOB_MAX_SIZE)
+ 		return -EFAULT;
+ 
+-	pdh_blob = kmalloc(input.pdh_cert_len, GFP_KERNEL);
++	pdh_blob = kzalloc(input.pdh_cert_len, GFP_KERNEL);
+ 	if (!pdh_blob)
+ 		return -ENOMEM;
+ 
+ 	data.pdh_cert_address = __psp_pa(pdh_blob);
+ 	data.pdh_cert_len = input.pdh_cert_len;
+ 
+-	cert_blob = kmalloc(input.cert_chain_len, GFP_KERNEL);
++	cert_blob = kzalloc(input.cert_chain_len, GFP_KERNEL);
+ 	if (!cert_blob) {
+ 		ret = -ENOMEM;
+ 		goto e_free_pdh;
+
 
