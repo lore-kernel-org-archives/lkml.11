@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 818BAC25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83970C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233580AbiHPEyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S232861AbiHPEyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233782AbiHPEvx (ORCPT
+        with ESMTP id S233789AbiHPEvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:51:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F52352834;
-        Mon, 15 Aug 2022 13:49:41 -0700 (PDT)
+        Tue, 16 Aug 2022 00:51:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E065B1A25CF;
+        Mon, 15 Aug 2022 13:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06E85B811A1;
-        Mon, 15 Aug 2022 20:49:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56143C433C1;
-        Mon, 15 Aug 2022 20:49:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12564B811AB;
+        Mon, 15 Aug 2022 20:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677CFC433D6;
+        Mon, 15 Aug 2022 20:49:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596578;
-        bh=ECYLy6ZnFKRuF+2gIewQOS7C8kcMwJoNV5HEHpGO02I=;
+        s=korg; t=1660596581;
+        bh=NEkv50wXzLdjjphvgfhiudZOSz2eMYNGuhjHWGxHaKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b6oNt8Qge7ggLGLzLtxxGE6MMuo/s/we4VxFTUrcILy7/fpKiYS0Om1yHurJO/tH+
-         +sp44Xzd7lKijixo8a4TgfmaXiRd9UtAgTNR5jXhRLGtd/1w+4MB6rD+T3ZiRpuqbt
-         YjBm8KTDvVHrr2gCiKDpkDMeOA4glCKVT4FA61OY=
+        b=OYl6pCAo2QjiWqCGUIDyIv0yCRIJi5/zT+LKDPa2j21G0rJ7EV0tukfWRiFD2cDq+
+         cWyoero55d+0vBXdvjTH2zg1Oe3xq+x66X3+S8nNa12JhhjYZVYMPjaO4zpacTjZ5O
+         TT/klrXDU8SeHkmeUAf5htDBh+E7GA7MVx5Aaygg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org, Andreas Dilger <adilger@dilger.ca>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1117/1157] ext4: update s_overhead_clusters in the superblock during an on-line resize
-Date:   Mon, 15 Aug 2022 20:07:53 +0200
-Message-Id: <20220815180525.014039343@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1126/1157] ext4: make sure ext4_append() always allocates new block
+Date:   Mon, 15 Aug 2022 20:08:02 +0200
+Message-Id: <20220815180525.397307272@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,48 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Lukas Czerner <lczerner@redhat.com>
 
-[ Upstream commit de394a86658ffe4e89e5328fd4993abfe41b7435 ]
+[ Upstream commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b ]
 
-When doing an online resize, the on-disk superblock on-disk wasn't
-updated.  This means that when the file system is unmounted and
-remounted, and the on-disk overhead value is non-zero, this would
-result in the results of statfs(2) to be incorrect.
+ext4_append() must always allocate a new block, otherwise we run the
+risk of overwriting existing directory block corrupting the directory
+tree in the process resulting in all manner of problems later on.
 
-This was partially fixed by Commits 10b01ee92df5 ("ext4: fix overhead
-calculation to account for the reserved gdt blocks"), 85d825dbf489
-("ext4: force overhead calculation if the s_overhead_cluster makes no
-sense"), and eb7054212eac ("ext4: update the cached overhead value in
-the superblock").
+Add a sanity check to see if the logical block is already allocated and
+error out if it is.
 
-However, since it was too expensive to forcibly recalculate the
-overhead for bigalloc file systems at every mount, this didn't fix the
-problem for bigalloc file systems.  This commit should address the
-problem when resizing file systems with the bigalloc feature enabled.
-
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
 Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220629040026.112371-1-tytso@mit.edu
+Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/resize.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/ext4/namei.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
-index 8b70a4701293..e5c2713aa11a 100644
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -1484,6 +1484,7 @@ static void ext4_update_super(struct super_block *sb,
- 	 * Update the fs overhead information
- 	 */
- 	ext4_calculate_overhead(sb);
-+	es->s_overhead_clusters = cpu_to_le32(sbi->s_overhead);
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index cf460aa4f81d..4af441494e09 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -54,6 +54,7 @@ static struct buffer_head *ext4_append(handle_t *handle,
+ 					struct inode *inode,
+ 					ext4_lblk_t *block)
+ {
++	struct ext4_map_blocks map;
+ 	struct buffer_head *bh;
+ 	int err;
  
- 	if (test_opt(sb, DEBUG))
- 		printk(KERN_DEBUG "EXT4-fs: added group %u:"
+@@ -63,6 +64,21 @@ static struct buffer_head *ext4_append(handle_t *handle,
+ 		return ERR_PTR(-ENOSPC);
+ 
+ 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
++	map.m_lblk = *block;
++	map.m_len = 1;
++
++	/*
++	 * We're appending new directory block. Make sure the block is not
++	 * allocated yet, otherwise we will end up corrupting the
++	 * directory.
++	 */
++	err = ext4_map_blocks(NULL, inode, &map, 0);
++	if (err < 0)
++		return ERR_PTR(err);
++	if (err) {
++		EXT4_ERROR_INODE(inode, "Logical block already allocated");
++		return ERR_PTR(-EFSCORRUPTED);
++	}
+ 
+ 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
+ 	if (IS_ERR(bh))
 -- 
 2.35.1
 
