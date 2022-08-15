@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51066C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA55C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350343AbiHOVwv (ORCPT
+        id S1350364AbiHOVwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
+        Mon, 15 Aug 2022 17:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350306AbiHOVri (ORCPT
+        with ESMTP id S1350320AbiHOVrj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979D76050F;
-        Mon, 15 Aug 2022 12:31:53 -0700 (PDT)
+        Mon, 15 Aug 2022 17:47:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C571A60535;
+        Mon, 15 Aug 2022 12:31:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0978EB8107A;
-        Mon, 15 Aug 2022 19:31:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A6C9C433C1;
-        Mon, 15 Aug 2022 19:31:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42D96B81128;
+        Mon, 15 Aug 2022 19:31:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74D9FC4315A;
+        Mon, 15 Aug 2022 19:31:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591910;
-        bh=z2ppMhTPiC/F2H1GoH0DGMhpTjqq0uo0VJ7PpbIH8zo=;
+        s=korg; t=1660591913;
+        bh=ISFO6hjI4XqtpbbowUxey809oGw5ggq0GNaeJcnkqKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W9oe+aTf7yjoposCPbzNekzFYYb1goza5bmqWIUrVZXWRr4bzyQV8nXJ6aUIajrwg
-         J0UauQW8RzO1HM5+GFdl3ICAtV7yH1TaDbe6LB032WoP/dAcTHua3TWMU6pokmXPle
-         KZ83C4+wvsJPTPTPFtW5ewIOOEN/yKwWnwPjM1x0=
+        b=JpennA+rVC23dmt3KSf0eBxhsieabMVmp+ZbjZ4OjF4MNxU6DFvwmxmXhXHcT5iT+
+         3TeZ1ToJu6+JtNamSsr/j6syAukVT0/O9B5kspD/0A/jdutxHn78yelf+n1d9ZI+AQ
+         8CXwOD9bTyosbxfj5Bwm5qEF8VMDRXmidBYXiubM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0703/1095] clk: qcom: gcc-msm8939: Point MM peripherals to system_mm_noc clock
-Date:   Mon, 15 Aug 2022 20:01:42 +0200
-Message-Id: <20220815180458.445954519@linuxfoundation.org>
+Subject: [PATCH 5.18 0694/1095] misc: rtsx: Fix an error handling path in rtsx_pci_probe()
+Date:   Mon, 15 Aug 2022 20:01:33 +0200
+Message-Id: <20220815180458.085909188@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,105 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 05eed0990927aa9634682fec58660e30f7b7ae30 ]
+[ Upstream commit 44fd1917314e9d4f53dd95dd65df1c152f503d3a ]
 
-Qcom docs indciate the following peripherals operating from System NOC
-MM not from System NOC clocks.
+If an error occurs after a successful idr_alloc() call, the corresponding
+resource must be released with idr_remove() as already done in the .remove
+function.
 
-- MDP
-- VFE
-- JPEGe
-- Venus
+Update the error handling path to add the missing idr_remove() call.
 
-Switch over the relevant parent pointers.
-
-Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220504163835.40130-5-bryan.odonoghue@linaro.org
+Fixes: ada8a8a13b13 ("mfd: Add realtek pcie card reader driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/e8dc41716cbf52fb37a12e70d8972848e69df6d6.1655271216.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-msm8939.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/misc/cardreader/rtsx_pcr.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
-index 12bab9067ea8..c7377ec0f423 100644
---- a/drivers/clk/qcom/gcc-msm8939.c
-+++ b/drivers/clk/qcom/gcc-msm8939.c
-@@ -2453,7 +2453,7 @@ static struct clk_branch gcc_camss_jpeg_axi_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_camss_jpeg_axi_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -2657,7 +2657,7 @@ static struct clk_branch gcc_camss_vfe_axi_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_camss_vfe_axi_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -2813,7 +2813,7 @@ static struct clk_branch gcc_mdss_axi_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_mdss_axi_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -3205,7 +3205,7 @@ static struct clk_branch gcc_mdp_tbu_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_mdp_tbu_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -3223,7 +3223,7 @@ static struct clk_branch gcc_venus_tbu_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_venus_tbu_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -3241,7 +3241,7 @@ static struct clk_branch gcc_vfe_tbu_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_vfe_tbu_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -3259,7 +3259,7 @@ static struct clk_branch gcc_jpeg_tbu_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_jpeg_tbu_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -3496,7 +3496,7 @@ static struct clk_branch gcc_venus0_axi_clk = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "gcc_venus0_axi_clk",
- 			.parent_data = &(const struct clk_parent_data){
--				.hw = &system_noc_bfdcd_clk_src.clkr.hw,
-+				.hw = &system_mm_noc_bfdcd_clk_src.clkr.hw,
- 			},
- 			.num_parents = 1,
- 			.flags = CLK_SET_RATE_PARENT,
+diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
+index 2a2619e3c72c..f001d99bf366 100644
+--- a/drivers/misc/cardreader/rtsx_pcr.c
++++ b/drivers/misc/cardreader/rtsx_pcr.c
+@@ -1507,7 +1507,7 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
+ 	pcr->remap_addr = ioremap(base, len);
+ 	if (!pcr->remap_addr) {
+ 		ret = -ENOMEM;
+-		goto free_handle;
++		goto free_idr;
+ 	}
+ 
+ 	pcr->rtsx_resv_buf = dma_alloc_coherent(&(pcidev->dev),
+@@ -1570,6 +1570,10 @@ static int rtsx_pci_probe(struct pci_dev *pcidev,
+ 			pcr->rtsx_resv_buf, pcr->rtsx_resv_buf_addr);
+ unmap:
+ 	iounmap(pcr->remap_addr);
++free_idr:
++	spin_lock(&rtsx_pci_lock);
++	idr_remove(&rtsx_pci_idr, pcr->id);
++	spin_unlock(&rtsx_pci_lock);
+ free_handle:
+ 	kfree(handle);
+ free_pcr:
 -- 
 2.35.1
 
