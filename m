@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7735C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6945EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239081AbiHOVPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
+        id S233387AbiHOVP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347982AbiHOVHw (ORCPT
+        with ESMTP id S1347994AbiHOVHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D642E686;
-        Mon, 15 Aug 2022 12:17:19 -0700 (PDT)
+        Mon, 15 Aug 2022 17:07:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BA62E681;
+        Mon, 15 Aug 2022 12:17:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B3A2B8107A;
-        Mon, 15 Aug 2022 19:17:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6608DC433C1;
-        Mon, 15 Aug 2022 19:17:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6D916009B;
+        Mon, 15 Aug 2022 19:17:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFF7CC433D6;
+        Mon, 15 Aug 2022 19:17:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591036;
-        bh=9gl4kRdQ+WLKKQ5khPH9o29OL7Te4TCVWT384FGVGKk=;
+        s=korg; t=1660591049;
+        bh=fNf3lYZ3JXkcpaPS13aW1IHh+HAR/gsUqnLFHXNzqIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CN/XWQ+SZwtm8+YvOY3yGycumBkpfQgANOH7UjMW5YtEyNtXclLbQbbyjWARF6nUn
-         FwUAghLPcdw4ZZiam37Ze/K1zIu4EedGi3PPZuABP1z/gzNSq2asZdxeg5QK2kF0ZL
-         Rc1qND5OwxVhNpqUzl+oac/bObRwh9rBlLo59KqM=
+        b=dsYmP9qZ30Y+vXmrFaa0rijYfoDFkIwMrykdWafwixhu77pjjMh6zOCcYtswR7vX7
+         zmoxpW1FlWCrX6qKw5/bBQzgIu+Tr493ZiHtoQ88CIfHm4THAt4ycd6MlV1CTbAv9c
+         wNrX1qNMUsDizOYiL8ti3vzB5lkyg8N3Kb90Z8Kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
+        stable@vger.kernel.org, Tony Ambardar <Tony.Ambardar@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0451/1095] skmsg: Fix invalid last sg check in sk_msg_recvmsg()
-Date:   Mon, 15 Aug 2022 19:57:30 +0200
-Message-Id: <20220815180448.289597023@linuxfoundation.org>
+Subject: [PATCH 5.18 0455/1095] bpf, x64: Add predicate for bpf2bpf with tailcalls support in JIT
+Date:   Mon, 15 Aug 2022 19:57:34 +0200
+Message-Id: <20220815180448.447796708@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,56 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
+From: Tony Ambardar <tony.ambardar@gmail.com>
 
-[ Upstream commit 9974d37ea75f01b47d16072b5dad305bd8d23fcc ]
+[ Upstream commit 95acd8817e66d031d2e6ee7def3f1e1874819317 ]
 
-In sk_psock_skb_ingress_enqueue function, if the linear area + nr_frags +
-frag_list of the SKB has NR_MSG_FRAG_IDS blocks in total, skb_to_sgvec
-will return NR_MSG_FRAG_IDS, then msg->sg.end will be set to
-NR_MSG_FRAG_IDS, and in addition, (NR_MSG_FRAG_IDS - 1) is set to the last
-SG of msg. Recv the msg in sk_msg_recvmsg, when i is (NR_MSG_FRAG_IDS - 1),
-the sk_msg_iter_var_next(i) will change i to 0 (not NR_MSG_FRAG_IDS), the
-judgment condition "msg_rx->sg.start==msg_rx->sg.end" and
-"i != msg_rx->sg.end" can not work.
+The BPF core/verifier is hard-coded to permit mixing bpf2bpf and tail
+calls for only x86-64. Change the logic to instead rely on a new weak
+function 'bool bpf_jit_supports_subprog_tailcalls(void)', which a capable
+JIT backend can override.
 
-As a result, the processed msg cannot be deleted from ingress_msg list.
-But the length of all the sge of the msg has changed to 0. Then the next
-recvmsg syscall will process the msg repeatedly, because the length of sge
-is 0, the -EFAULT error is always returned.
+Update the x86-64 eBPF JIT to reflect this.
 
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
+Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+[jakub: drop MIPS bits and tweak patch subject]
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220628123616.186950-1-liujian56@huawei.com
+Link: https://lore.kernel.org/bpf/20220617105735.733938-2-jakub@cloudflare.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skmsg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/net/bpf_jit_comp.c | 6 ++++++
+ include/linux/filter.h      | 1 +
+ kernel/bpf/core.c           | 6 ++++++
+ kernel/bpf/verifier.c       | 3 ++-
+ 4 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index ede0af308f40..f50f8d95b628 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -462,7 +462,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 9ec96d5a8239..124456bb23b9 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -2477,3 +2477,9 @@ void *bpf_arch_text_copy(void *dst, void *src, size_t len)
+ 		return ERR_PTR(-EINVAL);
+ 	return dst;
+ }
++
++/* Indicate the JIT backend supports mixing bpf2bpf and tailcalls. */
++bool bpf_jit_supports_subprog_tailcalls(void)
++{
++	return true;
++}
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index ed0c0ff42ad5..d9a0db845b50 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -948,6 +948,7 @@ u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
+ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
+ void bpf_jit_compile(struct bpf_prog *prog);
+ bool bpf_jit_needs_zext(void);
++bool bpf_jit_supports_subprog_tailcalls(void);
+ bool bpf_jit_supports_kfunc_call(void);
+ bool bpf_helper_changes_pkt_data(void *func);
  
- 			if (copied == len)
- 				break;
--		} while (i != msg_rx->sg.end);
-+		} while (!sg_is_last(sge));
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 3adff3831c04..7a1ce697689b 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2712,6 +2712,12 @@ bool __weak bpf_jit_needs_zext(void)
+ 	return false;
+ }
  
- 		if (unlikely(peek)) {
- 			msg_rx = sk_psock_next_msg(psock, msg_rx);
-@@ -472,7 +472,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 		}
++/* Return TRUE if the JIT backend supports mixing bpf2bpf and tailcalls. */
++bool __weak bpf_jit_supports_subprog_tailcalls(void)
++{
++	return false;
++}
++
+ bool __weak bpf_jit_supports_kfunc_call(void)
+ {
+ 	return false;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index d04147a5efa5..a6d3a8972355 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5696,7 +5696,8 @@ static bool may_update_sockmap(struct bpf_verifier_env *env, int func_id)
  
- 		msg_rx->sg.start = i;
--		if (!sge->length && msg_rx->sg.start == msg_rx->sg.end) {
-+		if (!sge->length && sg_is_last(sge)) {
- 			msg_rx = sk_psock_dequeue_msg(psock);
- 			kfree_sk_msg(msg_rx);
- 		}
+ static bool allow_tail_call_in_subprogs(struct bpf_verifier_env *env)
+ {
+-	return env->prog->jit_requested && IS_ENABLED(CONFIG_X86_64);
++	return env->prog->jit_requested &&
++	       bpf_jit_supports_subprog_tailcalls();
+ }
+ 
+ static int check_map_func_compatibility(struct bpf_verifier_env *env,
 -- 
 2.35.1
 
