@@ -2,241 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50067C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FA3C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347531AbiHOWYT (ORCPT
+        id S1347776AbiHOWYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        Mon, 15 Aug 2022 18:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350788AbiHOWSd (ORCPT
+        with ESMTP id S1350792AbiHOWSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:18:33 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32CB40BE1;
-        Mon, 15 Aug 2022 12:41:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660592504; x=1692128504;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=t539oKwDhI262eAFaZTn1ud3XYVbT+XoZk3kFbmmWGE=;
-  b=lFGkagEEUQYlQBD25Fe2tm7GogEJIS30WiuPMm07Zf5mTy+Ns7AeA8Le
-   8uRhruWOLp6ZyVtcDn4djiB191oa5MlKbAfE+4MdardStavGIfoGKSrPx
-   zM99Q7lekMNvbaO/1EHInaCDlZqy4ZNUXNoblTifkGL6fFucvXfwyL0i/
-   +ydTIEtYKJ0e5LCF3axuHFfKtHZzFG/oAtULEof9tX2eF3u7GUhZpMKz8
-   SXkzBgACdBDGU8kw7tZuPJOq42aDn9CxG8kNlyR5NEtgTXDfpmxWE/69U
-   gAwfM//Mzw1SY2XyKXKavQHy474gKHjtMOsssqUdY4YRtHkp6+M58MfuY
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="318033810"
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="318033810"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 12:41:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
-   d="scan'208";a="749043084"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Aug 2022 12:41:39 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNfxy-0001CK-2e;
-        Mon, 15 Aug 2022 19:41:38 +0000
-Date:   Tue, 16 Aug 2022 03:41:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, linux@armlinux.org.uk, arnd@arndb.de,
-        linus.walleij@linaro.org, ardb@kernel.org,
-        rmk+kernel@armlinux.org.uk, rostedt@goodmis.org,
-        nick.hawkins@hpe.com, john@phrozen.org, mhiramat@kernel.org,
-        chenzhongjin@huawei.com
-Subject: Re: [PATCH] x86/unwind/orc: Add 'unwind_debug' cmdline option
-Message-ID: <202208160326.pFZMVgFP-lkp@intel.com>
-References: <20220815105808.17385-2-chenzhongjin@huawei.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1034941D0E;
+        Mon, 15 Aug 2022 12:41:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1DBA610A3;
+        Mon, 15 Aug 2022 19:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C54C433D7;
+        Mon, 15 Aug 2022 19:41:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660592511;
+        bh=PQa41Dw1cLrvGbifrXo1+Q6UP14K5C3ONaexlLXM2xo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FB8mS6C50WsgEK4gkdcKJh6ZXRhpvSOdD4zvz/iwP+9BoZHlZNcLxnyvDPrhtD3eb
+         KzJ1+znHqxTmTmfz3rlzd6tUaywI5bCyd0Tn//BKt18cxgdroz6WoXu2onOpZnZrv8
+         H6q1MRfUEwDmoMV9/2POcUWz74pFtGJHWqmplyd8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0801/1095] platform/olpc: Fix uninitialized data in debugfs write
+Date:   Mon, 15 Aug 2022 20:03:20 +0200
+Message-Id: <20220815180502.399267021@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815105808.17385-2-chenzhongjin@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chen,
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-I love your patch! Perhaps something to improve:
+[ Upstream commit 40ec787e1adf302c11668d4cc69838f4d584187d ]
 
-[auto build test WARNING on tip/x86/core]
-[also build test WARNING on soc/for-next clk/clk-next linus/master v6.0-rc1 next-20220815]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+The call to:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chen-Zhongjin/x86-unwind-orc-Add-unwind_debug-cmdline-option/20220815-190328
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git a1a5482a2c6e38a3ebed32e571625c56a8cc41a6
-config: x86_64-randconfig-a003-20220815 (https://download.01.org/0day-ci/archive/20220816/202208160326.pFZMVgFP-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/3295e738f5b51f1f1f223bf52a8ecee2ab93fbca
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chen-Zhongjin/x86-unwind-orc-Add-unwind_debug-cmdline-option/20220815-190328
-        git checkout 3295e738f5b51f1f1f223bf52a8ecee2ab93fbca
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
+	size = simple_write_to_buffer(cmdbuf, sizeof(cmdbuf), ppos, buf, size);
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+will succeed if at least one byte is written to the "cmdbuf" buffer.
+The "*ppos" value controls which byte is written.  Another problem is
+that this code does not check for errors so it's possible for the entire
+buffer to be uninitialized.
 
-All warnings (new ones prefixed by >>):
+Inintialize the struct to zero to prevent reading uninitialized stack
+data.
 
-   arch/x86/kernel/unwind_orc.c:17:9: error: expected identifier or '(' before 'if'
-      17 |         if (state->task == current && !state->error)                    \
-         |         ^~
-   In file included from include/asm-generic/bug.h:7,
-                    from arch/x86/include/asm/bug.h:87,
-                    from include/linux/bug.h:5,
-                    from include/linux/jump_label.h:257,
-                    from include/linux/static_key.h:1,
-                    from arch/x86/include/asm/nospec-branch.h:6,
-                    from arch/x86/include/asm/paravirt_types.h:40,
-                    from arch/x86/include/asm/ptrace.h:97,
-                    from arch/x86/include/asm/math_emu.h:5,
-                    from arch/x86/include/asm/processor.h:13,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:67,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from arch/x86/kernel/unwind_orc.c:3:
-   include/linux/once_lite.h:34:10: error: expected identifier or '(' before ')' token
-      34 |         })
-         |          ^
-   include/linux/once_lite.h:11:9: note: in expansion of macro 'DO_ONCE_LITE_IF'
-      11 |         DO_ONCE_LITE_IF(true, func, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/printk.h:605:9: note: in expansion of macro 'DO_ONCE_LITE'
-     605 |         DO_ONCE_LITE(printk_deferred, fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:12:9: note: in expansion of macro 'printk_deferred_once'
-      12 |         printk_deferred_once(KERN_WARNING "WARNING: " fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:18:17: note: in expansion of macro 'orc_warn'
-      18 |                 orc_warn(args);                                         \
-         |                 ^~~~~~~~
-   arch/x86/kernel/unwind_orc.c:19:17: error: expected identifier or '(' before 'if'
-      19 |                 if (unwind_debug && !dumped_before)                     \
-         |                 ^~
->> arch/x86/kernel/unwind_orc.c:21:17: warning: data definition has no type or storage class
-      21 |                 dumped_before = true;                                   \
-         |                 ^~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:21:17: error: type defaults to 'int' in declaration of 'dumped_before' [-Werror=implicit-int]
-   arch/x86/kernel/unwind_orc.c:22:9: error: expected identifier or '(' before '}' token
-      22 |         }                                                               \
-         |         ^
-   arch/x86/kernel/unwind_orc.c:23:1: error: expected identifier or '(' before '}' token
-      23 | })
-         | ^
-   arch/x86/kernel/unwind_orc.c:23:2: error: expected identifier or '(' before ')' token
-      23 | })
-         |  ^
-   arch/x86/kernel/unwind_orc.c: In function 'orc_find':
-   arch/x86/kernel/unwind_orc.c:219:35: error: '__start_orc_unwind_ip' undeclared (first use in this function); did you mean '__start_orc_unwind'?
-     219 |                 return __orc_find(__start_orc_unwind_ip + start,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~
-         |                                   __start_orc_unwind
-   arch/x86/kernel/unwind_orc.c:219:35: note: each undeclared identifier is reported only once for each function it appears in
-   arch/x86/kernel/unwind_orc.c: At top level:
-   arch/x86/kernel/unwind_orc.c:239:32: error: '__start_orc_unwind_ip' undeclared here (not in a function); did you mean '__start_orc_unwind'?
-     239 | static int *cur_orc_ip_table = __start_orc_unwind_ip;
-         |                                ^~~~~~~~~~~~~~~~~~~~~
-         |                                __start_orc_unwind
-   arch/x86/kernel/unwind_orc.c: In function 'unwind_next_frame':
-   arch/x86/kernel/unwind_orc.c:534:18: error: expected ')' before 'break'
-     534 |                 }
-         |                  ^
-         |                  )
-     535 |                 break;
-         |                 ~~~~~
->> arch/x86/kernel/unwind_orc.c:16:21: warning: unused variable 'dumped_before' [-Wunused-variable]
-      16 |         static bool dumped_before;
-         |                     ^~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:531:25: note: in expansion of macro 'orc_warn_current'
-     531 |                         orc_warn_current("missing R10 value at %pB\n",
-         |                         ^~~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:767:1: error: expected declaration or statement at end of input
-     767 | EXPORT_SYMBOL_GPL(__unwind_start);
-         | ^~~~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:767:1: error: expected declaration or statement at end of input
-   arch/x86/kernel/unwind_orc.c:767:1: error: expected declaration or statement at end of input
-   arch/x86/kernel/unwind_orc.c:533:25: error: label 'err' used but not defined
-     533 |                         goto err;
-         |                         ^~~~
-   arch/x86/kernel/unwind_orc.c:506:17: error: label 'the_end' used but not defined
-     506 |                 goto the_end;
-         |                 ^~~~
->> arch/x86/kernel/unwind_orc.c:468:14: warning: variable 'indirect' set but not used [-Wunused-but-set-variable]
-     468 |         bool indirect = false;
-         |              ^~~~~~~~
->> arch/x86/kernel/unwind_orc.c:466:25: warning: unused variable 'prev_type' [-Wunused-variable]
-     466 |         enum stack_type prev_type = state->stack_info.type;
-         |                         ^~~~~~~~~
->> arch/x86/kernel/unwind_orc.c:465:59: warning: unused variable 'prev_sp' [-Wunused-variable]
-     465 |         unsigned long ip_p, sp, tmp, orig_ip = state->ip, prev_sp = state->sp;
-         |                                                           ^~~~~~~
->> arch/x86/kernel/unwind_orc.c:465:38: warning: unused variable 'orig_ip' [-Wunused-variable]
-     465 |         unsigned long ip_p, sp, tmp, orig_ip = state->ip, prev_sp = state->sp;
-         |                                      ^~~~~~~
->> arch/x86/kernel/unwind_orc.c:465:33: warning: unused variable 'tmp' [-Wunused-variable]
-     465 |         unsigned long ip_p, sp, tmp, orig_ip = state->ip, prev_sp = state->sp;
-         |                                 ^~~
->> arch/x86/kernel/unwind_orc.c:465:23: warning: unused variable 'ip_p' [-Wunused-variable]
-     465 |         unsigned long ip_p, sp, tmp, orig_ip = state->ip, prev_sp = state->sp;
-         |                       ^~~~
-   arch/x86/kernel/unwind_orc.c:768: error: control reaches end of non-void function [-Werror=return-type]
-   At top level:
->> arch/x86/kernel/unwind_orc.c:16:21: warning: 'dumped_before' defined but not used [-Wunused-variable]
-      16 |         static bool dumped_before;
-         |                     ^~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:531:25: note: in expansion of macro 'orc_warn_current'
-     531 |                         orc_warn_current("missing R10 value at %pB\n",
-         |                         ^~~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:421:13: warning: 'deref_stack_iret_regs' defined but not used [-Wunused-function]
-     421 | static bool deref_stack_iret_regs(struct unwind_state *state, unsigned long addr,
-         |             ^~~~~~~~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:405:13: warning: 'deref_stack_regs' defined but not used [-Wunused-function]
-     405 | static bool deref_stack_regs(struct unwind_state *state, unsigned long addr,
-         |             ^~~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:395:13: warning: 'deref_stack_reg' defined but not used [-Wunused-function]
-     395 | static bool deref_stack_reg(struct unwind_state *state, unsigned long addr,
-         |             ^~~~~~~~~~~~~~~
-   arch/x86/kernel/unwind_orc.c:42:13: warning: 'unwind_dump' defined but not used [-Wunused-function]
-      42 | static void unwind_dump(struct unwind_state *state)
-         |             ^~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Debugfs is normally only writable by root so the impact of this bug is
+very minimal.
 
+Fixes: 6cca83d498bd ("Platform: OLPC: move debugfs support from x86 EC driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YthIKn+TfZSZMEcM@kili
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/platform/olpc/olpc-ec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-vim +21 arch/x86/kernel/unwind_orc.c
-
-    10	
-    11	#define orc_warn(fmt, ...) \
-    12		printk_deferred_once(KERN_WARNING "WARNING: " fmt, ##__VA_ARGS__)
-    13	
-    14	#define orc_warn_current(args...)					\
-    15	({									\
-  > 16		static bool dumped_before;
-    17		if (state->task == current && !state->error)			\
-    18			orc_warn(args);						\
-    19			if (unwind_debug && !dumped_before)			\
-    20				unwind_dump(state);				\
-  > 21			dumped_before = true;					\
-    22		}								\
-    23	})
-    24	
-
+diff --git a/drivers/platform/olpc/olpc-ec.c b/drivers/platform/olpc/olpc-ec.c
+index 4ff5c3a12991..921520475ff6 100644
+--- a/drivers/platform/olpc/olpc-ec.c
++++ b/drivers/platform/olpc/olpc-ec.c
+@@ -264,7 +264,7 @@ static ssize_t ec_dbgfs_cmd_write(struct file *file, const char __user *buf,
+ 	int i, m;
+ 	unsigned char ec_cmd[EC_MAX_CMD_ARGS];
+ 	unsigned int ec_cmd_int[EC_MAX_CMD_ARGS];
+-	char cmdbuf[64];
++	char cmdbuf[64] = "";
+ 	int ec_cmd_bytes;
+ 
+ 	mutex_lock(&ec_dbgfs_lock);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
+
