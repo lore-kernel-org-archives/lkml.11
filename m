@@ -2,145 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BA2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86528C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 08:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240972AbiHOI2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 04:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52844 "EHLO
+        id S241553AbiHOI2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 04:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbiHOI21 (ORCPT
+        with ESMTP id S233066AbiHOI2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 04:28:27 -0400
-Received: from mail.fris.de (mail.fris.de [116.203.77.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51291F611;
-        Mon, 15 Aug 2022 01:28:25 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 26D88C017B;
-        Mon, 15 Aug 2022 10:28:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1660552104; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding:in-reply-to:references;
-        bh=LTBolOrKW71HOA29KSRA59eoWDLOhelEVU1jEz2c+ck=;
-        b=zKbYB4vXXsZMWAiKxPxBsvPKC7RWtWaWuL2BLQ0B+zMc6YWmLOFdRHug4UK9QuCXyNBJNQ
-        w9MCFFjLANuq/OhdZAdPpj6nWmZB+5EWelfHcgB3iotBxo8DHLyoZuCG4zMrtA226tOwce
-        Q95CMe/lC5BzjEgoJ5j8vVTeXeZaHl2bjfNCrHKwDSkDUY/N13YYv6SS7iCZsZJVfquXiv
-        47fZ5nyTc/Po0HXe+L24Z+8ZbdewC4Wf7ooEjIO834y9bmARvN/ujVW5tNwGNpV4wNPl82
-        DsPRTqM1CKYAYqnp3iMwtQ3AB+MpBdz1vDdrC/2/FHoInGmWKT5b4QikHsuhWg==
-From:   Frieder Schrempf <frieder@fris.de>
-To:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        "Ariel D'Alessandro" <ariel.dalessandro@collabora.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 1/3] dt-bindings: arm: fsl: imx6ul-kontron: Update bindings
-Date:   Mon, 15 Aug 2022 10:28:10 +0200
-Message-Id: <20220815082814.27651-2-frieder@fris.de>
-In-Reply-To: <20220815082814.27651-1-frieder@fris.de>
-References: <20220815082814.27651-1-frieder@fris.de>
+        Mon, 15 Aug 2022 04:28:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F9B11F639
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 01:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660552117;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lEHWMXFZ2uct4Ktk4KY1ISQiitnDvCq9CZGYvT11o94=;
+        b=ToM+WyNED1xHXruOEy9GT37AeCQV7Yme3ZiIbz7dDJ5xgMUQvA7+UkFM1zvDe4Nz8teDGJ
+        3YVG5o+R+5boNVTpiNwp/fCQA0ujaPQ+iREOE5dK/mOVISKMYUq58NU9A8K2sRmHXfXFRn
+        csAjQLqmpyIZEN2nJIo8TvuuIwtU8MQ=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-619-zfq21Dw_P-6oy3bysp51dw-1; Mon, 15 Aug 2022 04:28:35 -0400
+X-MC-Unique: zfq21Dw_P-6oy3bysp51dw-1
+Received: by mail-ej1-f71.google.com with SMTP id ga16-20020a1709070c1000b007331af32d3aso940766ejc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 01:28:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=lEHWMXFZ2uct4Ktk4KY1ISQiitnDvCq9CZGYvT11o94=;
+        b=SrohP0WFJ7IlQmxaaKYyDhbj1yswBklZjG5etCOZ9Df9NJctaR/hi1GCKrkLgmqrea
+         4qbnTyAJqr6TJyTGrmC7xNN97N0TWa14r3T6xttthhyWmCqS05Qwj/hDUA1HO5kqBuld
+         QGDUHGHsRtaKZ7SSqX8Mf/HStGm/8YS/Zm9SGgmOBL7HN3ueYXf8knqTVuAgzV1bLAU+
+         z5BkAu9oOh3blheOZ6Hn6N5cxUHRbvERbEWOUAwcMf8axdFp1hFtcOGDVb+ttE184mIJ
+         /+dTm+5gmnmxlrW2hGuiGeIo2dT3VMBavKZzK8+ifZ5VrjGwGSLl3atNdKJvjaOiCqcj
+         c3sw==
+X-Gm-Message-State: ACgBeo0XsibVPtQDPBGjFrre03GDZyJMNnR/aBw2fOfXPyxEZhGs3mZF
+        cDLktAQiJ876KApPlRaf+V/XMS5rdr71PnkCLfGUh+pRh4YPPFy1NBm2mx4cyBC+bW6nN7AmSyj
+        r34Vd4KttcC9BvhEE8ajl5wuS
+X-Received: by 2002:a17:906:5a4f:b0:730:825a:d860 with SMTP id my15-20020a1709065a4f00b00730825ad860mr9738655ejc.143.1660552114219;
+        Mon, 15 Aug 2022 01:28:34 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4tAIkoXvkWgmRems/JupsfZUMzrxVWgjeYGv5FVIVL7IdG83ARhP2VC6LbArZAKXBv+CG2fg==
+X-Received: by 2002:a17:906:5a4f:b0:730:825a:d860 with SMTP id my15-20020a1709065a4f00b00730825ad860mr9738642ejc.143.1660552114023;
+        Mon, 15 Aug 2022 01:28:34 -0700 (PDT)
+Received: from redhat.com ([2.54.169.49])
+        by smtp.gmail.com with ESMTPSA id n18-20020aa7c452000000b0043ba437fe04sm6236573edr.78.2022.08.15.01.28.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 01:28:33 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 04:28:29 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Andres Freund <andres@anarazel.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: upstream kernel crashes
+Message-ID: <20220815042623-mutt-send-email-mst@kernel.org>
+References: <20220814212610.GA3690074@roeck-us.net>
+ <CAHk-=wgf2EfLHui6A5NbWoaVBB2f8t-XBUiOMkyjN2NU41t6eA@mail.gmail.com>
+ <20220814223743.26ebsbnrvrjien4f@awork3.anarazel.de>
+ <CAHk-=wi6raoJE-1cyRU0YxJ+9ReO1eXmOAq0FwKAyZS7nhvk9w@mail.gmail.com>
+ <1c057afa-92df-ee3c-5978-3731d3db9345@kernel.dk>
+ <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
+ <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
+ <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
+ <20220815034532-mutt-send-email-mst@kernel.org>
+ <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On Mon, Aug 15, 2022 at 01:15:27AM -0700, Andres Freund wrote:
+> Hi,
+> 
+> On 2022-08-15 03:51:34 -0400, Michael S. Tsirkin wrote:
+> > It is possible that GCP gets confused if ring size is smaller than the
+> > device maximum simply because no one did it in the past.
+> > 
+> > So I pushed just the revert of 762faee5a267 to the test branch.
+> > Could you give it a spin?
+> 
+> Seems to fix the issue, at least to the extent I can determine at 1am... :)
+> 
+> Greetings,
+> 
+> Andres Freund
 
-This updates the bindings in order to simplify the devicetree
-structure and to add names for the boards that follow the latest
-convention used by Kontron marketing.
+So you tested this:
 
-It also gets rid of the N6xxx notation in the compatibles and
-file names, as they are not really used anymore and often result
-in confusion.
+commit 13df5a7eaeb22561d39354b576bc98a7e2c389f9 (HEAD, kernel.org/test)
+Author: Michael S. Tsirkin <mst@redhat.com>
+Date:   Mon Aug 15 03:44:38 2022 -0400
 
-This is a breaking change, but the impact shouldn't be too big
-and it makes usage and maintenance easier in the future.
+    Revert "virtio_net: set the default max ring size by find_vqs()"
+    
+    This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
+    
+    Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/arm/fsl.yaml          | 31 +++++++------------
- 1 file changed, 12 insertions(+), 19 deletions(-)
+and it fixes both issues right? No crashes no networking issue?
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index ef524378d449..649862052f53 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -553,8 +553,7 @@ properties:
-               - engicam,imx6ul-isiot      # Engicam Is.IoT MX6UL eMMC/NAND Starter kit
-               - fsl,imx6ul-14x14-evk      # i.MX6 UltraLite 14x14 EVK Board
-               - karo,imx6ul-tx6ul         # Ka-Ro electronics TXUL-0010 Module
--              - kontron,imx6ul-n6310-som  # Kontron N6310 SOM
--              - kontron,imx6ul-n6311-som  # Kontron N6311 SOM
-+              - kontron,sl-imx6ul         # Kontron SL i.MX6UL SoM
-               - prt,prti6g                # Protonic PRTI6G Board
-               - technexion,imx6ul-pico-dwarf   # TechNexion i.MX6UL Pico-Dwarf
-               - technexion,imx6ul-pico-hobbit  # TechNexion i.MX6UL Pico-Hobbit
-@@ -590,23 +589,17 @@ properties:
-           - const: phytec,imx6ul-pcl063   # PHYTEC phyCORE-i.MX 6UL
-           - const: fsl,imx6ul
- 
--      - description: Kontron N6310 S Board
-+      - description: Kontron BL i.MX6UL (N631X S) Board
-         items:
--          - const: kontron,imx6ul-n6310-s
--          - const: kontron,imx6ul-n6310-som
-+          - const: kontron,bl-imx6ul       # Kontron BL i.MX6UL Carrier Board
-+          - const: kontron,sl-imx6ul       # Kontron SL i.MX6UL SoM
-           - const: fsl,imx6ul
- 
--      - description: Kontron N6311 S Board
-+      - description: Kontron BL i.MX6UL 43 (N631X S 43) Board
-         items:
--          - const: kontron,imx6ul-n6311-s
--          - const: kontron,imx6ul-n6311-som
--          - const: fsl,imx6ul
--
--      - description: Kontron N6310 S 43 Board
--        items:
--          - const: kontron,imx6ul-n6310-s-43
--          - const: kontron,imx6ul-n6310-s
--          - const: kontron,imx6ul-n6310-som
-+          - const: kontron,bl-imx6ul-43    # Kontron BL i.MX6UL Carrier Board with 4.3" Display
-+          - const: kontron,bl-imx6ul       # Kontron BL i.MX6UL Carrier Board
-+          - const: kontron,sl-imx6ul       # Kontron SL i.MX6UL SoM
-           - const: fsl,imx6ul
- 
-       - description: TQ-Systems TQMa6UL1 SoM on MBa6ULx board
-@@ -636,7 +629,7 @@ properties:
-           - enum:
-               - fsl,imx6ull-14x14-evk     # i.MX6 UltraLiteLite 14x14 EVK Board
-               - joz,jozacp                # JOZ Access Point
--              - kontron,imx6ull-n6411-som # Kontron N6411 SOM
-+              - kontron,sl-imx6ull        # Kontron SL i.MX6ULL SoM
-               - myir,imx6ull-mys-6ulx-eval # MYiR Tech iMX6ULL Evaluation Board
-               - toradex,colibri-imx6ull      # Colibri iMX6ULL Modules
-               - toradex,colibri-imx6ull-emmc # Colibri iMX6ULL 1GB (eMMC) Module
-@@ -697,10 +690,10 @@ properties:
-           - const: toradex,colibri-imx6ull-wifi       # Colibri iMX6ULL Wi-Fi / BT Module
-           - const: fsl,imx6ull
- 
--      - description: Kontron N6411 S Board
-+      - description: Kontron BL i.MX6ULL (N6411 S) Board
-         items:
--          - const: kontron,imx6ull-n6411-s
--          - const: kontron,imx6ull-n6411-som
-+          - const: kontron,bl-imx6ull   # Kontron BL i.MX6ULL Carrier Board
-+          - const: kontron,sl-imx6ull   # Kontron SL i.MX6ULL SoM
-           - const: fsl,imx6ull
- 
-       - description: TQ Systems TQMa6ULLx SoM on MBa6ULx board
+Just making sure before I send this upstream as a stop-gap.
+
+We need to figure out what is going on since I think there's a GCP
+hypervisor bug that we need to find a way to detect and work around but
+that can wait.
+
 -- 
-2.37.1
+MST
 
