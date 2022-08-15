@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5702AC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD100C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351725AbiHPAEt (ORCPT
+        id S1352605AbiHPAFI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
+        Mon, 15 Aug 2022 20:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354642AbiHOXzC (ORCPT
+        with ESMTP id S1355558AbiHOX4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:55:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D20F13D22;
-        Mon, 15 Aug 2022 13:19:42 -0700 (PDT)
+        Mon, 15 Aug 2022 19:56:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9243616306E;
+        Mon, 15 Aug 2022 13:19:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2755C60E73;
-        Mon, 15 Aug 2022 20:19:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142C7C433C1;
-        Mon, 15 Aug 2022 20:19:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2270761057;
+        Mon, 15 Aug 2022 20:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 107EEC433D6;
+        Mon, 15 Aug 2022 20:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594780;
-        bh=bjh2T3gtOlTJmqSHRYkYkNlxRdKEcz/kD+u8jQqUFdg=;
+        s=korg; t=1660594796;
+        bh=UTztaEE8l6pZclggwKNlEFaJ8BgFSoAmWP/+gRernds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tI9V4fHZCnghRXLxLeK8P5dCphLJjh3mNOxfO/PW7d0BHAVFIROdD+LPFYk4Afz9c
-         mXOGBYNNh4lfiyIUYZjCFQOkm/S/9jsvceEeIi6pLVcyBsHEuU9Pmq2SgXK4xXnpPT
-         l284U6euxzlMYP8pC09DVfLbrgroVrdOSRf/wSqo=
+        b=tXruzDutR4SktlMAfLpMR1VzOzpBonOVpXrNYT6uVWJaxtBWfIOUke3W/oARP/67P
+         y/SHSnMKs/6aMfImriQCkyTxPZfB+I7lDsjh3Cew99iVtHYLt0rMg/9iGCZ+K/WLWH
+         6ikn9qo66pHbUDqVMufZs+4ZTUPMro4WxAMrlQYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhengchao Shao <shaozhengchao@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0557/1157] crypto: hisilicon/hpre - dont use GFP_KERNEL to alloc mem during softirq
-Date:   Mon, 15 Aug 2022 19:58:33 +0200
-Message-Id: <20220815180501.891751230@linuxfoundation.org>
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0562/1157] wifi: rtw88: check the return value of alloc_workqueue()
+Date:   Mon, 15 Aug 2022 19:58:38 +0200
+Message-Id: <20220815180502.085806225@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,34 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: William Dean <williamsukatube@gmail.com>
 
-[ Upstream commit 98dfa9343f37bdd4112966292751e3a93aaf2e56 ]
+[ Upstream commit 42bbf810e155efc6129a3a648ae5300f00b79d7b ]
 
-The hpre encryption driver may be used to encrypt and decrypt packets
-during the rx softirq, it is not allowed to use GFP_KERNEL.
+The function alloc_workqueue() in rtw_core_init() can fail, but
+there is no check of its return value. To fix this bug, its return value
+should be checked with new error handling code.
 
-Fixes: c8b4b477079d ("crypto: hisilicon - add HiSilicon HPRE accelerator")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: fe101716c7c9d ("rtw88: replace tx tasklet with work queue")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220723063756.2956189-1-williamsukatube@163.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/hpre/hpre_crypto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_crypto.c b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-index 97d54c1465c2..3ba6f15deafc 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-@@ -252,7 +252,7 @@ static int hpre_prepare_dma_buf(struct hpre_asym_request *hpre_req,
- 	if (unlikely(shift < 0))
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index efabd5b1bf5b..645ef1d01895 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1984,6 +1984,10 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+ 	timer_setup(&rtwdev->tx_report.purge_timer,
+ 		    rtw_tx_report_purge_timer, 0);
+ 	rtwdev->tx_wq = alloc_workqueue("rtw_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
++	if (!rtwdev->tx_wq) {
++		rtw_warn(rtwdev, "alloc_workqueue rtw_tx_wq failed\n");
++		return -ENOMEM;
++	}
  
--	ptr = dma_alloc_coherent(dev, ctx->key_sz, tmp, GFP_KERNEL);
-+	ptr = dma_alloc_coherent(dev, ctx->key_sz, tmp, GFP_ATOMIC);
- 	if (unlikely(!ptr))
- 		return -ENOMEM;
- 
+ 	INIT_DELAYED_WORK(&rtwdev->watch_dog_work, rtw_watch_dog_work);
+ 	INIT_DELAYED_WORK(&coex->bt_relink_work, rtw_coex_bt_relink_work);
 -- 
 2.35.1
 
