@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E5FC2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1511C32757
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349666AbiHOVlk (ORCPT
+        id S1349754AbiHOVlx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        Mon, 15 Aug 2022 17:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348832AbiHOVho (ORCPT
+        with ESMTP id S1348870AbiHOVhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:37:44 -0400
+        Mon, 15 Aug 2022 17:37:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03922764B;
-        Mon, 15 Aug 2022 12:27:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C9811A31;
+        Mon, 15 Aug 2022 12:27:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A7560EF0;
-        Mon, 15 Aug 2022 19:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86967C433D6;
-        Mon, 15 Aug 2022 19:27:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 832326102C;
+        Mon, 15 Aug 2022 19:27:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D32DC433C1;
+        Mon, 15 Aug 2022 19:27:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591648;
-        bh=p602ogtdB0tsIU314uDoYRHO1tao2jzK++pqzAL2gtU=;
+        s=korg; t=1660591660;
+        bh=8LUaCd4bTBKPuxdWhBKc9IuyNYhTts+CufpvhOlETNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQbxzwexEAQIeXQProorV61ubUcd7oXbwc3bSaMEvQl3ZLus8/KuiA4/m1ydlc6h1
-         Drx+e0wY5m7u+cmQ838mpPQqbzPwF4YpMktpchqSY/LUqCPITN0KLiy/OMAo7May0c
-         0hELwNb+zBt5GH0rIpXLjDZuGFs4JKQvgxqmwBik=
+        b=hsBLz2iENtBa/ssq7Xis8VXTnWap/MaivUDCgoYI+nxbQh/DHzzZ4QA1RFbHpuSao
+         g2bJBrW7C4QAuDNuQykPbGkL1oyJGUvOI1wz5ob/SQqqtL5bh2rap5vWhej9aY2VES
+         WwpORWLSWy3FCCh2P/8pJtjvGEFO5eDuIy2kD5HM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0647/1095] iio: dac: ti-dac7311: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:46 +0200
-Message-Id: <20220815180456.156169522@linuxfoundation.org>
+Subject: [PATCH 5.18 0650/1095] iio: frequency: adf4350: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:49 +0200
+Message-Id: <20220815180456.280292936@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,35 +53,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 3637c49ed54632d7c221af718d2d7b1d381d4b6e ]
+[ Upstream commit 389b8972eb2a614cb3189e5fa55b1b7f66142c71 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 7a02ef7907d8 ("iio:dac:ti-dac7311 Add driver for Texas Instrument DAC7311")
+Updated help text to 'may' require buffers to be in their own cacheline.
+
+Fixes: e31166f0fd48 ("iio: frequency: New driver for Analog Devices ADF4350/ADF4351 Wideband Synthesizers")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-64-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-67-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ti-dac7311.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/frequency/adf4350.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/dac/ti-dac7311.c b/drivers/iio/dac/ti-dac7311.c
-index e10d17e60ed3..dd0a7b77838d 100644
---- a/drivers/iio/dac/ti-dac7311.c
-+++ b/drivers/iio/dac/ti-dac7311.c
-@@ -52,7 +52,7 @@ struct ti_dac_chip {
- 	bool powerdown;
- 	u8 powerdown_mode;
- 	u8 resolution;
--	u8 buf[2] ____cacheline_aligned;
-+	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index be1218d86291..85e289700c3c 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -56,10 +56,10 @@ struct adf4350_state {
+ 	 */
+ 	struct mutex			lock;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
+-	 * transfer buffers to live in their own cache lines.
++	 * DMA (thus cache coherency maintenance) may require that
++	 * transfer buffers live in their own cache lines.
+ 	 */
+-	__be32				val ____cacheline_aligned;
++	__be32				val __aligned(IIO_DMA_MINALIGN);
  };
  
- static u8 ti_dac_get_power(struct ti_dac_chip *ti_dac, bool powerdown)
+ static struct adf4350_platform_data default_pdata = {
 -- 
 2.35.1
 
