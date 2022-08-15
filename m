@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50183C00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBEBC3F6B0
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351670AbiHOWqK (ORCPT
+        id S1351699AbiHOWqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
+        Mon, 15 Aug 2022 18:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350747AbiHOWnE (ORCPT
+        with ESMTP id S1351381AbiHOWnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:43:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3347C50E;
-        Mon, 15 Aug 2022 12:52:25 -0700 (PDT)
+        Mon, 15 Aug 2022 18:43:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C787C53B;
+        Mon, 15 Aug 2022 12:52:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 67E54CE12C4;
-        Mon, 15 Aug 2022 19:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409D6C433D6;
-        Mon, 15 Aug 2022 19:52:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA82DB80EAD;
+        Mon, 15 Aug 2022 19:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4414EC433C1;
+        Mon, 15 Aug 2022 19:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593141;
-        bh=Xt2o7rk5oJFU6iJYe4PvvzmIa68P7B6CvIJ8ffPlNYo=;
+        s=korg; t=1660593150;
+        bh=6WQcaD39Z7X1fJpxXq9yMC2ENvQGk6DSE/u5decyplU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SwpBwQk+/UIqACyhKTH61D+SiyZYSIsMHTnuYsgV7dQD0dsFeNOsmFmrDitJc4dVl
-         UyWpP4NiXZjwYoF+e7NI8XMLKGcytGGXPdDbquyGv3C9RnWBPaGrra/lMj2+FH2KyN
-         hwzWItTJ6GVkO9r69W2o0mkMwIw/7h/oDvxKdcmw=
+        b=iZVB/zn3h1zmuAkHN0cOhbFNqC6lOY4UYltqOAYSIxIdojR/1RuYaioi5WQwk1VaN
+         /yBPwuYecqAK5tFNd+p7//s59f5DevmbHTbEPyHJWesnRbHyXfO7CWN9p9/nZ+fZ0Z
+         HNx5nbD4f+E8jmm0mf2hWdN11PKM1AT7HWMtkdK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0220/1157] arm64: cpufeature: Allow different PMU versions in ID_DFR0_EL1
-Date:   Mon, 15 Aug 2022 19:52:56 +0200
-Message-Id: <20220815180448.389459453@linuxfoundation.org>
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0903/1095] ASoC: imx-card: use snd_pcm_format_t type for asrc_format
+Date:   Mon, 15 Aug 2022 20:05:02 +0200
+Message-Id: <20220815180506.658906582@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,59 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Elisei <alexandru.elisei@arm.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 506506cad3947b942425b119ffa2b06715d5d804 ]
+[ Upstream commit 409a8652e909e323c715f3088e6c3133e37c8881 ]
 
-Commit b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in
-PMU implementations") made it possible to run Linux on a machine with PMUs
-with different versions without tainting the kernel. The patch relaxed the
-restriction only for the ID_AA64DFR0_EL1.PMUVer field, and missed doing the
-same for ID_DFR0_EL1.PerfMon , which also reports the PMU version, but for
-the AArch32 state.
+Fix sparse warning:
+sound/soc/fsl/imx-card.c:653:59: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/imx-card.c:653:59: sparse:    expected unsigned int [usertype] asrc_format
+sound/soc/fsl/imx-card.c:653:59: sparse:    got restricted snd_pcm_format_t [usertype]
+sound/soc/fsl/imx-card.c:655:59: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/imx-card.c:655:59: sparse:    expected unsigned int [usertype] asrc_format
+sound/soc/fsl/imx-card.c:655:59: sparse:    got restricted snd_pcm_format_t [usertype]
 
-For example, with Linux running on two clusters with different PMU
-versions, the kernel is tainted when bringing up secondaries with the
-following message:
-
-[    0.097027] smp: Bringing up secondary CPUs ...
-[..]
-[    0.142805] Detected PIPT I-cache on CPU4
-[    0.142805] CPU features: SANITY CHECK: Unexpected variation in SYS_ID_DFR0_EL1. Boot CPU: 0x00000004011088, CPU4: 0x00000005011088
-[    0.143555] CPU features: Unsupported CPU feature variation detected.
-[    0.143702] GICv3: CPU4: found redistributor 10000 region 0:0x000000002f180000
-[    0.143702] GICv3: CPU4: using allocated LPI pending table @0x00000008800d0000
-[    0.144888] CPU4: Booted secondary processor 0x0000010000 [0x410fd0f0]
-
-The boot CPU implements FEAT_PMUv3p1 (ID_DFR0_EL1.PerfMon, bits 27:24, is
-0b0100), but CPU4, part of the other cluster, implements FEAT_PMUv3p4
-(ID_DFR0_EL1.PerfMon = 0b0101).
-
-Treat the PerfMon field as FTR_NONSTRICT and FTR_EXACT to pass the sanity
-check and to match how PMUVer is treated for the 64bit ID register.
-
-Fixes: b20d1ba3cf4b ("arm64: cpufeature: allow for version discrepancy in PMU implementations")
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Link: https://lore.kernel.org/r/20220617111332.203061-1-alexandru.elisei@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1658399393-28777-6-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/cpufeature.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/fsl/imx-card.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 90018643d424..ebdfbd1cf207 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -562,7 +562,7 @@ static const struct arm64_ftr_bits ftr_id_pfr2[] = {
+diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
+index c0eb218a254b..4a8609b0d700 100644
+--- a/sound/soc/fsl/imx-card.c
++++ b/sound/soc/fsl/imx-card.c
+@@ -118,7 +118,7 @@ struct imx_card_data {
+ 	struct snd_soc_card card;
+ 	int num_dapm_routes;
+ 	u32 asrc_rate;
+-	u32 asrc_format;
++	snd_pcm_format_t asrc_format;
+ };
  
- static const struct arm64_ftr_bits ftr_id_dfr0[] = {
- 	/* [31:28] TraceFilt */
--	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_PERFMON_SHIFT, 4, 0xf),
-+	S_ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_EXACT, ID_DFR0_PERFMON_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MPROFDBG_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_MMAPTRC_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_DFR0_COPTRC_SHIFT, 4, 0),
+ static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
+@@ -474,7 +474,7 @@ static int be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+ 
+ 	mask = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
+ 	snd_mask_none(mask);
+-	snd_mask_set(mask, data->asrc_format);
++	snd_mask_set(mask, (__force unsigned int)data->asrc_format);
+ 
+ 	return 0;
+ }
+@@ -493,6 +493,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
+ 	struct dai_link_data *link_data;
+ 	struct of_phandle_args args;
+ 	int ret, num_links;
++	u32 asrc_fmt = 0;
+ 	u32 width;
+ 
+ 	ret = snd_soc_of_parse_card_name(card, "model");
+@@ -639,7 +640,8 @@ static int imx_card_parse_of(struct imx_card_data *data)
+ 				goto err;
+ 			}
+ 
+-			ret = of_property_read_u32(args.np, "fsl,asrc-format", &data->asrc_format);
++			ret = of_property_read_u32(args.np, "fsl,asrc-format", &asrc_fmt);
++			data->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
+ 			if (ret) {
+ 				/* Fallback to old binding; translate to asrc_format */
+ 				ret = of_property_read_u32(args.np, "fsl,asrc-width", &width);
 -- 
 2.35.1
 
