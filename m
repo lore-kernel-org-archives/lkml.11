@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3149C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38372C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354400AbiHOXsC (ORCPT
+        id S1354462AbiHOXsR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
+        Mon, 15 Aug 2022 19:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354416AbiHOXmI (ORCPT
+        with ESMTP id S1354428AbiHOXmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:42:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32BA32D81;
-        Mon, 15 Aug 2022 13:13:25 -0700 (PDT)
+        Mon, 15 Aug 2022 19:42:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8BC32EC0;
+        Mon, 15 Aug 2022 13:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74B27B81154;
-        Mon, 15 Aug 2022 20:13:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D63F6C433C1;
-        Mon, 15 Aug 2022 20:13:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A5E4B80EA8;
+        Mon, 15 Aug 2022 20:13:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF14FC433D6;
+        Mon, 15 Aug 2022 20:13:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594403;
-        bh=NDaqN0HN4Lw9xKA+GYcUn8lKUCBj57SDn6sS5RzJY98=;
+        s=korg; t=1660594406;
+        bh=ZCTlZ6oiSDxVQ1XvejSCzZ84C+U5CBdJqQG1WcctKyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ixlHPoFMHxpuRkyfz0g/spNvYQQ6pLdZUoxpHweVbEpXg4rhXdhsg2GGPLcV9+J+X
-         rbBM4HAaOMC2RfxppnHmuPqrsgPRnDXge1BYBKdIoAgbGl3UqdQex9uJPslzBibOzu
-         y6j5SDG61DdIJLOFCcEZk6UZNzW9tS1JmubowKqk=
+        b=cvOFvV7ORMeu7XMQpriZhya4GjiKuHWRiQC/ij3Yu2H7vvpnW3gbOCwLthkgohmXQ
+         DRL1sP03V+qs1E4hXXLdGHtynf/P6svT9v72FTy6Vvi5H+SU1CriBUUl7tJXl+BZjK
+         Xv/SwKjbUfgg7POrO7t0ec8ORefXyVPoZd1NI6Ek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bo-Chen Chen <rex-bc.chen@mediatek.com>,
+        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
         Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0434/1157] drm/mediatek: dpi: Remove output format of YUV
-Date:   Mon, 15 Aug 2022 19:56:30 +0200
-Message-Id: <20220815180457.012405557@linuxfoundation.org>
+Subject: [PATCH 5.19 0435/1157] drm/mediatek: dpi: Only enable dpi after the bridge is enabled
+Date:   Mon, 15 Aug 2022 19:56:31 +0200
+Message-Id: <20220815180457.049435147@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,71 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+From: Guillaume Ranquet <granquet@baylibre.com>
 
-[ Upstream commit c9ed0713b3c35fc45677707ba47f432cad95da56 ]
+[ Upstream commit aed61ef6beb911cc043af0f2f291167663995065 ]
 
-DPI is not support output format as YUV, but there is the setting of
-configuring output YUV. Therefore, remove them in this patch.
+Enabling the dpi too early causes glitches on screen.
+
+Move the call to mtk_dpi_enable() at the end of the bridge_enable
+callback to ensure everything is setup properly before enabling dpi.
 
 Fixes: 9e629c17aa8d ("drm/mediatek: Add DPI sub driver")
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
 Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-5-rex-bc.chen@mediatek.com/
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220701035845.16458-16-rex-bc.chen@mediatek.com/
 Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 31 ++++++------------------------
- 1 file changed, 6 insertions(+), 25 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index e61cd67b978f..675e2e4072df 100644
+index 675e2e4072df..41c783349321 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -54,13 +54,7 @@ enum mtk_dpi_out_channel_swap {
- };
+@@ -417,7 +417,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
+ 	if (dpi->pinctrl && dpi->pins_dpi)
+ 		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
  
- enum mtk_dpi_out_color_format {
--	MTK_DPI_COLOR_FORMAT_RGB,
--	MTK_DPI_COLOR_FORMAT_RGB_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422,
--	MTK_DPI_COLOR_FORMAT_XV_YCC,
--	MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL,
--	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
-+	MTK_DPI_COLOR_FORMAT_RGB
- };
+-	mtk_dpi_enable(dpi);
+ 	return 0;
  
- struct mtk_dpi {
-@@ -364,24 +358,11 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
- static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
- 					enum mtk_dpi_out_color_format format)
- {
--	if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_444) ||
--	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
--	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
--		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
--		mtk_dpi_config_yuv422_enable(dpi, true);
--		mtk_dpi_config_csc_enable(dpi, true);
--		mtk_dpi_config_swap_input(dpi, true);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	} else {
--		mtk_dpi_config_yuv422_enable(dpi, false);
--		mtk_dpi_config_csc_enable(dpi, false);
--		mtk_dpi_config_swap_input(dpi, false);
--		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
--	}
-+	/* only support RGB888 */
-+	mtk_dpi_config_yuv422_enable(dpi, false);
-+	mtk_dpi_config_csc_enable(dpi, false);
-+	mtk_dpi_config_swap_input(dpi, false);
-+	mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+ err_pixel:
+@@ -639,6 +638,7 @@ static void mtk_dpi_bridge_enable(struct drm_bridge *bridge)
+ 
+ 	mtk_dpi_power_on(dpi);
+ 	mtk_dpi_set_display_mode(dpi, &dpi->mode);
++	mtk_dpi_enable(dpi);
  }
  
- static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
+ static enum drm_mode_status
 -- 
 2.35.1
 
