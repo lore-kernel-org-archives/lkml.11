@@ -2,175 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20604C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41DF3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244901AbiHOTEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60064 "EHLO
+        id S245373AbiHOTEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245109AbiHOTBR (ORCPT
+        with ESMTP id S245196AbiHOTBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:01:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5E24B0FD;
-        Mon, 15 Aug 2022 11:32:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BF6EB8106C;
-        Mon, 15 Aug 2022 18:32:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB253C433C1;
-        Mon, 15 Aug 2022 18:32:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588368;
-        bh=grTevtiDtZeHGoNwnZ4+5BrwyLfTwOyIQ6OsoxiYJ1w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BTGZNCqWcOdw+eCswi2KtL4pCY0tKmnKmzSxT9RiPiKXbfppEjBznfdidx3hkeLY+
-         y0RUvMZejwDSDCj/qdf5VEysJ/NE9zQT/UHmMNqETszt4Lb4R9ROr1Jg8s0xiiNlRE
-         RbOLJJZq9DpWrdfwUdkZEv5YcW4I/ByAHtQOYHmQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 380/779] iavf: Fix tc qdisc show listing too many queues
-Date:   Mon, 15 Aug 2022 20:00:24 +0200
-Message-Id: <20220815180353.534510020@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 15:01:31 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A464B0E0
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:32:59 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so15197595pjm.3
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=8bJQmDi/lCA9PqirReS3MPMutajyKB5RDjNh4fqCzaA=;
+        b=jdED2coZKjWQwnNfe6vINVdrNYG/s4Ap5/xy5Gcip3nOeogSVmoaiJccuFjEMCn604
+         aiAZAQA12xrgovQ0EK7RmswbJp8NFIGlbMK7CJIoj829dlR/YYKVOetZHn6kiWBGYqVw
+         iKFOwG4d+6zBCeFAM+4iDS7+9tD9UBi/j3bzxO26XKdYiOx4BB2DNlOWrPLyESziZRHe
+         LEaQNj92ErOuotlQ1magSPuxiMp4HGWT4qlqOjqs26rIJlOdgx2ohKm85mKBuL0W3Xiz
+         UuCSlnwEL0+m8YK540p/n30zlzjGqOSmL/ZEk6NbS6E6meNvlkJSA2GfQZf+c2O2OWU8
+         uGRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=8bJQmDi/lCA9PqirReS3MPMutajyKB5RDjNh4fqCzaA=;
+        b=X1z9HjMoXjJumWqSQUpfPPbZll+rvhGnJ/wEoQ3mDnTsZpwPuBfOdJdxGUqUfS7DWP
+         dLTAUXAV+1gG1lnWMYjibb5hJRZNEvDV9HkqOHvQy+K06ryCmkpEOHDMIjrRTu4Xxsng
+         fsIUdhB/Z0biPh40wF6GiXXp6dpbKOy8qcLgJO0n0OrihHfw+wGGEHyg5uYZBGL5uo0/
+         Nd47CXQgnRuAPhCi9VE6p5kDx3EA69lfJ1aQRZcOzCl8rJisAagnA257sWN7QJuqLhH7
+         6z/Sl+oAuhSuJWtthe204wtdNyzyjaXQ7jJ/Witmn1l1m5GN8pZuxbl8M2eoYDfUcrAG
+         8oRQ==
+X-Gm-Message-State: ACgBeo1F5milE6JG/nOwQVGNL96dceEdZwzVnM/mfiOj6x5XNU/TNO0/
+        hhF7b9YcWB1eH7OPvVgBVUg=
+X-Google-Smtp-Source: AA6agR6Clbh4D6hp8u1BwYfWLa6d/Cwe/QwEr2ontSg2+IYjxn4HZJNCGeWwoDVqjl6HR/cTznhCPA==
+X-Received: by 2002:a17:902:c201:b0:172:6c9d:14b9 with SMTP id 1-20020a170902c20100b001726c9d14b9mr7195297pll.161.1660588374426;
+        Mon, 15 Aug 2022 11:32:54 -0700 (PDT)
+Received: from [192.168.0.110] ([103.159.189.148])
+        by smtp.gmail.com with ESMTPSA id 200-20020a6216d1000000b005289fad1bbesm7034667pfw.94.2022.08.15.11.32.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 11:32:53 -0700 (PDT)
+Message-ID: <83820e90-04ac-16cd-b5be-87e1a0bbfca8@gmail.com>
+Date:   Tue, 16 Aug 2022 00:32:46 +0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH linux-next] drm/amdgpu/vcn: Remove unused assignment in
+ vcn_v4_0_stop
+Content-Language: en-US
+To:     "Dong, Ruijing" <Ruijing.Dong@amd.com>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees@lists.linuxfoundation.org" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Cc:     "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "Zhu, James" <James.Zhu@amd.com>,
+        "Jiang, Sonny" <Sonny.Jiang@amd.com>,
+        Wan Jiabing <wanjiabing@vivo.com>, "Liu, Leo" <Leo.Liu@amd.com>
+References: <20220815070056.10816-1-khalid.masum.92@gmail.com>
+ <SJ1PR12MB61944B1D53330D5E9531158695689@SJ1PR12MB6194.namprd12.prod.outlook.com>
+ <86088c17-585c-4a53-312d-ef339b824538@gmail.com>
+ <SJ1PR12MB6194C83D51101ACD97B55F0295689@SJ1PR12MB6194.namprd12.prod.outlook.com>
+ <f8734af1-6e31-75c9-9556-9519709284f1@gmail.com>
+ <SJ1PR12MB6194033EC36251B95A6737A095689@SJ1PR12MB6194.namprd12.prod.outlook.com>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+In-Reply-To: <SJ1PR12MB6194033EC36251B95A6737A095689@SJ1PR12MB6194.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+On 8/15/22 22:00, Dong, Ruijing wrote:
+> [AMD Official Use Only - General]
+> 
+> Then please update commit message, this change is due to "value r is never used, and remove unnecessary assignment", that makes sense to me.
+> 
+> Thanks
+> Ruijing
+> 
+Greg also pointed out that the function vcn_v4_0_stop_dpg_mode should 
+return void. I shall send a patch shortly with these two changes. Thanks 
+for your suggestion.
 
-[ Upstream commit 93cb804edab1b9a5bb7bb7b6824012dbb20abf22 ]
-
-Fix tc qdisc show dev <ethX> root displaying too many fq_codel qdiscs.
-tc_modify_qdisc, which is caller of ndo_setup_tc, expects driver to call
-netif_set_real_num_tx_queues, which prepares qdiscs.
-Without this patch, fq_codel qdiscs would not be adjusted to number of
-queues on VF.
-e.g.:
-tc qdisc show dev <ethX>
-qdisc mq 0: root
-qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-tc qdisc add dev <ethX> root mqprio num_tc 2 map 1 0 0 0 0 0 0 0 queues 1@0 1@1 hw 1 mode channel shaper bw_rlimit max_rate 5000Mbit 150Mbit
-tc qdisc show dev <ethX>
-qdisc mqprio 8003: root tc 2 map 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-             queues:(0:0) (1:1)
-             mode:channel
-             shaper:bw_rlimit   max_rate:5Gbit 150Mbit
-qdisc fq_codel 0: parent 8003:4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8003:3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8003:2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8003:1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-
-While after fix:
-tc qdisc add dev <ethX> root mqprio num_tc 2 map 1 0 0 0 0 0 0 0 queues 1@0 1@1 hw 1 mode channel shaper bw_rlimit max_rate 5000Mbit 150Mbit
-tc qdisc show dev <ethX> #should show 2, shows 4
-qdisc mqprio 8004: root tc 2 map 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-             queues:(0:0) (1:1)
-             mode:channel
-             shaper:bw_rlimit   max_rate:5Gbit 150Mbit
-qdisc fq_codel 0: parent 8004:2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-qdisc fq_codel 0: parent 8004:1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
-
-Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Co-developed-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/iavf/iavf.h      |  5 +++++
- drivers/net/ethernet/intel/iavf/iavf_main.c | 21 +++++++++++++++++++++
- 2 files changed, 26 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index ab84fc83352f..99d2b090a1e6 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -378,6 +378,11 @@ struct iavf_adapter {
- 	/* lock to protect access to the cloud filter list */
- 	spinlock_t cloud_filter_list_lock;
- 	u16 num_cloud_filters;
-+	/* snapshot of "num_active_queues" before setup_tc for qdisc add
-+	 * is invoked. This information is useful during qdisc del flow,
-+	 * to restore correct number of queues
-+	 */
-+	int orig_num_active_queues;
- 
- #define IAVF_MAX_FDIR_FILTERS 128	/* max allowed Flow Director filters */
- 	u16 fdir_active_fltr;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 067f0b265e7d..e2349131a428 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2839,6 +2839,7 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
- 			netif_tx_disable(netdev);
- 			iavf_del_all_cloud_filters(adapter);
- 			adapter->aq_required = IAVF_FLAG_AQ_DISABLE_CHANNELS;
-+			total_qps = adapter->orig_num_active_queues;
- 			goto exit;
- 		} else {
- 			return -EINVAL;
-@@ -2882,7 +2883,21 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
- 				adapter->ch_config.ch_info[i].offset = 0;
- 			}
- 		}
-+
-+		/* Take snapshot of original config such as "num_active_queues"
-+		 * It is used later when delete ADQ flow is exercised, so that
-+		 * once delete ADQ flow completes, VF shall go back to its
-+		 * original queue configuration
-+		 */
-+
-+		adapter->orig_num_active_queues = adapter->num_active_queues;
-+
-+		/* Store queue info based on TC so that VF gets configured
-+		 * with correct number of queues when VF completes ADQ config
-+		 * flow
-+		 */
- 		adapter->ch_config.total_qps = total_qps;
-+
- 		netif_tx_stop_all_queues(netdev);
- 		netif_tx_disable(netdev);
- 		adapter->aq_required |= IAVF_FLAG_AQ_ENABLE_CHANNELS;
-@@ -2899,6 +2914,12 @@ static int __iavf_setup_tc(struct net_device *netdev, void *type_data)
- 		}
- 	}
- exit:
-+	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
-+		return 0;
-+
-+	netif_set_real_num_rx_queues(netdev, total_qps);
-+	netif_set_real_num_tx_queues(netdev, total_qps);
-+
- 	return ret;
- }
- 
--- 
-2.35.1
-
-
-
+Thanks,
+   -- Khalid Masum
