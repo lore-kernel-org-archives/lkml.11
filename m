@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E44AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87099C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351218AbiHOWn0 (ORCPT
+        id S1351365AbiHOWna (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        Mon, 15 Aug 2022 18:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351322AbiHOWh6 (ORCPT
+        with ESMTP id S1351317AbiHOWh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 18:37:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A9C1322FE;
-        Mon, 15 Aug 2022 12:51:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B3B1322E4;
+        Mon, 15 Aug 2022 12:51:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F7FA61206;
-        Mon, 15 Aug 2022 19:51:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3039CC433C1;
-        Mon, 15 Aug 2022 19:50:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3825A6123B;
+        Mon, 15 Aug 2022 19:51:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED21C433D6;
+        Mon, 15 Aug 2022 19:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593059;
-        bh=f1yBoZdlxrrj+e56t5SpYyY3+I6Cwa8ohg4maem5XqM=;
+        s=korg; t=1660593062;
+        bh=VDHLpJeXgtOYXNXVIclwxev6mqDfXvY9gFVcYGXaWFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tf9sFFkKdx/lqKJtIVQZj0n3FcnqYVfZ8fmSnhiy3CoqVK4YZfZ0nrweKZIKGJb7H
-         L/WhkuV/v08g/u+VPKhAzlk+IJo48CjgLE2Vy6ALsalT9bWv5lZReTLOSvZDdf9tnU
-         0MGhtZr4NELe01nchIoUgfEtAcxZnhD/UzHMYWzU=
+        b=ca/s8FF3rsDsF/sXodVIP93SZpOBlmuU1Oe2JQSctLJP+d0cbVeX6yEholuPvcgHz
+         ypDWQOC48mY9y9uZW6dKKf0chhIDFFtZ6qDxnTipCMtuCm9/0gaDdZFx9yVG/gSe/y
+         B6JKl5+6uqegsrMoq4G2fLhbzRBYkSBWKzDZWjYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0886/1095] MIPS: Fixed __debug_virt_addr_valid()
-Date:   Mon, 15 Aug 2022 20:04:45 +0200
-Message-Id: <20220815180505.990184416@linuxfoundation.org>
+Subject: [PATCH 5.19 0207/1157] ARM: dts: imx7-colibri: move aliases, chosen, extcon and gpio-keys
+Date:   Mon, 15 Aug 2022 19:52:43 +0200
+Message-Id: <20220815180447.924486635@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +51,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-[ Upstream commit 8a2b456665d1e797123669581524cbb095fb003b ]
+[ Upstream commit 0ef1969ea5699b00394e1a8c8c7f927b2d0bc5bb ]
 
-It is permissible for kernel code to call virt_to_phys() against virtual
-addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
-types. Rewrite the test condition to ensure that the kernel virtual
-addresses are above PAGE_OFFSET which they must be, and below KSEG2
-where the non-linear mapping starts.
+Move aliases, chosen, extcon and gpio-keys to module-level device tree
+given they are standard Colibri functionalities.
 
-For EVA, there is not much that we can do given the linear address range
-that is offered, so just return any virtual address as being valid.
-
-Finally, when HIGHMEM is not enabled, all virtual addresses are assumed
-to be valid as well.
-
-Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/physaddr.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ arch/arm/boot/dts/imx7-colibri-aster.dtsi   | 18 ------------
+ arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi | 31 --------------------
+ arch/arm/boot/dts/imx7-colibri.dtsi         | 32 +++++++++++++++++++++
+ 3 files changed, 32 insertions(+), 49 deletions(-)
 
-diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
-index a1ced5e44951..f9b8c85e9843 100644
---- a/arch/mips/mm/physaddr.c
-+++ b/arch/mips/mm/physaddr.c
-@@ -5,6 +5,7 @@
- #include <linux/mmdebug.h>
- #include <linux/mm.h>
+diff --git a/arch/arm/boot/dts/imx7-colibri-aster.dtsi b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
+index 69ee85084ad4..02c49ed686a8 100644
+--- a/arch/arm/boot/dts/imx7-colibri-aster.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri-aster.dtsi
+@@ -5,24 +5,6 @@
+  */
  
-+#include <asm/addrspace.h>
- #include <asm/sections.h>
- #include <asm/io.h>
- #include <asm/page.h>
-@@ -12,15 +13,6 @@
- 
- static inline bool __debug_virt_addr_valid(unsigned long x)
- {
--	/* high_memory does not get immediately defined, and there
--	 * are early callers of __pa() against PAGE_OFFSET
--	 */
--	if (!high_memory && x >= PAGE_OFFSET)
--		return true;
+ / {
+-	chosen {
+-		stdout-path = "serial0:115200n8";
+-	};
 -
--	if (high_memory && x >= PAGE_OFFSET && x < (unsigned long)high_memory)
--		return true;
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_gpiokeys>;
 -
- 	/*
- 	 * MAX_DMA_ADDRESS is a virtual address that may not correspond to an
- 	 * actual physical address. Enough code relies on
-@@ -30,7 +22,9 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
- 	if (x == MAX_DMA_ADDRESS)
- 		return true;
+-		power {
+-			label = "Wake-Up";
+-			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+-			linux,code = <KEY_WAKEUP>;
+-			debounce-interval = <10>;
+-			wakeup-source;
+-		};
+-	};
+-
+ 	reg_3v3: regulator-3v3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "3.3V";
+diff --git a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
+index d6775e3c64f1..4cf4107fb642 100644
+--- a/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri-eval-v3.dtsi
+@@ -4,15 +4,6 @@
+  */
  
--	return false;
-+	return x >= PAGE_OFFSET && (KSEGX(x) < KSEG2 ||
-+	       IS_ENABLED(CONFIG_EVA) ||
-+	       !IS_ENABLED(CONFIG_HIGHMEM));
- }
+ / {
+-	aliases {
+-		rtc0 = &rtc;
+-		rtc1 = &snvs_rtc;
+-	};
+-
+-	chosen {
+-		stdout-path = "serial0:115200n8";
+-	};
+-
+ 	/* fixed crystal dedicated to mpc258x */
+ 	clk16m: clk16m {
+ 		compatible = "fixed-clock";
+@@ -20,27 +11,6 @@ clk16m: clk16m {
+ 		clock-frequency = <16000000>;
+ 	};
  
- phys_addr_t __virt_to_phys(volatile const void *x)
+-	extcon_usbc_det: usbc-det {
+-		compatible = "linux,extcon-usb-gpio";
+-		id-gpio = <&gpio7 14 GPIO_ACTIVE_HIGH>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_usbc_det>;
+-	};
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_gpiokeys>;
+-
+-		power {
+-			label = "Wake-Up";
+-			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+-			linux,code = <KEY_WAKEUP>;
+-			debounce-interval = <10>;
+-			wakeup-source;
+-		};
+-	};
+-
+ 	reg_3v3: regulator-3v3 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "3.3V";
+@@ -148,7 +118,6 @@ &uart3 {
+ };
+ 
+ &usbotg1 {
+-	extcon = <0>, <&extcon_usbc_det>;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
+index 4146564c3e4b..79f041988c7b 100644
+--- a/arch/arm/boot/dts/imx7-colibri.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri.dtsi
+@@ -6,6 +6,11 @@
+ #include <dt-bindings/pwm/pwm.h>
+ 
+ / {
++	aliases {
++		rtc0 = &rtc;
++		rtc1 = &snvs_rtc;
++	};
++
+ 	backlight: backlight {
+ 		brightness-levels = <0 45 63 88 119 158 203 255>;
+ 		compatible = "pwm-backlight";
+@@ -18,6 +23,32 @@ backlight: backlight {
+ 		status = "disabled";
+ 	};
+ 
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	extcon_usbc_det: usbc-det {
++		compatible = "linux,extcon-usb-gpio";
++		debounce = <25>;
++		id-gpio = <&gpio7 14 GPIO_ACTIVE_HIGH>; /* SODIMM 137 / USBC_DET */
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_usbc_det>;
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpiokeys>;
++
++		wakeup {
++			debounce-interval = <10>;
++			gpios = <&gpio1 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* SODIMM 45 */
++			label = "Wake-Up";
++			linux,code = <KEY_WAKEUP>;
++			wakeup-source;
++		};
++	};
++
+ 	panel_dpi: panel-dpi {
+ 		backlight = <&backlight>;
+ 		compatible = "edt,et057090dhu";
+@@ -498,6 +529,7 @@ &uart3 {
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	extcon = <0>, <&extcon_usbc_det>;
+ };
+ 
+ &usdhc1 {
 -- 
 2.35.1
 
