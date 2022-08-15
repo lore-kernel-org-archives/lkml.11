@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE727C25B0D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CDDC00140
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345988AbiHOXdr (ORCPT
+        id S1345634AbiHOXdh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
+        Mon, 15 Aug 2022 19:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346180AbiHOX1M (ORCPT
+        with ESMTP id S1345952AbiHOX06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:27:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0260F81B1E;
-        Mon, 15 Aug 2022 13:07:05 -0700 (PDT)
+        Mon, 15 Aug 2022 19:26:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2D280F7F;
+        Mon, 15 Aug 2022 13:07:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C7A60025;
-        Mon, 15 Aug 2022 20:07:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC652C4314C;
-        Mon, 15 Aug 2022 20:07:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B7DCB80EA9;
+        Mon, 15 Aug 2022 20:07:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD1EC433C1;
+        Mon, 15 Aug 2022 20:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594024;
-        bh=N836QlaP8EZTDQ0E+HF1nAvtsij5ua2T/dw7TqgbLH4=;
+        s=korg; t=1660594021;
+        bh=nZwBQrpKOrrBiHTXHEbNM8S3yRqLyVRgRX0ppWUJZIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W7ZI+CkpzjC7VFCuRuEFwhcEAabu0WFMPLmR/zeiHMTTZEPoMJscxcDe9mj/U/c2i
-         IJZcB8szHy//RI+1hjx1gawyjkZiwFtAfbh/0HB81VY2oaX+03pMYb6rT+crPwjHQ9
-         512xLAWAyV+9y+FYSe+75eRbhVaFtQQKVoovtk8w=
+        b=Fyu9D/+Yly+m9qOASGpb7lm262zeRAZzf2Pk5hUJofciCJ9xPjhcWz0W/cEZZAmAz
+         5vrtJVxnyoYRk9TEHofKSMO7XvDRYzgPTbiyUd9qKNhu5CXQfqKruUoYYRKGRUMygG
+         JK/gWb90JgB57CFiw9SH+b2RqzYFysPsvycuCc0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0341/1157] drm/meson: encoder_hdmi: Fix refcount leak in meson_encoder_hdmi_init
-Date:   Mon, 15 Aug 2022 19:54:57 +0200
-Message-Id: <20220815180453.324844206@linuxfoundation.org>
+Subject: [PATCH 5.19 0363/1157] selftests/bpf: Dont force lld on non-x86 architectures
+Date:   Mon, 15 Aug 2022 19:55:19 +0200
+Message-Id: <20220815180454.244202893@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,83 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit d82a5a4aae9d0203234737caed1bf470aa317568 ]
+[ Upstream commit 08c79c9cd67fffd0d5538ddbd3a97b0a865b5eb5 ]
 
-of_graph_get_remote_node() returns remote device nodepointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+LLVM's lld linker doesn't have a universal architecture support (e.g.,
+it definitely doesn't work on s390x), so be safe and force lld for
+urandom_read and liburandom_read.so only on x86 architectures.
 
-Fixes: e67f6037ae1b ("drm/meson: split out encoder from meson_dw_hdmi")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220601033927.47814-3-linmq006@gmail.com
+This should fix s390x CI runs.
+
+Fixes: 3e6fe5ce4d48 ("libbpf: Fix internal USDT address translation logic for shared libraries")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220617045512.1339795-1-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_encoder_hdmi.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/Makefile | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-index de87f02cd388..a7692584487c 100644
---- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-+++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-@@ -365,7 +365,8 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 	meson_encoder_hdmi->next_bridge = of_drm_find_bridge(remote);
- 	if (!meson_encoder_hdmi->next_bridge) {
- 		dev_err(priv->dev, "Failed to find HDMI transceiver bridge\n");
--		return -EPROBE_DEFER;
-+		ret = -EPROBE_DEFER;
-+		goto err_put_node;
- 	}
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 19ad83d306e0..21be936dd1af 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -168,18 +168,25 @@ $(OUTPUT)/%:%.c
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(LINK.c) $^ $(LDLIBS) -o $@
  
- 	/* HDMI Encoder Bridge */
-@@ -383,7 +384,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 				      DRM_MODE_ENCODER_TMDS);
- 	if (ret) {
- 		dev_err(priv->dev, "Failed to init HDMI encoder: %d\n", ret);
--		return ret;
-+		goto err_put_node;
- 	}
- 
- 	meson_encoder_hdmi->encoder.possible_crtcs = BIT(0);
-@@ -393,7 +394,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
- 	if (ret) {
- 		dev_err(priv->dev, "Failed to attach bridge: %d\n", ret);
--		return ret;
-+		goto err_put_node;
- 	}
- 
- 	/* Initialize & attach Bridge Connector */
-@@ -401,7 +402,8 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 							&meson_encoder_hdmi->encoder);
- 	if (IS_ERR(meson_encoder_hdmi->connector)) {
- 		dev_err(priv->dev, "Unable to create HDMI bridge connector\n");
--		return PTR_ERR(meson_encoder_hdmi->connector);
-+		ret = PTR_ERR(meson_encoder_hdmi->connector);
-+		goto err_put_node;
- 	}
- 	drm_connector_attach_encoder(meson_encoder_hdmi->connector,
- 				     &meson_encoder_hdmi->encoder);
-@@ -428,6 +430,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 	meson_encoder_hdmi->connector->ycbcr_420_allowed = true;
- 
- 	pdev = of_find_device_by_node(remote);
-+	of_node_put(remote);
- 	if (pdev) {
- 		struct cec_connector_info conn_info;
- 		struct cec_notifier *notifier;
-@@ -446,4 +449,8 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 	dev_dbg(priv->dev, "HDMI encoder initialized\n");
- 
- 	return 0;
++# LLVM's ld.lld doesn't support all the architectures, so use it only on x86
++ifeq ($(SRCARCH),x86)
++LLD := lld
++else
++LLD := ld
++endif
 +
-+err_put_node:
-+	of_node_put(remote);
-+	return ret;
- }
+ # Filter out -static for liburandom_read.so and its dependent targets so that static builds
+ # do not fail. Static builds leave urandom_read relying on system-wide shared libraries.
+ $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
+ 	$(call msg,LIB,,$@)
+ 	$(Q)$(CLANG) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $^ $(LDLIBS)   \
+-		     -fuse-ld=lld -Wl,-znoseparate-code -fPIC -shared -o $@
++		     -fuse-ld=$(LLD) -Wl,-znoseparate-code -fPIC -shared -o $@
+ 
+ $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_read.so
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CLANG) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $(filter %.c,$^) \
+ 		     liburandom_read.so $(LDLIBS)			       \
+-		     -fuse-ld=lld -Wl,-znoseparate-code	       		       \
++		     -fuse-ld=$(LLD) -Wl,-znoseparate-code		       \
+ 		     -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
+ 
+ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_testmod/*.[ch])
 -- 
 2.35.1
 
