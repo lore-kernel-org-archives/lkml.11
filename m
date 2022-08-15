@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E373BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D41C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241362AbiHOT6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        id S243486AbiHOT6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345885AbiHOT4T (ORCPT
+        with ESMTP id S1345921AbiHOT40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:56:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922787645E;
-        Mon, 15 Aug 2022 11:52:32 -0700 (PDT)
+        Mon, 15 Aug 2022 15:56:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27CA7647D;
+        Mon, 15 Aug 2022 11:52:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D996B810A5;
-        Mon, 15 Aug 2022 18:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 734E5C433C1;
-        Mon, 15 Aug 2022 18:52:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A553D61224;
+        Mon, 15 Aug 2022 18:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F192C433C1;
+        Mon, 15 Aug 2022 18:52:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589537;
-        bh=UJmdtNp9UclGRqO3oGh5Wh3J+d7Eg6EFFK3qiBFPpdU=;
+        s=korg; t=1660589547;
+        bh=FMs/sWj9WFMQUIEfGyLx6NRo6/tJlhfm8nDKhrM5/EY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5ZY1KHTY8dXVjLSX9IcXkXJUdM18qN/jD1nIZPSNJZgOINlbK0sCxv2AKtML3bcY
-         wiNdQFg0fSpC4alx79nLcOAI1+0p7rytdEXEWpPVbAeW5ACdhT6xPyg3sBCSH8VQit
-         iHER1zihIA0kZfFd2cXoN1izv7lXbrjBkLcoykNY=
+        b=e5Fhz1+uElVcsmJIbQJSk5s+VJTRMB2eFJmAFJ2LIrbPTItg7wAwLdhY6+QArCj05
+         GDq3+nydU0kl56PKyAIJAIZkMcPUksTAD5DDWIeUQPIkVr/FRU327zldUiML/WSEcz
+         w8AEFkHf5WLIRvn/8ygYPNNicye9YbKMbr3Ymuvk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Lukas Czerner <lczerner@redhat.com>,
-        Andreas Dilger <adilger@dilger.ca>,
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
         Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 749/779] ext4: make sure ext4_append() always allocates new block
-Date:   Mon, 15 Aug 2022 20:06:33 +0200
-Message-Id: <20220815180409.494538455@linuxfoundation.org>
+Subject: [PATCH 5.15 752/779] ext4: unindent codeblock in ext4_xattr_block_set()
+Date:   Mon, 15 Aug 2022 20:06:36 +0200
+Message-Id: <20220815180409.623950024@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,61 +48,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Czerner <lczerner@redhat.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit b8a04fe77ef1360fbf73c80fddbdfeaa9407ed1b ]
+[ Upstream commit fd48e9acdf26d0cbd80051de07d4a735d05d29b2 ]
 
-ext4_append() must always allocate a new block, otherwise we run the
-risk of overwriting existing directory block corrupting the directory
-tree in the process resulting in all manner of problems later on.
+Remove unnecessary else (and thus indentation level) from a code block
+in ext4_xattr_block_set(). It will also make following code changes
+easier. No functional changes.
 
-Add a sanity check to see if the logical block is already allocated and
-error out if it is.
-
-Cc: stable@kernel.org
-Signed-off-by: Lukas Czerner <lczerner@redhat.com>
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20220704142721.157985-2-lczerner@redhat.com
+CC: stable@vger.kernel.org
+Fixes: 82939d7999df ("ext4: convert to mbcache2")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220712105436.32204-4-jack@suse.cz
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ fs/ext4/xattr.c | 77 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 38 insertions(+), 39 deletions(-)
 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index ac0b7e53591f..5821638cb893 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -54,6 +54,7 @@ static struct buffer_head *ext4_append(handle_t *handle,
- 					struct inode *inode,
- 					ext4_lblk_t *block)
- {
-+	struct ext4_map_blocks map;
- 	struct buffer_head *bh;
- 	int err;
+diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
+index d92d50de5a01..a25942a74929 100644
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -1850,6 +1850,8 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
+ #define header(x) ((struct ext4_xattr_header *)(x))
  
-@@ -63,6 +64,21 @@ static struct buffer_head *ext4_append(handle_t *handle,
- 		return ERR_PTR(-ENOSPC);
- 
- 	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
-+	map.m_lblk = *block;
-+	map.m_len = 1;
+ 	if (s->base) {
++		int offset = (char *)s->here - bs->bh->b_data;
 +
-+	/*
-+	 * We're appending new directory block. Make sure the block is not
-+	 * allocated yet, otherwise we will end up corrupting the
-+	 * directory.
-+	 */
-+	err = ext4_map_blocks(NULL, inode, &map, 0);
-+	if (err < 0)
-+		return ERR_PTR(err);
-+	if (err) {
-+		EXT4_ERROR_INODE(inode, "Logical block already allocated");
-+		return ERR_PTR(-EFSCORRUPTED);
-+	}
+ 		BUFFER_TRACE(bs->bh, "get_write_access");
+ 		error = ext4_journal_get_write_access(handle, sb, bs->bh,
+ 						      EXT4_JTR_NONE);
+@@ -1882,49 +1884,46 @@ ext4_xattr_block_set(handle_t *handle, struct inode *inode,
+ 			if (error)
+ 				goto cleanup;
+ 			goto inserted;
+-		} else {
+-			int offset = (char *)s->here - bs->bh->b_data;
++		}
++		unlock_buffer(bs->bh);
++		ea_bdebug(bs->bh, "cloning");
++		s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
++		error = -ENOMEM;
++		if (s->base == NULL)
++			goto cleanup;
++		s->first = ENTRY(header(s->base)+1);
++		header(s->base)->h_refcount = cpu_to_le32(1);
++		s->here = ENTRY(s->base + offset);
++		s->end = s->base + bs->bh->b_size;
  
- 	bh = ext4_bread(handle, inode, *block, EXT4_GET_BLOCKS_CREATE);
- 	if (IS_ERR(bh))
+-			unlock_buffer(bs->bh);
+-			ea_bdebug(bs->bh, "cloning");
+-			s->base = kmemdup(BHDR(bs->bh), bs->bh->b_size, GFP_NOFS);
+-			error = -ENOMEM;
+-			if (s->base == NULL)
++		/*
++		 * If existing entry points to an xattr inode, we need
++		 * to prevent ext4_xattr_set_entry() from decrementing
++		 * ref count on it because the reference belongs to the
++		 * original block. In this case, make the entry look
++		 * like it has an empty value.
++		 */
++		if (!s->not_found && s->here->e_value_inum) {
++			ea_ino = le32_to_cpu(s->here->e_value_inum);
++			error = ext4_xattr_inode_iget(inode, ea_ino,
++				      le32_to_cpu(s->here->e_hash),
++				      &tmp_inode);
++			if (error)
+ 				goto cleanup;
+-			s->first = ENTRY(header(s->base)+1);
+-			header(s->base)->h_refcount = cpu_to_le32(1);
+-			s->here = ENTRY(s->base + offset);
+-			s->end = s->base + bs->bh->b_size;
+ 
+-			/*
+-			 * If existing entry points to an xattr inode, we need
+-			 * to prevent ext4_xattr_set_entry() from decrementing
+-			 * ref count on it because the reference belongs to the
+-			 * original block. In this case, make the entry look
+-			 * like it has an empty value.
+-			 */
+-			if (!s->not_found && s->here->e_value_inum) {
+-				ea_ino = le32_to_cpu(s->here->e_value_inum);
+-				error = ext4_xattr_inode_iget(inode, ea_ino,
+-					      le32_to_cpu(s->here->e_hash),
+-					      &tmp_inode);
+-				if (error)
+-					goto cleanup;
+-
+-				if (!ext4_test_inode_state(tmp_inode,
+-						EXT4_STATE_LUSTRE_EA_INODE)) {
+-					/*
+-					 * Defer quota free call for previous
+-					 * inode until success is guaranteed.
+-					 */
+-					old_ea_inode_quota = le32_to_cpu(
+-							s->here->e_value_size);
+-				}
+-				iput(tmp_inode);
+-
+-				s->here->e_value_inum = 0;
+-				s->here->e_value_size = 0;
++			if (!ext4_test_inode_state(tmp_inode,
++					EXT4_STATE_LUSTRE_EA_INODE)) {
++				/*
++				 * Defer quota free call for previous
++				 * inode until success is guaranteed.
++				 */
++				old_ea_inode_quota = le32_to_cpu(
++						s->here->e_value_size);
+ 			}
++			iput(tmp_inode);
++
++			s->here->e_value_inum = 0;
++			s->here->e_value_size = 0;
+ 		}
+ 	} else {
+ 		/* Allocate a buffer where we construct the new block. */
 -- 
 2.35.1
 
