@@ -2,110 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3181CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5ABC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345651AbiHOUjq (ORCPT
+        id S1345800AbiHOUjy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
+        Mon, 15 Aug 2022 16:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345380AbiHOUfE (ORCPT
+        with ESMTP id S1346023AbiHOUfE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 16:35:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8134ABD5F;
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16B4ABD60;
         Mon, 15 Aug 2022 12:06:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from pps.filterd (m0134424.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FI23UL000684;
+        Mon, 15 Aug 2022 19:06:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
+ bh=mufaP9+9c7b9pVorr0YTGCKgp71WgJtILQJnlfOl6W4=;
+ b=cRF4ZnhCubZ4tgBXSY4DpcQJjBNo5PLlNOe+4tN96tLqcfXHMYGSkBsq+fx135w9S4RP
+ G5fl2WkaVzcyyEDNgFjS3l0Jyf6BT4MXqmdDHfQ/BS6vBL15UULMsBvvlGn0wSKVZXYZ
+ FMq/FXlqZ9wOz0ONwUHa62EUHJ9bpOYmy/D5jpu6AXwfeYJIJYBGiWbAa+1q4Xpd5PLK
+ JyUUxeMr5k+000pKeeclL5SbIf1Vz/mP46ZhCT0zGIpfprobU2mjJ3nDfsV2z+IKpRvd
+ oQ3BKQcNM+fybuRsDABcrcFNFlMeyWKVW4EUruid2l0B7XA6PTCCxcR+uysZtGIUaYEP uA== 
+Received: from p1lg14878.it.hpe.com (p1lg14878.it.hpe.com [16.230.97.204])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hyts4rp7h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 19:06:17 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62476B81062;
-        Mon, 15 Aug 2022 19:06:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4B20C433D6;
-        Mon, 15 Aug 2022 19:06:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590381;
-        bh=lroM00tmODnDQFpUqqoc3y+4ybOKRk44pC+oLOaX9v4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1l9b9tKZ5nOtY46Sv0rXvm0cMHWDvH7vkV43zVKDoFRj9nV3hxTe02LVbAV4+VjGV
-         cp+YZ5ABBZotjod9HzEKEYsBTDZ2N/pb3FmZqUd75n/WOCOibRMY4VnscnM7NsyrY1
-         3PSzXg7j8PxGxcsESz9aBA+Y7wuNS25HBMaDebWo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0242/1095] iio: core: fix a few code style issues
-Date:   Mon, 15 Aug 2022 19:54:01 +0200
-Message-Id: <20220815180439.791950834@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by p1lg14878.it.hpe.com (Postfix) with ESMTPS id 99183D2EB;
+        Mon, 15 Aug 2022 19:06:16 +0000 (UTC)
+Received: from adevxp033-sys.us.rdlabs.hpecorp.net (unknown [16.231.227.36])
+        by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTP id 153A9802BAD;
+        Mon, 15 Aug 2022 19:06:15 +0000 (UTC)
+From:   Robert Elliott <elliott@hpe.com>
+To:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     toshi.kani@hpe.com, Robert Elliott <elliott@hpe.com>
+Subject: [PATCH 0/8] crypto: Kconfig - simplify menus and help text
+Date:   Mon, 15 Aug 2022 14:06:00 -0500
+Message-Id: <20220815190608.47182-1-elliott@hpe.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: 6zWimYhHHpOz3MG_7T5hk9el344-e-uu
+X-Proofpoint-GUID: 6zWimYhHHpOz3MG_7T5hk9el344-e-uu
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ impostorscore=0 lowpriorityscore=0 mlxlogscore=758 mlxscore=0 spamscore=0
+ bulkscore=0 phishscore=0 priorityscore=1501 clxscore=1015 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208150072
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+Improve the "make menuconfig" experience under the 
+Cryptographic API page.
 
-[ Upstream commit f4decb4c6e374a4ded59a6a76b8236695e44d8bc ]
+Robert Elliott (8):
+  crypto: Kconfig - add submenus
+  crypto: Kconfig - simplify public-key entries
+  crypto: Kconfig - simplify user-space interface entries
+  crypto: Kconfig - simplify AEAD and block mode entries
+  crypto: Kconfig - simplify hash mode and digest entries
+  crypto: Kconfig - simplify cipher, compression, and RNG entries
+  crypto: Kconfig - sort the digests
+  crypto: Kconfig - sort the ciphers
 
-* Fix indent in else statement
-* Remove unnecessary 'else' after 'break'
-* Remove space in '* attr'
+ crypto/Kconfig | 1511 +++++++++++++++++++++++++-----------------------
+ 1 file changed, 780 insertions(+), 731 deletions(-)
 
-Signed-off-by: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-Link: https://lore.kernel.org/r/20220312180343.8935-1-alexander.vorwerk@stud.uni-goettingen.de
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/industrialio-buffer.c | 4 ++--
- drivers/iio/industrialio-core.c   | 3 +--
- 2 files changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index b078eb2f3c9d..01369973329a 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -915,7 +915,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
- 		if (scan_mask == NULL)
- 			return -EINVAL;
- 	} else {
--	    scan_mask = compound_mask;
-+		scan_mask = compound_mask;
- 	}
- 
- 	config->scan_bytes = iio_compute_scan_bytes(indio_dev,
-@@ -1649,7 +1649,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 	}
- 
- 	attrn = buffer_attrcount + scan_el_attrcount + ARRAY_SIZE(iio_buffer_attrs);
--	attr = kcalloc(attrn + 1, sizeof(* attr), GFP_KERNEL);
-+	attr = kcalloc(attrn + 1, sizeof(*attr), GFP_KERNEL);
- 	if (!attr) {
- 		ret = -ENOMEM;
- 		goto error_free_scan_mask;
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 58d1180f4f61..b2d2b42614d3 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -908,8 +908,7 @@ static int __iio_str_to_fixpoint(const char *str, int fract_mult,
- 		} else if (*str == '\n') {
- 			if (*(str + 1) == '\0')
- 				break;
--			else
--				return -EINVAL;
-+			return -EINVAL;
- 		} else if (!strncmp(str, " dB", sizeof(" dB") - 1) && scale_db) {
- 			/* Ignore the dB suffix */
- 			str += sizeof(" dB") - 1;
 -- 
-2.35.1
-
-
+2.37.1
 
