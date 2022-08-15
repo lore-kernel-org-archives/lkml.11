@@ -2,95 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C74EAC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C272C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245656AbiHOT3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
+        id S245694AbiHOT3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245400AbiHOTZ6 (ORCPT
+        with ESMTP id S245561AbiHOT0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:25:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EEE5A2F5;
-        Mon, 15 Aug 2022 11:41:20 -0700 (PDT)
+        Mon, 15 Aug 2022 15:26:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DB32A972;
+        Mon, 15 Aug 2022 11:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 683E7B8105C;
-        Mon, 15 Aug 2022 18:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B053C433D6;
-        Mon, 15 Aug 2022 18:41:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588878;
-        bh=uSXCGKyWfEZEfMx7t2fOTKn70UCFSbJkruLUw78RvUs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I62mynV8yP5AtXABpqGDTeSoPBtDXXG9uKr9Cgy7dDlKvr4kwyiog0MXzp205EcMd
-         NiAxQ9sKSWLyt+gctFB+iLyiBspmX7PWRzAf3k8EnXC8kNNH5fkvffoSA3JmSILxM1
-         1lRc5QHgBaernsQAgbdZp4FZnhF+U30sl1Jwq3DE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Itay Aveksis <itayav@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 543/779] RDMA/mlx5: Add missing check for return value in get namespace flow
-Date:   Mon, 15 Aug 2022 20:03:07 +0200
-Message-Id: <20220815180400.514895853@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
-References: <20220815180337.130757997@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8C7D61052;
+        Mon, 15 Aug 2022 18:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34EF2C433D6;
+        Mon, 15 Aug 2022 18:41:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660588884;
+        bh=vLER9ahWMnnAVUjZqdQ45knecrK2MCT78YL5vPl0AyM=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=IVr2mMMDTz0rzFchBqIJhG8SPJGCa5MUJnMpZg3URb3AeLBZhnne+L1PgvKfPI3bs
+         Zw0fh/evjFcCki+V9JR5wqAFEdPwLU7VkoVO8gsnH4aEqCgUxY8Duc2E6B+cEAwUWG
+         vOSkmf1AKb19m3h9bd0zA1ixoXQEpxzGmg7WStDBTxuwKTh4eBPVN1ZVr5KI6I9yAt
+         nmydNPRGmHJdz795iJ5uKoQ9tm9K0et8KTCB6Z/VC5zjevP1/Orjx2EcUyvyxFfKpd
+         Nh65ZdxnkRXw00HjwdS61ixI4JjaE5bI1I50+5Kj6PvEm+PdjZT+HYHbNwcX/DlokH
+         MyMv8dk9Benfw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220510084315.1706978-1-zheyuma97@gmail.com>
+References: <20220510084315.1706978-1-zheyuma97@gmail.com>
+Subject: Re: [PATCH] clk: max9485: Register a callback to disable the regulator
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+To:     Zheyu Ma <zheyuma97@gmail.com>, mturquette@baylibre.com
+Date:   Mon, 15 Aug 2022 11:41:22 -0700
+User-Agent: alot/0.10
+Message-Id: <20220815184124.34EF2C433D6@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+Quoting Zheyu Ma (2022-05-10 01:43:15)
+> The driver should register a callback which can disable the regulator
+> when it fails to probe.
+>=20
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> ---
 
-[ Upstream commit c9776457bd5eaad4ce4ecb17af8d8f3cc6957c0b ]
+Looks like there's going to be a devm_regulator_get_enable() API that
+we can use instead. Please do that.
 
-Add missing check for return value when calling to
-mlx5_ib_ft_type_to_namespace, even though it can't really fail in this
-specific call.
-
-Fixes: 52438be44112 ("RDMA/mlx5: Allow inserting a steering rule to the FDB")
-Link: https://lore.kernel.org/r/7b9ceda217d9368a51dc47a46b769bad4af9ac92.1659256069.git.leonro@nvidia.com
-Reviewed-by: Itay Aveksis <itayav@nvidia.com>
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/infiniband/hw/mlx5/fs.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
-index 5fbc0a8454b9..8a7e182af530 100644
---- a/drivers/infiniband/hw/mlx5/fs.c
-+++ b/drivers/infiniband/hw/mlx5/fs.c
-@@ -2078,12 +2078,10 @@ static int mlx5_ib_matcher_ns(struct uverbs_attr_bundle *attrs,
- 		if (err)
- 			return err;
- 
--		if (flags) {
--			mlx5_ib_ft_type_to_namespace(
-+		if (flags)
-+			return mlx5_ib_ft_type_to_namespace(
- 				MLX5_IB_UAPI_FLOW_TABLE_TYPE_NIC_TX,
- 				&obj->ns_type);
--			return 0;
--		}
- 	}
- 
- 	obj->ns_type = MLX5_FLOW_NAMESPACE_BYPASS;
--- 
-2.35.1
-
-
-
+https://lore.kernel.org/all/cover.1660292316.git.mazziesaccount@gmail.com/
