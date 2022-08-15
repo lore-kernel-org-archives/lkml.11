@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0355DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC40C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243855AbiHOXFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        id S1347238AbiHOXFY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352469AbiHOXDE (ORCPT
+        with ESMTP id S1352556AbiHOXDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:03:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC99D8606F;
-        Mon, 15 Aug 2022 12:58:21 -0700 (PDT)
+        Mon, 15 Aug 2022 19:03:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B99E86079;
+        Mon, 15 Aug 2022 12:58:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70EFCB81154;
-        Mon, 15 Aug 2022 19:58:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6369C433C1;
-        Mon, 15 Aug 2022 19:58:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E82061299;
+        Mon, 15 Aug 2022 19:58:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91773C433D6;
+        Mon, 15 Aug 2022 19:58:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593499;
-        bh=geNftA5eZVmPTFeqJgby+ENz25ytyj+I5h5a3CstBus=;
+        s=korg; t=1660593502;
+        bh=T8AMqL1bI2nByzhLxcyPhAwx+e3draOCLCZ86QLTzuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdljFoIs9xWYWbzr5kHCOFuYZv0Zb+RNI7eAbdEiUK00zHw7yFnzdatItRoJMu590
-         4n5lkSBWEeB3AH3rQlG9+BeMap85QhroYy0oh4mWyvEE5lz76An9vXrPHqKldcMSK4
-         4YgVovDMKGteL8qNtUXD1E4O3XkQldmy/0E1iI1M=
+        b=YgIXnLy7FYoeYMmQiQKwo1HPEf0+qazu5SguwX/ar3mm6zFYbYQpDDYdfdAI9Dvj9
+         f2FRw29D3t2Aq3jlOknQhdQ36gJSRSYtOQoeeZu9UwMWsmA6P29yMO9KfqagChqUXK
+         QK//K8tVlJEOl9y7Cip+Hq7OmzlhJgfKC21ErpoE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        "GONG, Ruiqi" <gongruiqi1@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, GONG@vger.kernel.org
-Subject: [PATCH 5.19 0248/1157] stack: Declare {randomize_,}kstack_offset to fix Sparse warnings
-Date:   Mon, 15 Aug 2022 19:53:24 +0200
-Message-Id: <20220815180449.510854671@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0242/1157] soc: qcom: aoss: Fix refcount leak in qmp_cooling_devices_register
+Date:   Mon, 15 Aug 2022 19:53:18 +0200
+Message-Id: <20220815180449.244074137@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,45 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GONG, Ruiqi <gongruiqi1@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 375561bd6195a31bf4c109732bd538cb97a941f4 ]
+[ Upstream commit e6e0951414a314e7db3e9e24fd924b3e15515288 ]
 
-Fix the following Sparse warnings that got noticed when the PPC-dev
-patchwork was checking another patch (see the link below):
+Every iteration of for_each_available_child_of_node() decrements
+the reference count of the previous node.
+When breaking early from a for_each_available_child_of_node() loop,
+we need to explicitly call of_node_put() on the child node.
+Add missing of_node_put() to avoid refcount leak.
 
-init/main.c:862:1: warning: symbol 'randomize_kstack_offset' was not declared. Should it be static?
-init/main.c:864:1: warning: symbol 'kstack_offset' was not declared. Should it be static?
-
-Which in fact are triggered on all architectures that have
-HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET support (for instances x86, arm64
-etc).
-
-Link: https://lore.kernel.org/lkml/e7b0d68b-914d-7283-827c-101988923929@huawei.com/T/#m49b2d4490121445ce4bf7653500aba59eefcb67f
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220629060423.2515693-1-gongruiqi1@huawei.com
+Fixes: 05589b30b21a ("soc: qcom: Extend AOSS QMP driver to support resources that are used to wake up the SoC.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220606064252.42595-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/qcom/qcom_aoss.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/init/main.c b/init/main.c
-index 0ee39cdcfcac..91642a4e69be 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -99,6 +99,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <linux/randomize_kstack.h>
- #include <net/net_namespace.h>
+diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
+index a59bb34e5eba..18c856056475 100644
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -399,8 +399,10 @@ static int qmp_cooling_devices_register(struct qmp *qmp)
+ 			continue;
+ 		ret = qmp_cooling_device_add(qmp, &qmp->cooling_devs[count++],
+ 					     child);
+-		if (ret)
++		if (ret) {
++			of_node_put(child);
+ 			goto unroll;
++		}
+ 	}
  
- #include <asm/io.h>
+ 	if (!count)
 -- 
 2.35.1
 
