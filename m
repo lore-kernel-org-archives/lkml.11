@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EB0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9423C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiHOT6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
+        id S241918AbiHOT6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345973AbiHOT4r (ORCPT
+        with ESMTP id S1345975AbiHOT4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 15:56:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715457694A;
-        Mon, 15 Aug 2022 11:52:41 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719D57697E;
+        Mon, 15 Aug 2022 11:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A198CB810A6;
-        Mon, 15 Aug 2022 18:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BD2C433D6;
-        Mon, 15 Aug 2022 18:52:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D89C7B810A1;
+        Mon, 15 Aug 2022 18:52:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD67C433C1;
+        Mon, 15 Aug 2022 18:52:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589553;
-        bh=kxzoYOEPOH9+Y+3lO+DaaJftUEo51nXgjw+Ns0g0fJM=;
+        s=korg; t=1660589559;
+        bh=J49d4DEptKMWjWx4b8cin41uCtkezrgo6ZY79QE+qhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1YpEdVdY6rh9wDsl+Djmr7sWCsbvzWX45GNMYxJSvOnqNPn4AsVMpHY1V0/TyZOr5
-         yIFROq7w9ZvxyXsTTq63to8rjUu8Zx/EowE+7rll2asKLNHLv3e0AmGg2TcW04wbcV
-         9VTZkwN5Ln/MyuLEcGtk+Kx86kC6+IBiiEzl7qro=
+        b=XVge0nTwV7rBPzYflRo9xPNfPMtZpNoeAwUIw/+NuLk71VBO8froQTopdyRJvhUW5
+         GhiaUoh1bCLsXjMHGwh0Okr1L3vz/lnHuTjV9YrQP/p4ZC9NzL0bIUn3r8VsYb6xmk
+         p2lWNURIThBWr4SibMgStP9qKSzptlRCCA4LRBx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 754/779] KEYS: asymmetric: enforce SM2 signature use pkey algo
-Date:   Mon, 15 Aug 2022 20:06:38 +0200
-Message-Id: <20220815180409.709757173@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Heyne <mheyne@amazon.de>,
+        SeongJae Park <sj@kernel.org>, Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.15 756/779] xen-blkback: fix persistent grants negotiation
+Date:   Mon, 15 Aug 2022 20:06:40 +0200
+Message-Id: <20220815180409.784025415@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,60 +48,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+From: SeongJae Park <sj@kernel.org>
 
-[ Upstream commit 0815291a8fd66cdcf7db1445d4d99b0d16065829 ]
+commit fc9be616bb8f3ed9cf560308f86904f5c06be205 upstream.
 
-The signature verification of SM2 needs to add the Za value and
-recalculate sig->digest, which requires the detection of the pkey_algo
-in public_key_verify_signature(). As Eric Biggers said, the pkey_algo
-field in sig is attacker-controlled and should be use pkey->pkey_algo
-instead of sig->pkey_algo, and secondly, if sig->pkey_algo is NULL, it
-will also cause signature verification failure.
+Persistent grants feature can be used only when both backend and the
+frontend supports the feature.  The feature was always supported by
+'blkback', but commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has introduced a parameter for
+disabling it runtime.
 
-The software_key_determine_akcipher() already forces the algorithms
-are matched, so the SM3 algorithm is enforced in the SM2 signature,
-although this has been checked, we still avoid using any algorithm
-information in the signature as input.
+To avoid the parameter be updated while being used by 'blkback', the
+commit caches the parameter into 'vbd->feature_gnt_persistent' in
+'xen_vbd_create()', and then check if the guest also supports the
+feature and finally updates the field in 'connect_ring()'.
 
-Fixes: 215525639631 ("X.509: support OSCCA SM2-with-SM3 certificate verification")
-Reported-by: Eric Biggers <ebiggers@google.com>
-Cc: stable@vger.kernel.org # v5.10+
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+However, 'connect_ring()' could be called before 'xen_vbd_create()', so
+later execution of 'xen_vbd_create()' can wrongly overwrite 'true' to
+'vbd->feature_gnt_persistent'.  As a result, 'blkback' could try to use
+'persistent grants' feature even if the guest doesn't support the
+feature.
+
+This commit fixes the issue by moving the parameter value caching to
+'xen_blkif_alloc()', which allocates the 'blkif'.  Because the struct
+embeds 'vbd' object, which will be used by 'connect_ring()' later, this
+should be called before 'connect_ring()' and therefore this should be
+the right and safe place to do the caching.
+
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Reviewed-by: Maximilian Heyne <mheyne@amazon.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220715225108.193398-2-sj@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/asymmetric_keys/public_key.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/block/xen-blkback/xenbus.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/crypto/asymmetric_keys/public_key.c b/crypto/asymmetric_keys/public_key.c
-index 7c9e6be35c30..2f8352e88860 100644
---- a/crypto/asymmetric_keys/public_key.c
-+++ b/crypto/asymmetric_keys/public_key.c
-@@ -304,6 +304,10 @@ static int cert_sig_digest_update(const struct public_key_signature *sig,
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -156,6 +156,11 @@ static int xen_blkif_alloc_rings(struct
+ 	return 0;
+ }
  
- 	BUG_ON(!sig->data);
- 
-+	/* SM2 signatures always use the SM3 hash algorithm */
-+	if (!sig->hash_algo || strcmp(sig->hash_algo, "sm3") != 0)
-+		return -EINVAL;
++/* Enable the persistent grants feature. */
++static bool feature_persistent = true;
++module_param(feature_persistent, bool, 0644);
++MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
 +
- 	ret = sm2_compute_z_digest(tfm_pkey, SM2_DEFAULT_USERID,
- 					SM2_DEFAULT_USERID_LEN, dgst);
- 	if (ret)
-@@ -414,8 +418,7 @@ int public_key_verify_signature(const struct public_key *pkey,
- 	if (ret)
- 		goto error_free_key;
+ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
+ {
+ 	struct xen_blkif *blkif;
+@@ -180,6 +185,8 @@ static struct xen_blkif *xen_blkif_alloc
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
  
--	if (sig->pkey_algo && strcmp(sig->pkey_algo, "sm2") == 0 &&
--	    sig->data_size) {
-+	if (strcmp(pkey->pkey_algo, "sm2") == 0 && sig->data_size) {
- 		ret = cert_sig_digest_update(sig, tfm);
- 		if (ret)
- 			goto error_free_key;
--- 
-2.35.1
-
++	blkif->vbd.feature_gnt_persistent = feature_persistent;
++
+ 	return blkif;
+ }
+ 
+@@ -471,12 +478,6 @@ static void xen_vbd_free(struct xen_vbd
+ 	vbd->bdev = NULL;
+ }
+ 
+-/* Enable the persistent grants feature. */
+-static bool feature_persistent = true;
+-module_param(feature_persistent, bool, 0644);
+-MODULE_PARM_DESC(feature_persistent,
+-		"Enables the persistent grants feature");
+-
+ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
+ 			  unsigned major, unsigned minor, int readonly,
+ 			  int cdrom)
+@@ -522,8 +523,6 @@ static int xen_vbd_create(struct xen_blk
+ 	if (q && blk_queue_secure_erase(q))
+ 		vbd->discard_secure = true;
+ 
+-	vbd->feature_gnt_persistent = feature_persistent;
+-
+ 	pr_debug("Successful creation of handle=%04x (dom=%u)\n",
+ 		handle, blkif->domid);
+ 	return 0;
 
 
