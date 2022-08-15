@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8B4C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B59B2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241832AbiHOUe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
+        id S1346051AbiHOUe7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347303AbiHOUbF (ORCPT
+        with ESMTP id S1347318AbiHOUbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:31:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BC6A4074;
-        Mon, 15 Aug 2022 12:04:40 -0700 (PDT)
+        Mon, 15 Aug 2022 16:31:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FB2A1D23;
+        Mon, 15 Aug 2022 12:04:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AFF0B8110A;
-        Mon, 15 Aug 2022 19:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852F3C433D6;
-        Mon, 15 Aug 2022 19:04:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D768C612A4;
+        Mon, 15 Aug 2022 19:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A32D9C433D6;
+        Mon, 15 Aug 2022 19:04:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590279;
-        bh=eSCLQPm4JrorGQH+yAQyQacLZ20uAQNUTy1284zWgFg=;
+        s=korg; t=1660590269;
+        bh=prdicVcGBktfTngTfkb87k4cnTgWtyIR05o+Efpp1WQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Md58umynxB6QaJ6PZPZO/olk7rEyh6KkuTBWoujwiGt9QDHtG8qtpJ70DGpZJyj5
-         RkIGYZgtKzvSrDgyXkPpcSraOuUAE3G/V0bOQSfbrrx8I/vtYK3QOAE8593FMpJZkx
-         R15exNKP36d2rygbnPyMT8G/J2qpssi0e9xrJQsI=
+        b=Qecz8u3/wRWQQDZb4QRSbHXA+sSpNoA3ex7kTjZ2TDr10+GyJvKwv+FhW3hrOpI9I
+         b4b91jfUSiMeVJ6HkDXCS6WkSkmFLNkN2sRsuB+xJwgG/DLbvwmfW67nSYrhkjIdwJ
+         /+MU+sOhiXhQaweiNtB1N24Aj3rwRd1I1mHYb+6E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0210/1095] block: fix infinite loop for invalid zone append
-Date:   Mon, 15 Aug 2022 19:53:29 +0200
-Message-Id: <20220815180438.357692738@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0207/1095] arm64: dts: qcom: sc7180: Remove ipa_fw_mem node on trogdor
+Date:   Mon, 15 Aug 2022 19:53:26 +0200
+Message-Id: <20220815180438.233795321@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,43 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit b82d9fa257cb3725c49d94d2aeafc4677c34448a ]
+[ Upstream commit e60414644cf3a703e10ed4429c15263095945ffe ]
 
-Returning 0 early from __bio_iov_append_get_pages() for the
-max_append_sectors warning just creates an infinite loop since 0 means
-success, and the bio will never fill from the unadvancing iov_iter. We
-could turn the return into an error value, but it will already be turned
-into an error value later on, so just remove the warning. Clearly no one
-ever hit it anyway.
+We don't use this carveout on trogdor boards, and having it defined in
+the sc7180 SoC file causes an overlap message to be printed at boot.
 
-Fixes: 0512a75b98f84 ("block: Introduce REQ_OP_ZONE_APPEND")
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Link: https://lore.kernel.org/r/20220610195830.3574005-2-kbusch@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+ OF: reserved mem: OVERLAP DETECTED!
+ memory@86000000 (0x0000000086000000--0x000000008ec00000) overlaps with memory@8b700000 (0x000000008b700000--0x000000008b710000)
+
+Delete the node in the trogdor dtsi file to fix the overlap problem and
+remove the error message.
+
+Cc: Alex Elder <elder@linaro.org>
+Cc: Matthias Kaehlcke <mka@chromium.org>
+Fixes: 310b266655a3 ("arm64: dts: qcom: sc7180: define ipa_fw_mem node")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220517193307.3034602-1-swboyd@chromium.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/block/bio.c b/block/bio.c
-index d3ca79c3ebdf..fd73ee03d57e 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1199,9 +1199,6 @@ static int __bio_iov_append_get_pages(struct bio *bio, struct iov_iter *iter)
- 	size_t offset;
- 	int ret = 0;
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+index 732e1181af48..262224504921 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+@@ -42,6 +42,7 @@ charger-crit {
+  */
  
--	if (WARN_ON_ONCE(!max_append_sectors))
--		return 0;
--
- 	/*
- 	 * Move page array up in the allocated memory for the bio vecs as far as
- 	 * possible so that we can start filling biovecs from the beginning
+ /delete-node/ &hyp_mem;
++/delete-node/ &ipa_fw_mem;
+ /delete-node/ &xbl_mem;
+ /delete-node/ &aop_mem;
+ /delete-node/ &sec_apps_mem;
 -- 
 2.35.1
 
