@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96737C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75928C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350397AbiHPAR5 (ORCPT
+        id S1350754AbiHPASE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        Mon, 15 Aug 2022 20:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351823AbiHPAIc (ORCPT
+        with ESMTP id S1353011AbiHPAJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:08:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D086D173A0A;
-        Mon, 15 Aug 2022 13:29:13 -0700 (PDT)
+        Mon, 15 Aug 2022 20:09:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5191741AD;
+        Mon, 15 Aug 2022 13:29:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E72F611A1;
-        Mon, 15 Aug 2022 20:29:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2ECAC433D6;
-        Mon, 15 Aug 2022 20:29:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AD23B80EA8;
+        Mon, 15 Aug 2022 20:29:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86193C433D7;
+        Mon, 15 Aug 2022 20:29:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595352;
-        bh=sxFls+DEIE/5Au1qzQoTG72ZJ/mCtssf17FvHJv4ZJ8=;
+        s=korg; t=1660595359;
+        bh=bOmIgRM4vNz3Df9Jf/OuuxejBYT6qZkU/b0bYL8I7/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gFZ99AORf4Xe1Azs0xGK5Z3I80ubAqlQn5iRdFR/QbLs291+RI3cH+voh7T651A1D
-         Cegq6rt3FnysNiNdu0T1Zl6PJbC8xbq8yvrsHSQxawCTBUAT8p6ztuaHwQRByOzJCr
-         JLfATQwebMo7NpNDZZNoMQQDkGXkDWhr2EQgTYbY=
+        b=dZDrizdnsMRErkxuhlQw0CwwYrpPDXuMOcQ44meTBOh6RwC66CxnyvTCiD9OZLa1S
+         a/LaPxGW2eO9wEghn65PtFz2xRxKi2cZoxMtBIlntSaqCm4DL0ulLlN0aIiUcEX9TQ
+         bppow7XYtdf0Hc9rhxZogj+eX9EDP3BbhCMvVOU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Peter Xu <peterx@redhat.com>, Ben Gardon <bgardon@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0738/1157] KVM: x86: Fix errant brace in KVM capability handling
-Date:   Mon, 15 Aug 2022 20:01:34 +0200
-Message-Id: <20220815180509.001857237@linuxfoundation.org>
+Subject: [PATCH 5.19 0740/1157] mtd: dataflash: Add SPI ID table
+Date:   Mon, 15 Aug 2022 20:01:36 +0200
+Message-Id: <20220815180509.082055892@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,42 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Gardon <bgardon@google.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 1c4dc57328bf218e999951824dce75c6125c4f3c ]
+[ Upstream commit ac4f83482afbfd927d0fe118151b747cf175e724 ]
 
-The braces around the KVM_CAP_XSAVE2 block also surround the
-KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
-move the curly brace back to where it belongs.
+Currently autoloading for SPI devices does not use the DT ID table, it uses
+SPI modalises. Supporting OF modalises is going to be difficult if not
+impractical, an attempt was made but has been reverted, so ensure that
+module autoloading works for this driver by adding an id_table listing the
+SPI IDs for everything.
 
-Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
-
-Reviewed-by: David Matlack <dmatlack@google.com>
-Reviewed-by: Peter Xu <peterx@redhat.com>
-Signed-off-by: Ben Gardon <bgardon@google.com>
-Message-Id: <20220613212523.3436117-8-bgardon@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 96c8395e2166 ("spi: Revert modalias changes")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220620152313.708768-1-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/devices/mtd_dataflash.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 583fe0dffcd8..3ed0e86bf305 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4398,10 +4398,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 		if (r < sizeof(struct kvm_xsave))
- 			r = sizeof(struct kvm_xsave);
- 		break;
-+	}
- 	case KVM_CAP_PMU_CAPABILITY:
- 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
- 		break;
--	}
- 	case KVM_CAP_DISABLE_QUIRKS2:
- 		r = KVM_X86_VALID_QUIRKS;
- 		break;
+diff --git a/drivers/mtd/devices/mtd_dataflash.c b/drivers/mtd/devices/mtd_dataflash.c
+index 134e27328597..25bad4318305 100644
+--- a/drivers/mtd/devices/mtd_dataflash.c
++++ b/drivers/mtd/devices/mtd_dataflash.c
+@@ -112,6 +112,13 @@ static const struct of_device_id dataflash_dt_ids[] = {
+ MODULE_DEVICE_TABLE(of, dataflash_dt_ids);
+ #endif
+ 
++static const struct spi_device_id dataflash_spi_ids[] = {
++	{ .name = "at45", },
++	{ .name = "dataflash", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(spi, dataflash_spi_ids);
++
+ /* ......................................................................... */
+ 
+ /*
+@@ -936,6 +943,7 @@ static struct spi_driver dataflash_driver = {
+ 
+ 	.probe		= dataflash_probe,
+ 	.remove		= dataflash_remove,
++	.id_table	= dataflash_spi_ids,
+ 
+ 	/* FIXME:  investigate suspend and resume... */
+ };
 -- 
 2.35.1
 
