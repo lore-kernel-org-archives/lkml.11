@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCCAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFB7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243483AbiHOSci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
+        id S243111AbiHOScn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242426AbiHOSbi (ORCPT
+        with ESMTP id S242777AbiHOSbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:31:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DA43340D;
+        Mon, 15 Aug 2022 14:31:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154CC3340C;
         Mon, 15 Aug 2022 11:21:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B085A60BE9;
-        Mon, 15 Aug 2022 18:21:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75EF6C433C1;
-        Mon, 15 Aug 2022 18:21:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F310360EC3;
+        Mon, 15 Aug 2022 18:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 057DCC433C1;
+        Mon, 15 Aug 2022 18:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587685;
-        bh=GvM3E+AZZX7lYhFn5NiVlC4zztilrefSRbhsRU5CcIM=;
+        s=korg; t=1660587663;
+        bh=iErS5oo2Oc5DNTVd9UDyKVUFsYmh4vo+LGU2SJ245lM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kxdR84Ookw3ZBT8NAk/2sUiYH9U2A6rTCsZ+1qDNtDRVM2oE6FvK+OlfuPMS3X/zo
-         6/1yOMhxjwG/Shn7JZo/xDBzDVpTru5Sy7fUeYiWJe1X3Lb2hjPAAukFSORGKB25oM
-         Q1bvAZ0pN/h+dAbVAFm9Df08oF0oTzzDGWDpQGa0=
+        b=e8r8btG9yun4q5J65aGqVb6PrpHIYnp5rwVvl3R0KtOVNKcm1X0mvazrNENQzB8rL
+         8SAj4NzJz0Y0WlIgjYkVAqYG1Dw5yXLmqjAPQuiZE0i8+eTILS4S+ZyWG6YPi9D0Bg
+         FgxtLZ0CMG89UojafNupyUREHi/ZCfCwajx80U14=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiang Chen <chenxiang66@hisilicon.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 163/779] scsi: hisi_sas: Use managed PCI functions
-Date:   Mon, 15 Aug 2022 19:56:47 +0200
-Message-Id: <20220815180344.291473149@linuxfoundation.org>
+Subject: [PATCH 5.15 124/779] ARM: dts: imx6ul: add missing properties for sram
+Date:   Mon, 15 Aug 2022 19:56:08 +0200
+Message-Id: <20220815180342.598609620@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,98 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 4f6094f1663e2ed26a940f1842cdaa15c1dd649a ]
+[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
 
-Use managed PCI functions such as pcim_enable_device() and
-pcim_iomap_regions() to simplify exception handling code.
+All 3 properties are required by sram.yaml. Fixes the dtbs_check
+warning:
+sram@900000: '#address-cells' is a required property
+sram@900000: '#size-cells' is a required property
+sram@900000: 'ranges' is a required property
 
-Link: https://lore.kernel.org/r/1629799260-120116-2-git-send-email-john.garry@huawei.com
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 15c7451fb30f..fa22cb712be5 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -518,6 +518,8 @@ struct hisi_sas_err_record_v3 {
- #define CHNL_INT_STS_INT2_MSK BIT(3)
- #define CHNL_WIDTH 4
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index afeec01f6522..1d435a46fc5c 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -149,6 +149,9 @@ soc {
+ 		ocram: sram@900000 {
+ 			compatible = "mmio-sram";
+ 			reg = <0x00900000 0x20000>;
++			ranges = <0 0x00900000 0x20000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 		};
  
-+#define BAR_NO_V3_HW	5
-+
- enum {
- 	DSM_FUNC_ERR_HANDLE_MSI = 0,
- };
-@@ -4740,15 +4742,15 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	struct sas_ha_struct *sha;
- 	int rc, phy_nr, port_nr, i;
- 
--	rc = pci_enable_device(pdev);
-+	rc = pcim_enable_device(pdev);
- 	if (rc)
- 		goto err_out;
- 
- 	pci_set_master(pdev);
- 
--	rc = pci_request_regions(pdev, DRV_NAME);
-+	rc = pcim_iomap_regions(pdev, 1 << BAR_NO_V3_HW, DRV_NAME);
- 	if (rc)
--		goto err_out_disable_device;
-+		goto err_out;
- 
- 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (rc)
-@@ -4756,20 +4758,20 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (rc) {
- 		dev_err(dev, "No usable DMA addressing method\n");
- 		rc = -ENODEV;
--		goto err_out_regions;
-+		goto err_out;
- 	}
- 
- 	shost = hisi_sas_shost_alloc_pci(pdev);
- 	if (!shost) {
- 		rc = -ENOMEM;
--		goto err_out_regions;
-+		goto err_out;
- 	}
- 
- 	sha = SHOST_TO_SAS_HA(shost);
- 	hisi_hba = shost_priv(shost);
- 	dev_set_drvdata(dev, sha);
- 
--	hisi_hba->regs = pcim_iomap(pdev, 5, 0);
-+	hisi_hba->regs = pcim_iomap_table(pdev)[BAR_NO_V3_HW];
- 	if (!hisi_hba->regs) {
- 		dev_err(dev, "cannot map register\n");
- 		rc = -ENOMEM;
-@@ -4861,10 +4863,6 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- err_out_ha:
- 	hisi_sas_free(hisi_hba);
- 	scsi_host_put(shost);
--err_out_regions:
--	pci_release_regions(pdev);
--err_out_disable_device:
--	pci_disable_device(pdev);
- err_out:
- 	return rc;
- }
-@@ -4901,8 +4899,6 @@ static void hisi_sas_v3_remove(struct pci_dev *pdev)
- 	sas_remove_host(sha->core.shost);
- 
- 	hisi_sas_v3_destroy_irqs(pdev, hisi_hba);
--	pci_release_regions(pdev);
--	pci_disable_device(pdev);
- 	hisi_sas_free(hisi_hba);
- 	debugfs_exit_v3_hw(hisi_hba);
- 	scsi_host_put(shost);
+ 		intc: interrupt-controller@a01000 {
 -- 
 2.35.1
 
