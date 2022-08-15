@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2C4C28B2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7CAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351494AbiHOWs2 (ORCPT
+        id S1351535AbiHOWsf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
+        Mon, 15 Aug 2022 18:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351801AbiHOWqv (ORCPT
+        with ESMTP id S1351807AbiHOWqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:46:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B472134B8A;
-        Mon, 15 Aug 2022 12:52:53 -0700 (PDT)
+        Mon, 15 Aug 2022 18:46:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C851A134B83;
+        Mon, 15 Aug 2022 12:52:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B425760FB5;
-        Mon, 15 Aug 2022 19:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AF5C433C1;
-        Mon, 15 Aug 2022 19:52:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39FC8B80EAD;
+        Mon, 15 Aug 2022 19:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890AFC4314A;
+        Mon, 15 Aug 2022 19:52:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593172;
-        bh=WF7gVEsWaD81stKo2H4fD5esY9t3YMHFHgogMQnH3z8=;
+        s=korg; t=1660593169;
+        bh=Fm5gTEaXh03wXvsaJ/GNjtoSl6P8RdV9SEtL3fw6UPo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DG1WQUyiOjw07gDoZ3o9elYBg4rSn/X3/KfZjfVPq9czRXYGgeFl402sLPnv3Cb46
-         JNnYlK4vj/8unY6No5m7+J8et2eCsEESUy6rn6E0SrADFN89E4jGAlSPhx8GIQ3I5O
-         /0MuX8tjjv4/qJ7AwJmDtpbZt2agYAmrBlukcDxc=
+        b=DlZ9y6N9po7IKNwJtV61GmxR8mD8oO6RSL0/NFcwBD1IfoAFnsVsvlEqfuCO6Mb8n
+         03H1aZHSC92ZTjVLcmu6I9/XZDH68/0Le39KOvXLg9+w84otTsQMX9o4hNRXghLCxl
+         YcoLPWUN7KZx80HlLXL+f1YP5qKSEDw7Zzf0BT9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0906/1095] ASoC: audio-graph-card: Add of_node_put() in fail path
-Date:   Mon, 15 Aug 2022 20:05:05 +0200
-Message-Id: <20220815180506.782392479@linuxfoundation.org>
+Subject: [PATCH 5.19 0211/1157] arm64: dts: renesas: Fix thermal-sensors on single-zone sensors
+Date:   Mon, 15 Aug 2022 19:52:47 +0200
+Message-Id: <20220815180448.061965597@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 65fb8e2ef3531a6e950060fca6e551c923fb0f0e ]
+[ Upstream commit 62e8a53431145e06e503b71625a34eaa87b72b2c ]
 
-In asoc_simple_parse_dai(), we should call of_node_put() for the
-reference returned by of_graph_get_port_parent() in fail path.
+"make dtbs_check":
 
-Fixes: ae30a694da4c ("ASoC: simple-card-utils: add asoc_simple_card_parse_dai()")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220721144308.1301587-1-windhl@126.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+    arch/arm64/boot/dts/renesas/r8a774c0-cat874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[74], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a774c0-ek874.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[79], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a774c0-ek874-idk-2121wr.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[82], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a774c0-ek874-mipi-2.1.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[87], [0]] is too long
+    arch/arm64/boot/dts/renesas/r8a77990-ebisu.dtb: thermal-zones: cpu-thermal:thermal-sensors: [[105], [0]] is too long
+	    From schema: Documentation/devicetree/bindings/thermal/thermal-zones.yaml
+
+Indeed, the thermal sensors on R-Car E3 and RZ/G2E support only a single
+zone, hence #thermal-sensor-cells = <0>.
+
+Fix this by dropping the bogus zero cell from the thermal sensor
+specifiers.
+
+Fixes: 8fa7d18f9ee2dc20 ("arm64: dts: renesas: r8a77990: Create thermal zone to support IPA")
+Fixes: 8438bfda9d768157 ("arm64: dts: renesas: r8a774c0: Create thermal zone to support IPA")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Link: https://lore.kernel.org/r/28b812fdd1fc3698311fac984ab8b91d3d655c1c.1655301684.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/generic/audio-graph-card.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/renesas/r8a774c0.dtsi | 2 +-
+ arch/arm64/boot/dts/renesas/r8a77990.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/generic/audio-graph-card.c b/sound/soc/generic/audio-graph-card.c
-index 2b598af8feef..b327372f2e4a 100644
---- a/sound/soc/generic/audio-graph-card.c
-+++ b/sound/soc/generic/audio-graph-card.c
-@@ -158,8 +158,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
- 	 *    if he unbinded CPU or Codec.
- 	 */
- 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
--	if (ret < 0)
-+	if (ret < 0) {
-+		of_node_put(node);
- 		return ret;
-+	}
+diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
+index b6aeb22e8836..86e8c9b5147a 100644
+--- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
+@@ -1952,7 +1952,7 @@ thermal-zones {
+ 		cpu-thermal {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <0>;
+-			thermal-sensors = <&thermal 0>;
++			thermal-sensors = <&thermal>;
+ 			sustainable-power = <717>;
  
- 	dlc->of_node = node;
+ 			cooling-maps {
+diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
+index d33021202637..800274de1fe0 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
+@@ -2129,7 +2129,7 @@ thermal-zones {
+ 		cpu-thermal {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <0>;
+-			thermal-sensors = <&thermal 0>;
++			thermal-sensors = <&thermal>;
+ 			sustainable-power = <717>;
  
+ 			cooling-maps {
 -- 
 2.35.1
 
