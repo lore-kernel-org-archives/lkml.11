@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3C9C32757
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D21C32767
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350423AbiHOW0o (ORCPT
+        id S1350869AbiHOW1Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53414 "EHLO
+        Mon, 15 Aug 2022 18:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350071AbiHOWR2 (ORCPT
+        with ESMTP id S1348074AbiHOWUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:17:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DF56111E;
-        Mon, 15 Aug 2022 12:40:48 -0700 (PDT)
+        Mon, 15 Aug 2022 18:20:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F8912422E;
+        Mon, 15 Aug 2022 12:43:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A884611DD;
-        Mon, 15 Aug 2022 19:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C60C433D6;
-        Mon, 15 Aug 2022 19:40:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6DB92CE12C4;
+        Mon, 15 Aug 2022 19:43:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BB2EC433D6;
+        Mon, 15 Aug 2022 19:43:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592445;
-        bh=pEg1GtkK46egxGc6yKcxjHl9FylMjMsYz88rOu1nqA0=;
+        s=korg; t=1660592601;
+        bh=SWJJmdINFVcc3BT0UqIxnJ+boj5QJ5bET70RPyAduao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z3N4gOamyieIoO3OyUVJCNC0gX5X3xi6737uTRtZPHZyx6x2euhR9l1SCVkN+QPPg
-         5VKcuXAi4Eru3nqUgO2YOszgGhRQKSu4UwMISJdtg3A7Q6xVxMb6G7QE7wJ1lPBm8W
-         bcBC00eYLTnzbK3GvPu2WkA/tX+bOZUpS0wmGcX0=
+        b=AujAacXaBP5iKtbTCkU0cr5hFactR0TZAxw9ZY6UZyghSzvg2+bLUEfEebhUywLhA
+         bcKHMteMjtarhMQ/Y49F/txonzydBod3hYD58n7X4sxEKZZwrxMX0wzRvHfAro46uO
+         FcuIt60Yt1xTZkaU5YJCm67fiwX9DKlyV+hxW1B0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        zdi-disclosures@trendmicro.com
-Subject: [PATCH 5.19 0111/1157] ksmbd: fix use-after-free bug in smb2_tree_disconect
-Date:   Mon, 15 Aug 2022 19:51:07 +0200
-Message-Id: <20220815180444.071124057@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com,
+        Zhu Yanjun <yanjun.zhu@linux.dev>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0814/1095] RDMA/rxe: Fix error unwind in rxe_create_qp()
+Date:   Mon, 15 Aug 2022 20:03:33 +0200
+Message-Id: <20220815180502.952224633@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,59 +52,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
 
-commit cf6531d98190fa2cf92a6d8bbc8af0a4740a223c upstream.
+[ Upstream commit fd5382c5805c4bcb50fd25b7246247d3f7114733 ]
 
-smb2_tree_disconnect() freed the struct ksmbd_tree_connect,
-but it left the dangling pointer. It can be accessed
-again under compound requests.
+In the function rxe_create_qp(), rxe_qp_from_init() is called to
+initialize qp, internally things like the spin locks are not setup until
+rxe_qp_init_req().
 
-This bug can lead an oops looking something link:
+If an error occures before this point then the unwind will call
+rxe_cleanup() and eventually to rxe_qp_do_cleanup()/rxe_cleanup_task()
+which will oops when trying to access the uninitialized spinlock.
 
-[ 1685.468014 ] BUG: KASAN: use-after-free in ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468068 ] Read of size 4 at addr ffff888102172180 by task kworker/1:2/4807
-...
-[ 1685.468130 ] Call Trace:
-[ 1685.468132 ]  <TASK>
-[ 1685.468135 ]  dump_stack_lvl+0x49/0x5f
-[ 1685.468141 ]  print_report.cold+0x5e/0x5cf
-[ 1685.468145 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468157 ]  kasan_report+0xaa/0x120
-[ 1685.468194 ]  ? ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468206 ]  __asan_report_load4_noabort+0x14/0x20
-[ 1685.468210 ]  ksmbd_tree_conn_disconnect+0x131/0x160 [ksmbd]
-[ 1685.468222 ]  smb2_tree_disconnect+0x175/0x250 [ksmbd]
-[ 1685.468235 ]  handle_ksmbd_work+0x30e/0x1020 [ksmbd]
-[ 1685.468247 ]  process_one_work+0x778/0x11c0
-[ 1685.468251 ]  ? _raw_spin_lock_irq+0x8e/0xe0
-[ 1685.468289 ]  worker_thread+0x544/0x1180
-[ 1685.468293 ]  ? __cpuidle_text_end+0x4/0x4
-[ 1685.468297 ]  kthread+0x282/0x320
-[ 1685.468301 ]  ? process_one_work+0x11c0/0x11c0
-[ 1685.468305 ]  ? kthread_complete_and_exit+0x30/0x30
-[ 1685.468309 ]  ret_from_fork+0x1f/0x30
+Move the spinlock initializations earlier before any failures.
 
-Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
-Cc: stable@vger.kernel.org
-Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17816
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220731063621.298405-1-yanjun.zhu@linux.dev
+Reported-by: syzbot+833061116fa28df97f3b@syzkaller.appspotmail.com
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb2pdu.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/sw/rxe/rxe_qp.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -2043,6 +2043,7 @@ int smb2_tree_disconnect(struct ksmbd_wo
+diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
+index 7d0c4432d3fd..4889dcae0cc8 100644
+--- a/drivers/infiniband/sw/rxe/rxe_qp.c
++++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+@@ -186,6 +186,14 @@ static void rxe_qp_init_misc(struct rxe_dev *rxe, struct rxe_qp *qp,
  
- 	ksmbd_close_tree_conn_fds(work);
- 	ksmbd_tree_conn_disconnect(sess, tcon);
-+	work->tcon = NULL;
- 	return 0;
+ 	spin_lock_init(&qp->state_lock);
+ 
++	spin_lock_init(&qp->req.task.state_lock);
++	spin_lock_init(&qp->resp.task.state_lock);
++	spin_lock_init(&qp->comp.task.state_lock);
++
++	spin_lock_init(&qp->sq.sq_lock);
++	spin_lock_init(&qp->rq.producer_lock);
++	spin_lock_init(&qp->rq.consumer_lock);
++
+ 	atomic_set(&qp->ssn, 0);
+ 	atomic_set(&qp->skb_out, 0);
  }
+@@ -245,7 +253,6 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
+ 	qp->req.opcode		= -1;
+ 	qp->comp.opcode		= -1;
  
+-	spin_lock_init(&qp->sq.sq_lock);
+ 	skb_queue_head_init(&qp->req_pkts);
+ 
+ 	rxe_init_task(rxe, &qp->req.task, qp,
+@@ -296,9 +303,6 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
+ 		}
+ 	}
+ 
+-	spin_lock_init(&qp->rq.producer_lock);
+-	spin_lock_init(&qp->rq.consumer_lock);
+-
+ 	skb_queue_head_init(&qp->resp_pkts);
+ 
+ 	rxe_init_task(rxe, &qp->resp.task, qp,
+-- 
+2.35.1
+
 
 
