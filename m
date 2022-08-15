@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD6C2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C77C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352014AbiHOWwf (ORCPT
+        id S1352063AbiHOWwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
+        Mon, 15 Aug 2022 18:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352098AbiHOWux (ORCPT
+        with ESMTP id S1352131AbiHOWu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:50:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7185B137298;
-        Mon, 15 Aug 2022 12:53:58 -0700 (PDT)
+        Mon, 15 Aug 2022 18:50:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1BD13790B;
+        Mon, 15 Aug 2022 12:54:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D7B61178;
-        Mon, 15 Aug 2022 19:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 938ABC433C1;
-        Mon, 15 Aug 2022 19:53:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB00FB80EB1;
+        Mon, 15 Aug 2022 19:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D60C7C433C1;
+        Mon, 15 Aug 2022 19:53:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593237;
-        bh=VYfBlipzcVbhm4a67MWNtWYnwO8/NK7weJw/0ZKExAg=;
+        s=korg; t=1660593240;
+        bh=+5i3Ku8ynmuTRvV2CSEcO5qjFU81rtcPqBZQ8aw0a6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NZPz4bNHcDrQEP5G9Nz70TdU5X+0dsPnMfLB1JfhjbZs/2QVzrCRSbMG1D6xEi+1s
-         VKsKBYOcGYJegchTy23/blHI5v2Z1TEMO8scVM4iAxpXmGLHvfLdRJ4ic2EKAiO//I
-         IT8E/egsyOmNI+eYOT4vnOjPfdC/+LBPC2ZPo/lY=
+        b=tyshf22hQDUt7az4ejbPceFhmkoTyCGb+ibG+er91cwT9qEorcX2gyimiD4SzVlLx
+         NtjI6PzVQlpaqIYPZK6daVYfEMUThzmycwLHeByHiysSYRKkOc8jEryCo9Kbtml3Ej
+         6uyBp6ENqiN8ANXiUmP7Ryd2FMTrqPmLzAzUhUQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0212/1157] Revert "ARM: dts: imx6qdl-apalis: Avoid underscore in node name"
-Date:   Mon, 15 Aug 2022 19:52:48 +0200
-Message-Id: <20220815180448.097208042@linuxfoundation.org>
+Subject: [PATCH 5.18 0916/1095] powerpc/32s: Fix boot failure with KASAN + SMP + JUMP_LABEL_FEATURE_CHECK_DEBUG
+Date:   Mon, 15 Aug 2022 20:05:15 +0200
+Message-Id: <20220815180507.174163072@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,45 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 9c0919acb3fa7c1a24e384ff912f2d88f060c373 ]
+[ Upstream commit 6042a1652d643d1d34fa89bb314cb102960c0800 ]
 
-The STMPE MFD device binding requires the child node to have a fixed
-name, i.e. with '_', not '-'. Otherwise the stmpe_adc, stmpe_touchscreen
-drivers will not be probed.
+Since commit 4291d085b0b0 ("powerpc/32s: Make pte_update() non
+atomic on 603 core"), pte_update() has been using
+mmu_has_feature(MMU_FTR_HPTE_TABLE) to avoid a useless atomic
+operation on 603 cores.
 
-Fixes: 56086b5e804f ("ARM: dts: imx6qdl-apalis: Avoid underscore in node name")
-Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+When kasan_early_init() sets up the early zero shadow, it uses
+__set_pte_at(). On book3s/32, __set_pte_at() calls pte_update()
+when CONFIG_SMP is selected in order to ensure the preservation of
+_PAGE_HASHPTE in case of concurrent update of the PTE. But that's
+too early for mmu_has_feature(), so when
+CONFIG_JUMP_LABEL_FEATURE_CHECK_DEBUG is selected, mmu_has_feature()
+calls printk(). That's too early to call printk() because KASAN
+early zero shadow page is not set up yet. It leads to a deadlock.
+
+However, when kasan_early_init() is called, there is only one CPU
+running and no risk of concurrent PTE update. So __set_pte_at() can
+be called with the 'percpu' flag. With that flag set, the PTE is
+written directly instead of being written via pte_update().
+
+Fixes: 4291d085b0b0 ("powerpc/32s: Make pte_update() non atomic on 603 core")
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/2ee707512b8b212b079b877f4ceb525a1606a3fb.1656655567.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/mm/kasan/kasan_init_32.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index bd763bae596b..da919d0544a8 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -315,7 +315,7 @@ stmpe811@41 {
- 		/* ADC conversion time: 80 clocks */
- 		st,sample-time = <4>;
+diff --git a/arch/powerpc/mm/kasan/kasan_init_32.c b/arch/powerpc/mm/kasan/kasan_init_32.c
+index f3e4d069e0ba..a70828a6d935 100644
+--- a/arch/powerpc/mm/kasan/kasan_init_32.c
++++ b/arch/powerpc/mm/kasan/kasan_init_32.c
+@@ -25,7 +25,7 @@ static void __init kasan_populate_pte(pte_t *ptep, pgprot_t prot)
+ 	int i;
  
--		stmpe_touchscreen: stmpe-touchscreen {
-+		stmpe_touchscreen: stmpe_touchscreen {
- 			compatible = "st,stmpe-ts";
- 			/* 8 sample average control */
- 			st,ave-ctrl = <3>;
-@@ -332,7 +332,7 @@ stmpe_touchscreen: stmpe-touchscreen {
- 			st,touch-det-delay = <5>;
- 		};
+ 	for (i = 0; i < PTRS_PER_PTE; i++, ptep++)
+-		__set_pte_at(&init_mm, va, ptep, pfn_pte(PHYS_PFN(pa), prot), 0);
++		__set_pte_at(&init_mm, va, ptep, pfn_pte(PHYS_PFN(pa), prot), 1);
+ }
  
--		stmpe_adc: stmpe-adc {
-+		stmpe_adc: stmpe_adc {
- 			compatible = "st,stmpe-adc";
- 			/* forbid to use ADC channels 3-0 (touch) */
- 			st,norequest-mask = <0x0F>;
+ int __init kasan_init_shadow_page_tables(unsigned long k_start, unsigned long k_end)
 -- 
 2.35.1
 
