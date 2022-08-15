@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFAFC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C93F7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243801AbiHOSrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S243837AbiHOSrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244139AbiHOSmP (ORCPT
+        with ESMTP id S244144AbiHOSmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 14:42:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333722B266;
-        Mon, 15 Aug 2022 11:26:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2793C2B61D;
+        Mon, 15 Aug 2022 11:26:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8DFCB81071;
-        Mon, 15 Aug 2022 18:26:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C6D2C433D6;
-        Mon, 15 Aug 2022 18:26:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCA92B80F99;
+        Mon, 15 Aug 2022 18:26:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E4B5C433C1;
+        Mon, 15 Aug 2022 18:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587962;
-        bh=LGF9dF+fKB1PZkg6wP0g76Gr6e1+9+y03v69kg/R34Q=;
+        s=korg; t=1660587965;
+        bh=adh1CfaAQMrvtv+mKh3OYoijuXPEkwULKQoz71MtB0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZzT+CStbnhzlDib3mDZ+dP2TSVFqE2nBo6KI/8wBN4QzsA6oliE021LbsBnuAhirJ
-         NznBHHX9jD3eRen/jU6Fn7nUxy8/xuiDk9muU40nrpWfHHDvUuOpp/JLEwPT4IRcw4
-         TI/nE/4fbs0KqLS3vcX+5Rzdu+m2uS7V9K7l02Qk=
+        b=sMSmSp6q/G5Y3pTGSvZnY82p1k1/GKyeBYIVXdPEm1itkj2Gk9H5cKJk9FJyNB1JJ
+         JFShhdxZBVKoFmTeHXEk0AyM8+/1ZZeW1hToUR60n8D1g6fBQde7pAnHLW56+j9nQM
+         LEKSd1aaClfZTjU+sREEwHmikDM7KJuhEj4DD0DI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 224/779] x86/extable: Fix ex_handler_msr() print condition
-Date:   Mon, 15 Aug 2022 19:57:48 +0200
-Message-Id: <20220815180346.862423820@linuxfoundation.org>
+        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 251/779] i2c: npcm: Correct slave role behavior
+Date:   Mon, 15 Aug 2022 19:58:15 +0200
+Message-Id: <20220815180348.061466377@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,109 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Tali Perry <tali.perry1@gmail.com>
 
-[ Upstream commit a1a5482a2c6e38a3ebed32e571625c56a8cc41a6 ]
+[ Upstream commit d7aa1b149b8fc04d802879cf4662010aa4a42deb ]
 
-On Fri, Jun 17, 2022 at 02:08:52PM +0300, Stephane Eranian wrote:
-> Some changes to the way invalid MSR accesses are reported by the
-> kernel is causing some problems with messages printed on the
-> console.
->
-> We have seen several cases of ex_handler_msr() printing invalid MSR
-> accesses once but the callstack multiple times causing confusion on
-> the console.
+Correct the slave transaction logic to be compatible with the generic
+slave backend driver.
 
-> The problem here is that another earlier commit (5.13):
->
-> a358f40600b3 ("once: implement DO_ONCE_LITE for non-fast-path "do once" functionality")
->
-> Modifies all the pr_*_once() calls to always return true claiming
-> that no caller is ever checking the return value of the functions.
->
-> This is why we are seeing the callstack printed without the
-> associated printk() msg.
-
-Extract the ONCE_IF(cond) part into __ONCE_LTE_IF() and use that to
-implement DO_ONCE_LITE_IF() and fix the extable code.
-
-Fixes: a358f40600b3 ("once: implement DO_ONCE_LITE for non-fast-path "do once" functionality")
-Reported-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Stephane Eranian <eranian@google.com>
-Link: https://lkml.kernel.org/r/YqyVFsbviKjVGGZ9@worktop.programming.kicks-ass.net
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/mm/extable.c     | 16 +++++++++-------
- include/linux/once_lite.h | 20 ++++++++++++++++----
- 2 files changed, 25 insertions(+), 11 deletions(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index 13d838e6030b..a9c7efd4b794 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -86,16 +86,18 @@ static bool ex_handler_copy(const struct exception_table_entry *fixup,
- static bool ex_handler_msr(const struct exception_table_entry *fixup,
- 			   struct pt_regs *regs, bool wrmsr, bool safe, int reg)
- {
--	if (!safe && wrmsr &&
--	    pr_warn_once("unchecked MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
--			 (unsigned int)regs->cx, (unsigned int)regs->dx,
--			 (unsigned int)regs->ax,  regs->ip, (void *)regs->ip))
-+	if (__ONCE_LITE_IF(!safe && wrmsr)) {
-+		pr_warn("unchecked MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
-+			(unsigned int)regs->cx, (unsigned int)regs->dx,
-+			(unsigned int)regs->ax,  regs->ip, (void *)regs->ip);
- 		show_stack_regs(regs);
-+	}
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index ab31e7fb4cc9..31e3d2c9d6bc 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -912,11 +912,15 @@ static int npcm_i2c_slave_get_wr_buf(struct npcm_i2c *bus)
+ 	for (i = 0; i < I2C_HW_FIFO_SIZE; i++) {
+ 		if (bus->slv_wr_size >= I2C_HW_FIFO_SIZE)
+ 			break;
+-		i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
++		if (bus->state == I2C_SLAVE_MATCH) {
++			i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
++			bus->state = I2C_OPER_STARTED;
++		} else {
++			i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
++		}
+ 		ind = (bus->slv_wr_ind + bus->slv_wr_size) % I2C_HW_FIFO_SIZE;
+ 		bus->slv_wr_buf[ind] = value;
+ 		bus->slv_wr_size++;
+-		i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
+ 	}
+ 	return I2C_HW_FIFO_SIZE - ret;
+ }
+@@ -964,7 +968,6 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
+ 	if (nwrite == 0)
+ 		return;
  
--	if (!safe && !wrmsr &&
--	    pr_warn_once("unchecked MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
--			 (unsigned int)regs->cx, regs->ip, (void *)regs->ip))
-+	if (__ONCE_LITE_IF(!safe && !wrmsr)) {
-+		pr_warn("unchecked MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
-+			(unsigned int)regs->cx, regs->ip, (void *)regs->ip);
- 		show_stack_regs(regs);
-+	}
+-	bus->state = I2C_OPER_STARTED;
+ 	bus->operation = I2C_WRITE_OPER;
  
- 	if (!wrmsr) {
- 		/* Pretend that the read succeeded and returned 0. */
-diff --git a/include/linux/once_lite.h b/include/linux/once_lite.h
-index 861e606b820f..b7bce4983638 100644
---- a/include/linux/once_lite.h
-+++ b/include/linux/once_lite.h
-@@ -9,15 +9,27 @@
-  */
- #define DO_ONCE_LITE(func, ...)						\
- 	DO_ONCE_LITE_IF(true, func, ##__VA_ARGS__)
--#define DO_ONCE_LITE_IF(condition, func, ...)				\
-+
-+#define __ONCE_LITE_IF(condition)					\
- 	({								\
- 		static bool __section(".data.once") __already_done;	\
--		bool __ret_do_once = !!(condition);			\
-+		bool __ret_cond = !!(condition);			\
-+		bool __ret_once = false;				\
- 									\
--		if (unlikely(__ret_do_once && !__already_done)) {	\
-+		if (unlikely(__ret_cond && !__already_done)) {		\
- 			__already_done = true;				\
--			func(__VA_ARGS__);				\
-+			__ret_once = true;				\
- 		}							\
-+		unlikely(__ret_once);					\
-+	})
-+
-+#define DO_ONCE_LITE_IF(condition, func, ...)				\
-+	({								\
-+		bool __ret_do_once = !!(condition);			\
-+									\
-+		if (__ONCE_LITE_IF(__ret_do_once))			\
-+			func(__VA_ARGS__);				\
-+									\
- 		unlikely(__ret_do_once);				\
- 	})
- 
+ 	/* get the next buffer */
 -- 
 2.35.1
 
