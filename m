@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB48C2BB45
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F738C2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346848AbiHOUQ2 (ORCPT
+        id S1347085AbiHOUQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
+        Mon, 15 Aug 2022 16:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346648AbiHOULy (ORCPT
+        with ESMTP id S1346697AbiHOUMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A275549B52;
-        Mon, 15 Aug 2022 11:58:04 -0700 (PDT)
+        Mon, 15 Aug 2022 16:12:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB7285A8B;
+        Mon, 15 Aug 2022 11:58:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EB7DB810A1;
-        Mon, 15 Aug 2022 18:58:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68762C433C1;
-        Mon, 15 Aug 2022 18:58:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7434E61274;
+        Mon, 15 Aug 2022 18:58:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77768C433C1;
+        Mon, 15 Aug 2022 18:58:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589882;
-        bh=VZdlmM1yI6DDiCaE7reYOZ8qKqKYhTpxSZQNW8mwYrA=;
+        s=korg; t=1660589890;
+        bh=V1Q9LMJoIqpGyydO3a1zid7QGNBisxqlZD0J0mhVsWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=msGIP1HDYk5KxLDjeDYGm0Gcx986g/CmOgNmmDjEnqOqiWJ3xR9EYcAFsjmDXaqzS
-         T4ErQ9dHYoFbzdvfSLHK9wL5TsWG0HYl/UhYQhJPJ4aCPJbOH5OKxtePBVWhSCp0ax
-         2RM2v36czVcDkWPBBU6iomT6U/GxkPWDUJlKqVkM=
+        b=J2T+G2RiNpuX1vXQhg4Dz+fKIYzlyb1iFClXiXFYgpiqqrnj/ZNBUabeS8lUBXa+b
+         q2fy9C6tjZvwEO8FpTy3Ltoe5iwJSe74bwThAu/tOFr1kyT1BPMc/mSP9pazV2+n+s
+         PMFRE3+gA/blOsfMmi9G559pOHed9R2OAkjLYm3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Deepak Rawat <drawat.floss@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        linux-hyperv@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>
-Subject: [PATCH 5.18 0079/1095] drm/hyperv-drm: Include framebuffer and EDID headers
-Date:   Mon, 15 Aug 2022 19:51:18 +0200
-Message-Id: <20220815180432.787310852@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.18 0081/1095] drm/nouveau: Dont pm_runtime_put_sync(), only pm_runtime_put_autosuspend()
+Date:   Mon, 15 Aug 2022 19:51:20 +0200
+Message-Id: <20220815180432.872099520@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -55,59 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Lyude Paul <lyude@redhat.com>
 
-commit 009a3a52791f31c57d755a73f6bc66fbdd8bd76c upstream.
+commit c96cfaf8fc02d4bb70727dfa7ce7841a3cff9be2 upstream.
 
-Fix a number of compile errors by including the correct header
-files. Examples are shown below.
+While trying to fix another issue, it occurred to me that I don't actually
+think there is any situation where we want pm_runtime_put() in nouveau to
+be synchronous. In fact, this kind of just seems like it would cause
+issues where we may unexpectedly block a thread we don't expect to be
+blocked.
 
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c: In function 'hyperv_blit_to_vram_rect':
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:25:48: error: invalid use of undefined type 'struct drm_framebuffer'
-   25 |         struct hyperv_drm_device *hv = to_hv(fb->dev);
-      |                                                ^~
+So, let's only use pm_runtime_put_autosuspend().
 
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c: In function 'hyperv_connector_get_modes':
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:59:17: error: implicit declaration of function 'drm_add_modes_noedid' [-Werror=implicit-function-declaration]
-   59 |         count = drm_add_modes_noedid(connector,
-      |                 ^~~~~~~~~~~~~~~~~~~~
+Changes since v1:
+* Use pm_runtime_put_autosuspend(), not pm_runtime_put()
 
-  ../drivers/gpu/drm/hyperv/hyperv_drm_modeset.c:62:9: error: implicit declaration of function 'drm_set_preferred_mode'; did you mean 'drm_mm_reserve_node'? [-Werror=implicit-function-declaration]
-   62 |         drm_set_preferred_mode(connector, hv->preferred_width,
-      |         ^~~~~~~~~~~~~~~~~~~~~~
-
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 76c56a5affeb ("drm/hyperv: Add DRM driver for hyperv synthetic video device")
-Fixes: 720cf96d8fec ("drm: Drop drm_framebuffer.h from drm_crtc.h")
-Fixes: 255490f9150d ("drm: Drop drm_edid.h from drm_crtc.h")
-Cc: Deepak Rawat <drawat.floss@gmail.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: linux-hyperv@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: <stable@vger.kernel.org> # v5.14+
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220622083413.12573-1-tzimmermann@suse.de
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Reviewed-by: David Airlie <airlied@linux.ie>
+Fixes: 3a6536c51d5d ("drm/nouveau: Intercept ACPI_VIDEO_NOTIFY_PROBE")
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: <stable@vger.kernel.org> # v4.10+
+Link: https://patchwork.freedesktop.org/patch/msgid/20220714174234.949259-3-lyude@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/hyperv/hyperv_drm_modeset.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/nouveau/nouveau_display.c |    2 +-
+ drivers/gpu/drm/nouveau/nouveau_fbcon.c   |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
-+++ b/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
-@@ -7,9 +7,11 @@
+--- a/drivers/gpu/drm/nouveau/nouveau_display.c
++++ b/drivers/gpu/drm/nouveau/nouveau_display.c
+@@ -515,7 +515,7 @@ nouveau_display_hpd_work(struct work_str
  
- #include <drm/drm_damage_helper.h>
- #include <drm/drm_drv.h>
-+#include <drm/drm_edid.h>
- #include <drm/drm_fb_helper.h>
- #include <drm/drm_format_helper.h>
- #include <drm/drm_fourcc.h>
-+#include <drm/drm_framebuffer.h>
- #include <drm/drm_gem_atomic_helper.h>
- #include <drm/drm_gem_framebuffer_helper.h>
- #include <drm/drm_gem_shmem_helper.h>
+ 	pm_runtime_mark_last_busy(drm->dev->dev);
+ noop:
+-	pm_runtime_put_sync(drm->dev->dev);
++	pm_runtime_put_autosuspend(dev->dev);
+ }
+ 
+ #ifdef CONFIG_ACPI
+--- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
++++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+@@ -466,7 +466,7 @@ nouveau_fbcon_set_suspend_work(struct wo
+ 	if (state == FBINFO_STATE_RUNNING) {
+ 		nouveau_fbcon_hotplug_resume(drm->fbcon);
+ 		pm_runtime_mark_last_busy(drm->dev->dev);
+-		pm_runtime_put_sync(drm->dev->dev);
++		pm_runtime_put_autosuspend(drm->dev->dev);
+ 	}
+ }
+ 
 
 
