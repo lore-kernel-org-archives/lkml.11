@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1949C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 461BAC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243989AbiHPARi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
+        id S1346518AbiHPARo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356788AbiHPAH7 (ORCPT
+        with ESMTP id S1356789AbiHPAH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 20:07:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D3D1714F4;
-        Mon, 15 Aug 2022 13:28:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EABA172C00;
+        Mon, 15 Aug 2022 13:29:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 986E9B80EA8;
-        Mon, 15 Aug 2022 20:28:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2AAC433D6;
-        Mon, 15 Aug 2022 20:28:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9A2560EE9;
+        Mon, 15 Aug 2022 20:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7BDC433D6;
+        Mon, 15 Aug 2022 20:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595327;
-        bh=+qyw4jGk46jfvur7aLa6FVdQzcNeHXw56HaNyPAqrbk=;
+        s=korg; t=1660595340;
+        bh=uqZcaJCwpR4tvAkaLzZ8vTWBYN/99OrptHDtyN8vDYQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4+yUmiBPhT8hutQIVH2hy/rWJSZwOZR0WUTrQcgO5QF8sr/EQjDqAzBQ5ANJqtHb
-         K5gS9IgKc6UhKE76Lcy0LhNNGBUphaGMXNvREiAMivAwYLBgXMSK0RrLZ8JUaHT9v+
-         l5MA9nv9SlCJv55Yo8DC7BQGPagyFiUgL3yd60/I=
+        b=FgIdh5k/AinWIHwTsV039OCeK05zPpwJrgNcmsXyYP7IsvZN1b4W5XpnONGljIdO6
+         aOZooKL6dvGL+xYrEXYnM4cShbbnLq/Eiyv4ku4WbZhQdc2jiG7uHTLBCIp6byL109
+         MlqalBnpiKCirBrcUKXtb2bMyoJff/oVbnyypsHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        stable@vger.kernel.org, Nilesh Javali <njavali@marvell.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0686/1157] iio: dac: ad7303: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:42 +0200
-Message-Id: <20220815180507.073174515@linuxfoundation.org>
+Subject: [PATCH 5.19 0734/1157] scsi: iscsi: Allow iscsi_if_stop_conn() to be called from kernel
+Date:   Mon, 15 Aug 2022 20:01:30 +0200
+Message-Id: <20220815180508.827480883@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,42 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 69e51448ddfb9062efdf83e2d3179498e0aeb293 ]
+[ Upstream commit 3328333b47f4163504267440ec0a36087a407a5f ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+iscsi_if_stop_conn() is only called from the userspace interface but in a
+subsequent commit we will want to call it from the kernel interface to
+allow drivers like qedi to remove sessions from inside the kernel during
+shutdown. This removes the iscsi_uevent code from iscsi_if_stop_conn() so we
+can call it in a new helper.
 
-Update the comment to include 'may'.
-
-Fixes: f83478240e74 ("iio:dac: Add support for the AD7303")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-58-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220616222738.5722-3-michael.christie@oracle.com
+Tested-by: Nilesh Javali <njavali@marvell.com>
+Reviewed-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad7303.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
-index 03edf046dec6..bff6bf697d9c 100644
---- a/drivers/iio/dac/ad7303.c
-+++ b/drivers/iio/dac/ad7303.c
-@@ -44,10 +44,10 @@ struct ad7303_state {
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 5d21f07456c6..a410d0b8a445 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2264,16 +2264,8 @@ static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
+ 	}
+ }
  
- 	struct mutex lock;
+-static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+-			      struct iscsi_uevent *ev)
++static int iscsi_if_stop_conn(struct iscsi_cls_conn *conn, int flag)
+ {
+-	int flag = ev->u.stop_conn.flag;
+-	struct iscsi_cls_conn *conn;
+-
+-	conn = iscsi_conn_lookup(ev->u.stop_conn.sid, ev->u.stop_conn.cid);
+-	if (!conn)
+-		return -EINVAL;
+-
+ 	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop.\n");
  	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	__be16 data ____cacheline_aligned;
-+	__be16 data __aligned(IIO_DMA_MINALIGN);
- };
+ 	 * If this is a termination we have to call stop_conn with that flag
+@@ -3720,7 +3712,12 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
+ 	case ISCSI_UEVENT_DESTROY_CONN:
+ 		return iscsi_if_destroy_conn(transport, ev);
+ 	case ISCSI_UEVENT_STOP_CONN:
+-		return iscsi_if_stop_conn(transport, ev);
++		conn = iscsi_conn_lookup(ev->u.stop_conn.sid,
++					 ev->u.stop_conn.cid);
++		if (!conn)
++			return -EINVAL;
++
++		return iscsi_if_stop_conn(conn, ev->u.stop_conn.flag);
+ 	}
  
- static int ad7303_write(struct ad7303_state *st, unsigned int chan,
+ 	/*
 -- 
 2.35.1
 
