@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F90C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891F3C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242306AbiHOS2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
+        id S242375AbiHOS2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241163AbiHOSZK (ORCPT
+        with ESMTP id S242131AbiHOSZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:25:10 -0400
+        Mon, 15 Aug 2022 14:25:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9031A2F38A;
-        Mon, 15 Aug 2022 11:18:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAA02F664;
+        Mon, 15 Aug 2022 11:19:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7757D60ACE;
-        Mon, 15 Aug 2022 18:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628D6C433D6;
-        Mon, 15 Aug 2022 18:18:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F88F6068B;
+        Mon, 15 Aug 2022 18:18:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B27C433D6;
+        Mon, 15 Aug 2022 18:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587491;
-        bh=rkWXU3TEa6CIXUl/UnvFRmLkzh9CC0lIVI2ALWVyQsY=;
+        s=korg; t=1660587517;
+        bh=1nyJF6tS4IDL2t+3hw/6H7P10fs3MNbMX922x6MthPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K4TiO8HdxwMsrtUoJJSzuaEXreQcT6CleW9r/52CouYnEc4fgTYCrygUoYifA7wU8
-         eat/9MlPnu+g+xNus/IAbJwsF+B7tbzLIh+1UQ/Bmaxb/n+CARfSTL2ByjLL+lm6oX
-         JEAV07NUMBqAb/4lEc7J13v24prkI7ytGJpURtGs=
+        b=drS5MyEBryUcRSH9sKlDXT030OiwP4Bkmr1K2LAYqpHv1Xwl+0+jLDWol6B4ra+oi
+         PeddlfWBeiplnwTEEjm5U0jaVLCbD2cyUUwBxqdpputZ7vGamuRgVy9jGoB/+UGrF5
+         zh7Oq436VeKu9C1QBXE5MyF2yCGinlWqAJyr9qjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.15 102/779] arm64: dts: uniphier: Fix USB interrupts for PXs3 SoC
-Date:   Mon, 15 Aug 2022 19:55:46 +0200
-Message-Id: <20220815180341.665060321@linuxfoundation.org>
+        stable@vger.kernel.org, mingi cho <mgcho.minic@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 109/779] netfilter: nf_tables: fix null deref due to zeroed list head
+Date:   Mon, 15 Aug 2022 19:55:53 +0200
+Message-Id: <20220815180341.982021377@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,46 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit fe17b91a7777df140d0f1433991da67ba658796c upstream.
+commit 580077855a40741cf511766129702d97ff02f4d9 upstream.
 
-An interrupt for USB device are shared with USB host. Set interrupt-names
-property to common "dwc_usb3" instead of "host" and "peripheral".
+In nf_tables_updtable, if nf_tables_table_enable returns an error,
+nft_trans_destroy is called to free the transaction object.
 
-Cc: stable@vger.kernel.org
-Fixes: d7b9beb830d7 ("arm64: dts: uniphier: Add USB3 controller nodes")
-Reported-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+nft_trans_destroy() calls list_del(), but the transaction was never
+placed on a list -- the list head is all zeroes, this results in
+a null dereference:
+
+BUG: KASAN: null-ptr-deref in nft_trans_destroy+0x26/0x59
+Call Trace:
+ nft_trans_destroy+0x26/0x59
+ nf_tables_newtable+0x4bc/0x9bc
+ [..]
+
+Its sane to assume that nft_trans_destroy() can be called
+on the transaction object returned by nft_trans_alloc(), so
+make sure the list head is initialised.
+
+Fixes: 55dd6f93076b ("netfilter: nf_tables: use new transaction infrastructure to handle table")
+Reported-by: mingi cho <mgcho.minic@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/netfilter/nf_tables_api.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-+++ b/arch/arm64/boot/dts/socionext/uniphier-pxs3.dtsi
-@@ -599,8 +599,8 @@
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65a00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 134 4>, <0 135 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 134 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb0>, <&pinctrl_usb2>;
- 			clock-names = "ref", "bus_early", "suspend";
-@@ -701,8 +701,8 @@
- 			compatible = "socionext,uniphier-dwc3", "snps,dwc3";
- 			status = "disabled";
- 			reg = <0x65c00000 0xcd00>;
--			interrupt-names = "host", "peripheral";
--			interrupts = <0 137 4>, <0 138 4>;
-+			interrupt-names = "dwc_usb3";
-+			interrupts = <0 137 4>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_usb1>, <&pinctrl_usb3>;
- 			clock-names = "ref", "bus_early", "suspend";
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -153,6 +153,7 @@ static struct nft_trans *nft_trans_alloc
+ 	if (trans == NULL)
+ 		return NULL;
+ 
++	INIT_LIST_HEAD(&trans->list);
+ 	trans->msg_type = msg_type;
+ 	trans->ctx	= *ctx;
+ 
 
 
