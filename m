@@ -2,165 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81FC5C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6A5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242112AbiHOJnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35376 "EHLO
+        id S242122AbiHOJns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233228AbiHOJnl (ORCPT
+        with ESMTP id S242098AbiHOJnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:43:41 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5941EC7B
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:43:40 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 059F11A1915;
-        Mon, 15 Aug 2022 11:43:39 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 99B4D1A191B;
-        Mon, 15 Aug 2022 11:43:38 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 2ACE4180031A;
-        Mon, 15 Aug 2022 17:43:37 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: fsl_sai: Add support multi fifo sdma script
-Date:   Mon, 15 Aug 2022 17:25:46 +0800
-Message-Id: <1660555546-24223-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 15 Aug 2022 05:43:43 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD081EC7B;
+        Mon, 15 Aug 2022 02:43:42 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id 17so5958034pli.0;
+        Mon, 15 Aug 2022 02:43:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=VGpb9yI++t5guVH3M2YI/eDKS/dhqvfqUzMOcfAxFYM=;
+        b=gpB9oB+d+adC3A2ILZHzdUTWDfix4r5IqThT5UGjkMW6MFsSFd+4Le1XvWyHHUYxNp
+         6EI715Xp4ESBJNNfwyZ0a3QvoR7P4Bv7bnV/QhFvCPS0OxUSAiPpGg2jiF2lU2no3QoO
+         hKhy4eikoePjMuvzpxyaL5hJdXPeIgVT88cYCGFCmxUR44NNLqw9WIuXldhVz60LoRgw
+         u8DhjdMPOEBx7qfIyiYqAMtVh9eCrl9FVEqbdDDmq2bwUBxhI3pfcfMvO9UhwTbZNsmW
+         mV+/IO7uA5LRJP9iSYRD3GknT0Pp4f2IClojrIT8lWM1/reOr415b4yd8v37qOjZryMH
+         sFAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=VGpb9yI++t5guVH3M2YI/eDKS/dhqvfqUzMOcfAxFYM=;
+        b=2Fdjco9dAAQmgiHvJLW9W7wDXMkppGw8HLUNud0MtOcbcSAhpTMeyeVSCBa9xu/njh
+         zFoAm0hjwJKSDcLLxOIyRSbGSEnnGVHZhpSQjyxUxA8GuMxyRvt7UOAGM64i2Rqn5KeX
+         +DUdMHwIIlVvtq9duSuUZ4jShJqr0oLDF6QfQ4IePBG9g3JpvP5+KRYJPFegbgapB5nP
+         Jty/1CtrsM1Ca34xq9WaXUUUXYNUvCoP2dSkauYouBq7n3FQQan5gKhnUR9f3PPuatfO
+         ovuvBE6m3wSIn+yIpg4GFj8bOaJ5x+8BRjS9RtzCM1cy+mh7a2pu2Bs8a7BunY/e5oU2
+         sLJA==
+X-Gm-Message-State: ACgBeo0Qibtcl5ZgKixZ6nfSpJKKNx8gR6hVucc6tpzHwADTRhg7DPPT
+        osboyBIEuc3XDIor41DyXl4=
+X-Google-Smtp-Source: AA6agR7ju0iT+Ai73DrRPx/j6EPOe56/R2gA20CwOKA5toF2Ke90gkNy/DgQ4JvhgLE7M8wGDPlUPQ==
+X-Received: by 2002:a17:90b:4a0a:b0:1f4:e4fc:91d3 with SMTP id kk10-20020a17090b4a0a00b001f4e4fc91d3mr26878322pjb.67.1660556621938;
+        Mon, 15 Aug 2022 02:43:41 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id z6-20020a170903018600b0016ccbc9db0fsm6740246plg.5.2022.08.15.02.43.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 02:43:41 -0700 (PDT)
+Message-ID: <94e6c414-38e1-ebd7-0161-34548f0b5aae@gmail.com>
+Date:   Mon, 15 Aug 2022 17:43:34 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/7] perf/x86/core: Update x86_pmu.pebs_capable for
+ ICELAKE_{X,D}
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Kan Liang <kan.liang@linux.intel.com>
+References: <20220721103549.49543-1-likexu@tencent.com>
+ <20220721103549.49543-2-likexu@tencent.com>
+ <959fedce-aada-50e4-ce8d-a842d18439fa@redhat.com>
+ <YvoSXyy7ojZ9ird/@worktop.programming.kicks-ass.net>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <YvoSXyy7ojZ9ird/@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With disabling combine mode, the multiple successive
-FIFO registers or non successive FIFO registers of SAI module
-can work with the sdma multi fifo script.
+On 15/8/2022 5:31 pm, Peter Zijlstra wrote:
+> On Fri, Aug 12, 2022 at 09:52:13AM +0200, Paolo Bonzini wrote:
+>> On 7/21/22 12:35, Like Xu wrote:
+>>> From: Like Xu <likexu@tencent.com>
+>>>
+>>> Ice Lake microarchitecture with EPT-Friendly PEBS capability also support
+>>> the Extended feature, which means that all counters (both fixed function
+>>> and general purpose counters) can be used for PEBS events.
+>>>
+>>> Update x86_pmu.pebs_capable like SPR to apply PEBS_ALL semantics.
+>>>
+>>> Cc: Kan Liang <kan.liang@linux.intel.com>
+>>> Fixes: fb358e0b811e ("perf/x86/intel: Add EPT-Friendly PEBS for Ice Lake Server")
+>>> Signed-off-by: Like Xu <likexu@tencent.com>
+>>> ---
+>>>    arch/x86/events/intel/core.c | 1 +
+>>>    1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+>>> index 4e9b7af9cc45..e46fd496187b 100644
+>>> --- a/arch/x86/events/intel/core.c
+>>> +++ b/arch/x86/events/intel/core.c
+>>> @@ -6239,6 +6239,7 @@ __init int intel_pmu_init(void)
+>>>    	case INTEL_FAM6_ICELAKE_X:
+>>>    	case INTEL_FAM6_ICELAKE_D:
+>>>    		x86_pmu.pebs_ept = 1;
+>>> +		x86_pmu.pebs_capable = ~0ULL;
+>>>    		pmem = true;
+>>>    		fallthrough;
+>>>    	case INTEL_FAM6_ICELAKE_L:
+>>
+>> Peter, can you please ack this (you were not CCed on this KVM series but
+>> this patch is really perf core)?
+> 
+> I would much rather see something like this; except I don't know if it
+> is fully correct. I can never find what models support what... Kan do
+> you know?
 
-This patch is to configure the necessary information to
-the SDMA engine driver for support multi fifo script.
+For guest PEBS, it's a minor optimization from 0d23dc34a7ce to reduce branch 
+instructions:
+https://lore.kernel.org/kvm/YKIqbph62oclxjnt@hirez.programming.kicks-ass.net/
 
-'words_per_fifo' is the channels for each dataline
-'n_fifos_src' and 'n_fifos_dst' are the fifo number
-'stride_fifos_src' and 'stride_fifos_dst' are the stride
-between enable FIFOs
-'maxburst' is the multiply of datalines
+> 
+> 
+> diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+> index 2db93498ff71..b42c1beb9924 100644
+> --- a/arch/x86/events/intel/core.c
+> +++ b/arch/x86/events/intel/core.c
+> @@ -5933,7 +5933,6 @@ __init int intel_pmu_init(void)
+>   		x86_pmu.pebs_aliases = NULL;
+>   		x86_pmu.pebs_prec_dist = true;
+>   		x86_pmu.lbr_pt_coexist = true;
+> -		x86_pmu.pebs_capable = ~0ULL;
+>   		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+>   		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+>   		x86_pmu.get_event_constraints = glp_get_event_constraints;
+> @@ -6291,7 +6290,6 @@ __init int intel_pmu_init(void)
+>   		x86_pmu.pebs_aliases = NULL;
+>   		x86_pmu.pebs_prec_dist = true;
+>   		x86_pmu.pebs_block = true;
+> -		x86_pmu.pebs_capable = ~0ULL;
+>   		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+>   		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+>   		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+> @@ -6337,7 +6335,6 @@ __init int intel_pmu_init(void)
+>   		x86_pmu.pebs_aliases = NULL;
+>   		x86_pmu.pebs_prec_dist = true;
+>   		x86_pmu.pebs_block = true;
+> -		x86_pmu.pebs_capable = ~0ULL;
+>   		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+>   		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+>   		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+> index ba60427caa6d..e2da643632b9 100644
+> --- a/arch/x86/events/intel/ds.c
+> +++ b/arch/x86/events/intel/ds.c
+> @@ -2258,6 +2258,7 @@ void __init intel_ds_init(void)
+>   			x86_pmu.drain_pebs = intel_pmu_drain_pebs_icl;
+>   			x86_pmu.pebs_record_size = sizeof(struct pebs_basic);
+>   			if (x86_pmu.intel_cap.pebs_baseline) {
+> +				x86_pmu.pebs_capable = ~0ULL;
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_sai.c | 37 ++++++++++++++++++++++++++++++++++++-
- sound/soc/fsl/fsl_sai.h |  3 +++
- 2 files changed, 39 insertions(+), 1 deletion(-)
+The two features of "Extended PEBS (about pebs_capable)" and "Adaptive PEBS 
+(about pebs_baseline)"
+are orthogonal, although the two are often supported together.
 
-diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
-index acf76ea21138..a2b375e2b56c 100644
---- a/sound/soc/fsl/fsl_sai.c
-+++ b/sound/soc/fsl/fsl_sai.c
-@@ -533,6 +533,7 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 	u32 slot_width = word_width;
- 	int adir = tx ? RX : TX;
- 	u32 pins, bclk;
-+	u32 watermark;
- 	int ret, i;
- 
- 	if (sai->slot_width)
-@@ -627,7 +628,15 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 				   FSL_SAI_CR5_FBT_MASK, val_cr5);
- 	}
- 
--	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1)
-+	/*
-+	 * Combine mode has limation:
-+	 * - Can't used for singel dataline/FIFO case except the FIFO0
-+	 * - Can't used for multi dataline/FIFO case except the enabled FIFOs
-+	 *   are successive and start from FIFO0
-+	 *
-+	 * So for common usage, all multi fifo case disable the combine mode.
-+	 */
-+	if (hweight8(dl_cfg[dl_cfg_idx].mask[tx]) <= 1 || sai->is_multi_fifo_dma)
- 		regmap_update_bits(sai->regmap, FSL_SAI_xCR4(tx, ofs),
- 				   FSL_SAI_CR4_FCOMB_MASK, 0);
- 	else
-@@ -638,6 +647,26 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 	dma_params->addr = sai->res->start + FSL_SAI_xDR0(tx) +
- 			   dl_cfg[dl_cfg_idx].start_off[tx] * 0x4;
- 
-+	if (sai->is_multi_fifo_dma) {
-+		sai->audio_config[tx].words_per_fifo = min(slots, channels);
-+		if (tx) {
-+			sai->audio_config[tx].n_fifos_dst = pins;
-+			sai->audio_config[tx].stride_fifos_dst = dl_cfg[dl_cfg_idx].next_off[tx];
-+		} else {
-+			sai->audio_config[tx].n_fifos_src = pins;
-+			sai->audio_config[tx].stride_fifos_src = dl_cfg[dl_cfg_idx].next_off[tx];
-+		}
-+		dma_params->maxburst = sai->audio_config[tx].words_per_fifo * pins;
-+		dma_params->peripheral_config = &sai->audio_config[tx];
-+		dma_params->peripheral_size = sizeof(sai->audio_config[tx]);
-+
-+		watermark = tx ? (sai->soc_data->fifo_depth - dma_params->maxburst) :
-+				 (dma_params->maxburst - 1);
-+		regmap_update_bits(sai->regmap, FSL_SAI_xCR1(tx, ofs),
-+				   FSL_SAI_CR1_RFW_MASK(sai->soc_data->fifo_depth),
-+				   watermark);
-+	}
-+
- 	/* Find a proper tcre setting */
- 	for (i = 0; i < sai->soc_data->pins; i++) {
- 		trce_mask = (1 << (i + 1)) - 1;
-@@ -1265,6 +1294,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
- 	char tmp[8];
- 	int irq, ret, i;
- 	int index;
-+	u32 dmas[4];
- 
- 	sai = devm_kzalloc(dev, sizeof(*sai), GFP_KERNEL);
- 	if (!sai)
-@@ -1321,6 +1351,11 @@ static int fsl_sai_probe(struct platform_device *pdev)
- 	fsl_asoc_get_pll_clocks(&pdev->dev, &sai->pll8k_clk,
- 				&sai->pll11k_clk);
- 
-+	/* Use Multi FIFO mode depending on the support from SDMA script */
-+	ret = of_property_read_u32_array(np, "dmas", dmas, 4);
-+	if (!sai->soc_data->use_edma && !ret && dmas[2] == IMX_DMATYPE_MULTI_SAI)
-+		sai->is_multi_fifo_dma = true;
-+
- 	/* read dataline mask for rx and tx*/
- 	ret = fsl_sai_read_dlcfg(sai);
- 	if (ret < 0) {
-diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
-index 17956b5731dc..697f6690068c 100644
---- a/sound/soc/fsl/fsl_sai.h
-+++ b/sound/soc/fsl/fsl_sai.h
-@@ -6,6 +6,7 @@
- #ifndef __FSL_SAI_H
- #define __FSL_SAI_H
- 
-+#include <linux/dma/imx-dma.h>
- #include <sound/dmaengine_pcm.h>
- 
- #define FSL_SAI_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
-@@ -281,6 +282,7 @@ struct fsl_sai {
- 	bool is_lsb_first;
- 	bool is_dsp_mode;
- 	bool is_pdm_mode;
-+	bool is_multi_fifo_dma;
- 	bool synchronous[2];
- 	struct fsl_sai_dl_cfg *dl_cfg;
- 	unsigned int dl_cfg_cnt;
-@@ -300,6 +302,7 @@ struct fsl_sai {
- 	struct pm_qos_request pm_qos_req;
- 	struct pinctrl *pinctrl;
- 	struct pinctrl_state *pins_state;
-+	struct sdma_peripheral_config audio_config[2];
- };
- 
- #define TX 1
--- 
-2.17.1
-
+>   				x86_pmu.large_pebs_flags |=
+>   					PERF_SAMPLE_BRANCH_STACK |
+>   					PERF_SAMPLE_TIME;
