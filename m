@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6917FC25B0D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9971FC25B08
 	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244942AbiHPAzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        id S245737AbiHPA4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344545AbiHPAtF (ORCPT
+        with ESMTP id S245339AbiHPAtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:49:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C8E169C75;
-        Mon, 15 Aug 2022 13:45:54 -0700 (PDT)
+        Mon, 15 Aug 2022 20:49:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8DA198ED8;
+        Mon, 15 Aug 2022 13:46:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0478CE1187;
-        Mon, 15 Aug 2022 20:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B020AC433C1;
-        Mon, 15 Aug 2022 20:45:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92C1BB80EAD;
+        Mon, 15 Aug 2022 20:46:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DE3C433C1;
+        Mon, 15 Aug 2022 20:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596351;
-        bh=+qpLPaKGzazoYN5NC/HJnxora1lgK1xSLQ58YvKLZK8=;
+        s=korg; t=1660596376;
+        bh=N9KCxk+ujvL3bivhWFcCI7chj3lprh85y8NiTG0BOXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EPQR4Y5wpukCCaGP04UA0mwLGOaEV5i2c6FXhoXfT6cW/Q+ZJcf9s7ao2uSuXh3BN
-         76ZP6bXtgM8DQ+RQtwMWr+TUShok5CyQb4Y2EpUkHYAI0uftifFUY/OjvzWoRK1tLN
-         dxJc2mj98ld6LsHifpm53y8BhNYb5MKQof0gx9OY=
+        b=lvHD9RJRwJtOH3rX4Eqpo1j1Yjwsh6DVETSvyW060y8l4bSTB0Ha7exmd4nrUFyEb
+         DTUW3xvdIMD5mIeFmVtX9C/qdAlYYNjuFu5LtmL+uQeLr8BqHG9t+BkcXZaSsneDNR
+         U9exXi2Ivu/2Ghhe/P6wZ2taBwvCv/ULYXbzalGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 5.19 1053/1157] __follow_mount_rcu(): verify that mount_lock remains unchanged
-Date:   Mon, 15 Aug 2022 20:06:49 +0200
-Message-Id: <20220815180522.175089622@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable <stable@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1061/1157] intel_th: pci: Add Raptor Lake-S PCH support
+Date:   Mon, 15 Aug 2022 20:06:57 +0200
+Message-Id: <20220815180522.505370065@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -48,46 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
 
-commit 20aac6c60981f5bfacd66661d090d907bf1482f0 upstream.
+[ Upstream commit 23e2de5826e2fc4dd43e08bab3a2ea1a5338b063 ]
 
-Validate mount_lock seqcount as soon as we cross into mount in RCU
-mode.  Sure, ->mnt_root is pinned and will remain so until we
-do rcu_read_unlock() anyway, and we will eventually fail to unlazy if
-the mount_lock had been touched, but we might run into a hard error
-(e.g. -ENOENT) before trying to unlazy.  And it's possible to end
-up with RCU pathwalk racing with rename() and umount() in a way
-that would fail with -ENOENT while non-RCU pathwalk would've
-succeeded with any timings.
+Add support for the Trace Hub in Raptor Lake-S PCH.
 
-Once upon a time we hadn't needed that, but analysis had been subtle,
-brittle and went out of window as soon as RENAME_EXCHANGE had been
-added.
-
-It's narrow, hard to hit and won't get you anything other than
-stray -ENOENT that could be arranged in much easier way with the
-same priveleges, but it's a bug all the same.
-
-Cc: stable@kernel.org
-X-sky-is-falling: unlikely
-Fixes: da1ce0670c14 "vfs: add cross-rename"
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Link: https://lore.kernel.org/r/20220705082637.59979-6-alexander.shishkin@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/namei.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hwtracing/intel_th/pci.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -1505,6 +1505,8 @@ static bool __follow_mount_rcu(struct na
- 				 * becoming unpinned.
- 				 */
- 				flags = dentry->d_flags;
-+				if (read_seqretry(&mount_lock, nd->m_seq))
-+					return false;
- 				continue;
- 			}
- 			if (read_seqretry(&mount_lock, nd->m_seq))
+--- a/drivers/hwtracing/intel_th/pci.c
++++ b/drivers/hwtracing/intel_th/pci.c
+@@ -290,6 +290,11 @@ static const struct pci_device_id intel_
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
+ 	},
+ 	{
++		/* Raptor Lake-S */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x7a26),
++		.driver_data = (kernel_ulong_t)&intel_th_2x,
++	},
++	{
+ 		/* Alder Lake CPU */
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x466f),
+ 		.driver_data = (kernel_ulong_t)&intel_th_2x,
 
 
