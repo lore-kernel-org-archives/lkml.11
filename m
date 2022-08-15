@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B66C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B21C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345828AbiHOT7X (ORCPT
+        id S1345364AbiHOT71 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        Mon, 15 Aug 2022 15:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346109AbiHOT5L (ORCPT
+        with ESMTP id S1346122AbiHOT5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:57:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CC7785A3;
-        Mon, 15 Aug 2022 11:52:56 -0700 (PDT)
+        Mon, 15 Aug 2022 15:57:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766CF78239;
+        Mon, 15 Aug 2022 11:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0815B611ED;
-        Mon, 15 Aug 2022 18:52:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB991C433C1;
-        Mon, 15 Aug 2022 18:52:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3C20B810A2;
+        Mon, 15 Aug 2022 18:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C8FC433D6;
+        Mon, 15 Aug 2022 18:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589575;
-        bh=zm5yPCSka08KCN9psAi49vcukmwi+nuzh5ZWb1E34GA=;
+        s=korg; t=1660589578;
+        bh=Mm2TQnNtAU1OIa9pBcT16BOP94kV2EU0Mc9jDIVa3Rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yOXhaAMsxTcUB3DUPgaPMgfEkfdfMHAXOozOQTXdzilp8tLCzOVsLeWz4XSfKDBLy
-         QFhqMPSfct3lfbOIISnPC5DXQkeCiZXXJkEI69rXr8Tt6TFCyi5LJi8k+zWtBeNVL6
-         jnf5OloM7SesjNP+2IAwx9k/AKO3h4bZY0pcRgG4=
+        b=llK3758Nd4M/3hu6Gtk5Z1psApLfY302/P6Gyoy4sU0MTMQk1MsyGpZYkGpBt72M1
+         tlHPO9J4QJMt4cAZxrUOzeBAqI7CjYv6GkHgD0nof5qW7Dz6Uzq4PQHojWPOARR5+H
+         0hDOd81vYhUaYSGFnSGQhei7v35nhnmIltdKUcUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 760/779] tracing: Use a struct alignof to determine trace event field alignment
-Date:   Mon, 15 Aug 2022 20:06:44 +0200
-Message-Id: <20220815180409.926703705@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sachin Sant <sachinp@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 731/779] powerpc/powernv/kvm: Use darn for H_RANDOM on Power9
+Date:   Mon, 15 Aug 2022 20:06:15 +0200
+Message-Id: <20220815180408.693168428@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -53,74 +51,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 4c3d2f9388d36eb28640a220a6f908328442d873 upstream.
+[ Upstream commit 7ef3d06f1bc4a5e62273726f3dc2bd258ae1c71f ]
 
-alignof() gives an alignment of types as they would be as standalone
-variables. But alignment in structures might be different, and when
-building the fields of events, the alignment must be the actual
-alignment otherwise the field offsets may not match what they actually
-are.
+The existing logic in KVM to support guests calling H_RANDOM only works
+on Power8, because it looks for an RNG in the device tree, but on Power9
+we just use darn.
 
-This caused trace-cmd to crash, as libtraceevent did not check if the
-field offset was bigger than the event. The write_msr and read_msr
-events on 32 bit had their fields incorrect, because it had a u64 field
-between two ints. alignof(u64) would give 8, but the u64 field was at a
-4 byte alignment.
+In addition the existing code needs to work in real mode, so we have the
+special cased powernv_get_random_real_mode() to deal with that.
 
-Define a macro as:
+Instead just have KVM call ppc_md.get_random_seed(), and do the real
+mode check inside of there, that way we use whatever RNG is available,
+including darn on Power9.
 
-   ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
-
-which gives the actual alignment of types in a structure.
-
-Link: https://lkml.kernel.org/r/20220731015928.7ab3a154@rorschach.local.home
-
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: stable@vger.kernel.org
-Fixes: 04ae87a52074e ("ftrace: Rework event_create_dir()")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e928e9cb3601 ("KVM: PPC: Book3S HV: Add fast real-mode H_RANDOM implementation.")
+Cc: stable@vger.kernel.org # v4.1+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
+[mpe: Rebase on previous commit, update change log appropriately]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220727143219.2684192-2-mpe@ellerman.id.au
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/trace_events.h |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/powerpc/include/asm/archrandom.h |  5 ----
+ arch/powerpc/kvm/book3s_hv_builtin.c  |  7 +++---
+ arch/powerpc/platforms/powernv/rng.c  | 36 ++++++---------------------
+ 3 files changed, 12 insertions(+), 36 deletions(-)
 
---- a/include/trace/trace_events.h
-+++ b/include/trace/trace_events.h
-@@ -479,16 +479,18 @@ static struct trace_event_functions trac
+diff --git a/arch/powerpc/include/asm/archrandom.h b/arch/powerpc/include/asm/archrandom.h
+index 9a53e29680f4..258174304904 100644
+--- a/arch/powerpc/include/asm/archrandom.h
++++ b/arch/powerpc/include/asm/archrandom.h
+@@ -38,12 +38,7 @@ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+ #endif /* CONFIG_ARCH_RANDOM */
  
- #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+ #ifdef CONFIG_PPC_POWERNV
+-int powernv_hwrng_present(void);
+ int powernv_get_random_long(unsigned long *v);
+-int powernv_get_random_real_mode(unsigned long *v);
+-#else
+-static inline int powernv_hwrng_present(void) { return 0; }
+-static inline int powernv_get_random_real_mode(unsigned long *v) { return 0; }
+ #endif
  
-+#define ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
-+
- #undef __field_ext
- #define __field_ext(_type, _item, _filter_type) {			\
- 	.type = #_type, .name = #_item,					\
--	.size = sizeof(_type), .align = __alignof__(_type),		\
-+	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
- 	.is_signed = is_signed_type(_type), .filter_type = _filter_type },
+ #endif /* _ASM_POWERPC_ARCHRANDOM_H */
+diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
+index 70b7a8f97153..b148629b7f03 100644
+--- a/arch/powerpc/kvm/book3s_hv_builtin.c
++++ b/arch/powerpc/kvm/book3s_hv_builtin.c
+@@ -20,7 +20,7 @@
+ #include <asm/interrupt.h>
+ #include <asm/kvm_ppc.h>
+ #include <asm/kvm_book3s.h>
+-#include <asm/archrandom.h>
++#include <asm/machdep.h>
+ #include <asm/xics.h>
+ #include <asm/xive.h>
+ #include <asm/dbell.h>
+@@ -177,13 +177,14 @@ EXPORT_SYMBOL_GPL(kvmppc_hcall_impl_hv_realmode);
  
- #undef __field_struct_ext
- #define __field_struct_ext(_type, _item, _filter_type) {		\
- 	.type = #_type, .name = #_item,					\
--	.size = sizeof(_type), .align = __alignof__(_type),		\
-+	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
- 	0, .filter_type = _filter_type },
+ int kvmppc_hwrng_present(void)
+ {
+-	return powernv_hwrng_present();
++	return ppc_md.get_random_seed != NULL;
+ }
+ EXPORT_SYMBOL_GPL(kvmppc_hwrng_present);
  
- #undef __field
-@@ -500,7 +502,7 @@ static struct trace_event_functions trac
- #undef __array
- #define __array(_type, _item, _len) {					\
- 	.type = #_type"["__stringify(_len)"]", .name = #_item,		\
--	.size = sizeof(_type[_len]), .align = __alignof__(_type),	\
-+	.size = sizeof(_type[_len]), .align = ALIGN_STRUCTFIELD(_type),	\
- 	.is_signed = is_signed_type(_type), .filter_type = FILTER_OTHER },
+ long kvmppc_rm_h_random(struct kvm_vcpu *vcpu)
+ {
+-	if (powernv_get_random_real_mode(&vcpu->arch.regs.gpr[4]))
++	if (ppc_md.get_random_seed &&
++	    ppc_md.get_random_seed(&vcpu->arch.regs.gpr[4]))
+ 		return H_SUCCESS;
  
- #undef __dynamic_array
+ 	return H_HARDWARE;
+diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
+index a99033c3dce7..5f81ff9b5265 100644
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -29,15 +29,6 @@ struct powernv_rng {
+ 
+ static DEFINE_PER_CPU(struct powernv_rng *, powernv_rng);
+ 
+-int powernv_hwrng_present(void)
+-{
+-	struct powernv_rng *rng;
+-
+-	rng = get_cpu_var(powernv_rng);
+-	put_cpu_var(rng);
+-	return rng != NULL;
+-}
+-
+ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+ {
+ 	unsigned long parity;
+@@ -58,19 +49,6 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+ 	return val;
+ }
+ 
+-int powernv_get_random_real_mode(unsigned long *v)
+-{
+-	struct powernv_rng *rng;
+-
+-	rng = raw_cpu_read(powernv_rng);
+-	if (!rng)
+-		return 0;
+-
+-	*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
+-
+-	return 1;
+-}
+-
+ static int powernv_get_random_darn(unsigned long *v)
+ {
+ 	unsigned long val;
+@@ -107,12 +85,14 @@ int powernv_get_random_long(unsigned long *v)
+ {
+ 	struct powernv_rng *rng;
+ 
+-	rng = get_cpu_var(powernv_rng);
+-
+-	*v = rng_whiten(rng, in_be64(rng->regs));
+-
+-	put_cpu_var(rng);
+-
++	if (mfmsr() & MSR_DR) {
++		rng = get_cpu_var(powernv_rng);
++		*v = rng_whiten(rng, in_be64(rng->regs));
++		put_cpu_var(rng);
++	} else {
++		rng = raw_cpu_read(powernv_rng);
++		*v = rng_whiten(rng, __raw_rm_readq(rng->regs_real));
++	}
+ 	return 1;
+ }
+ EXPORT_SYMBOL_GPL(powernv_get_random_long);
+-- 
+2.35.1
+
 
 
