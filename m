@@ -2,115 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440EFC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A60C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbiHOPyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43042 "EHLO
+        id S231531AbiHOPyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiHOPyG (ORCPT
+        with ESMTP id S230443AbiHOPyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:54:06 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DAF17077
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 08:54:06 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id s5-20020a17090a13c500b001f4da9ffe5fso14801805pjf.5
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 08:54:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=rsucpEsc5D3CWajO1pTl308RBgWxNbG9t1oS7UmiC60=;
-        b=c9IES/GUi/YRTnq8ntFq9iy84T/2qbs+aIfYv0AyQOVaTtypUcAHdLJICt2zAB4X/B
-         4dYwLy7OnU1nSzGDcBqno4X26p9T2Rg3umFQoxDVNUxYdxj86i442PX0qvGtXBZBJT5O
-         3sQ5JTHhnGZBS32J/RkD8vUQ6rKmI+qWTjOgzPlT90vKfz4HJTgGYUiLH6LhUxHnPRWg
-         M503lWMUUWF75jkVCwy+h4wAHiI/g8EqkepRunM5afsGvgMLb76BvDnja1k0sJtz48N1
-         KfPpIcLxyCXHahCV+A1E+VmS4mGWbTJ5B6r4dj8WQC7yHITiP6iEfPkTD4I+ua+M2mn4
-         ob2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=rsucpEsc5D3CWajO1pTl308RBgWxNbG9t1oS7UmiC60=;
-        b=EdraPRyQeFCan2wO2loIlFbitEvrg1XsqR94gFo7xR0mCYw05PMASWA2g6QIIgYJlY
-         396Wx2ukRB33xBdIVlEVlyM/+npDpH+63M8J0ydi8TTbEX1UhFSmnKir8FsC5SNpVXwZ
-         42csZKNOqpZSeQSzTyb6/gV0M37UA4/4lLLdSAfoyMQMlgVITUWdI7MZ+MMni7pcFMNN
-         /pvDpQKE2iH06f1mNAPQikoanZTGQDmW9vw8XxnQtRV1p0/+lD/9EznBtc/LejAas7nR
-         YH+DLsjX1kijtxw7xJb+14FWeb25XLnPwWVcochFGYisfr6KW4/Tx1VljYkErgb2Qrdw
-         hcxw==
-X-Gm-Message-State: ACgBeo10xvJf746KRBqz0AaXTYw/v/n/kh9Q2ztW4HihAHcp19+NnrRK
-        16kAv2LZ7NaubeuYstfpQpY=
-X-Google-Smtp-Source: AA6agR7rXwMmQoFFhV9guzX50xC2Hx5lxc/ntTUb9/whlW1Pw7vwVN3TsUywF9bJ3hq6crg1K1/dIA==
-X-Received: by 2002:a17:90a:c38f:b0:1f3:2f26:e7c4 with SMTP id h15-20020a17090ac38f00b001f32f26e7c4mr28048030pjt.124.1660578845751;
-        Mon, 15 Aug 2022 08:54:05 -0700 (PDT)
-Received: from [192.168.141.45] ([103.230.106.6])
-        by smtp.gmail.com with ESMTPSA id p67-20020a62d046000000b0052ddaffbcc1sm6719244pfg.30.2022.08.15.08.53.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 08:54:05 -0700 (PDT)
-Message-ID: <f8734af1-6e31-75c9-9556-9519709284f1@gmail.com>
-Date:   Mon, 15 Aug 2022 21:53:54 +0600
+        Mon, 15 Aug 2022 11:54:53 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8987217077;
+        Mon, 15 Aug 2022 08:54:52 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 37E3D6601DAE;
+        Mon, 15 Aug 2022 16:54:50 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1660578891;
+        bh=R9SmFeYZ1iN/MuMsg2JDoB8UWfkyjtJieOUNto4HnGc=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=Sq3+jVX9uKW2EvCZcTaUGXKBFblrK2ajudH7TdKurWfkYXP/ERVIA0JRHClwf0pYK
+         xXhV2QbzM4Krsbu56L4ryvQZp1bm4oj5YzXdSauekrqt1dR6d/8nAwhKPq9x6qESqx
+         Sd2lnyaLyP18BM0F0mIXv4zFvhWjiX8q6PM6WCRUlSrljEZ0Utd/V7h9t4WthO4ODF
+         lI1hawKBM9898koa3SuQtvBu1Td29uudK3byjwnkGa6ithZrr+YwGSsXkmFC2K3Z3e
+         68qt4nYuu47BwJGIYtOTmMXS9gPmcv6qZjGdjSNg5EHAKLhJZ6vRZ3ePMLWdzPBHq8
+         008+F6NR/mUAw==
+Message-ID: <6effcd33-8cc3-a4e0-3608-b9cef7a76da7@collabora.com>
+Date:   Mon, 15 Aug 2022 18:54:47 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH linux-next] drm/amdgpu/vcn: Remove unused assignment in
- vcn_v4_0_stop
+Subject: Re: [PATCH v1] drm/ttm: Refcount allocated tail pages
 Content-Language: en-US
-To:     "Dong, Ruijing" <Ruijing.Dong@amd.com>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees@lists.linuxfoundation.org" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Cc:     "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>, Huang Rui <ray.huang@amd.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        "Zhu, James" <James.Zhu@amd.com>,
-        "Jiang, Sonny" <Sonny.Jiang@amd.com>,
-        Wan Jiabing <wanjiabing@vivo.com>, "Liu, Leo" <Leo.Liu@amd.com>
-References: <20220815070056.10816-1-khalid.masum.92@gmail.com>
- <SJ1PR12MB61944B1D53330D5E9531158695689@SJ1PR12MB6194.namprd12.prod.outlook.com>
- <86088c17-585c-4a53-312d-ef339b824538@gmail.com>
- <SJ1PR12MB6194C83D51101ACD97B55F0295689@SJ1PR12MB6194.namprd12.prod.outlook.com>
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-In-Reply-To: <SJ1PR12MB6194C83D51101ACD97B55F0295689@SJ1PR12MB6194.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Trigger Huang <Trigger.Huang@gmail.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Antonio Caggiano <antonio.caggiano@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>, kvm@vger.kernel.org,
+        kernel@collabora.com, virtualization@lists.linux-foundation.org
+References: <20220815095423.11131-1-dmitry.osipenko@collabora.com>
+ <8230a356-be38-f228-4a8e-95124e8e8db6@amd.com>
+ <134bce02-58d6-8553-bb73-42dfda18a595@collabora.com>
+ <8caf3008-dcf3-985a-631e-e019b277c6f0@amd.com>
+ <4fcc4739-2da9-1b89-209c-876129604d7d@amd.com>
+ <14be3b22-1d60-732b-c695-ddacc6b21055@collabora.com>
+ <2df57a30-2afb-23dc-c7f5-f61c113dd5b4@collabora.com>
+ <57562db8-bacf-e82d-8417-ab6343c1d2fa@amd.com>
+ <86a87de8-24a9-3c53-3ac7-612ca97e41df@collabora.com>
+ <8f749cd0-9a04-7c72-6a4f-a42d501e1489@amd.com>
+ <5340d876-62b8-8a64-aa6d-7736c2c8710f@collabora.com>
+ <594f1013-b925-3c75-be61-2d649f5ca54e@amd.com>
+ <6893d5e9-4b60-0efb-2a87-698b1bcda63e@collabora.com>
+ <73e5ed8d-0d25-7d44-8fa2-e1d61b1f5a04@amd.com>
+ <c9d89644-409e-0363-69f0-a3b8f2ef0ae4@collabora.com>
+In-Reply-To: <c9d89644-409e-0363-69f0-a3b8f2ef0ae4@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/15/22 21:17, Dong, Ruijing wrote:
-> [AMD Official Use Only - General]
+On 8/15/22 17:57, Dmitry Osipenko wrote:
+> On 8/15/22 16:53, Christian König wrote:
+>> Am 15.08.22 um 15:45 schrieb Dmitry Osipenko:
+>>> [SNIP]
+>>>> Well that comment sounds like KVM is doing the right thing, so I'm
+>>>> wondering what exactly is going on here.
+>>> KVM actually doesn't hold the page reference, it takes the temporal
+>>> reference during page fault and then drops the reference once page is
+>>> mapped, IIUC. Is it still illegal for TTM? Or there is a possibility for
+>>> a race condition here?
+>>>
+>>
+>> Well the question is why does KVM grab the page reference in the first
+>> place?
+>>
+>> If that is to prevent the mapping from changing then yes that's illegal
+>> and won't work. It can always happen that you grab the address, solve
+>> the fault and then immediately fault again because the address you just
+>> grabbed is invalidated.
+>>
+>> If it's for some other reason than we should probably investigate if we
+>> shouldn't stop doing this.
 > 
-> If the condition was met and it came to execute vcn_4_0_stop_dpg_mode, then it would never have a chance to go for /*wait for vcn idle*/, isn't it?
-
-Hypothetically, some other thread might set adev->pg_flags NULL and in 
-that case it will get the chance to go for /* wait for vcn idle */.
-
-
-> I still didn't see obvious purpose of this change.
+> CC: +Paolo Bonzini who introduced this code
 > 
->                  if (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG) {
->       ==>              r = vcn_v4_0_stop_dpg_mode(adev, i);
-
-Regardless of that, this assignment to r is unnecessary. Because this 
-value of r is never used. This patch simply removes this unnecessary
-assignment.
-
->                           continue;
->                   }
+> commit add6a0cd1c5ba51b201e1361b05a5df817083618
+> Author: Paolo Bonzini <pbonzini@redhat.com>
+> Date:   Tue Jun 7 17:51:18 2016 +0200
 > 
->                   /* wait for vcn idle */
->                   r = SOC15_WAIT_ON_RREG(VCN, i, regUVD_STATUS, UVD_STATUS__IDLE, 0x7);
+>     KVM: MMU: try to fix up page faults before giving up
 > 
-> Thanks
-> Ruijing
+>     The vGPU folks would like to trap the first access to a BAR by setting
+>     vm_ops on the VMAs produced by mmap-ing a VFIO device.  The fault
+> handler
+>     then can use remap_pfn_range to place some non-reserved pages in the
+> VMA.
+> 
+>     This kind of VM_PFNMAP mapping is not handled by KVM, but follow_pfn
+>     and fixup_user_fault together help supporting it.  The patch also
+> supports
+>     VM_MIXEDMAP vmas where the pfns are not reserved and thus subject to
+>     reference counting.
+> 
+> @Paolo,
+> https://lore.kernel.org/dri-devel/73e5ed8d-0d25-7d44-8fa2-e1d61b1f5a04@amd.com/T/#m7647ce5f8c4749599d2c6bc15a2b45f8d8cf8154
 > 
 
-Thanks,
-   -- Khalid Masum
+If we need to bump the refcount only for VM_MIXEDMAP and not for
+VM_PFNMAP, then perhaps we could add a flag for that to the kvm_main
+code that will denote to kvm_release_page_clean whether it needs to put
+the page?
+
+-- 
+Best regards,
+Dmitry
