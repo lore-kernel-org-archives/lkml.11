@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DE2C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654CEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354412AbiHOXpO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
+        id S244573AbiHOXpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354262AbiHOXlo (ORCPT
+        with ESMTP id S1354286AbiHOXls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:44 -0400
+        Mon, 15 Aug 2022 19:41:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530FDA187;
-        Mon, 15 Aug 2022 13:11:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC37DF92;
+        Mon, 15 Aug 2022 13:11:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 936F66077B;
-        Mon, 15 Aug 2022 20:11:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A39C433D6;
-        Mon, 15 Aug 2022 20:11:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD3B26077B;
+        Mon, 15 Aug 2022 20:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC606C433C1;
+        Mon, 15 Aug 2022 20:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594287;
-        bh=ee2XvZp7qZ5NKC+jn6QmcSc84kcU65loMihwoesT/Xw=;
+        s=korg; t=1660594296;
+        bh=zJh7aVjy83OVBviyzmE9wu2gQP51nHf6qxEIm9t2EEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sgORQLLwqSN3H7Jwafe7gwiNMZx6WWOhzUHs1r8H7xsqkmXKxDSaZXNsqGxr3O0nT
-         +Jd4s9fFdSnxeBPaAI9MHMPjvgELfoNTefN38Upa3L8Pmx1f73g+a67/7QrfGQu33T
-         RzLYg3jfbwXSEK+zFHIUL5egDzsBsFDyv7AjVDRs=
+        b=KxZIXbBfoLzPTQAdQ79ET1V6o7OScZyp54lr45B6umd1DoN6AIUWWGXIP3jACSFwq
+         VgRg9Mqt++gICxEdv6sqLndn3jFwTB+E5lINtrjyoRbmua3+pn4KoUPzDvKWx3WXlj
+         rkQKg2PII+pIyalAKAru8U04Nd4FZF/xrukqkFL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.18 1083/1095] tracing: Use a copy of the va_list for __assign_vstr()
-Date:   Mon, 15 Aug 2022 20:08:02 +0200
-Message-Id: <20220815180513.836978465@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0410/1157] drm/vc4: dsi: Correct DSI divider calculations
+Date:   Mon, 15 Aug 2022 19:56:06 +0200
+Message-Id: <20220815180456.055982552@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit 3a2dcbaf4d31023106975d6ae75b6df080c454cb upstream.
+[ Upstream commit 3b45eee87da171caa28f61240ddb5c21170cda53 ]
 
-If an instance of tracing enables the same trace event as another
-instance, or the top level instance, or even perf, then the va_list passed
-into some tracepoints can be used more than once.
+The divider calculations tried to find the divider just faster than the
+clock requested. However if it required a divider of 7 then the for loop
+aborted without handling the "error" case, and could end up with a clock
+lower than requested.
 
-As va_list can only be traversed once, this can cause issues:
+The integer divider from parent PLL to DSI clock is also capable of
+going up to /255, not just /7 that the driver was trying.  This allows
+for slower link frequencies on the DSI bus where the resolution permits.
 
- # cat /sys/kernel/tracing/instances/qla2xxx/trace
-             cat-56106   [012] ..... 2419873.470098: ql_dbg_log: qla2xxx [0000:05:00.0]-1054:14:  Entered (null).
-             cat-56106   [012] ..... 2419873.470101: ql_dbg_log: qla2xxx [0000:05:00.0]-1000:14:  Entered ×+<96>²Ü<98>^H.
-             cat-56106   [012] ..... 2419873.470102: ql_dbg_log: qla2xxx [0000:05:00.0]-1006:14:  Prepare to issue mbox cmd=0xde589000.
+Correct the loop so that we always have a clock greater than requested,
+and covering the whole range of dividers.
 
- # cat /sys/kernel/tracing/trace
-             cat-56106   [012] ..... 2419873.470097: ql_dbg_log: qla2xxx [0000:05:00.0]-1054:14:  Entered qla2x00_get_firmware_state.
-             cat-56106   [012] ..... 2419873.470100: ql_dbg_log: qla2xxx [0000:05:00.0]-1000:14:  Entered qla2x00_mailbox_command.
-             cat-56106   [012] ..... 2419873.470102: ql_dbg_log: qla2xxx [0000:05:00.0]-1006:14:  Prepare to issue mbox cmd=0x69.
-
-The instance version is corrupted because the top level instance iterated
-the va_list first.
-
-Use va_copy() in the __assign_vstr() macro to make sure that each trace
-event for each use case gets a fresh va_list.
-
-Link: https://lore.kernel.org/all/259d53a5-958e-6508-4e45-74dba2821242@marvell.com/
-Link: https://lkml.kernel.org/r/20220719182004.21daa83e@gandalf.local.home
-
-Fixes: 0563231f93c6d ("tracing/events: Add __vstring() and __assign_vstr() helper macros")
-Reported-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 86c1b9eff3f2 ("drm/vc4: Adjust modes in DSI to work around the integer PLL divider.")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-13-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/stages/stage6_event_callback.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/include/trace/stages/stage6_event_callback.h b/include/trace/stages/stage6_event_callback.h
-index 0f51f6b3ab70..3c554a585320 100644
---- a/include/trace/stages/stage6_event_callback.h
-+++ b/include/trace/stages/stage6_event_callback.h
-@@ -40,7 +40,12 @@
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index e82ee94cafc7..81a6c4e9576d 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -805,11 +805,9 @@ static bool vc4_dsi_encoder_mode_fixup(struct drm_encoder *encoder,
+ 	/* Find what divider gets us a faster clock than the requested
+ 	 * pixel clock.
+ 	 */
+-	for (divider = 1; divider < 8; divider++) {
+-		if (parent_rate / divider < pll_clock) {
+-			divider--;
++	for (divider = 1; divider < 255; divider++) {
++		if (parent_rate / (divider + 1) < pll_clock)
+ 			break;
+-		}
+ 	}
  
- #undef __assign_vstr
- #define __assign_vstr(dst, fmt, va)					\
--	vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, *(va))
-+	do {								\
-+		va_list __cp_va;					\
-+		va_copy(__cp_va, *(va));				\
-+		vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, __cp_va); \
-+		va_end(__cp_va);					\
-+	} while (0)
- 
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
+ 	/* Now that we've picked a PLL divider, calculate back to its
 -- 
-2.37.2
+2.35.1
 
 
 
