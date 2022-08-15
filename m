@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B172CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFC8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344439AbiHOX3g (ORCPT
+        id S1344903AbiHOX3w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
+        Mon, 15 Aug 2022 19:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241882AbiHOXXJ (ORCPT
+        with ESMTP id S243449AbiHOXXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:23:09 -0400
+        Mon, 15 Aug 2022 19:23:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21267391E;
-        Mon, 15 Aug 2022 13:05:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D429760E1;
+        Mon, 15 Aug 2022 13:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D547360690;
-        Mon, 15 Aug 2022 20:05:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDED8C433D6;
-        Mon, 15 Aug 2022 20:05:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4E2160A09;
+        Mon, 15 Aug 2022 20:05:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2606C433D6;
+        Mon, 15 Aug 2022 20:05:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593932;
-        bh=wzUTotmsOvyiM2qWLvIOatO2CoZfg/QgKijFCVNekYY=;
+        s=korg; t=1660593935;
+        bh=bTsCd9Icqv/0YCZZqzLOPav4xkPiWJdkMSgwWN2iyyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=osg9tDbXfB0v5yo4fxYDURkA1P2iTxpxDjkLyUNl5PtD17vALHM1Gcb0pGOIn3IfQ
-         1srGY6E75cEnyZO6YTyVm5XdyHqw2KW9S1H/Q7sY1bmWDz60KNOy/GZuyxyymeBMkA
-         Nl1Yb2bfOijiLgVrzbNGKvf8HzRDDaVynvIIAI7A=
+        b=wxknUGqeKsRZAV8kJenlW21RgFJ0uOXLZJ/THC+RCCg0f3aF79d6dIZrDQQWM488U
+         jTTClOw05Cf0csdWBVEZ0PMuVlxsbvHJ/LbrNJHIAcqfWEn+/scyjE70yJw27Ppp4X
+         GGdnJn4MgN3aTS9Bg2R1sRvN9hlK3uQ/StqCMfeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Riham Selim <rihams@fb.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
+        stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0350/1157] libbpf: Fix uprobe symbol file offset calculation logic
-Date:   Mon, 15 Aug 2022 19:55:06 +0200
-Message-Id: <20220815180453.716772247@linuxfoundation.org>
+Subject: [PATCH 5.18 1031/1095] btrfs: zoned: wait until zone is finished when allocation didnt progress
+Date:   Mon, 15 Aug 2022 20:07:10 +0200
+Message-Id: <20220815180511.711054007@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,118 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit fe92833524e368e59bba9c57e00f7359f133667f ]
+[ Upstream commit 2ce543f478433a0eec0f72090d7e814f1d53d456 ]
 
-Fix libbpf's bpf_program__attach_uprobe() logic of determining
-function's *file offset* (which is what kernel is actually expecting)
-when attaching uprobe/uretprobe by function name. Previously calculation
-was determining virtual address offset relative to base load address,
-which (offset) is not always the same as file offset (though very
-frequently it is which is why this went unnoticed for a while).
+When the allocated position doesn't progress, we cannot submit IOs to
+finish a block group, but there should be ongoing IOs that will finish a
+block group. So, in that case, we wait for a zone to be finished and retry
+the allocation after that.
 
-Fixes: 433966e3ae04 ("libbpf: Support function name-based attach uprobes")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Riham Selim <rihams@fb.com>
-Cc: Alan Maguire <alan.maguire@oracle.com>
-Link: https://lore.kernel.org/bpf/20220606220143.3796908-1-andrii@kernel.org
+Introduce a new flag BTRFS_FS_NEED_ZONE_FINISH for fs_info->flags to
+indicate we need a zone finish to have proceeded. The flag is set when the
+allocator detected it cannot activate a new block group. And, it is cleared
+once a zone is finished.
+
+CC: stable@vger.kernel.org # 5.16+
+Fixes: afba2bc036b0 ("btrfs: zoned: implement active zone tracking")
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 63 +++++++++++++++---------------------------
- 1 file changed, 22 insertions(+), 41 deletions(-)
+ fs/btrfs/ctree.h   | 5 +++++
+ fs/btrfs/disk-io.c | 1 +
+ fs/btrfs/inode.c   | 9 +++++++--
+ fs/btrfs/zoned.c   | 6 ++++++
+ 4 files changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 526bd6cd84a0..b9245bf688fa 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10983,43 +10983,6 @@ static int perf_event_uprobe_open_legacy(const char *probe_name, bool retprobe,
- 	return pfd;
+diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
+index 97f5a3d320ff..76fbe4cf2a28 100644
+--- a/fs/btrfs/ctree.h
++++ b/fs/btrfs/ctree.h
+@@ -635,6 +635,9 @@ enum {
+ 	/* Indicate we have half completed snapshot deletions pending. */
+ 	BTRFS_FS_UNFINISHED_DROPS,
+ 
++	/* Indicate we have to finish a zone to do next allocation. */
++	BTRFS_FS_NEED_ZONE_FINISH,
++
+ #if BITS_PER_LONG == 32
+ 	/* Indicate if we have error/warn message printed on 32bit systems */
+ 	BTRFS_FS_32BIT_ERROR,
+@@ -1074,6 +1077,8 @@ struct btrfs_fs_info {
+ 
+ 	spinlock_t zone_active_bgs_lock;
+ 	struct list_head zone_active_bgs;
++	/* Waiters when BTRFS_FS_NEED_ZONE_FINISH is set */
++	wait_queue_head_t zone_finish_wait;
+ 
+ #ifdef CONFIG_BTRFS_FS_REF_VERIFY
+ 	spinlock_t ref_verify_lock;
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index bf5c6ac67e87..59fa7bf3a2e5 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3239,6 +3239,7 @@ void btrfs_init_fs_info(struct btrfs_fs_info *fs_info)
+ 	init_waitqueue_head(&fs_info->transaction_blocked_wait);
+ 	init_waitqueue_head(&fs_info->async_submit_wait);
+ 	init_waitqueue_head(&fs_info->delayed_iputs_wait);
++	init_waitqueue_head(&fs_info->zone_finish_wait);
+ 
+ 	/* Usable values until the real ones are cached from the superblock */
+ 	fs_info->nodesize = 4096;
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 9753fc47e488..64d310ecbb84 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -1606,8 +1606,13 @@ static noinline int run_delalloc_zoned(struct btrfs_inode *inode,
+ 		if (ret == 0)
+ 			done_offset = end;
+ 
+-		if (done_offset == start)
+-			return -ENOSPC;
++		if (done_offset == start) {
++			struct btrfs_fs_info *info = inode->root->fs_info;
++
++			wait_var_event(&info->zone_finish_wait,
++				       !test_bit(BTRFS_FS_NEED_ZONE_FINISH, &info->flags));
++			continue;
++		}
+ 
+ 		if (!locked_page_done) {
+ 			__set_page_dirty_nobuffers(locked_page);
+diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
+index 0c2d81b0e3d3..45e29b8c705c 100644
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1993,6 +1993,9 @@ int btrfs_zone_finish(struct btrfs_block_group *block_group)
+ 	/* For active_bg_list */
+ 	btrfs_put_block_group(block_group);
+ 
++	clear_bit(BTRFS_FS_NEED_ZONE_FINISH, &fs_info->flags);
++	wake_up_all(&fs_info->zone_finish_wait);
++
+ 	return 0;
  }
  
--/* uprobes deal in relative offsets; subtract the base address associated with
-- * the mapped binary.  See Documentation/trace/uprobetracer.rst for more
-- * details.
-- */
--static long elf_find_relative_offset(const char *filename, Elf *elf, long addr)
--{
--	size_t n;
--	int i;
--
--	if (elf_getphdrnum(elf, &n)) {
--		pr_warn("elf: failed to find program headers for '%s': %s\n", filename,
--			elf_errmsg(-1));
--		return -ENOENT;
--	}
--
--	for (i = 0; i < n; i++) {
--		int seg_start, seg_end, seg_offset;
--		GElf_Phdr phdr;
--
--		if (!gelf_getphdr(elf, i, &phdr)) {
--			pr_warn("elf: failed to get program header %d from '%s': %s\n", i, filename,
--				elf_errmsg(-1));
--			return -ENOENT;
--		}
--		if (phdr.p_type != PT_LOAD || !(phdr.p_flags & PF_X))
--			continue;
--
--		seg_start = phdr.p_vaddr;
--		seg_end = seg_start + phdr.p_memsz;
--		seg_offset = phdr.p_offset;
--		if (addr >= seg_start && addr < seg_end)
--			return addr - seg_start + seg_offset;
--	}
--	pr_warn("elf: failed to find prog header containing 0x%lx in '%s'\n", addr, filename);
--	return -ENOENT;
--}
--
- /* Return next ELF section of sh_type after scn, or first of that type if scn is NULL. */
- static Elf_Scn *elf_find_next_scn_by_type(Elf *elf, int sh_type, Elf_Scn *scn)
- {
-@@ -11106,6 +11069,8 @@ static long elf_find_func_offset(const char *binary_path, const char *name)
- 		for (idx = 0; idx < nr_syms; idx++) {
- 			int curr_bind;
- 			GElf_Sym sym;
-+			Elf_Scn *sym_scn;
-+			GElf_Shdr sym_sh;
- 
- 			if (!gelf_getsym(symbols, idx, &sym))
- 				continue;
-@@ -11143,12 +11108,28 @@ static long elf_find_func_offset(const char *binary_path, const char *name)
- 					continue;
- 				}
- 			}
--			ret = sym.st_value;
-+
-+			/* Transform symbol's virtual address (absolute for
-+			 * binaries and relative for shared libs) into file
-+			 * offset, which is what kernel is expecting for
-+			 * uprobe/uretprobe attachment.
-+			 * See Documentation/trace/uprobetracer.rst for more
-+			 * details.
-+			 * This is done by looking up symbol's containing
-+			 * section's header and using it's virtual address
-+			 * (sh_addr) and corresponding file offset (sh_offset)
-+			 * to transform sym.st_value (virtual address) into
-+			 * desired final file offset.
-+			 */
-+			sym_scn = elf_getscn(elf, sym.st_shndx);
-+			if (!sym_scn)
-+				continue;
-+			if (!gelf_getshdr(sym_scn, &sym_sh))
-+				continue;
-+
-+			ret = sym.st_value - sym_sh.sh_addr + sym_sh.sh_offset;
- 			last_bind = curr_bind;
- 		}
--		/* For binaries that are not shared libraries, we need relative offset */
--		if (ret > 0 && !is_shared_lib)
--			ret = elf_find_relative_offset(binary_path, elf, ret);
- 		if (ret > 0)
- 			break;
+@@ -2021,6 +2024,9 @@ bool btrfs_can_activate_zone(struct btrfs_fs_devices *fs_devices, u64 flags)
  	}
+ 	mutex_unlock(&fs_info->chunk_mutex);
+ 
++	if (!ret)
++		set_bit(BTRFS_FS_NEED_ZONE_FINISH, &fs_info->flags);
++
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
