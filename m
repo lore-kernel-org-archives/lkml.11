@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A23C25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFA8C28B2B
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347491AbiHOVZl (ORCPT
+        id S1347829AbiHOV0U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
+        Mon, 15 Aug 2022 17:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241608AbiHOVNs (ORCPT
+        with ESMTP id S1346863AbiHOVSJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:13:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB262DABB5;
-        Mon, 15 Aug 2022 12:19:47 -0700 (PDT)
+        Mon, 15 Aug 2022 17:18:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D843BE5;
+        Mon, 15 Aug 2022 12:21:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49EF460A52;
-        Mon, 15 Aug 2022 19:19:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37903C433D6;
-        Mon, 15 Aug 2022 19:19:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFFA3B81109;
+        Mon, 15 Aug 2022 19:21:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BF24C433D6;
+        Mon, 15 Aug 2022 19:21:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591186;
-        bh=qXskdu1j9rHf85RE4xREBJawMz2p1A/Hq3++wgRptaI=;
+        s=korg; t=1660591296;
+        bh=UtehnCRzzqBGAbgtNav8NMIRUa9kB+iUG7AiDwD9Uks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cpiikw84cllnhkM4OGWv5CIppUOh0eunSQjR4WRk1GbvvHVffEEMb1MeTHkSDBOm1
-         wgenBsf5/HEV0z9QGknKhFz89bBlYAF/1ypwAAp8ddP7a1DAtPwWxTIGdL+7iNAIQJ
-         yhTq0uv6bF4AXqj8eSBCyLCRUIkx5hmTaJekq9EU=
+        b=PNmdZNE5e+Gjku84IU2lUuV7owsYtL0KDDuYAAbEV7Ks1Ryy5L/bnFExE5ysFJkUC
+         Slf9SxnMem6vHZEpssA9Eno4SsSmTbW1dS7eS/loKRXuZN7zFa0FBxygFRyFUTLlQh
+         XUEEbccdTQN+Q0AarfVt4un/WMV5Sm3AZOB6WbT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0467/1095] wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()
-Date:   Mon, 15 Aug 2022 19:57:46 +0200
-Message-Id: <20220815180448.927414587@linuxfoundation.org>
+Subject: [PATCH 5.18 0533/1095] net: ice: fix error NETIF_F_HW_VLAN_CTAG_FILTER check in ice_vsi_sync_fltr()
+Date:   Mon, 15 Aug 2022 19:58:52 +0200
+Message-Id: <20220815180451.598611436@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,50 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 7a4836560a6198d245d5732e26f94898b12eb760 ]
+[ Upstream commit 7dc839fe47611e6995f370cae37b9797cf7d2672 ]
 
-The simple_write_to_buffer() function will succeed if even a single
-byte is initialized.  However, we need to initialize the whole buffer
-to prevent information leaks.  Just use memdup_user().
+vsi->current_netdev_flags is used store the current net device
+flags, not the active netdevice features. So it should use
+vsi->netdev->featurs, rather than vsi->current_netdev_flags
+to check NETIF_F_HW_VLAN_CTAG_FILTER.
 
-Fixes: ff974e408334 ("wil6210: debugfs interface to send raw WMI command")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/Ysg14NdKAZF/hcNG@kili
+Fixes: 1babaf77f49d ("ice: Advertise 802.1ad VLAN filtering and offloads for PF netdev")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/debugfs.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
-index 4c944e595978..c6f8254cb21d 100644
---- a/drivers/net/wireless/ath/wil6210/debugfs.c
-+++ b/drivers/net/wireless/ath/wil6210/debugfs.c
-@@ -1012,18 +1012,12 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
- 	u16 cmdid;
- 	int rc, rc1;
- 
--	if (cmdlen < 0)
-+	if (cmdlen < 0 || *ppos != 0)
- 		return -EINVAL;
- 
--	wmi = kmalloc(len, GFP_KERNEL);
--	if (!wmi)
--		return -ENOMEM;
--
--	rc = simple_write_to_buffer(wmi, len, ppos, buf, len);
--	if (rc < 0) {
--		kfree(wmi);
--		return rc;
--	}
-+	wmi = memdup_user(buf, len);
-+	if (IS_ERR(wmi))
-+		return PTR_ERR(wmi);
- 
- 	cmd = (cmdlen > 0) ? &wmi[1] : NULL;
- 	cmdid = le16_to_cpu(wmi->command_id);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 522462f41067..f48938af960c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -419,7 +419,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+ 						IFF_PROMISC;
+ 					goto out_promisc;
+ 				}
+-				if (vsi->current_netdev_flags &
++				if (vsi->netdev->features &
+ 				    NETIF_F_HW_VLAN_CTAG_FILTER)
+ 					vlan_ops->ena_rx_filtering(vsi);
+ 			}
 -- 
 2.35.1
 
