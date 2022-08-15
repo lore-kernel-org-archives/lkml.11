@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F7AEC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C14C282E7
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350180AbiHOVup (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
+        id S244768AbiHOVvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350220AbiHOVr2 (ORCPT
+        with ESMTP id S1349486AbiHOVoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B1065251;
-        Mon, 15 Aug 2022 12:31:18 -0700 (PDT)
+        Mon, 15 Aug 2022 17:44:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B110228B;
+        Mon, 15 Aug 2022 12:29:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B3560FB9;
-        Mon, 15 Aug 2022 19:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F73BC433D6;
-        Mon, 15 Aug 2022 19:31:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 486B8B81062;
+        Mon, 15 Aug 2022 19:29:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0C6C433C1;
+        Mon, 15 Aug 2022 19:29:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591877;
-        bh=z1xUNYx42fke/EV5QP7IxecBd8URVJ29kBbGoG4kACI=;
+        s=korg; t=1660591787;
+        bh=tSG5BZiS7wjhmXMXzV5/Gy6ukN5wWDyGwnZ1mUmPQps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=We7Alsmr3ojowbIhKABYTYg7jeaAQJUhyK2Fba8QJPT8laLnyDktGTlu3vsMEsTnC
-         kE1IkETD060mFbcNdryTCVUFUt4659le9QyP61HHO/Xl6uU9T/YLPVvXLnexHNzME6
-         MU0OjyglycoKC+JckMPTOFiSSfFTW5n9Ru+b/8Qc=
+        b=TF5nKCizpYV1zk7jbvSLc46wrisoQGxdCeHMlHHLl+5j4nklmKNinWyMGqJ+GzdcM
+         nUO5P9k6JDM1fnw8vT3mbfADwrjbTVaqnDq4o229B0MI/clSAwd+Os34Nbf3XqKBoC
+         BTI053I2sPvA+s8yL5Jm5gMxQwW0rltnvCH4krtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Bob Pearson <rpearsonhpe@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0656/1095] iio: gyro: adis16080: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:55 +0200
-Message-Id: <20220815180456.539742838@linuxfoundation.org>
+Subject: [PATCH 5.18 0681/1095] RDMA/rxe: fix xa_alloc_cycle() error return value check again
+Date:   Mon, 15 Aug 2022 20:01:20 +0200
+Message-Id: <20220815180457.546859444@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,39 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit ae6eeb534924ecc2afd5a394964fd6de0ca54d39 ]
+[ Upstream commit 1a685940e6200e9def6e34bbaa19dd31dc5aeaf8 ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+Currently rxe_alloc checks ret to indicate error, but 1 is also a valid
+return and just indicates that the allocation succeeded with a wrap.
 
-Fixes tag is inaccurate but unlikely anyone will backport this
-beyond that point so I haven't chased the history futher than 2013.
+Fix this by modifying the check to be < 0.
 
-Fixes: 3c80372dae17 ("staging:iio:adis16080: be16 cleanups")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-73-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220609070656.1446121-1-dzm91@hust.edu.cn
+Fixes: 3225717f6dfa ("RDMA/rxe: Replace red-black trees by xarrays")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/gyro/adis16080.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/sw/rxe/rxe_pool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/gyro/adis16080.c b/drivers/iio/gyro/adis16080.c
-index acef59d822b1..14b3abf6dce9 100644
---- a/drivers/iio/gyro/adis16080.c
-+++ b/drivers/iio/gyro/adis16080.c
-@@ -45,7 +45,7 @@ struct adis16080_state {
- 	const struct adis16080_chip_info *info;
- 	struct mutex			lock;
+diff --git a/drivers/infiniband/sw/rxe/rxe_pool.c b/drivers/infiniband/sw/rxe/rxe_pool.c
+index 87066d04ed18..69db28944567 100644
+--- a/drivers/infiniband/sw/rxe/rxe_pool.c
++++ b/drivers/infiniband/sw/rxe/rxe_pool.c
+@@ -140,7 +140,7 @@ void *rxe_alloc(struct rxe_pool *pool)
  
--	__be16 buf ____cacheline_aligned;
-+	__be16 buf __aligned(IIO_DMA_MINALIGN);
- };
+ 	err = xa_alloc_cyclic(&pool->xa, &elem->index, elem, pool->limit,
+ 			      &pool->next, GFP_KERNEL);
+-	if (err)
++	if (err < 0)
+ 		goto err_free;
  
- static int adis16080_read_sample(struct iio_dev *indio_dev,
+ 	return obj;
+@@ -168,7 +168,7 @@ int __rxe_add_to_pool(struct rxe_pool *pool, struct rxe_pool_elem *elem)
+ 
+ 	err = xa_alloc_cyclic(&pool->xa, &elem->index, elem, pool->limit,
+ 			      &pool->next, GFP_KERNEL);
+-	if (err)
++	if (err < 0)
+ 		goto err_cnt;
+ 
+ 	return 0;
 -- 
 2.35.1
 
