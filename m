@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE56BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 167ACC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346292AbiHOUwY (ORCPT
+        id S1346348AbiHOUwb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
+        Mon, 15 Aug 2022 16:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345880AbiHOUub (ORCPT
+        with ESMTP id S1346310AbiHOUui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:50:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE70BA9D1;
-        Mon, 15 Aug 2022 12:09:36 -0700 (PDT)
+        Mon, 15 Aug 2022 16:50:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04939BA9D9;
+        Mon, 15 Aug 2022 12:09:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1BF8B81115;
-        Mon, 15 Aug 2022 19:09:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7655C433C1;
-        Mon, 15 Aug 2022 19:09:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15C2A6069E;
+        Mon, 15 Aug 2022 19:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D338EC433D6;
+        Mon, 15 Aug 2022 19:09:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590573;
-        bh=4zHJyk7rxxViGtfeCsyafRUduSS2cv1pFUD28Yv+0IM=;
+        s=korg; t=1660590576;
+        bh=Ro6xxxF1fVuz0fJmCgBArPo/LziyaAhePT/yijdPk/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mpQy/a768VjhE7oKMiwUCui3CGXidgqd5uZRnkgBnaULTB/52eDE8e+of+Aa81/gi
-         e3hlcA8c7xTh4eSVzCp4sZrEZYob4n+AgR5m91ZdE9zuUF6VaCrN6gBaTBdJYyu+21
-         yPZZe3Vxivx4Jzjqz7dfMf4y8hELplss3dUMi3Kw=
+        b=SBZ7vpvh90d75KTn+VlbKfR/17GmH0Ug/6KY0pE1UfNkQWUFLYAphAXHy2W8tgn8W
+         UkLLEgHjUKNmRCzbKLRgJWy2jqGl2FDAKGzgCyEOlCdPvRufa7w6tAhefBlaS0082e
+         QKWYD+H1xiqpoCWCS51scnP7K5KC/fpRuGQrOD3E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YiFei Zhu <zhuyifei@google.com>,
-        Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Marek Vasut <marex@denx.de>, Jonas Karlman <jonas@kwiboo.se>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0295/1095] selftests/seccomp: Fix compile warning when CC=clang
-Date:   Mon, 15 Aug 2022 19:54:54 +0200
-Message-Id: <20220815180441.980828101@linuxfoundation.org>
+Subject: [PATCH 5.18 0304/1095] drm/bridge: tc358767: Move (e)DP bridge endpoint parsing into dedicated function
+Date:   Mon, 15 Aug 2022 19:55:03 +0200
+Message-Id: <20220815180442.353613337@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,45 +55,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YiFei Zhu <zhuyifei@google.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 3ce4b78f73e8e00fb86bad67ee7f6fe12019707e ]
+[ Upstream commit 8478095a8c4bcea3c83b0767d6c9127434160761 ]
 
-clang has -Wconstant-conversion by default, and the constant 0xAAAAAAAAA
-(9 As) being converted to an int, which is generally 32 bits, results
-in the compile warning:
+The TC358767/TC358867/TC9595 are all capable of operating in multiple
+modes, DPI-to-(e)DP, DSI-to-(e)DP, DSI-to-DPI. Only the first mode is
+currently supported. In order to support the rest of the modes without
+making the tc_probe() overly long, split the bridge endpoint parsing
+into dedicated function, where the necessary logic to detect the bridge
+mode based on which endpoints are connected, can be implemented.
 
-  clang -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/  -lpthread  seccomp_bpf.c -lcap -o seccomp_bpf
-  seccomp_bpf.c:812:67: warning: implicit conversion from 'long' to 'int' changes value from 45812984490 to -1431655766 [-Wconstant-conversion]
-          int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAAA;
-              ~~~~                                                         ^~~~~~~~~~~
-  1 warning generated.
-
--1431655766 is the expected truncation, 0xAAAAAAAA (8 As), so use
-this directly in the code to avoid the warning.
-
-Fixes: 3932fcecd962 ("selftests/seccomp: Add test for unknown SECCOMP_RET kill behavior")
-Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220526223407.1686936-1-zhuyifei@google.com
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Tested-by: Lucas Stach <l.stach@pengutronix.de> # In both DPI to eDP and DSI to DPI mode.
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220329085015.39159-7-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/tc358767.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 313bb0cbfb1e..6f65eeb6a3dd 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -802,7 +802,7 @@ void kill_thread_or_group(struct __test_metadata *_metadata,
- 		.len = (unsigned short)ARRAY_SIZE(filter_thread),
- 		.filter = filter_thread,
- 	};
--	int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAAA;
-+	int kill = kill_how == KILL_PROCESS ? SECCOMP_RET_KILL_PROCESS : 0xAAAAAAAA;
- 	struct sock_filter filter_process[] = {
- 		BPF_STMT(BPF_LD|BPF_W|BPF_ABS,
- 			offsetof(struct seccomp_data, nr)),
+diff --git a/drivers/gpu/drm/bridge/tc358767.c b/drivers/gpu/drm/bridge/tc358767.c
+index c23e0abc65e8..835a146a0196 100644
+--- a/drivers/gpu/drm/bridge/tc358767.c
++++ b/drivers/gpu/drm/bridge/tc358767.c
+@@ -1549,19 +1549,12 @@ static irqreturn_t tc_irq_handler(int irq, void *arg)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
++static int tc_probe_edp_bridge_endpoint(struct tc_data *tc)
+ {
+-	struct device *dev = &client->dev;
++	struct device *dev = tc->dev;
+ 	struct drm_panel *panel;
+-	struct tc_data *tc;
+ 	int ret;
+ 
+-	tc = devm_kzalloc(dev, sizeof(*tc), GFP_KERNEL);
+-	if (!tc)
+-		return -ENOMEM;
+-
+-	tc->dev = dev;
+-
+ 	/* port@2 is the output port */
+ 	ret = drm_of_find_panel_or_bridge(dev->of_node, 2, 0, &panel, NULL);
+ 	if (ret && ret != -ENODEV)
+@@ -1580,6 +1573,25 @@ static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 		tc->bridge.type = DRM_MODE_CONNECTOR_DisplayPort;
+ 	}
+ 
++	return ret;
++}
++
++static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
++{
++	struct device *dev = &client->dev;
++	struct tc_data *tc;
++	int ret;
++
++	tc = devm_kzalloc(dev, sizeof(*tc), GFP_KERNEL);
++	if (!tc)
++		return -ENOMEM;
++
++	tc->dev = dev;
++
++	ret = tc_probe_edp_bridge_endpoint(tc);
++	if (ret)
++		return ret;
++
+ 	/* Shut down GPIO is optional */
+ 	tc->sd_gpio = devm_gpiod_get_optional(dev, "shutdown", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(tc->sd_gpio))
 -- 
 2.35.1
 
