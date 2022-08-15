@@ -2,118 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CCEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8602C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231721AbiHOUak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
+        id S1346944AbiHOUa4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347331AbiHOUWS (ORCPT
+        with ESMTP id S245187AbiHOUWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:22:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854922CCBF;
-        Mon, 15 Aug 2022 12:02:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C9D9B81062;
-        Mon, 15 Aug 2022 19:02:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B30FC433C1;
-        Mon, 15 Aug 2022 19:02:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590156;
-        bh=IO9ap3hmjMTu+JcV3hDkZ5Y3LMiXumCCUXgCjw5opXg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PlMewoO6S0orSvri4aj63cNOfxLRNtco1KmUbrETGIDFuBivshjftTLjZRK1mXc7H
-         JIt57GWcQuQeIun8ATv2D+MQqZNuPz/CTEjLvmw8WsSkIn5wfip2jOtoGgTCay4pF8
-         pz4Qn7ix19FbFAkDfXrZWHAd68yYnyUWiO0dW4vA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Subject: [PATCH 5.18 0127/1095] USB: gadget: Fix use-after-free Read in usb_udc_uevent()
-Date:   Mon, 15 Aug 2022 19:52:06 +0200
-Message-Id: <20220815180434.838639592@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 16:22:19 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FC3357C7;
+        Mon, 15 Aug 2022 12:02:43 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 202so7241484pgc.8;
+        Mon, 15 Aug 2022 12:02:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=T1urwYp+ngUfbtL/zRS1WH8Fw+1Y+MfmKi5JR02MB5Y=;
+        b=aZUuvkegx2ruNP8I4pY27Gd7ajx8X7gfwOxSAZ3xO1ObIxlYQCyO+KsPGzDJdleVTv
+         hGYNLNcK1bd4lx7e5tOpFAVQQat1kKKrbOnhbZVf/vzXlCVLycrJBvSo6GZqBb6xhon5
+         w64+6nGYOe1CU8KjLKooaF5XJnYY8fFQJIANLHPyxTrE+i+T6NqwBCvLV8/DRuCUYsVA
+         cbR9a22h60S3UnNmRA4/ngshmTMqszxt1Y/9kGjBtpqXsMHLcCKLBOs0rr1NgThW2cy9
+         LhoEHznxETNRdAg9+KRCxsNXk5Ty5LZSCMAlrb7JiEuMhWSsGVgcw33aSwNl8id53TRG
+         zFgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=T1urwYp+ngUfbtL/zRS1WH8Fw+1Y+MfmKi5JR02MB5Y=;
+        b=ugGFFmcTUOaFdGFh2TRcZ/ZM6P5MTbzHZfBD886PY0uaoDJl/R1B8+8mSMtQFu4f5q
+         uiDvSp80rxDrtqFRVJxOl5b6HZoJOg6pyKbxdfvfB7un76+Xlwm1/a4e1pX6eye1v7kr
+         CpHMdrWIrp8ZJIDcWXK5YWfCQuOkjdCkXYpNcH7yPWIkswLCAvfFZL/NVPKetHAnHKn7
+         wPMUKFvQrAI9JkXQsz+Hg7dcvU/cCFP5nQNWhv+nF3l57Mt/7G6oanAq2MxXJk5YmOZW
+         884JzrUkXgjKWHAABLIQpSQMV9FT3cpi61P6aBNQBgRaGY1nOrYEM8+UuTIn5UQQAyRk
+         ajCg==
+X-Gm-Message-State: ACgBeo2tjXUSsEOHe3oUC6b/Gyz+wN4qxJ/ELJw/li2Y34lg9vKFDddi
+        HSXmkd5NPxg7IRsQDp77CaA=
+X-Google-Smtp-Source: AA6agR4b/ybl6R8xhfXlQvXXGF/WKD/S1mp5KP2qIF0fDxTUUsj1b0ep3zp3dknndIRIq/PtXohsXA==
+X-Received: by 2002:a63:db06:0:b0:41d:f6f6:49d0 with SMTP id e6-20020a63db06000000b0041df6f649d0mr14624683pgg.83.1660590163000;
+        Mon, 15 Aug 2022 12:02:43 -0700 (PDT)
+Received: from youngsil.svl.corp.google.com ([2620:15c:2d4:203:df3e:22e0:b905:822b])
+        by smtp.gmail.com with ESMTPSA id q13-20020a170902a3cd00b0016a4db13429sm7266926plb.192.2022.08.15.12.02.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 12:02:42 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 2/4] tools lib perf: Handle read format in perf_evsel__read()
+Date:   Mon, 15 Aug 2022 12:01:04 -0700
+Message-Id: <20220815190106.1293082-3-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+In-Reply-To: <20220815190106.1293082-1-namhyung@kernel.org>
+References: <20220815190106.1293082-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+The perf_counts_values should be increased to read the new lost data.
+Also adjust values after read according the read format.
 
-commit 2191c00855b03aa59c20e698be713d952d51fc18 upstream.
+This supports PERF_FORMAT_GROUP which has a different data format but
+it's only available for leader events.  Currently it doesn't have an API
+to read sibling (member) events in the group.  But users may read the
+sibling event directly.
 
-The syzbot fuzzer found a race between uevent callbacks and gadget
-driver unregistration that can cause a use-after-free bug:
+Also reading from mmap would be disabled when the read format has ID or
+LOST bit as it's not exposed via mmap.
 
----------------------------------------------------------------
-BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130
-drivers/usb/gadget/udc/core.c:1732
-Read of size 8 at addr ffff888078ce2050 by task udevd/2968
-
-CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-06/29/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
- kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
- usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
- dev_uevent+0x290/0x770 drivers/base/core.c:2424
----------------------------------------------------------------
-
-The bug occurs because usb_udc_uevent() dereferences udc->driver but
-does so without acquiring the udc_lock mutex, which protects this
-field.  If the gadget driver is unbound from the udc concurrently with
-uevent processing, the driver structure may be accessed after it has
-been deallocated.
-
-To prevent the race, we make sure that the routine holds the mutex
-around the racing accesses.
-
-Link: <https://lore.kernel.org/all/0000000000004de90405a719c951@google.com>
-CC: stable@vger.kernel.org # fc274c1e9973
-Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YtlrnhHyrHsSky9m@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- drivers/usb/gadget/udc/core.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ tools/lib/perf/evsel.c              | 72 +++++++++++++++++++++++++++++
+ tools/lib/perf/include/perf/event.h |  3 +-
+ tools/lib/perf/include/perf/evsel.h |  4 +-
+ 3 files changed, 77 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1745,13 +1745,14 @@ static int usb_udc_uevent(struct device
- 		return ret;
- 	}
+diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
+index 952f3520d5c2..fc23670231cb 100644
+--- a/tools/lib/perf/evsel.c
++++ b/tools/lib/perf/evsel.c
+@@ -305,6 +305,9 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
+ 	if (read_format & PERF_FORMAT_ID)
+ 		entry += sizeof(u64);
  
--	if (udc->driver) {
-+	mutex_lock(&udc_lock);
-+	if (udc->driver)
- 		ret = add_uevent_var(env, "USB_UDC_DRIVER=%s",
- 				udc->driver->function);
--		if (ret) {
--			dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
--			return ret;
--		}
-+	mutex_unlock(&udc_lock);
-+	if (ret) {
-+		dev_err(dev, "failed to add uevent USB_UDC_DRIVER\n");
-+		return ret;
- 	}
++	if (read_format & PERF_FORMAT_LOST)
++		entry += sizeof(u64);
++
+ 	if (read_format & PERF_FORMAT_GROUP) {
+ 		nr = evsel->nr_members;
+ 		size += sizeof(u64);
+@@ -314,24 +317,93 @@ int perf_evsel__read_size(struct perf_evsel *evsel)
+ 	return size;
+ }
  
++/* This only reads values for the leader */
++static int perf_evsel__read_group(struct perf_evsel *evsel, int cpu_map_idx,
++				  int thread, struct perf_counts_values *count)
++{
++	size_t size = perf_evsel__read_size(evsel);
++	int *fd = FD(evsel, cpu_map_idx, thread);
++	u64 read_format = evsel->attr.read_format;
++	u64 *data;
++	int idx = 1;
++
++	if (fd == NULL || *fd < 0)
++		return -EINVAL;
++
++	data = calloc(1, size);
++	if (data == NULL)
++		return -ENOMEM;
++
++	if (readn(*fd, data, size) <= 0) {
++		free(data);
++		return -errno;
++	}
++
++	if (read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)
++		count->ena = data[idx++];
++	if (read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)
++		count->run = data[idx++];
++
++	/* value is always available */
++	count->val = data[idx++];
++	if (read_format & PERF_FORMAT_ID)
++		count->id = data[idx++];
++	if (read_format & PERF_FORMAT_LOST)
++		count->lost = data[idx++];
++
++	free(data);
++	return 0;
++}
++
++/*
++ * The perf read format is very flexible.  It needs to set the proper
++ * values according to the read format.
++ */
++static void perf_evsel__adjust_values(struct perf_evsel *evsel,
++				      struct perf_counts_values *count)
++{
++	u64 read_format = evsel->attr.read_format;
++
++	if (!(read_format & PERF_FORMAT_TOTAL_TIME_ENABLED)) {
++		memmove(&count->values[2], &count->values[1], 24);
++		count->ena = 0;
++	}
++
++	if (!(read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)) {
++		memmove(&count->values[3], &count->values[2], 16);
++		count->run = 0;
++	}
++
++	if (!(read_format & PERF_FORMAT_ID)) {
++		memmove(&count->values[4], &count->values[3], 8);
++		count->id = 0;
++	}
++}
++
+ int perf_evsel__read(struct perf_evsel *evsel, int cpu_map_idx, int thread,
+ 		     struct perf_counts_values *count)
+ {
+ 	size_t size = perf_evsel__read_size(evsel);
+ 	int *fd = FD(evsel, cpu_map_idx, thread);
++	u64 read_format = evsel->attr.read_format;
+ 
+ 	memset(count, 0, sizeof(*count));
+ 
+ 	if (fd == NULL || *fd < 0)
+ 		return -EINVAL;
+ 
++	if (read_format & PERF_FORMAT_GROUP)
++		return perf_evsel__read_group(evsel, cpu_map_idx, thread, count);
++
+ 	if (MMAP(evsel, cpu_map_idx, thread) &&
++	    !(read_format & (PERF_FORMAT_ID | PERF_FORMAT_LOST)) &&
+ 	    !perf_mmap__read_self(MMAP(evsel, cpu_map_idx, thread), count))
+ 		return 0;
+ 
+ 	if (readn(*fd, count->values, size) <= 0)
+ 		return -errno;
+ 
++	perf_evsel__adjust_values(evsel, count);
  	return 0;
-
+ }
+ 
+diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
+index 556bb06798f2..38dd35cbca71 100644
+--- a/tools/lib/perf/include/perf/event.h
++++ b/tools/lib/perf/include/perf/event.h
+@@ -76,7 +76,7 @@ struct perf_record_lost_samples {
+ };
+ 
+ /*
+- * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID
++ * PERF_FORMAT_ENABLED | PERF_FORMAT_RUNNING | PERF_FORMAT_ID | PERF_FORMAT_LOST
+  */
+ struct perf_record_read {
+ 	struct perf_event_header header;
+@@ -85,6 +85,7 @@ struct perf_record_read {
+ 	__u64			 time_enabled;
+ 	__u64			 time_running;
+ 	__u64			 id;
++	__u64			 lost;
+ };
+ 
+ struct perf_record_throttle {
+diff --git a/tools/lib/perf/include/perf/evsel.h b/tools/lib/perf/include/perf/evsel.h
+index 699c0ed97d34..6f92204075c2 100644
+--- a/tools/lib/perf/include/perf/evsel.h
++++ b/tools/lib/perf/include/perf/evsel.h
+@@ -18,8 +18,10 @@ struct perf_counts_values {
+ 			uint64_t val;
+ 			uint64_t ena;
+ 			uint64_t run;
++			uint64_t id;
++			uint64_t lost;
+ 		};
+-		uint64_t values[3];
++		uint64_t values[5];
+ 	};
+ };
+ 
+-- 
+2.37.1.595.g718a3a8f04-goog
 
