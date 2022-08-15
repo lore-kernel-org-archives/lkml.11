@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD156C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E87CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244786AbiHOXCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
+        id S245537AbiHOXCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245104AbiHOXAW (ORCPT
+        with ESMTP id S233204AbiHOXAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:00:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E89D78215;
-        Mon, 15 Aug 2022 12:57:34 -0700 (PDT)
+        Mon, 15 Aug 2022 19:00:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD345D10D;
+        Mon, 15 Aug 2022 12:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B120460FD8;
-        Mon, 15 Aug 2022 19:57:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F89CC433C1;
-        Mon, 15 Aug 2022 19:57:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1640612A3;
+        Mon, 15 Aug 2022 19:57:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8DC3C433D6;
+        Mon, 15 Aug 2022 19:57:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593453;
-        bh=fsOMfTvKS1OwyHIHiFZi4yp3lzMzwBLEDwhB4KCaDkM=;
+        s=korg; t=1660593456;
+        bh=EHTqRDxAE6XI7DhbKyIDIwdWSDYQCC2Vet31YKcW/kI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jtMXy5dvCtwB66Jtf0ziuNaLAdCCzOwNn+VYi1PfZMEvFgp0BewYruWazUeGClJZx
-         +7zmz+3m0Jp2HyJhr5969z3gVZfQ47wsojd3kydmt1O8ZCaswOYt5e8exl2+hn4KIN
-         byMHTMRpNcmJvybI3EUukqwmqN22ssO2ACyUI97I=
+        b=ZTvEBX6X8PGIDMgE2NOGWR7zq1aLqZVULSDjDXqWuFMDRDF043aqgtOVxccKiLo2n
+         nfzaGrEKXeCjFqJhVIS8L/PN+E4pH0iw9vZSYa/uY/LnC+6g02SUh6QpEauMkMkXiF
+         Uc40sXIrcfTA0NUMIxlhYKDSRlW1+35rOaPgeDYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0948/1095] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
-Date:   Mon, 15 Aug 2022 20:05:47 +0200
-Message-Id: <20220815180508.344597258@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0270/1157] spi: Fix simplification of devm_spi_register_controller
+Date:   Mon, 15 Aug 2022 19:53:46 +0200
+Message-Id: <20220815180450.412826860@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,57 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
+[ Upstream commit 43cc5a0afe4184a7fafe1eba32b5a11bb69c9ce0 ]
 
-Since the user can control the arguments of the ioctl() from the user
-space, under special arguments that may result in a divide-by-zero bug
-in:
-  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
-and then in:
-  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
-we'll get a division-by-zero.
+This reverts commit 59ebbe40fb51 ("spi: simplify
+devm_spi_register_controller").
 
-The following log can reveal it:
+If devm_add_action() fails in devm_add_action_or_reset(),
+devm_spi_unregister() will be called, it decreases the
+refcount of 'ctlr->dev' to 0, then it will cause uaf in
+the drivers that calling spi_put_controller() in error path.
 
-divide error: 0000 [#1] PREEMPT SMP KASAN PTI
-RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
-RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
-Call Trace:
- fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Fix this by checking the argument of ark_set_pixclock() first.
-
-Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 59ebbe40fb51 ("spi: simplify devm_spi_register_controller")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Link: https://lore.kernel.org/r/20220712135504.1055688-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/arkfb.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/spi/spi.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
-index eb3e47c58c5f..ed76ddc7df3d 100644
---- a/drivers/video/fbdev/arkfb.c
-+++ b/drivers/video/fbdev/arkfb.c
-@@ -781,7 +781,12 @@ static int arkfb_set_par(struct fb_info *info)
- 		return -EINVAL;
- 	}
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 62aa3f062f3d..2c616024f7c0 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -3050,9 +3050,9 @@ int spi_register_controller(struct spi_controller *ctlr)
+ }
+ EXPORT_SYMBOL_GPL(spi_register_controller);
  
--	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
-+	value = (hdiv * info->var.pixclock) / hmul;
-+	if (!value) {
-+		fb_dbg(info, "invalid pixclock\n");
-+		value = 1;
+-static void devm_spi_unregister(void *ctlr)
++static void devm_spi_unregister(struct device *dev, void *res)
+ {
+-	spi_unregister_controller(ctlr);
++	spi_unregister_controller(*(struct spi_controller **)res);
+ }
+ 
+ /**
+@@ -3071,13 +3071,22 @@ static void devm_spi_unregister(void *ctlr)
+ int devm_spi_register_controller(struct device *dev,
+ 				 struct spi_controller *ctlr)
+ {
++	struct spi_controller **ptr;
+ 	int ret;
+ 
++	ptr = devres_alloc(devm_spi_unregister, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
++
+ 	ret = spi_register_controller(ctlr);
+-	if (ret)
+-		return ret;
++	if (!ret) {
++		*ptr = ctlr;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
 +	}
-+	ark_set_pixclock(info, value);
- 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
- 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
- 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
+ 
+-	return devm_add_action_or_reset(dev, devm_spi_unregister, ctlr);
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(devm_spi_register_controller);
+ 
 -- 
 2.35.1
 
