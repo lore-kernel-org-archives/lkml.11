@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF43C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC3EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351177AbiHPAYH (ORCPT
+        id S1352764AbiHPAYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        Mon, 15 Aug 2022 20:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353070AbiHPAUX (ORCPT
+        with ESMTP id S1353228AbiHPAUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:20:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217AD17B819;
-        Mon, 15 Aug 2022 13:33:32 -0700 (PDT)
+        Mon, 15 Aug 2022 20:20:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE9617C32E;
+        Mon, 15 Aug 2022 13:33:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14073611AA;
-        Mon, 15 Aug 2022 20:33:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D06FC433C1;
-        Mon, 15 Aug 2022 20:33:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D326117D;
+        Mon, 15 Aug 2022 20:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65A21C433C1;
+        Mon, 15 Aug 2022 20:33:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595596;
-        bh=BWdZqPLDXsnad35DrHwcE33hAm8J1xbYtk0RGyawOr4=;
+        s=korg; t=1660595622;
+        bh=VQGx/IU7kOtacVCrGRXqdtCla6OPAn5IxSG9vexBIsA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJ3+QGAxdvOuq2EbSYqCw1LfVDZXX0RBsWTpxi3laEuRFpvRCsctGVkRu85uQBow2
-         HLJbhu1BmwzGtqCNpKVmV56AYb1Wu05Z6HKEejQsVoClvy++VblpXsmjnIHY8bKgyX
-         x8kDXofiCGG/GaRLLsOWkSU4qytARH4FcOJEC49Q=
+        b=gjEKGMWzhJZTczRf++1qDOI/3PDIlA1SjGZuc34EDR3FaNTYHSBY+X157vZervGY0
+         4xofmq+ogUyW1nllZr919xNofP6tFpFmq0mLDY73PheFiDTjCbTvSJvQvNMHGkzPWX
+         UGNAenFTlahLOBs8itCrjb3mehOPG1aj9S5+lTQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0814/1157] phy: stm32: fix error return in stm32_usbphyc_phy_init
-Date:   Mon, 15 Aug 2022 20:02:50 +0200
-Message-Id: <20220815180512.052610482@linuxfoundation.org>
+        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0821/1157] RDMA/irdma: Fix VLAN connection with wildcard address
+Date:   Mon, 15 Aug 2022 20:02:57 +0200
+Message-Id: <20220815180512.326176096@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,39 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-[ Upstream commit 32b378a9179ae4db61cfc5d502717214e6cd1e1c ]
+[ Upstream commit 82ab2b52654c43ba24a3f6603fec40874cc5a7e5 ]
 
-Error code is overridden, in case the PLL doesn't lock. So, the USB
-initialization can continue. This leads to a platform freeze.
-This can be avoided by returning proper error code to avoid USB probe
-freezing the platform. It also displays proper errors in log.
+When an application listens on a wildcard address, and there are VLAN and
+non-VLAN IP addresses, iWARP connection establishemnt can fail if the listen
+node VLAN ID does not match.
 
-Fixes: 5b1af71280ab ("phy: stm32: rework PLL Lock detection")
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Link: https://lore.kernel.org/r/20220713133953.595134-1-fabrice.gasnier@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fix this by checking the vlan_id only if not a wildcard listen node.
+
+Fixes: 146b9756f14c ("RDMA/irdma: Add connection manager")
+Link: https://lore.kernel.org/r/20220705230815.265-7-shiraz.saleem@intel.com
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/st/phy-stm32-usbphyc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/irdma/cm.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/phy/st/phy-stm32-usbphyc.c b/drivers/phy/st/phy-stm32-usbphyc.c
-index 007a23c78d56..a98c911cc37a 100644
---- a/drivers/phy/st/phy-stm32-usbphyc.c
-+++ b/drivers/phy/st/phy-stm32-usbphyc.c
-@@ -358,7 +358,9 @@ static int stm32_usbphyc_phy_init(struct phy *phy)
- 	return 0;
- 
- pll_disable:
--	return stm32_usbphyc_pll_disable(usbphyc);
-+	stm32_usbphyc_pll_disable(usbphyc);
-+
-+	return ret;
- }
- 
- static int stm32_usbphyc_phy_exit(struct phy *phy)
+diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
+index 646fa8677490..7b086fe63a24 100644
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -1477,12 +1477,13 @@ irdma_find_listener(struct irdma_cm_core *cm_core, u32 *dst_addr, u16 dst_port,
+ 	list_for_each_entry (listen_node, &cm_core->listen_list, list) {
+ 		memcpy(listen_addr, listen_node->loc_addr, sizeof(listen_addr));
+ 		listen_port = listen_node->loc_port;
++		if (listen_port != dst_port ||
++		    !(listener_state & listen_node->listener_state))
++			continue;
+ 		/* compare node pair, return node handle if a match */
+-		if ((!memcmp(listen_addr, dst_addr, sizeof(listen_addr)) ||
+-		     !memcmp(listen_addr, ip_zero, sizeof(listen_addr))) &&
+-		    listen_port == dst_port &&
+-		    vlan_id == listen_node->vlan_id &&
+-		    (listener_state & listen_node->listener_state)) {
++		if (!memcmp(listen_addr, ip_zero, sizeof(listen_addr)) ||
++		    (!memcmp(listen_addr, dst_addr, sizeof(listen_addr)) &&
++		     vlan_id == listen_node->vlan_id)) {
+ 			refcount_inc(&listen_node->refcnt);
+ 			spin_unlock_irqrestore(&cm_core->listen_list_lock,
+ 					       flags);
 -- 
 2.35.1
 
