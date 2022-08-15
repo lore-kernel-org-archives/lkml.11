@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C444C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D55CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245586AbiHOT3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        id S245402AbiHOT3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245192AbiHOTZs (ORCPT
+        with ESMTP id S245158AbiHOTZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:25:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0BB3E759;
-        Mon, 15 Aug 2022 11:41:15 -0700 (PDT)
+        Mon, 15 Aug 2022 15:25:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4583DF17;
+        Mon, 15 Aug 2022 11:41:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F02D161029;
-        Mon, 15 Aug 2022 18:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1483C433C1;
-        Mon, 15 Aug 2022 18:41:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FF42B81084;
+        Mon, 15 Aug 2022 18:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B526DC433D6;
+        Mon, 15 Aug 2022 18:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588874;
-        bh=0kvt60j2xLMDGX4/p5w7TBRFw0hJQ5k87RL9avNFBVw=;
+        s=korg; t=1660588871;
+        bh=0rSuf08xxpAs4juZrf9DdyilhYifmFUsrkyHzwVov84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yeRZiq+P7OkMJb/snf+HdXWCrTMx0P2pHqoi43P4rV0fZKfo2/hHYnqvn6O8QByhc
-         VoIo5HgskgkwvTGaZKsdWjREdRw8KM6ZtYFVTAuWpAiagXDn1q0toFiTklj+5WxSlR
-         prc4PwlSM23tH0nB7A6a2vIXKDr/R4Z30g0nYxGQ=
+        b=t+wrWl8B69DrdwxxvJ7hZDxYWd2fEM78hHJDJZbGr1THXLbRJqGWtuOmFmxGlrfM6
+         3fjjxDf8+xRGbka6Cen0+3xWvTyxE8ZQLuJZI6hJ+T/177HU15K0iDzB3LOC/h1/Xr
+         sCKBYplpabkko6qTi2KIf5BNkUvN173MCN9xJY+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Qiang <xuqiang36@huawei.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 542/779] of/fdt: declared return type does not match actual return type
-Date:   Mon, 15 Aug 2022 20:03:06 +0200
-Message-Id: <20220815180400.484353850@linuxfoundation.org>
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Robert Richter <rric@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 524/779] mmc: cavium-octeon: Add of_node_put() when breaking out of loop
+Date:   Mon, 15 Aug 2022 20:02:48 +0200
+Message-Id: <20220815180359.662011987@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -48,41 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Qiang <xuqiang36@huawei.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 7913145afa51bbed9eaf8e5b4ee55fa9884a71e5 ]
+[ Upstream commit 19bbb49acf8d7a03cb83e05624363741a4c3ec6f ]
 
-The commit 649cab56de8e (“of: properly check for error returned
-by fdt_get_name()”) changed the return value type from bool to int,
-but forgot to change the return value simultaneously.
+In octeon_mmc_probe(), we should call of_node_put() when breaking
+out of for_each_child_of_node() which has increased and decreased
+the refcount during each iteration.
 
-populate_node was only called in unflatten_dt_nodes, and returns
-with values greater than or equal to 0 were discarded without further
-processing. Considering that return 0 usually indicates success,
-return 0 instead of return true.
-
-Fixes: 649cab56de8e (“of: properly check for error returned by fdt_get_name()”)
-Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220801120506.11461-2-xuqiang36@huawei.com
+Fixes: 01d95843335c ("mmc: cavium: Add MMC support for Octeon SOCs.")
+Signed-off-by: Liang He <windhl@126.com>
+Acked-by: Robert Richter <rric@kernel.org>
+Link: https://lore.kernel.org/r/20220719095216.1241601-1-windhl@126.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/fdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/cavium-octeon.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 59a7a9ee58ef..d245628b15dd 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -245,7 +245,7 @@ static int populate_node(const void *blob,
- 	}
- 
- 	*pnp = np;
--	return true;
-+	return 0;
- }
- 
- static void reverse_nodes(struct device_node *parent)
+diff --git a/drivers/mmc/host/cavium-octeon.c b/drivers/mmc/host/cavium-octeon.c
+index 2c4b2df52adb..12dca91a8ef6 100644
+--- a/drivers/mmc/host/cavium-octeon.c
++++ b/drivers/mmc/host/cavium-octeon.c
+@@ -277,6 +277,7 @@ static int octeon_mmc_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "Error populating slots\n");
+ 			octeon_mmc_set_shared_power(host, 0);
++			of_node_put(cn);
+ 			goto error;
+ 		}
+ 		i++;
 -- 
 2.35.1
 
