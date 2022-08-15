@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA9AC32763
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 084E0C2BB47
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346893AbiHOUmI (ORCPT
+        id S1346675AbiHOUlx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        Mon, 15 Aug 2022 16:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345642AbiHOUhT (ORCPT
+        with ESMTP id S1346687AbiHOUgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:37:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FC4ABF36;
-        Mon, 15 Aug 2022 12:07:02 -0700 (PDT)
+        Mon, 15 Aug 2022 16:36:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4F94E843;
+        Mon, 15 Aug 2022 12:06:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF28E61019;
-        Mon, 15 Aug 2022 19:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF038C433C1;
-        Mon, 15 Aug 2022 19:07:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BB1CB810A2;
+        Mon, 15 Aug 2022 19:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFF3C433C1;
+        Mon, 15 Aug 2022 19:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590421;
-        bh=3mOblT3WWCqHpamng/ifMwZwt9N/Hcq6obNiMPcRVuU=;
+        s=korg; t=1660590412;
+        bh=lyE0Uoi4jt5cS3p9ntPQyP0WH2gJ35GJtynLlM09Ihs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FAXfW2tqy0zwI91PKK5i581dmFEHjZqFbhBuwyc3iRrht8QCxgI273c9yDG52nFY/
-         KRZ5UGlDyiSXflgJWLtGWemuZcaYqggMgEhP/RiWDdGhDNaacZWPpOIJXqaMtI1TOd
-         8PHdvc4Kvo9RIq86ldnvKGcEOfY9GGnWK1OY+h/U=
+        b=Cf0JdUihryG0f5wKx6B/Vqm1vx918XsgVjBtk1pPhBg4tMOBOlHEA4HtedDa8RLYp
+         iV4dMfxJkbjXDmmk2TTyi0FS2S1MO4yRLMDf1npnjyO2tkbXSdGjyz7ClmmG40FlND
+         E7DztCp5TB5XdLWXz2c10/II0/BupBhCz27FpNPI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Jin Liu <jinl@redhat.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0254/1095] ACPI: VIOT: Fix ACS setup
-Date:   Mon, 15 Aug 2022 19:54:13 +0200
-Message-Id: <20220815180440.256760198@linuxfoundation.org>
+Subject: [PATCH 5.18 0251/1095] arm64: dts: qcom: msm8916: Fix typo in pronto remoteproc node
+Date:   Mon, 15 Aug 2022 19:54:10 +0200
+Message-Id: <20220815180440.142752756@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,110 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Auger <eric.auger@redhat.com>
+From: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-[ Upstream commit 3dcb861dbc6ab101838a1548b1efddd00ca3c3ec ]
+[ Upstream commit 5458d6f2827cd30218570f266b8d238417461f2f ]
 
-Currently acpi_viot_init() gets called after the pci
-device has been scanned and pci_enable_acs() has been called.
-So pci_request_acs() fails to be taken into account leading
-to wrong single iommu group topologies when dealing with
-multi-function root ports for instance.
+The smem-state properties for the pronto node were incorrectly labelled,
+reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
+the stop state to be used.
 
-We cannot simply move the acpi_viot_init() earlier, similarly
-as the IORT init because the VIOT parsing relies on the pci
-scan. However we can detect VIOT is present earlier and in
-such a case, request ACS. Introduce a new acpi_viot_early_init()
-routine that allows to call pci_request_acs() before the scan.
-
-While at it, guard the call to pci_request_acs() with #ifdef
-CONFIG_PCI.
-
-Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
-Reported-by: Jin Liu <jinl@redhat.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220526141740.15834-3-sireeshkodali1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/bus.c        |  1 +
- drivers/acpi/viot.c       | 26 ++++++++++++++++++++------
- include/linux/acpi_viot.h |  2 ++
- 3 files changed, 23 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index 6c735cfa7d43..ef7858393a3c 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -1373,6 +1373,7 @@ static int __init acpi_init(void)
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index e34963505e07..7ecd747dc624 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -1758,8 +1758,8 @@ pronto: remoteproc@a21b000 {
+ 					<&rpmpd MSM8916_VDDMX>;
+ 			power-domain-names = "cx", "mx";
  
- 	pci_mmcfg_late_init();
- 	acpi_iort_init();
-+	acpi_viot_early_init();
- 	acpi_hest_init();
- 	acpi_ghes_init();
- 	acpi_scan_init();
-diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-index d2256326c73a..647f11cf165d 100644
---- a/drivers/acpi/viot.c
-+++ b/drivers/acpi/viot.c
-@@ -248,6 +248,26 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
- 	return ret;
- }
+-			qcom,state = <&wcnss_smp2p_out 0>;
+-			qcom,state-names = "stop";
++			qcom,smem-states = <&wcnss_smp2p_out 0>;
++			qcom,smem-state-names = "stop";
  
-+/**
-+ * acpi_viot_early_init - Test the presence of VIOT and enable ACS
-+ *
-+ * If the VIOT does exist, ACS must be enabled. This cannot be
-+ * done in acpi_viot_init() which is called after the bus scan
-+ */
-+void __init acpi_viot_early_init(void)
-+{
-+#ifdef CONFIG_PCI
-+	acpi_status status;
-+	struct acpi_table_header *hdr;
-+
-+	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
-+	if (ACPI_FAILURE(status))
-+		return;
-+	pci_request_acs();
-+	acpi_put_table(hdr);
-+#endif
-+}
-+
- /**
-  * acpi_viot_init - Parse the VIOT table
-  *
-@@ -319,12 +339,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
- 			epid = ((domain_nr - ep->segment_start) << 16) +
- 				dev_id - ep->bdf_start + ep->endpoint_id;
- 
--			/*
--			 * If we found a PCI range managed by the viommu, we're
--			 * the one that has to request ACS.
--			 */
--			pci_request_acs();
--
- 			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
- 						   epid);
- 		}
-diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
-index 1eb8ee5b0e5f..a5a122431563 100644
---- a/include/linux/acpi_viot.h
-+++ b/include/linux/acpi_viot.h
-@@ -6,9 +6,11 @@
- #include <linux/acpi.h>
- 
- #ifdef CONFIG_ACPI_VIOT
-+void __init acpi_viot_early_init(void);
- void __init acpi_viot_init(void);
- int viot_iommu_configure(struct device *dev);
- #else
-+static inline void acpi_viot_early_init(void) {}
- static inline void acpi_viot_init(void) {}
- static inline int viot_iommu_configure(struct device *dev)
- {
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&wcnss_pin_a>;
 -- 
 2.35.1
 
