@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA21C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB81DC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbiHPExH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S233070AbiHPExK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiHPEty (ORCPT
+        with ESMTP id S232851AbiHPEt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:49:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A11179E36;
-        Mon, 15 Aug 2022 13:46:28 -0700 (PDT)
+        Tue, 16 Aug 2022 00:49:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A137198EFE;
+        Mon, 15 Aug 2022 13:46:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7BC2B811A0;
-        Mon, 15 Aug 2022 20:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02FA4C433C1;
-        Mon, 15 Aug 2022 20:46:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19CABB81197;
+        Mon, 15 Aug 2022 20:46:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5902BC433C1;
+        Mon, 15 Aug 2022 20:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596385;
-        bh=EcOBiTqXf//qzVoa4HOTvZq8CkOTYfOkzuvGn1aqL/0=;
+        s=korg; t=1660596391;
+        bh=o535tWdjj0uexPJKKPrDxPX7BBwJbM7NqPGXgCvn8HI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tm09f4lcQYappyQ1JhoDPwHUqfu14UNOBR4Ym7oKNNeDZaUkNRNVBh3n/tF7/nQXS
-         4mCer1H5ahtTY4l6XUsReEBXwon0b7l3LEPDlqXKurZr92DyOoOTFxoyHD5Pryo3uy
-         vYtL9MYwNxktFGx1LVIeAlQpggtTRHHXD6DRCYK8=
+        b=YsCr8KV8OBixhFvvr9q1QuaqpBynp5tl0BoiZxH023eY1QGMBxuLKX5omiK1jyYST
+         KnVdGlEtqvaFTDbLO0VI6dBIk87L8YZ0ZMv6xf/RhhZoAgyuZou/PiiXTHdsozq95o
+         xkxoZrQ966sg0eZr8QnaS0ltwEdl+SD5PyjepX/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lev Kujawski <lkujaw@member.fsf.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Yury Norov <yury.norov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1063/1157] KVM: set_msr_mce: Permit guests to ignore single-bit ECC errors
-Date:   Mon, 15 Aug 2022 20:06:59 +0200
-Message-Id: <20220815180522.596216664@linuxfoundation.org>
+Subject: [PATCH 5.19 1065/1157] iommu/vt-d: avoid invalid memory access via node_online(NUMA_NO_NODE)
+Date:   Mon, 15 Aug 2022 20:07:01 +0200
+Message-Id: <20220815180522.674659278@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,66 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lev Kujawski <lkujaw@member.fsf.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 0471a7bd1bca2a47a5f378f2222c5cf39ce94152 ]
+[ Upstream commit b0b0b77ea611e3088e9523e60860f4f41b62b235 ]
 
-Certain guest operating systems (e.g., UNIXWARE) clear bit 0 of
-MC1_CTL to ignore single-bit ECC data errors.  Single-bit ECC data
-errors are always correctable and thus are safe to ignore because they
-are informational in nature rather than signaling a loss of data
-integrity.
+KASAN reports:
 
-Prior to this patch, these guests would crash upon writing MC1_CTL,
-with resultant error messages like the following:
+[ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+[    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
+[    4.683454][    T0]
+[    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
+[    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
+[    4.703196][    T0] Call Trace:
+[    4.706334][    T0]  <TASK>
+[ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
 
-error: kvm run failed Operation not permitted
-EAX=fffffffe EBX=fffffffe ECX=00000404 EDX=ffffffff
-ESI=ffffffff EDI=00000001 EBP=fffdaba4 ESP=fffdab20
-EIP=c01333a5 EFL=00000246 [---Z-P-] CPL=0 II=0 A20=1 SMM=0 HLT=0
-ES =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-CS =0100 00000000 ffffffff 00c09b00 DPL=0 CS32 [-RA]
-SS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-DS =0108 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]
-FS =0000 00000000 ffffffff 00c00000
-GS =0000 00000000 ffffffff 00c00000
-LDT=0118 c1026390 00000047 00008200 DPL=0 LDT
-TR =0110 ffff5af0 00000067 00008b00 DPL=0 TSS32-busy
-GDT=     ffff5020 000002cf
-IDT=     ffff52f0 000007ff
-CR0=8001003b CR2=00000000 CR3=0100a000 CR4=00000230
-DR0=00000000 DR1=00000000 DR2=00000000 DR3=00000000
-DR6=ffff0ff0 DR7=00000400
-EFER=0000000000000000
-Code=08 89 01 89 51 04 c3 8b 4c 24 08 8b 01 8b 51 04 8b 4c 24 04 <0f>
-30 c3 f7 05 a4 6d ff ff 10 00 00 00 74 03 0f 31 c3 33 c0 33 d2 c3 8d
-74 26 00 0f 31 c3
+after converting the type of the first argument (@nr, bit number)
+of arch_test_bit() from `long` to `unsigned long`[0].
 
-Signed-off-by: Lev Kujawski <lkujaw@member.fsf.org>
-Message-Id: <20220521081511.187388-1-lkujaw@member.fsf.org>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Under certain conditions (for example, when ACPI NUMA is disabled
+via command line), pxm_to_node() can return %NUMA_NO_NODE (-1).
+It is valid 'magic' number of NUMA node, but not valid bit number
+to use in bitops.
+node_online() eventually descends to test_bit() without checking
+for the input, assuming it's on caller side (which might be good
+for perf-critical tasks). There, -1 becomes %ULONG_MAX which leads
+to an insane array index when calculating bit position in memory.
+
+For now, add an explicit check for @node being not %NUMA_NO_NODE
+before calling test_bit(). The actual logics didn't change here
+at all.
+
+[0] https://github.com/norov/linux/commit/0e862838f290147ea9c16db852d8d494b552d38d
+
+Fixes: ee34b32d8c29 ("dmar: support for parsing Remapping Hardware Static Affinity structure")
+Cc: stable@vger.kernel.org # 2.6.33+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iommu/intel/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3245,10 +3245,13 @@ static int set_msr_mce(struct kvm_vcpu *
- 			/* only 0 or all 1s can be written to IA32_MCi_CTL
- 			 * some Linux kernels though clear bit 10 in bank 4 to
- 			 * workaround a BIOS/GART TBL issue on AMD K8s, ignore
--			 * this to avoid an uncatched #GP in the guest
-+			 * this to avoid an uncatched #GP in the guest.
-+			 *
-+			 * UNIXWARE clears bit 0 of MC1_CTL to ignore
-+			 * correctable, single-bit ECC data errors.
- 			 */
- 			if ((offset & 0x3) == 0 &&
--			    data != 0 && (data | (1 << 10)) != ~(u64)0)
-+			    data != 0 && (data | (1 << 10) | 1) != ~(u64)0)
- 				return -1;
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 9699ca101c62..64b14ac4c7b0 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -494,7 +494,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
+ 		if (drhd->reg_base_addr == rhsa->base_address) {
+ 			int node = pxm_to_node(rhsa->proximity_domain);
  
- 			/* MCi_STATUS */
+-			if (!node_online(node))
++			if (node != NUMA_NO_NODE && !node_online(node))
+ 				node = NUMA_NO_NODE;
+ 			drhd->iommu->node = node;
+ 			return 0;
+-- 
+2.35.1
+
 
 
