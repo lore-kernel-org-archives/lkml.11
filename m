@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D49DCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFD8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240581AbiHOXYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60710 "EHLO
+        id S244997AbiHOXYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245066AbiHOXUJ (ORCPT
+        with ESMTP id S245258AbiHOXUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:20:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A830F14A1F4;
-        Mon, 15 Aug 2022 13:04:07 -0700 (PDT)
+        Mon, 15 Aug 2022 19:20:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE35B4E8E;
+        Mon, 15 Aug 2022 13:04:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44E68612E8;
-        Mon, 15 Aug 2022 20:04:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC46C433D6;
-        Mon, 15 Aug 2022 20:04:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 47ED8CE12C5;
+        Mon, 15 Aug 2022 20:04:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FFFEC433D6;
+        Mon, 15 Aug 2022 20:04:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593846;
-        bh=PTZjMZz3dY7nGwXr/zmNJG3phN1LRfO3lK1lVY9wDPA=;
+        s=korg; t=1660593849;
+        bh=I+I2wzV0Z+MxOytYnSFYZBmG2OVavB/tYy6DM0PO2BQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ypWxWOvwn4gDr8s0uDyhRPlRAlaEa9s4G08qS26f2msANaR28armkDKCXPbvR3/Xm
-         3imAiZjZ78lmTcLB8Pxj40mbdsvU8x4qCnGIDJWtEzaA714f3hgc8FcYrONr75jpDT
-         9QZviPRj6KIuAmtZkcqNSkLlZQaiViIKsDybkRUc=
+        b=Vml4N3bB6nZrIwRaaWgyMctMLkieNYwTgsL/E6dZjulgfFy1V/nNHU5Hr0ly9OrTs
+         IQAdGrA7lhxeE+FuMbk9gKATEu+Zhb6M9/Yp8saOfuY2TWF1YZrxI159h0ULJSZkcz
+         K9X99v0jJ/s2XFZUcxNtpt/Des7A7cmjb1Kv/MpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org,
+        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1015/1095] btrfs: reset block group chunk force if we have to wait
-Date:   Mon, 15 Aug 2022 20:06:54 +0200
-Message-Id: <20220815180511.083835595@linuxfoundation.org>
+Subject: [PATCH 5.19 0335/1157] ath11k: Avoid REO CMD failed prints during firmware recovery
+Date:   Mon, 15 Aug 2022 19:54:51 +0200
+Message-Id: <20220815180453.069184063@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
 
-[ Upstream commit 1314ca78b2c35d3e7d0f097268a2ee6dc0d369ef ]
+[ Upstream commit 0ab52b2bd7be8fd49c8ade7703c1faa15359c6c5 ]
 
-If you try to force a chunk allocation, but you race with another chunk
-allocation, you will end up waiting on the chunk allocation that just
-occurred and then allocate another chunk.  If you have many threads all
-doing this at once you can way over-allocate chunks.
+Currently when firmware recovery is in progress, we do not queue REO
+commands to the firmware, instead -ESHUTDOWN will be returned to the
+caller leading to a failure print on the console. The REO command in
+the problem scenario is sent for all tids of a peer in which case we
+will have 16 failure prints on the console for a single peer. For an
+AP usecase, this count would be even higher in a worst case scenario.
+Since these commands are bound to fail during firmware recovery, it
+is better to avoid printing these failures and thereby avoid message
+flooding on the console.
 
-Fix this by resetting force to NO_FORCE, that way if we think we need to
-allocate we can, otherwise we don't force another chunk allocation if
-one is already happening.
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
 
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-CC: stable@vger.kernel.org # 5.4+
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 8ee8d38ca472 ("ath11k: Fix crash during firmware recovery on reo cmd ring access")
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220602122929.18896-1-quic_mpubbise@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/block-group.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
-index 667b7025d503..1deca5164c23 100644
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -3724,6 +3724,7 @@ int btrfs_chunk_alloc(struct btrfs_trans_handle *trans, u64 flags,
- 			 * attempt.
- 			 */
- 			wait_for_alloc = true;
-+			force = CHUNK_ALLOC_NO_FORCE;
- 			spin_unlock(&space_info->lock);
- 			mutex_lock(&fs_info->chunk_mutex);
- 			mutex_unlock(&fs_info->chunk_mutex);
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 049774cc158c..b3e133add1ce 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -835,8 +835,9 @@ void ath11k_peer_rx_tid_delete(struct ath11k *ar,
+ 					HAL_REO_CMD_UPDATE_RX_QUEUE, &cmd,
+ 					ath11k_dp_rx_tid_del_func);
+ 	if (ret) {
+-		ath11k_err(ar->ab, "failed to send HAL_REO_CMD_UPDATE_RX_QUEUE cmd, tid %d (%d)\n",
+-			   tid, ret);
++		if (ret != -ESHUTDOWN)
++			ath11k_err(ar->ab, "failed to send HAL_REO_CMD_UPDATE_RX_QUEUE cmd, tid %d (%d)\n",
++				   tid, ret);
+ 		dma_unmap_single(ar->ab->dev, rx_tid->paddr, rx_tid->size,
+ 				 DMA_BIDIRECTIONAL);
+ 		kfree(rx_tid->vaddr);
 -- 
 2.35.1
 
