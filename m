@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09454C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3D5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350471AbiHOWjd (ORCPT
+        id S1350521AbiHOWjr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        Mon, 15 Aug 2022 18:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349370AbiHOWcz (ORCPT
+        with ESMTP id S1349650AbiHOWdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:32:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A53F71726;
-        Mon, 15 Aug 2022 12:49:22 -0700 (PDT)
+        Mon, 15 Aug 2022 18:33:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CB712D2B9;
+        Mon, 15 Aug 2022 12:49:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B90C260FB5;
-        Mon, 15 Aug 2022 19:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACE3FC433C1;
-        Mon, 15 Aug 2022 19:48:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA356068D;
+        Mon, 15 Aug 2022 19:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C03C433D6;
+        Mon, 15 Aug 2022 19:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592930;
-        bh=qugEq5AH7Mw1dkYBi+7kXa7GsbL/C2gowS+hGLws7/U=;
+        s=korg; t=1660592952;
+        bh=RFhJ7oKbxaQZgjiYqpkKAEp72wMbCyf95ly99JkvQ/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mddXANWpv1PnJRCSTAdQtF8lms2EiM6RnY3w2EOfhX/kE9fYJNvh6MgVRy3Yyv5/I
-         RvMZcxM7gSxrnuP1veOXAs3KkB0rn6kUDpvx99SdAdhyG0fAg0JMaCkOHbuoncdZuK
-         8Qrm0hjVtBoPvZQP8hhCMMmSPunZQi78q77VM/58=
+        b=Nhb8g3A1+SA3nQiDgGLROhsQgLIxqe5Q5/I14C3bFAoi43FyKpMq7Sv5mKgzGo7cn
+         ejc4V+TrkyqVY+iP8wDkQ67ff0RC6dLVAZI7gOK4YjSsGAoztCPriIW8XotfFPndpX
+         oEi+TqwwT3jlA8kImZgzRMg2fyzqJ1ECqysCKqeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0859/1095] tty: n_gsm: fix packet re-transmission without open control channel
-Date:   Mon, 15 Aug 2022 20:04:18 +0200
-Message-Id: <20220815180504.871703687@linuxfoundation.org>
+Subject: [PATCH 5.18 0871/1095] tty: n_gsm: fix wrong T1 retry count handling
+Date:   Mon, 15 Aug 2022 20:04:30 +0200
+Message-Id: <20220815180505.409612638@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,36 +51,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 4fae831b3a71fc5a44cc5c7d0b8c1267ee7659f5 ]
+[ Upstream commit f30e10caa80aa1f35508bc17fc302dbbde9a833c ]
 
-In the current implementation control packets are re-transmitted even if
-the control channel closed down during T2. This is wrong.
-Check whether the control channel is open before re-transmitting any
-packets. Note that control channel open/close is handled by T1 and not T2
-and remains unaffected by this.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
+retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix gsm_dlci_t1() to comply with 3GPP 27.010.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220701061652.39604-7-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220707113223.3685-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 83ec596bba93..e95004217292 100644
+index 17927163790e..825c4b550ee0 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1532,7 +1532,7 @@ static void gsm_control_retransmit(struct timer_list *t)
- 	spin_lock_irqsave(&gsm->control_lock, flags);
- 	ctrl = gsm->pending_cmd;
- 	if (ctrl) {
--		if (gsm->cretries == 0) {
-+		if (gsm->cretries == 0 || !gsm->dlci[0] || gsm->dlci[0]->dead) {
- 			gsm->pending_cmd = NULL;
- 			ctrl->error = -ETIMEDOUT;
- 			ctrl->done = 1;
+@@ -1805,8 +1805,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 
+ 	switch (dlci->state) {
+ 	case DLCI_OPENING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+@@ -1821,8 +1821,8 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 
+ 		break;
+ 	case DLCI_CLOSING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else
 -- 
 2.35.1
 
