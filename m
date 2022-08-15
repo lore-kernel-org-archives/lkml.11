@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DF1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 546EBC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbiHOSAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
+        id S232105AbiHOSBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232721AbiHOR72 (ORCPT
+        with ESMTP id S232301AbiHOSAb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 13:59:28 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC1728E36
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 10:59:26 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id c9-20020a05660221c900b00688a5a621afso137626ioc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 10:59:26 -0700 (PDT)
+        Mon, 15 Aug 2022 14:00:31 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443F712AF7
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:00:29 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id t7-20020a6b6407000000b00684ed320f97so4590904iog.11
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:00:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=pc5WxU8NMnC+CnIzNPL1GwX0yvtsCVqhE7KfX+0SS/w=;
-        b=PqPkKsUd7vde7DCaM/Dwr2Qp7wkIF0QU3nmUFVZaOCZa8OUdATizWWcK2OSog0o7Am
-         H87hoDEjFQq/KWrW9ZS4HoI8RUHLeQEUa2kjINzUboZtu33tVGESlgXVDikq5gWPp7YV
-         tdgnPYrd3Lms1ZwIPAn/2QM6SHWEe1hRNMF3SNVlaNxQhjK95PUpqQAVFymCii7LB/gg
-         VkiwwBwDZnBTh9G0+lbbB809jiTL6GDhCJP+LAMpAEQvwHa7NLgg7NGfES09+BUxz3Qw
-         HDf84r1HhvpC1HdEn2/AeWbOGixVqfYkmTHeAbmvNjKBSdp7RB+Wt0SedJtunMl3G+lZ
-         YUAw==
-X-Gm-Message-State: ACgBeo0+plmghH3JrhXIzuniksK6dDQz5pYtBQ/E8WcCCNnZ/PoDQCUG
-        v6T5rWyMIpc3+XI8NEgtKJUsLnSelc+0Mybt5WCSiCiAeqzE
-X-Google-Smtp-Source: AA6agR7XNLSv+trWB7eGaaMeGYV48OHQ8WVQY5lpTMEJlKJLu6afFuOheCfxYnlH5qjQCSo5Jq7R1PaFAtbBO8eZhVwEZ4L6Ew1v
+        bh=YtpToKU6S1mKGIEzRazqNUn2SfKuWWw22c6k+Sd9uC8=;
+        b=483UxfeH/GDS+sotpqkbpm+HLXBCj23uB7VSS135uFD+QlFVF02hCQFXmzO4cvH4QX
+         tGQQuQvI0oYwmxoFHvgy4sF4anVwwDzt00mkmsBEo8BZ+YRrDuc+gKHW/bM+H7Xhb8xi
+         /q+SJYes6/NSBRKNNAr+0KJ1eZQ8BxJlh17lHAJumRnKrXb8RGJ/MxZ5aCM9+Y7ZEki8
+         1K4Lad4+Pi/Crb3o8/JvgfsXLgNXU3PSNhtTiLjdoaWZytNCG/HZBenWIrHu9qd4psEf
+         UNdYThfiON8L6mQRjnPKxbXH/H5xXcCS5rcdDwNSWrQD72R3aSfCz4T5bCicNJ1zD0pm
+         MSIA==
+X-Gm-Message-State: ACgBeo2UL8ZeiIWoK/I9Uuh2ApTbzVtPH3QhO/wQdsD10txpucfh8zAz
+        s5GP34Fx8f+MrRVH5wJcDSiAGu2ugumq2P8LlYg/gDCd4ZK0
+X-Google-Smtp-Source: AA6agR5b5dvdXe+ts8VwAH39aK0wM/YeVETAMtlg4elQ1w9J0nE1HEPe7wn8bPz1g65HG3B4p1jRLBxlN/cu+MoI9CYP+Vhyp1yA
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:dd1:b0:341:55c2:38b6 with SMTP id
- m17-20020a0566380dd100b0034155c238b6mr7809604jaj.245.1660586364483; Mon, 15
- Aug 2022 10:59:24 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 10:59:24 -0700
+X-Received: by 2002:a05:6e02:1c25:b0:2df:21fd:5a6b with SMTP id
+ m5-20020a056e021c2500b002df21fd5a6bmr7622010ilh.128.1660586429350; Mon, 15
+ Aug 2022 11:00:29 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:00:29 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fbed305e64b6440@google.com>
-Subject: [syzbot] upstream boot error: general protection fault in scsi_alloc_sdev
-From:   syzbot <syzbot+9ada839c852179f13999@syzkaller.appspotmail.com>
-To:     jejb@linux.ibm.com, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, martin.petersen@oracle.com,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000003d898a05e64b68bd@google.com>
+Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
+ request in copy_namespaces
+From:   syzbot <syzbot+2984d1b7aef6b51353f0@syzkaller.appspotmail.com>
+To:     avagin@gmail.com, brauner@kernel.org, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, shakeelb@google.com,
+        syzkaller-bugs@googlegroups.com, tkhai@ya.ru,
+        vasily.averin@linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -53,75 +55,82 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    568035b01cfb Linux 6.0-rc1
+HEAD commit:    5d6a0f4da927 Merge tag 'for-linus-6.0-rc1b-tag' of git://g..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17b23aa5080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
-dashboard link: https://syzkaller.appspot.com/bug?extid=9ada839c852179f13999
+console output: https://syzkaller.appspot.com/x/log.txt?x=1168343d080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6bcb425ba129b87
+dashboard link: https://syzkaller.appspot.com/bug?extid=2984d1b7aef6b51353f0
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9ada839c852179f13999@syzkaller.appspotmail.com
+Reported-by: syzbot+2984d1b7aef6b51353f0@syzkaller.appspotmail.com
 
-scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
-general protection fault, probably for non-canonical address 0xffff000000000800: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xfff8200000004000-0xfff8200000004007]
-CPU: 1 PID: 56 Comm: kworker/u4:4 Not tainted 6.0.0-rc1-syzkaller #0
+BUG: unable to handle page fault for address: ffffdc0000000013
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11826067 P4D 11826067 PUD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 11 Comm: kworker/u4:1 Not tainted 5.19.0-syzkaller-14374-g5d6a0f4da927 #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Workqueue: events_unbound async_run_entry_fn
-RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
-RIP: 0010:get_freepointer mm/slub.c:354 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:__kmalloc+0x113/0x340 mm/slub.c:4420
-Code: 8b 51 08 48 8b 01 48 83 79 10 00 48 89 44 24 08 0f 84 18 02 00 00 48 85 c0 0f 84 0f 02 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 1b 02 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0018:ffffc900015777f8 EFLAGS: 00010246
-
-RAX: ffff000000000000 RBX: ffff88801bd64000 RCX: 0000000000000800
-RDX: 0000000000005d09 RSI: 0000000000000dc0 RDI: 000000000003dce0
-RBP: ffff888011842140 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000dc0
-R13: 0000000000000000 R14: 0000000000000cb8 R15: 0000000000000dc0
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+Workqueue: events_unbound call_usermodehelper_exec_work
+RIP: 0010:copy_namespaces+0xe8/0x480 kernel/nsproxy.c:154
+Code: 0e 5f 2b 00 45 85 ed 0f 84 d4 01 00 00 e8 40 62 2b 00 49 8d bf 98 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 42 03 00 00 4d 8b bf 98 00 00 00 e8 32 ab 15 00
+RSP: 0000:ffffc90000107900 EFLAGS: 00010a02
+RAX: dffffc0000000000 RBX: ffff888020118000 RCX: 0000000000000000
+RDX: 1fffe00000000013 RSI: ffffffff8150a4b0 RDI: ffff000000000098
+RBP: ffff000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000808100
+R13: 0000000000000001 R14: ffff8880201188a0 R15: ffff000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000bc8e000 CR4: 0000000000350ee0
+CR2: ffffdc0000000013 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- kmalloc include/linux/slab.h:605 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- scsi_alloc_sdev+0x109/0xcc0 drivers/scsi/scsi_scan.c:287
- scsi_probe_and_add_lun+0x22be/0x3660 drivers/scsi/scsi_scan.c:1191
- __scsi_scan_target+0x21f/0xdb0 drivers/scsi/scsi_scan.c:1673
- scsi_scan_channel drivers/scsi/scsi_scan.c:1761 [inline]
- scsi_scan_channel+0x148/0x1e0 drivers/scsi/scsi_scan.c:1737
- scsi_scan_host_selected+0x2df/0x3b0 drivers/scsi/scsi_scan.c:1790
- do_scsi_scan_host+0x1e8/0x260 drivers/scsi/scsi_scan.c:1929
- do_scan_async+0x3e/0x500 drivers/scsi/scsi_scan.c:1939
- async_run_entry_fn+0x98/0x530 kernel/async.c:127
+ copy_process+0x305c/0x7090 kernel/fork.c:2259
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2673
+ user_mode_thread+0xad/0xe0 kernel/fork.c:2742
+ call_usermodehelper_exec_work kernel/umh.c:174 [inline]
+ call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
  process_one_work+0x991/0x1610 kernel/workqueue.c:2289
  worker_thread+0x665/0x1080 kernel/workqueue.c:2436
  kthread+0x2e4/0x3a0 kernel/kthread.c:376
  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
  </TASK>
 Modules linked in:
+CR2: ffffdc0000000013
+---[ end trace 0000000000000000 ]---
+RIP: 0010:copy_namespaces+0xe8/0x480 kernel/nsproxy.c:154
+Code: 0e 5f 2b 00 45 85 ed 0f 84 d4 01 00 00 e8 40 62 2b 00 49 8d bf 98 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 42 03 00 00 4d 8b bf 98 00 00 00 e8 32 ab 15 00
+RSP: 0000:ffffc90000107900 EFLAGS: 00010a02
+RAX: dffffc0000000000 RBX: ffff888020118000 RCX: 0000000000000000
+RDX: 1fffe00000000013 RSI: ffffffff8150a4b0 RDI: ffff000000000098
+RBP: ffff000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000808100
+R13: 0000000000000001 R14: ffff8880201188a0 R15: ffff000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdc0000000013 CR3: 000000000bc8e000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
-Code disassembly (best guess):
-   0:	8b 51 08             	mov    0x8(%rcx),%edx
-   3:	48 8b 01             	mov    (%rcx),%rax
-   6:	48 83 79 10 00       	cmpq   $0x0,0x10(%rcx)
-   b:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
-  10:	0f 84 18 02 00 00    	je     0x22e
-  16:	48 85 c0             	test   %rax,%rax
-  19:	0f 84 0f 02 00 00    	je     0x22e
-  1f:	48 8b 7d 00          	mov    0x0(%rbp),%rdi
-  23:	8b 4d 28             	mov    0x28(%rbp),%ecx
-  26:	40 f6 c7 0f          	test   $0xf,%dil
-* 2a:	48 8b 1c 08          	mov    (%rax,%rcx,1),%rbx <-- trapping instruction
-  2e:	0f 85 1b 02 00 00    	jne    0x24f
-  34:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
-  38:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
-  3d:	0f 94 c0             	sete   %al
+Code disassembly (best guess), 1 bytes skipped:
+   0:	5f                   	pop    %rdi
+   1:	2b 00                	sub    (%rax),%eax
+   3:	45 85 ed             	test   %r13d,%r13d
+   6:	0f 84 d4 01 00 00    	je     0x1e0
+   c:	e8 40 62 2b 00       	callq  0x2b6251
+  11:	49 8d bf 98 00 00 00 	lea    0x98(%r15),%rdi
+  18:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  1f:	fc ff df
+  22:	48 89 fa             	mov    %rdi,%rdx
+  25:	48 c1 ea 03          	shr    $0x3,%rdx
+* 29:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2d:	0f 85 42 03 00 00    	jne    0x375
+  33:	4d 8b bf 98 00 00 00 	mov    0x98(%r15),%r15
+  3a:	e8 32 ab 15 00       	callq  0x15ab71
 
 
 ---
