@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E568C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6A8C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243958AbiHOSsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        id S239939AbiHOSsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242674AbiHOSm4 (ORCPT
+        with ESMTP id S242868AbiHOSnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:42:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBAA2AE13;
-        Mon, 15 Aug 2022 11:26:32 -0700 (PDT)
+        Mon, 15 Aug 2022 14:43:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A21C2A7;
+        Mon, 15 Aug 2022 11:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DDB4B8107A;
-        Mon, 15 Aug 2022 18:26:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6F85C433D7;
-        Mon, 15 Aug 2022 18:26:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC47760FC4;
+        Mon, 15 Aug 2022 18:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D41C1C433C1;
+        Mon, 15 Aug 2022 18:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587990;
-        bh=aeRuvv4n+RQx3rdfldF9GjNSj+5s1DQan1L3wad8ZI0=;
+        s=korg; t=1660587996;
+        bh=2U69VoSm4UpXK3h1vY5AEo5exNg8mkLjEbQ48eUiu1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CdciEexMDv/p15jJBSIbcD2e8WyVHBEARv4NuMwlJCtQgkkuChN/b1zk/i0cBYAOI
-         UNA6SFCYZ/6A9LMuXwmZxVUo0o4Bf+vbbQ2bbz7cKFJ4tKjVQ638WPcomklc61x91M
-         +PjoccPDhFsrahQuNBJ7B0fLDOsZxgl1yuoqletU=
+        b=pa53CDpHF4y0KZvcvBKS+S8q1HS4WJwn2MQkXTqhImIiNsP8q4L2Y2IGgzUJbI7/T
+         d8snWy6KL2TV6WamgXq100KhCw4aAU6pVxwu/UN41h6LaBCwoE/zrVkBYroaHpHvuy
+         sBhjgbepsB66PcuqEcU7XEBvvCICcpgtfX9OGS24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 229/779] pwm: sifive: Ensure the clk is enabled exactly once per running PWM
-Date:   Mon, 15 Aug 2022 19:57:53 +0200
-Message-Id: <20220815180347.084421171@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Qiang <xuqiang36@huawei.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 221/779] irqdomain: Report irq number for NOMAP domains
+Date:   Mon, 15 Aug 2022 19:57:45 +0200
+Message-Id: <20220815180346.730050414@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,111 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Xu Qiang <xuqiang36@huawei.com>
 
-[ Upstream commit ace41d7564e655c39f709a78c035188a460c7cbd ]
+[ Upstream commit 6f194c99f466147148cc08452718b46664112548 ]
 
-.apply() assumes the clk to be for a given PWM iff the PWM is enabled.
-So make sure this is the case when .probe() completes. And in .remove()
-disable the according number of times.
+When using a NOMAP domain, __irq_resolve_mapping() doesn't store
+the Linux IRQ number at the address optionally provided by the caller.
+While this isn't a huge deal (the returned value is guaranteed
+to the hwirq that was passed as a parameter), let's honour the letter
+of the API by writing the expected value.
 
-This fixes a clk enable/disable imbalance, if some PWMs are already running
-at probe time.
-
-Fixes: 9e37a53eb051 (pwm: sifive: Add a driver for SiFive SoC PWM)
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Tested-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: d22558dd0a6c (“irqdomain: Introduce irq_resolve_mapping()”)
+Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
+[maz: commit message]
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220719063641.56541-2-xuqiang36@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-sifive.c | 46 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 37 insertions(+), 9 deletions(-)
+ kernel/irq/irqdomain.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
-index a55f7345dc87..3936fda53366 100644
---- a/drivers/pwm/pwm-sifive.c
-+++ b/drivers/pwm/pwm-sifive.c
-@@ -229,6 +229,8 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 	struct pwm_sifive_ddata *ddata;
- 	struct pwm_chip *chip;
- 	int ret;
-+	u32 val;
-+	unsigned int enabled_pwms = 0, enabled_clks = 1;
+diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+index 4d8fc65cf38f..035e3038c4de 100644
+--- a/kernel/irq/irqdomain.c
++++ b/kernel/irq/irqdomain.c
+@@ -910,6 +910,8 @@ struct irq_desc *__irq_resolve_mapping(struct irq_domain *domain,
+ 			data = irq_domain_get_irq_data(domain, hwirq);
+ 			if (data && data->hwirq == hwirq)
+ 				desc = irq_data_to_desc(data);
++			if (irq && desc)
++				*irq = hwirq;
+ 		}
  
- 	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
- 	if (!ddata)
-@@ -255,6 +257,33 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	val = readl(ddata->regs + PWM_SIFIVE_PWMCFG);
-+	if (val & PWM_SIFIVE_PWMCFG_EN_ALWAYS) {
-+		unsigned int i;
-+
-+		for (i = 0; i < chip->npwm; ++i) {
-+			val = readl(ddata->regs + PWM_SIFIVE_PWMCMP(i));
-+			if (val > 0)
-+				++enabled_pwms;
-+		}
-+	}
-+
-+	/* The clk should be on once for each running PWM. */
-+	if (enabled_pwms) {
-+		while (enabled_clks < enabled_pwms) {
-+			/* This is not expected to fail as the clk is already on */
-+			ret = clk_enable(ddata->clk);
-+			if (unlikely(ret)) {
-+				dev_err_probe(dev, ret, "Failed to enable clk\n");
-+				goto disable_clk;
-+			}
-+			++enabled_clks;
-+		}
-+	} else {
-+		clk_disable(ddata->clk);
-+		enabled_clks = 0;
-+	}
-+
- 	/* Watch for changes to underlying clock frequency */
- 	ddata->notifier.notifier_call = pwm_sifive_clock_notifier;
- 	ret = clk_notifier_register(ddata->clk, &ddata->notifier);
-@@ -277,7 +306,11 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- unregister_clk:
- 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
- disable_clk:
--	clk_disable_unprepare(ddata->clk);
-+	while (enabled_clks) {
-+		clk_disable(ddata->clk);
-+		--enabled_clks;
-+	}
-+	clk_unprepare(ddata->clk);
- 
- 	return ret;
- }
-@@ -285,21 +318,16 @@ static int pwm_sifive_probe(struct platform_device *pdev)
- static int pwm_sifive_remove(struct platform_device *dev)
- {
- 	struct pwm_sifive_ddata *ddata = platform_get_drvdata(dev);
--	bool is_enabled = false;
- 	struct pwm_device *pwm;
- 	int ch;
- 
- 	for (ch = 0; ch < ddata->chip.npwm; ch++) {
- 		pwm = &ddata->chip.pwms[ch];
--		if (pwm->state.enabled) {
--			is_enabled = true;
--			break;
--		}
-+		if (pwm->state.enabled)
-+			clk_disable(ddata->clk);
- 	}
--	if (is_enabled)
--		clk_disable(ddata->clk);
- 
--	clk_disable_unprepare(ddata->clk);
-+	clk_unprepare(ddata->clk);
- 	pwmchip_remove(&ddata->chip);
- 	clk_notifier_unregister(ddata->clk, &ddata->notifier);
- 
+ 		return desc;
 -- 
 2.35.1
 
