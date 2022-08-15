@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 264D5C25B06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDE3C00140
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 04:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240996AbiHOEPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 00:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
+        id S240851AbiHOEPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 00:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240604AbiHOEPW (ORCPT
+        with ESMTP id S240369AbiHOEPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 00:15:22 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCAC14085
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259AE14082
         for <linux-kernel@vger.kernel.org>; Sun, 14 Aug 2022 21:15:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1660536912; x=1692072912;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IDZAMF3H0jOJUSFvgSQfeFD1dZ2psaQLK4sileStRHs=;
-  b=GBIXTVBMC1mJPETz0E4WI9uAwJNGBy8dqLiM5IeaI7LZWDWlW97gRhcj
-   jjgKxaWfPDiXG1w5Hq9wHoG7qPcA8DouvsXFHTXntvXYMfcsQQY1N/vLH
-   ol3I70kB1AeMgBD4bdsESXLW20oBLl0QLKEri5v2IBHZ2e8ABpN8VxEeN
-   bmLHRdYZYyUmHjwiWTAsOw7DNlJazrCGzGOd0PuYqiXJN0VLS88euRDoM
-   lYhRiAPLhcLuqWl6UyN3d4y1N4jSpPkKXx+2eJdYwxSDEQARWF1Yqs/Ku
-   oJ03yF8THjxwYpTNU8dTQH4QMTggqzgr/dO/+aJeGfNNAO97YM9i6FLKn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="271658919"
+  bh=ds9Ls73+GWfzKa4/92sftksfxawt2Atz4orB+uMy8Go=;
+  b=fTyW3NyUKxRNDn80gH5c+6bBcs0MkJwUhE8vNsdjNO8cvnb+hImYrfLw
+   DcSn88hkFJTWPYWevZkmPw2Ew6IEvQDuGXeRsS9KU9EbudsDH3zSCa/qq
+   q60IwTT9PxtaG13GYOQ5HOvivFAPxPTaZvqLBAcB/U69N2F+/YDhMMiHP
+   A7DduYuFJq2HPb5VuCn26J/44yFZZqstFqn5/y3CGaLJM7ERvcwQye2pw
+   mZzVelQGhYZ/y3twtCIvj7YYsqVW77nGQ6ZYbIyMoWnZlhV4tOn7heM+v
+   nwDXVMvIAN+E07bGTx+RJMcPMp//HlsmgAWFIzfDm9FmN7W0P5WsUrsKU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="289455874"
 X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="271658919"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:12 -0700
+   d="scan'208";a="289455874"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:11 -0700
 X-IronPort-AV: E=Sophos;i="5.93,237,1654585200"; 
-   d="scan'208";a="635346906"
+   d="scan'208";a="557160547"
 Received: from dmalka-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.249.42.26])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:07 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 21:15:07 -0700
 Received: by box.shutemov.name (Postfix, from userid 1000)
-        id 9A162104A70; Mon, 15 Aug 2022 07:18:04 +0300 (+03)
+        id 71CB2104A6C; Mon, 15 Aug 2022 07:18:04 +0300 (+03)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -53,11 +53,10 @@ Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
         Andi Kleen <ak@linux.intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Weihong Zhang <weihong.zhang@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv6 11/11] selftests/x86/lam: Add inherit test cases for linear-address masking
-Date:   Mon, 15 Aug 2022 07:18:03 +0300
-Message-Id: <20220815041803.17954-12-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 07/11] x86: Expose untagging mask in /proc/$PID/arch_status
+Date:   Mon, 15 Aug 2022 07:17:59 +0300
+Message-Id: <20220815041803.17954-8-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
 References: <20220815041803.17954-1-kirill.shutemov@linux.intel.com>
@@ -67,213 +66,189 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weihong Zhang <weihong.zhang@intel.com>
+Add a line in /proc/$PID/arch_status to report untag_mask. It can be
+used to find out LAM status of the process from the outside. It is
+useful for debuggers.
 
-LAM is enabled per-thread and gets inherited on fork(2)/clone(2). exec()
-reverts LAM status to the default disabled state.
-
-There are two test scenarios:
-
- - Fork test cases:
-
-   These cases were used to test the inheritance of LAM for per-thread,
-   Child process generated by fork() should inherit LAM feature from
-   parent process, Child process can get the LAM mode same as parent
-   process.
-
- - Execve test cases:
-
-   Processes generated by execve() are different from processes
-   generated by fork(), these processes revert LAM status to disabled
-   status.
-
-Signed-off-by: Weihong Zhang <weihong.zhang@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Tested-by: Alexander Potapenko <glider@google.com>
 ---
- tools/testing/selftests/x86/lam.c | 123 +++++++++++++++++++++++++++++-
- 1 file changed, 120 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/mmu_context.h | 10 +++++
+ arch/x86/kernel/Makefile           |  2 +
+ arch/x86/kernel/fpu/xstate.c       | 47 -----------------------
+ arch/x86/kernel/proc.c             | 60 ++++++++++++++++++++++++++++++
+ 4 files changed, 72 insertions(+), 47 deletions(-)
+ create mode 100644 arch/x86/kernel/proc.c
 
-diff --git a/tools/testing/selftests/x86/lam.c b/tools/testing/selftests/x86/lam.c
-index 19208ba6047a..074fa0cd65ef 100644
---- a/tools/testing/selftests/x86/lam.c
-+++ b/tools/testing/selftests/x86/lam.c
-@@ -35,8 +35,9 @@
- #define FUNC_MMAP               0x4
- #define FUNC_SYSCALL            0x8
- #define FUNC_URING              0x10
-+#define FUNC_INHERITE           0x20
- 
--#define TEST_MASK               0x1f
-+#define TEST_MASK               0x3f
- 
- #define LOW_ADDR                (0x1UL << 30)
- #define HIGH_ADDR               (0x3UL << 48)
-@@ -169,6 +170,28 @@ static unsigned long get_default_tag_bits(void)
- 	return lam;
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+index 5bd3d46685dc..b0e9ea23758b 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -103,6 +103,11 @@ static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
+ 	mm->context.untag_mask = oldmm->context.untag_mask;
  }
  
-+/*
-+ * Set tagged address and read back untag mask.
-+ * check if the untag mask is expected.
-+ */
-+static int get_lam(void)
++static inline unsigned long mm_untag_mask(struct mm_struct *mm)
 +{
-+	uint64_t ptr = 0;
-+	int ret = -1;
-+	/* Get untagged mask */
-+	if (syscall(SYS_arch_prctl, ARCH_GET_UNTAG_MASK, &ptr) == -1)
-+		return -1;
-+
-+	/* Check mask returned is expected */
-+	if (ptr == ~(0x3fULL << 57))
-+		ret = LAM_U57_BITS;
-+	else if (ptr == -1ULL)
-+		ret = LAM_NONE;
-+
-+
-+	return ret;
++	return mm->context.untag_mask;
 +}
 +
- /* According to LAM mode, set metadata in high bits */
- static uint64_t get_metadata(uint64_t src, unsigned long lam)
+ static inline void mm_reset_untag_mask(struct mm_struct *mm)
  {
-@@ -623,6 +646,72 @@ static int fork_test(struct testcases *test)
- 	return ret;
+ 	mm->context.untag_mask = -1UL;
+@@ -119,6 +124,11 @@ static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
+ {
  }
  
-+static int handle_execve(struct testcases *test)
++static inline unsigned long mm_untag_mask(struct mm_struct *mm)
 +{
-+	int ret, child_ret;
-+	int lam = test->lam;
-+	pid_t pid;
-+
-+	pid = fork();
-+	if (pid < 0) {
-+		perror("Fork failed.");
-+		ret = 1;
-+	} else if (pid == 0) {
-+		char path[PATH_MAX];
-+
-+		/* Set LAM mode in parent process */
-+		if (set_lam(lam) != 0)
-+			return 1;
-+
-+		/* Get current binary's path and the binary was run by execve */
-+		if (readlink("/proc/self/exe", path, PATH_MAX) <= 0)
-+			exit(-1);
-+
-+		/* run binary to get LAM mode and return to parent process */
-+		if (execlp(path, path, "-t 0x0", NULL) < 0) {
-+			perror("error on exec");
-+			exit(-1);
-+		}
-+	} else {
-+		wait(&child_ret);
-+		ret = WEXITSTATUS(child_ret);
-+		if (ret != LAM_NONE)
-+			return 1;
-+	}
-+
-+	return 0;
++	return -1UL;
 +}
 +
-+static int handle_inheritance(struct testcases *test)
-+{
-+	int ret, child_ret;
-+	int lam = test->lam;
-+	pid_t pid;
-+
-+	/* Set LAM mode in parent process */
-+	if (set_lam(lam) != 0)
-+		return 1;
-+
-+	pid = fork();
-+	if (pid < 0) {
-+		perror("Fork failed.");
-+		return 1;
-+	} else if (pid == 0) {
-+		/* Set LAM mode in parent process */
-+		int child_lam = get_lam();
-+
-+		exit(child_lam);
-+	} else {
-+		wait(&child_ret);
-+		ret = WEXITSTATUS(child_ret);
-+
-+		if (lam != ret)
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
- static void run_test(struct testcases *test, int count)
+ static inline void mm_reset_untag_mask(struct mm_struct *mm)
  {
- 	int i, ret = 0;
-@@ -724,11 +813,26 @@ static struct testcases mmap_cases[] = {
- 	},
- };
- 
-+static struct testcases inheritance_cases[] = {
-+	{
-+		.expected = 0,
-+		.lam = LAM_U57_BITS,
-+		.test_func = handle_inheritance,
-+		.msg = "FORK: LAM_U57, child process should get LAM mode same as parent\n",
-+	},
-+	{
-+		.expected = 0,
-+		.lam = LAM_U57_BITS,
-+		.test_func = handle_execve,
-+		.msg = "EXECVE: LAM_U57, child process should get disabled LAM mode\n",
-+	},
-+};
-+
- static void cmd_help(void)
- {
- 	printf("usage: lam [-h] [-t test list]\n");
- 	printf("\t-t test list: run tests specified in the test list, default:0x%x\n", TEST_MASK);
--	printf("\t\t0x1:malloc; 0x2:max_bits; 0x4:mmap; 0x8:syscall; 0x10:io_uring.\n");
-+	printf("\t\t0x1:malloc; 0x2:max_bits; 0x4:mmap; 0x8:syscall; 0x10:io_uring; 0x20:inherit;\n");
- 	printf("\t-h: help\n");
  }
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index a20a5ebfacd7..fada0e36031b 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -139,6 +139,8 @@ obj-$(CONFIG_UNWINDER_GUESS)		+= unwind_guess.o
  
-@@ -748,7 +852,7 @@ int main(int argc, char **argv)
- 		switch (c) {
- 		case 't':
- 			tests = strtoul(optarg, NULL, 16);
--			if (!(tests & TEST_MASK)) {
-+			if (tests && !(tests & TEST_MASK)) {
- 				ksft_print_msg("Invalid argument!\n");
- 				return -1;
- 			}
-@@ -762,6 +866,16 @@ int main(int argc, char **argv)
- 		}
+ obj-$(CONFIG_AMD_MEM_ENCRYPT)		+= sev.o
+ 
++obj-$(CONFIG_PROC_FS)			+= proc.o
++
+ ###
+ # 64 bit specific files
+ ifeq ($(CONFIG_X86_64),y)
+diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+index c8340156bfd2..838a6f0627fd 100644
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -10,8 +10,6 @@
+ #include <linux/mman.h>
+ #include <linux/nospec.h>
+ #include <linux/pkeys.h>
+-#include <linux/seq_file.h>
+-#include <linux/proc_fs.h>
+ #include <linux/vmalloc.h>
+ 
+ #include <asm/fpu/api.h>
+@@ -1745,48 +1743,3 @@ long fpu_xstate_prctl(int option, unsigned long arg2)
+ 		return -EINVAL;
  	}
- 
+ }
+-
+-#ifdef CONFIG_PROC_PID_ARCH_STATUS
+-/*
+- * Report the amount of time elapsed in millisecond since last AVX512
+- * use in the task.
+- */
+-static void avx512_status(struct seq_file *m, struct task_struct *task)
+-{
+-	unsigned long timestamp = READ_ONCE(task->thread.fpu.avx512_timestamp);
+-	long delta;
+-
+-	if (!timestamp) {
+-		/*
+-		 * Report -1 if no AVX512 usage
+-		 */
+-		delta = -1;
+-	} else {
+-		delta = (long)(jiffies - timestamp);
+-		/*
+-		 * Cap to LONG_MAX if time difference > LONG_MAX
+-		 */
+-		if (delta < 0)
+-			delta = LONG_MAX;
+-		delta = jiffies_to_msecs(delta);
+-	}
+-
+-	seq_put_decimal_ll(m, "AVX512_elapsed_ms:\t", delta);
+-	seq_putc(m, '\n');
+-}
+-
+-/*
+- * Report architecture specific information
+- */
+-int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
+-			struct pid *pid, struct task_struct *task)
+-{
+-	/*
+-	 * Report AVX512 state if the processor and build option supported.
+-	 */
+-	if (cpu_feature_enabled(X86_FEATURE_AVX512F))
+-		avx512_status(m, task);
+-
+-	return 0;
+-}
+-#endif /* CONFIG_PROC_PID_ARCH_STATUS */
+diff --git a/arch/x86/kernel/proc.c b/arch/x86/kernel/proc.c
+new file mode 100644
+index 000000000000..9765b4d05ce4
+--- /dev/null
++++ b/arch/x86/kernel/proc.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <linux/proc_fs.h>
++#include <linux/sched/mm.h>
++#include <linux/seq_file.h>
++#include <uapi/asm/prctl.h>
++#include <asm/mmu_context.h>
++
++/*
++ * Report the amount of time elapsed in millisecond since last AVX512
++ * use in the task.
++ */
++static void avx512_status(struct seq_file *m, struct task_struct *task)
++{
++	unsigned long timestamp = READ_ONCE(task->thread.fpu.avx512_timestamp);
++	long delta;
++
++	if (!timestamp) {
++		/*
++		 * Report -1 if no AVX512 usage
++		 */
++		delta = -1;
++	} else {
++		delta = (long)(jiffies - timestamp);
++		/*
++		 * Cap to LONG_MAX if time difference > LONG_MAX
++		 */
++		if (delta < 0)
++			delta = LONG_MAX;
++		delta = jiffies_to_msecs(delta);
++	}
++
++	seq_put_decimal_ll(m, "AVX512_elapsed_ms:\t", delta);
++	seq_putc(m, '\n');
++}
++
++/*
++ * Report architecture specific information
++ */
++int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
++			struct pid *pid, struct task_struct *task)
++{
++	struct mm_struct *mm;
++	unsigned long untag_mask = -1UL;
++
 +	/*
-+	 * When tests is 0, it is not a real test case;
-+	 * the option used by test case(execve) to check the lam mode in
-+	 * process generated by execve, the process read back lam mode and
-+	 * check with lam mode in parent process.
++	 * Report AVX512 state if the processor and build option supported.
 +	 */
-+	if (!tests)
-+		return (get_lam());
++	if (cpu_feature_enabled(X86_FEATURE_AVX512F))
++		avx512_status(m, task);
 +
-+	/* Run test cases */
- 	if (tests & FUNC_MALLOC)
- 		run_test(malloc_cases, ARRAY_SIZE(malloc_cases));
- 
-@@ -777,6 +891,9 @@ int main(int argc, char **argv)
- 	if (tests & FUNC_URING)
- 		run_test(uring_cases, ARRAY_SIZE(uring_cases));
- 
-+	if (tests & FUNC_INHERITE)
-+		run_test(inheritance_cases, ARRAY_SIZE(inheritance_cases));
++	mm = get_task_mm(task);
++	if (mm) {
++		untag_mask = mm_untag_mask(task->mm);
++		mmput(mm);
++	}
 +
- 	ksft_set_plan(tests_cnt);
- 
- 	return ksft_exit_pass();
++	seq_printf(m, "untag_mask:\t%#lx\n", untag_mask);
++
++	return 0;
++}
 -- 
 2.35.1
 
