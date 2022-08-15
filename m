@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E328DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A1DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233157AbiHOUEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
+        id S232220AbiHOUE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241793AbiHOUES (ORCPT
+        with ESMTP id S232283AbiHOUE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:04:18 -0400
+        Mon, 15 Aug 2022 16:04:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A553F7E81F;
-        Mon, 15 Aug 2022 11:54:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9197E332;
+        Mon, 15 Aug 2022 11:54:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 895B4B810A4;
-        Mon, 15 Aug 2022 18:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC809C43470;
-        Mon, 15 Aug 2022 18:54:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76B00B81057;
+        Mon, 15 Aug 2022 18:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7D7C433C1;
+        Mon, 15 Aug 2022 18:54:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589667;
-        bh=uZyPPgotAGd7RCkMIzeaOQViKLRTRkhZOvqxuCGRMrk=;
+        s=korg; t=1660589661;
+        bh=0WIsGfkGmo3rleNMjmcotW8pvToMNo8P/dtxwlRRp4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yqbPkBoVCssLXlDAkxF+hrxfjHBtTz3p54Uoz8tQXdxelO1CDYSqH8aioxpPXAro+
-         A4s7SiXXFqUPtzLOOvCG5E/tbRmkytOguAMFXrAwdvoy7oZ2UuKv5sN/YJKdOY6Fr4
-         9D62vXKKqPYHcLKiyHj5GrUEDgMxXx1ku+W4LKks=
+        b=QcDtOO0RLbnHCP/3R/SswllSeLN9c8+A63MA11kO6s8aYE/c4Y1hHm5CN4IwSRNwm
+         1G2b+snJXXdOjSB5UDA3C1s6FmFcokCI1r6LcgrOxS1WuMF7pSb9Szo/Ev2pEKCBic
+         oyWuZz+NUwAlbELnpGWEOkpdVVbKJgHdY10n3uZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ivan Hasenkampf <ivan.hasenkampf@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 0011/1095] ALSA: hda/realtek: Add quirk for HP Spectre x360 15-eb0xxx
-Date:   Mon, 15 Aug 2022 19:50:10 +0200
-Message-Id: <20220815180429.789553229@linuxfoundation.org>
+        stable@vger.kernel.org, Fangrui Song <maskray@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 0001/1095] Makefile: link with -z noexecstack --no-warn-rwx-segments
+Date:   Mon, 15 Aug 2022 19:50:00 +0200
+Message-Id: <20220815180429.333167455@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,33 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Hasenkampf <ivan.hasenkampf@gmail.com>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-commit 24df5428ef9d1ca1edd54eca7eb667110f2dfae3 upstream.
+commit 0d362be5b14200b77ecc2127936a5ff82fbffe41 upstream.
 
-Fixes speaker output on HP Spectre x360 15-eb0xxx
+Users of GNU ld (BFD) from binutils 2.39+ will observe multiple
+instances of a new warning when linking kernels in the form:
 
-[ re-sorted in SSID order by tiwai ]
+  ld: warning: vmlinux: missing .note.GNU-stack section implies executable stack
+  ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+  ld: warning: vmlinux has a LOAD segment with RWX permissions
 
-Signed-off-by: Ivan Hasenkampf <ivan.hasenkampf@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220803164001.290394-1-ivan.hasenkampf@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Generally, we would like to avoid the stack being executable.  Because
+there could be a need for the stack to be executable, assembler sources
+have to opt-in to this security feature via explicit creation of the
+.note.GNU-stack feature (which compilers create by default) or command
+line flag --noexecstack.  Or we can simply tell the linker the
+production of such sections is irrelevant and to link the stack as
+--noexecstack.
+
+LLVM's LLD linker defaults to -z noexecstack, so this flag isn't
+strictly necessary when linking with LLD, only BFD, but it doesn't hurt
+to be explicit here for all linkers IMO.  --no-warn-rwx-segments is
+currently BFD specific and only available in the current latest release,
+so it's wrapped in an ld-option check.
+
+While the kernel makes extensive usage of ELF sections, it doesn't use
+permissions from ELF segments.
+
+Link: https://lore.kernel.org/linux-block/3af4127a-f453-4cf7-f133-a181cce06f73@kernel.dk/
+Link: https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+Link: https://github.com/llvm/llvm-project/issues/57009
+Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    2 ++
- 1 file changed, 2 insertions(+)
+ Makefile |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9096,6 +9096,8 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x861f, "HP Elite Dragonfly G1", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x869d, "HP", ALC236_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x86c7, "HP Envy AiO 32", ALC274_FIXUP_HP_ENVY_GPIO),
-+	SND_PCI_QUIRK(0x103c, 0x86e7, "HP Spectre x360 15-eb0xxx", ALC285_FIXUP_HP_SPECTRE_X360_EB1),
-+	SND_PCI_QUIRK(0x103c, 0x86e8, "HP Spectre x360 15-eb0xxx", ALC285_FIXUP_HP_SPECTRE_X360_EB1),
- 	SND_PCI_QUIRK(0x103c, 0x8716, "HP Elite Dragonfly G2 Notebook PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8720, "HP EliteBook x360 1040 G8 Notebook PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8724, "HP EliteBook 850 G7", ALC285_FIXUP_HP_GPIO_LED),
+--- a/Makefile
++++ b/Makefile
+@@ -1031,6 +1031,11 @@ KBUILD_CFLAGS   += $(KCFLAGS)
+ KBUILD_LDFLAGS_MODULE += --build-id=sha1
+ LDFLAGS_vmlinux += --build-id=sha1
+ 
++KBUILD_LDFLAGS	+= -z noexecstack
++ifeq ($(CONFIG_LD_IS_BFD),y)
++KBUILD_LDFLAGS	+= $(call ld-option,--no-warn-rwx-segments)
++endif
++
+ ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
+ LDFLAGS_vmlinux	+= $(call ld-option, -X,)
+ endif
 
 
