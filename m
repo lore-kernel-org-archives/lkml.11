@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4A1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8545CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350281AbiHOVwj (ORCPT
+        id S1350302AbiHOVwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59780 "EHLO
+        Mon, 15 Aug 2022 17:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350288AbiHOVrg (ORCPT
+        with ESMTP id S1350292AbiHOVrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5262B634;
-        Mon, 15 Aug 2022 12:31:42 -0700 (PDT)
+        Mon, 15 Aug 2022 17:47:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1541F5FAEF;
+        Mon, 15 Aug 2022 12:31:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B3A660EF0;
-        Mon, 15 Aug 2022 19:31:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14821C433D6;
-        Mon, 15 Aug 2022 19:31:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C33BAB81062;
+        Mon, 15 Aug 2022 19:31:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA91C433D6;
+        Mon, 15 Aug 2022 19:31:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591901;
-        bh=hVge2b40hrymoACoRoPHQOleTSb2rRVyOkW4WS8IgBU=;
+        s=korg; t=1660591904;
+        bh=/EF4z/uxQCTHAXnRvEbMiDLRJBQ1km36r9FTaXO2r6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=flowuNYV4yBgInJ337f2gvVlvXmifOFo25pJCEgtTdcDjPynuoJxGV8Sdgp5MXEr+
-         pioZFHeCVmIhBdVp9zkjaSWeGXT/awRh1KaNZMK0uBM7ArOEI4mwbtjHzgwYBGY+JI
-         4AeTbtYLJSsr2X4Gw8fnAofHBmhtQGTbrZLTQ134=
+        b=RXdftRpWbl17hiPcXdmt4fYEW5d9yykT1ix5sVgCrchwKrEd3lsTTtSioPb3i75GQ
+         F5c9F1WeoKR2sCc0jOaLC6aTktSSLaQ6siM5AhhwCEee8LCj0mQkvFtYj+/+aEcOt1
+         7KqxS1KyYy4CsqK1qjBhDFiRrj+CKSWWc4GT2ZgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.19 0028/1157] KVM: Put the extra pfn reference when reusing a pfn in the gpc cache
-Date:   Mon, 15 Aug 2022 19:49:44 +0200
-Message-Id: <20220815180440.551008180@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0702/1095] clk: qcom: gcc-msm8939: Add missing system_mm_noc_bfdcd_clk_src
+Date:   Mon, 15 Aug 2022 20:01:41 +0200
+Message-Id: <20220815180458.406405612@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit 3dddf65b4f4c451c345d34ae85bdf1791a746e49 upstream.
+[ Upstream commit dd363e2f7196278e7a30f509a0e8a841cb763b14 ]
 
-Put the struct page reference to pfn acquired by hva_to_pfn() when the
-old and new pfns for a gfn=>pfn cache match.  The cache already has a
-reference via the old/current pfn, and will only put one reference when
-the cache is done with the pfn.
+The msm8939 has an additional higher operating point for the multi-media
+peripherals. The higher throughput MM componets operate off of the
+system-mm noc not the system noc.
 
-Fixes: 982ed0de4753 ("KVM: Reinstate gfn_to_pfn_cache with invalidation support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220429210025.3293691-5-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+system_mm_noc_bfdcd_clk_src is the source clock for the higher frequency
+capable system noc mm.
+
+Maximum frequency for the MM SNOC is 400 MHz.
+
+Fixes: 1664014e4679 ("clk: qcom: gcc-msm8939: Add MSM8939 Generic Clock Controller")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220504163835.40130-4-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/pfncache.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/clk/qcom/gcc-msm8939.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/virt/kvm/pfncache.c
-+++ b/virt/kvm/pfncache.c
-@@ -206,6 +206,14 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+diff --git a/drivers/clk/qcom/gcc-msm8939.c b/drivers/clk/qcom/gcc-msm8939.c
+index 31568658d23d..12bab9067ea8 100644
+--- a/drivers/clk/qcom/gcc-msm8939.c
++++ b/drivers/clk/qcom/gcc-msm8939.c
+@@ -644,6 +644,18 @@ static struct clk_rcg2 bimc_ddr_clk_src = {
+ 	},
+ };
  
- 		if (gpc->usage & KVM_HOST_USES_PFN) {
- 			if (new_pfn == old_pfn) {
-+				/*
-+				 * Reuse the existing pfn and khva, but put the
-+				 * reference acquired hva_to_pfn_retry(); the
-+				 * cache still holds a reference to the pfn
-+				 * from the previous refresh.
-+				 */
-+				gpc_release_pfn_and_khva(kvm, new_pfn, NULL);
++static struct clk_rcg2 system_mm_noc_bfdcd_clk_src = {
++	.cmd_rcgr = 0x2600c,
++	.hid_width = 5,
++	.parent_map = gcc_xo_gpll0_gpll6a_map,
++	.clkr.hw.init = &(struct clk_init_data){
++		.name = "system_mm_noc_bfdcd_clk_src",
++		.parent_data = gcc_xo_gpll0_gpll6a_parent_data,
++		.num_parents = 3,
++		.ops = &clk_rcg2_ops,
++	},
++};
 +
- 				new_khva = old_khva;
- 				old_pfn = KVM_PFN_ERR_FAULT;
- 				old_khva = NULL;
+ static const struct freq_tbl ftbl_gcc_camss_ahb_clk[] = {
+ 	F(40000000, P_GPLL0, 10, 1, 2),
+ 	F(80000000, P_GPLL0, 10, 0, 0),
+@@ -3623,6 +3635,7 @@ static struct clk_regmap *gcc_msm8939_clocks[] = {
+ 	[GPLL2_VOTE] = &gpll2_vote,
+ 	[PCNOC_BFDCD_CLK_SRC] = &pcnoc_bfdcd_clk_src.clkr,
+ 	[SYSTEM_NOC_BFDCD_CLK_SRC] = &system_noc_bfdcd_clk_src.clkr,
++	[SYSTEM_MM_NOC_BFDCD_CLK_SRC] = &system_mm_noc_bfdcd_clk_src.clkr,
+ 	[CAMSS_AHB_CLK_SRC] = &camss_ahb_clk_src.clkr,
+ 	[APSS_AHB_CLK_SRC] = &apss_ahb_clk_src.clkr,
+ 	[CSI0_CLK_SRC] = &csi0_clk_src.clkr,
+-- 
+2.35.1
+
 
 
