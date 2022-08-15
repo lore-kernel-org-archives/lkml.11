@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B54C2BB43
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1872DC2BB41
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355388AbiHOXwC (ORCPT
+        id S1355233AbiHOXvm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
+        Mon, 15 Aug 2022 19:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354816AbiHOXq2 (ORCPT
+        with ESMTP id S1355123AbiHOXrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:46:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062D6C0B72;
-        Mon, 15 Aug 2022 13:14:51 -0700 (PDT)
+        Mon, 15 Aug 2022 19:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCC88C020;
+        Mon, 15 Aug 2022 13:15:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98FCDB80EA9;
-        Mon, 15 Aug 2022 20:14:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC623C433C1;
-        Mon, 15 Aug 2022 20:14:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EEF06069F;
+        Mon, 15 Aug 2022 20:15:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB52C433C1;
+        Mon, 15 Aug 2022 20:15:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594488;
-        bh=Dor7/W3ES3QsiTFumcjQzHudAmM9Yj25fTUrxd5js+s=;
+        s=korg; t=1660594519;
+        bh=kdc5HuFAFYp4Arr4949hQSaFEZ+/ws9O0bBEGlivX/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mhUg9RUObj5uLh574YPfHiuFZiMc8IbfL70m9gXJHudmrKgfhgzuaFcb3JmG+eZGq
-         jxVYeiPIb/NedkrCcoqx5svtkjJgrTyGEmtYMi+IpzNc0eA26b1VR38VH+VCPvDGrp
-         oCM8yO13gavHnk6Zb16pYnyKwI4jQQVXBhSR8590=
+        b=QgCpAtYcW6oEwt8usTKRTRjzCwWIICeAeJGt2HrGLFTY5JnWnst9jBKoqvyXB1suH
+         0eJveydUBoWW+ymVfw5dgAdIVLDjlFByYw0BLXS96UmTYHK7blZuvsj/Pwlx0q9bpI
+         9kNeT6SxHs+UeXwG60euEoai4hf5K7R05uqqMBQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Qian <ming.qian@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0463/1157] media: amphion: defer setting last_buffer_dequeued until resolution changes are processed
-Date:   Mon, 15 Aug 2022 19:56:59 +0200
-Message-Id: <20220815180458.136446630@linuxfoundation.org>
+Subject: [PATCH 5.19 0472/1157] mt76: mt7921: not support beacon offload disable command
+Date:   Mon, 15 Aug 2022 19:57:08 +0200
+Message-Id: <20220815180458.487674833@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,133 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit afba6e20801ad9a2f863c52c21e609e021269d83 ]
+[ Upstream commit c149d3a9058616ff942a6e44b6e968e18a84dd5a ]
 
-Don't set last_buffer_dequeued during dynamic resolution change,
-otherwise it may be cleared in handling resolution change,
-as streamoff may be called in dynamic resolution change.
+Beacon disable flow would be handled in bss stop handler automatically.
+Force return -EOPNOTSUPP in disable case.
 
-Normally, this does not happen.
-But we encounter a special testcase,
-User issue V4L2_DEC_CMD_STOP after enqueue one buffer
-that only contains codec config header, but not any frame data.
-So VPU report the parsed resolution, then report the eos event.
-
-So driver should notify user to handle resolution change first,
-after it's handled, set the last_buffer_dequeued.
-then the user can exit decoding normally.
-
-Otherwise the user may be stalled.
-
-Fixes: 6de8d628df6ef ("media: amphion: add v4l2 m2m vpu decoder stateful driver")
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 116c69603b01 ("mt76: mt7921: Add AP mode support")
+Reviewed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/amphion/vdec.c     | 36 ++++++++++++++---------
- drivers/media/platform/amphion/vpu_v4l2.c |  2 +-
- 2 files changed, 23 insertions(+), 15 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/mcu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
-index 3c02aa2a54aa..a5bb997b000b 100644
---- a/drivers/media/platform/amphion/vdec.c
-+++ b/drivers/media/platform/amphion/vdec.c
-@@ -178,16 +178,6 @@ static int vdec_ctrl_init(struct vpu_inst *inst)
- 	return 0;
- }
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+index 71cbb9073485..3765b345b741 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -1256,8 +1256,11 @@ mt7921_mcu_uni_add_beacon_offload(struct mt7921_dev *dev,
+ 	};
+ 	struct sk_buff *skb;
  
--static void vdec_set_last_buffer_dequeued(struct vpu_inst *inst)
--{
--	struct vdec_t *vdec = inst->priv;
--
--	if (vdec->eos_received) {
--		if (!vpu_set_last_buffer_dequeued(inst))
--			vdec->eos_received--;
--	}
--}
--
- static void vdec_handle_resolution_change(struct vpu_inst *inst)
- {
- 	struct vdec_t *vdec = inst->priv;
-@@ -234,6 +224,21 @@ static int vdec_update_state(struct vpu_inst *inst, enum vpu_codec_state state,
- 	return 0;
- }
++	/* support enable/update process only
++	 * disable flow would be handled in bss stop handler automatically
++	 */
+ 	if (!enable)
+-		goto out;
++		return -EOPNOTSUPP;
  
-+static void vdec_set_last_buffer_dequeued(struct vpu_inst *inst)
-+{
-+	struct vdec_t *vdec = inst->priv;
-+
-+	if (inst->state == VPU_CODEC_STATE_DYAMIC_RESOLUTION_CHANGE)
-+		return;
-+
-+	if (vdec->eos_received) {
-+		if (!vpu_set_last_buffer_dequeued(inst)) {
-+			vdec->eos_received--;
-+			vdec_update_state(inst, VPU_CODEC_STATE_DRAIN, 0);
-+		}
-+	}
-+}
-+
- static int vdec_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
- {
- 	strscpy(cap->driver, "amphion-vpu", sizeof(cap->driver));
-@@ -493,6 +498,8 @@ static int vdec_drain(struct vpu_inst *inst)
- 
- static int vdec_cmd_start(struct vpu_inst *inst)
- {
-+	struct vdec_t *vdec = inst->priv;
-+
- 	switch (inst->state) {
- 	case VPU_CODEC_STATE_STARTED:
- 	case VPU_CODEC_STATE_DRAIN:
-@@ -503,6 +510,8 @@ static int vdec_cmd_start(struct vpu_inst *inst)
- 		break;
+ 	skb = ieee80211_beacon_get_template(mt76_hw(dev), vif, &offs);
+ 	if (!skb)
+@@ -1283,7 +1286,6 @@ mt7921_mcu_uni_add_beacon_offload(struct mt7921_dev *dev,
  	}
- 	vpu_process_capture_buffer(inst);
-+	if (vdec->eos_received)
-+		vdec_set_last_buffer_dequeued(inst);
- 	return 0;
+ 	dev_kfree_skb(skb);
+ 
+-out:
+ 	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD(BSS_INFO_UPDATE),
+ 				 &req, sizeof(req), true);
  }
- 
-@@ -1203,7 +1212,6 @@ static void vdec_event_eos(struct vpu_inst *inst)
- 	vdec->eos_received++;
- 	vdec->fixed_fmt = false;
- 	inst->min_buffer_cap = VDEC_MIN_BUFFER_CAP;
--	vdec_update_state(inst, VPU_CODEC_STATE_DRAIN, 0);
- 	vdec_set_last_buffer_dequeued(inst);
- 	vpu_inst_unlock(inst);
- }
-@@ -1480,10 +1488,10 @@ static int vdec_stop_session(struct vpu_inst *inst, u32 type)
- 		vdec_update_state(inst, VPU_CODEC_STATE_SEEK, 0);
- 		vdec->drain = 0;
- 	} else {
--		if (inst->state != VPU_CODEC_STATE_DYAMIC_RESOLUTION_CHANGE)
-+		if (inst->state != VPU_CODEC_STATE_DYAMIC_RESOLUTION_CHANGE) {
- 			vdec_abort(inst);
--
--		vdec->eos_received = 0;
-+			vdec->eos_received = 0;
-+		}
- 		vdec_clear_slots(inst);
- 	}
- 
-diff --git a/drivers/media/platform/amphion/vpu_v4l2.c b/drivers/media/platform/amphion/vpu_v4l2.c
-index da455e5ab337..8a3eed957ae6 100644
---- a/drivers/media/platform/amphion/vpu_v4l2.c
-+++ b/drivers/media/platform/amphion/vpu_v4l2.c
-@@ -500,8 +500,8 @@ static int vpu_vb2_start_streaming(struct vb2_queue *q, unsigned int count)
- 		  fmt->sizeimage[1], fmt->bytesperline[1],
- 		  fmt->sizeimage[2], fmt->bytesperline[2],
- 		  q->num_buffers);
--	ret = call_vop(inst, start, q->type);
- 	vb2_clear_last_buffer_dequeued(q);
-+	ret = call_vop(inst, start, q->type);
- 	if (ret)
- 		vpu_vb2_buffers_return(inst, q->type, VB2_BUF_STATE_QUEUED);
- 
 -- 
 2.35.1
 
