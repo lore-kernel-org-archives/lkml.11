@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580C3C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58CCC25B0E
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348254AbiHOUcW (ORCPT
+        id S1348285AbiHOUc0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        Mon, 15 Aug 2022 16:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347738AbiHOU0d (ORCPT
+        with ESMTP id S1347847AbiHOU0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:26:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F219DFA8;
-        Mon, 15 Aug 2022 12:03:40 -0700 (PDT)
+        Mon, 15 Aug 2022 16:26:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DD99DB67;
+        Mon, 15 Aug 2022 12:03:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E41F761299;
-        Mon, 15 Aug 2022 19:03:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C00C433D7;
-        Mon, 15 Aug 2022 19:03:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFDD0B81109;
+        Mon, 15 Aug 2022 19:03:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D8DC433C1;
+        Mon, 15 Aug 2022 19:03:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590207;
-        bh=pMLp0+qYNKEIUa9AGUAmCf0y2RNO1+e4eW/XAxC26Kg=;
+        s=korg; t=1660590222;
+        bh=4za+avW1T/NnoFjLu6YyZVhW3X3P6uxrYzP7gGEKha0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JbL9p6j4Cn0XwGsSWa21uXcOIMhAPMn0nMfW35ay8rAo8fpUYPCjYpaR+TIrBU6sE
-         gl6RCpvWKQB6G1Vi0EMKW7Jxc/OFXQiDhDpVNjHHuZpzvym4fsf8wLxE1pBmK4iDaU
-         asKUB/ZJLxLVo/tyVGgHw+7gbYf8XuLOgKwhMQwo=
+        b=QpMOrj+eOG+3KO0qEOh0OA3j12LexheuouoYOwDqtMkfTuj1lpPOu6nJD6ubRyf75
+         /hXR5naac8huV+zkFaVwApwjbT9/UVc6a/fCQCA7CLN/Zt1tFomFMof34wDLyyGnmi
+         dUDoQrOaAysHv3M15ZGNY0lqG7Snkp5QSJxgzP2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0186/1095] netfilter: nft_queue: only allow supported familes and hooks
-Date:   Mon, 15 Aug 2022 19:53:05 +0200
-Message-Id: <20220815180437.333474752@linuxfoundation.org>
+Subject: [PATCH 5.18 0191/1095] ARM: bcm: Fix refcount leak in bcm_kona_smc_init
+Date:   Mon, 15 Aug 2022 19:53:10 +0200
+Message-Id: <20220815180437.522203928@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,82 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 47f4f510ad586032b85c89a0773fbb011d412425 ]
+[ Upstream commit cb23389a2458c2e4bfd6c86a513cbbe1c4d35e76 ]
 
-Trying to use 'queue' statement in ingress (for example)
-triggers a splat on reinject:
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-WARNING: CPU: 3 PID: 1345 at net/netfilter/nf_queue.c:291
-
-... because nf_reinject cannot find the ruleset head.
-
-The netdev family doesn't support async resume at the moment anyway,
-so disallow loading such rulesets with a more appropriate
-error message.
-
-v2: add 'validate' callback and also check hook points, v1 did
-allow ingress use in 'table inet', but that doesn't work either. (Pablo)
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Reviewed-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: b8eb35fd594a ("ARM: bcm281xx: Add L2 cache enable code")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_queue.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ arch/arm/mach-bcm/bcm_kona_smc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nft_queue.c b/net/netfilter/nft_queue.c
-index 15e4b7640dc0..da29e92c03e2 100644
---- a/net/netfilter/nft_queue.c
-+++ b/net/netfilter/nft_queue.c
-@@ -68,6 +68,31 @@ static void nft_queue_sreg_eval(const struct nft_expr *expr,
- 	regs->verdict.code = ret;
- }
+diff --git a/arch/arm/mach-bcm/bcm_kona_smc.c b/arch/arm/mach-bcm/bcm_kona_smc.c
+index 43829e49ad93..347bfb7f03e2 100644
+--- a/arch/arm/mach-bcm/bcm_kona_smc.c
++++ b/arch/arm/mach-bcm/bcm_kona_smc.c
+@@ -52,6 +52,7 @@ int __init bcm_kona_smc_init(void)
+ 		return -ENODEV;
  
-+static int nft_queue_validate(const struct nft_ctx *ctx,
-+			      const struct nft_expr *expr,
-+			      const struct nft_data **data)
-+{
-+	static const unsigned int supported_hooks = ((1 << NF_INET_PRE_ROUTING) |
-+						     (1 << NF_INET_LOCAL_IN) |
-+						     (1 << NF_INET_FORWARD) |
-+						     (1 << NF_INET_LOCAL_OUT) |
-+						     (1 << NF_INET_POST_ROUTING));
-+
-+	switch (ctx->family) {
-+	case NFPROTO_IPV4:
-+	case NFPROTO_IPV6:
-+	case NFPROTO_INET:
-+	case NFPROTO_BRIDGE:
-+		break;
-+	case NFPROTO_NETDEV: /* lacks okfn */
-+		fallthrough;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return nft_chain_validate_hooks(ctx->chain, supported_hooks);
-+}
-+
- static const struct nla_policy nft_queue_policy[NFTA_QUEUE_MAX + 1] = {
- 	[NFTA_QUEUE_NUM]	= { .type = NLA_U16 },
- 	[NFTA_QUEUE_TOTAL]	= { .type = NLA_U16 },
-@@ -164,6 +189,7 @@ static const struct nft_expr_ops nft_queue_ops = {
- 	.eval		= nft_queue_eval,
- 	.init		= nft_queue_init,
- 	.dump		= nft_queue_dump,
-+	.validate	= nft_queue_validate,
- 	.reduce		= NFT_REDUCE_READONLY,
- };
- 
-@@ -173,6 +199,7 @@ static const struct nft_expr_ops nft_queue_sreg_ops = {
- 	.eval		= nft_queue_sreg_eval,
- 	.init		= nft_queue_sreg_init,
- 	.dump		= nft_queue_sreg_dump,
-+	.validate	= nft_queue_validate,
- 	.reduce		= NFT_REDUCE_READONLY,
- };
+ 	prop_val = of_get_address(node, 0, &prop_size, NULL);
++	of_node_put(node);
+ 	if (!prop_val)
+ 		return -EINVAL;
  
 -- 
 2.35.1
