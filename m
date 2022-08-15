@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3A7C2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B68A4C32765
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347811AbiHOU0j (ORCPT
+        id S1347941AbiHOU06 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
+        Mon, 15 Aug 2022 16:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347077AbiHOUV5 (ORCPT
+        with ESMTP id S1347193AbiHOUWC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:21:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE6298D24;
-        Mon, 15 Aug 2022 12:01:07 -0700 (PDT)
+        Mon, 15 Aug 2022 16:22:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C674AD70;
+        Mon, 15 Aug 2022 12:01:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBC89B810A1;
-        Mon, 15 Aug 2022 19:01:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC971C433C1;
-        Mon, 15 Aug 2022 19:01:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B13FB81107;
+        Mon, 15 Aug 2022 19:01:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C883C433D6;
+        Mon, 15 Aug 2022 19:01:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590064;
-        bh=xExqZ2cjy5zyFW10bCJOCsLa1DT07p+HNJ7TEKasfsE=;
+        s=korg; t=1660590076;
+        bh=D/s5iHv5ysMovmW8o3ZkQG6IEKoY7QBzplDcxQg+tA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yy2F37Kmgp6gDi/WpMfXTKK9lf2uOUF+4Zq+aZbJ/c/s5SxfcRUvmqqws09+g6Jig
-         zCYb4v6CBHwkNyc3Qgk1RR1UljLpuIdH0bzH4M988Rrm7kA1J5AT1hqEUtsoYPVJ7O
-         1YzHfwxG07g9qKlUXRmJ/l6eFiy+Rxr1+Kp9MLjU=
+        b=Y0hi1ry20dz4FuS2u34+3+cxWBAa3PGytmOgzM5Dzn1/vFkflURdcLm6JBJ4uWxlJ
+         QJ4MYOXfkE5ePOiQHxZKwR4H+raztO0lholVsjEESEzR+iHM+R1IUpcp0/3pNFdB1e
+         ar5YAKmrcY75SEB5Kw0VfOdv35ZxYF6dVOX+ip3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0140/1095] arm64: errata: Remove AES hwcap for COMPAT tasks
-Date:   Mon, 15 Aug 2022 19:52:19 +0200
-Message-Id: <20220815180435.366390465@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0144/1095] irqchip/mips-gic: Only register IPI domain when SMP is enabled
+Date:   Mon, 15 Aug 2022 19:52:23 +0200
+Message-Id: <20220815180435.551634534@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -50,174 +50,179 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 44b3834b2eed595af07021b1c64e6f9bc396398b ]
+[ Upstream commit 8190cc572981f2f13b6ffc26c7cfa7899e5d3ccc ]
 
-Cortex-A57 and Cortex-A72 have an erratum where an interrupt that
-occurs between a pair of AES instructions in aarch32 mode may corrupt
-the ELR. The task will subsequently produce the wrong AES result.
+The MIPS GIC irqchip driver may be selected in a uniprocessor
+configuration, but it unconditionally registers an IPI domain.
 
-The AES instructions are part of the cryptographic extensions, which are
-optional. User-space software will detect the support for these
-instructions from the hwcaps. If the platform doesn't support these
-instructions a software implementation should be used.
+Limit the part of the driver dealing with IPIs to only be compiled when
+GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
 
-Remove the hwcap bits on affected parts to indicate user-space should
-not use the AES instructions.
-
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: James Morse <james.morse@arm.com>
-Link: https://lore.kernel.org/r/20220714161523.279570-3-james.morse@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220701200056.46555-2-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/arm64/silicon-errata.rst |  4 ++++
- arch/arm64/Kconfig                     | 16 ++++++++++++++++
- arch/arm64/kernel/cpu_errata.c         | 16 ++++++++++++++++
- arch/arm64/kernel/cpufeature.c         | 14 +++++++++++++-
- arch/arm64/tools/cpucaps               |  1 +
- 5 files changed, 50 insertions(+), 1 deletion(-)
+ drivers/irqchip/Kconfig        |  3 +-
+ drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
+ 2 files changed, 56 insertions(+), 27 deletions(-)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index d27db84d585e..0b4235b1f8c4 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -82,10 +82,14 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A57      | #1319537        | ARM64_ERRATUM_1319367       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-A57      | #1742098        | ARM64_ERRATUM_1742098       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A72      | #853709         | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A72      | #1319367        | ARM64_ERRATUM_1319367       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-A72      | #1655431        | ARM64_ERRATUM_1742098       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A73      | #858921         | ARM64_ERRATUM_858921        |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A76      | #1188873,1418040| ARM64_ERRATUM_1418040       |
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 20ea89d9ac2f..b2d5a1e8eda3 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -500,6 +500,22 @@ config ARM64_ERRATUM_834220
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 15edb9a6fcae..d43d25a411dd 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -310,7 +310,8 @@ config KEYSTONE_IRQ
  
- 	  If unsure, say Y.
+ config MIPS_GIC
+ 	bool
+-	select GENERIC_IRQ_IPI
++	select GENERIC_IRQ_IPI if SMP
++	select IRQ_DOMAIN_HIERARCHY
+ 	select MIPS_CM
  
-+config ARM64_ERRATUM_1742098
-+	bool "Cortex-A57/A72: 1742098: ELR recorded incorrectly on interrupt taken between cryptographic instructions in a sequence"
-+	depends on COMPAT
-+	default y
-+	help
-+	  This option removes the AES hwcap for aarch32 user-space to
-+	  workaround erratum 1742098 on Cortex-A57 and Cortex-A72.
+ config INGENIC_IRQ
+diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+index ff89b36267dd..8a9efb6ae587 100644
+--- a/drivers/irqchip/irq-mips-gic.c
++++ b/drivers/irqchip/irq-mips-gic.c
+@@ -52,13 +52,15 @@ static DEFINE_PER_CPU_READ_MOSTLY(unsigned long[GIC_MAX_LONGS], pcpu_masks);
+ 
+ static DEFINE_SPINLOCK(gic_lock);
+ static struct irq_domain *gic_irq_domain;
+-static struct irq_domain *gic_ipi_domain;
+ static int gic_shared_intrs;
+ static unsigned int gic_cpu_pin;
+ static unsigned int timer_cpu_pin;
+ static struct irq_chip gic_level_irq_controller, gic_edge_irq_controller;
 +
-+	  Affected parts may corrupt the AES state if an interrupt is
-+	  taken between a pair of AES instructions. These instructions
-+	  are only present if the cryptography extensions are present.
-+	  All software should have a fallback implementation for CPUs
-+	  that don't implement the cryptography extensions.
-+
-+	  If unsure, say Y.
-+
- config ARM64_ERRATUM_845719
- 	bool "Cortex-A53: 845719: a load might read incorrect data"
- 	depends on COMPAT
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index a0f3d0aaa3c5..27baa41c46ca 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -395,6 +395,14 @@ static struct midr_range trbe_write_out_of_range_cpus[] = {
++#ifdef CONFIG_GENERIC_IRQ_IPI
+ static DECLARE_BITMAP(ipi_resrv, GIC_MAX_INTRS);
+ static DECLARE_BITMAP(ipi_available, GIC_MAX_INTRS);
++#endif /* CONFIG_GENERIC_IRQ_IPI */
+ 
+ static struct gic_all_vpes_chip_data {
+ 	u32	map;
+@@ -472,9 +474,11 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
+ 	u32 map;
+ 
+ 	if (hwirq >= GIC_SHARED_HWIRQ_BASE) {
++#ifdef CONFIG_GENERIC_IRQ_IPI
+ 		/* verify that shared irqs don't conflict with an IPI irq */
+ 		if (test_bit(GIC_HWIRQ_TO_SHARED(hwirq), ipi_resrv))
+ 			return -EBUSY;
++#endif /* CONFIG_GENERIC_IRQ_IPI */
+ 
+ 		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
+ 						    &gic_level_irq_controller,
+@@ -567,6 +571,8 @@ static const struct irq_domain_ops gic_irq_domain_ops = {
+ 	.map = gic_irq_domain_map,
  };
- #endif /* CONFIG_ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE */
  
-+#ifdef CONFIG_ARM64_ERRATUM_1742098
-+static struct midr_range broken_aarch32_aes[] = {
-+	MIDR_RANGE(MIDR_CORTEX_A57, 0, 1, 0xf, 0xf),
-+	MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
-+	{},
-+};
-+#endif /* CONFIG_ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE */
++#ifdef CONFIG_GENERIC_IRQ_IPI
 +
- const struct arm64_cpu_capabilities arm64_errata[] = {
- #ifdef CONFIG_ARM64_WORKAROUND_CLEAN_CACHE
- 	{
-@@ -657,6 +665,14 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
- 		/* Cortex-A510 r0p0 - r0p1 */
- 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 1)
- 	},
-+#endif
-+#ifdef CONFIG_ARM64_ERRATUM_1742098
-+	{
-+		.desc = "ARM erratum 1742098",
-+		.capability = ARM64_WORKAROUND_1742098,
-+		CAP_MIDR_RANGE_LIST(broken_aarch32_aes),
-+		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
-+	},
- #endif
- 	{
- 	}
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 2cb9cc9e0eff..5357ba7ea3c7 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -79,6 +79,7 @@
- #include <asm/cpufeature.h>
- #include <asm/cpu_ops.h>
- #include <asm/fpsimd.h>
-+#include <asm/hwcap.h>
- #include <asm/insn.h>
- #include <asm/kvm_host.h>
- #include <asm/mmu_context.h>
-@@ -1921,6 +1922,14 @@ static void cpu_enable_mte(struct arm64_cpu_capabilities const *cap)
- }
- #endif /* CONFIG_ARM64_MTE */
+ static int gic_ipi_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
+ 				const u32 *intspec, unsigned int intsize,
+ 				irq_hw_number_t *out_hwirq,
+@@ -670,6 +676,48 @@ static const struct irq_domain_ops gic_ipi_domain_ops = {
+ 	.match = gic_ipi_domain_match,
+ };
  
-+static void elf_hwcap_fixup(void)
++static int gic_register_ipi_domain(struct device_node *node)
 +{
-+#ifdef CONFIG_ARM64_ERRATUM_1742098
-+	if (cpus_have_const_cap(ARM64_WORKAROUND_1742098))
-+		compat_elf_hwcap2 &= ~COMPAT_HWCAP2_AES;
-+#endif /* ARM64_ERRATUM_1742098 */
++	struct irq_domain *gic_ipi_domain;
++	unsigned int v[2], num_ipis;
++
++	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
++						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
++						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
++						  node, &gic_ipi_domain_ops, NULL);
++	if (!gic_ipi_domain) {
++		pr_err("Failed to add IPI domain");
++		return -ENXIO;
++	}
++
++	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
++
++	if (node &&
++	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
++		bitmap_set(ipi_resrv, v[0], v[1]);
++	} else {
++		/*
++		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
++		 * meeting the requirements of arch/mips SMP.
++		 */
++		num_ipis = 2 * num_possible_cpus();
++		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
++	}
++
++	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
++
++	return 0;
 +}
 +
- #ifdef CONFIG_KVM
- static bool is_kvm_protected_mode(const struct arm64_cpu_capabilities *entry, int __unused)
++#else /* !CONFIG_GENERIC_IRQ_IPI */
++
++static inline int gic_register_ipi_domain(struct device_node *node)
++{
++	return 0;
++}
++
++#endif /* !CONFIG_GENERIC_IRQ_IPI */
++
+ static int gic_cpu_startup(unsigned int cpu)
  {
-@@ -3033,8 +3042,10 @@ void __init setup_cpu_features(void)
- 	setup_system_capabilities();
- 	setup_elf_hwcaps(arm64_elf_hwcaps);
+ 	/* Enable or disable EIC */
+@@ -688,11 +736,12 @@ static int gic_cpu_startup(unsigned int cpu)
+ static int __init gic_of_init(struct device_node *node,
+ 			      struct device_node *parent)
+ {
+-	unsigned int cpu_vec, i, gicconfig, v[2], num_ipis;
++	unsigned int cpu_vec, i, gicconfig;
+ 	unsigned long reserved;
+ 	phys_addr_t gic_base;
+ 	struct resource res;
+ 	size_t gic_len;
++	int ret;
  
--	if (system_supports_32bit_el0())
-+	if (system_supports_32bit_el0()) {
- 		setup_elf_hwcaps(compat_elf_hwcaps);
-+		elf_hwcap_fixup();
-+	}
+ 	/* Find the first available CPU vector. */
+ 	i = 0;
+@@ -780,30 +829,9 @@ static int __init gic_of_init(struct device_node *node,
+ 		return -ENXIO;
+ 	}
  
- 	if (system_uses_ttbr0_pan())
- 		pr_info("emulated: Privileged Access Never (PAN) using TTBR0_EL1 switching\n");
-@@ -3086,6 +3097,7 @@ static int enable_mismatched_32bit_el0(unsigned int cpu)
- 							 cpu_active_mask);
- 	get_cpu_device(lucky_winner)->offline_disabled = true;
- 	setup_elf_hwcaps(compat_elf_hwcaps);
-+	elf_hwcap_fixup();
- 	pr_info("Asymmetric 32-bit EL0 support detected on CPU %u; CPU hot-unplug disabled on CPU %u\n",
- 		cpu, lucky_winner);
- 	return 0;
-diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-index 3ed418f70e3b..8cd6088f8875 100644
---- a/arch/arm64/tools/cpucaps
-+++ b/arch/arm64/tools/cpucaps
-@@ -58,6 +58,7 @@ WORKAROUND_1418040
- WORKAROUND_1463225
- WORKAROUND_1508412
- WORKAROUND_1542419
-+WORKAROUND_1742098
- WORKAROUND_1902691
- WORKAROUND_2038923
- WORKAROUND_2064142
+-	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
+-						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
+-						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
+-						  node, &gic_ipi_domain_ops, NULL);
+-	if (!gic_ipi_domain) {
+-		pr_err("Failed to add IPI domain");
+-		return -ENXIO;
+-	}
+-
+-	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
+-
+-	if (node &&
+-	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
+-		bitmap_set(ipi_resrv, v[0], v[1]);
+-	} else {
+-		/*
+-		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
+-		 * meeting the requirements of arch/mips SMP.
+-		 */
+-		num_ipis = 2 * num_possible_cpus();
+-		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
+-	}
+-
+-	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
++	ret = gic_register_ipi_domain(node);
++	if (ret)
++		return ret;
+ 
+ 	board_bind_eic_interrupt = &gic_bind_eic_interrupt;
+ 
 -- 
 2.35.1
 
