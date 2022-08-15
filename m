@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9DFC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F31BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354655AbiHOXtP (ORCPT
+        id S1348074AbiHOXtY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
+        Mon, 15 Aug 2022 19:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353643AbiHOXma (ORCPT
+        with ESMTP id S1353897AbiHOXmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:42:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B386D84EF0;
-        Mon, 15 Aug 2022 13:13:46 -0700 (PDT)
+        Mon, 15 Aug 2022 19:42:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724A885A95;
+        Mon, 15 Aug 2022 13:13:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE58060F0C;
-        Mon, 15 Aug 2022 20:13:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C81C433D6;
-        Mon, 15 Aug 2022 20:13:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD4E860B9B;
+        Mon, 15 Aug 2022 20:13:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBFE7C433C1;
+        Mon, 15 Aug 2022 20:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594425;
-        bh=nOfKq7c1vjoucNhMxCONBAKa9x7dzyly5obHXmxWhyY=;
+        s=korg; t=1660594428;
+        bh=gm9GfrC0J6whizYs8N/CPAxYEFys+ekiI6l13kMrfHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IdqOUL0wOlOJ8A6oyy+SFAZpiLEGyyFzOCrYdZTmwMBPFosYfAoSb5aU8vWR0xNfL
-         /xQJ9hdCmxmjkRt91FicrPUvCpRDYprn07hcmQ8WzDx6XfAPJxAmN5kfBD+lv8nTCQ
-         zBFAN8ZhOXFbkrcMmeD+q+qtef7mzPZvIfTz8X8k=
+        b=Xf6q2te4PfRAc8WaWJQ4MwA1DSu1iPdnuaeEBgunW8KuHiTeY+RYOrs2KMZvtbpPz
+         8zEnDoDmHTsysqCpJb05NytazlNK36siEI1Pukng6KKMd3S1/bKUJvPFYqIo2jj8sB
+         gKrtpR9ENLGvfU7e8K3G3R+SXkJ26oFbRdFRcEu4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Russell Currey <ruscur@russell.cc>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 1086/1095] powerpc/kexec: Fix build failure from uninitialised variable
-Date:   Mon, 15 Aug 2022 20:08:05 +0200
-Message-Id: <20220815180513.963060377@linuxfoundation.org>
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0408/1157] drm/vc4: plane: Fix margin calculations for the right/bottom edges
+Date:   Mon, 15 Aug 2022 19:56:04 +0200
+Message-Id: <20220815180455.975639104@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,48 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell Currey <ruscur@russell.cc>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit 83ee9f23763a432a4077bf20624ee35de87bce99 upstream.
+[ Upstream commit b7c3d6821627861f4ea3e1f2b595d0ed9e80aac8 ]
 
-clang 14 won't build because ret is uninitialised and can be returned if
-both prop and fdtprop are NULL.  Drop the ret variable and return an
-error in that failure case.
+The current plane margin calculation code clips the right and bottom
+edges of the range based using the left and top margins.
 
-Fixes: b1fc44eaa9ba ("pseries/iommu/ddw: Fix kdump to work in absence of ibm,dma-window")
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Russell Currey <ruscur@russell.cc>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220810054331.373761-1-ruscur@russell.cc
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This is obviously wrong, so let's fix it.
+
+Fixes: 666e73587f90 ("drm/vc4: Take margin setup into account when updating planes")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-6-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kexec/file_load_64.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/vc4/vc4_plane.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/powerpc/kexec/file_load_64.c
-+++ b/arch/powerpc/kexec/file_load_64.c
-@@ -1043,17 +1043,17 @@ static int copy_property(void *fdt, int
- 			 const char *propname)
- {
- 	const void *prop, *fdtprop;
--	int len = 0, fdtlen = 0, ret;
-+	int len = 0, fdtlen = 0;
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index 67402da89213..568371aa89c5 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -310,16 +310,16 @@ static int vc4_plane_margins_adj(struct drm_plane_state *pstate)
+ 					       adjhdisplay,
+ 					       crtc_state->mode.hdisplay);
+ 	vc4_pstate->crtc_x += left;
+-	if (vc4_pstate->crtc_x > crtc_state->mode.hdisplay - left)
+-		vc4_pstate->crtc_x = crtc_state->mode.hdisplay - left;
++	if (vc4_pstate->crtc_x > crtc_state->mode.hdisplay - right)
++		vc4_pstate->crtc_x = crtc_state->mode.hdisplay - right;
  
- 	prop = of_get_property(dn, propname, &len);
- 	fdtprop = fdt_getprop(fdt, node_offset, propname, &fdtlen);
+ 	adjvdisplay = crtc_state->mode.vdisplay - (top + bottom);
+ 	vc4_pstate->crtc_y = DIV_ROUND_CLOSEST(vc4_pstate->crtc_y *
+ 					       adjvdisplay,
+ 					       crtc_state->mode.vdisplay);
+ 	vc4_pstate->crtc_y += top;
+-	if (vc4_pstate->crtc_y > crtc_state->mode.vdisplay - top)
+-		vc4_pstate->crtc_y = crtc_state->mode.vdisplay - top;
++	if (vc4_pstate->crtc_y > crtc_state->mode.vdisplay - bottom)
++		vc4_pstate->crtc_y = crtc_state->mode.vdisplay - bottom;
  
- 	if (fdtprop && !prop)
--		ret = fdt_delprop(fdt, node_offset, propname);
-+		return fdt_delprop(fdt, node_offset, propname);
- 	else if (prop)
--		ret = fdt_setprop(fdt, node_offset, propname, prop, len);
--
--	return ret;
-+		return fdt_setprop(fdt, node_offset, propname, prop, len);
-+	else
-+		return -FDT_ERR_NOTFOUND;
- }
- 
- static int update_pci_dma_nodes(void *fdt, const char *dmapropname)
+ 	vc4_pstate->crtc_w = DIV_ROUND_CLOSEST(vc4_pstate->crtc_w *
+ 					       adjhdisplay,
+-- 
+2.35.1
+
 
 
