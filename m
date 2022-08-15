@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE0FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F040EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243557AbiHOVaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
+        id S1345140AbiHOVaY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348152AbiHOV07 (ORCPT
+        with ESMTP id S1348227AbiHOV1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:26:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4CEE97F1;
-        Mon, 15 Aug 2022 12:22:56 -0700 (PDT)
+        Mon, 15 Aug 2022 17:27:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A074E9A9F;
+        Mon, 15 Aug 2022 12:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 607F560FDA;
-        Mon, 15 Aug 2022 19:22:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63953C433D6;
-        Mon, 15 Aug 2022 19:22:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29D13B81062;
+        Mon, 15 Aug 2022 19:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CCECC433B5;
+        Mon, 15 Aug 2022 19:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591374;
-        bh=Y2JRNAOW2EOmlGoFTTcKC2KjNshzPUJ73cPXUm8YcIo=;
+        s=korg; t=1660591380;
+        bh=m5pg8KO/7b40AWDkw1tfUtzdu1cCdSm98iHUIZ9koyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wMYc9Ams5BffVckF0HS7IQUMeuD4+mnHpWPhcVBv2ByGFea5pe9VnXDwRBWRn2jrg
-         5Ar5CsrcLbnppV9zACFZ/58AQseRAj71p4xN6I8LuXr4+QnO2Eu82TFnSDIZyp7F5r
-         uSg+fDxJ3wrxN7K9JAUHvlziv5H6VITX3RXzPXHI=
+        b=WP+XBHPkrcsQG0HL0xgoUO79XFg3KBE2G9E4ahB1jn83myXElKy0UCGgiJwQ4gZta
+         spch18dcUP+AS7R4fPPjH3O7ttpurMp2o3DBNrSaAmLQXBbAzKyMKsswGBTxjxF9Ud
+         QA6QQq76xkVATZ5lku89LDlIZV6uaGbi07Hftx4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chanho Park <chanho61.park@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0559/1095] phy: samsung: exynosautov9-ufs: correct TSRV register configurations
-Date:   Mon, 15 Aug 2022 19:59:18 +0200
-Message-Id: <20220815180452.689981782@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0561/1095] PCI: tegra194: Fix PM error handling in tegra_pcie_config_ep()
+Date:   Mon, 15 Aug 2022 19:59:20 +0200
+Message-Id: <20220815180452.779643101@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,61 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f7fdc4db071f7ee7d408ea3f083222a060c76623 ]
+[ Upstream commit e8fbd344a5ea62663554b8546b6bf9f88b93785a ]
 
-For exynos auto v9's UFS MPHY, We should use 0x50 offset of TSRV register
-configurations. So, it must be
+pm_runtime_enable() will increase power disable depth.  If
+dw_pcie_ep_init() fails, we should use pm_runtime_disable() to balance it
+with pm_runtime_enable().
 
-s/PHY_TRSV_REG_CFG/PHY_TRSV_REG_CFG_AUTOV9/g
+Add missing pm_runtime_disable() for tegra_pcie_config_ep().
 
-Fixes: d64519249e1d ("phy: samsung-ufs: support exynosauto ufs phy driver")
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220603050536.61957-1-chanho61.park@samsung.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: c57247f940e8 ("PCI: tegra: Add support for PCIe endpoint mode in Tegra194")
+Link: https://lore.kernel.org/r/20220602031910.55859-1-linmq006@gmail.com
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/samsung/phy-exynosautov9-ufs.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/pci/controller/dwc/pcie-tegra194.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/samsung/phy-exynosautov9-ufs.c b/drivers/phy/samsung/phy-exynosautov9-ufs.c
-index 36398a15c2db..d043dfdb598a 100644
---- a/drivers/phy/samsung/phy-exynosautov9-ufs.c
-+++ b/drivers/phy/samsung/phy-exynosautov9-ufs.c
-@@ -31,22 +31,22 @@ static const struct samsung_ufs_phy_cfg exynosautov9_pre_init_cfg[] = {
- 	PHY_COMN_REG_CFG(0x023, 0xc0, PWR_MODE_ANY),
- 	PHY_COMN_REG_CFG(0x023, 0x00, PWR_MODE_ANY),
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index b1b5f836a806..0888c3726414 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -1951,6 +1951,7 @@ static int tegra_pcie_config_ep(struct tegra194_pcie *pcie,
+ 	if (ret) {
+ 		dev_err(dev, "Failed to initialize DWC Endpoint subsystem: %d\n",
+ 			ret);
++		pm_runtime_disable(dev);
+ 		return ret;
+ 	}
  
--	PHY_TRSV_REG_CFG(0x042, 0x5d, PWR_MODE_ANY),
--	PHY_TRSV_REG_CFG(0x043, 0x80, PWR_MODE_ANY),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x042, 0x5d, PWR_MODE_ANY),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x043, 0x80, PWR_MODE_ANY),
- 
- 	END_UFS_PHY_CFG,
- };
- 
- /* Calibration for HS mode series A/B */
- static const struct samsung_ufs_phy_cfg exynosautov9_pre_pwr_hs_cfg[] = {
--	PHY_TRSV_REG_CFG(0x032, 0xbc, PWR_MODE_HS_ANY),
--	PHY_TRSV_REG_CFG(0x03c, 0x7f, PWR_MODE_HS_ANY),
--	PHY_TRSV_REG_CFG(0x048, 0xc0, PWR_MODE_HS_ANY),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x032, 0xbc, PWR_MODE_HS_ANY),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x03c, 0x7f, PWR_MODE_HS_ANY),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x048, 0xc0, PWR_MODE_HS_ANY),
- 
--	PHY_TRSV_REG_CFG(0x04a, 0x00, PWR_MODE_HS_G3_SER_B),
--	PHY_TRSV_REG_CFG(0x04b, 0x10, PWR_MODE_HS_G1_SER_B |
--				      PWR_MODE_HS_G3_SER_B),
--	PHY_TRSV_REG_CFG(0x04d, 0x63, PWR_MODE_HS_G3_SER_B),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x04a, 0x00, PWR_MODE_HS_G3_SER_B),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x04b, 0x10, PWR_MODE_HS_G1_SER_B |
-+				PWR_MODE_HS_G3_SER_B),
-+	PHY_TRSV_REG_CFG_AUTOV9(0x04d, 0x63, PWR_MODE_HS_G3_SER_B),
- 
- 	END_UFS_PHY_CFG,
- };
 -- 
 2.35.1
 
