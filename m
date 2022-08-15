@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C892C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2683C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241819AbiHOS1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
+        id S241887AbiHOS17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242757AbiHOS00 (ORCPT
+        with ESMTP id S243113AbiHOS0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:26:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257A930F46;
-        Mon, 15 Aug 2022 11:19:25 -0700 (PDT)
+        Mon, 15 Aug 2022 14:26:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4241D3122C;
+        Mon, 15 Aug 2022 11:19:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 164A7B81077;
-        Mon, 15 Aug 2022 18:18:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF83C433D7;
-        Mon, 15 Aug 2022 18:18:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5C360C07;
+        Mon, 15 Aug 2022 18:19:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2792C433C1;
+        Mon, 15 Aug 2022 18:19:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587530;
-        bh=1sPZN9zAK9b0nXMwsiefYVa2gH9pSAB6Wy3GSLMBpQU=;
+        s=korg; t=1660587553;
+        bh=uwI7jOt3LUj5x/gvUBN4HIO7/wzxiNFPzitTcyPAavQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fgTSBiVjqM3IYcQghKckCVYJzYKeM4fxsIcbqTOaamSMIDHCKvtcsxHuRa+6mrnUt
-         umkYMwxF20KrD7vZ5I3jqaHuRJCQdpEpS+PJiJiChmCN/LiwQxKv339X/KEgnRM8PR
-         DnXiygkuiXJXnjCJ0ykpS+JXrTxk4Ev05xPY8gwc=
+        b=GN9sS4M59OpeLi4zqhL/bdZpB8oPDB7z8yakGjzO3qZdiHafOif7rVfDYNkwG0fjI
+         Tt5Hxz73tt3cJOI35yaCawvLVRQUxwQaUq+yq8ofA9XJSsPSsKkRzVcNjeJWWs9JnH
+         RVRP2HLVyRShfjE4aI1QRylZlloKeVuBEVj5fMTM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Francis Laniel <flaniel@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 113/779] arm64: Do not forget syscall when starting a new thread.
-Date:   Mon, 15 Aug 2022 19:55:57 +0200
-Message-Id: <20220815180342.160664688@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.15 090/779] mbcache: dont reclaim used entries
+Date:   Mon, 15 Aug 2022 19:55:34 +0200
+Message-Id: <20220815180341.138257153@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,40 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francis Laniel <flaniel@linux.microsoft.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
+commit 58318914186c157477b978b1739dfe2f1b9dc0fe upstream.
 
-Enable tracing of the execve*() system calls with the
-syscalls:sys_exit_execve tracepoint by removing the call to
-forget_syscall() when starting a new thread and preserving the value of
-regs->syscallno across exec.
+Do not reclaim entries that are currently used by somebody from a
+shrinker. Firstly, these entries are likely useful. Secondly, we will
+need to keep such entries to protect pending increment of xattr block
+refcount.
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: 82939d7999df ("ext4: convert to mbcache2")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220712105436.32204-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/processor.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/mbcache.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 5e73d7f7d1e7..d9bf3d12a2b8 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -204,8 +204,9 @@ void tls_preserve_current_state(void);
- 
- static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
- {
-+	s32 previous_syscall = regs->syscallno;
- 	memset(regs, 0, sizeof(*regs));
--	forget_syscall(regs);
-+	regs->syscallno = previous_syscall;
- 	regs->pc = pc;
- 
- 	if (system_uses_irq_prio_masking())
--- 
-2.35.1
-
+--- a/fs/mbcache.c
++++ b/fs/mbcache.c
+@@ -288,7 +288,7 @@ static unsigned long mb_cache_shrink(str
+ 	while (nr_to_scan-- && !list_empty(&cache->c_list)) {
+ 		entry = list_first_entry(&cache->c_list,
+ 					 struct mb_cache_entry, e_list);
+-		if (entry->e_referenced) {
++		if (entry->e_referenced || atomic_read(&entry->e_refcnt) > 2) {
+ 			entry->e_referenced = 0;
+ 			list_move_tail(&entry->e_list, &cache->c_list);
+ 			continue;
+@@ -302,6 +302,14 @@ static unsigned long mb_cache_shrink(str
+ 		spin_unlock(&cache->c_list_lock);
+ 		head = mb_cache_entry_head(cache, entry->e_key);
+ 		hlist_bl_lock(head);
++		/* Now a reliable check if the entry didn't get used... */
++		if (atomic_read(&entry->e_refcnt) > 2) {
++			hlist_bl_unlock(head);
++			spin_lock(&cache->c_list_lock);
++			list_add_tail(&entry->e_list, &cache->c_list);
++			cache->c_entry_count++;
++			continue;
++		}
+ 		if (!hlist_bl_unhashed(&entry->e_hash_list)) {
+ 			hlist_bl_del_init(&entry->e_hash_list);
+ 			atomic_dec(&entry->e_refcnt);
 
 
