@@ -2,69 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84872C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DED9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233838AbiHOXUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        id S241430AbiHOXUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353300AbiHOXQQ (ORCPT
+        with ESMTP id S1353338AbiHOXQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:16:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0ED147421;
-        Mon, 15 Aug 2022 13:03:04 -0700 (PDT)
+        Mon, 15 Aug 2022 19:16:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22B3147428;
+        Mon, 15 Aug 2022 13:03:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90FCCB81142;
-        Mon, 15 Aug 2022 20:03:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0EF3C433D7;
-        Mon, 15 Aug 2022 20:03:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF1E16068D;
+        Mon, 15 Aug 2022 20:03:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029D9C433D6;
+        Mon, 15 Aug 2022 20:03:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593781;
-        bh=UdYZI1riOsDbDH0atDWZkwjVT6LhIpkFlQ5M1a7XQrg=;
+        s=korg; t=1660593784;
+        bh=ZRVOLgopQgv/+zQaoA40b3/YGFhX9/yyPoY4VbifVdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nqCzr65tPSvGxEnVJ8gXdZ/z5++5gxCsKiyGk6vILBJm6JkJxezn9n6VBng+U4x5C
-         4O0Qr0g4CNyx0pF0Zgtvicu+TZ3i5qiN+Y02c+fOZ/TM/rOQmRhEdmrRMzHhNDHXW8
-         33GipBMO55ziBxIo1dkv8y8djCogDyVNWa/100lQ=
+        b=qGCjWYdd9U3XDF6lNRomUOWB2tSEju1hVc+/Y2DY72JGRRwjj5nT69tihdwwdpOWv
+         3TvLKfXaj5vmcuvPl/46St4zuAQYU1/MTyJJk65vaRsyHZjifJ9+HgrJ5SMdieS49o
+         uW6oV+RC9QCIWmL5VPEHONfdpReKjg0Xnyz9VAP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Bin Liu <b-liu@ti.com>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jim Cromie <jim.cromie@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 1005/1095] tracing/events: Add __vstring() and __assign_vstr() helper macros
-Date:   Mon, 15 Aug 2022 20:06:44 +0200
-Message-Id: <20220815180510.669145492@linuxfoundation.org>
+Subject: [PATCH 5.19 0325/1157] ath11k: fix netdev open race
+Date:   Mon, 15 Aug 2022 19:54:41 +0200
+Message-Id: <20220815180452.652767486@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -73,193 +49,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-[ Upstream commit 0563231f93c6d1f582b168a47753b345c1e20d81 ]
+[ Upstream commit d4ba1ff87b17e81686ada8f429300876f55f95ad ]
 
-There's several places that open code the following logic:
+Make sure to allocate resources needed before registering the device.
 
-  TP_STRUCT__entry(__dynamic_array(char, msg, MSG_MAX)),
-  TP_fast_assign(vsnprintf(__get_str(msg), MSG_MAX, vaf->fmt, *vaf->va);)
+This specifically avoids having a racing open() trigger a BUG_ON() in
+mod_timer() when ath11k_mac_op_start() is called before the
+mon_reap_timer as been set up.
 
-To load a string created by variable array va_list.
+I did not see this issue with next-20220310, but I hit it on every probe
+with next-20220511. Perhaps some timing changed in between.
 
-The main issue with this approach is that "MSG_MAX" usage in the
-__dynamic_array() portion. That actually just reserves the MSG_MAX in the
-event, and even wastes space because there's dynamic meta data also saved
-in the event to denote the offset and size of the dynamic array. It would
-have been better to just use a static __array() field.
+Here's the backtrace:
 
-Instead, create __vstring() and __assign_vstr() that work like __string
-and __assign_str() but instead of taking a destination string to copy,
-take a format string and a va_list pointer and fill in the values.
+[   51.346947] kernel BUG at kernel/time/timer.c:990!
+[   51.346958] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+...
+[   51.578225] Call trace:
+[   51.583293]  __mod_timer+0x298/0x390
+[   51.589518]  mod_timer+0x14/0x20
+[   51.595368]  ath11k_mac_op_start+0x41c/0x4a0 [ath11k]
+[   51.603165]  drv_start+0x38/0x60 [mac80211]
+[   51.610110]  ieee80211_do_open+0x29c/0x7d0 [mac80211]
+[   51.617945]  ieee80211_open+0x60/0xb0 [mac80211]
+[   51.625311]  __dev_open+0x100/0x1c0
+[   51.631420]  __dev_change_flags+0x194/0x210
+[   51.638214]  dev_change_flags+0x24/0x70
+[   51.644646]  do_setlink+0x228/0xdb0
+[   51.650723]  __rtnl_newlink+0x460/0x830
+[   51.657162]  rtnl_newlink+0x4c/0x80
+[   51.663229]  rtnetlink_rcv_msg+0x124/0x390
+[   51.669917]  netlink_rcv_skb+0x58/0x130
+[   51.676314]  rtnetlink_rcv+0x18/0x30
+[   51.682460]  netlink_unicast+0x250/0x310
+[   51.688960]  netlink_sendmsg+0x19c/0x3e0
+[   51.695458]  ____sys_sendmsg+0x220/0x290
+[   51.701938]  ___sys_sendmsg+0x7c/0xc0
+[   51.708148]  __sys_sendmsg+0x68/0xd0
+[   51.714254]  __arm64_sys_sendmsg+0x28/0x40
+[   51.720900]  invoke_syscall+0x48/0x120
 
-It uses the helper:
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
 
- #define __trace_event_vstr_len(fmt, va)		\
- ({							\
-	va_list __ap;					\
-	int __ret;					\
-							\
-	va_copy(__ap, *(va));				\
-	__ret = vsnprintf(NULL, 0, fmt, __ap) + 1;	\
-	va_end(__ap);					\
-							\
-	min(__ret, TRACE_EVENT_STR_MAX);		\
- })
-
-To figure out the length to store the string. It may be slightly slower as
-it needs to run the vsnprintf() twice, but it now saves space on the ring
-buffer.
-
-Link: https://lkml.kernel.org/r/20220705224749.053570613@goodmis.org
-
-Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Gregory Greenman <gregory.greenman@intel.com>
-Cc: Peter Chen <peter.chen@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mathias Nyman <mathias.nyman@intel.com>
-Cc: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Cc: Bin Liu <b-liu@ti.com>
-Cc: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Antonio Quartulli <a@unstable.cc>
-Cc: Sven Eckelmann <sven@narfation.org>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: Jim Cromie <jim.cromie@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Fixes: 840c36fa727a ("ath11k: dp: stop rx pktlog before suspend")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220517103436.15867-1-johan+linaro@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/trace_events.h                 | 18 ++++++++++++++++++
- include/trace/stages/stage1_struct_define.h  |  3 +++
- include/trace/stages/stage2_data_offsets.h   |  3 +++
- include/trace/stages/stage4_event_fields.h   |  3 +++
- include/trace/stages/stage5_get_offsets.h    |  4 ++++
- include/trace/stages/stage6_event_callback.h |  7 +++++++
- 6 files changed, 38 insertions(+)
+ drivers/net/wireless/ath/ath11k/core.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index e6e95a9f07a5..b18759a673c6 100644
---- a/include/linux/trace_events.h
-+++ b/include/linux/trace_events.h
-@@ -916,6 +916,24 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 1e98ff9ff288..c8e0bc935838 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -1225,23 +1225,23 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
+ 		return ret;
+ 	}
  
- #endif
+-	ret = ath11k_mac_register(ab);
++	ret = ath11k_dp_pdev_alloc(ab);
+ 	if (ret) {
+-		ath11k_err(ab, "failed register the radio with mac80211: %d\n", ret);
++		ath11k_err(ab, "failed to attach DP pdev: %d\n", ret);
+ 		goto err_pdev_debug;
+ 	}
  
-+#define TRACE_EVENT_STR_MAX	512
-+
-+/*
-+ * gcc warns that you can not use a va_list in an inlined
-+ * function. But lets me make it into a macro :-/
-+ */
-+#define __trace_event_vstr_len(fmt, va)			\
-+({							\
-+	va_list __ap;					\
-+	int __ret;					\
-+							\
-+	va_copy(__ap, *(va));				\
-+	__ret = vsnprintf(NULL, 0, fmt, __ap) + 1;	\
-+	va_end(__ap);					\
-+							\
-+	min(__ret, TRACE_EVENT_STR_MAX);		\
-+})
-+
- #endif /* _LINUX_TRACE_EVENT_H */
+-	ret = ath11k_dp_pdev_alloc(ab);
++	ret = ath11k_mac_register(ab);
+ 	if (ret) {
+-		ath11k_err(ab, "failed to attach DP pdev: %d\n", ret);
+-		goto err_mac_unregister;
++		ath11k_err(ab, "failed register the radio with mac80211: %d\n", ret);
++		goto err_dp_pdev_free;
+ 	}
  
- /*
-diff --git a/include/trace/stages/stage1_struct_define.h b/include/trace/stages/stage1_struct_define.h
-index a16783419687..1b7bab60434c 100644
---- a/include/trace/stages/stage1_struct_define.h
-+++ b/include/trace/stages/stage1_struct_define.h
-@@ -26,6 +26,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
+ 	ret = ath11k_thermal_register(ab);
+ 	if (ret) {
+ 		ath11k_err(ab, "could not register thermal device: %d\n",
+ 			   ret);
+-		goto err_dp_pdev_free;
++		goto err_mac_unregister;
+ 	}
  
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(char, item, -1)
+ 	ret = ath11k_spectral_init(ab);
+@@ -1254,10 +1254,10 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
  
-diff --git a/include/trace/stages/stage2_data_offsets.h b/include/trace/stages/stage2_data_offsets.h
-index 42fd1e8813ec..1b7a8f764fdd 100644
---- a/include/trace/stages/stage2_data_offsets.h
-+++ b/include/trace/stages/stage2_data_offsets.h
-@@ -32,6 +32,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
- 
-diff --git a/include/trace/stages/stage4_event_fields.h b/include/trace/stages/stage4_event_fields.h
-index e80cdc397a43..c3790ec7a453 100644
---- a/include/trace/stages/stage4_event_fields.h
-+++ b/include/trace/stages/stage4_event_fields.h
-@@ -38,6 +38,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
- 
-diff --git a/include/trace/stages/stage5_get_offsets.h b/include/trace/stages/stage5_get_offsets.h
-index 7ee5931300e6..fba4c24ed9e6 100644
---- a/include/trace/stages/stage5_get_offsets.h
-+++ b/include/trace/stages/stage5_get_offsets.h
-@@ -39,6 +39,10 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, (len) + 1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item,		\
-+		      __trace_event_vstr_len(fmt, ap))
-+
- #undef __rel_dynamic_array
- #define __rel_dynamic_array(type, item, len)				\
- 	__item_length = (len) * sizeof(type);				\
-diff --git a/include/trace/stages/stage6_event_callback.h b/include/trace/stages/stage6_event_callback.h
-index e1724f73594b..0f51f6b3ab70 100644
---- a/include/trace/stages/stage6_event_callback.h
-+++ b/include/trace/stages/stage6_event_callback.h
-@@ -24,6 +24,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __assign_str
- #define __assign_str(dst, src)						\
- 	strcpy(__get_str(dst), (src) ? (const char *)(src) : "(null)");
-@@ -35,6 +38,10 @@
- 		__get_str(dst)[len] = '\0';				\
- 	} while(0)
- 
-+#undef __assign_vstr
-+#define __assign_vstr(dst, fmt, va)					\
-+	vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, *(va))
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
+ err_thermal_unregister:
+ 	ath11k_thermal_unregister(ab);
+-err_dp_pdev_free:
+-	ath11k_dp_pdev_free(ab);
+ err_mac_unregister:
+ 	ath11k_mac_unregister(ab);
++err_dp_pdev_free:
++	ath11k_dp_pdev_free(ab);
+ err_pdev_debug:
+ 	ath11k_debugfs_pdev_destroy(ab);
  
 -- 
 2.35.1
