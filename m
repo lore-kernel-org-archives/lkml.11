@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D07C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7D3C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233207AbiHPAti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
+        id S243489AbiHPAtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347178AbiHPApw (ORCPT
+        with ESMTP id S1347315AbiHPApz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:45:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD18193574;
-        Mon, 15 Aug 2022 13:41:38 -0700 (PDT)
+        Mon, 15 Aug 2022 20:45:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79D0AEDA8;
+        Mon, 15 Aug 2022 13:41:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DA4CB8119A;
-        Mon, 15 Aug 2022 20:41:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461D5C433D6;
-        Mon, 15 Aug 2022 20:41:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 447366122B;
+        Mon, 15 Aug 2022 20:41:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41CF6C433C1;
+        Mon, 15 Aug 2022 20:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596095;
-        bh=9aFWhDb0sLjSYCbmI8Iu1nyBKM24DyHPC+Y0uMpBoEI=;
+        s=korg; t=1660596098;
+        bh=EYeWNRRdqeLTH60vOeNeougrx1JxpB34+HdpnISTfl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LEjR55Il+asskpd/9sIU0W9B1KLDQrP56qdFwTLpWCx1E/42aivOQCL7tkyDjaFA+
-         EpkyzdMn0ggT+glusqRhMYh7FPYGoR5kn1dl0b+AFrrOD2ubCHfkYsQmXIw1VAdOzR
-         HnSctgnowdRGEgEmKanvffbTJbpAjXSqyNNEdaPM=
+        b=1n9RRyMvx0sTjDTZ3dkJcBiK/opGc33CrnJqMQmvfmoi8QhEZsatLcnaywQJ3ILsS
+         NzRXzqEqb1/fVkfMjEuU7xzU6OA2vOlW+G8N8W67lyyXIpKfOHO4imUOiLwKoi4xjO
+         T8MVbd6FwMGZvQEppart3cBEkZNYQ6xDLbbcNlvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        stable@vger.kernel.org, Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0970/1157] mfd: max77620: Fix refcount leak in max77620_initialise_fps
-Date:   Mon, 15 Aug 2022 20:05:26 +0200
-Message-Id: <20220815180518.492866362@linuxfoundation.org>
+Subject: [PATCH 5.19 0937/1157] remoteproc: qcom: wcnss: Fix handling of IRQs
+Date:   Mon, 15 Aug 2022 20:04:53 +0200
+Message-Id: <20220815180516.989931223@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,40 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-[ Upstream commit 1520669c8255bd637c6b248b2be910e2688d38dd ]
+[ Upstream commit bed0adac1ded4cb486ba19a3a7e730fbd9a1c9c6 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The wcnss_get_irq function is expected to return a value > 0 in the
+event that an IRQ is succssfully obtained, but it instead returns 0.
+This causes the stop and ready IRQs to never actually be used despite
+being defined in the device-tree. This patch fixes that.
 
-Fixes: 327156c59360 ("mfd: max77620: Add core driver for MAX77620/MAX20024")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220601043222.64441-1-linmq006@gmail.com
+Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220526141740.15834-2-sireeshkodali1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/max77620.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mfd/max77620.c b/drivers/mfd/max77620.c
-index fec2096474ad..a6661e07035b 100644
---- a/drivers/mfd/max77620.c
-+++ b/drivers/mfd/max77620.c
-@@ -419,9 +419,11 @@ static int max77620_initialise_fps(struct max77620_chip *chip)
- 		ret = max77620_config_fps(chip, fps_child);
- 		if (ret < 0) {
- 			of_node_put(fps_child);
-+			of_node_put(fps_np);
- 			return ret;
- 		}
- 	}
-+	of_node_put(fps_np);
+diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
+index 9a223d394087..68f37296b151 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -467,6 +467,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 			     irq_handler_t thread_fn)
+ {
+ 	int ret;
++	int irq_number;
  
- 	config = chip->enable_global_lpm ? MAX77620_ONOFFCNFG2_SLP_LPM_MSK : 0;
- 	ret = regmap_update_bits(chip->rmap, MAX77620_REG_ONOFFCNFG2,
+ 	ret = platform_get_irq_byname(pdev, name);
+ 	if (ret < 0 && optional) {
+@@ -477,14 +478,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
+ 		return ret;
+ 	}
+ 
++	irq_number = ret;
++
+ 	ret = devm_request_threaded_irq(&pdev->dev, ret,
+ 					NULL, thread_fn,
+ 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+ 					"wcnss", wcnss);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
++		return ret;
++	}
+ 
+-	return ret;
++	/* Return the IRQ number if the IRQ was successfully acquired */
++	return irq_number;
+ }
+ 
+ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
 -- 
 2.35.1
 
