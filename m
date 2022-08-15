@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A313C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B435C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245102AbiHOXR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        id S244904AbiHOXRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241157AbiHOXOZ (ORCPT
+        with ESMTP id S1346380AbiHOXO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F968A1DE;
-        Mon, 15 Aug 2022 13:01:29 -0700 (PDT)
+        Mon, 15 Aug 2022 19:14:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A3079A72;
+        Mon, 15 Aug 2022 13:01:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 889F9B80EA8;
-        Mon, 15 Aug 2022 20:01:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E20B6C433D6;
-        Mon, 15 Aug 2022 20:01:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD1BC612B9;
+        Mon, 15 Aug 2022 20:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A48C433D7;
+        Mon, 15 Aug 2022 20:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593687;
-        bh=pNYcoTpG4Vva9kv7QzWq1FSRNEWbBS/YySs1ndBRAAg=;
+        s=korg; t=1660593690;
+        bh=XSbGAAKBx6WpXWobFza0TGpTgiFN3vMeX8OvdglASHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWz0tIJz6kysUB9dUFsZZhzroMXeu7wIQUWvJrp9H2iOEAMIkElt5PPZzA8arqDb+
-         H9Emd2XU2aB4L4EkfH9I37Fxfzk4NAsVVncoEPZycLk/1A6ywoW62zZI0D4huBf9CB
-         NYp9E/Q5Aat8f4Mmw0+mv2C04TtDuoxl56O1FUAc=
+        b=vv1i0sNl6GyoL2SbyCk+7UjqyN0GWJFeMMT60n/vP2vHnieO4oPxi6FoqgDEdSTou
+         W2J0O5wbSX3MoVRvZNxIp2YR112iqDT25TA1AGpo4LGXGsyCjcOLKaA696RKt0oU0I
+         HFsJriP8FmTsXNrspbCdaJwSk29+RRz5LZcaX9h8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0958/1095] video: fbdev: s3fb: Check the size of screen before memset_io()
-Date:   Mon, 15 Aug 2022 20:05:57 +0200
-Message-Id: <20220815180508.713587087@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0279/1157] dm writecache: count number of blocks discarded, not number of discard bios
+Date:   Mon, 15 Aug 2022 19:53:55 +0200
+Message-Id: <20220815180450.772707980@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8 ]
+[ Upstream commit 2ee73ef60db4d79b9f9b8cd501e8188b5179449f ]
 
-In the function s3fb_set_par(), the value of 'screen_size' is
-calculated by the user input. If the user provides the improper value,
-the value of 'screen_size' may larger than 'info->screen_size', which
-may cause the following bug:
+Change dm-writecache, so that it counts the number of blocks discarded
+instead of the number of discard bios. Make it consistent with the
+read and write statistics counters that were changed to count the
+number of blocks instead of bios.
 
-[   54.083733] BUG: unable to handle page fault for address: ffffc90003000000
-[   54.083742] #PF: supervisor write access in kernel mode
-[   54.083744] #PF: error_code(0x0002) - not-present page
-[   54.083760] RIP: 0010:memset_orig+0x33/0xb0
-[   54.083782] Call Trace:
-[   54.083788]  s3fb_set_par+0x1ec6/0x4040
-[   54.083806]  fb_set_var+0x604/0xeb0
-[   54.083836]  do_fb_ioctl+0x234/0x670
-
-Fix the this by checking the value of 'screen_size' before memset_io().
-
-Fixes: a268422de8bf ("fbdev driver for S3 Trio/Virge")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: e3a35d03407c ("dm writecache: add event counters")
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/s3fb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/admin-guide/device-mapper/writecache.rst | 2 +-
+ drivers/md/dm-writecache.c                             | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/s3fb.c b/drivers/video/fbdev/s3fb.c
-index b93c8eb02336..5069f6f67923 100644
---- a/drivers/video/fbdev/s3fb.c
-+++ b/drivers/video/fbdev/s3fb.c
-@@ -905,6 +905,8 @@ static int s3fb_set_par(struct fb_info *info)
- 	value = clamp((htotal + hsstart + 1) / 2 + 2, hsstart + 4, htotal + 1);
- 	svga_wcrt_multi(par->state.vgabase, s3_dtpc_regs, value);
+diff --git a/Documentation/admin-guide/device-mapper/writecache.rst b/Documentation/admin-guide/device-mapper/writecache.rst
+index 6c9a2c74df8a..724e028d1858 100644
+--- a/Documentation/admin-guide/device-mapper/writecache.rst
++++ b/Documentation/admin-guide/device-mapper/writecache.rst
+@@ -87,7 +87,7 @@ Status:
+ 11. the number of write blocks that are allocated in the cache
+ 12. the number of write requests that are blocked on the freelist
+ 13. the number of flush requests
+-14. the number of discard requests
++14. the number of discarded blocks
  
-+	if (screen_size > info->screen_size)
-+		screen_size = info->screen_size;
- 	memset_io(info->screen_base, 0x00, screen_size);
- 	/* Device and screen back on */
- 	svga_wcrt_mask(par->state.vgabase, 0x17, 0x80, 0x80);
+ Messages:
+ 	flush
+diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+index d1dca8f44028..b4d5bab8d68b 100644
+--- a/drivers/md/dm-writecache.c
++++ b/drivers/md/dm-writecache.c
+@@ -1514,7 +1514,7 @@ static enum wc_map_op writecache_map_flush(struct dm_writecache *wc, struct bio
+ 
+ static enum wc_map_op writecache_map_discard(struct dm_writecache *wc, struct bio *bio)
+ {
+-	wc->stats.discards++;
++	wc->stats.discards += bio->bi_iter.bi_size >> wc->block_size_bits;
+ 
+ 	if (writecache_has_error(wc))
+ 		return WC_MAP_ERROR;
 -- 
 2.35.1
 
