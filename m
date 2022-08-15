@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB46C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49369C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353827AbiHOXif (ORCPT
+        id S1353838AbiHOXil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
+        Mon, 15 Aug 2022 19:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233088AbiHOXeC (ORCPT
+        with ESMTP id S1346117AbiHOXds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:34:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550F4642CF;
-        Mon, 15 Aug 2022 13:09:00 -0700 (PDT)
+        Mon, 15 Aug 2022 19:33:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29371959C;
+        Mon, 15 Aug 2022 13:08:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7CA07CE12EB;
-        Mon, 15 Aug 2022 20:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620D9C433C1;
-        Mon, 15 Aug 2022 20:08:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9314BCE12E7;
+        Mon, 15 Aug 2022 20:08:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C9D3C433C1;
+        Mon, 15 Aug 2022 20:08:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594136;
-        bh=onNzqU9gBi851rma8Gsvyi5mkNCQG3TIVFTGJst1Yew=;
+        s=korg; t=1660594117;
+        bh=ZnymPQFspFL40QedNmT9etLRZlQVld7+zT63dbaFmGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uEGr/MwHsm82jGO9kDetYu+6tk0DtQqd4lfRF8WYeO9mP4+UsXvPJuSrxDe/fEezq
-         6aa1oqAbqSxYga/l5pFzPOkhdjHIHCgquyMZou8eeTsW7Eq1mnbZT7ZfjeEbWIrZ6L
-         NQOaD+Fj+DLpKq9FtGu7MoEqK/1eYA6BlFUqX19Y=
+        b=YMzUsz9j5m0iYJLWSAcTvkT/q/QWJEfqkMnKunDnDMCaa9+8Mgaq9md6co5dJDGIp
+         zNWJMLZipHn6QDhOnZbmavBz7E43vz4XJ+WQZPt+FNUjaLmXBjvdkwVZaAA06nDvAk
+         anBUxQOrxq8FRgk2qaLfh6ijLq2uWIWlE+Xybo0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0384/1157] wifi: rtw89: 8852a: rfk: fix div 0 exception
-Date:   Mon, 15 Aug 2022 19:55:40 +0200
-Message-Id: <20220815180455.079403632@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Baokun Li <libaokun1@huawei.com>,
+        "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 1059/1095] ext4: correct the misjudgment in ext4_iget_extra_inode
+Date:   Mon, 15 Aug 2022 20:07:38 +0200
+Message-Id: <20220815180512.842967020@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,81 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit 683a4647a7a3044868cfdc14c117525091b9fa0c ]
+[ Upstream commit fd7e672ea98b95b9d4c9dae316639f03c16a749d ]
 
-The DPK is a kind of RF calibration whose algorithm is to fine tune
-parameters and calibrate, and check the result. If the result isn't good
-enough, it could adjust parameters and try again.
+Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
+determine whether the inode have xattr space.
 
-This issue is to read and show the result, but it could be a negative
-calibration result that causes divisor 0 and core dump. So, fix it by
-phy_div() that does division only if divisor isn't zero; otherwise,
-zero is adopted.
-
-  divide error: 0000 [#1] PREEMPT SMP NOPTI
-  CPU: 1 PID: 728 Comm: wpa_supplicant Not tainted 5.10.114-16019-g462a1661811a #1 <HASH:d024 28>
-  RIP: 0010:rtw8852a_dpk+0x14ae/0x288f [rtw89_core]
-  RSP: 0018:ffffa9bb412a7520 EFLAGS: 00010246
-  RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-  RDX: 0000000000000000 RSI: 00000000000180fc RDI: ffffa141d01023c0
-  RBP: ffffa9bb412a76a0 R08: 0000000000001319 R09: 00000000ffffff92
-  R10: ffffffffc0292de3 R11: ffffffffc00d2f51 R12: 0000000000000000
-  R13: ffffa141d01023c0 R14: ffffffffc0290250 R15: ffffa141d0102638
-  FS:  00007fa99f5c2740(0000) GS:ffffa142e5e80000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000000013e8e010 CR3: 0000000110d2c000 CR4: 0000000000750ee0
-  PKRU: 55555554
-  Call Trace:
-   rtw89_core_sta_add+0x95/0x9c [rtw89_core <HASH:d239 29>]
-   rtw89_ops_sta_state+0x5d/0x108 [rtw89_core <HASH:d239 29>]
-   drv_sta_state+0x115/0x66f [mac80211 <HASH:81fe 30>]
-   sta_info_insert_rcu+0x45c/0x713 [mac80211 <HASH:81fe 30>]
-   sta_info_insert+0xf/0x1b [mac80211 <HASH:81fe 30>]
-   ieee80211_prep_connection+0x9d6/0xb0c [mac80211 <HASH:81fe 30>]
-   ieee80211_mgd_auth+0x2aa/0x352 [mac80211 <HASH:81fe 30>]
-   cfg80211_mlme_auth+0x160/0x1f6 [cfg80211 <HASH:00cd 31>]
-   nl80211_authenticate+0x2e5/0x306 [cfg80211 <HASH:00cd 31>]
-   genl_rcv_msg+0x371/0x3a1
-   ? nl80211_stop_sched_scan+0xe5/0xe5 [cfg80211 <HASH:00cd 31>]
-   ? genl_rcv+0x36/0x36
-   netlink_rcv_skb+0x8a/0xf9
-   genl_rcv+0x28/0x36
-   netlink_unicast+0x27b/0x3a0
-   netlink_sendmsg+0x2aa/0x469
-   sock_sendmsg_nosec+0x49/0x4d
-   ____sys_sendmsg+0xe5/0x213
-   __sys_sendmsg+0xec/0x157
-   ? syscall_enter_from_user_mode+0xd7/0x116
-   do_syscall_64+0x43/0x55
-   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-  RIP: 0033:0x7fa99f6e689b
-
-Fixes: e3ec7017f6a2 ("rtw89: add Realtek 802.11ax driver")
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220613065144.15647-1-pkshih@realtek.com
+Cc: stable@kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220616021358.2504451-5-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/ext4/inode.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c b/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c
-index e3c2fce32651..3d60feb78312 100644
---- a/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c
-+++ b/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c
-@@ -2330,8 +2330,8 @@ static u8 _dpk_pas_read(struct rtw89_dev *rtwdev, bool is_check)
- 		val2_q = abs(sign_extend32(val2_q, 11));
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 826e2deb10f8..e478cac3b8f2 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4681,8 +4681,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
+ 	__le32 *magic = (void *)raw_inode +
+ 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
  
- 		rtw89_debug(rtwdev, RTW89_DBG_RFK, "[DPK] PAS_delta = 0x%x\n",
--			    (val1_i * val1_i + val1_q * val1_q) /
--			    (val2_i * val2_i + val2_q * val2_q));
-+			    phy_div(val1_i * val1_i + val1_q * val1_q,
-+				    val2_i * val2_i + val2_q * val2_q));
- 
- 	} else {
- 		for (i = 0; i < 32; i++) {
+-	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
+-	    EXT4_INODE_SIZE(inode->i_sb) &&
++	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
+ 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
+ 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
+ 		return ext4_find_inline_data_nolock(inode);
 -- 
 2.35.1
 
