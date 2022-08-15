@@ -2,196 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4CCC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD787C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241863AbiHPBoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
+        id S231962AbiHPBrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240447AbiHPBni (ORCPT
+        with ESMTP id S245017AbiHPBqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:43:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE581F84F6;
-        Mon, 15 Aug 2022 14:35:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C159B611D5;
-        Mon, 15 Aug 2022 21:35:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB31C433C1;
-        Mon, 15 Aug 2022 21:35:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660599326;
-        bh=WJpJzeWfA2lvPyxEHsoYw4ISY9kus0KMPLf49JB424Y=;
-        h=Date:From:To:Cc:Subject:From;
-        b=clL2MlL/2HrVYwVTdD9BXwzNkWLmzssDTHI9xZO5YD6OlmAKFDJvlQ7brTnbrczwg
-         lgUqfI23njTS8GinsiwxDH1QIirKTNxfZAVLHtmbh2j8APsJRqNdoZhE4IphaOtG8z
-         ds9sCwP8Dxi4DRPpQOszm/E+KC3uX8kCmLpu6vvrMHpoYDUOQ8NR5nr2tSB8SS200r
-         59SNHNoECeA7oqOB/3/8Ow2Bnea5fjnbjYpAX+arKiCMh3PH8OtfLNpSUT0PMwaJve
-         kXqx9qvhC724/KMzW8BIw7tSRq6wddTKjQEmgPaGPDQhn1zdjWDA4meR7W+iHbrizB
-         /1SEHGh646elg==
-Date:   Mon, 15 Aug 2022 16:35:19 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Kashyap Desai <kashyap.desai@broadcom.com>,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Mon, 15 Aug 2022 21:46:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39307356D4
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:39:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660599555;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=e2Hg6grA0aMUmuL4rEa0v8OvN+G77+vUxp19mNa37p4=;
+        b=fvmPEoZ0xguwgALAx/MiAnwtYl5sdCPxOjewrbA3ynNj+eD67NhFjJBqCy7SBkQWV7C8S7
+        0chWHoAAa09Zcl98CTCzUF4marqx5npdmIQ55Zs2Am1A97nljGRRyplA57n2Yntt7wJ3Vt
+        X79TITi/cCtSuq7Po/PxcIH68gn5eUw=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-91-3Rp__2yUO3-t7gWk7tF5gA-1; Mon, 15 Aug 2022 17:39:14 -0400
+X-MC-Unique: 3Rp__2yUO3-t7gWk7tF5gA-1
+Received: by mail-wm1-f72.google.com with SMTP id z11-20020a05600c0a0b00b003a043991610so1583221wmp.8
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:39:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=e2Hg6grA0aMUmuL4rEa0v8OvN+G77+vUxp19mNa37p4=;
+        b=5CBGgfkVvR8f/14sUQir7MBWnSUnJRCfXpZ2M+eQNxF3uasaTdDSFPXDEqEo7pMl2I
+         AEyt3vhr/LN3goZTHJ1BW6AJDpYUQHDGI4QLQFuFPtVJRYRRO2Zq1F3lrlYmpddSMbE/
+         wzl5Eog8y/fZT4Cg98/aoylPaQbU9cgnABeXo0COzcktD7JtybgG+QAv0Tmfi5TU8B+e
+         wOeMMVITnZIt2cMiPcA67CiF5zYu/Fu5IRkyFuW1nK+efRtZPm8V0GeYJaxjs4uJmPp8
+         P1PoyzeX7e1mirl66s9PltOl2V0f6r2vR4CH8jTM9nj6r1AHsj6LVToUlZjMUfasFxKu
+         vOqA==
+X-Gm-Message-State: ACgBeo3m4acfWjjBMEkWJI2Ho0qUB+lTQWNs+/XQuCBbFxs5hxyLQDe+
+        5WcbOUkiz4NihmiRyoZI94k6PLG/NpFfodXxgE42idMuwIV4+qRJkn8cde0yQSPzI3mhCpLfFgu
+        2WWZlUh1HLss2gVtiiSTvuKHx
+X-Received: by 2002:a05:600c:1e8d:b0:3a5:e37f:6fd2 with SMTP id be13-20020a05600c1e8d00b003a5e37f6fd2mr6889427wmb.33.1660599553674;
+        Mon, 15 Aug 2022 14:39:13 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5OPTU7ZmWCtVBzowlE4TRPIvtXzHuep1+lrOGeKpN4aAF6Aj1ToJOY72dVoYDK4Ke/fClJcg==
+X-Received: by 2002:a05:600c:1e8d:b0:3a5:e37f:6fd2 with SMTP id be13-20020a05600c1e8d00b003a5e37f6fd2mr6889413wmb.33.1660599553427;
+        Mon, 15 Aug 2022 14:39:13 -0700 (PDT)
+Received: from redhat.com ([2.55.4.37])
+        by smtp.gmail.com with ESMTPSA id e14-20020a05600c4e4e00b003a31ca9dfb6sm13814387wmq.32.2022.08.15.14.39.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 14:39:12 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 17:39:08 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Andres Freund <andres@anarazel.de>
+Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH v3 0/6] Replace one-element arrays with flexible-array members
-Message-ID: <cover.1660592640.git.gustavoars@kernel.org>
+        Greg KH <gregkh@linuxfoundation.org>, c@redhat.com
+Subject: Re: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
+ size by find_vqs()"
+Message-ID: <20220815173256-mutt-send-email-mst@kernel.org>
+References: <20220815090521.127607-1-mst@redhat.com>
+ <20220815203426.GA509309@roeck-us.net>
+ <20220815164013-mutt-send-email-mst@kernel.org>
+ <20220815205053.GD509309@roeck-us.net>
+ <20220815165608-mutt-send-email-mst@kernel.org>
+ <20220815212839.aop6wwx4fkngihbf@awork3.anarazel.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220815212839.aop6wwx4fkngihbf@awork3.anarazel.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On Mon, Aug 15, 2022 at 02:28:39PM -0700, Andres Freund wrote:
+> Hi,
+> 
+> On 2022-08-15 17:04:10 -0400, Michael S. Tsirkin wrote:
+> > So virtio has a queue_size register. When read, it will give you
+> > originally the maximum queue size. Normally we just read it and
+> > use it as queue size.
+> > 
+> > However, when queue memory allocation fails, and unconditionally with a
+> > network device with the problematic patch, driver is asking the
+> > hypervisor to make the ring smaller by writing a smaller value into this
+> > register.
+> > 
+> > I suspect that what happens is hypervisor still uses the original value
+> > somewhere.
+> 
+> It looks more like the host is never told about the changed size for legacy
+> devices...
+> 
+> Indeed, adding a vp_legacy_set_queue_size() & call to it to setup_vq(), makes
+> 5.19 + restricting queue sizes to 1024 boot again.
 
-This series aims to replace one-element arrays with flexible-array
-members in drivers/scsi/megaraid/
+Interesting, the register is RO in the legacy interface.
+And to be frank I can't find where is vp_legacy_set_queue_size
+even implemented. It's midnight here too ...
 
-I followed the below steps in order to verify the changes don't
-significally impact the code (.text) section generated by the compiler,
-for each object file involved:
+>  I'd bet that it also would
+> fix 6.0rc1, but I'm running out of time to test that.
+> 
+> Greetings,
+> 
+> Andres Freund
 
-1. Prepare the build with the following settings and configurations:
+Yes I figured this out too. And I was able to reproduce on qemu now.
 
-        linux$ KBF="KBUILD_BUILD_TIMESTAMP=1970-01-01 KBUILD_BUILD_USER=user
-               KBUILD_BUILD_HOST=host KBUILD_BUILD_VERSION=1"
-        linux$ make $KBF allyesconfig
-        linux$ ./scripts/config -d GCOV_KERNEL -d KCOV -d GCC_PLUGINS \
-                         -d IKHEADERS -d KASAN -d UBSAN \
-                         -d DEBUG_INFO_NONE \
-                         -e DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
-        linux$ make $KBF olddefconfig
+Andres thanks a lot for the help!
 
-2. Build drivers/scsi/megaraid/ with the same settings and configurations
-   as in Step 1, and copy the generated object files in directory before/
+I'm posting a new patchset reverting all the handing of resize
+restrictions, I think we should rethink it for the next release.
 
-        linux$ make -j128 $KBF drivers/scsi/megaraid/
-        linux$ mkdir -p before
-        linux$ cp drivers/scsi/megaraid/*.o before/
-
-3. Implement all the needed changes and create the patch series. In this
-   case, six patches.
-
-        linux$ vi code.c
-               ...do the magic :)
-        linux$ git format-patch ...all the rest
-
-4. Apply a patch at a time (of the previously created series) and, after
-   applying EACH patch, build (as in Step 2) drivers/scsi/megaraid/ and
-   copy the generated object files in directory after/
-
-5. Compare the code section (.text) of each before/file.o and
-   after/file.o. I use the following bash script:
-
-   compare.sh:
-        ARGS="--disassemble --demangle --reloc --no-show-raw-insn --section=.text"
-        for i in $(cd before && echo *.o); do
-                echo $i
-                diff -u <(objdump $ARGS before/$i | sed "0,/^Disassembly/d") \
-                        <(objdump $ARGS after/$i  | sed "0,/^Disassembly/d")
-        done
-
-   linux$ ./compare.sh > code_comparison.diff
-
-6. Open the code_comparison.diff file from the example above, look for
-   any differences that might show up and analyze them in order to
-   determine their impact, and what (if something) should be changed
-   or study further.
-
-The above process (code section comparison of object files) is based on
-this[0] blog post by Kees Cook. The compiler used to build the code was
-GCC-12.
-
-In this series I only found the following sorts of differences in files
-megaraid_sas.o and megaraid_sas_base.o:
-
-...
-...@@ -7094,24 +7094,24 @@
-     6302:      movq   $0x0,0x1e20(%rbx)
-     630d:      test   %r15,%r15
-     6310:      je     6316 <megasas_aen_polling+0x56>
--                       6312: R_X86_64_PC32     .text.unlikely+0x3ae3
-+                       6312: R_X86_64_PC32     .text.unlikely+0x3ae0
-     6316:      mov    0x0(%rip),%eax        # 631c <megasas_aen_polling+0x5c>
-                        6318: R_X86_64_PC32     event_log_level-0x4
-     631c:      mov    0xc(%r15),%r14d
-     6320:      lea    0x2(%rax),%edx
-     6323:      cmp    $0x6,%edx
-     6326:      ja     632c <megasas_aen_polling+0x6c>
--                       6328: R_X86_64_PC32     .text.unlikely+0x3ac3
-+                       6328: R_X86_64_PC32     .text.unlikely+0x3ac0
-     632c:      mov    %r14d,%edx
-     632f:      sar    $0x18,%edx
-     6332:      mov    %edx,%ecx
-     6334:      cmp    %eax,%edx
-     6336:      jge    633c <megasas_aen_polling+0x7c>
--                       6338: R_X86_64_PC32     .text.unlikely+0x399c
-+                       6338: R_X86_64_PC32     .text.unlikely+0x3999
-...
-
-All of them have to do with the relocation of symbols in the
-.text.unlikely subsection and they don't seem to be of any actual
-relevance. So, we can safely ignore them.
-
-Also, notice there is an open issue in bugzilla.kernel.org [1] that's
-seems could be fixed by this series. :)
-
-This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
-routines on memcpy() and help us make progress towards globally
-enabling -fstrict-flex-arrays [2].
-
-Link: https://en.wikipedia.org/wiki/Flexible_array_member
-Link: https://www.kernel.org/doc/html/v5.10/process/deprecated.html#zero-length-and-one-element-arrays
-Link: https://github.com/KSPP/linux/issues/79
-Link: https://github.com/KSPP/linux/issues/109
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215943 [1]
-Link: https://reviews.llvm.org/D126864 [2]
-
-Thanks
-
-[0] https://outflux.net/blog/archives/2022/06/24/finding-binary-differences/
-
-Changes in v3:
- - Split the struct_size() changes into a couple of separate patches.
- - Use objdump to compare the code (.text) sections of the object
-   files before and after the changes.
- - Modify MR_FW_RAID_MAP_ALL and MR_DRV_RAID_MAP_ALL structures. Change
-   suggested by Kees Cook.
-
-Changes in v2:
- - Revert changes in struct MR_FW_RAID_MAP_ALL.
-
-Gustavo A. R. Silva (6):
-  scsi: megaraid_sas: Replace one-element array with flexible-array
-    member in MR_FW_RAID_MAP
-  scsi: megaraid_sas: Replace one-element array with flexible-array
-    member in MR_FW_RAID_MAP_DYNAMIC
-  scsi: megaraid_sas: Replace one-element array with flexible-array
-    member in MR_DRV_RAID_MAP
-  scsi: megaraid_sas: Replace one-element array with flexible-array
-    member in MR_PD_CFG_SEQ_NUM_SYNC
-  scsi: megaraid_sas: Use struct_size() in code related to struct
-    MR_FW_RAID_MAP
-  scsi: megaraid_sas: Use struct_size() in code related to struct
-    MR_PD_CFG_SEQ_NUM_SYNC
-
- drivers/scsi/megaraid/megaraid_sas_base.c   | 20 ++++++++++----------
- drivers/scsi/megaraid/megaraid_sas_fp.c     |  6 +++---
- drivers/scsi/megaraid/megaraid_sas_fusion.c |  2 +-
- drivers/scsi/megaraid/megaraid_sas_fusion.h | 12 ++++++------
- 4 files changed, 20 insertions(+), 20 deletions(-)
+Thanks everyone for the help!
 
 -- 
-2.34.1
+MST
 
