@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1FEC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADFCC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245210AbiHPAdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
+        id S1346070AbiHPAds (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353034AbiHPAbH (ORCPT
+        with ESMTP id S1353055AbiHPAbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:31:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466A71859A1;
-        Mon, 15 Aug 2022 13:36:05 -0700 (PDT)
+        Mon, 15 Aug 2022 20:31:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F49185278;
+        Mon, 15 Aug 2022 13:35:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86AC1B8113E;
-        Mon, 15 Aug 2022 20:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6312C433D6;
-        Mon, 15 Aug 2022 20:35:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B75936120E;
+        Mon, 15 Aug 2022 20:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE2CBC433C1;
+        Mon, 15 Aug 2022 20:35:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595759;
-        bh=95XFJWskYR5c35UCiLc3szUERpmzKhUaat+774PWgg4=;
+        s=korg; t=1660595735;
+        bh=e4KOm9d/OmVns9dybbdo24RWHSeEPB0MP1xvHiONHL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C3Bq+vJDNoAD7lz/ZfNCev3eHHKtStrlgZM8+Mdf5KOXyg28b8zujrs8qTJxElQqa
-         0AkT7bz1Tlx8EEhRPsDh2rFTQN76S9rkMIMrao5YfGRlWR5VwrpNi9rxtdV5mb42jB
-         rrDx4u/J3jYRTHgOeSa1SiFwLQ3GbaJfhcHnCJSg=
+        b=eD7ekyHBb6pikGD/dSHtXKrRxSlYj9Emw0apwc7KFxAMY4FjDgwIHL+Bc83QXrGkb
+         cZZOpJ1vOMPFVY4xt+ZCQUoECZJkaJQfy3hIV9gBqpUNWhaEsMgMlzQpgfbOKC/+l2
+         vHzPdkSuAxsnS8S9s2+kR3vWtaQNhIF7xnNWxvr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michael=20Sch=C3=B6ne?= <michael.schoene@rhebo.com>,
+        Paul Spooren <paul.spooren@rhebo.com>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0833/1157] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
-Date:   Mon, 15 Aug 2022 20:03:09 +0200
-Message-Id: <20220815180512.801120794@linuxfoundation.org>
+Subject: [PATCH 5.19 0857/1157] platform/x86: pmc_atom: Match all Lex BayTrail boards with critclk_systems DMI table
+Date:   Mon, 15 Aug 2022 20:03:33 +0200
+Message-Id: <20220815180513.761281028@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,43 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit aa2a1df3a2c85f855af7d54466ac10bd48645d63 ]
+[ Upstream commit c9d959fc32a5f9312282817052d8986614f2dc08 ]
 
-setup_base_ctxt() allocates a memory chunk for uctxt->groups with
-hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
-is not released, which will lead to a memory leak.
+The critclk_systems[] DMI match table already contains 2 Lex BayTrail
+boards and patches were just submitted to add 3 more entries for the
+following models: 3I380NX, 3I380A, 3I380CW.
 
-We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
-when init_user_ctxt() fails.
+Looking at: https://www.lex.com.tw/products/embedded-ipc-board/
+we can see that Lex BayTrail makes many embedded boards with
+multiple ethernet boards and none of their products are battery
+powered so we don't need to worry (too much) about power consumption
+when suspended.
 
-Fixes: e87473bc1b6c ("IB/hfi1: Only set fd pointer when base context is completely initialized")
-Link: https://lore.kernel.org/r/20220711070718.2318320-1-niejianglei2021@163.com
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Add a new DMI match which simply matches all Lex BayTrail boards and drop
+the 2 existing board specific quirks.
+
+Fixes: 648e921888ad ("clk: x86: Stop marking clocks as CLK_IS_CRITICAL")
+Reported-by: Michael Schöne <michael.schoene@rhebo.com>
+Reported-by: Paul Spooren <paul.spooren@rhebo.com>
+Reported-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/platform/x86/pmc_atom.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-index 2e4cf2b11653..629beff053ad 100644
---- a/drivers/infiniband/hw/hfi1/file_ops.c
-+++ b/drivers/infiniband/hw/hfi1/file_ops.c
-@@ -1179,8 +1179,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
- 		goto done;
- 
- 	ret = init_user_ctxt(fd, uctxt);
--	if (ret)
-+	if (ret) {
-+		hfi1_free_ctxt_rcv_groups(uctxt);
- 		goto done;
-+	}
- 
- 	user_init(uctxt);
- 
+diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
+index b8b1ed1406de..154317e9910d 100644
+--- a/drivers/platform/x86/pmc_atom.c
++++ b/drivers/platform/x86/pmc_atom.c
+@@ -389,21 +389,16 @@ static const struct dmi_system_id critclk_systems[] = {
+ 		},
+ 	},
+ 	{
+-		/* pmc_plt_clk0 - 3 are used for the 4 ethernet controllers */
+-		.ident = "Lex 3I380D",
++		/*
++		 * Lex System / Lex Computech Co. makes a lot of Bay Trail
++		 * based embedded boards which often come with multiple
++		 * ethernet controllers using multiple pmc_plt_clks. See:
++		 * https://www.lex.com.tw/products/embedded-ipc-board/
++		 */
++		.ident = "Lex BayTrail",
+ 		.callback = dmi_callback,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "3I380D"),
+-		},
+-	},
+-	{
+-		/* pmc_plt_clk* - are used for ethernet controllers */
+-		.ident = "Lex 2I385SW",
+-		.callback = dmi_callback,
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "2I385SW"),
+ 		},
+ 	},
+ 	{
 -- 
 2.35.1
 
