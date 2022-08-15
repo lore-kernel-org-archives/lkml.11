@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76029C2BBC5
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F57DC25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345981AbiHOX07 (ORCPT
+        id S1344206AbiHOX0L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
+        Mon, 15 Aug 2022 19:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353267AbiHOXWA (ORCPT
+        with ESMTP id S1346627AbiHOXVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:22:00 -0400
+        Mon, 15 Aug 2022 19:21:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DC37E817;
-        Mon, 15 Aug 2022 13:05:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5A87E305;
+        Mon, 15 Aug 2022 13:04:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BACEB80EB1;
-        Mon, 15 Aug 2022 20:05:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBF18C433D6;
-        Mon, 15 Aug 2022 20:05:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 615DBB80EA8;
+        Mon, 15 Aug 2022 20:04:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9476C433C1;
+        Mon, 15 Aug 2022 20:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593905;
-        bh=catCIrF+FyTL0WjZLHY3p3AfBbLlV9/q/eoNToE/gr4=;
+        s=korg; t=1660593877;
+        bh=hP/9KZye9mvWkD+qnzNh7Mn9ujOi/BfJgmHbNS6xy7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ic1lPlCd9HWZ/7fIzcoFaPSiIaqL4GvNdgr5P0ZZwvJZl4CczARQdoeF6h0x/2oDr
-         4olFz7QJX9I65P6P556k+9D+WQyC8UI0WZjaQJ9/w8+whtto0EC1AHD80wqRKeEgoZ
-         mZJtvFNLNUIP3y07rsuYwiwHWMPfwLfTHXEL2S4g=
+        b=Dq/JmeaqkWtarQzuNxI4nkjKmDFmE3bWq8XESEyPPUdSN6uiskvqu7kNi4eiGncep
+         cM28E52ljwHSIwKY/WKSLhtPqPFQ5mSnf/ItlelmaTx2G1zRDTTq6c3fEVCc8cGWad
+         1g+nIxZZW96WPqS0IXBAQLaNpJKo5eza2+8qoyNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
-        Tyrone Ting <kfting@nuvoton.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0346/1157] i2c: npcm: Correct slave role behavior
-Date:   Mon, 15 Aug 2022 19:55:02 +0200
-Message-Id: <20220815180453.551332627@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0311/1157] drm/meson: Fix refcount leak in meson_encoder_hdmi_init
+Date:   Mon, 15 Aug 2022 19:54:27 +0200
+Message-Id: <20220815180452.097271850@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,53 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d7aa1b149b8fc04d802879cf4662010aa4a42deb ]
+[ Upstream commit 7381076809586528e2a812a709e2758916318a99 ]
 
-Correct the slave transaction logic to be compatible with the generic
-slave backend driver.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() in error path to avoid refcount
+leak.
 
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 0af5e0b41110 ("drm/meson: encoder_hdmi: switch to bridge DRM_BRIDGE_ATTACH_NO_CONNECTOR")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220511054052.51981-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/meson/meson_encoder_hdmi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index f3177cff9591..7b112be5e35c 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -915,11 +915,15 @@ static int npcm_i2c_slave_get_wr_buf(struct npcm_i2c *bus)
- 	for (i = 0; i < I2C_HW_FIFO_SIZE; i++) {
- 		if (bus->slv_wr_size >= I2C_HW_FIFO_SIZE)
- 			break;
--		i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
-+		if (bus->state == I2C_SLAVE_MATCH) {
-+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
-+			bus->state = I2C_OPER_STARTED;
-+		} else {
-+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
+diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
+index 5e306de6f485..de87f02cd388 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
++++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
+@@ -435,8 +435,10 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
+ 		cec_fill_conn_info_from_drm(&conn_info, meson_encoder_hdmi->connector);
+ 
+ 		notifier = cec_notifier_conn_register(&pdev->dev, NULL, &conn_info);
+-		if (!notifier)
++		if (!notifier) {
++			put_device(&pdev->dev);
+ 			return -ENOMEM;
 +		}
- 		ind = (bus->slv_wr_ind + bus->slv_wr_size) % I2C_HW_FIFO_SIZE;
- 		bus->slv_wr_buf[ind] = value;
- 		bus->slv_wr_size++;
--		i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
+ 
+ 		meson_encoder_hdmi->cec_notifier = notifier;
  	}
- 	return I2C_HW_FIFO_SIZE - ret;
- }
-@@ -967,7 +971,6 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
- 	if (nwrite == 0)
- 		return;
- 
--	bus->state = I2C_OPER_STARTED;
- 	bus->operation = I2C_WRITE_OPER;
- 
- 	/* get the next buffer */
 -- 
 2.35.1
 
