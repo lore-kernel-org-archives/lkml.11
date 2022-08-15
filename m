@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56276C32762
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65654C32765
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350769AbiHOWcL (ORCPT
+        id S1350815AbiHOWcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
+        Mon, 15 Aug 2022 18:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350570AbiHOW07 (ORCPT
+        with ESMTP id S1350648AbiHOW1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:26:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACA55F9E;
-        Mon, 15 Aug 2022 12:45:23 -0700 (PDT)
+        Mon, 15 Aug 2022 18:27:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F88D2CE14;
+        Mon, 15 Aug 2022 12:45:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0367AB80EAB;
-        Mon, 15 Aug 2022 19:45:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4920BC433C1;
-        Mon, 15 Aug 2022 19:45:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6567E61226;
+        Mon, 15 Aug 2022 19:45:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54FC6C4314B;
+        Mon, 15 Aug 2022 19:45:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592720;
-        bh=Ll3VrOpxsVmeadqheby9L6HRHAFePhaWMYtkUoqpQtY=;
+        s=korg; t=1660592726;
+        bh=klIS7ycXksOFminzkbfQIkkg2qc2wVpDENS4p2ZuMMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iq9A8kFwBEgJ7ovw9teq8KFFlWW811EeqTyszpJk5WEMf+gtA9WUYq58aX/7+6Y3D
-         z/mu/0o6HaY5W1nyW6XjDjGCI3ShoIoFjWd53B4NWdvbSQ7sQzoVHS1s5wz9lSqTg8
-         gxg5Tk0GIFF/MLQOMyhbi0ElnPfnuftLEWqbvg2w=
+        b=MIuuPlUvfghqlLyoaHCK+AQy7PopzBAZOiuaPre7PhH3T/Zuok4WaMuCJVRJcsbeF
+         JTnvWDYVc24Sn6B5Qnrp4DCJNnN2qJflvEllWkerzYqpWYmwhIQ1br/vF824zNARDG
+         W5bgZEU67mE396vOj21TuKcpNe0Bs7V0qlO4K5Ao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0155/1157] ext2: Add more validity checks for inode counts
-Date:   Mon, 15 Aug 2022 19:51:51 +0200
-Message-Id: <20220815180445.881843213@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0836/1095] serial: 8250: Export ICR access helpers for internal use
+Date:   Mon, 15 Aug 2022 20:03:55 +0200
+Message-Id: <20220815180503.922165178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
+[ Upstream commit cb5a40e3143bc64437858b337273fd63cc42e9c2 ]
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+Make ICR access helpers available outside 8250_port.c, however retain
+them as ordinary static functions so as not to regress code generation.
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
+This is because `serial_icr_write' is currently automatically inlined by
+GCC, however `serial_icr_read' is not.  Making them both static inline
+would grow code produced, e.g.:
+
+$ i386-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+      text       data        bss      total filename
+     15065       3378          0      18443 8250_port-old.o
+     15289       3378          0      18667 8250_port-new.o
+
+and:
+
+$ riscv64-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+      text       data        bss      total filename
+     16980       5306          0      22286 8250_port-old.o
+     17124       5306          0      22430 8250_port-new.o
+
+while making them external would needlessly add a new module interface
+and lose the benefit from `serial_icr_write' getting inlined outside
+8250_port.o.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181517500.9383@angie.orcam.me.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250.h      | 22 ++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 21 ---------------------
+ 2 files changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index f6a19f6d9f6d..cdffa2a041af 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1059,9 +1059,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index db784ace25d8..467372534d1c 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -120,6 +120,28 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
+ 	up->port.serial_out(&up->port, offset, value);
+ }
+ 
++/*
++ * For the 16C950
++ */
++static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
++{
++	serial_out(up, UART_SCR, offset);
++	serial_out(up, UART_ICR, value);
++}
++
++static unsigned int __maybe_unused serial_icr_read(struct uart_8250_port *up,
++						   int offset)
++{
++	unsigned int value;
++
++	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
++	serial_out(up, UART_SCR, offset);
++	value = serial_in(up, UART_ICR);
++	serial_icr_write(up, UART_ACR, up->acr);
++
++	return value;
++}
++
+ void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
+ 
+ static inline int serial_dl_read(struct uart_8250_port *up)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index ddaf35daf316..291fd99bd7f1 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -537,27 +537,6 @@ serial_port_out_sync(struct uart_port *p, int offset, int value)
  	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1071,6 +1072,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
-+	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array(db_count,
+ }
+ 
+-/*
+- * For the 16C950
+- */
+-static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
+-{
+-	serial_out(up, UART_SCR, offset);
+-	serial_out(up, UART_ICR, value);
+-}
+-
+-static unsigned int serial_icr_read(struct uart_8250_port *up, int offset)
+-{
+-	unsigned int value;
+-
+-	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
+-	serial_out(up, UART_SCR, offset);
+-	value = serial_in(up, UART_ICR);
+-	serial_icr_write(up, UART_ACR, up->acr);
+-
+-	return value;
+-}
+-
+ /*
+  * FIFO support.
+  */
 -- 
 2.35.1
 
