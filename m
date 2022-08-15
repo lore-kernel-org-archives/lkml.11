@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E57B2C2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7123C2BB43
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346581AbiHOUls (ORCPT
+        id S1346536AbiHOUlk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
+        Mon, 15 Aug 2022 16:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346260AbiHOUf6 (ORCPT
+        with ESMTP id S1345149AbiHOUfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:35:58 -0400
+        Mon, 15 Aug 2022 16:35:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6E92CDFB;
-        Mon, 15 Aug 2022 12:06:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFE3371A9;
+        Mon, 15 Aug 2022 12:06:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53279B81062;
-        Mon, 15 Aug 2022 19:06:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC3AC433C1;
-        Mon, 15 Aug 2022 19:06:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91CBCB81104;
+        Mon, 15 Aug 2022 19:06:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC26DC433C1;
+        Mon, 15 Aug 2022 19:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590409;
-        bh=qvJ6CSHoffT99ctcnfN/FArQviAOFzwCtP0KVNA+j7U=;
+        s=korg; t=1660590384;
+        bh=CBgb56HFKBmdWIWJ/wiKMtuMrogElOROawwgv/vqOZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N7oagBSN/PpNyd9afCF2YHOJPIL4W7J6AwnOnQ1woFUDeD6E6ginSPHbPN5AlRolU
-         qkOSPER4ElD1EEEXhkUBPTFgZ9tjc2BJNl1/gPJaWjTioK9BdyS7omMrZLm+aCqXiB
-         Q8ohkhH20ea1xKxARmtJ7GwzDbbQ99QS4YcPbO24=
+        b=yWJbzjvrDSJcqTgOPu/wmgfy2ksplL9vrknXwdakFAHj8hL/Yl/GHBs2UBGxcIHW7
+         OxJybGhwsLchzn9cxLoVCtqn6r2xmFT11nGqS1jzDuV9VuzXGo3kOLOgV6/a8SIyBT
+         kYPrXAVIhZtdnTs+c4quu0M830kxvx/7lDrXU21k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        "GONG, Ruiqi" <gongruiqi1@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, GONG@vger.kernel.org
-Subject: [PATCH 5.18 0250/1095] stack: Declare {randomize_,}kstack_offset to fix Sparse warnings
-Date:   Mon, 15 Aug 2022 19:54:09 +0200
-Message-Id: <20220815180440.093887422@linuxfoundation.org>
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0243/1095] ia64: fix typos in comments
+Date:   Mon, 15 Aug 2022 19:54:02 +0200
+Message-Id: <20220815180439.831224468@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -53,45 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GONG, Ruiqi <gongruiqi1@huawei.com>
+From: Julia Lawall <Julia.Lawall@inria.fr>
 
-[ Upstream commit 375561bd6195a31bf4c109732bd538cb97a941f4 ]
+[ Upstream commit 0af96a024f524a5318485cbada73ab7d874895d4 ]
 
-Fix the following Sparse warnings that got noticed when the PPC-dev
-patchwork was checking another patch (see the link below):
+Various spelling mistakes in comments.
+Detected with the help of Coccinelle.
 
-init/main.c:862:1: warning: symbol 'randomize_kstack_offset' was not declared. Should it be static?
-init/main.c:864:1: warning: symbol 'kstack_offset' was not declared. Should it be static?
-
-Which in fact are triggered on all architectures that have
-HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET support (for instances x86, arm64
-etc).
-
-Link: https://lore.kernel.org/lkml/e7b0d68b-914d-7283-827c-101988923929@huawei.com/T/#m49b2d4490121445ce4bf7653500aba59eefcb67f
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220629060423.2515693-1-gongruiqi1@huawei.com
+Link: https://lkml.kernel.org/r/20220318103729.157574-1-Julia.Lawall@inria.fr
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/ia64/kernel/palinfo.c | 2 +-
+ arch/ia64/kernel/traps.c   | 2 +-
+ arch/ia64/mm/init.c        | 2 +-
+ arch/ia64/mm/tlb.c         | 4 ++--
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index 80bd217dd35e..1e866b31bf19 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -99,6 +99,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <linux/randomize_kstack.h>
- #include <net/net_namespace.h>
+diff --git a/arch/ia64/kernel/palinfo.c b/arch/ia64/kernel/palinfo.c
+index 64189f04c1a4..b9ae093bfe37 100644
+--- a/arch/ia64/kernel/palinfo.c
++++ b/arch/ia64/kernel/palinfo.c
+@@ -120,7 +120,7 @@ static const char *mem_attrib[]={
+  * Input:
+  *	- a pointer to a buffer to hold the string
+  *	- a 64-bit vector
+- * Ouput:
++ * Output:
+  *	- a pointer to the end of the buffer
+  *
+  */
+diff --git a/arch/ia64/kernel/traps.c b/arch/ia64/kernel/traps.c
+index 753642366e12..53735b1d1be3 100644
+--- a/arch/ia64/kernel/traps.c
++++ b/arch/ia64/kernel/traps.c
+@@ -309,7 +309,7 @@ handle_fpu_swa (int fp_fault, struct pt_regs *regs, unsigned long isr)
+ 			/*
+ 			 * Lower 4 bits are used as a count. Upper bits are a sequence
+ 			 * number that is updated when count is reset. The cmpxchg will
+-			 * fail is seqno has changed. This minimizes mutiple cpus
++			 * fail is seqno has changed. This minimizes multiple cpus
+ 			 * resetting the count.
+ 			 */
+ 			if (current_jiffies > last.time)
+diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
+index 5d165607bf35..7ae1244ed8ec 100644
+--- a/arch/ia64/mm/init.c
++++ b/arch/ia64/mm/init.c
+@@ -451,7 +451,7 @@ mem_init (void)
+ 	memblock_free_all();
  
- #include <asm/io.h>
+ 	/*
+-	 * For fsyscall entrpoints with no light-weight handler, use the ordinary
++	 * For fsyscall entrypoints with no light-weight handler, use the ordinary
+ 	 * (heavy-weight) handler, but mark it by setting bit 0, so the fsyscall entry
+ 	 * code can tell them apart.
+ 	 */
+diff --git a/arch/ia64/mm/tlb.c b/arch/ia64/mm/tlb.c
+index 135b5135cace..ca060e7a2a46 100644
+--- a/arch/ia64/mm/tlb.c
++++ b/arch/ia64/mm/tlb.c
+@@ -174,7 +174,7 @@ __setup("nptcg=", set_nptcg);
+  * override table (in which case we should ignore the value from
+  * PAL_VM_SUMMARY).
+  *
+- * Kernel parameter "nptcg=" overrides maximum number of simultanesous ptc.g
++ * Kernel parameter "nptcg=" overrides maximum number of simultaneous ptc.g
+  * purges defined in either PAL_VM_SUMMARY or PAL override table. In this case,
+  * we should ignore the value from either PAL_VM_SUMMARY or PAL override table.
+  *
+@@ -516,7 +516,7 @@ int ia64_itr_entry(u64 target_mask, u64 va, u64 pte, u64 log_size)
+ 	if (i >= per_cpu(ia64_tr_num, cpu))
+ 		return -EBUSY;
+ 
+-	/*Record tr info for mca hander use!*/
++	/*Record tr info for mca handler use!*/
+ 	if (i > per_cpu(ia64_tr_used, cpu))
+ 		per_cpu(ia64_tr_used, cpu) = i;
+ 
 -- 
 2.35.1
 
