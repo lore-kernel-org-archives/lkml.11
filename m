@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68657C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2159FC2BB47
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345207AbiHOVRm (ORCPT
+        id S1346783AbiHOVSH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        Mon, 15 Aug 2022 17:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347726AbiHOVHS (ORCPT
+        with ESMTP id S240133AbiHOVIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:07:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DD737F88;
-        Mon, 15 Aug 2022 12:15:47 -0700 (PDT)
+        Mon, 15 Aug 2022 17:08:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0121454645;
+        Mon, 15 Aug 2022 12:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DA85B81106;
-        Mon, 15 Aug 2022 19:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B73DC433D6;
-        Mon, 15 Aug 2022 19:15:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A233E60FB9;
+        Mon, 15 Aug 2022 19:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99859C433D6;
+        Mon, 15 Aug 2022 19:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590944;
-        bh=z+5x1ygZ0wmS3S4zFmjdaGOeyp2L82efvKH3V/p6uRc=;
+        s=korg; t=1660591121;
+        bh=xYO+TDFOfQODSrEx0HoMIGJBE32gT1/jzGDxoOV/ltY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yJRxCO4y6yllgDM8q8ilHmbc2VyfFFUsIenbVlHBBJropzMwB8fBbPhd2xbGpAUTy
-         9h0JJYc5LFJctkfbWGht/kschzf/gPStd79zAgktswLoC4+Z1Vm79vmJtR7HRgr4B5
-         0ivyoQ+aPsSdoS41ca41EMkpqz9UCM8ubaNZ0aUI=
+        b=Tql5egFyVxl8bBl6zYmmQ5j9cOPj+nTsPoAnRGkLExsYJJs3z3Gh7Qun0fjFOLBT6
+         6egqfZ4xJYzEh1amBi3nAT8dmGcrXEuSy1vE89LjssJqD4wxa9RekdLPNkjFQvr7sG
+         fq6ROglsOmYmwOx0iqvk8BNVHaFb2vPGuf8fdwmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0421/1095] drm/msm: Avoid unclocked GMU register access in 6xx gpu_busy
-Date:   Mon, 15 Aug 2022 19:57:00 +0200
-Message-Id: <20220815180447.129052352@linuxfoundation.org>
+Subject: [PATCH 5.18 0479/1095] bpf: Adapt copy_map_value for multiple offset case
+Date:   Mon, 15 Aug 2022 19:57:58 +0200
+Message-Id: <20220815180449.404334664@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,327 +50,266 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Anderson <dianders@chromium.org>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-[ Upstream commit 6694482a70e9536efbf2ac233cbf0c302d6e2dae ]
+[ Upstream commit 4d7d7f69f4b104b2ddeec6a1e7fcfd2d044ed8c4 ]
 
->From testing on sc7180-trogdor devices, reading the GMU registers
-needs the GMU clocks to be enabled. Those clocks get turned on in
-a6xx_gmu_resume(). Confusingly enough, that function is called as a
-result of the runtime_pm of the GPU "struct device", not the GMU
-"struct device". Unfortunately the current a6xx_gpu_busy() grabs a
-reference to the GMU's "struct device".
+Since now there might be at most 10 offsets that need handling in
+copy_map_value, the manual shuffling and special case is no longer going
+to work. Hence, let's generalise the copy_map_value function by using
+a sorted array of offsets to skip regions that must be avoided while
+copying into and out of a map value.
 
-The fact that we were grabbing the wrong reference was easily seen to
-cause crashes that happen if we change the GPU's pm_runtime usage to
-not use autosuspend. It's also believed to cause some long tail GPU
-crashes even with autosuspend.
+When the map is created, we populate the offset array in struct map,
+Then, copy_map_value uses this sorted offset array is used to memcpy
+while skipping timer, spin lock, and kptr. The array is allocated as
+in most cases none of these special fields would be present in map
+value, hence we can save on space for the common case by not embedding
+the entire object inside bpf_map struct.
 
-We could look at changing it so that we do pm_runtime_get_if_in_use()
-on the GPU's "struct device", but then we run into a different
-problem. pm_runtime_get_if_in_use() will return 0 for the GPU's
-"struct device" the whole time when we're in the "autosuspend
-delay". That is, when we drop the last reference to the GPU but we're
-waiting a period before actually suspending then we'll think the GPU
-is off. One reason that's bad is that if the GPU didn't actually turn
-off then the cycle counter doesn't lose state and that throws off all
-of our calculations.
-
-Let's change the code to keep track of the suspend state of
-devfreq. msm_devfreq_suspend() is always called before we actually
-suspend the GPU and msm_devfreq_resume() after we resume it. This
-means we can use the suspended state to know if we're powered or not.
-
-NOTE: one might wonder when exactly our status function is called when
-devfreq is supposed to be disabled. The stack crawl I captured was:
-  msm_devfreq_get_dev_status
-  devfreq_simple_ondemand_func
-  devfreq_update_target
-  qos_notifier_call
-  qos_max_notifier_call
-  blocking_notifier_call_chain
-  pm_qos_update_target
-  freq_qos_apply
-  apply_constraint
-  __dev_pm_qos_update_request
-  dev_pm_qos_update_request
-  msm_devfreq_idle_work
-
-Fixes: eadf79286a4b ("drm/msm: Check for powered down HW in the devfreq callbacks")
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Patchwork: https://patchwork.freedesktop.org/patch/489124/
-Link: https://lore.kernel.org/r/20220610124639.v4.1.Ie846c5352bc307ee4248d7cab998ab3016b85d06@changeid
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220424214901.2743946-6-memxor@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/adreno/a5xx_gpu.c |  8 ------
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 13 ++++-----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 12 +++------
- drivers/gpu/drm/msm/adreno/a6xx_gpu.h |  3 ++-
- drivers/gpu/drm/msm/msm_gpu.h         | 11 +++++++-
- drivers/gpu/drm/msm/msm_gpu_devfreq.c | 39 +++++++++++++++++++++------
- 6 files changed, 53 insertions(+), 33 deletions(-)
+ include/linux/bpf.h  | 56 +++++++++++++++-------------
+ kernel/bpf/syscall.c | 88 +++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 117 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-index 217615e0e850..213f75fc98e8 100644
---- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-@@ -1666,18 +1666,10 @@ static u64 a5xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
- {
- 	u64 busy_cycles;
- 
--	/* Only read the gpu busy if the hardware is already active */
--	if (pm_runtime_get_if_in_use(&gpu->pdev->dev) == 0) {
--		*out_sample_rate = 1;
--		return 0;
--	}
--
- 	busy_cycles = gpu_read64(gpu, REG_A5XX_RBBM_PERFCTR_RBBM_0_LO,
- 			REG_A5XX_RBBM_PERFCTR_RBBM_0_HI);
- 	*out_sample_rate = clk_get_rate(gpu->core_clk);
- 
--	pm_runtime_put(&gpu->pdev->dev);
--
- 	return busy_cycles;
- }
- 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index 3e325e2a2b1b..1863908694dc 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -102,7 +102,8 @@ bool a6xx_gmu_gx_is_on(struct a6xx_gmu *gmu)
- 		A6XX_GMU_SPTPRAC_PWR_CLK_STATUS_GX_HM_CLK_OFF));
- }
- 
--void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
-+void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-+		       bool suspended)
- {
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
- 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-@@ -127,15 +128,16 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
- 
- 	/*
- 	 * This can get called from devfreq while the hardware is idle. Don't
--	 * bring up the power if it isn't already active
-+	 * bring up the power if it isn't already active. All we're doing here
-+	 * is updating the frequency so that when we come back online we're at
-+	 * the right rate.
- 	 */
--	if (pm_runtime_get_if_in_use(gmu->dev) == 0)
-+	if (suspended)
- 		return;
- 
- 	if (!gmu->legacy) {
- 		a6xx_hfi_set_freq(gmu, perf_index);
- 		dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
--		pm_runtime_put(gmu->dev);
- 		return;
- 	}
- 
-@@ -159,7 +161,6 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
- 		dev_err(gmu->dev, "GMU set GPU frequency error: %d\n", ret);
- 
- 	dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
--	pm_runtime_put(gmu->dev);
- }
- 
- unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu)
-@@ -895,7 +896,7 @@ static void a6xx_gmu_set_initial_freq(struct msm_gpu *gpu, struct a6xx_gmu *gmu)
- 		return;
- 
- 	gmu->freq = 0; /* so a6xx_gmu_set_freq() doesn't exit early */
--	a6xx_gmu_set_freq(gpu, gpu_opp);
-+	a6xx_gmu_set_freq(gpu, gpu_opp, false);
- 	dev_pm_opp_put(gpu_opp);
- }
- 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 40fb92becc78..a8a0d798d17f 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1658,27 +1658,21 @@ static u64 a6xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
- 	/* 19.2MHz */
- 	*out_sample_rate = 19200000;
- 
--	/* Only read the gpu busy if the hardware is already active */
--	if (pm_runtime_get_if_in_use(a6xx_gpu->gmu.dev) == 0)
--		return 0;
--
- 	busy_cycles = gmu_read64(&a6xx_gpu->gmu,
- 			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_L,
- 			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_H);
- 
--
--	pm_runtime_put(a6xx_gpu->gmu.dev);
--
- 	return busy_cycles;
- }
- 
--static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
-+static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-+			      bool suspended)
- {
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
- 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
- 
- 	mutex_lock(&a6xx_gpu->gmu.lock);
--	a6xx_gmu_set_freq(gpu, opp);
-+	a6xx_gmu_set_freq(gpu, opp, suspended);
- 	mutex_unlock(&a6xx_gpu->gmu.lock);
- }
- 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-index 86e0a7c3fe6d..ab853f61db63 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-@@ -77,7 +77,8 @@ void a6xx_gmu_clear_oob(struct a6xx_gmu *gmu, enum a6xx_gmu_oob_state state);
- int a6xx_gmu_init(struct a6xx_gpu *a6xx_gpu, struct device_node *node);
- void a6xx_gmu_remove(struct a6xx_gpu *a6xx_gpu);
- 
--void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp);
-+void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-+		       bool suspended);
- unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu);
- 
- void a6xx_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 143c56f5185b..a4d3abc4f3e1 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -63,11 +63,14 @@ struct msm_gpu_funcs {
- 	/* for generation specific debugfs: */
- 	void (*debugfs_init)(struct msm_gpu *gpu, struct drm_minor *minor);
- #endif
-+	/* note: gpu_busy() can assume that we have been pm_resumed */
- 	u64 (*gpu_busy)(struct msm_gpu *gpu, unsigned long *out_sample_rate);
- 	struct msm_gpu_state *(*gpu_state_get)(struct msm_gpu *gpu);
- 	int (*gpu_state_put)(struct msm_gpu_state *state);
- 	unsigned long (*gpu_get_freq)(struct msm_gpu *gpu);
--	void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp);
-+	/* note: gpu_set_freq() can assume that we have been pm_resumed */
-+	void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-+			     bool suspended);
- 	struct msm_gem_address_space *(*create_address_space)
- 		(struct msm_gpu *gpu, struct platform_device *pdev);
- 	struct msm_gem_address_space *(*create_private_address_space)
-@@ -91,6 +94,9 @@ struct msm_gpu_devfreq {
- 	/** devfreq: devfreq instance */
- 	struct devfreq *devfreq;
- 
-+	/** lock: lock for "suspended", "busy_cycles", and "time" */
-+	struct mutex lock;
-+
- 	/**
- 	 * idle_constraint:
- 	 *
-@@ -134,6 +140,9 @@ struct msm_gpu_devfreq {
- 	 * elapsed
- 	 */
- 	struct msm_hrtimer_work boost_work;
-+
-+	/** suspended: tracks if we're suspended */
-+	bool suspended;
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 2f6e7fc474ea..a3fe7f53e567 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -158,6 +158,9 @@ struct bpf_map_ops {
+ enum {
+ 	/* Support at most 8 pointers in a BPF map value */
+ 	BPF_MAP_VALUE_OFF_MAX = 8,
++	BPF_MAP_OFF_ARR_MAX   = BPF_MAP_VALUE_OFF_MAX +
++				1 + /* for bpf_spin_lock */
++				1,  /* for bpf_timer */
  };
  
- struct msm_gpu {
-diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-index c7dbaa4b1926..01248d340124 100644
---- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-+++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-@@ -20,6 +20,7 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
- 		u32 flags)
- {
- 	struct msm_gpu *gpu = dev_to_gpu(dev);
-+	struct msm_gpu_devfreq *df = &gpu->devfreq;
- 	struct dev_pm_opp *opp;
+ enum bpf_kptr_type {
+@@ -179,6 +182,12 @@ struct bpf_map_value_off {
+ 	struct bpf_map_value_off_desc off[];
+ };
  
- 	/*
-@@ -32,10 +33,13 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
- 
- 	trace_msm_gpu_freq_change(dev_pm_opp_get_freq(opp));
- 
--	if (gpu->funcs->gpu_set_freq)
--		gpu->funcs->gpu_set_freq(gpu, opp);
--	else
-+	if (gpu->funcs->gpu_set_freq) {
-+		mutex_lock(&df->lock);
-+		gpu->funcs->gpu_set_freq(gpu, opp, df->suspended);
-+		mutex_unlock(&df->lock);
-+	} else {
- 		clk_set_rate(gpu->core_clk, *freq);
-+	}
- 
- 	dev_pm_opp_put(opp);
- 
-@@ -58,15 +62,24 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
- 	unsigned long sample_rate;
- 	ktime_t time;
- 
-+	mutex_lock(&df->lock);
++struct bpf_map_off_arr {
++	u32 cnt;
++	u32 field_off[BPF_MAP_OFF_ARR_MAX];
++	u8 field_sz[BPF_MAP_OFF_ARR_MAX];
++};
 +
- 	status->current_frequency = get_freq(gpu);
--	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
- 	time = ktime_get();
+ struct bpf_map {
+ 	/* The first two cachelines with read-mostly members of which some
+ 	 * are also accessed in fast-path (e.g. ops, max_entries).
+@@ -207,10 +216,7 @@ struct bpf_map {
+ 	struct mem_cgroup *memcg;
+ #endif
+ 	char name[BPF_OBJ_NAME_LEN];
+-	bool bypass_spec_v1;
+-	bool frozen; /* write-once; write-protected by freeze_mutex */
+-	/* 6 bytes hole */
 -
--	busy_time = busy_cycles - df->busy_cycles;
- 	status->total_time = ktime_us_delta(time, df->time);
-+	df->time = time;
++	struct bpf_map_off_arr *off_arr;
+ 	/* The 3rd and 4th cacheline with misc members to avoid false sharing
+ 	 * particularly with refcounting.
+ 	 */
+@@ -230,6 +236,8 @@ struct bpf_map {
+ 		bool jited;
+ 		bool xdp_has_frags;
+ 	} owner;
++	bool bypass_spec_v1;
++	bool frozen; /* write-once; write-protected by freeze_mutex */
+ };
  
-+	if (df->suspended) {
-+		mutex_unlock(&df->lock);
-+		status->busy_time = 0;
+ static inline bool map_value_has_spin_lock(const struct bpf_map *map)
+@@ -253,37 +261,33 @@ static inline void check_and_init_map_value(struct bpf_map *map, void *dst)
+ 		memset(dst + map->spin_lock_off, 0, sizeof(struct bpf_spin_lock));
+ 	if (unlikely(map_value_has_timer(map)))
+ 		memset(dst + map->timer_off, 0, sizeof(struct bpf_timer));
++	if (unlikely(map_value_has_kptrs(map))) {
++		struct bpf_map_value_off *tab = map->kptr_off_tab;
++		int i;
++
++		for (i = 0; i < tab->nr_off; i++)
++			*(u64 *)(dst + tab->off[i].offset) = 0;
++	}
+ }
+ 
+ /* copy everything but bpf_spin_lock and bpf_timer. There could be one of each. */
+ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
+ {
+-	u32 s_off = 0, s_sz = 0, t_off = 0, t_sz = 0;
++	u32 curr_off = 0;
++	int i;
+ 
+-	if (unlikely(map_value_has_spin_lock(map))) {
+-		s_off = map->spin_lock_off;
+-		s_sz = sizeof(struct bpf_spin_lock);
+-	}
+-	if (unlikely(map_value_has_timer(map))) {
+-		t_off = map->timer_off;
+-		t_sz = sizeof(struct bpf_timer);
++	if (likely(!map->off_arr)) {
++		memcpy(dst, src, map->value_size);
 +		return;
+ 	}
+ 
+-	if (unlikely(s_sz || t_sz)) {
+-		if (s_off < t_off || !s_sz) {
+-			swap(s_off, t_off);
+-			swap(s_sz, t_sz);
+-		}
+-		memcpy(dst, src, t_off);
+-		memcpy(dst + t_off + t_sz,
+-		       src + t_off + t_sz,
+-		       s_off - t_off - t_sz);
+-		memcpy(dst + s_off + s_sz,
+-		       src + s_off + s_sz,
+-		       map->value_size - s_off - s_sz);
+-	} else {
+-		memcpy(dst, src, map->value_size);
++	for (i = 0; i < map->off_arr->cnt; i++) {
++		u32 next_off = map->off_arr->field_off[i];
++
++		memcpy(dst + curr_off, src + curr_off, next_off - curr_off);
++		curr_off += map->off_arr->field_sz[i];
+ 	}
++	memcpy(dst + curr_off, src + curr_off, map->value_size - curr_off);
+ }
+ void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+ 			   bool lock_src);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index dc49bd880ac0..811bc71b0906 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -30,6 +30,7 @@
+ #include <linux/pgtable.h>
+ #include <linux/bpf_lsm.h>
+ #include <linux/poll.h>
++#include <linux/sort.h>
+ #include <linux/bpf-netns.h>
+ #include <linux/rcupdate_trace.h>
+ #include <linux/memcontrol.h>
+@@ -551,6 +552,7 @@ static void bpf_map_free_deferred(struct work_struct *work)
+ 	struct bpf_map *map = container_of(work, struct bpf_map, work);
+ 
+ 	security_bpf_map_free(map);
++	kfree(map->off_arr);
+ 	bpf_map_free_kptr_off_tab(map);
+ 	bpf_map_release_memcg(map);
+ 	/* implementation dependent freeing */
+@@ -840,6 +842,84 @@ int map_check_no_btf(const struct bpf_map *map,
+ 	return -ENOTSUPP;
+ }
+ 
++static int map_off_arr_cmp(const void *_a, const void *_b, const void *priv)
++{
++	const u32 a = *(const u32 *)_a;
++	const u32 b = *(const u32 *)_b;
++
++	if (a < b)
++		return -1;
++	else if (a > b)
++		return 1;
++	return 0;
++}
++
++static void map_off_arr_swap(void *_a, void *_b, int size, const void *priv)
++{
++	struct bpf_map *map = (struct bpf_map *)priv;
++	u32 *off_base = map->off_arr->field_off;
++	u32 *a = _a, *b = _b;
++	u8 *sz_a, *sz_b;
++
++	sz_a = map->off_arr->field_sz + (a - off_base);
++	sz_b = map->off_arr->field_sz + (b - off_base);
++
++	swap(*a, *b);
++	swap(*sz_a, *sz_b);
++}
++
++static int bpf_map_alloc_off_arr(struct bpf_map *map)
++{
++	bool has_spin_lock = map_value_has_spin_lock(map);
++	bool has_timer = map_value_has_timer(map);
++	bool has_kptrs = map_value_has_kptrs(map);
++	struct bpf_map_off_arr *off_arr;
++	u32 i;
++
++	if (!has_spin_lock && !has_timer && !has_kptrs) {
++		map->off_arr = NULL;
++		return 0;
 +	}
 +
-+	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
-+	busy_time = busy_cycles - df->busy_cycles;
- 	df->busy_cycles = busy_cycles;
--	df->time = time;
++	off_arr = kmalloc(sizeof(*map->off_arr), GFP_KERNEL | __GFP_NOWARN);
++	if (!off_arr)
++		return -ENOMEM;
++	map->off_arr = off_arr;
 +
-+	mutex_unlock(&df->lock);
- 
- 	busy_time *= USEC_PER_SEC;
- 	do_div(busy_time, sample_rate);
-@@ -175,6 +188,8 @@ void msm_devfreq_init(struct msm_gpu *gpu)
- 	if (!gpu->funcs->gpu_busy)
- 		return;
- 
-+	mutex_init(&df->lock);
++	off_arr->cnt = 0;
++	if (has_spin_lock) {
++		i = off_arr->cnt;
 +
- 	dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
- 			       DEV_PM_QOS_MAX_FREQUENCY,
- 			       PM_QOS_MAX_FREQUENCY_DEFAULT_VALUE);
-@@ -244,12 +259,16 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
- void msm_devfreq_resume(struct msm_gpu *gpu)
++		off_arr->field_off[i] = map->spin_lock_off;
++		off_arr->field_sz[i] = sizeof(struct bpf_spin_lock);
++		off_arr->cnt++;
++	}
++	if (has_timer) {
++		i = off_arr->cnt;
++
++		off_arr->field_off[i] = map->timer_off;
++		off_arr->field_sz[i] = sizeof(struct bpf_timer);
++		off_arr->cnt++;
++	}
++	if (has_kptrs) {
++		struct bpf_map_value_off *tab = map->kptr_off_tab;
++		u32 *off = &off_arr->field_off[off_arr->cnt];
++		u8 *sz = &off_arr->field_sz[off_arr->cnt];
++
++		for (i = 0; i < tab->nr_off; i++) {
++			*off++ = tab->off[i].offset;
++			*sz++ = sizeof(u64);
++		}
++		off_arr->cnt += tab->nr_off;
++	}
++
++	if (off_arr->cnt == 1)
++		return 0;
++	sort_r(off_arr->field_off, off_arr->cnt, sizeof(off_arr->field_off[0]),
++	       map_off_arr_cmp, map_off_arr_swap, map);
++	return 0;
++}
++
+ static int map_check_btf(struct bpf_map *map, const struct btf *btf,
+ 			 u32 btf_key_id, u32 btf_value_id)
  {
- 	struct msm_gpu_devfreq *df = &gpu->devfreq;
-+	unsigned long sample_rate;
+@@ -1009,10 +1089,14 @@ static int map_create(union bpf_attr *attr)
+ 			attr->btf_vmlinux_value_type_id;
+ 	}
  
- 	if (!has_devfreq(gpu))
- 		return;
+-	err = security_bpf_map_alloc(map);
++	err = bpf_map_alloc_off_arr(map);
+ 	if (err)
+ 		goto free_map;
  
--	df->busy_cycles = 0;
-+	mutex_lock(&df->lock);
-+	df->busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
- 	df->time = ktime_get();
-+	df->suspended = false;
-+	mutex_unlock(&df->lock);
- 
- 	devfreq_resume_device(df->devfreq);
- }
-@@ -261,6 +280,10 @@ void msm_devfreq_suspend(struct msm_gpu *gpu)
- 	if (!has_devfreq(gpu))
- 		return;
- 
-+	mutex_lock(&df->lock);
-+	df->suspended = true;
-+	mutex_unlock(&df->lock);
++	err = security_bpf_map_alloc(map);
++	if (err)
++		goto free_map_off_arr;
 +
- 	devfreq_suspend_device(df->devfreq);
+ 	err = bpf_map_alloc_id(map);
+ 	if (err)
+ 		goto free_map_sec;
+@@ -1035,6 +1119,8 @@ static int map_create(union bpf_attr *attr)
  
- 	cancel_idle_work(df);
+ free_map_sec:
+ 	security_bpf_map_free(map);
++free_map_off_arr:
++	kfree(map->off_arr);
+ free_map:
+ 	btf_put(map->btf);
+ 	map->ops->map_free(map);
 -- 
 2.35.1
 
