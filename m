@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F8EC2BB45
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE850C2BB47
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345296AbiHOTqW (ORCPT
+        id S1345240AbiHOTqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        Mon, 15 Aug 2022 15:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344510AbiHOTn0 (ORCPT
+        with ESMTP id S1344447AbiHOTnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:43:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458B06B173;
-        Mon, 15 Aug 2022 11:48:21 -0700 (PDT)
+        Mon, 15 Aug 2022 15:43:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62BA41D14;
+        Mon, 15 Aug 2022 11:48:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BA95B81057;
-        Mon, 15 Aug 2022 18:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87626C433D6;
-        Mon, 15 Aug 2022 18:48:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B412611C1;
+        Mon, 15 Aug 2022 18:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC325C433C1;
+        Mon, 15 Aug 2022 18:48:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589298;
-        bh=xP/ztu0pUq3CTpZIxN6O309pzYdzPqxQGpCHUkUVZK4=;
+        s=korg; t=1660589307;
+        bh=PxBqGK2Kj8p0vATicmcfzDVyrDcCLlfhoWha3BM427I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rswcGjtObRCu5AaUcdteoFBQbiONL6UhraOHURbewxxoGpuoZD669ZzsPzGUVteF9
-         FOL3uVEI0NpTxLlGahZqJYLyNLDlIRwhUArHc/NLipXwhK6nUYoVtJD2/S/Li7/Owi
-         P2CBlMWqEt1byWNK18dfm7jOTA19O+0+v60IyHXk=
+        b=wktWy4cG7ng/MCglyZqGKEpWW2aLcvyndnStQOPEPjQkCgnveLjbfO9k0leRziCAy
+         fAIJXa8Cw5WbGRbQm+uotIq1zYAWwRx7b2ZSdMnlSSaod2qub/n7Bsmnm5D24fW+ia
+         PTr/KtsWt1wUGJT5sBxIXmlnlqN1v6MZnd2JKjwk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Arun Easi <aeasi@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 675/779] scsi: qla2xxx: Fix excessive I/O error messages by default
-Date:   Mon, 15 Aug 2022 20:05:19 +0200
-Message-Id: <20220815180406.199561698@linuxfoundation.org>
+Subject: [PATCH 5.15 678/779] scsi: qla2xxx: Fix losing FCP-2 targets on long port disable with I/Os
+Date:   Mon, 15 Aug 2022 20:05:22 +0200
+Message-Id: <20220815180406.331391461@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,41 +52,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arun Easi <aeasi@marvell.com>
 
-commit bff4873c709085e09d0ffae0c25b8e65256e3205 upstream.
+commit 2416ccd3815ba1613e10a6da0a24ef21acfe5633 upstream.
 
-Disable printing I/O error messages by default.  The messages will be
-printed only when logging was enabled.
+FCP-2 devices were not coming back online once they were lost, login
+retries exhausted, and then came back up.  Fix this by accepting RSCN when
+the device is not online.
 
-Link: https://lore.kernel.org/r/20220616053508.27186-2-njavali@marvell.com
-Fixes: 8e2d81c6b5be ("scsi: qla2xxx: Fix excessive messages during device logout")
+Link: https://lore.kernel.org/r/20220616053508.27186-10-njavali@marvell.com
+Fixes: 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
 Cc: stable@vger.kernel.org
 Signed-off-by: Arun Easi <aeasi@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -2633,7 +2633,7 @@ static void qla24xx_nvme_iocb_entry(scsi
- 	}
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1836,7 +1836,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 	case RSCN_PORT_ADDR:
+ 		fcport = qla2x00_find_fcport_by_nportid(vha, &ea->id, 1);
+ 		if (fcport) {
+-			if (fcport->flags & FCF_FCP2_DEVICE) {
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE) {
+ 				ql_dbg(ql_dbg_disc, vha, 0x2115,
+ 				       "Delaying session delete for FCP2 portid=%06x %8phC ",
+ 					fcport->d_id.b24, fcport->port_name);
+@@ -1868,7 +1869,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 		break;
+ 	case RSCN_AREA_ADDR:
+ 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+-			if (fcport->flags & FCF_FCP2_DEVICE)
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE)
+ 				continue;
  
- 	if (unlikely(logit))
--		ql_log(ql_dbg_io, fcport->vha, 0x5060,
-+		ql_dbg(ql_dbg_io, fcport->vha, 0x5060,
- 		   "NVME-%s ERR Handling - hdl=%x status(%x) tr_len:%x resid=%x  ox_id=%x\n",
- 		   sp->name, sp->handle, comp_status,
- 		   fd->transferred_length, le32_to_cpu(sts->residual_len),
-@@ -3491,7 +3491,7 @@ check_scsi_status:
+ 			if ((ea->id.b24 & 0xffff00) == (fcport->d_id.b24 & 0xffff00)) {
+@@ -1879,7 +1881,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 		break;
+ 	case RSCN_DOM_ADDR:
+ 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+-			if (fcport->flags & FCF_FCP2_DEVICE)
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE)
+ 				continue;
  
- out:
- 	if (logit)
--		ql_log(ql_dbg_io, fcport->vha, 0x3022,
-+		ql_dbg(ql_dbg_io, fcport->vha, 0x3022,
- 		       "FCP command status: 0x%x-0x%x (0x%x) nexus=%ld:%d:%llu portid=%02x%02x%02x oxid=0x%x cdb=%10phN len=0x%x rsp_info=0x%x resid=0x%x fw_resid=0x%x sp=%p cp=%p.\n",
- 		       comp_status, scsi_status, res, vha->host_no,
- 		       cp->device->id, cp->device->lun, fcport->d_id.b.domain,
+ 			if ((ea->id.b24 & 0xff0000) == (fcport->d_id.b24 & 0xff0000)) {
+@@ -1891,7 +1894,8 @@ void qla2x00_handle_rscn(scsi_qla_host_t
+ 	case RSCN_FAB_ADDR:
+ 	default:
+ 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+-			if (fcport->flags & FCF_FCP2_DEVICE)
++			if (fcport->flags & FCF_FCP2_DEVICE &&
++			    atomic_read(&fcport->state) == FCS_ONLINE)
+ 				continue;
+ 
+ 			fcport->scan_needed = 1;
 
 
