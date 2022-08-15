@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61445C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A25AAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233097AbiHOPpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        id S233045AbiHOPqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233081AbiHOPpN (ORCPT
+        with ESMTP id S233222AbiHOPpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:45:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE37167F7;
-        Mon, 15 Aug 2022 08:45:10 -0700 (PDT)
+        Mon, 15 Aug 2022 11:45:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13C0C16;
+        Mon, 15 Aug 2022 08:45:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70FE86111B;
-        Mon, 15 Aug 2022 15:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47547C433D7;
-        Mon, 15 Aug 2022 15:45:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B70B610FB;
+        Mon, 15 Aug 2022 15:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC428C43141;
+        Mon, 15 Aug 2022 15:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660578308;
-        bh=kHq6yMy6gK9MQCNPVme+VzjQOm4ty0ndfUWa4Uog7s8=;
+        s=k20201202; t=1660578314;
+        bh=0Q6eADI3Tco1PDxr5yvf++mMgHZkrwSUpLo7KbmRoAk=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=LkKFN1OCoKVjRoYpbWqnGar9UrZh+cY1rFi4MVyVhL7X29cZNaU4A+8wAB4b8Cet5
-         +FqB1BP0zhgD7v0tmuIwFn324PItCDP9MFUJhDAHeJK2MSgqASN1Bba4HygH4UZJUm
-         2egYexUIxdNeG5w7B55ZJl90DAXVIjyY2tGpvqCN3J2KcwabVIkj2j+pdmRxd/sxq7
-         yd8JfVGtiH1K2kAcrBjUhR7Wpbl/BEw42bia41NQPeQ+i/wPf/wsf2NQVlXq4YcML1
-         c/u+7ba13K7bQj5pRs8ReFDdmlp7nniFr5vAGZ+E2NR/yOj0FWf5FWn8gxauqr003n
-         pTGQ5UPGSXVFA==
+        b=uEU5JWu8stgqm5pe2bGYE0zdMHlrmz3BbgTES4nmXzlN5YrCX8tj7Lr5jqxvyV+6X
+         Kz7xZRVKiKMOF08AAre2L7Q9ozAV8elPeXoM9tErWQpfxJn01P4GEbrqIW2m6ZDpAH
+         BhazzIxFUKfCC1YK6e7cRIVLVK1BGBNfmp7zJ/dUdZAda4ExS01sWCL9SvRfZN3D0R
+         wS4TnQIpQymmUJ9EA9oQojz73UDJpGfBvuDHY6Jl/FKjWQlf9kHi81MZUge7kolGtf
+         iSVdINnViO85yYjVjeh6WEn6AelC08/Muou3TrriqS1hM7ZODabeWDhm553492eYFu
+         4C8fze+HUCI9w==
 From:   Mark Brown <broonie@kernel.org>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-spi@vger.kernel.org,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org
-Cc:     Peng Fan <peng.fan@nxp.com>, xiaoning.wang@nxp.com
-In-Reply-To: <20220812073452.45763-1-peng.fan@oss.nxp.com>
-References: <20220812073452.45763-1-peng.fan@oss.nxp.com>
-Subject: Re: [PATCH 1/2] dt-bindings: lpspi: add dmas property
-Message-Id: <166057830692.697678.5825676350299676949.b4-ty@kernel.org>
-Date:   Mon, 15 Aug 2022 16:45:06 +0100
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     linux-spi@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <253543c462b765eca40ba54c66f4e3fdf4acdeb7.1659735546.git.christophe.jaillet@wanadoo.fr>
+References: <253543c462b765eca40ba54c66f4e3fdf4acdeb7.1659735546.git.christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] spi: lpspi: Simplify some error message
+Message-Id: <166057831362.697678.10418733101562971754.b4-ty@kernel.org>
+Date:   Mon, 15 Aug 2022 16:45:13 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,10 +50,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 12 Aug 2022 15:34:51 +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> The LPSPI has dma capability, so add dma property.
+On Fri, 5 Aug 2022 23:39:19 +0200, Christophe JAILLET wrote:
+> dev_err_probe() already prints the error code in a human readable way, so
+> there is no need to duplicate it as a numerical value at the end of the
+> message.
 > 
 > 
 
@@ -63,10 +63,8 @@ Applied to
 
 Thanks!
 
-[1/2] dt-bindings: lpspi: add dmas property
-      commit: fba933c2d975463d6a19898cbe30f7399de9f32e
-[2/2] dt-bindings: lpspi: add i.MX93 compatible
-      commit: d9c6a706f37c32480ab287aafcc781192996d584
+[1/1] spi: lpspi: Simplify some error message
+      commit: 0df874c6712d9aa8f43c50ec887a21f7b86fc917
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
