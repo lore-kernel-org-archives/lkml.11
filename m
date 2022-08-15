@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05584C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3898BC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiHPEnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
+        id S231994AbiHPEnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231858AbiHPEka (ORCPT
+        with ESMTP id S231879AbiHPEkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:40:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EB637187;
-        Mon, 15 Aug 2022 13:31:50 -0700 (PDT)
+        Tue, 16 Aug 2022 00:40:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB864D1E18;
+        Mon, 15 Aug 2022 13:33:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02201B81197;
-        Mon, 15 Aug 2022 20:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B5EC433C1;
-        Mon, 15 Aug 2022 20:31:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BA29B8113E;
+        Mon, 15 Aug 2022 20:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C34DCC433D6;
+        Mon, 15 Aug 2022 20:33:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595507;
-        bh=49uVIo5yxX6YOHCXdzDZ21EmAzU5bpz2xA4aVGHhjq0=;
+        s=korg; t=1660595587;
+        bh=lqFeD8MAkRoKJduKvTpl2VoSr2nYJ07xNk3pjF9zMZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OuZuVQvaLkJcxQ6wSjzb9zomn6MpEP4N29Ktpos8iUoLYX+hOIUb7gZ2GibGLJLcS
-         Bz5i+JU7YncpeQN3tEBggJeDrb6/REsYphURapA4BxelhD9jQg3olChHuSndKXEvQC
-         2iM39EmHuXUeNI70HTwrWXBoShb2MNckrSWrOhS4=
+        b=gGIyiEWd0VBU9TE169xc02sDK6NjW6WJDg4SzbWB5vJfmQ/mTRVt54B6mJ0vlZDfw
+         yAPfV/e5ajsHRnDVZ3VEQV7bdeAjO4Zu4B662AEeF/PqDrwEHy39TnJQ2Wvcw+W28J
+         O31RbDsRy4/RbFoVgOQXAqx3pVl9YjEor7YS0ncM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Rohith Kollalsi <quic_rkollals@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0786/1157] intel_th: Fix a resource leak in an error handling path
-Date:   Mon, 15 Aug 2022 20:02:22 +0200
-Message-Id: <20220815180510.930699398@linuxfoundation.org>
+Subject: [PATCH 5.19 0811/1157] usb: dwc3: core: Do not perform GCTL_CORE_SOFTRESET during bootup
+Date:   Mon, 15 Aug 2022 20:02:47 +0200
+Message-Id: <20220815180511.945558529@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,53 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Rohith Kollalsi <quic_rkollals@quicinc.com>
 
-[ Upstream commit 086c28ab7c5699256aced0049aae9c42f1410313 ]
+[ Upstream commit 07903626d98853e605fe63e5ce149f1b7314bbea ]
 
-If an error occurs after calling 'pci_alloc_irq_vectors()',
-'pci_free_irq_vectors()' must be called as already done in the remove
-function.
+According to the programming guide, it is recommended to
+perform a GCTL_CORE_SOFTRESET only when switching the mode
+from device to host or host to device. However, it is found
+that during bootup when __dwc3_set_mode() is called for the
+first time, GCTL_CORESOFTRESET is done with suspendable bit(BIT 17)
+of DWC3_GUSB3PIPECTL set. This some times leads to issues
+like controller going into bad state and controller registers
+reading value zero. Until GCTL_CORESOFTRESET is done and
+run/stop bit is set core initialization is not complete.
+Setting suspendable bit of DWC3_GUSB3PIPECTL and then
+performing GCTL_CORESOFTRESET is therefore not recommended.
+Avoid this by only performing the reset if current_dr_role is set,
+that is, when doing subsequent role switching.
 
-Fixes: 7b7036d47c35 ("intel_th: pci: Use MSI interrupt signalling")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Link: https://lore.kernel.org/r/20220705082637.59979-2-alexander.shishkin@linux.intel.com
+Fixes: f88359e1588b ("usb: dwc3: core: Do core softreset when switch mode")
+Signed-off-by: Rohith Kollalsi <quic_rkollals@quicinc.com>
+Link: https://lore.kernel.org/r/20220714045625.20377-1-quic_rkollals@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/intel_th/pci.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/core.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hwtracing/intel_th/pci.c b/drivers/hwtracing/intel_th/pci.c
-index 7da4f298ed01..fcd0aca75007 100644
---- a/drivers/hwtracing/intel_th/pci.c
-+++ b/drivers/hwtracing/intel_th/pci.c
-@@ -100,8 +100,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 		}
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index 4c753cc0fa61..ba2fa91be1d6 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -158,9 +158,13 @@ static void __dwc3_set_mode(struct work_struct *work)
+ 		break;
+ 	}
  
- 	th = intel_th_alloc(&pdev->dev, drvdata, resource, r);
--	if (IS_ERR(th))
--		return PTR_ERR(th);
-+	if (IS_ERR(th)) {
-+		err = PTR_ERR(th);
-+		goto err_free_irq;
-+	}
- 
- 	th->activate   = intel_th_pci_activate;
- 	th->deactivate = intel_th_pci_deactivate;
-@@ -109,6 +111,10 @@ static int intel_th_pci_probe(struct pci_dev *pdev,
- 	pci_set_master(pdev);
- 
- 	return 0;
-+
-+err_free_irq:
-+	pci_free_irq_vectors(pdev);
-+	return err;
- }
- 
- static void intel_th_pci_remove(struct pci_dev *pdev)
+-	/* For DRD host or device mode only */
+-	if ((DWC3_IP_IS(DWC3) || DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
+-	    dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG) {
++	/*
++	 * When current_dr_role is not set, there's no role switching.
++	 * Only perform GCTL.CoreSoftReset when there's DRD role switching.
++	 */
++	if (dwc->current_dr_role && ((DWC3_IP_IS(DWC3) ||
++			DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
++			dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG)) {
+ 		reg = dwc3_readl(dwc->regs, DWC3_GCTL);
+ 		reg |= DWC3_GCTL_CORESOFTRESET;
+ 		dwc3_writel(dwc->regs, DWC3_GCTL, reg);
 -- 
 2.35.1
 
