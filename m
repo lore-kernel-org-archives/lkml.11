@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA84C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EAFC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353570AbiHOXfY (ORCPT
+        id S1345526AbiHOXfb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39760 "EHLO
+        Mon, 15 Aug 2022 19:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233897AbiHOX2W (ORCPT
+        with ESMTP id S245013AbiHOX3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:28:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D7C14ECB9;
-        Mon, 15 Aug 2022 13:07:52 -0700 (PDT)
+        Mon, 15 Aug 2022 19:29:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A60BB908;
+        Mon, 15 Aug 2022 13:07:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4DCB60B9F;
-        Mon, 15 Aug 2022 20:07:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1985C433C1;
-        Mon, 15 Aug 2022 20:07:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD16AB81142;
+        Mon, 15 Aug 2022 20:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A91FC433D6;
+        Mon, 15 Aug 2022 20:07:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594071;
-        bh=wyyssmJjKz0+S4y54OgC72TBm269W186STRi3OTGgoY=;
+        s=korg; t=1660594074;
+        bh=PubY1hmrGCf0b7CV+WmrD1xQ9cFgoAo/s7Yj5UkVxNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H5+DJFkbh2FfmaPvGdhxEcVAvFd/OXEPMki1S++HA6WsNMZZEtguiWQfr7je7rRQ4
-         7NlEmLQxncmIZ3QzTf+nzVCexhQWr0w7AYJ0XBvaaet/rxQgOBAwUlNomMUeEbo3QT
-         Cg2V2x+ZoaBPKfl0f+RN3nT+mtJQH6Zfh5jVLoPo=
+        b=margB09aOgF1l4NRzrTpPWFqnGcSUaJDufbfn1A4/D1sfuLIPj6TMC1C79tC4pFBD
+         7IIsWXCzYyZ2Z24tDmy6SZ5bs6fTbTI78ev8XWMR0sIpGkfZ0BRIMlj0cVkTYmfjCi
+         uAEltIyYGt1mh+ndTu+L3cvc7wK2FqodP/GXiC00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0370/1157] raw: Fix mixed declarations error in raw_icmp_error().
-Date:   Mon, 15 Aug 2022 19:55:26 +0200
-Message-Id: <20220815180454.512024314@linuxfoundation.org>
+Subject: [PATCH 5.18 1051/1095] ksmbd: add smbd max io size parameter
+Date:   Mon, 15 Aug 2022 20:07:30 +0200
+Message-Id: <20220815180512.555659116@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +51,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 5da39e31b1b0eb62b8ed369ad9615da850239e9e ]
+[ Upstream commit 65bb45b97b578c8eed1ffa80caec84708df49729 ]
 
-The trailing semicolon causes a compiler error, so let's remove it.
+Add 'smbd max io size' parameter to adjust smbd-direct max read/write
+size.
 
-net/ipv4/raw.c: In function ‘raw_icmp_error’:
-net/ipv4/raw.c:266:2: error: ISO C90 forbids mixed declarations and code [-Werror=declaration-after-statement]
-  266 |  struct hlist_nulls_head *hlist;
-      |  ^~~~~~
-
-Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/raw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ksmbd/ksmbd_netlink.h  | 3 ++-
+ fs/ksmbd/transport_ipc.c  | 3 +++
+ fs/ksmbd/transport_rdma.c | 8 +++++++-
+ fs/ksmbd/transport_rdma.h | 6 ++++++
+ 4 files changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index d28bf0b901a2..b3b255db9021 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -262,7 +262,7 @@ static void raw_err(struct sock *sk, struct sk_buff *skb, u32 info)
+diff --git a/fs/ksmbd/ksmbd_netlink.h b/fs/ksmbd/ksmbd_netlink.h
+index ebe6ca08467a..52aa0adeb951 100644
+--- a/fs/ksmbd/ksmbd_netlink.h
++++ b/fs/ksmbd/ksmbd_netlink.h
+@@ -104,7 +104,8 @@ struct ksmbd_startup_request {
+ 					 */
+ 	__u32	sub_auth[3];		/* Subauth value for Security ID */
+ 	__u32	smb2_max_credits;	/* MAX credits */
+-	__u32	reserved[128];		/* Reserved room */
++	__u32	smbd_max_io_size;	/* smbd read write size */
++	__u32	reserved[127];		/* Reserved room */
+ 	__u32	ifc_list_sz;		/* interfaces list size */
+ 	__s8	____payload[];
+ };
+diff --git a/fs/ksmbd/transport_ipc.c b/fs/ksmbd/transport_ipc.c
+index 3ad6881e0f7e..7cb0eeb07c80 100644
+--- a/fs/ksmbd/transport_ipc.c
++++ b/fs/ksmbd/transport_ipc.c
+@@ -26,6 +26,7 @@
+ #include "mgmt/ksmbd_ida.h"
+ #include "connection.h"
+ #include "transport_tcp.h"
++#include "transport_rdma.h"
  
- void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
+ #define IPC_WAIT_TIMEOUT	(2 * HZ)
+ 
+@@ -303,6 +304,8 @@ static int ipc_server_config_on_startup(struct ksmbd_startup_request *req)
+ 		init_smb2_max_trans_size(req->smb2_max_trans);
+ 	if (req->smb2_max_credits)
+ 		init_smb2_max_credits(req->smb2_max_credits);
++	if (req->smbd_max_io_size)
++		init_smbd_max_io_size(req->smbd_max_io_size);
+ 
+ 	ret = ksmbd_set_netbios_name(req->netbios_name);
+ 	ret |= ksmbd_set_server_string(req->server_string);
+diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
+index b44a5e584bac..afc66b9765e7 100644
+--- a/fs/ksmbd/transport_rdma.c
++++ b/fs/ksmbd/transport_rdma.c
+@@ -80,7 +80,7 @@ static int smb_direct_max_fragmented_recv_size = 1024 * 1024;
+ /*  The maximum single-message size which can be received */
+ static int smb_direct_max_receive_size = 8192;
+ 
+-static int smb_direct_max_read_write_size = 8 * 1024 * 1024;
++static int smb_direct_max_read_write_size = SMBD_DEFAULT_IOSIZE;
+ 
+ static LIST_HEAD(smb_direct_device_list);
+ static DEFINE_RWLOCK(smb_direct_device_lock);
+@@ -214,6 +214,12 @@ struct smb_direct_rdma_rw_msg {
+ 	struct scatterlist	sg_list[];
+ };
+ 
++void init_smbd_max_io_size(unsigned int sz)
++{
++	sz = clamp_val(sz, SMBD_MIN_IOSIZE, SMBD_MAX_IOSIZE);
++	smb_direct_max_read_write_size = sz;
++}
++
+ static inline int get_buf_page_count(void *buf, int size)
  {
--	struct net *net = dev_net(skb->dev);;
-+	struct net *net = dev_net(skb->dev);
- 	struct hlist_nulls_head *hlist;
- 	struct hlist_nulls_node *hnode;
- 	int dif = skb->dev->ifindex;
+ 	return DIV_ROUND_UP((uintptr_t)buf + size, PAGE_SIZE) -
+diff --git a/fs/ksmbd/transport_rdma.h b/fs/ksmbd/transport_rdma.h
+index 5567d93a6f96..e7b4e6790fab 100644
+--- a/fs/ksmbd/transport_rdma.h
++++ b/fs/ksmbd/transport_rdma.h
+@@ -7,6 +7,10 @@
+ #ifndef __KSMBD_TRANSPORT_RDMA_H__
+ #define __KSMBD_TRANSPORT_RDMA_H__
+ 
++#define SMBD_DEFAULT_IOSIZE (8 * 1024 * 1024)
++#define SMBD_MIN_IOSIZE (512 * 1024)
++#define SMBD_MAX_IOSIZE (16 * 1024 * 1024)
++
+ /* SMB DIRECT negotiation request packet [MS-SMBD] 2.2.1 */
+ struct smb_direct_negotiate_req {
+ 	__le16 min_version;
+@@ -52,10 +56,12 @@ struct smb_direct_data_transfer {
+ int ksmbd_rdma_init(void);
+ void ksmbd_rdma_destroy(void);
+ bool ksmbd_rdma_capable_netdev(struct net_device *netdev);
++void init_smbd_max_io_size(unsigned int sz);
+ #else
+ static inline int ksmbd_rdma_init(void) { return 0; }
+ static inline int ksmbd_rdma_destroy(void) { return 0; }
+ static inline bool ksmbd_rdma_capable_netdev(struct net_device *netdev) { return false; }
++static inline void init_smbd_max_io_size(unsigned int sz) { }
+ #endif
+ 
+ #endif /* __KSMBD_TRANSPORT_RDMA_H__ */
 -- 
 2.35.1
 
