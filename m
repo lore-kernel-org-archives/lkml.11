@@ -2,136 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8D7C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55522C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 15:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbiHOPzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 11:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        id S232201AbiHOP4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 11:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232201AbiHOPzF (ORCPT
+        with ESMTP id S230304AbiHOP4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 11:55:05 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5191A05A;
-        Mon, 15 Aug 2022 08:55:02 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 26F5656D;
-        Mon, 15 Aug 2022 17:54:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1660578899;
-        bh=S8j7GbNbq17SRBvgGdMvUVVVDhDYQu28yqUMRIme4pw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KkMqLgeA3Hlou6eQxDNwuj/cAMOGRuZWf6psOJwAoE+lkqdgWTBYLUFWFiFmirC11
-         MV/sX2S9rJ9pHMvTFjbnnwFQbUhcqWxVXtYbPHGpZY4nQn8qmWU8YDavgsBevmlt5n
-         2eecXKodkdAhl5/HdCyGSGest6FWKhs5flNo+vq8=
-Date:   Mon, 15 Aug 2022 18:54:45 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Matti Vaittinen <mazziesaccount@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        dri-devel@lists.freedesktop.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        linux-amlogic@lists.infradead.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        linux-hwmon@vger.kernel.org, linux-clk@vger.kernel.org,
-        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        David Airlie <airlied@linux.ie>, linux-iio@vger.kernel.org
-Subject: Re: (subset) [PATCH v2 0/7] Devm helpers for regulator get and enable
-Message-ID: <YvpsRbguMXn74GhR@pendragon.ideasonboard.com>
-References: <cover.1660292316.git.mazziesaccount@gmail.com>
- <166057828406.697572.228317501909350108.b4-ty@kernel.org>
+        Mon, 15 Aug 2022 11:56:12 -0400
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9536D12D32;
+        Mon, 15 Aug 2022 08:56:11 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id b4so6428671wrn.4;
+        Mon, 15 Aug 2022 08:56:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Vat6AZoY9+pk6p00nX/E13J/m0/mJwwh8QQBSGedRWI=;
+        b=iYe9lM3I2HfiLa/RejGyvAT1+FOoPhMX+L577RycoUNZOyMrdGNKLhOgNUdK4nTc+/
+         ardycnvQ2omH44g+pJmvHgMuxvOzBae4dffWT+REVO2e92Oj0m/Vpvar5qOeBz08jDcb
+         wmgXH5Gz+mvE35GAbZRS//lvYMNjqgEG1HGYlywhDja3QQ1RL+gxtNFW+cwH9UDA6e+O
+         e4jgwEsH0sGhUoB9WZw4s3Cv5mxDjUlHPoW2OVtfp0K6tB+krrxoZebEYnxUcIBNcbPc
+         50QZ4sSTwWUXg7xrecMma7M9PNgiIoVxxxYVmrGCgDaswKLu451m3HH2FpCQIZ0hV5y9
+         tMFg==
+X-Gm-Message-State: ACgBeo3b4w04HsKUNmFY1U/tJTeYi9LjySPiZxVZR7uWz/LDOVWcc5hR
+        JXoAKulDFBEhdZ6v0kTBX7s=
+X-Google-Smtp-Source: AA6agR6LqwBwhr8IBNtL5BKxuU4r3Y+LjMPMFEeYwRcLmbQKw/Ljf/Ui34QWaaHHynm6D1Y8i9VY5g==
+X-Received: by 2002:a05:6000:1e0e:b0:220:5c9f:a468 with SMTP id bj14-20020a0560001e0e00b002205c9fa468mr8849712wrb.587.1660578970160;
+        Mon, 15 Aug 2022 08:56:10 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id g15-20020a5d488f000000b0022395a63153sm7800412wrq.107.2022.08.15.08.56.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 08:56:09 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 15:56:08 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        Wei Liu <wei.liu@kernel.org>
+Subject: Re: [PATCH] drm/hyperv: Fix an error handling path in
+ hyperv_vmbus_probe()
+Message-ID: <20220815155608.uekossy5hejqflni@liuwe-devbox-debian-v2>
+References: <7dfa372af3e35fbb1d6f157183dfef2e4512d3be.1659297696.git.christophe.jaillet@wanadoo.fr>
+ <PH0PR21MB3025D61C85CD6E724919A9D8D79E9@PH0PR21MB3025.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <166057828406.697572.228317501909350108.b4-ty@kernel.org>
+In-Reply-To: <PH0PR21MB3025D61C85CD6E724919A9D8D79E9@PH0PR21MB3025.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 04:44:44PM +0100, Mark Brown wrote:
-> On Fri, 12 Aug 2022 13:08:17 +0300, Matti Vaittinen wrote:
-> > Devm helpers for regulator get and enable
+On Fri, Aug 05, 2022 at 06:35:01PM +0000, Michael Kelley (LINUX) wrote:
+> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr> Sent: Sunday, July 31, 2022 1:02 PM
 > > 
-> > First patch in the series is actually just a simple documentation fix
-> > which could be taken in as it is now.
+> > hyperv_setup_vram() calls vmbus_allocate_mmio().
+> > This must be undone in the error handling path of the probe, as already
+> > done in the remove function.
 > > 
-> > A few* drivers seem to use pattern demonstrated by pseudocode:
+> > This patch depends on commit a0ab5abced55 ("drm/hyperv : Removing the
+> > restruction of VRAM allocation with PCI bar size").
+> > Without it, something like what is done in commit e048834c209a
+> > ("drm/hyperv: Fix device removal on Gen1 VMs") should be done.
+> 
+> Should the above paragraph be below the '---' as a comment, rather than
+> part of the commit message?  It's more about staging instructions than a
+> long-term record of the actual functional/code change.
+> 
+
+I don't think this paragraph needs to be in the final commit message.
+
 > > 
-> > [...]
+> > Fixes: 76c56a5affeb ("drm/hyperv: Add DRM driver for hyperv synthetic video device")
 > 
-> Applied to
+> I wonder if the Fixes: dependency should be on a0ab5abced55.  As you noted,
+> this patch won't apply cleanly on stable kernel versions that lack that commit,
+> so we'll need a separate patch for stable if we want to make the fix there.
 > 
->    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
-> 
-> Thanks!
-> 
-> [1/7] docs: devres: regulator: Add missing devm_* functions to devres.rst
->       commit: 9b6744f60b6b47bc0757a1955adb4d2c3ab22e13
-> [2/7] regulator: Add devm helpers for get and enable
->       (no commit info)
 
-I didn't have time to reply to the series yet, but I think this isn't a
-great idea. There are two issues:
+I think a0ab5abced55 is more appropriate.
 
-- With devres, you don't have full control over the order in which
-  resources will be released, which means that you can't control the
-  power off sequence, in particular if it needs to be sequenced with
-  GPIOs and clocks. That's not a concern for all drivers, but this API
-  will creep in in places where it shouldn't be used, driver authours
-  should really pay attention to power management and not live with the
-  false impression that everything will be handled automatically for
-  them. In the worst cases, an incorrect power off sequence could lead
-  to hardware damage.
-
-- Powering regulators on at probe time and leaving them on is a very bad
-  practice from a power management point of view, and should really be
-  discouraged. Adding convenience helpers to make this easy is the wrong
-  message, we should instead push driver authors to implement proper
-  runtime PM.
-
-> All being well this means that it will be integrated into the linux-next
-> tree (usually sometime in the next 24 hours) and sent to Linus during
-> the next merge window (or sooner if it is a bug fix), however if
-> problems are discovered then the patch may be dropped or reverted.
+> > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > 
-> You may get further e-mails resulting from automated or manual testing
-> and review of the tree, please engage with people reporting problems and
-> send followup patches addressing any issues that are reported if needed.
+> All that said, the fix looks good, so
 > 
-> If any updates are required or you are submitting further changes they
-> should be sent as incremental updates against current git, existing
-> patches will not be replaced.
-> 
-> Please add any relevant lists and maintainers to the CCs when replying
-> to this mail.
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 
--- 
-Regards,
+I made the two changes listed above and applied this patch to
+hyperv-fixes.
 
-Laurent Pinchart
+Thanks,
+Wei.
