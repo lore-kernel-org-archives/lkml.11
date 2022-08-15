@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB49C25B08
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C042AC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347465AbiHPBEb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        id S244068AbiHPBEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348940AbiHPA54 (ORCPT
+        with ESMTP id S1349150AbiHPA6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:57:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D001A153D;
-        Mon, 15 Aug 2022 13:49:33 -0700 (PDT)
+        Mon, 15 Aug 2022 20:58:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CCE33427;
+        Mon, 15 Aug 2022 13:49:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAE2C61275;
-        Mon, 15 Aug 2022 20:49:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB6D5C433D6;
-        Mon, 15 Aug 2022 20:49:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70030B8114A;
+        Mon, 15 Aug 2022 20:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B956BC433D6;
+        Mon, 15 Aug 2022 20:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596572;
-        bh=gDAwmXYERhw10a9sfoxHyQnxm9AwJu7cfxmrBmi3DU0=;
+        s=korg; t=1660596566;
+        bh=7IK/drlHk1T+rvVggqUV2frGwTPfHLuz+70ozCIkTT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QrQosL9n3T9tsAHvgp2vooUhS2Maf30ebdyteat+8oj8hRuoR4rKLO2cg3qaKkkTK
-         WtSAYB+ktFzv4uh3jPd4MAF25mZqFlMooSoN9MQr8CwPfmTpE9pq+1koe1v1Jbl6ju
-         +6/Ir2TrL/FkdknTbUIw78l/W4+ZjdmtBN/+rgPQ=
+        b=BpXv8F2d91j3sCqDPkOjD8TVL/+okJshPU65iyQRSAZcb78FVeiwMcdAVI9R5iVBp
+         m2u73um950ZwCGI2QxjhnTo1+iNxavr91sqggTxLQwSD8RZFlUOHTsdT9T2+X59rua
+         IPwfeiQulvWBun7pNxzzDH7zJs2WBhOaa1EjCz/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
+        stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
         David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1089/1157] btrfs: zoned: finish least available block group on data bg allocation
-Date:   Mon, 15 Aug 2022 20:07:25 +0200
-Message-Id: <20220815180523.754213997@linuxfoundation.org>
+Subject: [PATCH 5.19 1087/1157] btrfs: convert count_max_extents() to use fs_info->max_extent_size
+Date:   Mon, 15 Aug 2022 20:07:23 +0200
+Message-Id: <20220815180523.678201270@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -54,183 +51,147 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit 393f646e34c18b85d0f41272bfcbd475ae3a0d34 ]
+[ Upstream commit 7d7672bc5d1038c745716c397d892d21e29de71c ]
 
-When we run out of active zones and no sufficient space is left in any
-block groups, we need to finish one block group to make room to activate a
-new block group.
+If count_max_extents() uses BTRFS_MAX_EXTENT_SIZE to calculate the number
+of extents needed, btrfs release the metadata reservation too much on its
+way to write out the data.
 
-However, we cannot do this for metadata block groups because we can cause a
-deadlock by waiting for a running transaction commit. So, do that only for
-a data block group.
+Now that BTRFS_MAX_EXTENT_SIZE is replaced with fs_info->max_extent_size,
+convert count_max_extents() to use it instead, and fix the calculation of
+the metadata reservation.
 
-Furthermore, the block group to be finished has two requirements. First,
-the block group must not have reserved bytes left. Having reserved bytes
-means we have an allocated region but did not yet send bios for it. If that
-region is allocated by the thread calling btrfs_zone_finish(), it results
-in a deadlock.
-
-Second, the block group to be finished must not be a SYSTEM block
-group. Finishing a SYSTEM block group easily breaks further chunk
-allocation by nullifying the SYSTEM free space.
-
-In a certain case, we cannot find any zone finish candidate or
-btrfs_zone_finish() may fail. In that case, we fall back to split the
-allocation bytes and fill the last spaces left in the block groups.
-
-CC: stable@vger.kernel.org # 5.16+
-Fixes: afba2bc036b0 ("btrfs: zoned: implement active zone tracking")
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+CC: stable@vger.kernel.org # 5.12+
+Fixes: d8e3fb106f39 ("btrfs: zoned: use ZONE_APPEND write for zoned mode")
 Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/extent-tree.c | 50 +++++++++++++++++++++++++++++++++---------
- fs/btrfs/zoned.c       | 40 +++++++++++++++++++++++++++++++++
- fs/btrfs/zoned.h       |  7 ++++++
- 3 files changed, 87 insertions(+), 10 deletions(-)
+ fs/btrfs/ctree.h          | 21 +++++++++++++--------
+ fs/btrfs/delalloc-space.c |  6 +++---
+ fs/btrfs/inode.c          | 16 ++++++++--------
+ 3 files changed, 24 insertions(+), 19 deletions(-)
 
-diff --git a/fs/btrfs/extent-tree.c b/fs/btrfs/extent-tree.c
-index 506852795db1..ad45083c6461 100644
---- a/fs/btrfs/extent-tree.c
-+++ b/fs/btrfs/extent-tree.c
-@@ -3981,6 +3981,45 @@ static void found_extent(struct find_free_extent_ctl *ffe_ctl,
- 	}
- }
+diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
+index 364c71ad7cce..d306db5dbdc2 100644
+--- a/fs/btrfs/ctree.h
++++ b/fs/btrfs/ctree.h
+@@ -107,14 +107,6 @@ struct btrfs_ioctl_encoded_io_args;
+ #define BTRFS_STAT_CURR		0
+ #define BTRFS_STAT_PREV		1
  
-+static int can_allocate_chunk_zoned(struct btrfs_fs_info *fs_info,
-+				    struct find_free_extent_ctl *ffe_ctl)
-+{
-+	/* If we can activate new zone, just allocate a chunk and use it */
-+	if (btrfs_can_activate_zone(fs_info->fs_devices, ffe_ctl->flags))
-+		return 0;
-+
-+	/*
-+	 * We already reached the max active zones. Try to finish one block
-+	 * group to make a room for a new block group. This is only possible
-+	 * for a data block group because btrfs_zone_finish() may need to wait
-+	 * for a running transaction which can cause a deadlock for metadata
-+	 * allocation.
-+	 */
-+	if (ffe_ctl->flags & BTRFS_BLOCK_GROUP_DATA) {
-+		int ret = btrfs_zone_finish_one_bg(fs_info);
-+
-+		if (ret == 1)
-+			return 0;
-+		else if (ret < 0)
-+			return ret;
-+	}
-+
-+	/*
-+	 * If we have enough free space left in an already active block group
-+	 * and we can't activate any other zone now, do not allow allocating a
-+	 * new chunk and let find_free_extent() retry with a smaller size.
-+	 */
-+	if (ffe_ctl->max_extent_size >= ffe_ctl->min_alloc_size)
-+		return -ENOSPC;
-+
-+	/*
-+	 * We cannot activate a new block group and no enough space left in any
-+	 * block groups. So, allocating a new block group may not help. But,
-+	 * there is nothing to do anyway, so let's go with it.
-+	 */
-+	return 0;
-+}
-+
- static int can_allocate_chunk(struct btrfs_fs_info *fs_info,
- 			      struct find_free_extent_ctl *ffe_ctl)
+-/*
+- * Count how many BTRFS_MAX_EXTENT_SIZE cover the @size
+- */
+-static inline u32 count_max_extents(u64 size)
+-{
+-	return div_u64(size + BTRFS_MAX_EXTENT_SIZE - 1, BTRFS_MAX_EXTENT_SIZE);
+-}
+-
+ static inline unsigned long btrfs_chunk_item_size(int num_stripes)
  {
-@@ -3988,16 +4027,7 @@ static int can_allocate_chunk(struct btrfs_fs_info *fs_info,
- 	case BTRFS_EXTENT_ALLOC_CLUSTERED:
- 		return 0;
- 	case BTRFS_EXTENT_ALLOC_ZONED:
--		/*
--		 * If we have enough free space left in an already
--		 * active block group and we can't activate any other
--		 * zone now, do not allow allocating a new chunk and
--		 * let find_free_extent() retry with a smaller size.
--		 */
--		if (ffe_ctl->max_extent_size >= ffe_ctl->min_alloc_size &&
--		    !btrfs_can_activate_zone(fs_info->fs_devices, ffe_ctl->flags))
--			return -ENOSPC;
--		return 0;
-+		return can_allocate_chunk_zoned(fs_info, ffe_ctl);
- 	default:
- 		BUG();
- 	}
-diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
-index 7ac2d7cfca31..eb9eb9e72187 100644
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -2180,3 +2180,43 @@ void btrfs_zoned_release_data_reloc_bg(struct btrfs_fs_info *fs_info, u64 logica
- 	spin_unlock(&block_group->lock);
- 	btrfs_put_block_group(block_group);
+ 	BUG_ON(num_stripes == 0);
+@@ -4017,6 +4009,19 @@ static inline bool btrfs_is_zoned(const struct btrfs_fs_info *fs_info)
+ 	return fs_info->zone_size > 0;
  }
-+
-+int btrfs_zone_finish_one_bg(struct btrfs_fs_info *fs_info)
-+{
-+	struct btrfs_block_group *block_group;
-+	struct btrfs_block_group *min_bg = NULL;
-+	u64 min_avail = U64_MAX;
-+	int ret;
-+
-+	spin_lock(&fs_info->zone_active_bgs_lock);
-+	list_for_each_entry(block_group, &fs_info->zone_active_bgs,
-+			    active_bg_list) {
-+		u64 avail;
-+
-+		spin_lock(&block_group->lock);
-+		if (block_group->reserved ||
-+		    (block_group->flags & BTRFS_BLOCK_GROUP_SYSTEM)) {
-+			spin_unlock(&block_group->lock);
-+			continue;
-+		}
-+
-+		avail = block_group->zone_capacity - block_group->alloc_offset;
-+		if (min_avail > avail) {
-+			if (min_bg)
-+				btrfs_put_block_group(min_bg);
-+			min_bg = block_group;
-+			min_avail = avail;
-+			btrfs_get_block_group(min_bg);
-+		}
-+		spin_unlock(&block_group->lock);
-+	}
-+	spin_unlock(&fs_info->zone_active_bgs_lock);
-+
-+	if (!min_bg)
-+		return 0;
-+
-+	ret = btrfs_zone_finish(min_bg);
-+	btrfs_put_block_group(min_bg);
-+
-+	return ret < 0 ? ret : 1;
-+}
-diff --git a/fs/btrfs/zoned.h b/fs/btrfs/zoned.h
-index 9caeab07fd38..329d28e2fd8d 100644
---- a/fs/btrfs/zoned.h
-+++ b/fs/btrfs/zoned.h
-@@ -80,6 +80,7 @@ void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info);
- bool btrfs_zoned_should_reclaim(struct btrfs_fs_info *fs_info);
- void btrfs_zoned_release_data_reloc_bg(struct btrfs_fs_info *fs_info, u64 logical,
- 				       u64 length);
-+int btrfs_zone_finish_one_bg(struct btrfs_fs_info *fs_info);
- #else /* CONFIG_BLK_DEV_ZONED */
- static inline int btrfs_get_dev_zone(struct btrfs_device *device, u64 pos,
- 				     struct blk_zone *zone)
-@@ -249,6 +250,12 @@ static inline bool btrfs_zoned_should_reclaim(struct btrfs_fs_info *fs_info)
  
- static inline void btrfs_zoned_release_data_reloc_bg(struct btrfs_fs_info *fs_info,
- 						     u64 logical, u64 length) { }
-+
-+static inline int btrfs_zone_finish_one_bg(struct btrfs_fs_info *fs_info)
++/*
++ * Count how many fs_info->max_extent_size cover the @size
++ */
++static inline u32 count_max_extents(struct btrfs_fs_info *fs_info, u64 size)
 +{
-+	return 1;
++#ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
++	if (!fs_info)
++		return div_u64(size + BTRFS_MAX_EXTENT_SIZE - 1, BTRFS_MAX_EXTENT_SIZE);
++#endif
++
++	return div_u64(size + fs_info->max_extent_size - 1, fs_info->max_extent_size);
 +}
 +
- #endif
+ static inline bool btrfs_is_data_reloc_root(const struct btrfs_root *root)
+ {
+ 	return root->root_key.objectid == BTRFS_DATA_RELOC_TREE_OBJECTID;
+diff --git a/fs/btrfs/delalloc-space.c b/fs/btrfs/delalloc-space.c
+index 36ab0859a263..1e8f17ff829e 100644
+--- a/fs/btrfs/delalloc-space.c
++++ b/fs/btrfs/delalloc-space.c
+@@ -273,7 +273,7 @@ static void calc_inode_reservations(struct btrfs_fs_info *fs_info,
+ 				    u64 num_bytes, u64 disk_num_bytes,
+ 				    u64 *meta_reserve, u64 *qgroup_reserve)
+ {
+-	u64 nr_extents = count_max_extents(num_bytes);
++	u64 nr_extents = count_max_extents(fs_info, num_bytes);
+ 	u64 csum_leaves = btrfs_csum_bytes_to_leaves(fs_info, disk_num_bytes);
+ 	u64 inode_update = btrfs_calc_metadata_size(fs_info, 1);
  
- static inline bool btrfs_dev_is_sequential(struct btrfs_device *device, u64 pos)
+@@ -350,7 +350,7 @@ int btrfs_delalloc_reserve_metadata(struct btrfs_inode *inode, u64 num_bytes,
+ 	 * needs to free the reservation we just made.
+ 	 */
+ 	spin_lock(&inode->lock);
+-	nr_extents = count_max_extents(num_bytes);
++	nr_extents = count_max_extents(fs_info, num_bytes);
+ 	btrfs_mod_outstanding_extents(inode, nr_extents);
+ 	inode->csum_bytes += disk_num_bytes;
+ 	btrfs_calculate_inode_block_rsv_size(fs_info, inode);
+@@ -413,7 +413,7 @@ void btrfs_delalloc_release_extents(struct btrfs_inode *inode, u64 num_bytes)
+ 	unsigned num_extents;
+ 
+ 	spin_lock(&inode->lock);
+-	num_extents = count_max_extents(num_bytes);
++	num_extents = count_max_extents(fs_info, num_bytes);
+ 	btrfs_mod_outstanding_extents(inode, -num_extents);
+ 	btrfs_calculate_inode_block_rsv_size(fs_info, inode);
+ 	spin_unlock(&inode->lock);
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index d9123bfeae8d..30e454197fb9 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -2217,10 +2217,10 @@ void btrfs_split_delalloc_extent(struct inode *inode,
+ 		 * applies here, just in reverse.
+ 		 */
+ 		new_size = orig->end - split + 1;
+-		num_extents = count_max_extents(new_size);
++		num_extents = count_max_extents(fs_info, new_size);
+ 		new_size = split - orig->start;
+-		num_extents += count_max_extents(new_size);
+-		if (count_max_extents(size) >= num_extents)
++		num_extents += count_max_extents(fs_info, new_size);
++		if (count_max_extents(fs_info, size) >= num_extents)
+ 			return;
+ 	}
+ 
+@@ -2277,10 +2277,10 @@ void btrfs_merge_delalloc_extent(struct inode *inode, struct extent_state *new,
+ 	 * this case.
+ 	 */
+ 	old_size = other->end - other->start + 1;
+-	num_extents = count_max_extents(old_size);
++	num_extents = count_max_extents(fs_info, old_size);
+ 	old_size = new->end - new->start + 1;
+-	num_extents += count_max_extents(old_size);
+-	if (count_max_extents(new_size) >= num_extents)
++	num_extents += count_max_extents(fs_info, old_size);
++	if (count_max_extents(fs_info, new_size) >= num_extents)
+ 		return;
+ 
+ 	spin_lock(&BTRFS_I(inode)->lock);
+@@ -2359,7 +2359,7 @@ void btrfs_set_delalloc_extent(struct inode *inode, struct extent_state *state,
+ 	if (!(state->state & EXTENT_DELALLOC) && (*bits & EXTENT_DELALLOC)) {
+ 		struct btrfs_root *root = BTRFS_I(inode)->root;
+ 		u64 len = state->end + 1 - state->start;
+-		u32 num_extents = count_max_extents(len);
++		u32 num_extents = count_max_extents(fs_info, len);
+ 		bool do_list = !btrfs_is_free_space_inode(BTRFS_I(inode));
+ 
+ 		spin_lock(&BTRFS_I(inode)->lock);
+@@ -2401,7 +2401,7 @@ void btrfs_clear_delalloc_extent(struct inode *vfs_inode,
+ 	struct btrfs_inode *inode = BTRFS_I(vfs_inode);
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(vfs_inode->i_sb);
+ 	u64 len = state->end + 1 - state->start;
+-	u32 num_extents = count_max_extents(len);
++	u32 num_extents = count_max_extents(fs_info, len);
+ 
+ 	if ((state->state & EXTENT_DEFRAG) && (*bits & EXTENT_DEFRAG)) {
+ 		spin_lock(&inode->lock);
 -- 
 2.35.1
 
