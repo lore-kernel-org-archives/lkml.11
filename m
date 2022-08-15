@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 094BCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FB0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344308AbiHOTjs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        id S242456AbiHOTj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344129AbiHOTgQ (ORCPT
+        with ESMTP id S1344380AbiHOTgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:36:16 -0400
+        Mon, 15 Aug 2022 15:36:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A14852FC0;
-        Mon, 15 Aug 2022 11:45:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E60642F3;
+        Mon, 15 Aug 2022 11:46:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67176611EA;
-        Mon, 15 Aug 2022 18:45:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD20C433C1;
-        Mon, 15 Aug 2022 18:45:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95876611DB;
+        Mon, 15 Aug 2022 18:46:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969ECC433C1;
+        Mon, 15 Aug 2022 18:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589135;
-        bh=FlydeP6PYQGyn0AYt0muUhmpUF8x2hn0JEyYh0BdFuw=;
+        s=korg; t=1660589161;
+        bh=5SpB8uOR+chZgRcrC8jOsqoAakLPmR2ieEX9GHWy0ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CmNx+hm3vrHMvQo/5kewqeVxeAbKrLnqRfSq6ZT6ozYRTlpf0Ch8GYvUPfTovevi3
-         LnbGpckvS14M84tMW8OoDU3VW8MK3qxSn3MXaxuykkB/vAZw1W0m4iy0FibnZe7Z+u
-         1IeR+34HfW0LkL0oe+xg5TrbfCslFw4gLgzAep8E=
+        b=x9+NAtGD9g21B6V4lGcO8SP9mjb+m4wGVuznakZ1zj77gp4ePGlq+tm0koLT5Igku
+         +fppAzZ3c6NM54zF4v/Nq8FkT+7RBlaaxqAMzWPUgY95TgXAVgzKb+j4eFI5TtdZJA
+         6R9QUTy9D0EO6iMx7Jik58GwuaLi3Pr7VX8rP4Cc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 623/779] ASoC: fsl_asrc: force cast the asrc_format type
-Date:   Mon, 15 Aug 2022 20:04:27 +0200
-Message-Id: <20220815180404.026562897@linuxfoundation.org>
+Subject: [PATCH 5.15 601/779] ASoC: mt6359: Fix refcount leak bug
+Date:   Mon, 15 Aug 2022 20:04:05 +0200
+Message-Id: <20220815180403.052918259@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,56 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit c49932726de24405d45516b3f8ad2735714fdf05 ]
+[ Upstream commit a8d5df69e2ec702d979f7d04ed519caf8691a032 ]
 
-Fix sparse warning:
-sound/soc/fsl/fsl_asrc.c:1177:60: sparse: warning: incorrect type in argument 3 (different base types)
-sound/soc/fsl/fsl_asrc.c:1177:60: sparse:    expected unsigned int [usertype] *out_value
-sound/soc/fsl/fsl_asrc.c:1177:60: sparse:    got restricted snd_pcm_format_t *
-sound/soc/fsl/fsl_asrc.c:1200:47: sparse: warning: restricted snd_pcm_format_t degrades to integer
+In mt6359_parse_dt() and mt6359_accdet_parse_dt(), we should call
+of_node_put() for the reference returned by of_get_child_by_name()
+which has increased the refcount.
 
-Fixes: 4520af41fd21 ("ASoC: fsl_asrc: Support new property fsl,asrc-format")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1658399393-28777-3-git-send-email-shengjiu.wang@nxp.com
+Fixes: 683530285316 ("ASoC: mt6359: fix failed to parse DT properties")
+Fixes: eef07b9e0925 ("ASoC: mediatek: mt6359: add MT6359 accdet jack driver")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220713102013.367336-1-windhl@126.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_asrc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/codecs/mt6359-accdet.c | 1 +
+ sound/soc/codecs/mt6359.c        | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/sound/soc/fsl/fsl_asrc.c b/sound/soc/fsl/fsl_asrc.c
-index d7d1536a4f37..44dcbf49456c 100644
---- a/sound/soc/fsl/fsl_asrc.c
-+++ b/sound/soc/fsl/fsl_asrc.c
-@@ -1066,6 +1066,7 @@ static int fsl_asrc_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *regs;
- 	int irq, ret, i;
-+	u32 asrc_fmt = 0;
- 	u32 map_idx;
- 	char tmp[16];
- 	u32 width;
-@@ -1174,7 +1175,8 @@ static int fsl_asrc_probe(struct platform_device *pdev)
- 		return ret;
+diff --git a/sound/soc/codecs/mt6359-accdet.c b/sound/soc/codecs/mt6359-accdet.c
+index 6d3d170144a0..c190628e2905 100644
+--- a/sound/soc/codecs/mt6359-accdet.c
++++ b/sound/soc/codecs/mt6359-accdet.c
+@@ -675,6 +675,7 @@ static int mt6359_accdet_parse_dt(struct mt6359_accdet *priv)
+ 			       sizeof(struct three_key_threshold));
  	}
  
--	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc->asrc_format);
-+	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc_fmt);
-+	asrc->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
++	of_node_put(node);
+ 	dev_warn(priv->dev, "accdet caps=%x\n", priv->caps);
+ 
+ 	return 0;
+diff --git a/sound/soc/codecs/mt6359.c b/sound/soc/codecs/mt6359.c
+index 2d6a4a29b850..cf1febe54bcd 100644
+--- a/sound/soc/codecs/mt6359.c
++++ b/sound/soc/codecs/mt6359.c
+@@ -2780,6 +2780,7 @@ static int mt6359_parse_dt(struct mt6359_priv *priv)
+ 
+ 	ret = of_property_read_u32(np, "mediatek,mic-type-2",
+ 				   &priv->mux_select[MUX_MIC_TYPE_2]);
++	of_node_put(np);
  	if (ret) {
- 		ret = of_property_read_u32(np, "fsl,asrc-width", &width);
- 		if (ret) {
-@@ -1197,7 +1199,7 @@ static int fsl_asrc_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	if (!(FSL_ASRC_FORMATS & (1ULL << asrc->asrc_format))) {
-+	if (!(FSL_ASRC_FORMATS & pcm_format_to_bits(asrc->asrc_format))) {
- 		dev_warn(&pdev->dev, "unsupported width, use default S24_LE\n");
- 		asrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
- 	}
+ 		dev_info(priv->dev,
+ 			 "%s() failed to read mic-type-2, use default (%d)\n",
 -- 
 2.35.1
 
