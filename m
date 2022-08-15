@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533CDC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF7EC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344881AbiHOTpg (ORCPT
+        id S1344909AbiHOTps (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
+        Mon, 15 Aug 2022 15:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345006AbiHOTmH (ORCPT
+        with ESMTP id S1345078AbiHOTmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:42:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B3941D11;
-        Mon, 15 Aug 2022 11:47:56 -0700 (PDT)
+        Mon, 15 Aug 2022 15:42:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D3D6AA17;
+        Mon, 15 Aug 2022 11:48:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3116461215;
-        Mon, 15 Aug 2022 18:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0FBBC433C1;
-        Mon, 15 Aug 2022 18:47:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41C25B810A7;
+        Mon, 15 Aug 2022 18:48:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49357C433D6;
+        Mon, 15 Aug 2022 18:47:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589275;
-        bh=Fwi3sWQJEDyeCfSlZ8mzk9hmc7TmCoU9uZk6Wb8OtrM=;
+        s=korg; t=1660589279;
+        bh=yvmeV3EfBEO14uIQ/mpXL74P8WfYvkvN0eh0Mv9qcl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dMsnNHLWIQr9xPdiP42iKIn/G8MM+8YsxPOsZ0b+N7aRbtshbA5UuaIEm+G1BBfv4
-         hZXEJGvOXtUzXz6uZuTp8LlWUjEZX0JV7waSVzJvooWKuRLdTTnP9+IrFLHyJzwf6V
-         Npt4KXPBX2tKKoPSX7g2JWqIlsNrNhv+bD0dWDkM=
+        b=X2UddrWvequf87pzJ39LNvHWlwtXQUtxvJNxp0d60r95RDhgu93cEpAKStk4bDVFA
+         4/trO4hL/smyzYXyctWAAXOLfyNoiBeE8lGFA64/GpQeyBCdGm7jUGhimf/hJuUMUH
+         Yz366+56Qxdr0sKkzioM/B5tTBr+lpyH2adHWoMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Tianchen Ding <dtcccc@linux.alibaba.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Valentin Schneider <vschneid@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 626/779] ASoC: imx-card: use snd_pcm_format_t type for asrc_format
-Date:   Mon, 15 Aug 2022 20:04:30 +0200
-Message-Id: <20220815180404.131743767@linuxfoundation.org>
+Subject: [PATCH 5.15 661/779] sched: Remove the limitation of WF_ON_CPU on wakelist if wakee cpu is idle
+Date:   Mon, 15 Aug 2022 20:05:05 +0200
+Message-Id: <20220815180405.614039131@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -50,67 +51,233 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Tianchen Ding <dtcccc@linux.alibaba.com>
 
-[ Upstream commit 409a8652e909e323c715f3088e6c3133e37c8881 ]
+[ Upstream commit f3dd3f674555bd9455c5ae7fafce0696bd9931b3 ]
 
-Fix sparse warning:
-sound/soc/fsl/imx-card.c:653:59: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/imx-card.c:653:59: sparse:    expected unsigned int [usertype] asrc_format
-sound/soc/fsl/imx-card.c:653:59: sparse:    got restricted snd_pcm_format_t [usertype]
-sound/soc/fsl/imx-card.c:655:59: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/imx-card.c:655:59: sparse:    expected unsigned int [usertype] asrc_format
-sound/soc/fsl/imx-card.c:655:59: sparse:    got restricted snd_pcm_format_t [usertype]
+Wakelist can help avoid cache bouncing and offload the overhead of waker
+cpu. So far, using wakelist within the same llc only happens on
+WF_ON_CPU, and this limitation could be removed to further improve
+wakeup performance.
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1658399393-28777-6-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The commit 518cd6234178 ("sched: Only queue remote wakeups when
+crossing cache boundaries") disabled queuing tasks on wakelist when
+the cpus share llc. This is because, at that time, the scheduler must
+send IPIs to do ttwu_queue_wakelist. Nowadays, ttwu_queue_wakelist also
+supports TIF_POLLING, so this is not a problem now when the wakee cpu is
+in idle polling.
+
+Benefits:
+  Queuing the task on idle cpu can help improving performance on waker cpu
+  and utilization on wakee cpu, and further improve locality because
+  the wakee cpu can handle its own rq. This patch helps improving rt on
+  our real java workloads where wakeup happens frequently.
+
+  Consider the normal condition (CPU0 and CPU1 share same llc)
+  Before this patch:
+
+         CPU0                                       CPU1
+
+    select_task_rq()                                idle
+    rq_lock(CPU1->rq)
+    enqueue_task(CPU1->rq)
+    notify CPU1 (by sending IPI or CPU1 polling)
+
+                                                    resched()
+
+  After this patch:
+
+         CPU0                                       CPU1
+
+    select_task_rq()                                idle
+    add to wakelist of CPU1
+    notify CPU1 (by sending IPI or CPU1 polling)
+
+                                                    rq_lock(CPU1->rq)
+                                                    enqueue_task(CPU1->rq)
+                                                    resched()
+
+  We see CPU0 can finish its work earlier. It only needs to put task to
+  wakelist and return.
+  While CPU1 is idle, so let itself handle its own runqueue data.
+
+This patch brings no difference about IPI.
+  This patch only takes effect when the wakee cpu is:
+  1) idle polling
+  2) idle not polling
+
+  For 1), there will be no IPI with or without this patch.
+
+  For 2), there will always be an IPI before or after this patch.
+  Before this patch: waker cpu will enqueue task and check preempt. Since
+  "idle" will be sure to be preempted, waker cpu must send a resched IPI.
+  After this patch: waker cpu will put the task to the wakelist of wakee
+  cpu, and send an IPI.
+
+Benchmark:
+We've tested schbench, unixbench, and hachbench on both x86 and arm64.
+
+On x86 (Intel Xeon Platinum 8269CY):
+  schbench -m 2 -t 8
+
+    Latency percentiles (usec)              before        after
+        50.0000th:                             8            6
+        75.0000th:                            10            7
+        90.0000th:                            11            8
+        95.0000th:                            12            8
+        *99.0000th:                           13           10
+        99.5000th:                            15           11
+        99.9000th:                            18           14
+
+  Unixbench with full threads (104)
+                                            before        after
+    Dhrystone 2 using register variables  3011862938    3009935994  -0.06%
+    Double-Precision Whetstone              617119.3      617298.5   0.03%
+    Execl Throughput                         27667.3       27627.3  -0.14%
+    File Copy 1024 bufsize 2000 maxblocks   785871.4      784906.2  -0.12%
+    File Copy 256 bufsize 500 maxblocks     210113.6      212635.4   1.20%
+    File Copy 4096 bufsize 8000 maxblocks  2328862.2     2320529.1  -0.36%
+    Pipe Throughput                      145535622.8   145323033.2  -0.15%
+    Pipe-based Context Switching           3221686.4     3583975.4  11.25%
+    Process Creation                        101347.1      103345.4   1.97%
+    Shell Scripts (1 concurrent)            120193.5      123977.8   3.15%
+    Shell Scripts (8 concurrent)             17233.4       17138.4  -0.55%
+    System Call Overhead                   5300604.8     5312213.6   0.22%
+
+  hackbench -g 1 -l 100000
+                                            before        after
+    Time                                     3.246        2.251
+
+On arm64 (Ampere Altra):
+  schbench -m 2 -t 8
+
+    Latency percentiles (usec)              before        after
+        50.0000th:                            14           10
+        75.0000th:                            19           14
+        90.0000th:                            22           16
+        95.0000th:                            23           16
+        *99.0000th:                           24           17
+        99.5000th:                            24           17
+        99.9000th:                            28           25
+
+  Unixbench with full threads (80)
+                                            before        after
+    Dhrystone 2 using register variables  3536194249    3537019613   0.02%
+    Double-Precision Whetstone              629383.6      629431.6   0.01%
+    Execl Throughput                         65920.5       65846.2  -0.11%
+    File Copy 1024 bufsize 2000 maxblocks  1063722.8     1064026.8   0.03%
+    File Copy 256 bufsize 500 maxblocks     322684.5      318724.5  -1.23%
+    File Copy 4096 bufsize 8000 maxblocks  2348285.3     2328804.8  -0.83%
+    Pipe Throughput                      133542875.3   131619389.8  -1.44%
+    Pipe-based Context Switching           3215356.1     3576945.1  11.25%
+    Process Creation                        108520.5      120184.6  10.75%
+    Shell Scripts (1 concurrent)            122636.3        121888  -0.61%
+    Shell Scripts (8 concurrent)             17462.1       17381.4  -0.46%
+    System Call Overhead                   4429998.9     4435006.7   0.11%
+
+  hackbench -g 1 -l 100000
+                                            before        after
+    Time                                     4.217        2.916
+
+Our patch has improvement on schbench, hackbench
+and Pipe-based Context Switching of unixbench
+when there exists idle cpus,
+and no obvious regression on other tests of unixbench.
+This can help improve rt in scenes where wakeup happens frequently.
+
+Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Link: https://lore.kernel.org/r/20220608233412.327341-3-dtcccc@linux.alibaba.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-card.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/sched/core.c  | 26 ++++++++++++++------------
+ kernel/sched/sched.h |  1 -
+ 2 files changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index b28b30c69a3f..593d69b96523 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -118,7 +118,7 @@ struct imx_card_data {
- 	struct snd_soc_card card;
- 	int num_dapm_routes;
- 	u32 asrc_rate;
--	u32 asrc_format;
-+	snd_pcm_format_t asrc_format;
- };
- 
- static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
-@@ -474,7 +474,7 @@ static int be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
- 
- 	mask = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
- 	snd_mask_none(mask);
--	snd_mask_set(mask, data->asrc_format);
-+	snd_mask_set(mask, (__force unsigned int)data->asrc_format);
- 
- 	return 0;
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 892c06ff9dd0..4499b58ac2ca 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3714,7 +3714,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
+ 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
  }
-@@ -493,6 +493,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
- 	struct dai_link_data *link_data;
- 	struct of_phandle_args args;
- 	int ret, num_links;
-+	u32 asrc_fmt = 0;
- 	u32 width;
  
- 	ret = snd_soc_of_parse_card_name(card, "model");
-@@ -639,7 +640,8 @@ static int imx_card_parse_of(struct imx_card_data *data)
- 				goto err;
- 			}
+-static inline bool ttwu_queue_cond(int cpu, int wake_flags)
++static inline bool ttwu_queue_cond(int cpu)
+ {
+ 	/*
+ 	 * Do not complicate things with the async wake_list while the CPU is
+@@ -3730,17 +3730,21 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+ 	if (!cpus_share_cache(smp_processor_id(), cpu))
+ 		return true;
  
--			ret = of_property_read_u32(args.np, "fsl,asrc-format", &data->asrc_format);
-+			ret = of_property_read_u32(args.np, "fsl,asrc-format", &asrc_fmt);
-+			data->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
- 			if (ret) {
- 				/* Fallback to old binding; translate to asrc_format */
- 				ret = of_property_read_u32(args.np, "fsl,asrc-width", &width);
++	if (cpu == smp_processor_id())
++		return false;
++
+ 	/*
+-	 * If the task is descheduling and the only running task on the
+-	 * CPU then use the wakelist to offload the task activation to
+-	 * the soon-to-be-idle CPU as the current CPU is likely busy.
+-	 * nr_running is checked to avoid unnecessary task stacking.
++	 * If the wakee cpu is idle, or the task is descheduling and the
++	 * only running task on the CPU, then use the wakelist to offload
++	 * the task activation to the idle (or soon-to-be-idle) CPU as
++	 * the current CPU is likely busy. nr_running is checked to
++	 * avoid unnecessary task stacking.
+ 	 *
+ 	 * Note that we can only get here with (wakee) p->on_rq=0,
+ 	 * p->on_cpu can be whatever, we've done the dequeue, so
+ 	 * the wakee has been accounted out of ->nr_running.
+ 	 */
+-	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
++	if (!cpu_rq(cpu)->nr_running)
+ 		return true;
+ 
+ 	return false;
+@@ -3748,10 +3752,7 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+ 
+ static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ {
+-	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu, wake_flags)) {
+-		if (WARN_ON_ONCE(cpu == smp_processor_id()))
+-			return false;
+-
++	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
+ 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
+ 		__ttwu_queue_wakelist(p, cpu, wake_flags);
+ 		return true;
+@@ -4073,7 +4074,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
+ 	 * scheduling.
+ 	 */
+ 	if (smp_load_acquire(&p->on_cpu) &&
+-	    ttwu_queue_wakelist(p, task_cpu(p), wake_flags | WF_ON_CPU))
++	    ttwu_queue_wakelist(p, task_cpu(p), wake_flags))
+ 		goto unlock;
+ 
+ 	/*
+@@ -4589,7 +4590,8 @@ static inline void prepare_task(struct task_struct *next)
+ 	 * Claim the task as running, we do this before switching to it
+ 	 * such that any running task will have this set.
+ 	 *
+-	 * See the ttwu() WF_ON_CPU case and its ordering comment.
++	 * See the smp_load_acquire(&p->on_cpu) case in ttwu() and
++	 * its ordering comment.
+ 	 */
+ 	WRITE_ONCE(next->on_cpu, 1);
+ #endif
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 2bbf1f006d63..e49902898253 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2052,7 +2052,6 @@ static inline int task_on_rq_migrating(struct task_struct *p)
+ 
+ #define WF_SYNC     0x10 /* Waker goes to sleep after wakeup */
+ #define WF_MIGRATED 0x20 /* Internal use, task got migrated */
+-#define WF_ON_CPU   0x40 /* Wakee is on_cpu */
+ 
+ #ifdef CONFIG_SMP
+ static_assert(WF_EXEC == SD_BALANCE_EXEC);
 -- 
 2.35.1
 
