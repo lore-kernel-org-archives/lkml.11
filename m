@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD966C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136CAC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233619AbiHOXRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:17:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
+        id S242124AbiHOXRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245338AbiHOXOX (ORCPT
+        with ESMTP id S1345283AbiHOXOZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:14:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE9C12F71D;
-        Mon, 15 Aug 2022 13:01:19 -0700 (PDT)
+        Mon, 15 Aug 2022 19:14:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD1F7AC1D;
+        Mon, 15 Aug 2022 13:01:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3865061299;
-        Mon, 15 Aug 2022 20:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBBCC433D7;
-        Mon, 15 Aug 2022 20:01:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2B3EB80EAD;
+        Mon, 15 Aug 2022 20:01:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A33C433C1;
+        Mon, 15 Aug 2022 20:01:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593678;
-        bh=wkCfAnjFsSmxAg0uM9KGph7C/w9NhuQf22vBGcpc4qo=;
+        s=korg; t=1660593681;
+        bh=DaELCTiURVygaN7KydWbsGgnuiXU/kiGrSZdk8PGV4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dAzbwj8la92tG6qAHHRbiWnKA2d5KJr0eel5r/T96EanhMR8Veu/GFX7Qp9ZAybKL
-         i1Hw6I7+yjZ+PidYt1R1jmTsbSfpxwGrYG1e7NJxVBu5wEtKkWK1ibuDohnaNtGQAg
-         GuulmSygY7yIG2tc+QHYGfa6PGwZYgRjrqt6KGuE=
+        b=vs2wa4vDtmNlsUE74amOP4HfGOSX73+dRy3GR2gYPPdwndgKKfkEq/u1ASvoQy+DN
+         ZBmQU1ag5jVGQzIWQnlLzpXOclpfI6G8qSllkJBESCnabtivNlanSNOPRkX5bpNEIT
+         2GwsSyGTwYZi22GTDN9SwJHVhVFOuZ8JN/spvaCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0306/1157] drm/i915: remove unused GEM_DEBUG_DECL() and GEM_DEBUG_BUG_ON()
-Date:   Mon, 15 Aug 2022 19:54:22 +0200
-Message-Id: <20220815180451.900305479@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.18 0986/1095] usbnet: smsc95xx: Avoid link settings race on interrupt reception
+Date:   Mon, 15 Aug 2022 20:06:25 +0200
+Message-Id: <20220815180509.913191496@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,45 +52,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 1b93ff4d0679190e8812cd0d0b3aebfcba1ed883 ]
+[ Upstream commit 8960f878e39fadc03d74292a6731f1e914cf2019 ]
 
-There are already too many choices here, take away the unused ones.
+When a PHY interrupt is signaled, the SMSC LAN95xx driver updates the
+MAC full duplex mode and PHY flow control registers based on cached data
+in struct phy_device:
 
-Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220504183716.987793-1-jani.nikula@intel.com
+  smsc95xx_status()                 # raises EVENT_LINK_RESET
+    usbnet_deferred_kevent()
+      smsc95xx_link_reset()         # uses cached data in phydev
+
+Simultaneously, phylib polls link status once per second and updates
+that cached data:
+
+  phy_state_machine()
+    phy_check_link_status()
+      phy_read_status()
+        lan87xx_read_status()
+          genphy_read_status()      # updates cached data in phydev
+
+If smsc95xx_link_reset() wins the race against genphy_read_status(),
+the registers may be updated based on stale data.
+
+E.g. if the link was previously down, phydev->duplex is set to
+DUPLEX_UNKNOWN and that's what smsc95xx_link_reset() will use, even
+though genphy_read_status() may update it to DUPLEX_FULL afterwards.
+
+PHY interrupts are currently only enabled on suspend to trigger wakeup,
+so the impact of the race is limited, but we're about to enable them
+perpetually.
+
+Avoid the race by delaying execution of smsc95xx_link_reset() until
+phy_state_machine() has done its job and calls back via
+smsc95xx_handle_link_change().
+
+Signaling EVENT_LINK_RESET on wakeup is not necessary because phylib
+picks up link status changes through polling.  So drop the declaration
+of a ->link_reset() callback.
+
+Note that the semicolon on a line by itself added in smsc95xx_status()
+is a placeholder for a function call which will be added in a subsequent
+commit.  That function call will actually handle the INT_ENP_PHY_INT_
+interrupt.
+
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/i915_gem.h | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/usb/smsc95xx.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_gem.h b/drivers/gpu/drm/i915/i915_gem.h
-index d0752e5553db..b7b257f54d2e 100644
---- a/drivers/gpu/drm/i915/i915_gem.h
-+++ b/drivers/gpu/drm/i915/i915_gem.h
-@@ -54,9 +54,7 @@ struct drm_i915_private;
- 	} while(0)
- #define GEM_WARN_ON(expr) WARN_ON(expr)
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 2cb44d65bbc3..f5a208948d22 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -566,7 +566,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev)
+ 	return smsc95xx_write_reg(dev, AFC_CFG, afc_cfg);
+ }
  
--#define GEM_DEBUG_DECL(var) var
- #define GEM_DEBUG_EXEC(expr) expr
--#define GEM_DEBUG_BUG_ON(expr) GEM_BUG_ON(expr)
- #define GEM_DEBUG_WARN_ON(expr) GEM_WARN_ON(expr)
+-static int smsc95xx_link_reset(struct usbnet *dev)
++static void smsc95xx_mac_update_fullduplex(struct usbnet *dev)
+ {
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	unsigned long flags;
+@@ -583,14 +583,16 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	spin_unlock_irqrestore(&pdata->mac_cr_lock, flags);
  
- #else
-@@ -66,9 +64,7 @@ struct drm_i915_private;
- #define GEM_BUG_ON(expr) BUILD_BUG_ON_INVALID(expr)
- #define GEM_WARN_ON(expr) ({ unlikely(!!(expr)); })
+ 	ret = smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr);
+-	if (ret < 0)
+-		return ret;
++	if (ret < 0) {
++		if (ret != -ENODEV)
++			netdev_warn(dev->net,
++				    "Error updating MAC full duplex mode\n");
++		return;
++	}
  
--#define GEM_DEBUG_DECL(var)
- #define GEM_DEBUG_EXEC(expr) do { } while (0)
--#define GEM_DEBUG_BUG_ON(expr)
- #define GEM_DEBUG_WARN_ON(expr) ({ BUILD_BUG_ON_INVALID(expr); 0; })
- #endif
+ 	ret = smsc95xx_phy_update_flowcontrol(dev);
+ 	if (ret < 0)
+ 		netdev_warn(dev->net, "Error updating PHY flow control\n");
+-
+-	return ret;
+ }
  
+ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+@@ -607,7 +609,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+ 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+ 
+ 	if (intdata & INT_ENP_PHY_INT_)
+-		usbnet_defer_kevent(dev, EVENT_LINK_RESET);
++		;
+ 	else
+ 		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+ 			    intdata);
+@@ -1088,6 +1090,7 @@ static void smsc95xx_handle_link_change(struct net_device *net)
+ 	struct usbnet *dev = netdev_priv(net);
+ 
+ 	phy_print_status(net->phydev);
++	smsc95xx_mac_update_fullduplex(dev);
+ 	usbnet_defer_kevent(dev, EVENT_LINK_CHANGE);
+ }
+ 
+@@ -1993,7 +1996,6 @@ static const struct driver_info smsc95xx_info = {
+ 	.description	= "smsc95xx USB 2.0 Ethernet",
+ 	.bind		= smsc95xx_bind,
+ 	.unbind		= smsc95xx_unbind,
+-	.link_reset	= smsc95xx_link_reset,
+ 	.reset		= smsc95xx_reset,
+ 	.check_connect	= smsc95xx_start_phy,
+ 	.stop		= smsc95xx_stop,
 -- 
 2.35.1
 
