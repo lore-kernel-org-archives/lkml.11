@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A82CAC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCECCC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:19:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241928AbiHOUTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
+        id S1346182AbiHOUT1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346206AbiHOULD (ORCPT
+        with ESMTP id S1346283AbiHOULI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:11:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5829AAE4D;
-        Mon, 15 Aug 2022 11:57:01 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0636C19285;
+        Mon, 15 Aug 2022 11:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AE961268;
-        Mon, 15 Aug 2022 18:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA03FC433B5;
-        Mon, 15 Aug 2022 18:56:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C442E6126D;
+        Mon, 15 Aug 2022 18:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A4FC433D7;
+        Mon, 15 Aug 2022 18:57:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589820;
-        bh=uIHdBK00fuRJ0+kcdtpWQyECMj7ez0aq6V3wiv+dffw=;
+        s=korg; t=1660589851;
+        bh=KKc5u0c4svxwVAcIxxjFmvahLmLCXSorZlxcM4OLRUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LPlFhqbXAa65bSBD3qkEBiFV3DV6gmfPMZFXCP7xbm5tcgWsoJX9j9SYyXv2A2vzU
-         au1sAAKnWv9jWl8y0OmG2WgEF3AoDkPiYyeKtwTCPcapcUIg31y5sN5s9rikI3xZex
-         L4Q1ai3g0tUuGYcJ1D7T7TqjgWSj/CbF+vDu6i5Y=
+        b=HZEm9ZVsImEKThcmT4hmWlp6hPSAHG2+5KrBP5qpVtJsAXDbPcOdXUYG7ul4NPZkL
+         K2FxoZWgBZs926qpGEt7/CUOhdy2svaZUaMjqluWltjFa9wXfEdyD7OcTUuNGTXzHl
+         oEnnYAviDNDsDjNCL8UkjNTvi/odPTt9EqqUx9/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 5.18 0057/1095] parisc: Drop pa_swapper_pg_lock spinlock
-Date:   Mon, 15 Aug 2022 19:50:56 +0200
-Message-Id: <20220815180431.831310995@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 0027/1095] KVM: Drop unused @gpa param from gfn=>pfn caches __release_gpc() helper
+Date:   Mon, 15 Aug 2022 19:50:26 +0200
+Message-Id: <20220815180430.481743335@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -48,34 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 3fbc9a7de0564c55d8a9584c9cd2c9dfe6bd6d43 upstream.
+commit 345b0fd6fe5f66dfe841bad0b39dd11a5672df68 upstream.
 
-This spinlock was dropped with commit b7795074a046 ("parisc: Optimize
-per-pagetable spinlocks") in kernel v5.12.
+Drop the @pga param from __release_gpc() and rename the helper to make it
+more obvious that the cache itself is not being released.  The helper
+will be reused by a future commit to release a pfn+khva combination that
+is _never_ associated with the cache, at which point the current name
+would go from slightly misleading to blatantly wrong.
 
-Remove it to silence a sparse warning.
+No functional change intended.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: <stable@vger.kernel.org> # v5.12+
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429210025.3293691-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/cache.c |    3 ---
- 1 file changed, 3 deletions(-)
+ virt/kvm/pfncache.c |   10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
---- a/arch/parisc/kernel/cache.c
-+++ b/arch/parisc/kernel/cache.c
-@@ -50,9 +50,6 @@ void flush_instruction_cache_local(void)
-  */
- DEFINE_SPINLOCK(pa_tlb_flush_lock);
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -95,7 +95,7 @@ bool kvm_gfn_to_pfn_cache_check(struct k
+ }
+ EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_check);
  
--/* Swapper page setup lock. */
--DEFINE_SPINLOCK(pa_swapper_pg_lock);
--
- #if defined(CONFIG_64BIT) && defined(CONFIG_SMP)
- int pa_serialize_tlb_flushes __ro_after_init;
- #endif
+-static void __release_gpc(struct kvm *kvm, kvm_pfn_t pfn, void *khva, gpa_t gpa)
++static void gpc_release_pfn_and_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
+ {
+ 	/* Unmap the old page if it was mapped before, and release it */
+ 	if (!is_error_noslot_pfn(pfn)) {
+@@ -146,7 +146,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 	unsigned long page_offset = gpa & ~PAGE_MASK;
+ 	kvm_pfn_t old_pfn, new_pfn;
+ 	unsigned long old_uhva;
+-	gpa_t old_gpa;
+ 	void *old_khva;
+ 	bool old_valid;
+ 	int ret = 0;
+@@ -160,7 +159,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 
+ 	write_lock_irq(&gpc->lock);
+ 
+-	old_gpa = gpc->gpa;
+ 	old_pfn = gpc->pfn;
+ 	old_khva = gpc->khva - offset_in_page(gpc->khva);
+ 	old_uhva = gpc->uhva;
+@@ -244,7 +242,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+  out:
+ 	write_unlock_irq(&gpc->lock);
+ 
+-	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
++	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ 
+ 	return ret;
+ }
+@@ -254,14 +252,12 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ {
+ 	void *old_khva;
+ 	kvm_pfn_t old_pfn;
+-	gpa_t old_gpa;
+ 
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	gpc->valid = false;
+ 
+ 	old_khva = gpc->khva - offset_in_page(gpc->khva);
+-	old_gpa = gpc->gpa;
+ 	old_pfn = gpc->pfn;
+ 
+ 	/*
+@@ -273,7 +269,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ 
+ 	write_unlock_irq(&gpc->lock);
+ 
+-	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
++	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ }
+ EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_unmap);
+ 
 
 
