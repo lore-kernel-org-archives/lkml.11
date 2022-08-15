@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA567C25B0F
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8115AC282E7
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232320AbiHPEwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
+        id S232586AbiHPEw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231669AbiHPEsP (ORCPT
+        with ESMTP id S232875AbiHPEsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:48:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B50B08BC;
-        Mon, 15 Aug 2022 13:43:23 -0700 (PDT)
+        Tue, 16 Aug 2022 00:48:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DAFB4421;
+        Mon, 15 Aug 2022 13:43:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8DE86127C;
-        Mon, 15 Aug 2022 20:43:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3B88C433C1;
-        Mon, 15 Aug 2022 20:43:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AF0EB80EAD;
+        Mon, 15 Aug 2022 20:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA18C433C1;
+        Mon, 15 Aug 2022 20:43:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596201;
-        bh=/qLeM6O+hsKWkm56b8NdyqMMrg/DKwhFZQtIKkk3yxU=;
+        s=korg; t=1660596217;
+        bh=mQCrq2ntPhCcnbK41SusLBAMdtiHg3E1dAxiOPm3NqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XPIYxXg5WjWVsCmYyEVYNs4XHMnXCBp1HKO9YDxXInDqbZ++t2aluUy68k8ZlhzBi
-         91qhcCm/2efLPx6ji6BbK5eQ2CjOZRzVVIMdhk1kQYtvaNa9RvCapQAbqVgY0DkqQk
-         dRvMYhp/HfiuWMgF8dRAAABtTb0FnoGQwvzA/E94=
+        b=bOC5Bv961JegYGD8Un605g5kh4Qs7RqwAm2c10IaAmUYBfLIdn6OTeWQTBzcHAPwD
+         aWHcK9KFXL4ZOSxacLBIDQI7UBorfk6mlLsCtVqfLZ7Thgj2jTfCnxhB4lmdAWOUwx
+         y8n45zCFLCA1dkcwIT9CjOoWQJuypeOQpuxariKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Sherry Sun <sherry.sun@nxp.com>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1003/1157] tty: serial: fsl_lpuart: correct the count of break characters
-Date:   Mon, 15 Aug 2022 20:05:59 +0200
-Message-Id: <20220815180519.918305358@linuxfoundation.org>
+Subject: [PATCH 5.19 0976/1157] s390/zcore: fix race when reading from hardware system area
+Date:   Mon, 15 Aug 2022 20:05:32 +0200
+Message-Id: <20220815180518.771965641@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,60 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Sun <sherry.sun@nxp.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 707f816f25590c20e056b3bd4a17ce69b03fe856 ]
+[ Upstream commit 9ffed254d938c9e99eb7761c7f739294c84e0367 ]
 
-The LPUART can't distinguish between a break signal and a framing error,
-so need to count the break characters if there is a framing error and
-received data is zero instead of the parity error.
+Memory buffer used for reading out data from hardware system
+area is not protected against concurrent access.
 
-Fixes: 5541a9bacfe5 ("serial: fsl_lpuart: handle break and make sysrq work")
-Reviewed-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Link: https://lore.kernel.org/r/20220725050115.12396-1-sherry.sun@nxp.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Fixes: 411ed3225733 ("[S390] zfcpdump support.")
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Link: https://lore.kernel.org/r/e68137f0f9a0d2558f37becc20af18e2939934f6.1658206891.git.agordeev@linux.ibm.com
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/fsl_lpuart.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/s390/char/zcore.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 0d6e62f6bb07..561d6d0b7c94 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -990,12 +990,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index 516783ba950f..92b32ce645b9 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
+@@ -50,6 +50,7 @@ static struct dentry *zcore_reipl_file;
+ static struct dentry *zcore_hsa_file;
+ static struct ipl_parameter_block *zcore_ipl_block;
  
- 		if (sr & (UARTSTAT_PE | UARTSTAT_OR | UARTSTAT_FE)) {
- 			if (sr & UARTSTAT_PE) {
-+				sport->port.icount.parity++;
-+			} else if (sr & UARTSTAT_FE) {
- 				if (is_break)
- 					sport->port.icount.brk++;
- 				else
--					sport->port.icount.parity++;
--			} else if (sr & UARTSTAT_FE) {
--				sport->port.icount.frame++;
-+					sport->port.icount.frame++;
- 			}
++static DEFINE_MUTEX(hsa_buf_mutex);
+ static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
  
- 			if (sr & UARTSTAT_OR)
-@@ -1010,12 +1010,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
- 			sr &= sport->port.read_status_mask;
+ /*
+@@ -66,19 +67,24 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
  
- 			if (sr & UARTSTAT_PE) {
-+				flg = TTY_PARITY;
-+			} else if (sr & UARTSTAT_FE) {
- 				if (is_break)
- 					flg = TTY_BREAK;
- 				else
--					flg = TTY_PARITY;
--			} else if (sr & UARTSTAT_FE) {
--				flg = TTY_FRAME;
-+					flg = TTY_FRAME;
- 			}
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+ 		bytes = min(PAGE_SIZE - offset, count);
+-		if (copy_to_user(dest, hsa_buf + offset, bytes))
++		if (copy_to_user(dest, hsa_buf + offset, bytes)) {
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EFAULT;
++		}
+ 		src += bytes;
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
  
- 			if (sr & UARTSTAT_OR)
+@@ -96,9 +102,11 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 	if (!hsa_available)
+ 		return -ENODATA;
+ 
++	mutex_lock(&hsa_buf_mutex);
+ 	while (count) {
+ 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
+ 			TRACE("sclp_sdias_copy() failed\n");
++			mutex_unlock(&hsa_buf_mutex);
+ 			return -EIO;
+ 		}
+ 		offset = src % PAGE_SIZE;
+@@ -108,6 +116,7 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
+ 		dest += bytes;
+ 		count -= bytes;
+ 	}
++	mutex_unlock(&hsa_buf_mutex);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
