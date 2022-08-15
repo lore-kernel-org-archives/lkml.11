@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE481C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7453CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245558AbiHOXpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        id S1354111AbiHOXp1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354283AbiHOXlr (ORCPT
+        with ESMTP id S1354272AbiHOXlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:41:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244CAB86B;
-        Mon, 15 Aug 2022 13:11:34 -0700 (PDT)
+        Mon, 15 Aug 2022 19:41:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFACCAE77;
+        Mon, 15 Aug 2022 13:11:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4ED06077B;
-        Mon, 15 Aug 2022 20:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA20AC433C1;
-        Mon, 15 Aug 2022 20:11:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C81860B9B;
+        Mon, 15 Aug 2022 20:11:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8985AC433C1;
+        Mon, 15 Aug 2022 20:11:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594293;
-        bh=m6tmQ3fcvqEazC3ml2tP0P8yC/apYVAOn4jfufH1sJ0=;
+        s=korg; t=1660594290;
+        bh=glN6sxhxG13vQizBKcYdIeAELf9tcp4qdEOf3tEnxBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tjp8GdQThCTq0OsWotrGBEoZ04KsIiLE2Ewu0rqN3H/W8P5QyUnvAEuRnCm6IrYMe
-         3gRCJ/sg+ox56h2cT3F96k2BowJMq83KkGn+GSck2+5lnVL9bLspwswb2VNA/lyCrU
-         bL4Wm/s1IKa05iU3GlVAJQqxmQdRDVExW4vYPcAQ=
+        b=VlqfFczx5bN+1Kqpl1ZsN+xKM7HL8LN2MW/aJsovfmMoWsenlGRI9xBdvuLlk823m
+         blU4UyeuPihnC7JnN/Fpbu6WuG68Im63Koe+zXO0p+Sv8gt9ZJIeZwL83WeA35Pk+8
+         mrUZS+9FkZyAeGYuUwKyV1TodaCpAmtQV1JnYJSs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.18 1088/1095] bpf: Fix sparse warning for bpf_kptr_xchg_proto
-Date:   Mon, 15 Aug 2022 20:08:07 +0200
-Message-Id: <20220815180514.042329632@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0409/1157] drm/vc4: dsi: Release workaround buffer and DMA
+Date:   Mon, 15 Aug 2022 19:56:05 +0200
+Message-Id: <20220815180456.017347408@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit 5b74c690e1c55953ec99fd9dab74f72dbee4fe95 upstream.
+[ Upstream commit 89c4bbe2a01ea401c2b0fabc104720809084b77f ]
 
-Kernel Test Robot complained about missing static storage class
-annotation for bpf_kptr_xchg_proto variable.
+On Pi0-3 the driver allocates a buffer and requests a DMA channel
+because the ARM can't write to DSI1's registers directly.
 
-sparse: symbol 'bpf_kptr_xchg_proto' was not declared. Should it be static?
+However, we never release that buffer or channel. Let's add a
+device-managed action to release each.
 
-This caused by missing extern definition in the header. Add it to
-suppress the sparse warning.
-
-Fixes: c0a5a21c25f3 ("bpf: Allow storing referenced kptr in map")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220511194654.765705-2-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-12-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/bpf.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2228,6 +2228,7 @@ extern const struct bpf_func_proto bpf_f
- extern const struct bpf_func_proto bpf_loop_proto;
- extern const struct bpf_func_proto bpf_strncmp_proto;
- extern const struct bpf_func_proto bpf_copy_from_user_task_proto;
-+extern const struct bpf_func_proto bpf_kptr_xchg_proto;
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 98308a17e4ed..e82ee94cafc7 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -1487,13 +1487,29 @@ vc4_dsi_init_phy_clocks(struct vc4_dsi *dsi)
+ 				      dsi->clk_onecell);
+ }
  
- const struct bpf_func_proto *tracing_prog_func_proto(
-   enum bpf_func_id func_id, const struct bpf_prog *prog);
++static void vc4_dsi_dma_mem_release(void *ptr)
++{
++	struct vc4_dsi *dsi = ptr;
++	struct device *dev = &dsi->pdev->dev;
++
++	dma_free_coherent(dev, 4, dsi->reg_dma_mem, dsi->reg_dma_paddr);
++	dsi->reg_dma_mem = NULL;
++}
++
++static void vc4_dsi_dma_chan_release(void *ptr)
++{
++	struct vc4_dsi *dsi = ptr;
++
++	dma_release_channel(dsi->reg_dma_chan);
++	dsi->reg_dma_chan = NULL;
++}
++
+ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct drm_device *drm = dev_get_drvdata(master);
+ 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
+ 	struct vc4_dsi_encoder *vc4_dsi_encoder;
+-	dma_cap_mask_t dma_mask;
+ 	int ret;
+ 
+ 	dsi->variant = of_device_get_match_data(dev);
+@@ -1527,6 +1543,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 	 * so set up a channel for talking to it.
+ 	 */
+ 	if (dsi->variant->broken_axi_workaround) {
++		dma_cap_mask_t dma_mask;
++
+ 		dsi->reg_dma_mem = dma_alloc_coherent(dev, 4,
+ 						      &dsi->reg_dma_paddr,
+ 						      GFP_KERNEL);
+@@ -1535,8 +1553,13 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 			return -ENOMEM;
+ 		}
+ 
++		ret = devm_add_action_or_reset(dev, vc4_dsi_dma_mem_release, dsi);
++		if (ret)
++			return ret;
++
+ 		dma_cap_zero(dma_mask);
+ 		dma_cap_set(DMA_MEMCPY, dma_mask);
++
+ 		dsi->reg_dma_chan = dma_request_chan_by_mask(&dma_mask);
+ 		if (IS_ERR(dsi->reg_dma_chan)) {
+ 			ret = PTR_ERR(dsi->reg_dma_chan);
+@@ -1546,6 +1569,10 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 			return ret;
+ 		}
+ 
++		ret = devm_add_action_or_reset(dev, vc4_dsi_dma_chan_release, dsi);
++		if (ret)
++			return ret;
++
+ 		/* Get the physical address of the device's registers.  The
+ 		 * struct resource for the regs gives us the bus address
+ 		 * instead.
+-- 
+2.35.1
+
 
 
