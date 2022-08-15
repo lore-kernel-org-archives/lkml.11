@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F72C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17217C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351927AbiHOWty (ORCPT
+        id S1351937AbiHOWuA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60464 "EHLO
+        Mon, 15 Aug 2022 18:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352099AbiHOWrv (ORCPT
+        with ESMTP id S1351471AbiHOWnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:47:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62254135AE0;
-        Mon, 15 Aug 2022 12:53:26 -0700 (PDT)
+        Mon, 15 Aug 2022 18:43:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95D5133A4A;
+        Mon, 15 Aug 2022 12:52:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5522ECE12C1;
-        Mon, 15 Aug 2022 19:53:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CECCC433D6;
-        Mon, 15 Aug 2022 19:53:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 519A760FB5;
+        Mon, 15 Aug 2022 19:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29629C433D6;
+        Mon, 15 Aug 2022 19:52:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593202;
-        bh=hyTcSWCJpM8XrR++nPsIwaPrLzF9BBedKqDgX0Srn/w=;
+        s=korg; t=1660593153;
+        bh=okJrlgzBj1K0AXC4N2+ssJGxbgJwbYicAEw9OP6fVVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kUuHy/+V3COipcsKw8jGJcNicuMAWydJ353y82ab/nsg/UmLHrCM3MbJMURuDq2J2
-         poZkzI5ulExEHkgFBpfF7zwy4PowRKlsu1zAxVpOaxScZZERnJmVvKsWSKkjBKMw8W
-         w5a65Rz4LFYkoNSaEJVVXOcmkUw5KzveZsRVwLU0=
+        b=O1mzi740kLq5+FT0fiDCe+WHSWil3lrWwKZbrkGcGT61kcUhBzrfiZo6G+JQlbLFW
+         H1zB4BCFAhQylhho5rKZRSzyVaP0ywIsyvidsQW4QSntaUTwpdRS2zHKd7/M4nXx6L
+         qw3pm0RQcosM41P3NEJxpmPdKrbar+avuo0pW2VU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0893/1095] mfd: t7l66xb: Drop platform disable callback
-Date:   Mon, 15 Aug 2022 20:04:52 +0200
-Message-Id: <20220815180506.269443880@linuxfoundation.org>
+Subject: [PATCH 5.19 0222/1157] arm64: dts: qcom: sc7180: Remove ipa_fw_mem node on trogdor
+Date:   Mon, 15 Aug 2022 19:52:58 +0200
+Message-Id: <20220815180448.463546438@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,65 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit 128ac294e1b437cb8a7f2ff8ede1cde9082bddbe ]
+[ Upstream commit e60414644cf3a703e10ed4429c15263095945ffe ]
 
-None of the in-tree instantiations of struct t7l66xb_platform_data
-provides a disable callback. So better don't dereference this function
-pointer unconditionally. As there is no user, drop it completely instead
-of calling it conditional.
+We don't use this carveout on trogdor boards, and having it defined in
+the sc7180 SoC file causes an overlap message to be printed at boot.
 
-This is a preparation for making platform remove callbacks return void.
+ OF: reserved mem: OVERLAP DETECTED!
+ memory@86000000 (0x0000000086000000--0x000000008ec00000) overlaps with memory@8b700000 (0x000000008b700000--0x000000008b710000)
 
-Fixes: 1f192015ca5b ("mfd: driver for the T7L66XB TMIO SoC")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220530192430.2108217-3-u.kleine-koenig@pengutronix.de
+Delete the node in the trogdor dtsi file to fix the overlap problem and
+remove the error message.
+
+Cc: Alex Elder <elder@linaro.org>
+Cc: Matthias Kaehlcke <mka@chromium.org>
+Fixes: 310b266655a3 ("arm64: dts: qcom: sc7180: define ipa_fw_mem node")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220517193307.3034602-1-swboyd@chromium.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/t7l66xb.c       | 6 +-----
- include/linux/mfd/t7l66xb.h | 1 -
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mfd/t7l66xb.c b/drivers/mfd/t7l66xb.c
-index 5369c67e3280..663ffd4b8570 100644
---- a/drivers/mfd/t7l66xb.c
-+++ b/drivers/mfd/t7l66xb.c
-@@ -397,11 +397,8 @@ static int t7l66xb_probe(struct platform_device *dev)
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+index e55dbaa6dc12..a071b8f5d7dc 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
+@@ -43,6 +43,7 @@ charger-crit {
+  */
  
- static int t7l66xb_remove(struct platform_device *dev)
- {
--	struct t7l66xb_platform_data *pdata = dev_get_platdata(&dev->dev);
- 	struct t7l66xb *t7l66xb = platform_get_drvdata(dev);
--	int ret;
- 
--	ret = pdata->disable(dev);
- 	clk_disable_unprepare(t7l66xb->clk48m);
- 	clk_put(t7l66xb->clk48m);
- 	clk_disable_unprepare(t7l66xb->clk32k);
-@@ -412,8 +409,7 @@ static int t7l66xb_remove(struct platform_device *dev)
- 	mfd_remove_devices(&dev->dev);
- 	kfree(t7l66xb);
- 
--	return ret;
--
-+	return 0;
- }
- 
- static struct platform_driver t7l66xb_platform_driver = {
-diff --git a/include/linux/mfd/t7l66xb.h b/include/linux/mfd/t7l66xb.h
-index 69632c1b07bd..ae3e7a5c5219 100644
---- a/include/linux/mfd/t7l66xb.h
-+++ b/include/linux/mfd/t7l66xb.h
-@@ -12,7 +12,6 @@
- 
- struct t7l66xb_platform_data {
- 	int (*enable)(struct platform_device *dev);
--	int (*disable)(struct platform_device *dev);
- 	int (*suspend)(struct platform_device *dev);
- 	int (*resume)(struct platform_device *dev);
- 
+ /delete-node/ &hyp_mem;
++/delete-node/ &ipa_fw_mem;
+ /delete-node/ &xbl_mem;
+ /delete-node/ &aop_mem;
+ /delete-node/ &sec_apps_mem;
 -- 
 2.35.1
 
