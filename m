@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B139C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42EDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344771AbiHOTol (ORCPT
+        id S1344792AbiHOTos (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
+        Mon, 15 Aug 2022 15:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344700AbiHOTlY (ORCPT
+        with ESMTP id S1344734AbiHOTl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:41:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C79E65811;
-        Mon, 15 Aug 2022 11:47:26 -0700 (PDT)
+        Mon, 15 Aug 2022 15:41:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71B741D0E;
+        Mon, 15 Aug 2022 11:47:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6A15B81084;
-        Mon, 15 Aug 2022 18:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A57C433C1;
-        Mon, 15 Aug 2022 18:47:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A3CCB810A1;
+        Mon, 15 Aug 2022 18:47:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3511AC433C1;
+        Mon, 15 Aug 2022 18:47:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589243;
-        bh=m/cZj8U6SnnRtObGLL41hNZvW4O1KjdnXBw2od3BvTU=;
+        s=korg; t=1660589249;
+        bh=LCo2QkVytE7Tr9hl2fNVtY5d98hSWfj7DY3qjB6UhnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2g2xXbJ0S9ELeOv+nVYn9dDxwuwNyyCL3LmZcTE6T95mEc1dDBqX1Os8ZRt7qLh8
-         KnZGWLupkYlReZoRsge2WpX9yx/u7vWmB1hXuo3Vuw8Oj9BcU9oFwHaqM3RPITNyfU
-         0siAFSGjavMTqLpb+TDyUPZwHz5VXRNbBej19B60=
+        b=t50fAoimKA7TpEdmkjaGj4CkzaSFRLS8IYIawA5jAojqB2JbZDbAIig14GeWud1nC
+         6A1KIWJr21l0vM/VOc2KD0u499ZRTpz5uqUBR74Ze0Xe1LmIXJSiYfM4hEf2FwmAUW
+         gAEcHK2M420TKS2z+QMfvsJ4oLr7QizREj+Zor+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 656/779] sched, cpuset: Fix dl_cpu_busy() panic due to empty cs->cpus_allowed
-Date:   Mon, 15 Aug 2022 20:05:00 +0200
-Message-Id: <20220815180405.422575786@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 658/779] video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
+Date:   Mon, 15 Aug 2022 20:05:02 +0200
+Message-Id: <20220815180405.492821485@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,107 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit b6e8d40d43ae4dec00c8fea2593eeea3114b8f44 ]
+[ Upstream commit 2f1c4523f7a3aaabe7e53d3ebd378292947e95c8 ]
 
-With cgroup v2, the cpuset's cpus_allowed mask can be empty indicating
-that the cpuset will just use the effective CPUs of its parent. So
-cpuset_can_attach() can call task_can_attach() with an empty mask.
-This can lead to cpumask_any_and() returns nr_cpu_ids causing the call
-to dl_bw_of() to crash due to percpu value access of an out of bound
-CPU value. For example:
+Since the user can control the arguments of the ioctl() from the user
+space, under special arguments that may result in a divide-by-zero bug
+in:
+  drivers/video/fbdev/arkfb.c:784: ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
+with hdiv=1, pixclock=1 and hmul=2 you end up with (1*1)/2 = (int) 0.
+and then in:
+  drivers/video/fbdev/arkfb.c:504: rv = dac_set_freq(par->dac, 0, 1000000000 / pixclock);
+we'll get a division-by-zero.
 
-	[80468.182258] BUG: unable to handle page fault for address: ffffffff8b6648b0
-	  :
-	[80468.191019] RIP: 0010:dl_cpu_busy+0x30/0x2b0
-	  :
-	[80468.207946] Call Trace:
-	[80468.208947]  cpuset_can_attach+0xa0/0x140
-	[80468.209953]  cgroup_migrate_execute+0x8c/0x490
-	[80468.210931]  cgroup_update_dfl_csses+0x254/0x270
-	[80468.211898]  cgroup_subtree_control_write+0x322/0x400
-	[80468.212854]  kernfs_fop_write_iter+0x11c/0x1b0
-	[80468.213777]  new_sync_write+0x11f/0x1b0
-	[80468.214689]  vfs_write+0x1eb/0x280
-	[80468.215592]  ksys_write+0x5f/0xe0
-	[80468.216463]  do_syscall_64+0x5c/0x80
-	[80468.224287]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+The following log can reveal it:
 
-Fix that by using effective_cpus instead. For cgroup v1, effective_cpus
-is the same as cpus_allowed. For v2, effective_cpus is the real cpumask
-to be used by tasks within the cpuset anyway.
+divide error: 0000 [#1] PREEMPT SMP KASAN PTI
+RIP: 0010:ark_set_pixclock drivers/video/fbdev/arkfb.c:504 [inline]
+RIP: 0010:arkfb_set_par+0x10fc/0x24c0 drivers/video/fbdev/arkfb.c:784
+Call Trace:
+ fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1034
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
 
-Also update task_can_attach()'s 2nd argument name to cs_effective_cpus to
-reflect the change. In addition, a check is added to task_can_attach()
-to guard against the possibility that cpumask_any_and() may return a
-value >= nr_cpu_ids.
+Fix this by checking the argument of ark_set_pixclock() first.
 
-Fixes: 7f51412a415d ("sched/deadline: Fix bandwidth check/update when migrating tasks between exclusive cpusets")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Acked-by: Juri Lelli <juri.lelli@redhat.com>
-Link: https://lore.kernel.org/r/20220803015451.2219567-1-longman@redhat.com
+Fixes: 681e14730c73 ("arkfb: new framebuffer driver for ARK Logic cards")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h  | 2 +-
- kernel/cgroup/cpuset.c | 2 +-
- kernel/sched/core.c    | 8 +++++---
- 3 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/video/fbdev/arkfb.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index ad7ff332a0ac..dcba347cbffa 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1797,7 +1797,7 @@ current_restore_flags(unsigned long orig_flags, unsigned long flags)
- }
- 
- extern int cpuset_cpumask_can_shrink(const struct cpumask *cur, const struct cpumask *trial);
--extern int task_can_attach(struct task_struct *p, const struct cpumask *cs_cpus_allowed);
-+extern int task_can_attach(struct task_struct *p, const struct cpumask *cs_effective_cpus);
- #ifdef CONFIG_SMP
- extern void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask);
- extern int set_cpus_allowed_ptr(struct task_struct *p, const struct cpumask *new_mask);
-diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-index 31f94c6ea0a5..9c5b659db63f 100644
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2199,7 +2199,7 @@ static int cpuset_can_attach(struct cgroup_taskset *tset)
- 		goto out_unlock;
- 
- 	cgroup_taskset_for_each(task, css, tset) {
--		ret = task_can_attach(task, cs->cpus_allowed);
-+		ret = task_can_attach(task, cs->effective_cpus);
- 		if (ret)
- 			goto out_unlock;
- 		ret = security_task_setscheduler(task);
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 154506e4d1f5..5c7937b504d2 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8741,7 +8741,7 @@ int cpuset_cpumask_can_shrink(const struct cpumask *cur,
- }
- 
- int task_can_attach(struct task_struct *p,
--		    const struct cpumask *cs_cpus_allowed)
-+		    const struct cpumask *cs_effective_cpus)
- {
- 	int ret = 0;
- 
-@@ -8760,9 +8760,11 @@ int task_can_attach(struct task_struct *p,
+diff --git a/drivers/video/fbdev/arkfb.c b/drivers/video/fbdev/arkfb.c
+index edf169d0816e..d94cc5ad1ef6 100644
+--- a/drivers/video/fbdev/arkfb.c
++++ b/drivers/video/fbdev/arkfb.c
+@@ -778,7 +778,12 @@ static int arkfb_set_par(struct fb_info *info)
+ 		return -EINVAL;
  	}
  
- 	if (dl_task(p) && !cpumask_intersects(task_rq(p)->rd->span,
--					      cs_cpus_allowed)) {
--		int cpu = cpumask_any_and(cpu_active_mask, cs_cpus_allowed);
-+					      cs_effective_cpus)) {
-+		int cpu = cpumask_any_and(cpu_active_mask, cs_effective_cpus);
- 
-+		if (unlikely(cpu >= nr_cpu_ids))
-+			return -EINVAL;
- 		ret = dl_cpu_busy(cpu, p);
- 	}
- 
+-	ark_set_pixclock(info, (hdiv * info->var.pixclock) / hmul);
++	value = (hdiv * info->var.pixclock) / hmul;
++	if (!value) {
++		fb_dbg(info, "invalid pixclock\n");
++		value = 1;
++	}
++	ark_set_pixclock(info, value);
+ 	svga_set_timings(par->state.vgabase, &ark_timing_regs, &(info->var), hmul, hdiv,
+ 			 (info->var.vmode & FB_VMODE_DOUBLE)     ? 2 : 1,
+ 			 (info->var.vmode & FB_VMODE_INTERLACED) ? 2 : 1,
 -- 
 2.35.1
 
