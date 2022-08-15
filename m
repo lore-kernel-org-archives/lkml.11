@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 088B7C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC05AC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243113AbiHPAxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        id S242388AbiHPAx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 20:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233161AbiHPAoE (ORCPT
+        with ESMTP id S1344310AbiHPAo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:44:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C700319230C;
-        Mon, 15 Aug 2022 13:40:28 -0700 (PDT)
+        Mon, 15 Aug 2022 20:44:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1EE193552;
+        Mon, 15 Aug 2022 13:41:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 635F061185;
-        Mon, 15 Aug 2022 20:40:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A39CC433D6;
-        Mon, 15 Aug 2022 20:40:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6D16B80EAD;
+        Mon, 15 Aug 2022 20:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36303C433D7;
+        Mon, 15 Aug 2022 20:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596027;
-        bh=77vapIcyjRpAWS+nM1j1G1Guba+2OS7XdW3xVb0Phes=;
+        s=korg; t=1660596075;
+        bh=JLzz5dq88jRbBg6ItZt/44TfxmNsOXXimPAGwGAhAmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dRVeXsjpSoaMFXFUI7r+lQcDLJhsYYmU82vOxXpvxXu6Cc/1Pg0HLhyp5ogPMIB9x
-         chh8DJzTEf5lAtXeXUz48NPlttjHP2Cnfw9k4+NHHtgfkz5k9LBuS3/ZdkqtYoQlgw
-         ++mc3bLHAlHRfG8IvR4/9wz2iZFiiwSn6SPm+kYM=
+        b=Ef0zvKInlc+YR6jjZp0q/UqrUlTYVeEIhGW0xTXZ4iGz+kOzAkvsM0pkScu24CNWa
+         boXoQaGmrA+ikrHbZ9zJq16K2z4kJgITiiIbHATCvDQB1Z2fs5nZ9Jzn5IDgNuZInF
+         EMMO3VsPPBFYAAWbouAXUArsu3bROZ92JQeYF5oc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Stefani Seibold <stefani@seibold.net>,
+        Randy Dunlap <randy.dunlap@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0951/1157] ASoC: SOF: ipc3-topology: Prevent double freeing of ipc_control_data via load_bytes
-Date:   Mon, 15 Aug 2022 20:05:07 +0200
-Message-Id: <20220815180517.627610692@linuxfoundation.org>
+Subject: [PATCH 5.19 0964/1157] kfifo: fix kfifo_to_user() return type
+Date:   Mon, 15 Aug 2022 20:05:20 +0200
+Message-Id: <20220815180518.225172147@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,42 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit d5bd47f3ca124058a8e87eae4508afeda2132611 ]
+[ Upstream commit 045ed31e23aea840648c290dbde04797064960db ]
 
-We have sanity checks for byte controls and if any of the fail the locally
-allocated scontrol->ipc_control_data is freed up, but not set to NULL.
+The kfifo_to_user() macro is supposed to return zero for success or
+negative error codes.  Unfortunately, there is a signedness bug so it
+returns unsigned int.  This only affects callers which try to save the
+result in ssize_t and as far as I can see the only place which does that
+is line6_hwdep_read().
 
-On a rollback path of the error the higher level code will also try to free
-the scontrol->ipc_control_data which will eventually going to lead to
-memory corruption as double freeing memory is not a good thing.
+TL;DR: s/_uint/_int/.
 
-Fixes: b5cee8feb1d4 ("ASoC: SOF: topology: Make control parsing IPC agnostic")
-Reported-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Seppo Ingalsuo <seppo.ingalsuo@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220712130103.31514-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lkml.kernel.org/r/YrVL3OJVLlNhIMFs@kili
+Fixes: 144ecf310eb5 ("kfifo: fix kfifo_alloc() to return a signed int value")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Stefani Seibold <stefani@seibold.net>
+Cc: Randy Dunlap <randy.dunlap@oracle.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/ipc3-topology.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/kfifo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
-index 10740c55294d..e97f50d5bcba 100644
---- a/sound/soc/sof/ipc3-topology.c
-+++ b/sound/soc/sof/ipc3-topology.c
-@@ -1628,6 +1628,7 @@ static int sof_ipc3_control_load_bytes(struct snd_sof_dev *sdev, struct snd_sof_
- 	return 0;
- err:
- 	kfree(scontrol->ipc_control_data);
-+	scontrol->ipc_control_data = NULL;
- 	return ret;
- }
- 
+diff --git a/include/linux/kfifo.h b/include/linux/kfifo.h
+index 86249476b57f..0b35a41440ff 100644
+--- a/include/linux/kfifo.h
++++ b/include/linux/kfifo.h
+@@ -688,7 +688,7 @@ __kfifo_uint_must_check_helper( \
+  * writer, you don't need extra locking to use these macro.
+  */
+ #define	kfifo_to_user(fifo, to, len, copied) \
+-__kfifo_uint_must_check_helper( \
++__kfifo_int_must_check_helper( \
+ ({ \
+ 	typeof((fifo) + 1) __tmp = (fifo); \
+ 	void __user *__to = (to); \
 -- 
 2.35.1
 
