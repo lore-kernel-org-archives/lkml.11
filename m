@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4C2C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B17C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348169AbiHOWWt (ORCPT
+        id S1348318AbiHOWW4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
+        Mon, 15 Aug 2022 18:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350595AbiHOWSG (ORCPT
+        with ESMTP id S1350642AbiHOWSJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:18:06 -0400
+        Mon, 15 Aug 2022 18:18:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37AD1237B3;
-        Mon, 15 Aug 2022 12:41:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87534123C94;
+        Mon, 15 Aug 2022 12:41:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A935D610A5;
-        Mon, 15 Aug 2022 19:41:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9648CC433C1;
-        Mon, 15 Aug 2022 19:41:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC4E960FB9;
+        Mon, 15 Aug 2022 19:41:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A88B9C433D6;
+        Mon, 15 Aug 2022 19:41:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592470;
-        bh=ZtONQ8XSpOXOQxcmGuU/YXF7E00mNmKvlX58loiVN4k=;
+        s=korg; t=1660592473;
+        bh=Dh+emGNHm1D8DGNCBwnBuEUQw+j66ciJrWboMiUcFmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J7hp62um7P6NeaU6Wmh/LOs2sTInCleG4IuMHxuv1iD9AL5moUYUE9IEX8w2fHCNN
-         5fp+a2t1R/6s+Qmdaz0AOfIga5dNKAkucmbvWUr5Q/GuXN/OFXBvyCW6TIxNUz44vU
-         KneytjrT/n4uvOfBCsdnar8Zt97mcZtZ+cLwUem8=
+        b=O2hbG9WGG4a9VKrgFlXqECyjd++5MFlOy1+Qj5h+2OI/SFB9zz1I91s9vy8BVIFTi
+         +p9f+IsC+a6+jBCmPHTXs1dzfijkh2Pr0zZjwRsJ3c1owln7iU1hkORpausK3I0B4g
+         C/ERQa1Bv7oQ0nS4R/9+ZLYRNO//c8V0hWVo8xac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vidya Sagar <vidyas@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0791/1095] PCI: tegra194: Fix link up retry sequence
-Date:   Mon, 15 Aug 2022 20:03:10 +0200
-Message-Id: <20220815180501.963824498@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+6e1efbd8efaaa6860e91@syzkaller.appspotmail.com,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.19 0115/1157] fuse: write inode in fuse_release()
+Date:   Mon, 15 Aug 2022 19:51:11 +0200
+Message-Id: <20220815180444.224814123@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vidya Sagar <vidyas@nvidia.com>
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-[ Upstream commit e05fd6ae77c3e2cc0dba283005d24b6d56d2b1fa ]
+commit 035ff33cf4db101250fb980a3941bf078f37a544 upstream.
 
-Add the missing DLF capability offset while clearing DL_FEATURE_EXCHANGE_EN
-bit during link up retry.
+A race between write(2) and close(2) allows pages to be dirtied after
+fuse_flush -> write_inode_now().  If these pages are not flushed from
+fuse_release(), then there might not be a writable open file later.  So any
+remaining dirty pages must be written back before the file is released.
 
-Link: https://lore.kernel.org/r/20220721142052.25971-15-vidyas@nvidia.com
-Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
-Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This is a partial revert of the blamed commit.
+
+Reported-by: syzbot+6e1efbd8efaaa6860e91@syzkaller.appspotmail.com
+Fixes: 36ea23374d1f ("fuse: write inode in fuse_vma_close() instead of fuse_release()")
+Cc: <stable@vger.kernel.org> # v5.16
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/fuse/file.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 85d405057ba8..a479e58cc8fb 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -978,7 +978,7 @@ static int tegra194_pcie_start_link(struct dw_pcie *pci)
- 		offset = dw_pcie_find_ext_capability(pci, PCI_EXT_CAP_ID_DLF);
- 		val = dw_pcie_readl_dbi(pci, offset + PCI_DLF_CAP);
- 		val &= ~PCI_DLF_EXCHANGE_ENABLE;
--		dw_pcie_writel_dbi(pci, offset, val);
-+		dw_pcie_writel_dbi(pci, offset + PCI_DLF_CAP, val);
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -338,6 +338,15 @@ static int fuse_open(struct inode *inode
  
- 		tegra194_pcie_host_init(pp);
- 		dw_pcie_setup_rc(pp);
--- 
-2.35.1
-
+ static int fuse_release(struct inode *inode, struct file *file)
+ {
++	struct fuse_conn *fc = get_fuse_conn(inode);
++
++	/*
++	 * Dirty pages might remain despite write_inode_now() call from
++	 * fuse_flush() due to writes racing with the close.
++	 */
++	if (fc->writeback_cache)
++		write_inode_now(inode, 1);
++
+ 	fuse_release_common(file, false);
+ 
+ 	/* return value is ignored by VFS */
 
 
