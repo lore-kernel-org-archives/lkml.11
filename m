@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D18A7C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A0CC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344728AbiHOTrc (ORCPT
+        id S1344893AbiHOTpn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        Mon, 15 Aug 2022 15:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345014AbiHOTqB (ORCPT
+        with ESMTP id S1345026AbiHOTmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:46:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2B96D54C;
-        Mon, 15 Aug 2022 11:48:43 -0700 (PDT)
+        Mon, 15 Aug 2022 15:42:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2EC6A499;
+        Mon, 15 Aug 2022 11:47:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F09611DB;
-        Mon, 15 Aug 2022 18:48:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B77CC433D6;
-        Mon, 15 Aug 2022 18:48:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C401DCE1278;
+        Mon, 15 Aug 2022 18:47:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C946C433D6;
+        Mon, 15 Aug 2022 18:47:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589321;
-        bh=qtqnXj6pQ+/+Vwp2iNF9jsPKncWlXe0QUMxDlQHbSKw=;
+        s=korg; t=1660589272;
+        bh=0pZNiys6EeeQjDyQBEPKfm5W/loToFEP2OhpcPkhyts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cei7pfXz1edLybruNKsHplku+siojwatrR0w3BLSEGfng33LT0nnUAiLxGMOa3L1A
-         CLcEPadyuns+b4YGNdQWuKCloAfHRAyV8Kxb5O2BzCk65HGceZF/FFLtOOfW6hg6ya
-         bMdd9ZL7fwkNGUdhd9E9Pgie/n7RFrSDSE4bF5aw=
+        b=bFyk5y/IupakqImUtJXcGGb29UlFvHTJx1a/4rJUKFkLShRADmCmJRsLOYh/CpHcy
+         VCpV0/TAVq7aIYsathWmO7/x29RLaAAb34vSF6cID2k689ROC200+7uLaxmi+X7BBh
+         5wXBT63SfGst7iDAlUwwBBQwlSmKwv+ojW/vlyco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 681/779] x86/bugs: Enable STIBP for IBPB mitigated RETBleed
-Date:   Mon, 15 Aug 2022 20:05:25 +0200
-Message-Id: <20220815180406.462224184@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 635/779] powerpc/32: Call mmu_mark_initmem_nx() regardless of data block mapping.
+Date:   Mon, 15 Aug 2022 20:04:39 +0200
+Message-Id: <20220815180404.482517916@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,115 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit e6cfcdda8cbe81eaf821c897369a65fec987b404 upstream.
+[ Upstream commit 980bbf7ca72012d317617fcdbfabe8708e4cef29 ]
 
-AMD's "Technical Guidance for Mitigating Branch Type Confusion,
-Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
-Privileged Mode Entry / SMT Safety" says:
+mark_initmem_nx() calls either mmu_mark_initmem_nx() or
+set_memory_attr() based on return from v_block_mapped()
+of _sinittext.
 
-  Similar to the Jmp2Ret mitigation, if the code on the sibling thread
-  cannot be trusted, software should set STIBP to 1 or disable SMT to
-  ensure SMT safety when using this mitigation.
+But we can now handle text and data independently, so that
+text may be mapped by block even when data is mapped by pages.
 
-So, like already being done for retbleed=unret, and now also for
-retbleed=ibpb, force STIBP on machines that have it, and report its SMT
-vulnerability status accordingly.
+On the 8xx for instance, at startup 32Mbytes of memory are
+pinned in TLB. So the pinned entries need to go away for sinittext.
 
- [ bp: Remove the "we" and remove "[AMD]" applicability parameter which
-   doesn't work here. ]
+In next patch a BAT will be set to also covers sinittext on book3s/32.
+So it will also be needed to call mmu_mark_initmem_nx() even when
+data above sinittext is not mapped with BATs.
 
-Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org # 5.10, 5.15, 5.19
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
-Link: https://lore.kernel.org/r/20220804192201.439596-1-kim.phillips@amd.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As this is highly dependent on the platform, call mmu_mark_initmem_nx()
+regardless of data block mapping. Then the platform will know what to
+do.
+
+Modify 8xx mmu_mark_initmem_nx() so that inittext mapping is modified
+only when pagealloc debug and kfence are not active, otherwise inittext
+is mapped with standard pages. And don't do anything on kernel text
+which is already mapped with PAGE_KERNEL_TEXT.
+
+Fixes: da1adea07576 ("powerpc/8xx: Allow STRICT_KERNEL_RwX with pinned TLB")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/db3fc14f3bfa6215b0786ef58a6e2bc1e1f964d7.1655202804.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |   29 +++++++++++++++++-------
- arch/x86/kernel/cpu/bugs.c                      |   10 ++++----
- 2 files changed, 27 insertions(+), 12 deletions(-)
+ arch/powerpc/mm/nohash/8xx.c | 4 ++--
+ arch/powerpc/mm/pgtable_32.c | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4974,20 +4974,33 @@
- 			Speculative Code Execution with Return Instructions)
- 			vulnerability.
+diff --git a/arch/powerpc/mm/nohash/8xx.c b/arch/powerpc/mm/nohash/8xx.c
+index 0df9fe29dd56..5348e1f9eb94 100644
+--- a/arch/powerpc/mm/nohash/8xx.c
++++ b/arch/powerpc/mm/nohash/8xx.c
+@@ -183,8 +183,8 @@ void mmu_mark_initmem_nx(void)
+ 	unsigned long boundary = strict_kernel_rwx_enabled() ? sinittext : etext8;
+ 	unsigned long einittext8 = ALIGN(__pa(_einittext), SZ_8M);
  
-+			AMD-based UNRET and IBPB mitigations alone do not stop
-+			sibling threads from influencing the predictions of other
-+			sibling threads. For that reason, STIBP is used on pro-
-+			cessors that support it, and mitigate SMT on processors
-+			that don't.
+-	mmu_mapin_ram_chunk(0, boundary, PAGE_KERNEL_TEXT, false);
+-	mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
++	if (!debug_pagealloc_enabled_or_kfence())
++		mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
+ 
+ 	mmu_pin_tlb(block_mapped_ram, false);
+ }
+diff --git a/arch/powerpc/mm/pgtable_32.c b/arch/powerpc/mm/pgtable_32.c
+index f28859771440..502e3d3d1dbf 100644
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -138,9 +138,9 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
+ 
+-	if (v_block_mapped((unsigned long)_sinittext)) {
+-		mmu_mark_initmem_nx();
+-	} else {
++	mmu_mark_initmem_nx();
 +
- 			off          - no mitigation
- 			auto         - automatically select a migitation
- 			auto,nosmt   - automatically select a mitigation,
- 				       disabling SMT if necessary for
- 				       the full mitigation (only on Zen1
- 				       and older without STIBP).
--			ibpb	     - mitigate short speculation windows on
--				       basic block boundaries too. Safe, highest
--				       perf impact.
--			unret        - force enable untrained return thunks,
--				       only effective on AMD f15h-f17h
--				       based systems.
--			unret,nosmt  - like unret, will disable SMT when STIBP
--			               is not available.
-+			ibpb         - On AMD, mitigate short speculation
-+				       windows on basic block boundaries too.
-+				       Safe, highest perf impact. It also
-+				       enables STIBP if present. Not suitable
-+				       on Intel.
-+			ibpb,nosmt   - Like "ibpb" above but will disable SMT
-+				       when STIBP is not available. This is
-+				       the alternative for systems which do not
-+				       have STIBP.
-+			unret        - Force enable untrained return thunks,
-+				       only effective on AMD f15h-f17h based
-+				       systems.
-+			unret,nosmt  - Like unret, but will disable SMT when STIBP
-+				       is not available. This is the alternative for
-+				       systems which do not have STIBP.
- 
- 			Selecting 'auto' will choose a mitigation method at run
- 			time according to the CPU.
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -152,7 +152,7 @@ void __init check_bugs(void)
- 	/*
- 	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
--	 * forced for UNRET.
-+	 * forced for UNRET or IBPB.
- 	 */
- 	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
-@@ -1172,7 +1172,8 @@ spectre_v2_user_select_mitigation(void)
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 		if (mode != SPECTRE_V2_USER_STRICT &&
- 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
- 			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
-@@ -2353,10 +2354,11 @@ static ssize_t srbds_show_state(char *bu
- 
- static ssize_t retbleed_show_state(char *buf)
- {
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
- 		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
--		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+		    return sprintf(buf, "Vulnerable: untrained return thunk / IBPB on non-AMD based uarch\n");
- 
- 	    return sprintf(buf, "%s; SMT %s\n",
- 			   retbleed_strings[retbleed_mitigation],
++	if (!v_block_mapped((unsigned long)_sinittext)) {
+ 		set_memory_nx((unsigned long)_sinittext, numpages);
+ 		set_memory_rw((unsigned long)_sinittext, numpages);
+ 	}
+-- 
+2.35.1
+
 
 
