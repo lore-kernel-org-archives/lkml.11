@@ -2,91 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7611C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D59B7C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230363AbiHOSBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S229603AbiHOSBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbiHOSAw (ORCPT
+        with ESMTP id S233193AbiHOSBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:00:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964C3BC18;
-        Mon, 15 Aug 2022 11:00:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/1Bx4HDcIyS39X1ZLODVkDqCVJcvom8FSa7thBn5AsE=; b=mENEtynCU/ALxF5w4Q0Ehssk5Q
-        O5IupNEBxUgN7s73l+WpbLWR7KJDJaAjc/w01JiKOQUfUUGGi8AapQHL0Sf76sM3jAz7nm6amNxmK
-        TAo5EfGIS0GpbTQpicxWprZ+iNJX4vFkTUfGuCjdBtjGYmyNcAMe61WRzJD8wPC9Sm1oZ0FgD+MEA
-        H9gA5RUix9i25JSNE8mDv4y+iR/pEkC5Io094XmSiz61hdyh+XOizyPeQdU4fES4cprdAx114605i
-        tXSIBiSoKYTRADPVzdrlPQosCEccXopfGXUDuik+l8aY4QKpq0sC5VBWz1rramrs1l1sioy08lUKn
-        MAgr9C4w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33802)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oNeOL-0003TT-Hg; Mon, 15 Aug 2022 19:00:45 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oNeOI-00041h-LD; Mon, 15 Aug 2022 19:00:42 +0100
-Date:   Mon, 15 Aug 2022 19:00:42 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: phy: broadcom: Implement suspend/resume
- for AC131 and BCM5241
-Message-ID: <YvqJyg3eUusc8jkC@shell.armlinux.org.uk>
-References: <20220815174356.2681127-1-f.fainelli@gmail.com>
+        Mon, 15 Aug 2022 14:01:42 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756CF29C95
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:01:31 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id o9-20020a056e0214c900b002dc29c288bfso5525658ilk.3
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 11:01:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=3sgGWROvpPX7osNJCRx6Ia34nyM6KYC3TuaOx+aet5U=;
+        b=VKl9oJHSzdiHsKY/ndjUH5m1tPnAjpcWYFfFkz+zciGNkIo4sxYZEl5JBArrKoFD/N
+         i6B9fg0/FxZlRSurt/t3CO03LMZKzu/G/e3KZSufH+fMJ35gv1RJ/WEmKOA9MKWgdV55
+         kHu5K8k5W7R+DZdHAa6JmM9Yn7rT/WogJnlnHqu+Lu5x2mumxwnOZnKtGXSeS5e7XCFp
+         /FMYxYR3HLlltUSiaSG/XgJ5Q1d24788dkonlKC1WzVPT7YYhEOVnVPjJNmw7ry+R4zU
+         T54w5Z+N6IU0dZn+pRwLbbxf1bjhs9FeErTFM+GjSmmRq/ihMfV4toX29RZxp00Xlokj
+         6t6A==
+X-Gm-Message-State: ACgBeo3HLARxgLUoivT2NYpMEKAfWf3/LnxV7DAu83FdW7h+hP06zj1g
+        +zYfsGtaEinFZRQ3V/VDykdwC1tE81n9z4YSqOfj8TdAYyBY
+X-Google-Smtp-Source: AA6agR7X9OHh7mHsHq41mRM3kiBs7wuQrw+u6LlWbTaTrFtd/giExCoZ1ZCKzGFyCEGq/lohbm2/ARg4+ZlEhItnUWeGwfGdY5QL
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815174356.2681127-1-f.fainelli@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Received: by 2002:a02:1d09:0:b0:33b:a8cc:17d3 with SMTP id
+ 9-20020a021d09000000b0033ba8cc17d3mr7400845jaj.25.1660586490872; Mon, 15 Aug
+ 2022 11:01:30 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:01:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e84b3305e64b6b92@google.com>
+Subject: [syzbot] usb-testing boot error: kernel BUG in __phys_addr
+From:   syzbot <syzbot+005efde5e97744047fe4@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:43:56AM -0700, Florian Fainelli wrote:
-> +	/* We cannot use a read/modify/write here otherwise the PHY continues
-> +	 * to drive LEDs which defeats the purpose of low power mode.
-> +	 */
-...
-> +	/* Set standby mode */
-> +	reg = phy_read(phydev, MII_BRCM_FET_SHDW_AUXMODE4);
-> +	if (reg < 0) {
-> +		err = reg;
-> +		goto done;
-> +	}
-> +
-> +	reg |= MII_BRCM_FET_SHDW_AM4_STANDBY;
-> +
-> +	err = phy_write(phydev, MII_BRCM_FET_SHDW_AUXMODE4, reg);
+Hello,
 
-Does the read-modify-write problem extend to this register? Why would
-the PHY behave differently whether you used phy_modify() here or not?
-On the mdio bus, it should be exactly the same - the only difference
-is that we're guaranteed to hold the lock over the sequence whereas
-this drops and re-acquires the lock.
+syzbot found the following issue on:
 
-If it's sensitive to the timing of the read and the write, it suggests
-the above code is fragile - maybe there needs to be a minimum delay
-inserted between the read and the write?
+HEAD commit:    568035b01cfb Linux 6.0-rc1
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=10049fc3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb39b084894e9a5
+dashboard link: https://syzkaller.appspot.com/bug?extid=005efde5e97744047fe4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+005efde5e97744047fe4@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+kernel BUG at arch/x86/mm/physaddr.c:28!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 1183 Comm: udevd Not tainted 6.0.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:__phys_addr+0xd3/0x140 arch/x86/mm/physaddr.c:28
+Code: e3 44 89 e9 31 ff 48 d3 eb 48 89 de e8 66 85 33 00 48 85 db 75 0f e8 7c 88 33 00 4c 89 e0 5b 5d 41 5c 41 5d c3 e8 6d 88 33 00 <0f> 0b e8 66 88 33 00 48 c7 c0 10 c0 84 87 48 ba 00 00 00 00 00 fc
+RSP: 0018:ffffc900005a7c48 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff000000000000 RCX: 0000000000000000
+RDX: ffff888116509c80 RSI: ffffffff81128083 RDI: 0000000000000006
+RBP: ffff000080000000 R08: 0000000000000006 R09: ffff000080000000
+R10: ffff778000000000 R11: 0000000000000000 R12: ffff778000000000
+R13: ffffc900005a7cb0 R14: ffff000000000000 R15: 0000000000000000
+FS:  00007f178556a840(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffdb659f080 CR3: 00000001165bd000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ virt_to_folio include/linux/mm.h:856 [inline]
+ virt_to_slab mm/kasan/../slab.h:175 [inline]
+ qlink_to_cache mm/kasan/quarantine.c:131 [inline]
+ qlist_free_all+0x86/0x170 mm/kasan/quarantine.c:184
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0x78/0x80 mm/kasan/common.c:447
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:727 [inline]
+ slab_alloc_node mm/slub.c:3243 [inline]
+ slab_alloc mm/slub.c:3251 [inline]
+ __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
+ kmem_cache_alloc+0x354/0x4a0 mm/slub.c:3268
+ getname_flags.part.0+0x50/0x4f0 fs/namei.c:139
+ getname_flags include/linux/audit.h:320 [inline]
+ getname+0x8e/0xd0 fs/namei.c:218
+ do_sys_openat2+0xf5/0x4c0 fs/open.c:1305
+ do_sys_open fs/open.c:1327 [inline]
+ __do_sys_openat fs/open.c:1343 [inline]
+ __se_sys_openat fs/open.c:1338 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1338
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f17856c1697
+Code: 25 00 00 41 00 3d 00 00 41 00 74 37 64 8b 04 25 18 00 00 00 85 c0 75 5b 44 89 e2 48 89 ee bf 9c ff ff ff b8 01 01 00 00 0f 05 <48> 3d 00 f0 ff ff 0f 87 85 00 00 00 48 83 c4 68 5d 41 5c c3 0f 1f
+RSP: 002b:00007ffc93f6eed0 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 000055d283d25ae0 RCX: 00007f17856c1697
+RDX: 0000000000080000 RSI: 00007ffc93f6f008 RDI: 00000000ffffff9c
+RBP: 00007ffc93f6f008 R08: 0000000000000008 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000080000
+R13: 000055d283d25ae0 R14: 0000000000000001 R15: 000055d2833eb160
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__phys_addr+0xd3/0x140 arch/x86/mm/physaddr.c:28
+Code: e3 44 89 e9 31 ff 48 d3 eb 48 89 de e8 66 85 33 00 48 85 db 75 0f e8 7c 88 33 00 4c 89 e0 5b 5d 41 5c 41 5d c3 e8 6d 88 33 00 <0f> 0b e8 66 88 33 00 48 c7 c0 10 c0 84 87 48 ba 00 00 00 00 00 fc
+RSP: 0018:ffffc900005a7c48 EFLAGS: 00010293
+
+RAX: 0000000000000000 RBX: ffff000000000000 RCX: 0000000000000000
+RDX: ffff888116509c80 RSI: ffffffff81128083 RDI: 0000000000000006
+RBP: ffff000080000000 R08: 0000000000000006 R09: ffff000080000000
+R10: ffff778000000000 R11: 0000000000000000 R12: ffff778000000000
+R13: ffffc900005a7cb0 R14: ffff000000000000 R15: 0000000000000000
+FS:  00007f178556a840(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffdb659f080 CR3: 00000001165bd000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
