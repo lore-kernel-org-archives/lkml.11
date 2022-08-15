@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEBCC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 315E2C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350220AbiHOVwV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
+        id S244343AbiHOVwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 17:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350272AbiHOVre (ORCPT
+        with ESMTP id S1350278AbiHOVrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:47:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9885FAE3;
-        Mon, 15 Aug 2022 12:31:33 -0700 (PDT)
+        Mon, 15 Aug 2022 17:47:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D088A2B628;
+        Mon, 15 Aug 2022 12:31:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC8ED6101B;
-        Mon, 15 Aug 2022 19:31:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3221C433C1;
-        Mon, 15 Aug 2022 19:31:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85B05B8107A;
+        Mon, 15 Aug 2022 19:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE49C433D6;
+        Mon, 15 Aug 2022 19:31:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591892;
-        bh=wtp6p6RMN1MZpTJuYtBu272z3ieJ8QwXzu/VzXe3Qcw=;
+        s=korg; t=1660591895;
+        bh=KKc5u0c4svxwVAcIxxjFmvahLmLCXSorZlxcM4OLRUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IM3brOL24ONhaiR1/31iflriA5AT0dLukJz6RH2kYpG65OH07Jne2ajgHHNUC2IHP
-         qTY/NWe7lMsqwVlANQrU6CxtVK0I9wvepk08kR/GV8wRpnprvXbFM3CIBUviSb+GDV
-         564DXJW1994zwOPU8vq1jHGmOggNG4YIQWQaNJ0M=
+        b=N/QxrU/3+kiRTnCKgzYWAua8DRuARNRFpt//PVWjvvGMOLRPLOaxPiyvX1yNkRSHR
+         ZiXUCytbLjt+bGj9SHPmhmj2r44yMYSuZk7JuibTpmgJFnRjK/b8flHWm0c8V0MXsh
+         wCXevx48iz/k9f7U2o0SJp56alLwrtIZy9CFgxyw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0700/1095] clk: qcom: gcc-msm8939: Add missing SYSTEM_MM_NOC_BFDCD_CLK_SRC
-Date:   Mon, 15 Aug 2022 20:01:39 +0200
-Message-Id: <20220815180458.339813454@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0027/1157] KVM: Drop unused @gpa param from gfn=>pfn caches __release_gpc() helper
+Date:   Mon, 15 Aug 2022 19:49:43 +0200
+Message-Id: <20220815180440.512740346@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,42 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 07e7fcf1714c5f9930ad27613fea940aedba68da ]
+commit 345b0fd6fe5f66dfe841bad0b39dd11a5672df68 upstream.
 
-When adding in the indexes for this clock-controller we missed
-SYSTEM_MM_NOC_BFDCD_CLK_SRC.
+Drop the @pga param from __release_gpc() and rename the helper to make it
+more obvious that the cache itself is not being released.  The helper
+will be reused by a future commit to release a pfn+khva combination that
+is _never_ associated with the cache, at which point the current name
+would go from slightly misleading to blatantly wrong.
 
-Add it in now.
+No functional change intended.
 
-Fixes: 4c71d6abc4fc ("clk: qcom: Add DT bindings for MSM8939 GCC")
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220504163835.40130-2-bryan.odonoghue@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220429210025.3293691-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/dt-bindings/clock/qcom,gcc-msm8939.h | 1 +
- 1 file changed, 1 insertion(+)
+ virt/kvm/pfncache.c |   10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/include/dt-bindings/clock/qcom,gcc-msm8939.h b/include/dt-bindings/clock/qcom,gcc-msm8939.h
-index 0634467c4ce5..2d545ed0d35a 100644
---- a/include/dt-bindings/clock/qcom,gcc-msm8939.h
-+++ b/include/dt-bindings/clock/qcom,gcc-msm8939.h
-@@ -192,6 +192,7 @@
- #define GCC_VENUS0_CORE0_VCODEC0_CLK		183
- #define GCC_VENUS0_CORE1_VCODEC0_CLK		184
- #define GCC_OXILI_TIMER_CLK			185
-+#define SYSTEM_MM_NOC_BFDCD_CLK_SRC		186
+--- a/virt/kvm/pfncache.c
++++ b/virt/kvm/pfncache.c
+@@ -95,7 +95,7 @@ bool kvm_gfn_to_pfn_cache_check(struct k
+ }
+ EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_check);
  
- /* Indexes for GDSCs */
- #define BIMC_GDSC				0
--- 
-2.35.1
-
+-static void __release_gpc(struct kvm *kvm, kvm_pfn_t pfn, void *khva, gpa_t gpa)
++static void gpc_release_pfn_and_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
+ {
+ 	/* Unmap the old page if it was mapped before, and release it */
+ 	if (!is_error_noslot_pfn(pfn)) {
+@@ -146,7 +146,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 	unsigned long page_offset = gpa & ~PAGE_MASK;
+ 	kvm_pfn_t old_pfn, new_pfn;
+ 	unsigned long old_uhva;
+-	gpa_t old_gpa;
+ 	void *old_khva;
+ 	bool old_valid;
+ 	int ret = 0;
+@@ -160,7 +159,6 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+ 
+ 	write_lock_irq(&gpc->lock);
+ 
+-	old_gpa = gpc->gpa;
+ 	old_pfn = gpc->pfn;
+ 	old_khva = gpc->khva - offset_in_page(gpc->khva);
+ 	old_uhva = gpc->uhva;
+@@ -244,7 +242,7 @@ int kvm_gfn_to_pfn_cache_refresh(struct
+  out:
+ 	write_unlock_irq(&gpc->lock);
+ 
+-	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
++	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ 
+ 	return ret;
+ }
+@@ -254,14 +252,12 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ {
+ 	void *old_khva;
+ 	kvm_pfn_t old_pfn;
+-	gpa_t old_gpa;
+ 
+ 	write_lock_irq(&gpc->lock);
+ 
+ 	gpc->valid = false;
+ 
+ 	old_khva = gpc->khva - offset_in_page(gpc->khva);
+-	old_gpa = gpc->gpa;
+ 	old_pfn = gpc->pfn;
+ 
+ 	/*
+@@ -273,7 +269,7 @@ void kvm_gfn_to_pfn_cache_unmap(struct k
+ 
+ 	write_unlock_irq(&gpc->lock);
+ 
+-	__release_gpc(kvm, old_pfn, old_khva, old_gpa);
++	gpc_release_pfn_and_khva(kvm, old_pfn, old_khva);
+ }
+ EXPORT_SYMBOL_GPL(kvm_gfn_to_pfn_cache_unmap);
+ 
 
 
