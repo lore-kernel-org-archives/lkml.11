@@ -2,114 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C397C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC52C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiHPBXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53690 "EHLO
+        id S243977AbiHPBY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 21:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241812AbiHPBWy (ORCPT
+        with ESMTP id S233745AbiHPBYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:22:54 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09651C6ACF
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:13:27 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id j6so6544815qkl.10
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 14:13:27 -0700 (PDT)
+        Mon, 15 Aug 2022 21:24:36 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338BBEE6BD;
+        Mon, 15 Aug 2022 14:14:12 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id x23so7416710pll.7;
+        Mon, 15 Aug 2022 14:14:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=i1YnZDU4kGkUqvV68QP5vWBRPLjGwIcMu76nuGXlI1w=;
-        b=i9KT+nlIeo4sOmKbkuU5XWL5+h8V3JdrhAle4xxsyCRvLbFhGDB7sd4z19BwiNcfaE
-         4EuGTaG3d7cpnzjaB4g7LUVMlrmZnq/REudt4tOlnQ75HLaAHtI2trxUKf2mMLisTboI
-         pVukSq5zi8A+93NLG9Ap70JSEVpKq4zTdmIilCVRWTG+SW2oDqlIDXvcW1n/6zB+Sl26
-         EBGy2zwla+bX6tB4cJ1jT5fMYh8Q1YUIi18LfdnHXP7jKChD7WaUMdSehjflR9yiZJeS
-         /LyJZNHx/L9681CppzBG+eBfI8aRp6JatjQhBY3b6qw3PT77qMJg2oTXwGcA/DbD35zK
-         HqUw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=wcQ1r/sqg2CzoRZsjNTeLUUOzyl5NynlAfx/6TvShuo=;
+        b=jfdRIc58wSKw5+LFAOD3R58oEgb8WlNSW6Yq/3GU4cMgOltcrqra8jsFDIYpa9grCu
+         j6xLue9nuTgx1/xXYk1GJ4mEaPe1rCfHLpDwuyQCDIwXPPzNlE7/D7imW3J8mQdrg/vG
+         lYeec4rF0VYtjQmQwLQg4mYI11EQ7rxYeCj7j6KRlJThxhbFzs9s9IdN4VuMmDr54mCw
+         DxFtI7lvaMQD5noiZ+KNP9ggRXCUsmmWraIkDJ1AAiUCGscBJJR4+RYge0S36mQOqixk
+         FjcSHuDaM38f9eJZw+nQsAm+77WcA+z6MICzr7FYbxiybVARFIOGETxwFVaLTRCWjA/f
+         8QlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=i1YnZDU4kGkUqvV68QP5vWBRPLjGwIcMu76nuGXlI1w=;
-        b=lNLFgUpcNufLnsC7m98pPzczKGetuYZH4XrGNbwDyp6Fxy1ddH+2yEkscIhEzQKmpR
-         eFiLgu9ImtJZ7cFX8xIJtJXj4BjdBfB/IbUnDFBAk9HsbIMpguvr7/4R5E++Nao6xfnw
-         nPgwAXR/EIqLshGx4pzwk6lupOeHm4g6cowDseD3Gz056wGL/xikabOuQqsVud346/iJ
-         F1veMJjRlMPcETUinScAFa2hY3QnYWoiGtoYK2i0NqMxXOHCwon1tdr1Zfv0JYxF/lCx
-         +UmnJqv6nNSs+mkQvLvvj4PcKmbIkewx9m/a6Sh/XRIGMMAccrUQIiIam5a9VDuGxgqi
-         fEqw==
-X-Gm-Message-State: ACgBeo143wCTSXVXOh4AkV4IIXUSjjmHHXYbqcA8ZKzRwvECZkGBmKXv
-        kVh/g6p97I/oCQXARPRDiUO6aArgzH+7MPmfXrXdyw==
-X-Google-Smtp-Source: AA6agR5pzAAJiuU9oX7Kdy38RRItPdNJmP3D71vCHcN9IBFjaFJ7BYZAyyUaT85g2vLwlvmgqg2PHrRSMbAXXhk1Sng=
-X-Received: by 2002:a05:620a:459e:b0:6ba:c5a7:485c with SMTP id
- bp30-20020a05620a459e00b006bac5a7485cmr12410926qkb.267.1660598004119; Mon, 15
- Aug 2022 14:13:24 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=wcQ1r/sqg2CzoRZsjNTeLUUOzyl5NynlAfx/6TvShuo=;
+        b=Mld2QIitNzcBASUDQpen5CzdyNN5YYahAJCLRemKIMhDKMsNejIoyxJMuzarPyhN5k
+         9RmTZOs6xorp0o5Cuz60xZmw929ZGVMRsT17+iXf0X0DDC3eon9+dYVMmZeUhW/EO0iU
+         m0aWz5/T15lAJNMCKOF+71+mMNAACdywSlYXDiu/Zs8kid/BCxmn+f+t/RBH1dQTyXSg
+         0goloE3Oc6C44goE00VNlOxuCNuq3781g+gonZNvlhyJ8UoUrvSCizbPD0YuiZF+xXv1
+         22BTlZEwHlt3WdChP1nB5aCDt09XUdJjxBLOUAVNd2GsLL/14ApzHykJDVs5Aq2itv6E
+         AIXw==
+X-Gm-Message-State: ACgBeo0pjIwH7lNlMcyA1r/tOwk9Y/9v9UClbD1e3APAZcZ5DgF/V7oe
+        FBUZS3TJbAY1RUtR7RMBvRw=
+X-Google-Smtp-Source: AA6agR7tyqf8aF+PTibUJNLOlk1vDgukJjxkk3/99RHrkgVyzm9T4WHBVDjh2q+NGKNb7I6rbzJ8oQ==
+X-Received: by 2002:a17:903:22c3:b0:16f:2182:6f3e with SMTP id y3-20020a17090322c300b0016f21826f3emr18749047plg.59.1660598051842;
+        Mon, 15 Aug 2022 14:14:11 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:3a69])
+        by smtp.gmail.com with ESMTPSA id d26-20020a65621a000000b00421841943dfsm6224115pgv.12.2022.08.15.14.14.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 14:14:11 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 15 Aug 2022 11:14:09 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+Subject: Re: [PATCH v8 06/31] workqueue: introduce `__INIT_WORK_WITH_KEY`
+Message-ID: <Yvq3IfK4+C94AeE2@slm.duckdns.org>
+References: <20220802015052.10452-1-ojeda@kernel.org>
+ <20220802015052.10452-7-ojeda@kernel.org>
 MIME-Version: 1.0
-References: <20220808155248.2475981-1-void@manifault.com> <CA+khW7iuENZHvbyWUkq1T1ieV9Yz+MJyRs=7Kd6N59kPTjz7Rg@mail.gmail.com>
- <20220810011510.c3chrli27e6ebftt@maniforge>
-In-Reply-To: <20220810011510.c3chrli27e6ebftt@maniforge>
-From:   Hao Luo <haoluo@google.com>
-Date:   Mon, 15 Aug 2022 14:13:13 -0700
-Message-ID: <CA+khW7iBeAW9tzuZqVaafcAFQZhNwjdEBwE8C-zAaq8gkyujFQ@mail.gmail.com>
-Subject: Re: [PATCH 0/5] bpf: Add user-space-publisher ringbuffer map type
-To:     David Vernet <void@manifault.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, john.fastabend@gmail.com, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        jolsa@kernel.org, tj@kernel.org, joannelkoong@gmail.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220802015052.10452-7-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 6:15 PM David Vernet <void@manifault.com> wrote:
->
-> Hi Hao,
->
-> On Mon, Aug 08, 2022 at 11:57:53AM -0700, Hao Luo wrote:
-> > > Note that one thing that is not included in this patch-set is the ability
-> > > to kick the kernel from user-space to have it drain messages. The selftests
-> > > included in this patch-set currently just use progs with syscall hooks to
-> > > "kick" the kernel and have it drain samples from a user-producer
-> > > ringbuffer, but being able to kick the kernel using some other mechanism
-> > > that doesn't rely on such hooks would be very useful as well. I'm planning
-> > > on adding this in a future patch-set.
-> > >
-> >
-> > This could be done using iters. Basically, you can perform draining in
-> > bpf_iter programs and export iter links as bpffs files. Then to kick
-> > the kernel, you simply just read() the file.
->
-> Thanks for pointing this out. I agree that iters could be used this way to
-> kick the kernel, and perhaps that would be a sufficient solution. My
-> thinking, however, was that it would be useful to provide some APIs that
-> are a bit more ergonomic, and specifically meant to enable kicking
-> arbitrary "pre-attached" callbacks in a BPF prog, possibly along with some
-> payload from userspace.
+On Tue, Aug 02, 2022 at 03:49:53AM +0200, Miguel Ojeda wrote:
+> From: Wedson Almeida Filho <wedsonaf@google.com>
+> 
+> A Rust helper (introduced in a later patch) needs to call
+> `__INIT_WORK` with a passed key, rather than define one in place.
+> 
+> In order to do that, this moves the initialization code from
+> the `__INIT_WORK` macro into a new `__INIT_WORK_WITH_KEY` macro
+> which takes the key as an extra parameter.
+> 
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 
-David, very sorry about the late reply. Thank you for sharing your
-thoughts. I am looking at your v2 and understand you need a way to
-trigger the kernel to consume samples in the ringbuf, which seems a
-reasonable motivation to me.
+Acked-by: Tejun Heo <tj@kernel.org>
 
->
-> Iters allow userspace to kick the kernel, but IMO they're meant to enable
-> data extraction from the kernel, and dumping kernel data into user-space.
+Please feel free to route the patch with the rest of the series or let me
+know if you want through the wq tree.
 
-Not necessarily extracting data and dumping data. It could be used to
-do operations on a set of objects, the operation could be
-notification. Iterating and notifying are orthogonal IMHO.
+Thanks.
 
-> What I'm proposing is a more generalizable way of driving logic in the
-> kernel from user-space.
-> Does that make sense? Looking forward to hearing your thoughts.
-
-Yes, sort of. I see the difference between iter and the proposed
-interface. But I am not clear about the motivation of a new APis for
-kicking callbacks from userspace. I guess maybe it will become clear,
-when you publish a concerte RFC of that interface and integrates with
-your userspace publisher.
-
-Hao
+-- 
+tejun
