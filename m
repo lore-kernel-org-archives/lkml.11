@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E771C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE8DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243340AbiHOSnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
+        id S243347AbiHOSnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243548AbiHOSlP (ORCPT
+        with ESMTP id S243746AbiHOSlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:41:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD54B20F;
-        Mon, 15 Aug 2022 11:24:46 -0700 (PDT)
+        Mon, 15 Aug 2022 14:41:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0EE3F321;
+        Mon, 15 Aug 2022 11:24:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9542FB81082;
-        Mon, 15 Aug 2022 18:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6209C433D6;
-        Mon, 15 Aug 2022 18:24:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADD4FB8107D;
+        Mon, 15 Aug 2022 18:24:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F36FEC433C1;
+        Mon, 15 Aug 2022 18:24:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660587884;
-        bh=8e8cLGBEfOgW7SXzthoRIC0+pNV2OH/E5k8Ju7+lsF4=;
+        s=korg; t=1660587893;
+        bh=+g4G3oT1kbUpJNzmT4Ho/D7lCja7yauDPgdHOvtnxbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d6p55P+yZKrFjxjb2YmLEUgzIBuHqYqwy0oVSw3Rr502bCfl4SJy4hh6l1A5DlBHR
-         reo38AOTE/vVVBLyQfByrdMrT83Noj1WAdIfDQQP3QWD0bCwljvG1nynHCqFsRWBvN
-         ShQIQmNZlxmoKSrAwk0X7c+j1qb+oYKmwHybNfe8=
+        b=FSVH54mX/4Gibzi7JTvltjZMF83768h0lYsyaXRCjN+glj0dtrhmqbivP+OoyNRFK
+         Z37vdlHizTCtlK4NcKyS90HSDxI2dgrVxPd3iTzG5bgFE+6dcnAQB9f+c3BLtIzhnn
+         sKsM2pkJLQqYNlY0qjdUtylJcdZo0FuRD/smI6go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        "GONG, Ruiqi" <gongruiqi1@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, GONG@vger.kernel.org
-Subject: [PATCH 5.15 194/779] stack: Declare {randomize_,}kstack_offset to fix Sparse warnings
-Date:   Mon, 15 Aug 2022 19:57:18 +0200
-Message-Id: <20220815180345.564511077@linuxfoundation.org>
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 187/779] regulator: qcom_smd: Fix pm8916_pldo range
+Date:   Mon, 15 Aug 2022 19:57:11 +0200
+Message-Id: <20220815180345.252710227@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,45 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GONG, Ruiqi <gongruiqi1@huawei.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit 375561bd6195a31bf4c109732bd538cb97a941f4 ]
+[ Upstream commit e8977917e116d1571dacb8e9864474551c1c12bd ]
 
-Fix the following Sparse warnings that got noticed when the PPC-dev
-patchwork was checking another patch (see the link below):
+The PM8916 device specification [1] documents a programmable range of
+1.75V to 3.337V with 12.5mV steps for the PMOS LDOs in PM8916. This
+range is also used when controlling the regulator directly using the
+qcom_spmi-regulator driver ("ult_pldo" there).
 
-init/main.c:862:1: warning: symbol 'randomize_kstack_offset' was not declared. Should it be static?
-init/main.c:864:1: warning: symbol 'kstack_offset' was not declared. Should it be static?
+However, for some reason the qcom_smd-regulator driver allows a much
+larger range for the same hardware component. This could be simply a
+typo, since the start of the range is essentially just missing a '1'.
 
-Which in fact are triggered on all architectures that have
-HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET support (for instances x86, arm64
-etc).
+In practice this does not cause any major problems, since the driver
+just sends the actual voltage to the RPM firmware instead of making use
+of the incorrect voltage selector. Still, having the wrong range there
+is confusing and prevents the regulator core from validating requests
+correctly.
 
-Link: https://lore.kernel.org/lkml/e7b0d68b-914d-7283-827c-101988923929@huawei.com/T/#m49b2d4490121445ce4bf7653500aba59eefcb67f
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Fixes: 39218ff4c625 ("stack: Optionally randomize kernel stack offset each syscall")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220629060423.2515693-1-gongruiqi1@huawei.com
+[1]: https://developer.qualcomm.com/download/sd410/pm8916pm8916-1-power-management-ic-device-specification.pdf
+
+Fixes: 57d6567680ed ("regulator: qcom-smd: Add PM8916 support")
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Link: https://lore.kernel.org/r/20220623094614.1410180-2-stephan.gerhold@kernkonzept.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/regulator/qcom_smd-regulator.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index cf79b5a766cb..649d9e4201a8 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -100,6 +100,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <linux/randomize_kstack.h>
- #include <net/net_namespace.h>
+diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
+index eb974b9c0b19..2fe13c765eff 100644
+--- a/drivers/regulator/qcom_smd-regulator.c
++++ b/drivers/regulator/qcom_smd-regulator.c
+@@ -357,10 +357,10 @@ static const struct regulator_desc pm8941_switch = {
  
- #include <asm/io.h>
+ static const struct regulator_desc pm8916_pldo = {
+ 	.linear_ranges = (struct linear_range[]) {
+-		REGULATOR_LINEAR_RANGE(750000, 0, 208, 12500),
++		REGULATOR_LINEAR_RANGE(1750000, 0, 127, 12500),
+ 	},
+ 	.n_linear_ranges = 1,
+-	.n_voltages = 209,
++	.n_voltages = 128,
+ 	.ops = &rpm_smps_ldo_ops,
+ };
+ 
 -- 
 2.35.1
 
