@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B62A9C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC35C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243970AbiHOSuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 14:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
+        id S244145AbiHOSuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 14:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243349AbiHOSpM (ORCPT
+        with ESMTP id S243828AbiHOSpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 14:45:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1F430567;
-        Mon, 15 Aug 2022 11:27:31 -0700 (PDT)
+        Mon, 15 Aug 2022 14:45:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148013120F;
+        Mon, 15 Aug 2022 11:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC85260FD0;
-        Mon, 15 Aug 2022 18:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA962C433D7;
-        Mon, 15 Aug 2022 18:27:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1D6060FDC;
+        Mon, 15 Aug 2022 18:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F42C433C1;
+        Mon, 15 Aug 2022 18:27:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660588050;
-        bh=BokTBTMkZ4346PaQMeY33bF5LXXEd68/+dwp0v89MXc=;
+        s=korg; t=1660588056;
+        bh=0GoneA/qGJtls0aUIePvwzp+dy/pKMZAcfjAAZ2A3tM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jfem1UaPpo4KOsmhsqqKgV1X9St2XQsPajcFGmVUYsCd+j0O1WqzZ1491douHPSeB
-         VYzvdcb7vW+2XLD4PaGzepxaTkfxQPphY/qC1HwD2GHSNT+lKWlvjL5lSLc9zh33KG
-         H1jU9I8URNNnjynN2ri5Sw+6znCwODNmFVjsB6yU=
+        b=q2eXh5cTfx9OzpR9/REoMLAlIK3RBL1vQLDnoYSZw7/vpp7z+IeKj2qDDSA8c3SKz
+         V4Iu080ucAaJEPW91wnNyS2zQ9E/GJuPX7cn1h5XJQAYHUQhLE5LoJ152u8CgRPSER
+         fdxOFItYVwkE8DI1oEI+1Onknf9n9oZKpYaMPpVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 279/779] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Mon, 15 Aug 2022 19:58:43 +0200
-Message-Id: <20220815180349.237918719@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 281/779] drm/radeon: fix incorrrect SPDX-License-Identifiers
+Date:   Mon, 15 Aug 2022 19:58:45 +0200
+Message-Id: <20220815180349.323039928@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -52,89 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 0ac4827f78c7ffe8eef074bc010e7e34bc22f533 ]
+[ Upstream commit 1f43b8903f3aae4a26a603c36f6d5dd25d6edb51 ]
 
-Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
-problem was in incorrect htc_handle->drv_priv initialization.
+radeon is MIT.  This were incorrectly changed in
+commit b24413180f56 ("License cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+and
+commit d198b34f3855 (".gitignore: add SPDX License Identifier")
+and:
+commit ec8f24b7faaf ("treewide: Add SPDX license identifier - Makefile/Kconfig")
 
-Probable call trace which can trigger use-after-free:
-
-ath9k_htc_probe_device()
-  /* htc_handle->drv_priv = priv; */
-  ath9k_htc_wait_for_target()      <--- Failed
-  ieee80211_free_hw()		   <--- priv pointer is freed
-
-<IRQ>
-...
-ath9k_hif_usb_rx_cb()
-  ath9k_hif_usb_rx_stream()
-   RX_STAT_INC()		<--- htc_handle->drv_priv access
-
-In order to not add fancy protection for drv_priv we can move
-htc_handle->drv_priv initialization at the end of the
-ath9k_htc_probe_device() and add helper macro to make
-all *_STAT_* macros NULL safe, since syzbot has reported related NULL
-deref in that macros [1]
-
-Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
-Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com
+Fixes: d198b34f3855 (".gitignore: add SPDX License Identifier")
+Fixes: ec8f24b7faaf ("treewide: Add SPDX license identifier - Makefile/Kconfig")
+Fixes: b24413180f56 ("License cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2053
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/radeon/.gitignore | 2 +-
+ drivers/gpu/drm/radeon/Kconfig    | 2 +-
+ drivers/gpu/drm/radeon/Makefile   | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 6b45e63fae4b..e3d546ef71dd 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -327,11 +327,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
- }
+diff --git a/drivers/gpu/drm/radeon/.gitignore b/drivers/gpu/drm/radeon/.gitignore
+index 9c1a94153983..d8777383a64a 100644
+--- a/drivers/gpu/drm/radeon/.gitignore
++++ b/drivers/gpu/drm/radeon/.gitignore
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: MIT
+ mkregtable
+ *_reg_safe.h
  
- #ifdef CONFIG_ATH9K_HTC_DEBUGFS
--
--#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
--#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
--#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
--#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-+#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-+#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-+#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-+#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-+#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
- #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
- 
- #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index ff61ae34ecdf..07ac88fb1c57 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -944,7 +944,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	priv->hw = hw;
- 	priv->htc = htc_handle;
- 	priv->dev = dev;
--	htc_handle->drv_priv = priv;
- 	SET_IEEE80211_DEV(hw, priv->dev);
- 
- 	ret = ath9k_htc_wait_for_target(priv);
-@@ -965,6 +964,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	if (ret)
- 		goto err_init;
- 
-+	htc_handle->drv_priv = priv;
-+
- 	return 0;
- 
- err_init:
+diff --git a/drivers/gpu/drm/radeon/Kconfig b/drivers/gpu/drm/radeon/Kconfig
+index 6f60f4840cc5..52819e7f1fca 100644
+--- a/drivers/gpu/drm/radeon/Kconfig
++++ b/drivers/gpu/drm/radeon/Kconfig
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0-only
++# SPDX-License-Identifier: MIT
+ config DRM_RADEON_USERPTR
+ 	bool "Always enable userptr support"
+ 	depends on DRM_RADEON
+diff --git a/drivers/gpu/drm/radeon/Makefile b/drivers/gpu/drm/radeon/Makefile
+index 11c97edde54d..3d502f1bbfcb 100644
+--- a/drivers/gpu/drm/radeon/Makefile
++++ b/drivers/gpu/drm/radeon/Makefile
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: MIT
+ #
+ # Makefile for the drm device driver.  This driver provides support for the
+ # Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
 -- 
 2.35.1
 
