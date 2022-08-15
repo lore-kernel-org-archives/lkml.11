@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA09C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2C4C28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350654AbiHOWsV (ORCPT
+        id S1351494AbiHOWs2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
+        Mon, 15 Aug 2022 18:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351776AbiHOWqn (ORCPT
+        with ESMTP id S1351801AbiHOWqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:46:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773CE13422B;
-        Mon, 15 Aug 2022 12:52:46 -0700 (PDT)
+        Mon, 15 Aug 2022 18:46:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B472134B8A;
+        Mon, 15 Aug 2022 12:52:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 784A061178;
-        Mon, 15 Aug 2022 19:52:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 697A4C433C1;
-        Mon, 15 Aug 2022 19:52:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B425760FB5;
+        Mon, 15 Aug 2022 19:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AF5C433C1;
+        Mon, 15 Aug 2022 19:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593165;
-        bh=2nSJYS2SJ8h0PWkngDu10ZIh+24L5ysWN8ONbY7NjPk=;
+        s=korg; t=1660593172;
+        bh=WF7gVEsWaD81stKo2H4fD5esY9t3YMHFHgogMQnH3z8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W4hx8p7lATAjdC6OatVqZ2qIK6KEB3hRLSYNS/mIKiclJsj/3oFA3Fvdq6MyX8X9F
-         Hzte6QeP7IwmYR6h/VE73K98HG9UxLPwmC+Do8RX9D5WjpUhNQaSgPETdYyvcWONgf
-         gR7njjMB6v8UrxrRcyguNSBMWek1FMybY3dHkYAM=
+        b=DG1WQUyiOjw07gDoZ3o9elYBg4rSn/X3/KfZjfVPq9czRXYGgeFl402sLPnv3Cb46
+         JNnYlK4vj/8unY6No5m7+J8et2eCsEESUy6rn6E0SrADFN89E4jGAlSPhx8GIQ3I5O
+         /0MuX8tjjv4/qJ7AwJmDtpbZt2agYAmrBlukcDxc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0224/1157] spi: s3c64xx: constify fsd_spi_port_config
-Date:   Mon, 15 Aug 2022 19:53:00 +0200
-Message-Id: <20220815180448.547996085@linuxfoundation.org>
+Subject: [PATCH 5.18 0906/1095] ASoC: audio-graph-card: Add of_node_put() in fail path
+Date:   Mon, 15 Aug 2022 20:05:05 +0200
+Message-Id: <20220815180506.782392479@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,34 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit a813c47d22b0a0c51567292bc198a39bdcdc3799 ]
+[ Upstream commit 65fb8e2ef3531a6e950060fca6e551c923fb0f0e ]
 
-All struct s3c64xx_spi_port_config should be const.
+In asoc_simple_parse_dai(), we should call of_node_put() for the
+reference returned by of_graph_get_port_parent() in fail path.
 
-Fixes: 4ebb15a15799 ("spi: s3c64xx: Add spi port configuration for Tesla FSD SoC")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220627094541.95166-1-krzysztof.kozlowski@linaro.org
+Fixes: ae30a694da4c ("ASoC: simple-card-utils: add asoc_simple_card_parse_dai()")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220721144308.1301587-1-windhl@126.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-s3c64xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/generic/audio-graph-card.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-s3c64xx.c b/drivers/spi/spi-s3c64xx.c
-index c26440e9058d..8fa21afc6a35 100644
---- a/drivers/spi/spi-s3c64xx.c
-+++ b/drivers/spi/spi-s3c64xx.c
-@@ -1413,7 +1413,7 @@ static const struct s3c64xx_spi_port_config exynos5433_spi_port_config = {
- 	.quirks		= S3C64XX_SPI_QUIRK_CS_AUTO,
- };
+diff --git a/sound/soc/generic/audio-graph-card.c b/sound/soc/generic/audio-graph-card.c
+index 2b598af8feef..b327372f2e4a 100644
+--- a/sound/soc/generic/audio-graph-card.c
++++ b/sound/soc/generic/audio-graph-card.c
+@@ -158,8 +158,10 @@ static int asoc_simple_parse_dai(struct device_node *ep,
+ 	 *    if he unbinded CPU or Codec.
+ 	 */
+ 	ret = snd_soc_get_dai_name(&args, &dlc->dai_name);
+-	if (ret < 0)
++	if (ret < 0) {
++		of_node_put(node);
+ 		return ret;
++	}
  
--static struct s3c64xx_spi_port_config fsd_spi_port_config = {
-+static const struct s3c64xx_spi_port_config fsd_spi_port_config = {
- 	.fifo_lvl_mask	= { 0x7f, 0x7f, 0x7f, 0x7f, 0x7f},
- 	.rx_lvl_offset	= 15,
- 	.tx_st_done	= 25,
+ 	dlc->of_node = node;
+ 
 -- 
 2.35.1
 
