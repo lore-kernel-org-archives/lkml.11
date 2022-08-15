@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6C9C2BB41
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDE4C2BB43
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233487AbiHOXpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
+        id S1354497AbiHOXpr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 19:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354296AbiHOXlt (ORCPT
+        with ESMTP id S1354300AbiHOXlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 19:41:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7499D2A414;
-        Mon, 15 Aug 2022 13:11:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BDD2A954;
+        Mon, 15 Aug 2022 13:11:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B560B80EAD;
-        Mon, 15 Aug 2022 20:11:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F53C433C1;
-        Mon, 15 Aug 2022 20:11:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FEEBB80EAD;
+        Mon, 15 Aug 2022 20:11:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A092C433C1;
+        Mon, 15 Aug 2022 20:11:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594305;
-        bh=sCNQHxIcqQE3JOMnC1htlcE1nC/bTIllDvjHDq3ZsNs=;
+        s=korg; t=1660594309;
+        bh=KcEV8SKvsjL468XkPQvCHNAT9nTCGEg25sQJaScv6vE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HSK4rZgK/gKM4ACwZ8Oj3El+DDhRafw/kkAo9U/difW93scZTw04MQSuPFrNK+xAf
-         IkuH3/0+iSQnegXB3E7iqjdHWAzfN6PGSsrwd9+fpH6HfBrkKPeDG3ayDwDYtwt6OK
-         f/sbUcWZbX87TpThJCCxKwtZFsNItSwGYboiBmxI=
+        b=ZKGzdOFGSrVb+3zARUOaLbGjxnSJfQoemiGxeBAdPzBhCO4NkDKkhugm65OlHk1SZ
+         pRJCizB/kFqCpR5NF39xKfmbXHH+jCaYR7/lw4RrkgZ7F3ClAAkvW4ZEO4ujZcXP4B
+         30AR2C4pDT9vVdANoZUWkKs69FSqQwHxa/AooAXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Simon Han <z.han@kunbus.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 1090/1095] net: phy: smsc: Disable Energy Detect Power-Down in interrupt mode
-Date:   Mon, 15 Aug 2022 20:08:09 +0200
-Message-Id: <20220815180514.105918423@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0412/1157] drm/vc4: dsi: Register dsi0 as the correct vc4 encoder type
+Date:   Mon, 15 Aug 2022 19:56:08 +0200
+Message-Id: <20220815180456.117894646@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,64 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit 2642cc6c3bbe0900ba15bab078fd15ad8baccbc5 upstream.
+[ Upstream commit 4d9273c978d4c1af15d7874c10c732ec83d444d0 ]
 
-Simon reports that if two LAN9514 USB adapters are directly connected
-without an intermediate switch, the link fails to come up and link LEDs
-remain dark.  The issue was introduced by commit 1ce8b37241ed ("usbnet:
-smsc95xx: Forward PHY interrupts to PHY driver to avoid polling").
+vc4_dsi was registering both dsi0 and dsi1 as VC4_ENCODER_TYPE_DSI1
+which seemed to work OK for a single DSI display, but fails
+if there are two DSI displays connected.
 
-The PHY suffers from a known erratum wherein link detection becomes
-unreliable if Energy Detect Power-Down is used.  In poll mode, the
-driver works around the erratum by briefly disabling EDPD for 640 msec
-to detect a neighbor, then re-enabling it to save power.
+Update to register the correct type.
 
-In interrupt mode, no interrupt is signaled if EDPD is used by both link
-partners, so it must not be enabled at all.
-
-We'll recoup the power savings by enabling SUSPEND1 mode on affected
-LAN95xx chips in a forthcoming commit.
-
-Fixes: 1ce8b37241ed ("usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling")
-Reported-by: Simon Han <z.han@kunbus.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/439a3f3168c2f9d44b5fd9bb8d2b551711316be6.1655714438.git.lukas@wunner.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220613144800.326124-15-maxime@cerno.tech
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/smsc.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -110,7 +110,7 @@ static int smsc_phy_config_init(struct p
- 	struct smsc_phy_priv *priv = phydev->priv;
- 	int rc;
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 81a6c4e9576d..97a258c934af 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -1518,7 +1518,8 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
+ 		return -ENOMEM;
  
--	if (!priv->energy_enable)
-+	if (!priv->energy_enable || phydev->irq != PHY_POLL)
- 		return 0;
+ 	INIT_LIST_HEAD(&dsi->bridge_chain);
+-	vc4_dsi_encoder->base.type = VC4_ENCODER_TYPE_DSI1;
++	vc4_dsi_encoder->base.type = dsi->variant->port ?
++			VC4_ENCODER_TYPE_DSI1 : VC4_ENCODER_TYPE_DSI0;
+ 	vc4_dsi_encoder->dsi = dsi;
+ 	dsi->encoder = &vc4_dsi_encoder->base.base;
  
- 	rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
-@@ -210,6 +210,8 @@ static int lan95xx_config_aneg_ext(struc
-  * response on link pulses to detect presence of plugged Ethernet cable.
-  * The Energy Detect Power-Down mode is enabled again in the end of procedure to
-  * save approximately 220 mW of power if cable is unplugged.
-+ * The workaround is only applicable to poll mode. Energy Detect Power-Down may
-+ * not be used in interrupt mode lest link change detection becomes unreliable.
-  */
- static int lan87xx_read_status(struct phy_device *phydev)
- {
-@@ -217,7 +219,7 @@ static int lan87xx_read_status(struct ph
- 
- 	int err = genphy_read_status(phydev);
- 
--	if (!phydev->link && priv->energy_enable) {
-+	if (!phydev->link && priv->energy_enable && phydev->irq == PHY_POLL) {
- 		/* Disable EDPD to wake up PHY */
- 		int rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
- 		if (rc < 0)
+-- 
+2.35.1
+
 
 
