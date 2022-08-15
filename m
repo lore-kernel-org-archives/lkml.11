@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E51EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA555C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 18:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232707AbiHOR7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 13:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
+        id S229624AbiHOR76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 13:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232661AbiHOR70 (ORCPT
+        with ESMTP id S231854AbiHOR70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 15 Aug 2022 13:59:26 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E45B28E0A
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E18C28E2C
         for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 10:59:24 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id x7-20020a056e021ca700b002ded2e6331aso5577638ill.20
+Received: by mail-io1-f71.google.com with SMTP id j8-20020a6b7948000000b0067c2923d1b8so4505204iop.6
         for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 10:59:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=o4gt2uH2nRBrWB+v2fHMFI9b9NFOngOVSEfxYVNbalc=;
-        b=wrnC7IfEAqElDLFv2dRivGA2HNgRS73WYd8j+dxdU8/QbRHKWuV45Us5VeaDQG7TJc
-         VP97i84ZBWge0NyMf/vPd78Z34p10I1JBZI8m3FUUC77jWOTSlKHV9uZKymQg0Lm3jpO
-         iTTlVQ5slA8zFqWPWytSmUiOjRDNwV0hlNcfHEdW0LKF3OI2Ho+ZGDgeb5fUdkpMC775
-         llh5Jr+IhfnWGTycid6urnZX0+MpMe2Aj8cqaiSBbh7KklIwKjzfIEjzTU8myWphGEWf
-         hfs69ABLg8mvOxduOriiiJmmDvuHXcJJOc1IBwz8jKEaT2pASu5ygAKF3A+NgpWiulXg
-         qc5Q==
-X-Gm-Message-State: ACgBeo0sp2oQ166Bq27EzztuDwq0M9BPKr8JE2pSzubRVbuKZZ1etCe6
-        eHLhocb+RtA4IS188TnVpz8ogk/F7FKbwM68ebVGJ3DMogy6
-X-Google-Smtp-Source: AA6agR4k6eysZypx7i2tNh7V2DyW4EBeU4bZGsGuhKTxiKZM8mY8yQb8sscnz2VXOMKOJ1q/pJlzIWts2c18QPKSh2wZ7SErnwOq
+        bh=hWOOJX8NuM+oPIFYN51dx1eD//PoLJa22GbFPJ3c01w=;
+        b=LSZafZVeB/bl6AlYTVDTVHCfEJW77pDk6wfBgQPKlS+dkim9MgHF0D0pptHHengpu5
+         2WhDH2CHlIuC339i+ozKgsO0lxPEkO4yKGHWuD22cVNmZBI3iy4FGIYF6Gdi1IzsS6w2
+         r+bhHjBiz1V1PDS0jnROrq9dJFQDgsK4P0IkBg622MLw6ZTycck4J81KPkAiSK64FuR+
+         Um954TxSQghu/ZpVetMU8v0pwf25LR3t0h4KX3+zw0KNj6zE129OmfJGUThsgCDebb7n
+         HBRrug8r5B/QRhyaK4PLEZesPJW8c2TXtbQnpAUEJPTPFfUKIl82t8b5/JbbeC1uf7Yf
+         013Q==
+X-Gm-Message-State: ACgBeo10deQt37DRJ/HEweIK6GCulZxZXAY8tbewb+1v7JJajl35jcDz
+        uXOc/SxqGlAdr0lgzaUUfEtfUQhT0WzqWoSzdrZFic1P9VOx
+X-Google-Smtp-Source: AA6agR7O1GWq6dDpyGR/ua+eY6Qvu/0jJUV5+uS50D+L4CPtkHI+uQrFFRwdA53mRA9LX3HkRKDRRavZHFUiX8KkqWMGCi1wBKAI
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a46:b0:2df:86f0:ebd2 with SMTP id
- u6-20020a056e021a4600b002df86f0ebd2mr7878465ilv.209.1660586363853; Mon, 15
- Aug 2022 10:59:23 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 10:59:23 -0700
+X-Received: by 2002:a6b:2a05:0:b0:688:d09:1e45 with SMTP id
+ q5-20020a6b2a05000000b006880d091e45mr3334659ioq.128.1660586364091; Mon, 15
+ Aug 2022 10:59:24 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 10:59:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000056248b05e64b6478@google.com>
-Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
- request in free_block
-From:   syzbot <syzbot+382af021ce115a936b1f@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, syzkaller-bugs@googlegroups.com,
-        vbabka@suse.cz, willy@infradead.org
+Message-ID: <00000000000059c5b005e64b64ef@google.com>
+Subject: [syzbot] upstream boot error: general protection fault in mm_alloc
+From:   syzbot <syzbot+97f830ad641de86d08c0@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, bigeasy@linutronix.de,
+        bpf@vger.kernel.org, brauner@kernel.org, david@redhat.com,
+        ebiederm@xmission.com, linux-kernel@vger.kernel.org,
+        luto@kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,88 +55,79 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    568035b01cfb Linux 6.0-rc1
+HEAD commit:    5d6a0f4da927 Merge tag 'for-linus-6.0-rc1b-tag' of git://g..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15d65d0d080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e656d8727a25e83b
-dashboard link: https://syzkaller.appspot.com/bug?extid=382af021ce115a936b1f
+console output: https://syzkaller.appspot.com/x/log.txt?x=1668343d080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f83c035536d7b2e3
+dashboard link: https://syzkaller.appspot.com/bug?extid=97f830ad641de86d08c0
 compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+382af021ce115a936b1f@syzkaller.appspotmail.com
+Reported-by: syzbot+97f830ad641de86d08c0@syzkaller.appspotmail.com
 
-platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
-cfg80211: failed to load regulatory.db
-BUG: unable to handle page fault for address: ffffebde00000008
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 0 P4D 0 
-Oops: 0000 [#1] PREEMPT SMP
-CPU: 1 PID: 25 Comm: kworker/1:1 Not tainted 6.0.0-rc1-syzkaller-dirty #0
+general protection fault, probably for non-canonical address 0xffff00d300000338: 0000 [#1] PREEMPT SMP KASAN
+KASAN: maybe wild-memory-access in range [0xfff82698000019c0-0xfff82698000019c7]
+CPU: 1 PID: 1155 Comm: kworker/u4:4 Not tainted 5.19.0-syzkaller-14374-g5d6a0f4da927 #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Workqueue: events cache_reap
-RIP: 0010:_compound_head include/linux/page-flags.h:253 [inline]
-RIP: 0010:virt_to_folio include/linux/mm.h:858 [inline]
-RIP: 0010:virt_to_slab mm/slab.h:175 [inline]
-RIP: 0010:free_block+0xc4/0x2d0 mm/slab.c:3317
-Code: b8 00 00 00 80 7f 77 00 00 48 81 fd 00 00 00 80 72 07 48 8b 05 9d d0 70 04 48 01 e8 48 2d 00 00 00 80 48 c1 e8 06 48 83 e0 c0 <48> 8b 4c 06 08 f6 c1 01 0f 85 47 01 00 00 48 01 f0 0f 1f 44 00 00
-RSP: 0018:ffffc900002f3c80 EFLAGS: 00010006
-RAX: 000001de00000000 RBX: 0000000000000001 RCX: 0000000000000001
-RDX: 0000000000000001 RSI: ffffea0000000000 RDI: ffff888100cf06c0
-RBP: 0000000000000000 R08: ffffc900002f3cf8 R09: 0000000000000000
-R10: ffff888100f70a40 R11: 0001ffffffffffff R12: ffff888100cf06c0
-R13: ffffc900002f3cf8 R14: ffffc900002f3cf8 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff888237d00000(0000) knlGS:0000000000000000
+RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
+RIP: 0010:__kmem_cache_alloc_lru mm/slub.c:3258 [inline]
+RIP: 0010:kmem_cache_alloc+0x12d/0x310 mm/slub.c:3268
+Code: 84 1c 01 00 00 48 83 78 10 00 0f 84 11 01 00 00 49 8b 3f 40 f6 c7 0f 0f 85 e3 01 00 00 45 84 c0 0f 84 dc 01 00 00 41 8b 47 28 <49> 8b 5c 05 00 48 8d 4a 08 4c 89 e8 65 48 0f c7 0f 0f 94 c0 a8 01
+RSP: 0000:ffffc90004bcfda8 EFLAGS: 00010202
+RAX: 0000000000000338 RBX: 0000000000000cc0 RCX: 0000000000000000
+RDX: 0000000000000b89 RSI: 0000000000000cc0 RDI: 0000000000040aa0
+RBP: ffffffff8150835f R08: dffffc0000000001 R09: fffffbfff1c4ade6
+R10: fffffbfff1c4ade6 R11: 1ffffffff1c4ade5 R12: ffffffff8d38ce40
+R13: ffff00d300000000 R14: ffffffff8150835f R15: ffff8881400068c0
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffebde00000008 CR3: 0000000104e75000 CR4: 00000000003506e0
+CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- drain_array_locked mm/slab.c:2130 [inline]
- drain_array+0xb8/0x1a0 mm/slab.c:3958
- cache_reap+0x238/0x330 mm/slab.c:4010
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
+ mm_alloc+0x1f/0xb0 kernel/fork.c:1171
+ bprm_mm_init fs/exec.c:369 [inline]
+ alloc_bprm+0x1ef/0x3b0 fs/exec.c:1534
+ kernel_execve+0x97/0xa00 fs/exec.c:1974
+ call_usermodehelper_exec_async+0x262/0x3b0 kernel/umh.c:112
  ret_from_fork+0x1f/0x30
  </TASK>
 Modules linked in:
-CR2: ffffebde00000008
 ---[ end trace 0000000000000000 ]---
-RIP: 0010:_compound_head include/linux/page-flags.h:253 [inline]
-RIP: 0010:virt_to_folio include/linux/mm.h:858 [inline]
-RIP: 0010:virt_to_slab mm/slab.h:175 [inline]
-RIP: 0010:free_block+0xc4/0x2d0 mm/slab.c:3317
-Code: b8 00 00 00 80 7f 77 00 00 48 81 fd 00 00 00 80 72 07 48 8b 05 9d d0 70 04 48 01 e8 48 2d 00 00 00 80 48 c1 e8 06 48 83 e0 c0 <48> 8b 4c 06 08 f6 c1 01 0f 85 47 01 00 00 48 01 f0 0f 1f 44 00 00
-RSP: 0018:ffffc900002f3c80 EFLAGS: 00010006
-RAX: 000001de00000000 RBX: 0000000000000001 RCX: 0000000000000001
-RDX: 0000000000000001 RSI: ffffea0000000000 RDI: ffff888100cf06c0
-RBP: 0000000000000000 R08: ffffc900002f3cf8 R09: 0000000000000000
-R10: ffff888100f70a40 R11: 0001ffffffffffff R12: ffff888100cf06c0
-R13: ffffc900002f3cf8 R14: ffffc900002f3cf8 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff888237d00000(0000) knlGS:0000000000000000
+RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
+RIP: 0010:__kmem_cache_alloc_lru mm/slub.c:3258 [inline]
+RIP: 0010:kmem_cache_alloc+0x12d/0x310 mm/slub.c:3268
+Code: 84 1c 01 00 00 48 83 78 10 00 0f 84 11 01 00 00 49 8b 3f 40 f6 c7 0f 0f 85 e3 01 00 00 45 84 c0 0f 84 dc 01 00 00 41 8b 47 28 <49> 8b 5c 05 00 48 8d 4a 08 4c 89 e8 65 48 0f c7 0f 0f 94 c0 a8 01
+RSP: 0000:ffffc90004bcfda8 EFLAGS: 00010202
+RAX: 0000000000000338 RBX: 0000000000000cc0 RCX: 0000000000000000
+RDX: 0000000000000b89 RSI: 0000000000000cc0 RDI: 0000000000040aa0
+RBP: ffffffff8150835f R08: dffffc0000000001 R09: fffffbfff1c4ade6
+R10: fffffbfff1c4ade6 R11: 1ffffffff1c4ade5 R12: ffffffff8d38ce40
+R13: ffff00d300000000 R14: ffffffff8150835f R15: ffff8881400068c0
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffebde00000008 CR3: 0000000104e75000 CR4: 00000000003506e0
+CR2: 0000000000000000 CR3: 000000000ca8e000 CR4: 00000000003506e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
 Code disassembly (best guess):
-   0:	b8 00 00 00 80       	mov    $0x80000000,%eax
-   5:	7f 77                	jg     0x7e
-   7:	00 00                	add    %al,(%rax)
-   9:	48 81 fd 00 00 00 80 	cmp    $0xffffffff80000000,%rbp
-  10:	72 07                	jb     0x19
-  12:	48 8b 05 9d d0 70 04 	mov    0x470d09d(%rip),%rax        # 0x470d0b6
-  19:	48 01 e8             	add    %rbp,%rax
-  1c:	48 2d 00 00 00 80    	sub    $0xffffffff80000000,%rax
-  22:	48 c1 e8 06          	shr    $0x6,%rax
-  26:	48 83 e0 c0          	and    $0xffffffffffffffc0,%rax
-* 2a:	48 8b 4c 06 08       	mov    0x8(%rsi,%rax,1),%rcx <-- trapping instruction
-  2f:	f6 c1 01             	test   $0x1,%cl
-  32:	0f 85 47 01 00 00    	jne    0x17f
-  38:	48 01 f0             	add    %rsi,%rax
-  3b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   0:	84 1c 01             	test   %bl,(%rcx,%rax,1)
+   3:	00 00                	add    %al,(%rax)
+   5:	48 83 78 10 00       	cmpq   $0x0,0x10(%rax)
+   a:	0f 84 11 01 00 00    	je     0x121
+  10:	49 8b 3f             	mov    (%r15),%rdi
+  13:	40 f6 c7 0f          	test   $0xf,%dil
+  17:	0f 85 e3 01 00 00    	jne    0x200
+  1d:	45 84 c0             	test   %r8b,%r8b
+  20:	0f 84 dc 01 00 00    	je     0x202
+  26:	41 8b 47 28          	mov    0x28(%r15),%eax
+* 2a:	49 8b 5c 05 00       	mov    0x0(%r13,%rax,1),%rbx <-- trapping instruction
+  2f:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
+  33:	4c 89 e8             	mov    %r13,%rax
+  36:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
+  3b:	0f 94 c0             	sete   %al
+  3e:	a8 01                	test   $0x1,%al
 
 
 ---
