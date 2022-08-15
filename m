@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC835C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E64C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242900AbiHOUNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
+        id S239184AbiHOUNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243972AbiHOUJg (ORCPT
+        with ESMTP id S232356AbiHOUJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:09:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02ED299;
-        Mon, 15 Aug 2022 11:56:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E1D06125B;
-        Mon, 15 Aug 2022 18:56:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98F76C433B5;
-        Mon, 15 Aug 2022 18:56:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589766;
-        bh=ELjryB8FWGLugOIuSJFH96NH9H+/KyRj7dUBAwO2eqs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1MpXWzROWKlrW4HGu4RpcppXzG7R/HtVbiF7UIo2YN/djlo/TgKRh8AsjuJY/6Tlz
-         JnDrXMTtJ2XMO0rhZDLIYe/9g5CZcSVM9azQPx3eMIQ6QilHz3MOa5EFEWvnyNrkWv
-         QHLDSMTxuq/hjEl2MOFzt2qJiNp5H0v83TLEt2Xc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 0042/1095] ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model
-Date:   Mon, 15 Aug 2022 19:50:41 +0200
-Message-Id: <20220815180431.175225230@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 15 Aug 2022 16:09:28 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13AA83F1C;
+        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id x10so7125110plb.3;
+        Mon, 15 Aug 2022 11:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=/3WdeuCJ7GOu9Di/kxGE5ZGCTP43O1pORgSps3IpIM0=;
+        b=pzhH71/RORsENTBh74vzN5tqqZUKFr4QVYLeRWr9RocyL7OZKiodwsp21TGAG95MnP
+         dsuAJ49JcqdqnfiQ/krxHAJW/NtnLndMog8nxsvyC2oA20RPu4/6P6mDM4v7uuHosvVH
+         pT5ae4HmStn9CqdvdQtc2KGE6WbjIPCG3FCvuooEIPPs6GLaeOdlD3rRWGmVbQl6FVff
+         Nzqo8PGtzrW7EDcHQrvUe2tpoWaUa6xYETFR7d9fAzFnv7Bbq3TYbrJwUFNVcLqbYKyj
+         NC6RjlEpmZ5pJ/nLcPtKXXEhsDM9I9HkAYhAFnuJgZuL9w1mjMSt+T8E7NreD5qk8oS0
+         AZrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=/3WdeuCJ7GOu9Di/kxGE5ZGCTP43O1pORgSps3IpIM0=;
+        b=O4mricfSToXg5JHnWXFPOBLqboRzKdSD2tkaaZV+JXZVVkT/30JGfT3FcfrBMLiJzo
+         wpX6Z354eb+0/HKgeF6Onz7oKgCYP7ZrgbvL3KeksPmhWgieTnk/gR6T+YvkVrTDDkSy
+         97W0tVHzGqSZViOJUALXBHp8SYrFqxoGsvhKbvlTJp6CbIaeHCJ5qB1yYZH+vOLZuuMQ
+         vSTI8bBpOlNEn7RD1UoQYxOAhR8QXPvCJZJbzASdt0Mw7tkarWBJnTLE6qAih79AdEO/
+         i1mip+g7c8gnZ/Ni+e8ygYEEWqVMemyTQkdlZt9R3FZ6LJQQsM7UMmKEeUsgUXPchFfs
+         WkzA==
+X-Gm-Message-State: ACgBeo3z2t3xDEs4BaxM1AMqkLju6sttxptHBnO0o+jxstEiSzk0hrxd
+        J5ExLXqUiDSnEW1YpSrZusD8UwgGhMUNChIb
+X-Google-Smtp-Source: AA6agR4ivgKsW1nGK+NgnkoWRxp99CaZs3EHTMf/igrghYYz2Hbi4Z0NHcfQ+u7S31hvnU6vrpxPBQ==
+X-Received: by 2002:a17:90b:1bcf:b0:1f5:53cf:c01d with SMTP id oa15-20020a17090b1bcf00b001f553cfc01dmr30056226pjb.37.1660589760532;
+        Mon, 15 Aug 2022 11:56:00 -0700 (PDT)
+Received: from vmfolio.. (c-73-189-111-8.hsd1.ca.comcast.net. [73.189.111.8])
+        by smtp.googlemail.com with ESMTPSA id x190-20020a6231c7000000b0052def2e20dasm6858174pfx.167.2022.08.15.11.55.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 11:56:00 -0700 (PDT)
+From:   "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     linux-btrfs@vger.kernel.org, linux-nilfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Vishal Moola (Oracle)" <vishal.moola@gmail.com>
+Subject: [PATCH 3/7] btrfs: Convert end_compressed_writeback() to use filemap_get_folios()
+Date:   Mon, 15 Aug 2022 11:54:48 -0700
+Message-Id: <20220815185452.37447-4-vishal.moola@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220815185452.37447-1-vishal.moola@gmail.com>
+References: <20220815185452.37447-1-vishal.moola@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+Converted function to use folios throughout. This is in preparation for
+the removal of find_get_pages_contig(). Now also supports large folios.
 
-commit f83bb2592482fe94c6eea07a8121763c80f36ce5 upstream.
+Since we may receive more than nr_pages pages, nr_pages may underflow.
+Since nr_pages > 0 is equivalent to index <= end_index, we replaced it
+with this check instead.
 
-There is another LENOVO 20149 (Type1Sku0) Notebook model with
-CX20590, the device PCI SSID is 17aa:3977, which headphones are
-not responding, that requires the quirk CXT_PINCFG_LENOVO_NOTEBOOK.
-Add the corresponding entry to the quirk table.
+Also this function does not care about the pages being contiguous so we
+can just use filemap_get_folios() to be more efficient.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220808073406.19460-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vishal Moola (Oracle) <vishal.moola@gmail.com>
 ---
- sound/pci/hda/patch_conexant.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ fs/btrfs/compression.c | 26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -222,6 +222,7 @@ enum {
- 	CXT_PINCFG_LEMOTE_A1205,
- 	CXT_PINCFG_COMPAQ_CQ60,
- 	CXT_FIXUP_STEREO_DMIC,
-+	CXT_PINCFG_LENOVO_NOTEBOOK,
- 	CXT_FIXUP_INC_MIC_BOOST,
- 	CXT_FIXUP_HEADPHONE_MIC_PIN,
- 	CXT_FIXUP_HEADPHONE_MIC,
-@@ -772,6 +773,14 @@ static const struct hda_fixup cxt_fixups
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cxt_fixup_stereo_dmic,
- 	},
-+	[CXT_PINCFG_LENOVO_NOTEBOOK] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x1a, 0x05d71030 },
-+			{ }
-+		},
-+		.chain_id = CXT_FIXUP_STEREO_DMIC,
-+	},
- 	[CXT_FIXUP_INC_MIC_BOOST] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cxt5066_increase_mic_boost,
-@@ -971,7 +980,7 @@ static const struct snd_pci_quirk cxt506
- 	SND_PCI_QUIRK(0x17aa, 0x3905, "Lenovo G50-30", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x390b, "Lenovo G50-80", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x3975, "Lenovo U300s", CXT_FIXUP_STEREO_DMIC),
--	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_FIXUP_STEREO_DMIC),
-+	SND_PCI_QUIRK(0x17aa, 0x3977, "Lenovo IdeaPad U310", CXT_PINCFG_LENOVO_NOTEBOOK),
- 	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo G50-70", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK(0x17aa, 0x397b, "Lenovo S205", CXT_FIXUP_STEREO_DMIC),
- 	SND_PCI_QUIRK_VENDOR(0x17aa, "Thinkpad", CXT_FIXUP_THINKPAD_ACPI),
-
+diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
+index e84d22c5c6a8..d4ebef60b3ce 100644
+--- a/fs/btrfs/compression.c
++++ b/fs/btrfs/compression.c
+@@ -8,6 +8,7 @@
+ #include <linux/file.h>
+ #include <linux/fs.h>
+ #include <linux/pagemap.h>
++#include <linux/pagevec.h>
+ #include <linux/highmem.h>
+ #include <linux/kthread.h>
+ #include <linux/time.h>
+@@ -222,8 +223,7 @@ static noinline void end_compressed_writeback(struct inode *inode,
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
+ 	unsigned long index = cb->start >> PAGE_SHIFT;
+ 	unsigned long end_index = (cb->start + cb->len - 1) >> PAGE_SHIFT;
+-	struct page *pages[16];
+-	unsigned long nr_pages = end_index - index + 1;
++	struct folio_batch fbatch;
+ 	const int errno = blk_status_to_errno(cb->status);
+ 	int i;
+ 	int ret;
+@@ -231,24 +231,22 @@ static noinline void end_compressed_writeback(struct inode *inode,
+ 	if (errno)
+ 		mapping_set_error(inode->i_mapping, errno);
+ 
+-	while (nr_pages > 0) {
+-		ret = find_get_pages_contig(inode->i_mapping, index,
+-				     min_t(unsigned long,
+-				     nr_pages, ARRAY_SIZE(pages)), pages);
++	folio_batch_init(&fbatch);
++	while (index <= end_index) {
++		ret = filemap_get_folios(inode->i_mapping, &index, end_index,
++				&fbatch);
++
+ 		if (ret == 0) {
+-			nr_pages -= 1;
+-			index += 1;
+-			continue;
++			return;
+ 		}
+ 		for (i = 0; i < ret; i++) {
++			struct folio *folio = fbatch.folios[i];
+ 			if (errno)
+-				SetPageError(pages[i]);
+-			btrfs_page_clamp_clear_writeback(fs_info, pages[i],
++				folio_set_error(folio);
++			btrfs_page_clamp_clear_writeback(fs_info, &folio->page,
+ 							 cb->start, cb->len);
+-			put_page(pages[i]);
+ 		}
+-		nr_pages -= ret;
+-		index += ret;
++		folio_batch_release(&fbatch);
+ 	}
+ 	/* the inode may be gone now */
+ }
+-- 
+2.36.1
 
