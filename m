@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D18C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B06B0C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347061AbiHOVZS (ORCPT
+        id S1344612AbiHOVZ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
+        Mon, 15 Aug 2022 17:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347024AbiHOVSO (ORCPT
+        with ESMTP id S1347162AbiHOVSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:18:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E33ACC5;
-        Mon, 15 Aug 2022 12:21:47 -0700 (PDT)
+        Mon, 15 Aug 2022 17:18:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1234986C10;
+        Mon, 15 Aug 2022 12:21:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC6CE60EF0;
-        Mon, 15 Aug 2022 19:21:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3DA5C4315D;
-        Mon, 15 Aug 2022 19:21:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8D16B81120;
+        Mon, 15 Aug 2022 19:21:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C27C433D7;
+        Mon, 15 Aug 2022 19:21:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591306;
-        bh=7HKHyqcvmrU1BBYjyvlutRcXUP3YLfWBNtPAvCpOBb0=;
+        s=korg; t=1660591312;
+        bh=AZWjm2x8zpKJXfI6zI6/Cj794cVBbJ4zC6s5gwi7uz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q1nrQguorhrAiTSNB9HbQiOhsSkEnp6oCT1xBHEA8k1SIU1EkS0MNZUKiKh0MjgiS
-         81KrJfcDZgXsUA/ZSFJ/wq/VLycAxQ/570OhjVA97s4henDem277jG7K+IeB1Rwe9H
-         TsecEe5PPtPqnw4646Gogcb90sh1mV9U0q53pHPI=
+        b=Z7jAWnd0Az+mL66si0lL0tIMvLRWYLlTf6HzVovjhd/RnzK8IriaBI9+0CJ0dVl/M
+         06JRrNkMA8Gwa1i0fe0+iU2IByxeg87Yozsuow1sjNIM5PTv8lDnv6qUfs1Xc2YWs7
+         lJuRvCSj5a/IG3PGQGv/UhU3EUZVuUPpNqeeT1Aw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joanne Koong <joannelkoong@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel test robot <lkp@intel.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0503/1095] bpf: Fix bpf_xdp_pointer return pointer
-Date:   Mon, 15 Aug 2022 19:58:22 +0200
-Message-Id: <20220815180450.337220358@linuxfoundation.org>
+Subject: [PATCH 5.18 0505/1095] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
+Date:   Mon, 15 Aug 2022 19:58:24 +0200
+Message-Id: <20220815180450.412888119@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,38 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joanne Koong <joannelkoong@gmail.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit bbd52178e249fe893ef4a9b87cde5b6c473b0a7c ]
+[ Upstream commit d578e0af3a003736f6c440188b156483d451b329 ]
 
-For the case where offset + len == size, bpf_xdp_pointer should return a
-valid pointer to the addr because that access is permitted. We should
-only return NULL in the case where offset + len exceeds size.
+Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
+but it forgets to change the value to be returned that came from
+simple_write_to_buffer() call. It results in the following warning:
 
-Fixes: 3f364222d032 ("net: xdp: introduce bpf_xdp_pointer utility routine")
-Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Link: https://lore.kernel.org/bpf/20220722220105.2065466-1-joannelkoong@gmail.com
+  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
+           return rc;
+                  ^~
+
+Remove rc variable and just return the passed in length if the
+memdup_user() succeeds.
+
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
+Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220724202452.61846-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5db4fae23925..a98f34cb5aee 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3917,7 +3917,7 @@ static void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u32 len)
- 		offset -= frag_size;
- 	}
- out:
--	return offset + len < size ? addr + offset : NULL;
-+	return offset + len <= size ? addr + offset : NULL;
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index c6f8254cb21d..ac7787e1a7f6 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -1010,7 +1010,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 	void *cmd;
+ 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
+ 	u16 cmdid;
+-	int rc, rc1;
++	int rc1;
+ 
+ 	if (cmdlen < 0 || *ppos != 0)
+ 		return -EINVAL;
+@@ -1027,7 +1027,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 
+ 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
+ 
+-	return rc;
++	return len;
  }
  
- BPF_CALL_4(bpf_xdp_load_bytes, struct xdp_buff *, xdp, u32, offset,
+ static const struct file_operations fops_wmi = {
 -- 
 2.35.1
 
