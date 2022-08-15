@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 679BAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 462B0C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiHOUHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
+        id S239942AbiHOUH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346239AbiHOUGT (ORCPT
+        with ESMTP id S1346254AbiHOUGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:06:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3824F81B23;
-        Mon, 15 Aug 2022 11:55:05 -0700 (PDT)
+        Mon, 15 Aug 2022 16:06:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB2E8284C;
+        Mon, 15 Aug 2022 11:55:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D8D90CE1277;
-        Mon, 15 Aug 2022 18:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B10C433C1;
-        Mon, 15 Aug 2022 18:55:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B6516123D;
+        Mon, 15 Aug 2022 18:55:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D879C433D7;
+        Mon, 15 Aug 2022 18:55:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589702;
-        bh=llpMxHGJXWP5cf7sbBkd+Qs7oAxQTdYK6TfLN8Q4UGc=;
+        s=korg; t=1660589711;
+        bh=KWqI2ePOpoE/aKn9QsoqOkzYg6rD54Cwvqu/xPV9oCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W9bib26XbqEtKdeUdCbNdlNK7pzPAQ0oos6O1T0etLamGVaz2zF0TkviN0K4xhXNg
-         buEeEfSIiq36iE3xb+O4SAj9dqV5bdEbBX1w0HWNczjznZ/MfmbbeJNdtd6Bq8cpoW
-         53aeL3rAvuOYeiS1oEFSmgOfRy2+zEtFn6WJSv2Y=
+        b=EgXns0iL4M6bLaS/kes7kxfrAvG2hq4oINMeDUmaxxQMNW7q3inwWt5GsbHd3svZt
+         haLktkeEE/8/Pgt3+K66qCYG9MstdMxcY9r4fRCxSPay3OG+D7KDbtyqnj4gGfC5kl
+         Gl/HnkECv+4k9QRCDQ5DDHeRcuRLvnUVtcYQh1nQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ping Cheng <ping.cheng@wacom.com>,
-        Jason Gerecke <jason.gerecke@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.18 0021/1095] HID: wacom: Only report rotation for art pen
-Date:   Mon, 15 Aug 2022 19:50:20 +0200
-Message-Id: <20220815180430.226829268@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 0024/1095] KVM: nVMX: Snapshot pre-VM-Enter DEBUGCTL for !nested_run_pending case
+Date:   Mon, 15 Aug 2022 19:50:23 +0200
+Message-Id: <20220815180430.362954403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,88 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping Cheng <pinglinux@gmail.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 7ccced33a0ba39b0103ae1dfbf7f1dffdc0a1bc2 upstream.
+commit 764643a6be07445308e492a528197044c801b3ba upstream.
 
-The generic routine, wacom_wac_pen_event, turns rotation value 90
-degree anti-clockwise before posting the events. This non-zero
-event trggers a non-zero ABS_Z event for non art pen tools. However,
-HID_DG_TWIST is only supported by art pen.
+If a nested run isn't pending, snapshot vmcs01.GUEST_IA32_DEBUGCTL
+irrespective of whether or not VM_ENTRY_LOAD_DEBUG_CONTROLS is set in
+vmcs12.  When restoring nested state, e.g. after migration, without a
+nested run pending, prepare_vmcs02() will propagate
+nested.vmcs01_debugctl to vmcs02, i.e. will load garbage/zeros into
+vmcs02.GUEST_IA32_DEBUGCTL.
 
-[jkosina@suse.cz: fix build: add missing brace]
+If userspace restores nested state before MSRs, then loading garbage is a
+non-issue as loading DEBUGCTL will also update vmcs02.  But if usersepace
+restores MSRs first, then KVM is responsible for propagating L2's value,
+which is actually thrown into vmcs01, into vmcs02.
+
+Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
+is all kinds of bizarre and ideally would not be supported.  Sadly, some
+VMMs do exactly that and rely on KVM to make things work.
+
+Note, there's still a lurking SMM bug, as propagating vmcs01's DEBUGCTL
+to vmcs02 across RSM may corrupt L2's DEBUGCTL.  But KVM's entire VMX+SMM
+emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
+"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
+
+Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
+Fixes: 8fcc4b5923af ("kvm: nVMX: Introduce KVM_CAP_NESTED_STATE")
 Cc: stable@vger.kernel.org
-Signed-off-by: Ping Cheng <ping.cheng@wacom.com>
-Reviewed-by: Jason Gerecke <jason.gerecke@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220614215831.3762138-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_wac.c |   29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ arch/x86/kvm/vmx/nested.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -638,9 +638,26 @@ static int wacom_intuos_id_mangle(int to
- 	return (tool_id & ~0xFFF) << 4 | (tool_id & 0xFFF);
- }
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3378,7 +3378,8 @@ enum nvmx_vmentry_status nested_vmx_ente
+ 	if (likely(!evaluate_pending_interrupts) && kvm_vcpu_apicv_active(vcpu))
+ 		evaluate_pending_interrupts |= vmx_has_apicv_interrupt(vcpu);
  
-+static bool wacom_is_art_pen(int tool_id)
-+{
-+	bool is_art_pen = false;
-+
-+	switch (tool_id) {
-+	case 0x885:	/* Intuos3 Marker Pen */
-+	case 0x804:	/* Intuos4/5 13HD/24HD Marker Pen */
-+	case 0x10804:	/* Intuos4/5 13HD/24HD Art Pen */
-+		is_art_pen = true;
-+		break;
-+	}
-+	return is_art_pen;
-+}
-+
- static int wacom_intuos_get_tool_type(int tool_id)
- {
--	int tool_type;
-+	int tool_type = BTN_TOOL_PEN;
-+
-+	if (wacom_is_art_pen(tool_id))
-+		return tool_type;
- 
- 	switch (tool_id) {
- 	case 0x812: /* Inking pen */
-@@ -655,12 +672,9 @@ static int wacom_intuos_get_tool_type(in
- 	case 0x852:
- 	case 0x823: /* Intuos3 Grip Pen */
- 	case 0x813: /* Intuos3 Classic Pen */
--	case 0x885: /* Intuos3 Marker Pen */
- 	case 0x802: /* Intuos4/5 13HD/24HD General Pen */
--	case 0x804: /* Intuos4/5 13HD/24HD Marker Pen */
- 	case 0x8e2: /* IntuosHT2 pen */
- 	case 0x022:
--	case 0x10804: /* Intuos4/5 13HD/24HD Art Pen */
- 	case 0x10842: /* MobileStudio Pro Pro Pen slim */
- 	case 0x14802: /* Intuos4/5 13HD/24HD Classic Pen */
- 	case 0x16802: /* Cintiq 13HD Pro Pen */
-@@ -718,10 +732,6 @@ static int wacom_intuos_get_tool_type(in
- 	case 0x10902: /* Intuos4/5 13HD/24HD Airbrush */
- 		tool_type = BTN_TOOL_AIRBRUSH;
- 		break;
--
--	default: /* Unknown tool */
--		tool_type = BTN_TOOL_PEN;
--		break;
- 	}
- 	return tool_type;
- }
-@@ -2323,6 +2333,9 @@ static void wacom_wac_pen_event(struct h
- 		}
- 		return;
- 	case HID_DG_TWIST:
-+		/* don't modify the value if the pen doesn't support the feature */
-+		if (!wacom_is_art_pen(wacom_wac->id[0])) return;
-+
- 		/*
- 		 * Userspace expects pen twist to have its zero point when
- 		 * the buttons/finger is on the tablet's left. HID values
+-	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
++	if (!vmx->nested.nested_run_pending ||
++	    !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
+ 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
+ 	if (kvm_mpx_supported() &&
+ 	    (!vmx->nested.nested_run_pending ||
 
 
