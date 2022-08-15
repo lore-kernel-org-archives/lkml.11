@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB574C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E37CAC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353427AbiHOXep (ORCPT
+        id S1353449AbiHOXex (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        Mon, 15 Aug 2022 19:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352940AbiHOX1h (ORCPT
+        with ESMTP id S1353352AbiHOX14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:27:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F02914D703;
-        Mon, 15 Aug 2022 13:07:24 -0700 (PDT)
+        Mon, 15 Aug 2022 19:27:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1D114E113;
+        Mon, 15 Aug 2022 13:07:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D06760025;
-        Mon, 15 Aug 2022 20:07:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758FAC433D6;
-        Mon, 15 Aug 2022 20:07:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57F20B81142;
+        Mon, 15 Aug 2022 20:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70FA7C433C1;
+        Mon, 15 Aug 2022 20:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594042;
-        bh=uH6TwudIP++SMcyH3qUggh6Qa7X7048klOz79flPWDY=;
+        s=korg; t=1660594046;
+        bh=fKV254h6rlaIOkZW+7MI6wx3Yxyt5S+adxZmtrAb6Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ik58paUhu22ePMLXoq///FKPU28mrFgIMtZskt8TpV3acJ5MxSItmEHFYyAa+bOt4
-         cfwxxhqrVf8OE9U0tpjZhSpJWz6/jWxfdo8i8KyTFZrAkphjFGPgJ81Sy1ckOAVN+H
-         Tet1i8A4nhjXVHmOho067EkWwckwHrUhHaFm1Gq8=
+        b=QfdhulPrNobuY0bmXMLIAgevj3ALf0SW/XRtFxsYIchArZF8qliXdm39RSXQxlIc7
+         zDzYByMxoRTppNAz2OR024dzWxcPvYd1NW6vcKnISOFiN6ZtMch4uLOVNZyShuS44T
+         sR0In83F8ybFljbKj0jRuoGFG+/z5U/0aub1yuwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0366/1157] net: ag71xx: fix discards const qualifier warning
-Date:   Mon, 15 Aug 2022 19:55:22 +0200
-Message-Id: <20220815180454.360065935@linuxfoundation.org>
+Subject: [PATCH 5.18 1047/1095] tracing: Use a struct alignof to determine trace event field alignment
+Date:   Mon, 15 Aug 2022 20:07:26 +0200
+Message-Id: <20220815180512.392209275@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +54,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 225b0ed27e6ac523e5e98e7395392446859c7f20 ]
+[ Upstream commit 4c3d2f9388d36eb28640a220a6f908328442d873 ]
 
-Current kernel will compile this driver with warnings. This patch will
-fix it.
+alignof() gives an alignment of types as they would be as standalone
+variables. But alignment in structures might be different, and when
+building the fields of events, the alignment must be the actual
+alignment otherwise the field offsets may not match what they actually
+are.
 
-drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_fast_reset':
-drivers/net/ethernet/atheros/ag71xx.c:996:31: warning: passing argument 2 of 'ag71xx_hw_set
-_macaddr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-  996 |  ag71xx_hw_set_macaddr(ag, dev->dev_addr);
-      |                            ~~~^~~~~~~~~~
-drivers/net/ethernet/atheros/ag71xx.c:951:69: note: expected 'unsigned char *' but argument
- is of type 'const unsigned char *'
-  951 | static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
-      |                                                      ~~~~~~~~~~~~~~~^~~
-drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_open':
-drivers/net/ethernet/atheros/ag71xx.c:1441:32: warning: passing argument 2 of 'ag71xx_hw_se
-t_macaddr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
- 1441 |  ag71xx_hw_set_macaddr(ag, ndev->dev_addr);
-      |                            ~~~~^~~~~~~~~~
-drivers/net/ethernet/atheros/ag71xx.c:951:69: note: expected 'unsigned char *' but argument
- is of type 'const unsigned char *'
-  951 | static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
-      |                                                      ~~~~~~~~~~~~~~~^~~
+This caused trace-cmd to crash, as libtraceevent did not check if the
+field offset was bigger than the event. The write_msr and read_msr
+events on 32 bit had their fields incorrect, because it had a u64 field
+between two ints. alignof(u64) would give 8, but the u64 field was at a
+4 byte alignment.
 
-Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Define a macro as:
+
+   ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
+
+which gives the actual alignment of types in a structure.
+
+Link: https://lkml.kernel.org/r/20220731015928.7ab3a154@rorschach.local.home
+
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 04ae87a52074e ("ftrace: Rework event_create_dir()")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/atheros/ag71xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/trace/stages/stage4_event_fields.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index cac509708e9d..1c6ea6766aa1 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -946,7 +946,7 @@ static unsigned int ag71xx_max_frame_len(unsigned int mtu)
- 	return ETH_HLEN + VLAN_HLEN + mtu + ETH_FCS_LEN;
- }
+diff --git a/include/trace/stages/stage4_event_fields.h b/include/trace/stages/stage4_event_fields.h
+index c3790ec7a453..80d34f396555 100644
+--- a/include/trace/stages/stage4_event_fields.h
++++ b/include/trace/stages/stage4_event_fields.h
+@@ -2,16 +2,18 @@
  
--static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
-+static void ag71xx_hw_set_macaddr(struct ag71xx *ag, const unsigned char *mac)
- {
- 	u32 t;
+ /* Stage 4 definitions for creating trace events */
  
++#define ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
++
+ #undef __field_ext
+ #define __field_ext(_type, _item, _filter_type) {			\
+ 	.type = #_type, .name = #_item,					\
+-	.size = sizeof(_type), .align = __alignof__(_type),		\
++	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
+ 	.is_signed = is_signed_type(_type), .filter_type = _filter_type },
+ 
+ #undef __field_struct_ext
+ #define __field_struct_ext(_type, _item, _filter_type) {		\
+ 	.type = #_type, .name = #_item,					\
+-	.size = sizeof(_type), .align = __alignof__(_type),		\
++	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
+ 	0, .filter_type = _filter_type },
+ 
+ #undef __field
+@@ -23,7 +25,7 @@
+ #undef __array
+ #define __array(_type, _item, _len) {					\
+ 	.type = #_type"["__stringify(_len)"]", .name = #_item,		\
+-	.size = sizeof(_type[_len]), .align = __alignof__(_type),	\
++	.size = sizeof(_type[_len]), .align = ALIGN_STRUCTFIELD(_type),	\
+ 	.is_signed = is_signed_type(_type), .filter_type = FILTER_OTHER },
+ 
+ #undef __dynamic_array
 -- 
 2.35.1
 
