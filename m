@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EB5C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C72FC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353023AbiHPAY3 (ORCPT
+        id S1350931AbiHPAYk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46026 "EHLO
+        Mon, 15 Aug 2022 20:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357240AbiHPAWd (ORCPT
+        with ESMTP id S1357429AbiHPAWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:22:33 -0400
+        Mon, 15 Aug 2022 20:22:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C47217DA85;
-        Mon, 15 Aug 2022 13:34:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8674A17CF81;
+        Mon, 15 Aug 2022 13:33:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1919B8114A;
-        Mon, 15 Aug 2022 20:33:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DD1C433C1;
-        Mon, 15 Aug 2022 20:33:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B938B81197;
+        Mon, 15 Aug 2022 20:33:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA7E2C43470;
+        Mon, 15 Aug 2022 20:33:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595628;
-        bh=weok3iHwUqW9l/tFNEfGTuwTKgKYFlTygOvmoFYZ3F0=;
+        s=korg; t=1660595618;
+        bh=SY2E2wXYD56yvEtvgGm7t9vW1KbZ8dTo7tvk4SOguHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bqr9z7oTKnvK+iBrwAAhn75glf2+j/VJErxGPPwxhFnMG/BzPvjuuolXXiuKkMe8J
-         2NCjnHybF9DUNFtkth6X19+amN8z+GztiYtUqX/GPYyFL5Wk3AjuqTI7KCru/PFUdd
-         8AzHnMcFkwqyIDmp3KeEmRAjvfzWJYhqDqETbXS8=
+        b=BEACWF9pR9EW/kcyc0GV+a6Qvm/BHGwWfq2DCfeJ3II369EFg4Frx3CApN/U6z+nU
+         wv+IdEXmRjnAk+Ez41eWxASeEwMwEIXNi8U2KfFIhvHn8Bmc3Fwyw7J7GO/PaCXc8C
+         6Ayvb9c1Cfd4kIDFBVtlTQig+sl9mG8fPGdV+iEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, jinpu.wang@ionos.com,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Aleksei Marov <aleksei.marov@ionos.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0823/1157] RDMA/rtrs-srv: Fix modinfo output for stringify
-Date:   Mon, 15 Aug 2022 20:02:59 +0200
-Message-Id: <20220815180512.408006196@linuxfoundation.org>
+Subject: [PATCH 5.19 0794/1157] mmc: sdhci-of-esdhc: Fix refcount leak in esdhc_signal_voltage_switch
+Date:   Mon, 15 Aug 2022 20:02:30 +0200
+Message-Id: <20220815180511.245407404@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,63 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jack Wang <jinpu.wang@ionos.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ed6e53820ee4f68ed927de17e5675ff2a07a47e2 ]
+[ Upstream commit b5899a3e2f783a27b268e38d37f9b24c71bddf45 ]
 
-stringify works with define, not enum.
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() checks null pointer.
 
-Fixes: 91fddedd439c ("RDMA/rtrs: private headers with rtrs protocol structs and helpers")
-Cc: jinpu.wang@ionos.com
-Link: https://lore.kernel.org/r/20220712103113.617754-2-haris.iqbal@ionos.com
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Reviewed-by: Aleksei Marov <aleksei.marov@ionos.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Fixes: ea35645a3c66 ("mmc: sdhci-of-esdhc: add support for signal voltage switch")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220523144255.10310-1-linmq006@gmail.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-pri.h | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/mmc/host/sdhci-of-esdhc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-pri.h b/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-index 9a1e5c2ae55c..ac0df734eba8 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-pri.h
-@@ -23,6 +23,17 @@
- #define RTRS_PROTO_VER_STRING __stringify(RTRS_PROTO_VER_MAJOR) "." \
- 			       __stringify(RTRS_PROTO_VER_MINOR)
- 
-+/*
-+ * Max IB immediate data size is 2^28 (MAX_IMM_PAYL_BITS)
-+ * and the minimum chunk size is 4096 (2^12).
-+ * So the maximum sess_queue_depth is 65536 (2^16) in theory.
-+ * But mempool_create, create_qp and ib_post_send fail with
-+ * "cannot allocate memory" error if sess_queue_depth is too big.
-+ * Therefore the pratical max value of sess_queue_depth is
-+ * somewhere between 1 and 65534 and it depends on the system.
-+ */
-+#define MAX_SESS_QUEUE_DEPTH 65535
-+
- enum rtrs_imm_const {
- 	MAX_IMM_TYPE_BITS = 4,
- 	MAX_IMM_TYPE_MASK = ((1 << MAX_IMM_TYPE_BITS) - 1),
-@@ -46,16 +57,6 @@ enum {
- 
- 	MAX_PATHS_NUM = 128,
- 
--	/*
--	 * Max IB immediate data size is 2^28 (MAX_IMM_PAYL_BITS)
--	 * and the minimum chunk size is 4096 (2^12).
--	 * So the maximum sess_queue_depth is 65536 (2^16) in theory.
--	 * But mempool_create, create_qp and ib_post_send fail with
--	 * "cannot allocate memory" error if sess_queue_depth is too big.
--	 * Therefore the pratical max value of sess_queue_depth is
--	 * somewhere between 1 and 65534 and it depends on the system.
--	 */
--	MAX_SESS_QUEUE_DEPTH = 65535,
- 	MIN_CHUNK_SIZE = 8192,
- 
- 	RTRS_HB_INTERVAL_MS = 5000,
+diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
+index d9dc41143bb3..8b3d8119f388 100644
+--- a/drivers/mmc/host/sdhci-of-esdhc.c
++++ b/drivers/mmc/host/sdhci-of-esdhc.c
+@@ -904,6 +904,7 @@ static int esdhc_signal_voltage_switch(struct mmc_host *mmc,
+ 		scfg_node = of_find_matching_node(NULL, scfg_device_ids);
+ 		if (scfg_node)
+ 			scfg_base = of_iomap(scfg_node, 0);
++		of_node_put(scfg_node);
+ 		if (scfg_base) {
+ 			sdhciovselcr = SDHCIOVSELCR_TGLEN |
+ 				       SDHCIOVSELCR_VSELVAL;
 -- 
 2.35.1
 
