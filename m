@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69362C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF43C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346724AbiHPAYC (ORCPT
+        id S1351177AbiHPAYH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
+        Mon, 15 Aug 2022 20:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350989AbiHPAUH (ORCPT
+        with ESMTP id S1353070AbiHPAUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:20:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC9717B814;
+        Mon, 15 Aug 2022 20:20:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217AD17B819;
         Mon, 15 Aug 2022 13:33:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15FF3B8114A;
-        Mon, 15 Aug 2022 20:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A35CC433D6;
-        Mon, 15 Aug 2022 20:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14073611AA;
+        Mon, 15 Aug 2022 20:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D06FC433C1;
+        Mon, 15 Aug 2022 20:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595608;
-        bh=hwUVotYLPPfsowZItZNAHswZcEHPnU+JPQbbWO55Yh0=;
+        s=korg; t=1660595596;
+        bh=BWdZqPLDXsnad35DrHwcE33hAm8J1xbYtk0RGyawOr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wDZVkQcUBElgn39qdDhdXxAw3iU4XCSz1rXbB7QX8gf2P8lAu9VzeahLjS8hbLobP
-         4rvpdJ5ItDNBAkoaPY3qJzWta1z5otHzuXl6/El7QMVbEAecw48R6ruRIsfh4Nk0CR
-         gxcAimB2RXDmNeu9ZZ4HFhFmDCmsoxbhAh8yqSm0=
+        b=uJ3+QGAxdvOuq2EbSYqCw1LfVDZXX0RBsWTpxi3laEuRFpvRCsctGVkRu85uQBow2
+         HLJbhu1BmwzGtqCNpKVmV56AYb1Wu05Z6HKEejQsVoClvy++VblpXsmjnIHY8bKgyX
+         x8kDXofiCGG/GaRLLsOWkSU4qytARH4FcOJEC49Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christopher Obbard <chris.obbard@collabora.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0818/1157] um: random: Dont initialise hwrng struct with zero
-Date:   Mon, 15 Aug 2022 20:02:54 +0200
-Message-Id: <20220815180512.202761718@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0814/1157] phy: stm32: fix error return in stm32_usbphyc_phy_init
+Date:   Mon, 15 Aug 2022 20:02:50 +0200
+Message-Id: <20220815180512.052610482@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -51,44 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christopher Obbard <chris.obbard@collabora.com>
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-[ Upstream commit 9e70cbd11b03889c92462cf52edb2bd023c798fa ]
+[ Upstream commit 32b378a9179ae4db61cfc5d502717214e6cd1e1c ]
 
-Initialising the hwrng struct with zeros causes a
-compile-time sparse warning:
+Error code is overridden, in case the PLL doesn't lock. So, the USB
+initialization can continue. This leads to a platform freeze.
+This can be avoided by returning proper error code to avoid USB probe
+freezing the platform. It also displays proper errors in log.
 
- $ ARCH=um make -j10 W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
- ...
- CHECK   arch/um/drivers/random.c
- arch/um/drivers/random.c:31:31: sparse: warning: Using plain integer as NULL pointer
-
-Fix the warning by not initialising the hwrng struct
-with zeros as it is initialised anyway during module
-init.
-
-Fixes: 72d3e093afae ("um: random: Register random as hwrng-core device")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 5b1af71280ab ("phy: stm32: rework PLL Lock detection")
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/20220713133953.595134-1-fabrice.gasnier@foss.st.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/random.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/phy/st/phy-stm32-usbphyc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/um/drivers/random.c b/arch/um/drivers/random.c
-index 433a3f8f2ef3..32b3341fe970 100644
---- a/arch/um/drivers/random.c
-+++ b/arch/um/drivers/random.c
-@@ -28,7 +28,7 @@
-  * protects against a module being loaded twice at the same time.
-  */
- static int random_fd = -1;
--static struct hwrng hwrng = { 0, };
-+static struct hwrng hwrng;
- static DECLARE_COMPLETION(have_data);
+diff --git a/drivers/phy/st/phy-stm32-usbphyc.c b/drivers/phy/st/phy-stm32-usbphyc.c
+index 007a23c78d56..a98c911cc37a 100644
+--- a/drivers/phy/st/phy-stm32-usbphyc.c
++++ b/drivers/phy/st/phy-stm32-usbphyc.c
+@@ -358,7 +358,9 @@ static int stm32_usbphyc_phy_init(struct phy *phy)
+ 	return 0;
  
- static int rng_dev_read(struct hwrng *rng, void *buf, size_t max, bool block)
+ pll_disable:
+-	return stm32_usbphyc_pll_disable(usbphyc);
++	stm32_usbphyc_pll_disable(usbphyc);
++
++	return ret;
+ }
+ 
+ static int stm32_usbphyc_phy_exit(struct phy *phy)
 -- 
 2.35.1
 
