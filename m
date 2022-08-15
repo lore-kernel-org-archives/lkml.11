@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89257C25B0F
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B44FDC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbiHPEee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57622 "EHLO
+        id S230384AbiHPEei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiHPEdw (ORCPT
+        with ESMTP id S230307AbiHPEd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:33:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C21F162C6D;
-        Mon, 15 Aug 2022 13:24:44 -0700 (PDT)
+        Tue, 16 Aug 2022 00:33:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF02516C103;
+        Mon, 15 Aug 2022 13:24:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26D9E60EE9;
-        Mon, 15 Aug 2022 20:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16133C433C1;
-        Mon, 15 Aug 2022 20:24:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50CDD61073;
+        Mon, 15 Aug 2022 20:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59623C433D7;
+        Mon, 15 Aug 2022 20:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595083;
-        bh=2oBrmztX5ILvCe0bc7Fv7LeINu6uTnScN9hYYDlqA7Y=;
+        s=korg; t=1660595086;
+        bh=IOOFlhgi7ETtUKqChafS8n6DPAcCN9kqNI9gMPOh32s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVtzcFisL80nWC9WymGLppC6Q1z2e62UCgYuacNDYHq4RpmrCDujHc4Rr9XQTkLmJ
-         mGas4l11M1/LKSKPrKG3yeTZdeipS9xkQKdxMoGiz2d+UB0iXPCOBWq+xq+wZ0RKQl
-         FZZiPi1wMPz/2AkTNxQWfDPrRcSNz8BYj/HI4gaY=
+        b=0JFBUQmrxljH9m5ZVJ3DI5cWHnBJCcRVZTTU3Kgl14h7zqAwChk1/ljeefhFWCiCa
+         t+LgAjvjPNn7PllEhvjHSgaz+Mt7dCi6X5dqAVP8M+C/cappBlnAgk1ujelK92rty8
+         Vypszm+Z+ylQS0laIIxvN73MC0f0P9+CIu8Z1BhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0650/1157] iio: adc: ltc2496: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:06 +0200
-Message-Id: <20220815180505.743485775@linuxfoundation.org>
+Subject: [PATCH 5.19 0620/1157] scsi: qla2xxx: edif: Fix no login after app start
+Date:   Mon, 15 Aug 2022 19:59:36 +0200
+Message-Id: <20220815180504.455839846@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -52,43 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 1673b7ca2dc1fb3b8d7c94a112496c02d34ae449 ]
+[ Upstream commit 24c796098f5395477f7f7ebf8e24f3f08a139f71 ]
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+The scenario is this: User loaded driver but has not started authentication
+app. All sessions to secure device will exhaust all login attempts, fail,
+and in stay in deleted state. Then some time later the app is started. The
+driver will replenish the login retry count, trigger delete to prepare for
+secure login. After deletion, relogin is triggered.
 
-Update the comment to include 'may'.
+For the session that is already deleted, the delete trigger is a no-op. If
+none of the sessions trigger a relogin, no progress is made.
 
-Fixes: e4c5c4dfaa88 ("iio: adc: new driver to support Linear technology's ltc2496")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-22-jic23@kernel.org
+Add a relogin trigger.
+
+Link: https://lore.kernel.org/r/20220608115849.16693-5-njavali@marvell.com
+Fixes: 7ebb336e45ef ("scsi: qla2xxx: edif: Add start + stop bsgs")
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ltc2496.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_edif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
-index 5a55f79f2574..dfb3bb5997e5 100644
---- a/drivers/iio/adc/ltc2496.c
-+++ b/drivers/iio/adc/ltc2496.c
-@@ -24,10 +24,10 @@ struct ltc2496_driverdata {
- 	struct spi_device *spi;
+diff --git a/drivers/scsi/qla2xxx/qla_edif.c b/drivers/scsi/qla2xxx/qla_edif.c
+index 4523ae745e55..c4bebbb17e92 100644
+--- a/drivers/scsi/qla2xxx/qla_edif.c
++++ b/drivers/scsi/qla2xxx/qla_edif.c
+@@ -567,6 +567,7 @@ qla_edif_app_start(scsi_qla_host_t *vha, struct bsg_job *bsg_job)
+ 			qlt_schedule_sess_for_deletion(fcport);
+ 			qla_edif_sa_ctl_init(vha, fcport);
+ 		}
++		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 	}
  
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	unsigned char rxbuf[3] ____cacheline_aligned;
-+	unsigned char rxbuf[3] __aligned(IIO_DMA_MINALIGN);
- 	unsigned char txbuf[3];
- };
- 
+ 	if (vha->pur_cinfo.enode_flags != ENODE_ACTIVE) {
 -- 
 2.35.1
 
