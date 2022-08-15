@@ -2,75 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF57C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CC4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355636AbiHOX52 (ORCPT
+        id S1354846AbiHOX5e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
+        Mon, 15 Aug 2022 19:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355356AbiHOXv5 (ORCPT
+        with ESMTP id S1355385AbiHOXwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:51:57 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC64C915C8;
-        Mon, 15 Aug 2022 13:16:39 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b988d329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:988d:329c:23ff:fea6:a903])
+        Mon, 15 Aug 2022 19:52:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEAC92F6E;
+        Mon, 15 Aug 2022 13:16:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BB2E01EC02AD;
-        Mon, 15 Aug 2022 22:16:33 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1660594593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=KMD5ZZW0UGq2Obs996tfjGpJxzdAX0qHGDYWDHvQl+Q=;
-        b=L0QhKbmGsK+x7YnEkJO3Efs8BnoHyjMhN6fVG8HyEAb+v6OPMY5NRRmwfr1N+wTC4qwX+M
-        KR558BiStQ1xGsTbFHpB+zRz0BtpTb3YSrsxi+cGm36DHMlDsnCXuM26DderQLFaZ3r760
-        aF1onIFyJBQlok+JIWgrfndBo46rZbQ=
-Date:   Mon, 15 Aug 2022 22:16:29 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Johannes Erdfelt <johannes@erdfelt.com>,
-        Ingo Molnar <mingo@redhat.com>, live-patching@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: ftrace regression with CONFIG_UNWINDER_FRAME_POINTER
-Message-ID: <YvqpnfM9ZdRO6oXa@zn.tnic>
-References: <20220815195828.GE3948@sventech.com>
- <20220815160646.0dca7227@gandalf.local.home>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15FBBB8115B;
+        Mon, 15 Aug 2022 20:16:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47133C433D6;
+        Mon, 15 Aug 2022 20:16:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660594605;
+        bh=MEBQGLR4Wi8YUObvifBBBpQoQcSMmdCnvx59pobyrQc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wHKxf8d0kxwoQ9MwisoKksDJPeHs+QQmC/gi05Ak+XqgrYEH4bg1dR3WEoWmqM5TX
+         Zgi7Q7tfP/fMCxQeqB6uaLP1XSX5GpAql3+ecG+MACnwrns431rjGVP9CZa3zVIiAX
+         bGHTODN3LjlNNATqHwdTCrMpQUQSjjgXGp503ZqU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0501/1157] media: ov7251: add missing disable functions on error in ov7251_set_power_on()
+Date:   Mon, 15 Aug 2022 19:57:37 +0200
+Message-Id: <20220815180459.734281331@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220815160646.0dca7227@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 04:06:46PM -0400, Steven Rostedt wrote:
-> On Mon, 15 Aug 2022 12:58:28 -0700
-> Johannes Erdfelt <johannes@erdfelt.com> wrote:
-> 
-> > I recently ran across an oops with ftrace when using the frame pointer
-> > unwinder. It does not affect Linus' tree (tested 6.0-rc1), but it does
-> > affect 5.15.60 and 5.10.136 (at least, have not tested other kernels).
-> > 
-> > It appears to be related to the recently merged retbleed mitigations,
-> 
-> If you believe this, then Cc those that are involved with those
-> mitigations, which I did.
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Sounds like this one:
+[ Upstream commit 7a9795b31049b7e233d050a82b00094155a695c7 ]
 
-https://lore.kernel.org/all/Yu2H%2FRdg%2FU4bHWaY@quatroqueijos/
+Add the missing gpiod_set_value_cansleep() and clk_disable_unprepare()
+before return from ov7251_set_power_on() in the error handling case.
 
+Fixes: 9e1d3012cc10 ("media: i2c: Remove .s_power() from ov7251")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/i2c/ov7251.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/media/i2c/ov7251.c b/drivers/media/i2c/ov7251.c
+index 0e7be15bc20a..ad9689820ecc 100644
+--- a/drivers/media/i2c/ov7251.c
++++ b/drivers/media/i2c/ov7251.c
+@@ -934,6 +934,8 @@ static int ov7251_set_power_on(struct device *dev)
+ 					ARRAY_SIZE(ov7251_global_init_setting));
+ 	if (ret < 0) {
+ 		dev_err(ov7251->dev, "error during global init\n");
++		gpiod_set_value_cansleep(ov7251->enable_gpio, 0);
++		clk_disable_unprepare(ov7251->xclk);
+ 		ov7251_regulators_disable(ov7251);
+ 		return ret;
+ 	}
 -- 
-Regards/Gruss,
-    Boris.
+2.35.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
