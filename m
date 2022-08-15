@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6282C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D18A7C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344624AbiHOTr1 (ORCPT
+        id S1344728AbiHOTrc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
+        Mon, 15 Aug 2022 15:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344965AbiHOTp5 (ORCPT
+        with ESMTP id S1345014AbiHOTqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:45:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DB06CD22;
-        Mon, 15 Aug 2022 11:48:37 -0700 (PDT)
+        Mon, 15 Aug 2022 15:46:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2B96D54C;
+        Mon, 15 Aug 2022 11:48:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9405EB81082;
-        Mon, 15 Aug 2022 18:48:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9935AC433D6;
-        Mon, 15 Aug 2022 18:48:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F09611DB;
+        Mon, 15 Aug 2022 18:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B77CC433D6;
+        Mon, 15 Aug 2022 18:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589314;
-        bh=QY8H96EPvepEtFY3UWFxK8kekjXPXBDtFe/aU03yreA=;
+        s=korg; t=1660589321;
+        bh=qtqnXj6pQ+/+Vwp2iNF9jsPKncWlXe0QUMxDlQHbSKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nh/F6uun1yAkAVVTguNMXyIEpH0b3mVu2+EB8L5hdDecgFDfJnz+MCIIo6yBJZhRr
-         FlDSltOhR4Ug4slTuncY1XPKMjTqNwq2inS3sgSMauOfYSONeSpe3xj2jLnZrjTv37
-         y00w7YSpBWILWyvPCk3MjBfUlUCQly2vUNQbScYM=
+        b=cei7pfXz1edLybruNKsHplku+siojwatrR0w3BLSEGfng33LT0nnUAiLxGMOa3L1A
+         CLcEPadyuns+b4YGNdQWuKCloAfHRAyV8Kxb5O2BzCk65HGceZF/FFLtOOfW6hg6ya
+         bMdd9ZL7fwkNGUdhd9E9Pgie/n7RFrSDSE4bF5aw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 662/779] sched/core: Do not requeue task on CPU excluded from cpus_mask
-Date:   Mon, 15 Aug 2022 20:05:06 +0200
-Message-Id: <20220815180405.648962572@linuxfoundation.org>
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 681/779] x86/bugs: Enable STIBP for IBPB mitigated RETBleed
+Date:   Mon, 15 Aug 2022 20:05:25 +0200
+Message-Id: <20220815180406.462224184@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -49,85 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Kim Phillips <kim.phillips@amd.com>
 
-[ Upstream commit 751d4cbc43879229dbc124afefe240b70fd29a85 ]
+commit e6cfcdda8cbe81eaf821c897369a65fec987b404 upstream.
 
-The following warning was triggered on a large machine early in boot on
-a distribution kernel but the same problem should also affect mainline.
+AMD's "Technical Guidance for Mitigating Branch Type Confusion,
+Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
+Privileged Mode Entry / SMT Safety" says:
 
-   WARNING: CPU: 439 PID: 10 at ../kernel/workqueue.c:2231 process_one_work+0x4d/0x440
-   Call Trace:
-    <TASK>
-    rescuer_thread+0x1f6/0x360
-    kthread+0x156/0x180
-    ret_from_fork+0x22/0x30
-    </TASK>
+  Similar to the Jmp2Ret mitigation, if the code on the sibling thread
+  cannot be trusted, software should set STIBP to 1 or disable SMT to
+  ensure SMT safety when using this mitigation.
 
-Commit c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
-optimises ttwu by queueing a task that is descheduling on the wakelist,
-but does not check if the task descheduling is still allowed to run on that CPU.
+So, like already being done for retbleed=unret, and now also for
+retbleed=ibpb, force STIBP on machines that have it, and report its SMT
+vulnerability status accordingly.
 
-In this warning, the problematic task is a workqueue rescue thread which
-checks if the rescue is for a per-cpu workqueue and running on the wrong CPU.
-While this is early in boot and it should be possible to create workers,
-the rescue thread may still used if the MAYDAY_INITIAL_TIMEOUT is reached
-or MAYDAY_INTERVAL and on a sufficiently large machine, the rescue
-thread is being used frequently.
+ [ bp: Remove the "we" and remove "[AMD]" applicability parameter which
+   doesn't work here. ]
 
-Tracing confirmed that the task should have migrated properly using the
-stopper thread to handle the migration. However, a parallel wakeup from udev
-running on another CPU that does not share CPU cache observes p->on_cpu and
-uses task_cpu(p), queues the task on the old CPU and triggers the warning.
-
-Check that the wakee task that is descheduling is still allowed to run
-on its current CPU and if not, wait for the descheduling to complete
-and select an allowed CPU.
-
-Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/20220804092119.20137-1-mgorman@techsingularity.net
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org # 5.10, 5.15, 5.19
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
+Link: https://lore.kernel.org/r/20220804192201.439596-1-kim.phillips@amd.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |   29 +++++++++++++++++-------
+ arch/x86/kernel/cpu/bugs.c                      |   10 ++++----
+ 2 files changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 4499b58ac2ca..85be684687b0 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3714,7 +3714,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
- 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
- }
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4974,20 +4974,33 @@
+ 			Speculative Code Execution with Return Instructions)
+ 			vulnerability.
  
--static inline bool ttwu_queue_cond(int cpu)
-+static inline bool ttwu_queue_cond(struct task_struct *p, int cpu)
- {
- 	/*
- 	 * Do not complicate things with the async wake_list while the CPU is
-@@ -3723,6 +3723,10 @@ static inline bool ttwu_queue_cond(int cpu)
- 	if (!cpu_active(cpu))
- 		return false;
- 
-+	/* Ensure the task will still be allowed to run on the CPU. */
-+	if (!cpumask_test_cpu(cpu, p->cpus_ptr))
-+		return false;
++			AMD-based UNRET and IBPB mitigations alone do not stop
++			sibling threads from influencing the predictions of other
++			sibling threads. For that reason, STIBP is used on pro-
++			cessors that support it, and mitigate SMT on processors
++			that don't.
 +
- 	/*
- 	 * If the CPU does not share cache, then queue the task on the
- 	 * remote rqs wakelist to avoid accessing remote data.
-@@ -3752,7 +3756,7 @@ static inline bool ttwu_queue_cond(int cpu)
+ 			off          - no mitigation
+ 			auto         - automatically select a migitation
+ 			auto,nosmt   - automatically select a mitigation,
+ 				       disabling SMT if necessary for
+ 				       the full mitigation (only on Zen1
+ 				       and older without STIBP).
+-			ibpb	     - mitigate short speculation windows on
+-				       basic block boundaries too. Safe, highest
+-				       perf impact.
+-			unret        - force enable untrained return thunks,
+-				       only effective on AMD f15h-f17h
+-				       based systems.
+-			unret,nosmt  - like unret, will disable SMT when STIBP
+-			               is not available.
++			ibpb         - On AMD, mitigate short speculation
++				       windows on basic block boundaries too.
++				       Safe, highest perf impact. It also
++				       enables STIBP if present. Not suitable
++				       on Intel.
++			ibpb,nosmt   - Like "ibpb" above but will disable SMT
++				       when STIBP is not available. This is
++				       the alternative for systems which do not
++				       have STIBP.
++			unret        - Force enable untrained return thunks,
++				       only effective on AMD f15h-f17h based
++				       systems.
++			unret,nosmt  - Like unret, but will disable SMT when STIBP
++				       is not available. This is the alternative for
++				       systems which do not have STIBP.
  
- static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ 			Selecting 'auto' will choose a mitigation method at run
+ 			time according to the CPU.
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -152,7 +152,7 @@ void __init check_bugs(void)
+ 	/*
+ 	 * spectre_v2_user_select_mitigation() relies on the state set by
+ 	 * retbleed_select_mitigation(); specifically the STIBP selection is
+-	 * forced for UNRET.
++	 * forced for UNRET or IBPB.
+ 	 */
+ 	spectre_v2_user_select_mitigation();
+ 	ssb_select_mitigation();
+@@ -1172,7 +1172,8 @@ spectre_v2_user_select_mitigation(void)
+ 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
+ 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
+ 
+-	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
++	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
++	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
+ 		if (mode != SPECTRE_V2_USER_STRICT &&
+ 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
+ 			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
+@@ -2353,10 +2354,11 @@ static ssize_t srbds_show_state(char *bu
+ 
+ static ssize_t retbleed_show_state(char *buf)
  {
--	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
-+	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(p, cpu)) {
- 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
- 		__ttwu_queue_wakelist(p, cpu, wake_flags);
- 		return true;
--- 
-2.35.1
-
+-	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
++	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
++	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
+ 	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
+ 		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
+-		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
++		    return sprintf(buf, "Vulnerable: untrained return thunk / IBPB on non-AMD based uarch\n");
+ 
+ 	    return sprintf(buf, "%s; SMT %s\n",
+ 			   retbleed_strings[retbleed_mitigation],
 
 
