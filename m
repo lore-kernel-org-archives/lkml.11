@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D451EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C173C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241512AbiHOU5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        id S233609AbiHOU5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 16:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346917AbiHOU4C (ORCPT
+        with ESMTP id S1346951AbiHOU4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:56:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C555A48E82;
-        Mon, 15 Aug 2022 12:11:34 -0700 (PDT)
+        Mon, 15 Aug 2022 16:56:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B579A2DA94;
+        Mon, 15 Aug 2022 12:11:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81C35B81109;
-        Mon, 15 Aug 2022 19:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6B4C433D7;
-        Mon, 15 Aug 2022 19:11:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78FE2B810A3;
+        Mon, 15 Aug 2022 19:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6595C433C1;
+        Mon, 15 Aug 2022 19:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660590692;
-        bh=rG5TxObyUf1LId3LHy8gMxxLmgk02vTuSArN1/uPQjw=;
+        s=korg; t=1660590698;
+        bh=7ZxS7jGKRr+fV61GISzQduPft6Zbuh8vkk9x+jopIpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2fCMLLoQL95FIwCZWLkLHmvjxeD1SLbDvpOmle2lt7JttbhF3yGuUJYnrcN8jWlzP
-         widQzy8sM9hRuzKAyI4N3tLaqdB0064xv+Ad8S74zmCBFJaH7GJ2eWJ++2A+jdw2Fr
-         z60ZOhVAyNDgi/RswppCVrui+JieidCTLk+PMlRM=
+        b=Iiy+/usMntatwr9Ke/HL5uVe+wo4heayKeEBlRqgI3moHY2ed1HXZMOy8oKhxzT3Y
+         dgqg+noK96oHvAUpAgoVcZAl9JDxQPfshU4/8neRxM+paN386yBraDnqNNsAVrtITO
+         r1LubfjpdV3syMyEUelXAN4nbe+TWh8bxKE+ohF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0341/1095] tcp: fix possible freeze in tx path under memory pressure
-Date:   Mon, 15 Aug 2022 19:55:40 +0200
-Message-Id: <20220815180443.908916463@linuxfoundation.org>
+Subject: [PATCH 5.18 0343/1095] net: ag71xx: fix discards const qualifier warning
+Date:   Mon, 15 Aug 2022 19:55:42 +0200
+Message-Id: <20220815180443.994844594@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -52,106 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-[ Upstream commit 849b425cd091e1804af964b771761cfbefbafb43 ]
+[ Upstream commit 225b0ed27e6ac523e5e98e7395392446859c7f20 ]
 
-Blamed commit only dealt with applications issuing small writes.
+Current kernel will compile this driver with warnings. This patch will
+fix it.
 
-Issue here is that we allow to force memory schedule for the sk_buff
-allocation, but we have no guarantee that sendmsg() is able to
-copy some payload in it.
+drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_fast_reset':
+drivers/net/ethernet/atheros/ag71xx.c:996:31: warning: passing argument 2 of 'ag71xx_hw_set
+_macaddr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  996 |  ag71xx_hw_set_macaddr(ag, dev->dev_addr);
+      |                            ~~~^~~~~~~~~~
+drivers/net/ethernet/atheros/ag71xx.c:951:69: note: expected 'unsigned char *' but argument
+ is of type 'const unsigned char *'
+  951 | static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
+      |                                                      ~~~~~~~~~~~~~~~^~~
+drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_open':
+drivers/net/ethernet/atheros/ag71xx.c:1441:32: warning: passing argument 2 of 'ag71xx_hw_se
+t_macaddr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+ 1441 |  ag71xx_hw_set_macaddr(ag, ndev->dev_addr);
+      |                            ~~~~^~~~~~~~~~
+drivers/net/ethernet/atheros/ag71xx.c:951:69: note: expected 'unsigned char *' but argument
+ is of type 'const unsigned char *'
+  951 | static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
+      |                                                      ~~~~~~~~~~~~~~~^~~
 
-In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
-
-For example, if we consider tcp_wmem[0] = 4096 (default on x86),
-and initial skb->truesize being 1280, tcp_sendmsg() is able to
-copy up to 2816 bytes under memory pressure.
-
-Before this patch a sendmsg() sending more than 2816 bytes
-would either block forever (if persistent memory pressure),
-or return -EAGAIN.
-
-For bigger MTU networks, it is advised to increase tcp_wmem[0]
-to avoid sending too small packets.
-
-v2: deal with zero copy paths.
-
-Fixes: 8e4d980ac215 ("tcp: fix behavior for epoll edge trigger")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Fixes: adeef3e32146 ("net: constify netdev->dev_addr")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/atheros/ag71xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 91735d631a28..51116166e3d2 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -953,6 +953,23 @@ static int tcp_downgrade_zcopy_pure(struct sock *sk, struct sk_buff *skb)
- 	return 0;
+diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+index ec167af0e3b2..5041265f4226 100644
+--- a/drivers/net/ethernet/atheros/ag71xx.c
++++ b/drivers/net/ethernet/atheros/ag71xx.c
+@@ -946,7 +946,7 @@ static unsigned int ag71xx_max_frame_len(unsigned int mtu)
+ 	return ETH_HLEN + VLAN_HLEN + mtu + ETH_FCS_LEN;
  }
  
-+static int tcp_wmem_schedule(struct sock *sk, int copy)
-+{
-+	int left;
-+
-+	if (likely(sk_wmem_schedule(sk, copy)))
-+		return copy;
-+
-+	/* We could be in trouble if we have nothing queued.
-+	 * Use whatever is left in sk->sk_forward_alloc and tcp_wmem[0]
-+	 * to guarantee some progress.
-+	 */
-+	left = sock_net(sk)->ipv4.sysctl_tcp_wmem[0] - sk->sk_wmem_queued;
-+	if (left > 0)
-+		sk_forced_mem_schedule(sk, min(left, copy));
-+	return min(copy, sk->sk_forward_alloc);
-+}
-+
- static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 				      struct page *page, int offset, size_t *size)
+-static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
++static void ag71xx_hw_set_macaddr(struct ag71xx *ag, const unsigned char *mac)
  {
-@@ -988,7 +1005,11 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 		tcp_mark_push(tp, skb);
- 		goto new_segment;
- 	}
--	if (tcp_downgrade_zcopy_pure(sk, skb) || !sk_wmem_schedule(sk, copy))
-+	if (tcp_downgrade_zcopy_pure(sk, skb))
-+		return NULL;
-+
-+	copy = tcp_wmem_schedule(sk, copy);
-+	if (!copy)
- 		return NULL;
- 
- 	if (can_coalesce) {
-@@ -1337,8 +1358,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
- 
--			if (tcp_downgrade_zcopy_pure(sk, skb) ||
--			    !sk_wmem_schedule(sk, copy))
-+			if (tcp_downgrade_zcopy_pure(sk, skb))
-+				goto wait_for_space;
-+
-+			copy = tcp_wmem_schedule(sk, copy);
-+			if (!copy)
- 				goto wait_for_space;
- 
- 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
-@@ -1365,7 +1389,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 				skb_shinfo(skb)->flags |= SKBFL_PURE_ZEROCOPY;
- 
- 			if (!skb_zcopy_pure(skb)) {
--				if (!sk_wmem_schedule(sk, copy))
-+				copy = tcp_wmem_schedule(sk, copy);
-+				if (!copy)
- 					goto wait_for_space;
- 			}
+ 	u32 t;
  
 -- 
 2.35.1
