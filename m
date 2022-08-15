@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DEAC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D4AEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 19:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244398AbiHOTjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 15:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
+        id S1344216AbiHOTjH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 15:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343567AbiHOTfT (ORCPT
+        with ESMTP id S1344208AbiHOTgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 15:35:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655F52C106;
-        Mon, 15 Aug 2022 11:45:34 -0700 (PDT)
+        Mon, 15 Aug 2022 15:36:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAB62FFD2;
+        Mon, 15 Aug 2022 11:45:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FAEC611C1;
-        Mon, 15 Aug 2022 18:45:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 447F8C433D6;
-        Mon, 15 Aug 2022 18:45:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C16A611C1;
+        Mon, 15 Aug 2022 18:45:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE70C433D6;
+        Mon, 15 Aug 2022 18:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589132;
-        bh=mQCrq2ntPhCcnbK41SusLBAMdtiHg3E1dAxiOPm3NqU=;
+        s=korg; t=1660589138;
+        bh=SJ0B+3F+fbAszECz8ZtkNnD+5SL0MMT+AsyQBtyN4Bg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0bEho7NGW93XSDxOcQ76m3UDyWGP5IlSmLVofIas/jwIRlXHeULA+caJbKpnCaPDN
-         yDybB46avztVk0MzGFPGGUbfE9vKEZyo8YckW0BGWX/r5UO5mR9qUDikvn/SIZTWZx
-         NjHWV839brwPQl5fe2AwBPTQ1Q1ugWQ/NarXo4tA=
+        b=S0ypjPLsHsuQeGSpN0+n8IB2GNVGwFfduhwKeZQCy+Veb/3UzwoNKRPGkc+c5HmHK
+         ujbd8VoO7odV8QA6ERyOWGQmzVvzfUH1FOhvJ1L+BeSJu4byDexV1GWSJE91hwctHs
+         mSNMUS+fFqrXzqOt/pdr1+KamX8QIPnywcPMpwz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 622/779] s390/zcore: fix race when reading from hardware system area
-Date:   Mon, 15 Aug 2022 20:04:26 +0200
-Message-Id: <20220815180403.978669981@linuxfoundation.org>
+Subject: [PATCH 5.15 624/779] ASoC: fsl-asoc-card: force cast the asrc_format type
+Date:   Mon, 15 Aug 2022 20:04:28 +0200
+Message-Id: <20220815180404.057997012@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180337.130757997@linuxfoundation.org>
 References: <20220815180337.130757997@linuxfoundation.org>
@@ -51,82 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Gordeev <agordeev@linux.ibm.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 9ffed254d938c9e99eb7761c7f739294c84e0367 ]
+[ Upstream commit 6c7b077dad62178c33f9a3ae17f90d6b0bf6e2e5 ]
 
-Memory buffer used for reading out data from hardware system
-area is not protected against concurrent access.
+Fix sparse warning:
+sound/soc/fsl/fsl-asoc-card.c:833:45: sparse: warning: incorrect type in argument 3 (different base types)
+sound/soc/fsl/fsl-asoc-card.c:833:45: sparse:    expected unsigned int [usertype] *out_value
+sound/soc/fsl/fsl-asoc-card.c:833:45: sparse:    got restricted snd_pcm_format_t *
 
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Fixes: 411ed3225733 ("[S390] zfcpdump support.")
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Tested-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Link: https://lore.kernel.org/r/e68137f0f9a0d2558f37becc20af18e2939934f6.1658206891.git.agordeev@linux.ibm.com
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Fixes: 859e364302c5 ("ASoC: fsl-asoc-card: Support new property fsl, asrc-format")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1658399393-28777-4-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/s390/char/zcore.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ sound/soc/fsl/fsl-asoc-card.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
-index 516783ba950f..92b32ce645b9 100644
---- a/drivers/s390/char/zcore.c
-+++ b/drivers/s390/char/zcore.c
-@@ -50,6 +50,7 @@ static struct dentry *zcore_reipl_file;
- static struct dentry *zcore_hsa_file;
- static struct ipl_parameter_block *zcore_ipl_block;
+diff --git a/sound/soc/fsl/fsl-asoc-card.c b/sound/soc/fsl/fsl-asoc-card.c
+index 95286c839b57..c72a156737e6 100644
+--- a/sound/soc/fsl/fsl-asoc-card.c
++++ b/sound/soc/fsl/fsl-asoc-card.c
+@@ -540,6 +540,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
+ 	struct device *codec_dev = NULL;
+ 	const char *codec_dai_name;
+ 	const char *codec_dev_name;
++	u32 asrc_fmt = 0;
+ 	u32 width;
+ 	int ret;
  
-+static DEFINE_MUTEX(hsa_buf_mutex);
- static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
- 
- /*
-@@ -66,19 +67,24 @@ int memcpy_hsa_user(void __user *dest, unsigned long src, size_t count)
- 	if (!hsa_available)
- 		return -ENODATA;
- 
-+	mutex_lock(&hsa_buf_mutex);
- 	while (count) {
- 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
- 			TRACE("sclp_sdias_copy() failed\n");
-+			mutex_unlock(&hsa_buf_mutex);
- 			return -EIO;
+@@ -817,8 +818,8 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
+ 			goto asrc_fail;
  		}
- 		offset = src % PAGE_SIZE;
- 		bytes = min(PAGE_SIZE - offset, count);
--		if (copy_to_user(dest, hsa_buf + offset, bytes))
-+		if (copy_to_user(dest, hsa_buf + offset, bytes)) {
-+			mutex_unlock(&hsa_buf_mutex);
- 			return -EFAULT;
-+		}
- 		src += bytes;
- 		dest += bytes;
- 		count -= bytes;
- 	}
-+	mutex_unlock(&hsa_buf_mutex);
- 	return 0;
- }
  
-@@ -96,9 +102,11 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
- 	if (!hsa_available)
- 		return -ENODATA;
- 
-+	mutex_lock(&hsa_buf_mutex);
- 	while (count) {
- 		if (sclp_sdias_copy(hsa_buf, src / PAGE_SIZE + 2, 1)) {
- 			TRACE("sclp_sdias_copy() failed\n");
-+			mutex_unlock(&hsa_buf_mutex);
- 			return -EIO;
- 		}
- 		offset = src % PAGE_SIZE;
-@@ -108,6 +116,7 @@ int memcpy_hsa_kernel(void *dest, unsigned long src, size_t count)
- 		dest += bytes;
- 		count -= bytes;
- 	}
-+	mutex_unlock(&hsa_buf_mutex);
- 	return 0;
- }
- 
+-		ret = of_property_read_u32(asrc_np, "fsl,asrc-format",
+-					   &priv->asrc_format);
++		ret = of_property_read_u32(asrc_np, "fsl,asrc-format", &asrc_fmt);
++		priv->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
+ 		if (ret) {
+ 			/* Fallback to old binding; translate to asrc_format */
+ 			ret = of_property_read_u32(asrc_np, "fsl,asrc-width",
 -- 
 2.35.1
 
