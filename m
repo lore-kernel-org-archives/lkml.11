@@ -2,124 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1961BC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B614C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 17:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232342AbiHORA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 13:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
+        id S233071AbiHORAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 13:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiHORAX (ORCPT
+        with ESMTP id S236130AbiHORAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 13:00:23 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCC8D55;
-        Mon, 15 Aug 2022 10:00:19 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oNdRh-00054d-Ba; Mon, 15 Aug 2022 19:00:09 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH v3 2/4] regulator: sun20i: Add support for Allwinner D1 LDOs
-Date:   Mon, 15 Aug 2022 19:00:08 +0200
-Message-ID: <37742446.J2Yia2DhmK@diego>
-In-Reply-To: <20220815043436.20170-3-samuel@sholland.org>
-References: <20220815043436.20170-1-samuel@sholland.org> <20220815043436.20170-3-samuel@sholland.org>
+        Mon, 15 Aug 2022 13:00:50 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6621711C18;
+        Mon, 15 Aug 2022 10:00:49 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id bx38so8174546ljb.10;
+        Mon, 15 Aug 2022 10:00:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc;
+        bh=SqgMO61HKo9LO3ZR8aj5lCUUOKdlsT1EAnLa0+nEyII=;
+        b=HqrGB3waUaPwt3dbHwnXeNuvp64MFi2z7gFBM7uC6E00IFaxdSjoXBRAtAL7Fhbu7P
+         UbKCSTmwXwkIbmZTMFveEwrS17UJKFAmQo5/AfMFKYrZCyAdzToW80FF/jo+i+MeHDYn
+         jM8CQfzsQYHhOtb7DXpIoDdcWhom0YeoImgwSZH5sy8uhBMve8jZKlifYYVsM2lPqrGm
+         IbrZGxkc4LAuNs2Cm1zv/A6GS8RR5qP7uo3U3jHbkgLqRTK4s9dWR7JT8z7tzsV27IQ+
+         Htt7Puz1TMhnK+HtW/2/78vLOb2ZIXGYlmov72TBueMTVn5JVhVu8pDbLbxhQsZ89VIH
+         jKuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc;
+        bh=SqgMO61HKo9LO3ZR8aj5lCUUOKdlsT1EAnLa0+nEyII=;
+        b=6ln48VwZ3L7HuOclzIoy7YbDBGN3esQWI2hb/3B7bZ2Vgi2eeF+dyWGXKdqzBpbRoX
+         RNP/bBuYtdijytsNLW4fhtx4qgUV+UQZcMclDWPmSp+X88Ike81ApFsL4dYCgPVUVUub
+         izp1KUuMTMd4ylZfhiW4zCzrrPdxghPmehjVVlnEhMAZ/xCGgbbXEfkUR5kJSK6Me/Hh
+         h+ADC4XCRqCWmZF0cISKZLmyAosJsBoRrVEayWY5xlm6KhWcnDjJ/44Q9X43SD2Z3/1p
+         set9ThdhTmJIRw4mW9LcMxYhmvbDw/UjBQNb4UoW0lAWqjQ4xs0Oj1xTe6vC6Qp7s7OR
+         9Cyg==
+X-Gm-Message-State: ACgBeo17OAJzIY9TKp+W+rBLz+xN3BAUfTIc6VOSonfcCiqMZ3hut040
+        8BQkLKjEIqXM7HeAi84nfb1T0FI+Lbo=
+X-Google-Smtp-Source: AA6agR5+vnjUDUMm4sYZlKOzZknd6MiC7wdFA2gl0BVCnOf04hu87bgTEZ6uSrZ1YngMeA5ZVd+tzQ==
+X-Received: by 2002:a2e:878b:0:b0:25e:c46f:12a3 with SMTP id n11-20020a2e878b000000b0025ec46f12a3mr4966094lji.466.1660582847612;
+        Mon, 15 Aug 2022 10:00:47 -0700 (PDT)
+Received: from razdolb (95-31-189-152.broadband.corbina.ru. [95.31.189.152])
+        by smtp.gmail.com with ESMTPSA id x8-20020a19e008000000b0048afb8b8e53sm1148441lfg.80.2022.08.15.10.00.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 10:00:46 -0700 (PDT)
+References: <20220712141925.678595-1-mike.rudenko@gmail.com>
+User-agent: mu4e 1.7.27; emacs 28.1
+From:   Mikhail Rudenko <mike.rudenko@gmail.com>
+To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Mikhail Rudenko <mike.rudenko@gmail.com>
+Subject: Re: [PATCH 0/2] Add Omnivision OV4689 image sensor driver
+Date:   Mon, 15 Aug 2022 19:59:14 +0300
+In-reply-to: <20220712141925.678595-1-mike.rudenko@gmail.com>
+Message-ID: <87zgg530ht.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Montag, 15. August 2022, 06:34:33 CEST schrieb Samuel Holland:
-> D1 contains two pairs of LDOs. Since they have similar bindings, and
-> they always exist together, put them in a single driver.
-> 
-> The analog LDOs are relatively boring, with a single linear range. Their
-> one quirk is that a bandgap reference must be calibrated for them to
-> produce the correct voltage.
-> 
-> The system LDOs have the complication that their voltage step is not an
-> integer, so a custom .list_voltage is needed to get the rounding right.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
-> 
-> Changes in v3:
->  - Adjust control flow in sun20i_regulator_get_regmap() for clarity
-> 
-> Changes in v2:
->  - Use decimal numbers for .n_voltages instead of field widths
->  - Get the regmap from the parent device instead of a property/phandle
-> 
->  drivers/regulator/Kconfig            |   8 +
->  drivers/regulator/Makefile           |   1 +
->  drivers/regulator/sun20i-regulator.c | 232 +++++++++++++++++++++++++++
->  3 files changed, 241 insertions(+)
->  create mode 100644 drivers/regulator/sun20i-regulator.c
-> 
-> diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
-> index 23e3e4a35cc9..0c5727173fa0 100644
-> --- a/drivers/regulator/Kconfig
-> +++ b/drivers/regulator/Kconfig
-> @@ -1262,6 +1262,14 @@ config REGULATOR_STW481X_VMMC
->  	  This driver supports the internal VMMC regulator in the STw481x
->  	  PMIC chips.
->  
-> +config REGULATOR_SUN20I
-> +	tristate "Allwinner D1 internal LDOs"
-> +	depends on ARCH_SUNXI || COMPILE_TEST
-> +	depends on MFD_SYSCON && NVMEM
-> +	default ARCH_SUNXI
-> +	help
-> +	  This driver supports the internal LDOs in the Allwinner D1 SoC.
-> +
->  config REGULATOR_SY7636A
->  	tristate "Silergy SY7636A voltage regulator"
->  	help
-> diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
-> index fa49bb6cc544..5dff112eb015 100644
-> --- a/drivers/regulator/Makefile
-> +++ b/drivers/regulator/Makefile
-> @@ -148,6 +148,7 @@ obj-$(CONFIG_REGULATOR_STM32_VREFBUF) += stm32-vrefbuf.o
->  obj-$(CONFIG_REGULATOR_STM32_PWR) += stm32-pwr.o
->  obj-$(CONFIG_REGULATOR_STPMIC1) += stpmic1_regulator.o
->  obj-$(CONFIG_REGULATOR_STW481X_VMMC) += stw481x-vmmc.o
-> +obj-$(CONFIG_REGULATOR_SUN20I) += sun20i-regulator.o
->  obj-$(CONFIG_REGULATOR_SY7636A) += sy7636a-regulator.o
->  obj-$(CONFIG_REGULATOR_SY8106A) += sy8106a-regulator.o
->  obj-$(CONFIG_REGULATOR_SY8824X) += sy8824x.o
-> diff --git a/drivers/regulator/sun20i-regulator.c b/drivers/regulator/sun20i-regulator.c
-> new file mode 100644
-> index 000000000000..46f3927d7d10
-> --- /dev/null
-> +++ b/drivers/regulator/sun20i-regulator.c
-> @@ -0,0 +1,232 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +//
-> +// Copyright (c) 2021-2022 Samuel Holland <samuel@sholland.org>
-> +//
-
-nit: shouldn't the comment look like
-/*
- * Copyright (c) 2021-2022 Samuel Holland <samuel@sholland.org>
- */
+Gentle ping. Still waiting for any [2/2] review. Should I resend?
 
 
-otherwise looks great
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
+On 2022-07-12 at 17:19 +03, Mikhail Rudenko <mike.rudenko@gmail.com> wrote:
+> Hello,
+>
+> this series implements support for Omnivision OV4689 image
+> sensor. The Omnivision OV4689 is a high performance, 1/3-inch, 4
+> megapixel image sensor. Ihis chip supports high frame rate speeds up
+> to 90 fps at 2688x1520 resolution. It is programmable through an I2C
+> interface, and sensor output is sent via 1/2/4 lane MIPI CSI-2
+> connection.
+>
+> The driver is based on Rockchip BSP kernel [1]. It implements 4-lane CSI-2
+> and single 2688x1520 @ 30 fps mode. The driver was tested on Rockchip
+> 3399-based FriendlyElec NanoPi M4 board with MCAM400 camera module.
+>
+> While porting the driver, I stumbled upon two issues:
+>
+> (1) In the original driver, horizontal total size (HTS) was set to a
+> value (2584) lower then the frame width (2688), resulting in negative
+> hblank. In this driver, I increased HTS to 2688, but fps dropped from
+> 29.88 to 28.73. What is the preferred way to handle this?
+>
+> (2) The original driver exposes analog gain range 0x0 - 0x7ff, but the
+> gain is not linear across that range. Instead, it is piecewise linear
+> (and discontinuous). 0x0-0xff register values result in 0x-2x gain,
+> 0x100-0x1ff to 0x-4x, 0x300-0x3ff to 0x-8x, and 0x700-0x7ff to 0x-16x,
+> with more linear segments in between. Rockchip's camera engine code
+> chooses one of the above segments depenging on the desired gain
+> value. The question is, how should we proceed keeping in mind
+> libcamera use case? Should the whole 0x0-0x7ff be exposed as-is and
+> libcamera will do the mapping, or the driver will do the mapping
+> itself and expose some logical gain units not tied to the actual gain
+> register value? Meanwhile, this driver conservatively exposes only
+> 0x0-0xf8 gain register range.
+>
+> [1] https://github.com/rockchip-linux/kernel/blob/develop-4.19/drivers/media/i2c/ov4689.c
+>
+> Mikhail Rudenko (2):
+>   media: dt-bindings: media: i2c: document OV4689 DT bindings
+>   media: i2c: add support for ov4689
+>
+>  .../bindings/media/i2c/ovti,ov4689.yaml       | 122 +++
+>  MAINTAINERS                                   |   8 +
+>  drivers/media/i2c/Kconfig                     |  14 +
+>  drivers/media/i2c/Makefile                    |   1 +
+>  drivers/media/i2c/ov4689.c                    | 899 ++++++++++++++++++
+>  5 files changed, 1044 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov4689.yaml
+>  create mode 100644 drivers/media/i2c/ov4689.c
 
 
+--
+Best regards,
+Mikhail Rudenko
