@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F188BC2BB45
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12723C2BBC5
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350494AbiHOWbx (ORCPT
+        id S1350543AbiHOWb4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
+        Mon, 15 Aug 2022 18:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350228AbiHOW0a (ORCPT
+        with ESMTP id S1350315AbiHOW0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:26:30 -0400
+        Mon, 15 Aug 2022 18:26:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CA9128EC6;
-        Mon, 15 Aug 2022 12:45:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BC3C3A;
+        Mon, 15 Aug 2022 12:45:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F3061222;
-        Mon, 15 Aug 2022 19:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C411C43140;
-        Mon, 15 Aug 2022 19:45:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78398610A3;
+        Mon, 15 Aug 2022 19:45:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 848B8C433D7;
+        Mon, 15 Aug 2022 19:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592711;
-        bh=GoIK9W5tFF1ThOTmt9iGmRMGayudum/t1PMhPQgfubw=;
+        s=korg; t=1660592713;
+        bh=WoA22Vm2iBulFdiJeGAV5PfbFX2gOwJuHwIGao/gU4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tDtR42bB7zSmpLIWurUL9CscBs8PSxD6eW/iyaHnRsWM8hMUcib8giUEOqsZTgr7i
-         kHTMrEM4/xJgN+daIoAFEbJploEOec5K1Aq5b+04QDpU6dzmJU15RDwwsIZzj1Z/Mh
-         rRhWDSSQuPZHpzdLe/CQ3OrA3zhgvQXxSyEFsDws=
+        b=biylNvbLTB6as4R/5rS5qF8gwzf4ekDxt0o6/LkVzk8v/ybBuWIHUaKbbYV4Cc4OK
+         e7p/93ZubPRNcCDZdwTkhfnwTmbw3BOdQOHTeKEic750bKEV+8eHbUmAIoTAE3/mBa
+         hJsk/+saB1wftA/Bc7l4QE3+04UMStBtuVw9d+Kw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0834/1095] serial: pic32: free up irq names correctly
-Date:   Mon, 15 Aug 2022 20:03:53 +0200
-Message-Id: <20220815180503.829667712@linuxfoundation.org>
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 0154/1157] arm64: errata: Remove AES hwcap for COMPAT tasks
+Date:   Mon, 15 Aug 2022 19:51:50 +0200
+Message-Id: <20220815180445.824009584@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,61 +50,174 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: James Morse <james.morse@arm.com>
 
-[ Upstream commit fe36fa18ca77ca3ca9f90aab6cf39031416e432b ]
+[ Upstream commit 44b3834b2eed595af07021b1c64e6f9bc396398b ]
 
-struct pic32_sport contains built-up names for irqs. These are freed
-only in error path of pic32_uart_startup(). And even there, the freeing
-happens before free_irq().
+Cortex-A57 and Cortex-A72 have an erratum where an interrupt that
+occurs between a pair of AES instructions in aarch32 mode may corrupt
+the ELR. The task will subsequently produce the wrong AES result.
 
-So fix this by:
-* moving frees after free_irq(), and
-* add frees to pic32_uart_shutdown() -- the opposite of
-  pic32_uart_startup().
+The AES instructions are part of the cryptographic extensions, which are
+optional. User-space software will detect the support for these
+instructions from the hwcaps. If the platform doesn't support these
+instructions a software implementation should be used.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220503063122.20957-11-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Remove the hwcap bits on affected parts to indicate user-space should
+not use the AES instructions.
+
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
+Link: https://lore.kernel.org/r/20220714161523.279570-3-james.morse@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/pic32_uart.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ Documentation/arm64/silicon-errata.rst |  4 ++++
+ arch/arm64/Kconfig                     | 16 ++++++++++++++++
+ arch/arm64/kernel/cpu_errata.c         | 16 ++++++++++++++++
+ arch/arm64/kernel/cpufeature.c         | 14 +++++++++++++-
+ arch/arm64/tools/cpucaps               |  1 +
+ 5 files changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index b7a3a1b959b1..e3535bd8c8a2 100644
---- a/drivers/tty/serial/pic32_uart.c
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -493,14 +493,14 @@ static int pic32_uart_startup(struct uart_port *port)
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index d27db84d585e..0b4235b1f8c4 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -82,10 +82,14 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A57      | #1319537        | ARM64_ERRATUM_1319367       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A57      | #1742098        | ARM64_ERRATUM_1742098       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A72      | #853709         | N/A                         |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A72      | #1319367        | ARM64_ERRATUM_1319367       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | Cortex-A72      | #1655431        | ARM64_ERRATUM_1742098       |
+++----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A73      | #858921         | ARM64_ERRATUM_858921        |
+ +----------------+-----------------+-----------------+-----------------------------+
+ | ARM            | Cortex-A76      | #1188873,1418040| ARM64_ERRATUM_1418040       |
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 1652a9800ebe..3ad734de8e49 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -503,6 +503,22 @@ config ARM64_ERRATUM_834220
+ 
+ 	  If unsure, say Y.
+ 
++config ARM64_ERRATUM_1742098
++	bool "Cortex-A57/A72: 1742098: ELR recorded incorrectly on interrupt taken between cryptographic instructions in a sequence"
++	depends on COMPAT
++	default y
++	help
++	  This option removes the AES hwcap for aarch32 user-space to
++	  workaround erratum 1742098 on Cortex-A57 and Cortex-A72.
++
++	  Affected parts may corrupt the AES state if an interrupt is
++	  taken between a pair of AES instructions. These instructions
++	  are only present if the cryptography extensions are present.
++	  All software should have a fallback implementation for CPUs
++	  that don't implement the cryptography extensions.
++
++	  If unsure, say Y.
++
+ config ARM64_ERRATUM_845719
+ 	bool "Cortex-A53: 845719: a load might read incorrect data"
+ 	depends on COMPAT
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index c05cc3b6162e..6b92989f4cc2 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -395,6 +395,14 @@ static struct midr_range trbe_write_out_of_range_cpus[] = {
+ };
+ #endif /* CONFIG_ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE */
+ 
++#ifdef CONFIG_ARM64_ERRATUM_1742098
++static struct midr_range broken_aarch32_aes[] = {
++	MIDR_RANGE(MIDR_CORTEX_A57, 0, 1, 0xf, 0xf),
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
++	{},
++};
++#endif /* CONFIG_ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE */
++
+ const struct arm64_cpu_capabilities arm64_errata[] = {
+ #ifdef CONFIG_ARM64_WORKAROUND_CLEAN_CACHE
+ 	{
+@@ -657,6 +665,14 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
+ 		/* Cortex-A510 r0p0 - r0p1 */
+ 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 1)
+ 	},
++#endif
++#ifdef CONFIG_ARM64_ERRATUM_1742098
++	{
++		.desc = "ARM erratum 1742098",
++		.capability = ARM64_WORKAROUND_1742098,
++		CAP_MIDR_RANGE_LIST(broken_aarch32_aes),
++		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
++	},
+ #endif
+ 	{
+ 	}
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 8d88433de81d..90018643d424 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -79,6 +79,7 @@
+ #include <asm/cpufeature.h>
+ #include <asm/cpu_ops.h>
+ #include <asm/fpsimd.h>
++#include <asm/hwcap.h>
+ #include <asm/insn.h>
+ #include <asm/kvm_host.h>
+ #include <asm/mmu_context.h>
+@@ -1971,6 +1972,14 @@ static void cpu_enable_mte(struct arm64_cpu_capabilities const *cap)
+ }
+ #endif /* CONFIG_ARM64_MTE */
+ 
++static void elf_hwcap_fixup(void)
++{
++#ifdef CONFIG_ARM64_ERRATUM_1742098
++	if (cpus_have_const_cap(ARM64_WORKAROUND_1742098))
++		compat_elf_hwcap2 &= ~COMPAT_HWCAP2_AES;
++#endif /* ARM64_ERRATUM_1742098 */
++}
++
+ #ifdef CONFIG_KVM
+ static bool is_kvm_protected_mode(const struct arm64_cpu_capabilities *entry, int __unused)
+ {
+@@ -3143,8 +3152,10 @@ void __init setup_cpu_features(void)
+ 	setup_system_capabilities();
+ 	setup_elf_hwcaps(arm64_elf_hwcaps);
+ 
+-	if (system_supports_32bit_el0())
++	if (system_supports_32bit_el0()) {
+ 		setup_elf_hwcaps(compat_elf_hwcaps);
++		elf_hwcap_fixup();
++	}
+ 
+ 	if (system_uses_ttbr0_pan())
+ 		pr_info("emulated: Privileged Access Never (PAN) using TTBR0_EL1 switching\n");
+@@ -3197,6 +3208,7 @@ static int enable_mismatched_32bit_el0(unsigned int cpu)
+ 							 cpu_active_mask);
+ 	get_cpu_device(lucky_winner)->offline_disabled = true;
+ 	setup_elf_hwcaps(compat_elf_hwcaps);
++	elf_hwcap_fixup();
+ 	pr_info("Asymmetric 32-bit EL0 support detected on CPU %u; CPU hot-unplug disabled on CPU %u\n",
+ 		cpu, lucky_winner);
  	return 0;
- 
- out_t:
--	kfree(sport->irq_tx_name);
- 	free_irq(sport->irq_tx, port);
-+	kfree(sport->irq_tx_name);
- out_r:
--	kfree(sport->irq_rx_name);
- 	free_irq(sport->irq_rx, port);
-+	kfree(sport->irq_rx_name);
- out_f:
--	kfree(sport->irq_fault_name);
- 	free_irq(sport->irq_fault, port);
-+	kfree(sport->irq_fault_name);
- out_done:
- 	return ret;
- }
-@@ -519,8 +519,11 @@ static void pic32_uart_shutdown(struct uart_port *port)
- 
- 	/* free all 3 interrupts for this UART */
- 	free_irq(sport->irq_fault, port);
-+	kfree(sport->irq_fault_name);
- 	free_irq(sport->irq_tx, port);
-+	kfree(sport->irq_tx_name);
- 	free_irq(sport->irq_rx, port);
-+	kfree(sport->irq_rx_name);
- }
- 
- /* serial core request to change current uart setting */
+diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+index 507b20373953..8809e14cf86a 100644
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -61,6 +61,7 @@ WORKAROUND_1418040
+ WORKAROUND_1463225
+ WORKAROUND_1508412
+ WORKAROUND_1542419
++WORKAROUND_1742098
+ WORKAROUND_1902691
+ WORKAROUND_2038923
+ WORKAROUND_2064142
 -- 
 2.35.1
 
