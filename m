@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F15C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5512FC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 20:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346733AbiHOUQX (ORCPT
+        id S1346794AbiHOUQZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 16:16:23 -0400
+        Mon, 15 Aug 2022 16:16:25 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346772AbiHOUMK (ORCPT
+        with ESMTP id S1346540AbiHOULl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 16:12:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712E485FAF;
-        Mon, 15 Aug 2022 11:58:20 -0700 (PDT)
+        Mon, 15 Aug 2022 16:11:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AAB48EBF;
+        Mon, 15 Aug 2022 11:57:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4917BB8109E;
-        Mon, 15 Aug 2022 18:58:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90CACC433C1;
-        Mon, 15 Aug 2022 18:58:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0261CB810D5;
+        Mon, 15 Aug 2022 18:57:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BC6C433C1;
+        Mon, 15 Aug 2022 18:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660589897;
-        bh=y5dOMvY/vtWmTZ442l2tNq7mMPfl2pLTBxrmgWBug+g=;
+        s=korg; t=1660589869;
+        bh=Rb/9eQRLbUfd2fRzgGAKHPh1034WETbV1eA+5pMP7DU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1055WH18Hcli+c3zty9pKhxzp1JbRu/d7svU3iDuWwl55o/SqJaJNOf40sAo4AtA8
-         UvEsCNQseGwq11o4CfWToJZKfj5mV+9veK/lR50Cx9dQiCSwSxze84DiGwo1bMktOc
-         byjVMnAG9cwmzaNrqum1lp9fDxbiIXczvx1z7Ock=
+        b=qji79SbvIucD0sW+OvZKuFeKHBpocmX+NIePYyzueR49AUQLSA1Kh5P4Ag9HLOLIL
+         vGb5b47++w3Gury5C2Oz7XEjDCfgufFSxEUo2tBmTaesNsiUg3nv58bz8GHq5ka5fH
+         wTrpDrjZ9LzxOdo+L7WLLINKT6D3/qEUComomoHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH 5.18 0083/1095] drm/nouveau/kms: Fix failure path for creating DP connectors
-Date:   Mon, 15 Aug 2022 19:51:22 +0200
-Message-Id: <20220815180432.951391700@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: [PATCH 5.18 0075/1095] drm/gem: Properly annotate WW context on drm_gem_lock_reservations() error
+Date:   Mon, 15 Aug 2022 19:51:14 +0200
+Message-Id: <20220815180432.632763251@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -49,46 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-commit ca0367ca5d9216644b41f86348d6661f8d9e32d8 upstream.
+commit 2939deac1fa220bc82b89235f146df1d9b52e876 upstream.
 
-It looks like that when we moved nouveau over to using drm_dp_aux_init()
-and registering it's aux bus during late connector registration, we totally
-forgot to fix the failure codepath in nouveau_connector_create() - as it
-still seems to assume that drm_dp_aux_init() can fail (it can't).
+Use ww_acquire_fini() in the error code paths. Otherwise lockdep
+thinks that lock is held when lock's memory is freed after the
+drm_gem_lock_reservations() error. The ww_acquire_context needs to be
+annotated as "released", which fixes the noisy "WARNING: held lock freed!"
+splat of VirtIO-GPU driver with CONFIG_DEBUG_MUTEXES=y and enabled lockdep.
 
-So, let's fix that and also add a missing check to ensure that we've
-properly allocated nv_connector->aux.name while we're at it.
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: David Airlie <airlied@linux.ie>
-Fixes: fd43ad9d47e7 ("drm/nouveau/kms/nv50-: Move AUX adapter reg to connector late register/early unregister")
-Cc: <stable@vger.kernel.org> # v5.14+
-Link: https://patchwork.freedesktop.org/patch/msgid/20220526204313.656473-1-lyude@redhat.com
+Cc: stable@vger.kernel.org
+Fixes: 7edc3e3b975b5 ("drm: Add helpers for locking an array of BO reservations.")
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220630200405.1883897-2-dmitry.osipenko@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_connector.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/drm_gem.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_connector.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
-@@ -1361,13 +1361,11 @@ nouveau_connector_create(struct drm_devi
- 		snprintf(aux_name, sizeof(aux_name), "sor-%04x-%04x",
- 			 dcbe->hasht, dcbe->hashm);
- 		nv_connector->aux.name = kstrdup(aux_name, GFP_KERNEL);
--		drm_dp_aux_init(&nv_connector->aux);
--		if (ret) {
--			NV_ERROR(drm, "Failed to init AUX adapter for sor-%04x-%04x: %d\n",
--				 dcbe->hasht, dcbe->hashm, ret);
-+		if (!nv_connector->aux.name) {
- 			kfree(nv_connector);
--			return ERR_PTR(ret);
-+			return ERR_PTR(-ENOMEM);
+--- a/drivers/gpu/drm/drm_gem.c
++++ b/drivers/gpu/drm/drm_gem.c
+@@ -1225,7 +1225,7 @@ retry:
+ 		ret = dma_resv_lock_slow_interruptible(obj->resv,
+ 								 acquire_ctx);
+ 		if (ret) {
+-			ww_acquire_done(acquire_ctx);
++			ww_acquire_fini(acquire_ctx);
+ 			return ret;
  		}
-+		drm_dp_aux_init(&nv_connector->aux);
- 		fallthrough;
- 	default:
- 		funcs = &nouveau_connector_funcs;
+ 	}
+@@ -1250,7 +1250,7 @@ retry:
+ 				goto retry;
+ 			}
+ 
+-			ww_acquire_done(acquire_ctx);
++			ww_acquire_fini(acquire_ctx);
+ 			return ret;
+ 		}
+ 	}
 
 
