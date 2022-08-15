@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277FAC3276E
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5BAC2BB45
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351105AbiHOW1h (ORCPT
+        id S1348033AbiHOW21 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
+        Mon, 15 Aug 2022 18:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349406AbiHOWV3 (ORCPT
+        with ESMTP id S1349798AbiHOWVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:21:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA2BB5A58;
-        Mon, 15 Aug 2022 12:43:42 -0700 (PDT)
+        Mon, 15 Aug 2022 18:21:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F49B5A4E;
+        Mon, 15 Aug 2022 12:43:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E0A761215;
-        Mon, 15 Aug 2022 19:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16665C433C1;
-        Mon, 15 Aug 2022 19:43:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CA5F610A5;
+        Mon, 15 Aug 2022 19:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F7DC433B5;
+        Mon, 15 Aug 2022 19:43:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592620;
-        bh=P6zsy+Br50IxBtDghnh0AItILePGuWVPwZtgnBjUs34=;
+        s=korg; t=1660592626;
+        bh=ptbstcd6stve8vBtBfyzgL8zEE8ay3I+XdRF4HhLEpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dYLtOJK9Fqje69L8m6W5CO9Bv5qV90yWOT0cuQ+DbncWQ0ne2KSn1pZLGUOAMXHDo
-         PreaIin5kNPJav+iJWnV/AShWfPCqxain+3gy17qTgJH8gHpynwPTA/I74vSQw9bu8
-         p/iiSsxVlBTvyhgBDiBFwRjb8KbdgGWVOKM8o1PM=
+        b=bzK1m2eEGEIJkZm8D058Lm7D0lpKzS08u8akVJlJSul2FgL9xsFTlFXWUI7RTG3H+
+         ZJ8IOhIo95BbF7YtiNOQ431X+DwQKkvI2t6oxYziH1jAjQ4kkAOJ1q8eyrnG7Q2YDx
+         zXcItG7ihoCbR9UEU6mLUd/4OHtx7EtSiyFxLpa4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0817/1095] nvme: use command_id instead of req->tag in trace_nvme_complete_rq()
-Date:   Mon, 15 Aug 2022 20:03:36 +0200
-Message-Id: <20220815180503.076313071@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Guo <yi.guo@cavium.com>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Narendra Hadke <nhadke@marvell.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH 5.19 0117/1157] serial: mvebu-uart: uart2 error bits clearing
+Date:   Mon, 15 Aug 2022 19:51:13 +0200
+Message-Id: <20220815180444.294323311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bean Huo <beanhuo@micron.com>
+From: Narendra Hadke <nhadke@marvell.com>
 
-[ Upstream commit 679c54f2de672b7d79d02f8c4ad483ff6dd8ce2e ]
+commit a7209541239e5dd44d981289e5f9059222d40fd1 upstream.
 
-Use command_id instead of req->tag in trace_nvme_complete_rq(),
-because of commit e7006de6c238 ("nvme: code command_id with a genctr
-for use authentication after release"), cmd->common.command_id is set to
-((genctl & 0xf)< 12 | req->tag), no longer req->tag, which makes cid in
-trace_nvme_complete_rq and trace_nvme_setup_cmd are not the same.
+For mvebu uart2, error bits are not cleared on buffer read.
+This causes interrupt loop and system hang.
 
-Fixes: e7006de6c238 ("nvme: code command_id with a genctr for use authentication after release")
-Signed-off-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reviewed-by: Yi Guo <yi.guo@cavium.com>
+Reviewed-by: Nadav Haklai <nadavh@marvell.com>
+Signed-off-by: Narendra Hadke <nhadke@marvell.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20220726091221.12358-1-pali@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/trace.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/mvebu-uart.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/nvme/host/trace.h b/drivers/nvme/host/trace.h
-index 37c7f4c89f92..6f0eaf6a1528 100644
---- a/drivers/nvme/host/trace.h
-+++ b/drivers/nvme/host/trace.h
-@@ -98,7 +98,7 @@ TRACE_EVENT(nvme_complete_rq,
- 	    TP_fast_assign(
- 		__entry->ctrl_id = nvme_req(req)->ctrl->instance;
- 		__entry->qid = nvme_req_qid(req);
--		__entry->cid = req->tag;
-+		__entry->cid = nvme_req(req)->cmd->common.command_id;
- 		__entry->result = le64_to_cpu(nvme_req(req)->result.u64);
- 		__entry->retries = nvme_req(req)->retries;
- 		__entry->flags = nvme_req(req)->flags;
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 0429c2a54290..ff61a8d00014 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -265,6 +265,7 @@ static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
+ 	struct tty_port *tport = &port->state->port;
+ 	unsigned char ch = 0;
+ 	char flag = 0;
++	int ret;
+ 
+ 	do {
+ 		if (status & STAT_RX_RDY(port)) {
+@@ -277,6 +278,16 @@ static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
+ 				port->icount.parity++;
+ 		}
+ 
++		/*
++		 * For UART2, error bits are not cleared on buffer read.
++		 * This causes interrupt loop and system hang.
++		 */
++		if (IS_EXTENDED(port) && (status & STAT_BRK_ERR)) {
++			ret = readl(port->membase + UART_STAT);
++			ret |= STAT_BRK_ERR;
++			writel(ret, port->membase + UART_STAT);
++		}
++
+ 		if (status & STAT_BRK_DET) {
+ 			port->icount.brk++;
+ 			status &= ~(STAT_FRM_ERR | STAT_PAR_ERR);
 -- 
-2.35.1
+2.37.1
 
 
 
