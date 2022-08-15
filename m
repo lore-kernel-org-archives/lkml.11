@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6577BC00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95570C25B08
 	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354963AbiHOXvK (ORCPT
+        id S1355360AbiHOXv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
+        Mon, 15 Aug 2022 19:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354862AbiHOXqe (ORCPT
+        with ESMTP id S1354652AbiHOXqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:46:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18CF8E45E;
-        Mon, 15 Aug 2022 13:14:57 -0700 (PDT)
+        Mon, 15 Aug 2022 19:46:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CDD399CC;
+        Mon, 15 Aug 2022 13:14:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B2E4B80EAB;
-        Mon, 15 Aug 2022 20:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72ACCC433D6;
-        Mon, 15 Aug 2022 20:14:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8F9360B6E;
+        Mon, 15 Aug 2022 20:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7069C433C1;
+        Mon, 15 Aug 2022 20:14:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594494;
-        bh=++0gQvoVEsES9czLKXdr0jf/8o4LNf21BoHpAo3XYVE=;
+        s=korg; t=1660594472;
+        bh=6U8qGS21fq+Kq2W4/KJtwovisBl/qNohL58egSw7v+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1gWKuW0jFzmUvvcIVgw2hkX3632//DJGaV+7rYx4RGR0anQulJgsauZdI4aSnfnTS
-         s0bgsZPQ9b/oIAWF2fGwofeTZfg4Tz5kYTZmMAjPHTXt4A+KmxcCjQf22seHaEDY23
-         4t1cfpBlu6yIQJFnX6mCUe3TjMlQLc/kP8C5YS0s=
+        b=zTo5D4LJb/ASpTfWF90JOcT0VzZ69oulk3K4Lcx+ZMeBNGdOlzI1gbijcRgJoUEsq
+         fM1LnKNOBHi39RnAVk473t/kYqZpc4YW8Z/HHU56pTlDOk+xB2DW00JbJ6r6Hr/0oP
+         Uv8csfTMMMxIFf/Uz2VcYa0VefmrwX+6KXTu/rs0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0465/1157] media: hantro: Fix RK3399 H.264 format advertising
-Date:   Mon, 15 Aug 2022 19:57:01 +0200
-Message-Id: <20220815180458.209647716@linuxfoundation.org>
+Subject: [PATCH 5.19 0441/1157] drm/msm: Fix fence rollover issue
+Date:   Mon, 15 Aug 2022 19:56:37 +0200
+Message-Id: <20220815180457.256915051@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,134 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 177d841fa19542eb35aa5ec9579c4abb989c9255 ]
+[ Upstream commit 2311720a0182756f175fbf4afc1fb76ac487b587 ]
 
-Commit 1f82f2df523cb ("media: hantro: Enable H.264 on Rockchip VDPU2")
-enabled H.264 on some SoCs with VDPU2 cores. This had the side-effect
-of exposing H.264 coded format as supported on RK3399.
+And while we are at it, let's start the fence counter close to the
+rollover point so that if issues slip in, they are more obvious.
 
-Fix this and clarify how the codec is explicitly disabled on RK3399 on
-this driver.
-
-Fixes: 1f82f2df523cb ("media: hantro: Enable H.264 on Rockchip VDPU2")
-Signed-off-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Tested-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: fde5de6cb461 ("drm/msm: move fence code to it's own file")
+Fixes: 5f3aee4ceb5b ("drm/msm: Handle fence rollover")
+Patchwork: https://patchwork.freedesktop.org/patch/489619/
+Link: https://lore.kernel.org/r/20220615162435.3011793-1-robdclark@gmail.com
+[DB: fixed the conflict while applying the patch]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/hantro/rockchip_vpu_hw.c    | 60 ++++++++++++++++---
- 1 file changed, 53 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/msm/msm_fence.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-index 098486b9ec27..26e16b5a6a70 100644
---- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
-+++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
-@@ -182,7 +182,7 @@ static const struct hantro_fmt rk3288_vpu_dec_fmts[] = {
- 	},
- };
+diff --git a/drivers/gpu/drm/msm/msm_fence.c b/drivers/gpu/drm/msm/msm_fence.c
+index 38e3323bc232..a47e5837c528 100644
+--- a/drivers/gpu/drm/msm/msm_fence.c
++++ b/drivers/gpu/drm/msm/msm_fence.c
+@@ -28,6 +28,14 @@ msm_fence_context_alloc(struct drm_device *dev, volatile uint32_t *fenceptr,
+ 	fctx->fenceptr = fenceptr;
+ 	spin_lock_init(&fctx->spinlock);
  
--static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
-+static const struct hantro_fmt rockchip_vdpu2_dec_fmts[] = {
- 	{
- 		.fourcc = V4L2_PIX_FMT_NV12,
- 		.codec_mode = HANTRO_MODE_NONE,
-@@ -236,6 +236,47 @@ static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
- 	},
- };
- 
-+static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
-+	{
-+		.fourcc = V4L2_PIX_FMT_NV12,
-+		.codec_mode = HANTRO_MODE_NONE,
-+		.frmsize = {
-+			.min_width = FMT_MIN_WIDTH,
-+			.max_width = FMT_FHD_WIDTH,
-+			.step_width = MB_DIM,
-+			.min_height = FMT_MIN_HEIGHT,
-+			.max_height = FMT_FHD_HEIGHT,
-+			.step_height = MB_DIM,
-+		},
-+	},
-+	{
-+		.fourcc = V4L2_PIX_FMT_MPEG2_SLICE,
-+		.codec_mode = HANTRO_MODE_MPEG2_DEC,
-+		.max_depth = 2,
-+		.frmsize = {
-+			.min_width = FMT_MIN_WIDTH,
-+			.max_width = FMT_FHD_WIDTH,
-+			.step_width = MB_DIM,
-+			.min_height = FMT_MIN_HEIGHT,
-+			.max_height = FMT_FHD_HEIGHT,
-+			.step_height = MB_DIM,
-+		},
-+	},
-+	{
-+		.fourcc = V4L2_PIX_FMT_VP8_FRAME,
-+		.codec_mode = HANTRO_MODE_VP8_DEC,
-+		.max_depth = 2,
-+		.frmsize = {
-+			.min_width = FMT_MIN_WIDTH,
-+			.max_width = FMT_UHD_WIDTH,
-+			.step_width = MB_DIM,
-+			.min_height = FMT_MIN_HEIGHT,
-+			.max_height = FMT_UHD_HEIGHT,
-+			.step_height = MB_DIM,
-+		},
-+	},
-+};
++	/*
++	 * Start out close to the 32b fence rollover point, so we can
++	 * catch bugs with fence comparisons.
++	 */
++	fctx->last_fence = 0xffffff00;
++	fctx->completed_fence = fctx->last_fence;
++	*fctx->fenceptr = fctx->last_fence;
 +
- static irqreturn_t rockchip_vpu1_vepu_irq(int irq, void *dev_id)
- {
- 	struct hantro_dev *vpu = dev_id;
-@@ -548,8 +589,8 @@ const struct hantro_variant rk3288_vpu_variant = {
+ 	return fctx;
+ }
  
- const struct hantro_variant rk3328_vpu_variant = {
- 	.dec_offset = 0x400,
--	.dec_fmts = rk3399_vpu_dec_fmts,
--	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
-+	.dec_fmts = rockchip_vdpu2_dec_fmts,
-+	.num_dec_fmts = ARRAY_SIZE(rockchip_vdpu2_dec_fmts),
- 	.codec = HANTRO_MPEG2_DECODER | HANTRO_VP8_DECODER |
- 		 HANTRO_H264_DECODER,
- 	.codec_ops = rk3399_vpu_codec_ops,
-@@ -560,6 +601,11 @@ const struct hantro_variant rk3328_vpu_variant = {
- 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names),
- };
+@@ -52,7 +60,8 @@ void msm_update_fence(struct msm_fence_context *fctx, uint32_t fence)
+ 	unsigned long flags;
  
-+/*
-+ * H.264 decoding explicitly disabled in RK3399.
-+ * This ensures userspace applications use the Rockchip VDEC core,
-+ * which has better performance.
-+ */
- const struct hantro_variant rk3399_vpu_variant = {
- 	.enc_offset = 0x0,
- 	.enc_fmts = rockchip_vpu_enc_fmts,
-@@ -579,8 +625,8 @@ const struct hantro_variant rk3399_vpu_variant = {
+ 	spin_lock_irqsave(&fctx->spinlock, flags);
+-	fctx->completed_fence = max(fence, fctx->completed_fence);
++	if (fence_after(fence, fctx->completed_fence))
++		fctx->completed_fence = fence;
+ 	spin_unlock_irqrestore(&fctx->spinlock, flags);
+ }
  
- const struct hantro_variant rk3568_vpu_variant = {
- 	.dec_offset = 0x400,
--	.dec_fmts = rk3399_vpu_dec_fmts,
--	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
-+	.dec_fmts = rockchip_vdpu2_dec_fmts,
-+	.num_dec_fmts = ARRAY_SIZE(rockchip_vdpu2_dec_fmts),
- 	.codec = HANTRO_MPEG2_DECODER |
- 		 HANTRO_VP8_DECODER | HANTRO_H264_DECODER,
- 	.codec_ops = rk3399_vpu_codec_ops,
-@@ -596,8 +642,8 @@ const struct hantro_variant px30_vpu_variant = {
- 	.enc_fmts = rockchip_vpu_enc_fmts,
- 	.num_enc_fmts = ARRAY_SIZE(rockchip_vpu_enc_fmts),
- 	.dec_offset = 0x400,
--	.dec_fmts = rk3399_vpu_dec_fmts,
--	.num_dec_fmts = ARRAY_SIZE(rk3399_vpu_dec_fmts),
-+	.dec_fmts = rockchip_vdpu2_dec_fmts,
-+	.num_dec_fmts = ARRAY_SIZE(rockchip_vdpu2_dec_fmts),
- 	.codec = HANTRO_JPEG_ENCODER | HANTRO_MPEG2_DECODER |
- 		 HANTRO_VP8_DECODER | HANTRO_H264_DECODER,
- 	.codec_ops = rk3399_vpu_codec_ops,
 -- 
 2.35.1
 
