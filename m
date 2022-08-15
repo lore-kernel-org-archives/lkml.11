@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA066C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A57C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 23:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354617AbiHOXs4 (ORCPT
+        id S1354635AbiHOXtB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 19:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        Mon, 15 Aug 2022 19:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354539AbiHOXmY (ORCPT
+        with ESMTP id S1354557AbiHOXm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 19:42:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F4A49B7B;
-        Mon, 15 Aug 2022 13:13:39 -0700 (PDT)
+        Mon, 15 Aug 2022 19:42:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBD248EBE;
+        Mon, 15 Aug 2022 13:13:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C1F07CE1262;
-        Mon, 15 Aug 2022 20:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5208C433C1;
-        Mon, 15 Aug 2022 20:13:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B385B80EAB;
+        Mon, 15 Aug 2022 20:13:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8543C433C1;
+        Mon, 15 Aug 2022 20:13:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660594416;
-        bh=ltOldmr4MWN325/ydtP+kHo/ym5G4Awzre5cMSNIyXw=;
+        s=korg; t=1660594419;
+        bh=6aBMzaqoaG5/pDLHyavSbk3RURz9kTZQdE3pp1Q3vSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mP2NhYVC8yzrk/iieuJrKKSYc4CLxs85/Hu2Z5YKIMFg6QDHrEYUGDNiRETQmBNn5
-         aKfkvxMqri9uVU9zOwLn3EJHfQnjCSSiiTgAobNsdR04XGh7vXq7YD5SfzKZcUAFZr
-         y0nrPu0I1rGvqkMGdUCT/+pJdycnXuLk4WrED0vs=
+        b=O9tvYZ+B3Fzt3+SLHyGIX+is8o7NtN7Qc9DMujxwgS9VFmEDDx3S9/LMAy3OGIGuI
+         yx8IBIg9PIstsg5g4YhK6X+Ts7B0Jqp3EtHONG944SubmVej3BNtzqF4fttLc7rc3u
+         gAMOZLYNXS/+AsMGX0qcIwA45dW9gcADZefVl+lE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0438/1157] drm/msm/dpu: remove hard-coded linewidth limit for writeback
-Date:   Mon, 15 Aug 2022 19:56:34 +0200
-Message-Id: <20220815180457.156506873@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>
+Subject: [PATCH 5.18 1085/1095] Revert "s390/smp: enforce lowcore protection on CPU restart"
+Date:   Mon, 15 Aug 2022 20:08:04 +0200
+Message-Id: <20220815180513.931633763@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,54 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhinav Kumar <quic_abhinavk@quicinc.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 4edea8d305873336a626c5f4ce17cb8751059054 ]
+commit 953503751a426413ea8aee2299ae3ee971b70d9b upstream.
 
-Remove the hard-coded limit for writeback and lets start using
-the one from catalog instead.
+This reverts commit 6f5c672d17f583b081e283927f5040f726c54598.
 
-changes in v3:
-	- correct the Fixes tag
+This breaks normal crash dump when CPU0 is offline.
 
-Fixes: d7d0e73f7de3 ("drm/msm/dpu: introduce the dpu_encoder_phys_* for writeback")
-Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/489888/
-Link: https://lore.kernel.org/r/1655406084-17407-3-git-send-email-quic_abhinavk@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/s390/kernel/setup.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
-index 0ec809ab06e7..15919e1a8dc3 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
-@@ -20,8 +20,6 @@
- #include "dpu_crtc.h"
- #include "disp/msm_disp_snapshot.h"
- 
--#define DEFAULT_MAX_WRITEBACK_WIDTH 2048
--
- #define to_dpu_encoder_phys_wb(x) \
- 	container_of(x, struct dpu_encoder_phys_wb, base)
- 
-@@ -278,9 +276,9 @@ static int dpu_encoder_phys_wb_atomic_check(
- 		DPU_ERROR("invalid fb h=%d, mode h=%d\n", fb->height,
- 				  mode->vdisplay);
- 		return -EINVAL;
--	} else if (fb->width > DEFAULT_MAX_WRITEBACK_WIDTH) {
-+	} else if (fb->width > phys_enc->hw_wb->caps->maxlinewidth) {
- 		DPU_ERROR("invalid fb w=%d, maxlinewidth=%u\n",
--				  fb->width, DEFAULT_MAX_WRITEBACK_WIDTH);
-+				  fb->width, phys_enc->hw_wb->caps->maxlinewidth);
- 		return -EINVAL;
- 	}
- 
--- 
-2.35.1
-
+--- a/arch/s390/kernel/setup.c
++++ b/arch/s390/kernel/setup.c
+@@ -508,8 +508,8 @@ static void __init setup_lowcore_dat_on(
+ 	S390_lowcore.svc_new_psw.mask |= PSW_MASK_DAT;
+ 	S390_lowcore.program_new_psw.mask |= PSW_MASK_DAT;
+ 	S390_lowcore.io_new_psw.mask |= PSW_MASK_DAT;
+-	__ctl_set_bit(0, 28);
+ 	__ctl_store(S390_lowcore.cregs_save_area, 0, 15);
++	__ctl_set_bit(0, 28);
+ 	put_abs_lowcore(restart_flags, RESTART_FLAG_CTLREGS);
+ 	put_abs_lowcore(program_new_psw, lc->program_new_psw);
+ 	for (cr = 0; cr < ARRAY_SIZE(lc->cregs_save_area); cr++)
 
 
