@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C52ADC00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC35C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343830AbiHOV6l (ORCPT
+        id S1345568AbiHOV7D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56130 "EHLO
+        Mon, 15 Aug 2022 17:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245061AbiHOV5D (ORCPT
+        with ESMTP id S1347295AbiHOV5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:57:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A4DE398B;
-        Mon, 15 Aug 2022 12:34:36 -0700 (PDT)
+        Mon, 15 Aug 2022 17:57:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89E761D6E;
+        Mon, 15 Aug 2022 12:34:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CFA86114B;
-        Mon, 15 Aug 2022 19:34:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 679A1C433C1;
-        Mon, 15 Aug 2022 19:34:21 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 970DCCE1262;
+        Mon, 15 Aug 2022 19:34:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76869C433D6;
+        Mon, 15 Aug 2022 19:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592061;
-        bh=etTdpPIG0VrZzrSW1Uy6t2CsLZn9dPRHjvPBSvV4u9Y=;
+        s=korg; t=1660592074;
+        bh=MuUvQMQtUS6FdxlLbNBEqXsEkyLbc/1N/PGO89GjuTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MxP2Rir1OHaU/YkLOXiGoM5UfBUgceR0pc114eh7dIHz7AkC9nKiErVOZfPDNB0z6
-         eGPbKugoi1lxZySNF4o6KGiAFbgOMRDVTB/s6WzXCCTYUoGUQSyAl73MwkyChGbc0Y
-         2WJt/GVtvxL3K5vIzlYfummtcch/g2dCZr4I+MvU=
+        b=ProOOPoe0ONWG0lbgcw3vnKzgMglyw2S7q/WjxVVivt+EGTkExuyB9anIgIJ8ukDK
+         D4+DIe+xGIcIp/1rQML7cJfu2jb0OI69bYDELoVPGq3ilZz7ecoUqZ9y+WKks95719
+         3TAOZCn6zXl4xDbNr4yHctE8Zi+Wqydu+6kuf0t8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.19 0051/1157] tty: 8250: Add support for Brainboxes PX cards.
-Date:   Mon, 15 Aug 2022 19:50:07 +0200
-Message-Id: <20220815180441.488781703@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.19 0024/1157] KVM: nVMX: Snapshot pre-VM-Enter DEBUGCTL for !nested_run_pending case
+Date:   Mon, 15 Aug 2022 19:49:40 +0200
+Message-Id: <20220815180440.389253034@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -49,141 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cameron Williams <cang1@live.co.uk>
+From: Sean Christopherson <seanjc@google.com>
 
-commit ef5a03a26c87a760bc3d86b5af7b773e82f8b1b7 upstream.
+commit 764643a6be07445308e492a528197044c801b3ba upstream.
 
-Add support for some of the Brainboxes PCIe (PX) range of
-serial cards, including the PX-101, PX-235/PX-246,
-PX-203/PX-257, PX-260/PX-701, PX-310, PX-313,
-PX-320/PX-324/PX-376/PX-387, PX-335/PX-346, PX-368, PX-420,
-PX-803 and PX-846.
+If a nested run isn't pending, snapshot vmcs01.GUEST_IA32_DEBUGCTL
+irrespective of whether or not VM_ENTRY_LOAD_DEBUG_CONTROLS is set in
+vmcs12.  When restoring nested state, e.g. after migration, without a
+nested run pending, prepare_vmcs02() will propagate
+nested.vmcs01_debugctl to vmcs02, i.e. will load garbage/zeros into
+vmcs02.GUEST_IA32_DEBUGCTL.
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/AM5PR0202MB2564669252BDC59BF55A6E87C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com
+If userspace restores nested state before MSRs, then loading garbage is a
+non-issue as loading DEBUGCTL will also update vmcs02.  But if usersepace
+restores MSRs first, then KVM is responsible for propagating L2's value,
+which is actually thrown into vmcs01, into vmcs02.
+
+Restoring L2 MSRs into vmcs01, i.e. loading all MSRs before nested state
+is all kinds of bizarre and ideally would not be supported.  Sadly, some
+VMMs do exactly that and rely on KVM to make things work.
+
+Note, there's still a lurking SMM bug, as propagating vmcs01's DEBUGCTL
+to vmcs02 across RSM may corrupt L2's DEBUGCTL.  But KVM's entire VMX+SMM
+emulation is flawed as SMI+RSM should not toouch _any_ VMCS when use the
+"default treatment of SMIs", i.e. when not using an SMI Transfer Monitor.
+
+Link: https://lore.kernel.org/all/Yobt1XwOfb5M6Dfa@google.com
+Fixes: 8fcc4b5923af ("kvm: nVMX: Introduce KVM_CAP_NESTED_STATE")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220614215831.3762138-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |  109 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 109 insertions(+)
+ arch/x86/kvm/vmx/nested.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -5077,6 +5077,115 @@ static const struct pci_device_id serial
- 		0, 0,
- 		pbn_b2_4_115200 },
- 	/*
-+	 * Brainboxes PX-101
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4005,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4019,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-235/246
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4004,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4016,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-203/PX-257
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4006,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4015,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-260/PX-701
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-310
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-313
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400C,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-320/324/PX-376/PX-387
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400B,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-335/346
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400F,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-368
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x4010,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-420
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4000,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_4_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4011,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-803
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4009,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x401E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-846
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4008,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4017,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+
-+	/*
- 	 * Perle PCI-RAS cards
- 	 */
- 	{       PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3373,7 +3373,8 @@ enum nvmx_vmentry_status nested_vmx_ente
+ 	if (likely(!evaluate_pending_interrupts) && kvm_vcpu_apicv_active(vcpu))
+ 		evaluate_pending_interrupts |= vmx_has_apicv_interrupt(vcpu);
+ 
+-	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
++	if (!vmx->nested.nested_run_pending ||
++	    !(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
+ 		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
+ 	if (kvm_mpx_supported() &&
+ 	    (!vmx->nested.nested_run_pending ||
 
 
