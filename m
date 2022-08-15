@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 977D1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDA7C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351635AbiHOWqC (ORCPT
+        id S1351652AbiHOWqG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50294 "EHLO
+        Mon, 15 Aug 2022 18:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350430AbiHOWmh (ORCPT
+        with ESMTP id S1350689AbiHOWmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:42:37 -0400
+        Mon, 15 Aug 2022 18:42:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CDA74346;
-        Mon, 15 Aug 2022 12:52:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE537C515;
+        Mon, 15 Aug 2022 12:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 038A261206;
-        Mon, 15 Aug 2022 19:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F224AC433D6;
-        Mon, 15 Aug 2022 19:52:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D3C661206;
+        Mon, 15 Aug 2022 19:52:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AEC5C433D6;
+        Mon, 15 Aug 2022 19:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593135;
-        bh=0uKQ4XlDoVmec3sjjPuLPu/Rai684n2yPKBqpnW4JQ0=;
+        s=korg; t=1660593144;
+        bh=ZrmD6NIvlvB4c/OD2NuWsSHOYZ1Vb1Ay9jCFCc1P/sY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uElSEXc4s1UrVFjTMkhUubkm/L2ipAZDJdCdXvO8dw/V6yDNzekjt8sAbym5Xknke
-         fwH9Pp+aEjQTgM9iJRKIi72D98fOEGtMUhVNd6rhVyVkzQWg7Q7FU0OBBiKgGHZACc
-         kZCMN2CfpZV1rufJPKosVQEU7mhQ+QJCYYQ1S/mE=
+        b=kZGc4H/HSuH7YRHJREmt994wazBXYuLTokoz/NY1blcsTKtK3p/4iN0c5vhXKsj4P
+         +N64QuyMqP/mDj6OJ+fyrPsdLP77hvIqjKyrI/DWfRlOcGUXAAkHEdIikel+8bP+Je
+         +Xrx3J1ih/JcIwvXArUx0e/kafZ6WQ8Xh40hYMhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0892/1095] remoteproc: sysmon: Wait for SSCTL service to come up
-Date:   Mon, 15 Aug 2022 20:04:51 +0200
-Message-Id: <20220815180506.232156171@linuxfoundation.org>
+Subject: [PATCH 5.18 0902/1095] ASoC: fsl_easrc: use snd_pcm_format_t type for sample_format
+Date:   Mon, 15 Aug 2022 20:05:01 +0200
+Message-Id: <20220815180506.620039701@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -51,75 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sibi Sankar <quic_sibis@quicinc.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 47c04e00eff86a81cd357c3feed04c86089bcb85 ]
+[ Upstream commit de27216cf2d645c2fd14e513707bdcd54e5b1de4 ]
 
-The SSCTL service comes up after a finite time when the remote Q6 comes
-out of reset. Any graceful shutdowns requested during this period will
-be a NOP and abrupt tearing down of the glink channel might lead to pending
-transactions on the remote Q6 side and will ultimately lead to a fatal
-error. Fix this by waiting for the SSCTL service when a graceful shutdown
-is requested.
+Fix sparse warning:
+sound/soc/fsl/fsl_easrc.c:562:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:563:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:565:38: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:566:39: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:608:33: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:609:34: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:615:40: sparse: warning: restricted snd_pcm_format_t degrades to integer
+sound/soc/fsl/fsl_easrc.c:616:41: sparse: warning: restricted snd_pcm_format_t degrades to integer
 
-Fixes: 1fb82ee806d1 ("remoteproc: qcom: Introduce sysmon")
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1657022900-2049-7-git-send-email-quic_sibis@quicinc.com
+sound/soc/fsl/fsl_easrc.c:1465:51: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    expected unsigned int sample_format
+sound/soc/fsl/fsl_easrc.c:1465:51: sparse:    got restricted snd_pcm_format_t [usertype] format
+sound/soc/fsl/fsl_easrc.c:1467:52: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    expected unsigned int sample_format
+sound/soc/fsl/fsl_easrc.c:1467:52: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
+sound/soc/fsl/fsl_easrc.c:1470:52: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    expected unsigned int sample_format
+sound/soc/fsl/fsl_easrc.c:1470:52: sparse:    got restricted snd_pcm_format_t [usertype] format
+sound/soc/fsl/fsl_easrc.c:1472:51: sparse: warning: incorrect type in assignment (different base types)
+sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    expected unsigned int sample_format
+sound/soc/fsl/fsl_easrc.c:1472:51: sparse:    got restricted snd_pcm_format_t [usertype] asrc_format
+sound/soc/fsl/fsl_easrc.c:1484:41: sparse: warning: incorrect type in argument 2 (different base types)
+sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    expected restricted snd_pcm_format_t [usertype] *in_raw_format
+sound/soc/fsl/fsl_easrc.c:1484:41: sparse:    got unsigned int *
+sound/soc/fsl/fsl_easrc.c:1485:41: sparse: warning: incorrect type in argument 3 (different base types)
+sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    expected restricted snd_pcm_format_t [usertype] *out_raw_format
+sound/soc/fsl/fsl_easrc.c:1485:41: sparse:    got unsigned int *
+sound/soc/fsl/fsl_easrc.c:1937:60: sparse: warning: incorrect type in argument 3 (different base types)
+sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    expected unsigned int [usertype] *out_value
+sound/soc/fsl/fsl_easrc.c:1937:60: sparse:    got restricted snd_pcm_format_t *
+sound/soc/fsl/fsl_easrc.c:1943:49: sparse: warning: restricted snd_pcm_format_t degrades to integer
+
+Fixes: 955ac624058f ("ASoC: fsl_easrc: Add EASRC ASoC CPU DAI drivers")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1658399393-28777-5-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_sysmon.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/soc/fsl/fsl_easrc.c | 9 ++++++---
+ sound/soc/fsl/fsl_easrc.h | 2 +-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_sysmon.c b/drivers/remoteproc/qcom_sysmon.c
-index 9fca81492863..a9f04dd83ab6 100644
---- a/drivers/remoteproc/qcom_sysmon.c
-+++ b/drivers/remoteproc/qcom_sysmon.c
-@@ -41,6 +41,7 @@ struct qcom_sysmon {
- 	struct completion comp;
- 	struct completion ind_comp;
- 	struct completion shutdown_comp;
-+	struct completion ssctl_comp;
- 	struct mutex lock;
+diff --git a/sound/soc/fsl/fsl_easrc.c b/sound/soc/fsl/fsl_easrc.c
+index be14f84796cb..cf0e10d17dbe 100644
+--- a/sound/soc/fsl/fsl_easrc.c
++++ b/sound/soc/fsl/fsl_easrc.c
+@@ -476,7 +476,8 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
+ 	struct fsl_asrc_pair *ctx;
+ 	struct device *dev;
+ 	u32 inrate, outrate, offset = 0;
+-	u32 in_s_rate, out_s_rate, in_s_fmt, out_s_fmt;
++	u32 in_s_rate, out_s_rate;
++	snd_pcm_format_t in_s_fmt, out_s_fmt;
+ 	int ret, i;
  
- 	bool ssr_ack;
-@@ -445,6 +446,8 @@ static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
+ 	if (!easrc)
+@@ -1873,6 +1874,7 @@ static int fsl_easrc_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	struct device_node *np;
+ 	void __iomem *regs;
++	u32 asrc_fmt = 0;
+ 	int ret, irq;
  
- 	svc->priv = sysmon;
+ 	easrc = devm_kzalloc(dev, sizeof(*easrc), GFP_KERNEL);
+@@ -1933,13 +1935,14 @@ static int fsl_easrc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
-+	complete(&sysmon->ssctl_comp);
-+
- 	return 0;
- }
+-	ret = of_property_read_u32(np, "fsl,asrc-format", &easrc->asrc_format);
++	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc_fmt);
++	easrc->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
+ 	if (ret) {
+ 		dev_err(dev, "failed to asrc format\n");
+ 		return ret;
+ 	}
  
-@@ -501,6 +504,7 @@ static int sysmon_start(struct rproc_subdev *subdev)
- 		.ssr_event = SSCTL_SSR_EVENT_AFTER_POWERUP
- 	};
- 
-+	reinit_completion(&sysmon->ssctl_comp);
- 	mutex_lock(&sysmon->state_lock);
- 	sysmon->state = SSCTL_SSR_EVENT_AFTER_POWERUP;
- 	blocking_notifier_call_chain(&sysmon_notifiers, 0, (void *)&event);
-@@ -545,6 +549,11 @@ static void sysmon_stop(struct rproc_subdev *subdev, bool crashed)
- 	if (crashed)
- 		return;
- 
-+	if (sysmon->ssctl_instance) {
-+		if (!wait_for_completion_timeout(&sysmon->ssctl_comp, HZ / 2))
-+			dev_err(sysmon->dev, "timeout waiting for ssctl service\n");
-+	}
-+
- 	if (sysmon->ssctl_version)
- 		sysmon->shutdown_acked = ssctl_request_shutdown(sysmon);
- 	else if (sysmon->ept)
-@@ -631,6 +640,7 @@ struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
- 	init_completion(&sysmon->comp);
- 	init_completion(&sysmon->ind_comp);
- 	init_completion(&sysmon->shutdown_comp);
-+	init_completion(&sysmon->ssctl_comp);
- 	mutex_init(&sysmon->lock);
- 	mutex_init(&sysmon->state_lock);
+-	if (!(FSL_EASRC_FORMATS & (1ULL << easrc->asrc_format))) {
++	if (!(FSL_EASRC_FORMATS & (pcm_format_to_bits(easrc->asrc_format)))) {
+ 		dev_warn(dev, "unsupported format, switching to S24_LE\n");
+ 		easrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
+ 	}
+diff --git a/sound/soc/fsl/fsl_easrc.h b/sound/soc/fsl/fsl_easrc.h
+index 30620d56252c..5b8469757c12 100644
+--- a/sound/soc/fsl/fsl_easrc.h
++++ b/sound/soc/fsl/fsl_easrc.h
+@@ -569,7 +569,7 @@ struct fsl_easrc_io_params {
+ 	unsigned int access_len;
+ 	unsigned int fifo_wtmk;
+ 	unsigned int sample_rate;
+-	unsigned int sample_format;
++	snd_pcm_format_t sample_format;
+ 	unsigned int norm_rate;
+ };
  
 -- 
 2.35.1
