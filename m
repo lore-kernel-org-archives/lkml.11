@@ -2,189 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA8D3C282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3374C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 09:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241971AbiHOJoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 05:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
+        id S231922AbiHOJri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 05:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242142AbiHOJol (ORCPT
+        with ESMTP id S232116AbiHOJrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 05:44:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2148E2253A;
-        Mon, 15 Aug 2022 02:44:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8B7261026;
-        Mon, 15 Aug 2022 09:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82466C433C1;
-        Mon, 15 Aug 2022 09:44:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660556679;
-        bh=QaGBzqhn0ZD/7Zc89Ov2cg1W44KZCJ7lb2WJY5GCRe0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R2Ofi4zyad+oWz3HSL8eqIZkRZa1q6PYP3byrgrIvNeESt3UDcRvypPVdxOIa0rLu
-         DJfDWXiIXk+lF+2z8fMZbipcFDoqefOkINi/1sKBUey2Ymdx3AYmxXsJ6A0tEfmY6o
-         MGL2DWhpT+5/Rwrj3yZTlmHwSjFtDlF+RXnSbC7SDlhUp7ccqHs1/cifyQQ0V3V6T4
-         eUo1MzxbSFxwVkhE4lY/UCmKW1kbznB+YilWQ6Ot1hD/hxHDXIY4AI+8oMmFYjq+tv
-         pEAxBC0eHySIMaUe2GNV6CCNmyd4r/vsF9MXNBW3H411HH5kEMvFGBcYFu4hGu/iDP
-         av0IFTplRP1SA==
-Date:   Mon, 15 Aug 2022 11:44:32 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>, linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, devel@openvz.org
-Subject: Re: [PATCH v2 1/2] neigh: fix possible DoS due to net iface
- start/stop loop
-Message-ID: <20220815094432.tdqdfh3pwcfekegg@wittgenstein>
-References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
- <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
- <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
+        Mon, 15 Aug 2022 05:47:36 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F098D1928A
+        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 02:47:34 -0700 (PDT)
+Received: from fsav411.sakura.ne.jp (fsav411.sakura.ne.jp [133.242.250.110])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 27F9lP4H060928;
+        Mon, 15 Aug 2022 18:47:25 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav411.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp);
+ Mon, 15 Aug 2022 18:47:25 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 27F9lJN7060918
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 15 Aug 2022 18:47:19 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <410a1a56-2f14-5cee-e5ce-61afe516b8fc@I-love.SAKURA.ne.jp>
+Date:   Mon, 15 Aug 2022 18:47:16 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v2 (REPOST)] rapidio/tsi721: Replace
+ flush_scheduled_work() with flush_work().
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <8347375e-29fd-cd45-2b07-5504c9ddbd0c@I-love.SAKURA.ne.jp>
+ <20220814171422.49b14550b9f3f3794166316e@linux-foundation.org>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <20220814171422.49b14550b9f3f3794166316e@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 07:08:39PM +0300, Alexander Mikhalitsyn wrote:
-> From: "Denis V. Lunev" <den@openvz.org>
+On 2022/08/15 9:14, Andrew Morton wrote:
+> On Thu, 28 Jul 2022 10:02:13 +0900 Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> wrote:
 > 
-> Normal processing of ARP request (usually this is Ethernet broadcast
-> packet) coming to the host is looking like the following:
-> * the packet comes to arp_process() call and is passed through routing
->   procedure
-> * the request is put into the queue using pneigh_enqueue() if
->   corresponding ARP record is not local (common case for container
->   records on the host)
-> * the request is processed by timer (within 80 jiffies by default) and
->   ARP reply is sent from the same arp_process() using
->   NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
->   pneigh_enqueue())
+>> Since "struct tsi721_device" is per a device struct, I assume that
+>> tsi721_remove() needs to wait for only two works associated with that
+>> device. Therefore, wait for only these works using flush_work().
 > 
-> And here the problem comes. Linux kernel calls pneigh_queue_purge()
-> which destroys the whole queue of ARP requests on ANY network interface
-> start/stop event through __neigh_ifdown().
-> 
-> This is actually not a problem within the original world as network
-> interface start/stop was accessible to the host 'root' only, which
-> could do more destructive things. But the world is changed and there
-> are Linux containers available. Here container 'root' has an access
-> to this API and could be considered as untrusted user in the hosting
-> (container's) world.
-> 
-> Thus there is an attack vector to other containers on node when
-> container's root will endlessly start/stop interfaces. We have observed
-> similar situation on a real production node when docker container was
-> doing such activity and thus other containers on the node become not
-> accessible.
-> 
-> The patch proposed doing very simple thing. It drops only packets from
-> the same namespace in the pneigh_queue_purge() where network interface
-> state change is detected. This is enough to prevent the problem for the
-> whole node preserving original semantics of the code.
+> The changelog provides no reason for making this change.  Correctness?
+> Efficiency?
 
-This is how I'd do it as well.
+For reducing locking dependency chains that might lead to deadlock.
 
-> 
-> v2:
-> 	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: Yajun Deng <yajun.deng@linux.dev>
-> Cc: Roopa Prabhu <roopa@nvidia.com>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-> Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-> Cc: kernel@openvz.org
-> Cc: devel@openvz.org
-> Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-> Signed-off-by: Denis V. Lunev <den@openvz.org>
-> ---
->  net/core/neighbour.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 54625287ee5b..19d99d1eff53 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -307,14 +307,23 @@ static int neigh_del_timer(struct neighbour *n)
->  	return 0;
->  }
->  
-> -static void pneigh_queue_purge(struct sk_buff_head *list)
-> +static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
->  {
-> +	unsigned long flags;
->  	struct sk_buff *skb;
->  
-> -	while ((skb = skb_dequeue(list)) != NULL) {
-> -		dev_put(skb->dev);
-> -		kfree_skb(skb);
-> +	spin_lock_irqsave(&list->lock, flags);
+The reason was explained in commit c4f135d643823a86 ("workqueue: Wrap flush_workqueue()
+using a macro"). For example, after the fact it turned out that a blind conversion patch
+fixed a deadlock problem at https://syzkaller.appspot.com/bug?extid=2d6ac90723742279e101
+which was hidden due to use of lockdep_set_novalidate_class() call.
 
-I'm a bit surprised to see a spinlock held around a while loop walking a
-linked list but that seems to be quite common in this file. I take it
-the lists are guaranteed to be short.
+Many of flush_scheduled_work() callers have been removed by v6.0-rc1, but not all
+patches were verbose (because the reason was already explained).
 
-> +	skb = skb_peek(list);
-> +	while (skb != NULL) {
-> +		struct sk_buff *skb_next = skb_peek_next(skb, list);
-> +		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-> +			__skb_unlink(skb, list);
-> +			dev_put(skb->dev);
-> +			kfree_skb(skb);
-> +		}
-> +		skb = skb_next;
->  	}
-> +	spin_unlock_irqrestore(&list->lock, flags);
->  }
->  
->  static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
-> @@ -385,9 +394,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
->  	write_lock_bh(&tbl->lock);
->  	neigh_flush_dev(tbl, dev, skip_perm);
->  	pneigh_ifdown_and_unlock(tbl, dev);
-> -
-> -	del_timer_sync(&tbl->proxy_timer);
-> -	pneigh_queue_purge(&tbl->proxy_queue);
-> +	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-> +	if (skb_queue_empty_lockless(&tbl->proxy_queue))
-> +		del_timer_sync(&tbl->proxy_timer);
->  	return 0;
->  }
->  
-> @@ -1787,7 +1796,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
->  	cancel_delayed_work_sync(&tbl->managed_work);
->  	cancel_delayed_work_sync(&tbl->gc_work);
->  	del_timer_sync(&tbl->proxy_timer);
-> -	pneigh_queue_purge(&tbl->proxy_queue);
-> +	pneigh_queue_purge(&tbl->proxy_queue, NULL);
->  	neigh_ifdown(tbl, NULL);
->  	if (atomic_read(&tbl->entries))
->  		pr_crit("neighbour leakage\n");
-> -- 
-> 2.36.1
-> 
+  a1124c84d467 power: supply: ab8500: Remove flush_scheduled_work() call.
+  162b05524ed3 rtc: Replace flush_scheduled_work() with flush_work().
+  31a1e4a5c104 platform/surface: avoid flush_scheduled_work() usage
+  90c3ca3f247d scsi: mpt3sas: Remove flush_scheduled_work() call
+  62ebaf2f9261 ath6kl: avoid flush_scheduled_work() usage
+  76faa32077b0 iio: light: tsl2563: Replace flush_scheduled_work() with cancel_delayed_work_sync().
+  4bbdc208a5ff staging: olpc_dcon: Replace flush_scheduled_work() with flush_work().
+  c4f135d64382 workqueue: Wrap flush_workqueue() using a macro
+  9cf62d91e4b7 RDMA/mlx4: Avoid flush_scheduled_work() usage
+  549f39a58acf IB/isert: Avoid flush_scheduled_work() usage
+  1b3ce51dde36 Input: psmouse-smbus - avoid flush_scheduled_work() usage
+  0a2f4b5785ca crypto: atmel - Avoid flush_scheduled_work() usage
+  eeff214dbfcb wfx: avoid flush_workqueue(system_highpri_wq) usage
+  0b8d7622ab18 aoe: Avoid flush_scheduled_work() usage
+  cc271ab86606 wwan_hwsim: Avoid flush_scheduled_work() usage
+  ff815a89398d RDMA/core: Avoid flush_workqueue(system_unbound_wq) usage
+
+There are 7 callers remaining as of v6.0-rc1, and I'm pinging them for heads up.
+
+  drivers/gpu/drm/bridge/cadence/cdns-mhdp8546-core.c
+  drivers/gpu/drm/i915/display/intel_display.c
+  drivers/gpu/drm/i915/gt/selftest_execlists.c
+  drivers/md/dm.c
+  drivers/message/fusion/mptscsih.c
+  drivers/rapidio/devices/tsi721.c
+  drivers/scsi/qla2xxx/qla_target.c
+
+If you want to update patch description, you can insert the following.
+
+----------------------------------------
+
+Like commit c4f135d643823a86 ("workqueue: Wrap flush_workqueue() using a
+macro") says, flush_scheduled_work() is dangerous and will be forbidden.
+We are on the way for removing all flush_scheduled_work() callers from
+the kernel, and this patch is for removing flush_scheduled_work() call
+ from tsi721 driver.
+
