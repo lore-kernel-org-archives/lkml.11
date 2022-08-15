@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAF2C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 600BFC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 01:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343498AbiHPBHe (ORCPT
+        id S1346864AbiHPBHn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 21:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
+        Mon, 15 Aug 2022 21:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348546AbiHPBCS (ORCPT
+        with ESMTP id S1348391AbiHPBCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 21:02:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDEAEB9FA7;
-        Mon, 15 Aug 2022 13:50:53 -0700 (PDT)
+        Mon, 15 Aug 2022 21:02:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A433DCFD6;
+        Mon, 15 Aug 2022 13:50:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26A31B811AB;
-        Mon, 15 Aug 2022 20:50:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84FC4C433C1;
-        Mon, 15 Aug 2022 20:50:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E66361239;
+        Mon, 15 Aug 2022 20:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BEE2C433B5;
+        Mon, 15 Aug 2022 20:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596650;
-        bh=HPQ3uqaqAfVf4S6PuzQ/p3Xy42uW6oBrQE6d2Cc8B6s=;
+        s=korg; t=1660596632;
+        bh=vDkvebUt7MZA8+U3hS5joEOkD7qc/yPP/d1mBQwSSSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vbShbruym06Wk/ce8Td1N2yLBewE+rD5hhY5IAff2thIaIPh/Jbi9OQAYJzJUeFlU
-         XL+7ZXR2SdaevIiyu5qPYZascLN+1Tpcr8mVM4lRvRQI9FUvfg/Bdf6kqOIHmzIy8Y
-         iaZFszlHUqCNHdO7q4Lz6SX0fT8x9nNcNNYT+CUc=
+        b=vg97i6CSsVYaDzl4LQlSqP7gd/mVauc7/e5WD/f8ARJsRNmzAcNtr584/OfuiznzN
+         SRH/ZF97DtS88HzwQUkWfSUpnzJ52092u5tMQu6Ba54uQEm1ybZwDFpTQeL64xbQmq
+         PF61vq8+Bt82EScnwlO6BBkMWv0AvADyBQWxChTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.19 1146/1157] mptcp: refine memory scheduling
-Date:   Mon, 15 Aug 2022 20:08:22 +0200
-Message-Id: <20220815180526.349759462@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.19 1141/1157] crypto: lib/blake2s - reduce stack frame usage in self test
+Date:   Mon, 15 Aug 2022 20:08:17 +0200
+Message-Id: <20220815180526.112677632@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,35 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 69d93daec026cdda98e29e8edb12534bfa5b1a9b upstream.
+commit d6c14da474bf260d73953fbf7992c98d9112aec7 upstream.
 
-Similar to commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors"), let the MPTCP receive path schedule
-exactly the required amount of memory.
+Using 3 blocks here doesn't give us much more than using 2, and it
+causes a stack frame size warning on certain compiler/config/arch
+combinations:
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+   lib/crypto/blake2s-selftest.c: In function 'blake2s_selftest':
+>> lib/crypto/blake2s-selftest.c:632:1: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+     632 | }
+         | ^
+
+So this patch just reduces the block from 3 to 2, which makes the
+warning go away.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/linux-crypto/202206200851.gE3MHCgd-lkp@intel.com
+Fixes: 2d16803c562e ("crypto: blake2s - remove shash module")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mptcp/protocol.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ lib/crypto/blake2s-selftest.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -323,9 +323,10 @@ static bool mptcp_rmem_schedule(struct s
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	int amt, amount;
+--- a/lib/crypto/blake2s-selftest.c
++++ b/lib/crypto/blake2s-selftest.c
+@@ -593,7 +593,7 @@ bool __init blake2s_selftest(void)
+ 		enum { TEST_ALIGNMENT = 16 };
+ 		u8 unaligned_block[BLAKE2S_BLOCK_SIZE + TEST_ALIGNMENT - 1]
+ 					__aligned(TEST_ALIGNMENT);
+-		u8 blocks[BLAKE2S_BLOCK_SIZE * 3];
++		u8 blocks[BLAKE2S_BLOCK_SIZE * 2];
+ 		struct blake2s_state state1, state2;
  
--	if (size < msk->rmem_fwd_alloc)
-+	if (size <= msk->rmem_fwd_alloc)
- 		return true;
- 
-+	size -= msk->rmem_fwd_alloc;
- 	amt = sk_mem_pages(size);
- 	amount = amt << SK_MEM_QUANTUM_SHIFT;
- 	msk->rmem_fwd_alloc += amount;
+ 		get_random_bytes(blocks, sizeof(blocks));
+@@ -603,8 +603,8 @@ bool __init blake2s_selftest(void)
+     defined(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S)
+ 		memcpy(&state1, &state, sizeof(state1));
+ 		memcpy(&state2, &state, sizeof(state2));
+-		blake2s_compress(&state1, blocks, 3, BLAKE2S_BLOCK_SIZE);
+-		blake2s_compress_generic(&state2, blocks, 3, BLAKE2S_BLOCK_SIZE);
++		blake2s_compress(&state1, blocks, 2, BLAKE2S_BLOCK_SIZE);
++		blake2s_compress_generic(&state2, blocks, 2, BLAKE2S_BLOCK_SIZE);
+ 		if (memcmp(&state1, &state2, sizeof(state1))) {
+ 			pr_err("blake2s random compress self-test %d: FAIL\n",
+ 			       i + 1);
 
 
