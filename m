@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F52C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E105C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350591AbiHPA1k (ORCPT
+        id S1350924AbiHPA1r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
+        Mon, 15 Aug 2022 20:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353324AbiHPAZ5 (ORCPT
+        with ESMTP id S1357100AbiHPA06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:25:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A436FA21;
-        Mon, 15 Aug 2022 13:34:27 -0700 (PDT)
+        Mon, 15 Aug 2022 20:26:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E651180B62;
+        Mon, 15 Aug 2022 13:34:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1821F611E7;
-        Mon, 15 Aug 2022 20:34:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F112C433D7;
-        Mon, 15 Aug 2022 20:34:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BAC2B8113E;
+        Mon, 15 Aug 2022 20:34:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF0AC433C1;
+        Mon, 15 Aug 2022 20:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595666;
-        bh=IEw2+7fat2zf456WyY63t95UESRb53CBUFzlL2bLdck=;
+        s=korg; t=1660595688;
+        bh=LlWXzo+ay1TYd13G3nCLValj8epFIQqO5xQfwJDSVxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DiBbEFggUy6gWhP9t8ucNrhI1jnr1YXYlNewF5wAOBvmZCYpCJ2+kz1uNoVFwshLl
-         ZRldItJlvtMcl91laX1Y9qOZhignQn/Hdj5miL0BJVpDBPpkJ/3Yk0rvhYISjDqfYE
-         7fLhvMprBzqQprRelgB1Duw+gOQF2+hIF+wLiPbM=
+        b=PpTPpl0VmkTpwDqjzyHqnJi412I2WQzvhXVXOvpV83AU96RtcTj8UCDr9sN+lE73C
+         uGEATpkOLhLWC+cbgmKPGv5MfSb/tPsRqqI7XQDOWu7PoqoEwBw1K55QBsgr//yUQ9
+         sq/UCJm/nP2Lx/eH//6G4gFaksibNH774/fapqTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        stable@vger.kernel.org, Artem Borisov <dedsa2002@gmail.com>,
         Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0837/1157] HID: amd_sfh: Add NULL check for hid device
-Date:   Mon, 15 Aug 2022 20:03:13 +0200
-Message-Id: <20220815180512.978813251@linuxfoundation.org>
+Subject: [PATCH 5.19 0844/1157] HID: alps: Declare U1_UNICORN_LEGACY support
+Date:   Mon, 15 Aug 2022 20:03:20 +0200
+Message-Id: <20220815180513.259874097@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -50,45 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Artem Borisov <dedsa2002@gmail.com>
 
-[ Upstream commit 06aa2a43c307cf4096f422dcb575e5d2913e528f ]
+[ Upstream commit 1117d182c5d72abd7eb8b7d5e7b8c3373181c3ab ]
 
-On removal of hid device during SFH set report may cause NULL pointer
-exception. Hence add NULL check for hid device before accessing.
+U1_UNICORN_LEGACY id was added to the driver, but was not declared
+in the device id table, making it impossible to use.
 
-Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
+Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/hid/hid-alps.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-index 1089134030b0..1b18291fc5af 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-@@ -101,11 +101,15 @@ static int amdtp_wait_for_response(struct hid_device *hid)
- 
- void amdtp_hid_wakeup(struct hid_device *hid)
- {
--	struct amdtp_hid_data *hid_data = hid->driver_data;
--	struct amdtp_cl_data *cli_data = hid_data->cli_data;
-+	struct amdtp_hid_data *hid_data;
-+	struct amdtp_cl_data *cli_data;
- 
--	cli_data->request_done[cli_data->cur_hid_dev] = true;
--	wake_up_interruptible(&hid_data->hid_wait);
-+	if (hid) {
-+		hid_data = hid->driver_data;
-+		cli_data = hid_data->cli_data;
-+		cli_data->request_done[cli_data->cur_hid_dev] = true;
-+		wake_up_interruptible(&hid_data->hid_wait);
-+	}
- }
- 
- static struct hid_ll_driver amdtp_hid_ll_driver = {
+diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
+index 2b986d0dbde4..db146d0f7937 100644
+--- a/drivers/hid/hid-alps.c
++++ b/drivers/hid/hid-alps.c
+@@ -830,6 +830,8 @@ static const struct hid_device_id alps_id[] = {
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
++	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
++		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
+ 		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
+ 	{ }
 -- 
 2.35.1
 
