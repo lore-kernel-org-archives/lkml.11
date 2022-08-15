@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F83FC282E7
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1135C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 21:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349355AbiHOVlC (ORCPT
+        id S1349300AbiHOVkx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 17:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        Mon, 15 Aug 2022 17:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348693AbiHOVhC (ORCPT
+        with ESMTP id S1348667AbiHOVhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 17:37:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9F3302;
-        Mon, 15 Aug 2022 12:26:58 -0700 (PDT)
+        Mon, 15 Aug 2022 17:37:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CF32E4;
+        Mon, 15 Aug 2022 12:26:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21E1EB810C6;
-        Mon, 15 Aug 2022 19:26:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60079C433C1;
-        Mon, 15 Aug 2022 19:26:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C7F8610A3;
+        Mon, 15 Aug 2022 19:26:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32FC7C433C1;
+        Mon, 15 Aug 2022 19:26:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660591615;
-        bh=Wqu/9eB3IBw4Rlu01YrHumyUkZpx4nb+nPdYyBgmIMA=;
+        s=korg; t=1660591612;
+        bh=ZxyM/5s66vFtuDDP4J/0MFczF9QSWxEyXjL60nT96AE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NxXoQ0w8ht2xcj1wHScdJoaEzxAmsM6BYR57mOSRUIvmIfcwoSG7LIOjmU6XpH3dY
-         mAoXl5QaiNoXq43FL634/cnD5nVqbe9EuIC72lCWMNKejNm/e0EysrvVvhC8/3mi4v
-         Gwau9BqhcPiMcYenjA6A8QGest3tW2aeox78O0Uk=
+        b=Q4J8NacJkVa2rfvCuXuFmNLXAm0VNy9z5I0OlBp6RKOyUHb+yzf/RI8KRUtgokO9Q
+         3KNK/A68Lh3Ie/qbIiJwCsQZURtSNNj4RTdZVFrsARYYu7rAQYFCBd2+HfBViPxgPx
+         wCHmICwuVhi6zPTqKKGQpKknE1rkXuMtst9DR/+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        David Lechner <david@lechnology.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0620/1095] iio: adc: ti-ads7950: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:19 +0200
-Message-Id: <20220815180455.122978329@linuxfoundation.org>
+Subject: [PATCH 5.18 0637/1095] iio: dac: ad5766: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:36 +0200
+Message-Id: <20220815180455.770895356@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
 References: <20220815180429.240518113@linuxfoundation.org>
@@ -54,42 +53,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit dd54ba8b2469f6ae665c529623a9454ce5293ca8 ]
+[ Upstream commit c32be7f035ae430ba9c142b03ceb9f935b09ed6b ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
-
-Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
+Fixes: fd9373e41b9b ("iio: dac: ad5766: add driver support for AD5766")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: David Lechner <david@lechnology.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-37-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-54-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ti-ads7950.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5766.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index e3658b969c5b..2cc9a9bd9db6 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -102,11 +102,11 @@ struct ti_ads7950_state {
- 	unsigned int		gpio_cmd_settings_bitmask;
+diff --git a/drivers/iio/dac/ad5766.c b/drivers/iio/dac/ad5766.c
+index 43189af2fb1f..899894523752 100644
+--- a/drivers/iio/dac/ad5766.c
++++ b/drivers/iio/dac/ad5766.c
+@@ -123,7 +123,7 @@ struct ad5766_state {
+ 		u32	d32;
+ 		u16	w16[2];
+ 		u8	b8[4];
+-	} data[3] ____cacheline_aligned;
++	} data[3] __aligned(IIO_DMA_MINALIGN);
+ };
  
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
- 	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2 + TI_ADS7950_TIMESTAMP_SIZE]
--							____cacheline_aligned;
-+		__aligned(IIO_DMA_MINALIGN);
- 	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
- 	u16 single_tx;
- 	u16 single_rx;
+ struct ad5766_span_tbl {
 -- 
 2.35.1
 
