@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15610C00140
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D89C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351875AbiHOWwV (ORCPT
+        id S1351919AbiHOWw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        Mon, 15 Aug 2022 18:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351925AbiHOWtw (ORCPT
+        with ESMTP id S1351956AbiHOWuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:49:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA67574DC9;
-        Mon, 15 Aug 2022 12:53:48 -0700 (PDT)
+        Mon, 15 Aug 2022 18:50:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A3A13728B;
+        Mon, 15 Aug 2022 12:53:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AD246122B;
-        Mon, 15 Aug 2022 19:53:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4549EC433D6;
-        Mon, 15 Aug 2022 19:53:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED54EB80EB1;
+        Mon, 15 Aug 2022 19:53:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FF6C433C1;
+        Mon, 15 Aug 2022 19:53:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660593227;
-        bh=wvNzw7DQdnhF+QKs3givu5smwTEe8WsQIiupZFUE5UM=;
+        s=korg; t=1660593230;
+        bh=hjKaXMlf/qIWQalHOBKYAOOd5KyNV3mEb9Uy2J+LTrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GbM6BxxLK+/cgTR1pzb60Cv6vASzkdQQ57hYU164QVhQcgygoDxLrLhLEAynE4qDg
-         Q9cCJlxIJHjm1vZELOBh+lD+H9RRhM4bcl7Ud+YcDhi7LtbKkPQWf53UWY1zL83Yxm
-         vaBDgKxf9w1SRiYOZwBwaP5hnlOOo47hmvnXLWO8=
+        b=Y9FMMkVsQ2hrqsXJOVlmzx3JhJEUCVhGyv/Lt7y17Gvfeq+qDV2wi0b45VrJvXNWP
+         scvU2ze3K6HJbpCVezCGrlXk8hq346b2TldX7B/eH5aO/+3u1aq2vSIZuhb/FEuk2E
+         2gXhCoq3A7KXH1n5cpQLsyTQ5A4LtyR7CYtZ18eQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0233/1157] arm64: dts: qcom: sdm636-sony-xperia-ganges-mermaid: correct sdc2 pinconf
-Date:   Mon, 15 Aug 2022 19:53:09 +0200
-Message-Id: <20220815180448.896654290@linuxfoundation.org>
+Subject: [PATCH 5.18 0915/1095] powerpc/32: Call mmu_mark_initmem_nx() regardless of data block mapping.
+Date:   Mon, 15 Aug 2022 20:05:14 +0200
+Message-Id: <20220815180507.134696584@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,37 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 3a04cec9cba393abfe70fc62e523f381c9baec2e ]
+[ Upstream commit 980bbf7ca72012d317617fcdbfabe8708e4cef29 ]
 
-Fix the device tree node in the &sdc2_state_on override. The sdm630 uses
-'clk' rather than 'pinconf-clk'.
+mark_initmem_nx() calls either mmu_mark_initmem_nx() or
+set_memory_attr() based on return from v_block_mapped()
+of _sinittext.
 
-Fixes: 4c1d849ec047 ("arm64: dts: qcom: sdm630-xperia: Retire sdm630-sony-xperia-ganges.dtsi")
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220521202708.1509308-9-dmitry.baryshkov@linaro.org
+But we can now handle text and data independently, so that
+text may be mapped by block even when data is mapped by pages.
+
+On the 8xx for instance, at startup 32Mbytes of memory are
+pinned in TLB. So the pinned entries need to go away for sinittext.
+
+In next patch a BAT will be set to also covers sinittext on book3s/32.
+So it will also be needed to call mmu_mark_initmem_nx() even when
+data above sinittext is not mapped with BATs.
+
+As this is highly dependent on the platform, call mmu_mark_initmem_nx()
+regardless of data block mapping. Then the platform will know what to
+do.
+
+Modify 8xx mmu_mark_initmem_nx() so that inittext mapping is modified
+only when pagealloc debug and kfence are not active, otherwise inittext
+is mapped with standard pages. And don't do anything on kernel text
+which is already mapped with PAGE_KERNEL_TEXT.
+
+Fixes: da1adea07576 ("powerpc/8xx: Allow STRICT_KERNEL_RwX with pinned TLB")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/db3fc14f3bfa6215b0786ef58a6e2bc1e1f964d7.1655202804.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/mm/nohash/8xx.c | 4 ++--
+ arch/powerpc/mm/pgtable_32.c | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts b/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts
-index b96da53f2f1e..58f687fc49e0 100644
---- a/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm636-sony-xperia-ganges-mermaid.dts
-@@ -19,7 +19,7 @@ / {
- };
+diff --git a/arch/powerpc/mm/nohash/8xx.c b/arch/powerpc/mm/nohash/8xx.c
+index 27f9186ae374..1ee08c3efe5b 100644
+--- a/arch/powerpc/mm/nohash/8xx.c
++++ b/arch/powerpc/mm/nohash/8xx.c
+@@ -179,8 +179,8 @@ void mmu_mark_initmem_nx(void)
+ 	unsigned long boundary = strict_kernel_rwx_enabled() ? sinittext : etext8;
+ 	unsigned long einittext8 = ALIGN(__pa(_einittext), SZ_8M);
  
- &sdc2_state_on {
--	pinconf-clk {
-+	clk {
- 		drive-strength = <14>;
- 	};
- };
+-	mmu_mapin_ram_chunk(0, boundary, PAGE_KERNEL_TEXT, false);
+-	mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
++	if (!debug_pagealloc_enabled_or_kfence())
++		mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
+ 
+ 	mmu_pin_tlb(block_mapped_ram, false);
+ }
+diff --git a/arch/powerpc/mm/pgtable_32.c b/arch/powerpc/mm/pgtable_32.c
+index a56ade39dc68..3ac73f9fb5d5 100644
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -135,9 +135,9 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
+ 
+-	if (v_block_mapped((unsigned long)_sinittext)) {
+-		mmu_mark_initmem_nx();
+-	} else {
++	mmu_mark_initmem_nx();
++
++	if (!v_block_mapped((unsigned long)_sinittext)) {
+ 		set_memory_nx((unsigned long)_sinittext, numpages);
+ 		set_memory_rw((unsigned long)_sinittext, numpages);
+ 	}
 -- 
 2.35.1
 
