@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F945C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 999FEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245010AbiHOWTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54762 "EHLO
+        id S1344633AbiHOWT5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 15 Aug 2022 18:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245684AbiHOWPk (ORCPT
+        with ESMTP id S1347059AbiHOWPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:15:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852306745A;
-        Mon, 15 Aug 2022 12:39:49 -0700 (PDT)
+        Mon, 15 Aug 2022 18:15:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA06811FD0F;
+        Mon, 15 Aug 2022 12:39:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48120B80EAD;
-        Mon, 15 Aug 2022 19:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D82C433B5;
-        Mon, 15 Aug 2022 19:39:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62908B81136;
+        Mon, 15 Aug 2022 19:39:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A33A8C433C1;
+        Mon, 15 Aug 2022 19:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592366;
-        bh=NnNp7DWWOboATNhkynY0ZdcfWWZJZrnmvFmpd0g1rf4=;
+        s=korg; t=1660592391;
+        bh=R8yxeifnW/C+ZIsn9QhQpqxpvBGG+oGcICoWCpEV/dU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RVs3aSDHMCZrozmDbROchD1tQkB/8iKtW3UmRlM4PvW6CaRYK2tXHXwIw3PtC6Uc2
-         81wKCHQ5u80FveA7XXQOUciFkYXBTyTJjO7NEcPwoYqKVBMiVBCPTLbiuU4Ewz8lvi
-         YR0CBoU3bimDdYHBWfUNDsP0z/9CSUOheBBYU1Rc=
+        b=XmXvvNj4v2K6aSNexxoYvIpU8/LQXs/0kim9tWB3bIcvcHJyevs1n4qRURDRN2zuE
+         nL+eJx0Jl2Jc1dPn/Yxx61kNnTfhwoK0Q767/sSkAejWAq4ROhi3NLb8lWAhXJKJ+I
+         FMs7XFPousoyKqLHBzHRfiCfxm8y4qwi8EnoQsrg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 0776/1095] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
-Date:   Mon, 15 Aug 2022 20:02:55 +0200
-Message-Id: <20220815180501.371731518@linuxfoundation.org>
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 0103/1157] scsi: lpfc: Remove extra atomic_inc on cmd_pending in queuecommand after VMID
+Date:   Mon, 15 Aug 2022 19:50:59 +0200
+Message-Id: <20220815180443.752948029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
-References: <20220815180429.240518113@linuxfoundation.org>
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit aa2a1df3a2c85f855af7d54466ac10bd48645d63 ]
+commit 0948a9c5386095baae4012190a6b65aba684a907 upstream.
 
-setup_base_ctxt() allocates a memory chunk for uctxt->groups with
-hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
-is not released, which will lead to a memory leak.
+VMID introduced an extra increment of cmd_pending, causing double-counting
+of the I/O. The normal increment ios performed in lpfc_get_scsi_buf.
 
-We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
-when init_user_ctxt() fails.
-
-Fixes: e87473bc1b6c ("IB/hfi1: Only set fd pointer when base context is completely initialized")
-Link: https://lore.kernel.org/r/20220711070718.2318320-1-niejianglei2021@163.com
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220701211425.2708-5-jsmart2021@gmail.com
+Fixes: 33c79741deaf ("scsi: lpfc: vmid: Introduce VMID in I/O path")
+Cc: <stable@vger.kernel.org> # v5.14+
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_scsi.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-index 3ebdd42fec36..686d170a5947 100644
---- a/drivers/infiniband/hw/hfi1/file_ops.c
-+++ b/drivers/infiniband/hw/hfi1/file_ops.c
-@@ -1179,8 +1179,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
- 		goto done;
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -5456,7 +5456,6 @@ lpfc_queuecommand(struct Scsi_Host *shos
+ 				cur_iocbq->cmd_flag |= LPFC_IO_VMID;
+ 		}
+ 	}
+-	atomic_inc(&ndlp->cmd_pending);
  
- 	ret = init_user_ctxt(fd, uctxt);
--	if (ret)
-+	if (ret) {
-+		hfi1_free_ctxt_rcv_groups(uctxt);
- 		goto done;
-+	}
- 
- 	user_init(uctxt);
- 
--- 
-2.35.1
-
+ #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
+ 	if (unlikely(phba->hdwqstat_on & LPFC_CHECK_SCSI_IO))
 
 
