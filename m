@@ -2,79 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE00C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CCFC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 04:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiHPE6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 16 Aug 2022 00:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
+        id S233814AbiHPE6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 16 Aug 2022 00:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiHPE4m (ORCPT
+        with ESMTP id S233767AbiHPE47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 16 Aug 2022 00:56:42 -0400
-Received: from smtp.smtpout.orange.fr (smtp-16.smtpout.orange.fr [80.12.242.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665A280B56
-        for <linux-kernel@vger.kernel.org>; Mon, 15 Aug 2022 13:52:28 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id Nh4To0e9HTLjwNh4TowhXt; Mon, 15 Aug 2022 22:52:26 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 15 Aug 2022 22:52:26 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     michael.christie@oracle.com,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-Subject: [PATCH v2] scsi: target: Save a few cycles in transport_lookup_[cmd|tmr]_lun()
-Date:   Mon, 15 Aug 2022 22:52:24 +0200
-Message-Id: <03705222390bfa3b48ad7658f693fc0fc030b3ae.1660596679.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Tue, 16 Aug 2022 00:56:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E085BC833;
+        Mon, 15 Aug 2022 13:51:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2EC361239;
+        Mon, 15 Aug 2022 20:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C6D5C433C1;
+        Mon, 15 Aug 2022 20:51:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660596685;
+        bh=9V2Lh427dE0c3DVs2bzvA7D9zotqaw/O2V5rkXiOl68=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jHJOQ2MeJijf5Ly76fDeuo9j9EilorVZCxkDbpy7Lf5aGMCHz1WKEaG8wM5JFA5v0
+         XV3UvNQdoOGpnoosEYvDmF/JVaXKuSfdLNldg8nSB4h6VJ82cKxqd9tNaryz95lTN0
+         pTaQkGuGySeLwyso72xXSP9/bDri6bBIGKmLhdpI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Andreas Dilger <adilger@dilger.ca>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 1125/1157] ext4: check if directory block is within i_size
+Date:   Mon, 15 Aug 2022 20:08:01 +0200
+Message-Id: <20220815180525.350164423@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
+References: <20220815180439.416659447@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use percpu_ref_tryget_live_rcu() instead of percpu_ref_tryget_live() to
-save a few cycles when it is known that the rcu lock is already
-taken/released.
+From: Lukas Czerner <lczerner@redhat.com>
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+[ Upstream commit 65f8ea4cd57dbd46ea13b41dc8bac03176b04233 ]
+
+Currently ext4 directory handling code implicitly assumes that the
+directory blocks are always within the i_size. In fact ext4_append()
+will attempt to allocate next directory block based solely on i_size and
+the i_size is then appropriately increased after a successful
+allocation.
+
+However, for this to work it requires i_size to be correct. If, for any
+reason, the directory inode i_size is corrupted in a way that the
+directory tree refers to a valid directory block past i_size, we could
+end up corrupting parts of the directory tree structure by overwriting
+already used directory blocks when modifying the directory.
+
+Fix it by catching the corruption early in __ext4_read_dirblock().
+
+Addresses Red-Hat-Bugzilla: #2070205
+CVE: CVE-2022-1184
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Link: https://lore.kernel.org/r/20220704142721.157985-1-lczerner@redhat.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Change in v2:
-  * sync with -next
+ fs/ext4/namei.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-v1:
-  * https://lore.kernel.org/all/e4a21bc607c39935cb98d4825cd63ba349820550.1635974637.git.christophe.jaillet@wanadoo.fr/
----
- drivers/target/target_core_device.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/target/target_core_device.c b/drivers/target/target_core_device.c
-index b7f16ee8aa0e..76c6613a1da7 100644
---- a/drivers/target/target_core_device.c
-+++ b/drivers/target/target_core_device.c
-@@ -77,7 +77,7 @@ transport_lookup_cmd_lun(struct se_cmd *se_cmd)
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index db4ba99d1ceb..cf460aa4f81d 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -110,6 +110,13 @@ static struct buffer_head *__ext4_read_dirblock(struct inode *inode,
+ 	struct ext4_dir_entry *dirent;
+ 	int is_dx_block = 0;
  
- 		se_lun = deve->se_lun;
- 
--		if (!percpu_ref_tryget_live(&se_lun->lun_ref)) {
-+		if (!percpu_ref_tryget_live_rcu(&se_lun->lun_ref)) {
- 			se_lun = NULL;
- 			goto out_unlock;
- 		}
-@@ -154,7 +154,7 @@ int transport_lookup_tmr_lun(struct se_cmd *se_cmd)
- 	if (deve) {
- 		se_lun = deve->se_lun;
- 
--		if (!percpu_ref_tryget_live(&se_lun->lun_ref)) {
-+		if (!percpu_ref_tryget_live_rcu(&se_lun->lun_ref)) {
- 			se_lun = NULL;
- 			goto out_unlock;
- 		}
++	if (block >= inode->i_size) {
++		ext4_error_inode(inode, func, line, block,
++		       "Attempting to read directory block (%u) that is past i_size (%llu)",
++		       block, inode->i_size);
++		return ERR_PTR(-EFSCORRUPTED);
++	}
++
+ 	if (ext4_simulate_fail(inode->i_sb, EXT4_SIM_DIRBLOCK_EIO))
+ 		bh = ERR_PTR(-EIO);
+ 	else
 -- 
-2.34.1
+2.35.1
+
+
 
