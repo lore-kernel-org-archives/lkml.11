@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF68C2BBC5
-	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90180C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue, 16 Aug 2022 00:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357238AbiHPANQ (ORCPT
+        id S1356994AbiHPAMy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 20:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48738 "EHLO
+        Mon, 15 Aug 2022 20:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357026AbiHPADe (ORCPT
+        with ESMTP id S1356834AbiHPADH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 20:03:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F4A16D47D;
-        Mon, 15 Aug 2022 13:25:20 -0700 (PDT)
+        Mon, 15 Aug 2022 20:03:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FCE4B496;
+        Mon, 15 Aug 2022 13:24:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3281E610A7;
-        Mon, 15 Aug 2022 20:25:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B56DC433C1;
-        Mon, 15 Aug 2022 20:25:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB276108E;
+        Mon, 15 Aug 2022 20:24:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC2C8C433D6;
+        Mon, 15 Aug 2022 20:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660595119;
-        bh=32JWxgsHlTzu0E40Cgme+bJNd6tCN/0r15ri5IIlPQg=;
+        s=korg; t=1660595071;
+        bh=AjPHz77vqqBU48LoSmJeUUwmzkiS0wYCFE5oYXiVF7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ESZCPMp4LdVDMxBu27aZoUokQkOq0wmLujtar2SaZeOy1h9jIsV+HqrP+tAp4uNHj
-         X+dR7jUvxqj1Zs4bXYk/fWizm4TFnPufTIpgG9xyJjG/dAfL21bqYK6ebYYQ8SwAYz
-         d1PtswlIxCbXzyVszWMD2U/QONGYteirYDVavStM=
+        b=jGkY2zXWi1PHyiRo5S9CpgvOJiS6f5LlaV0P5BMGCx7vAxvYgUXJ0Epop5ddd/5Dj
+         0GnZ5AaTQiE+YeaJd8wxo45ajzWyNzu/8MFpfunUboPJn4VBdT42ucR23CKhBAWmrE
+         tH52QDh252hnT4w2WVVKPjII2F8f62bzLX97ClDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 0663/1157] iio: adc: ti-ads124s08: Fix alignment for DMA safety
-Date:   Mon, 15 Aug 2022 20:00:19 +0200
-Message-Id: <20220815180506.237341583@linuxfoundation.org>
+Subject: [PATCH 5.19 0646/1157] iio: adc: ad7887: Fix alignment for DMA safety
+Date:   Mon, 15 Aug 2022 20:00:02 +0200
+Message-Id: <20220815180505.575503212@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
 References: <20220815180439.416659447@linuxfoundation.org>
@@ -53,34 +54,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 7df19bd26cc0b85ff997cc9e2aaea712836b5460 ]
+[ Upstream commit b330ea6bc52468e183ced79189ff064f36c64aa7 ]
 
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: e717f8c6dfec ("iio: adc: Add the TI ads124s08 ADC code")
+Update the comment to include 'may'.
+
+Fixes tag is clearly not where this was introduced but it is very unlikely
+anyone will back port it past that point.
+
+Fixes: 65dd3d3d7a9b ("staging:iio:ad7887: Squash everything into one file")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220508175712.647246-35-jic23@kernel.org
+Link: https://lore.kernel.org/r/20220508175712.647246-18-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ti-ads124s08.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ad7887.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
-index 767b3b634809..64833156c199 100644
---- a/drivers/iio/adc/ti-ads124s08.c
-+++ b/drivers/iio/adc/ti-ads124s08.c
-@@ -106,7 +106,7 @@ struct ads124s_private {
- 	 * timestamp is maintained.
+diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+index f64999714a4d..965bdc8aa696 100644
+--- a/drivers/iio/adc/ad7887.c
++++ b/drivers/iio/adc/ad7887.c
+@@ -66,13 +66,12 @@ struct ad7887_state {
+ 	unsigned char			tx_cmd_buf[4];
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 * Buffer needs to be large enough to hold two 16 bit samples and a
+ 	 * 64 bit aligned 64 bit timestamp.
  	 */
- 	u32 buffer[ADS124S08_MAX_CHANNELS + sizeof(s64)/sizeof(u32)] __aligned(8);
--	u8 data[5] ____cacheline_aligned;
-+	u8 data[5] __aligned(IIO_DMA_MINALIGN);
+-	unsigned char data[ALIGN(4, sizeof(s64)) + sizeof(s64)]
+-		____cacheline_aligned;
++	unsigned char data[ALIGN(4, sizeof(s64)) + sizeof(s64)] __aligned(IIO_DMA_MINALIGN);
  };
  
- #define ADS124S08_CHAN(index)					\
+ enum ad7887_supported_device_ids {
 -- 
 2.35.1
 
