@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97197C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CF4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon, 15 Aug 2022 22:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346941AbiHOWE7 (ORCPT
+        id S1347394AbiHOWFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 15 Aug 2022 18:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
+        Mon, 15 Aug 2022 18:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350228AbiHOWBz (ORCPT
+        with ESMTP id S1350190AbiHOWBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 15 Aug 2022 18:01:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E78E113686;
-        Mon, 15 Aug 2022 12:36:14 -0700 (PDT)
+        Mon, 15 Aug 2022 18:01:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13E0113682;
+        Mon, 15 Aug 2022 12:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B015AB81141;
-        Mon, 15 Aug 2022 19:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABFAC433B5;
-        Mon, 15 Aug 2022 19:36:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2834B81136;
+        Mon, 15 Aug 2022 19:36:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B29CC43470;
+        Mon, 15 Aug 2022 19:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660592171;
-        bh=MqXDXlZKe82M+ZSR3HvDR2TXSZqOQYNlIWIzz4zgi5A=;
+        s=korg; t=1660592168;
+        bh=WInj4pOrN2LEbYBEShrOBHF7IyqIhqtVGRwA7OG/tBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2hdwX4hPtbIIQWyoVtNdnbmasXBMaiG+luRaQOEnJ8nbw3B1v2Qz/Sw0+Bi/A+MMV
-         pJLsMd5LpFp3Uaye0w0dEGRuQcQku3F2Bl3m2jtAqZ8XEjpVqIV1yxaqGq/8zHobA5
-         xjYUot6AY3ijqyytUBPyphsOK6puqMXJhBxBRCbU=
+        b=xpGEggu1uTwAiA0V37ZK5pSSQaFzkqYLYZ42MduTNPY3D+Tb00NEFsZ632Ddkjcyh
+         Hk0dLVQcYsGt6CCE6dYig3HHyYueVtKcqgXfnFnzkBhMhL7GWEIuo+WUlVZEHMtdXA
+         Flt3H7aheG1zbHurNfYuIQZnmg2x6Zmw52bpWiR0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atul Khare <atulkhare@rivosinc.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 0069/1157] dt-bindings: riscv: fix SiFive l2-caches cache-sets
-Date:   Mon, 15 Aug 2022 19:50:25 +0200
-Message-Id: <20220815180442.253046396@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 0744/1095] memstick/ms_block: Fix a memory leak
+Date:   Mon, 15 Aug 2022 20:02:23 +0200
+Message-Id: <20220815180500.140907842@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
+In-Reply-To: <20220815180429.240518113@linuxfoundation.org>
+References: <20220815180429.240518113@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,64 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit b60cf8e59e61133b6c9514ff8d8c8d7049d040ef upstream.
+[ Upstream commit 54eb7a55be6779c4d0c25eaf5056498a28595049 ]
 
-Fix device tree schema validation error messages for the SiFive
-Unmatched: ' cache-sets:0:0: 1024 was expected'.
+'erased_blocks_bitmap' is never freed. As it is allocated at the same time
+as 'used_blocks_bitmap', it is likely that it should be freed also at the
+same time.
 
-The existing bindings allow for just 1024 cache-sets but the fu740 on
-Unmatched the has 2048 cache-sets. The ISA itself permits any arbitrary
-power of two, however this is not supported by dt-schema. The RTL for
-the IP, to which the number of cache-sets is a tunable parameter, has
-been released publicly so speculatively adding a small number of
-"reasonable" values seems unwise also.
+Add the corresponding bitmap_free() in msb_data_clear().
 
-Instead, as the binding only supports two distinct controllers: add 2048
-and explicitly lock it to the fu740's l2 cache while limiting 1024 to
-the l2 cache on the fu540.
-
-Fixes: af951c3a113b ("dt-bindings: riscv: Update l2 cache DT documentation to add support for SiFive FU740")
-Reported-by: Atul Khare <atulkhare@rivosinc.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220803185359.942928-1-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0ab30494bc4f ("memstick: add support for legacy memorysticks")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/b3b78926569445962ea5c3b6e9102418a9effb88.1656155715.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/memstick/core/ms_block.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
-+++ b/Documentation/devicetree/bindings/riscv/sifive-l2-cache.yaml
-@@ -46,7 +46,7 @@ properties:
-     const: 2
- 
-   cache-sets:
--    const: 1024
-+    enum: [1024, 2048]
- 
-   cache-size:
-     const: 2097152
-@@ -84,6 +84,8 @@ then:
-       description: |
-         Must contain entries for DirError, DataError and DataFail signals.
-       maxItems: 3
-+    cache-sets:
-+      const: 1024
- 
- else:
-   properties:
-@@ -91,6 +93,8 @@ else:
-       description: |
-         Must contain entries for DirError, DataError, DataFail, DirFail signals.
-       minItems: 4
-+    cache-sets:
-+      const: 2048
- 
- additionalProperties: false
- 
+diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
+index f8f151163667..f8fdf88fb240 100644
+--- a/drivers/memstick/core/ms_block.c
++++ b/drivers/memstick/core/ms_block.c
+@@ -1947,6 +1947,7 @@ static void msb_data_clear(struct msb_data *msb)
+ {
+ 	kfree(msb->boot_page);
+ 	bitmap_free(msb->used_blocks_bitmap);
++	bitmap_free(msb->erased_blocks_bitmap);
+ 	kfree(msb->lba_to_pba_table);
+ 	kfree(msb->cache);
+ 	msb->card = NULL;
+-- 
+2.35.1
+
 
 
